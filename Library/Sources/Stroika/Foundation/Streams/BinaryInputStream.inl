@@ -71,6 +71,15 @@ namespace   Stroika {
                 RequireNotNull (_GetRep ().get ());
                 return _GetRep ()->Read (intoStart, intoEnd);
             }
+            inline  size_t  BinaryInputStream::Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) const
+            {
+                SeekOffsetType  savedOffset =   GetOffset ();
+                Seek (*offset);
+                size_t  result = Read (intoStart, intoEnd);
+                Seek (savedOffset);
+                *offset += result;
+                return result;
+            }
 
 
         }

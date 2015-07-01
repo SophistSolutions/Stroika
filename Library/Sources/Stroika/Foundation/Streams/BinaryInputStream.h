@@ -24,6 +24,9 @@
  *  TODO:
  *      @todo   Either #include Memory/BLOB.h or document in the forward declare why not.
  *
+ *      @todo   Bake Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) into REP
+ *              API so its operation can be atomic.
+ *
  *      @todo   Explain in docs how Stroika streams differ from iostream
  *              o   MUCH MUCH easier to implement your own complaint stream
  *              o   Separarate interface from implementation (thats why easier to implement)
@@ -143,9 +146,23 @@ namespace   Stroika {
                  *      bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
                  *      BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *      without prejudice about how much more is available.
+                 *
+                 *  Read/3
+                 *      TRIAL BALLOON IDEA FROM STERL - NYI.
+                 *
+                 *      \req IsSeekable()
+                 *
+                 *      Would be LIKE Read/2 () - except NOT update any intrinsic seek offset. Input offset
+                 *      would be where we read from, and would be updated to reflect where we read to. Change in
+                 *      offset would be the same as the returned value.
                  */
                 nonvirtual  Memory::Optional<Byte>  Read () const;
                 nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd) const;
+                nonvirtual  size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) const;
+
+            public:
+                /**
+                 */
 
             public:
                 /**
