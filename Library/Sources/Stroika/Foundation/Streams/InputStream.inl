@@ -66,14 +66,8 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  auto  InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType> {
                 ElementType b {};
-                RequireNotNull (_GetRep ().get ());
-                if (_GetRep ()->Read (&b, &b + 1) == 0)
-                {
-                    return Memory::Optional<ElementType> ();
-                }
-                else {
-                    return b;
-                }
+                RequireNotNull (_GetRep ());
+                return (_GetRep ()->Read (nullptr, &b, &b + 1) == 0)? Memory::Optional<ElementType> () : b;
             }
             template    <typename ELEMENT_TYPE>
             inline  size_t  InputStream<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
