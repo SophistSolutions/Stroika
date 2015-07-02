@@ -40,6 +40,11 @@ namespace   Stroika {
                 return fRep_;
             }
             template    <typename ELEMENT_TYPE>
+            inline  bool    Stream<ELEMENT_TYPE>::IsSeekable () const
+            {
+                return fSeekable_;
+            }
+            template    <typename ELEMENT_TYPE>
             inline  bool    Stream<ELEMENT_TYPE>::empty () const
             {
                 return fRep_.get () == nullptr;

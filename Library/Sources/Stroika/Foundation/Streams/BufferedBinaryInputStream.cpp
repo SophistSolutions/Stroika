@@ -28,8 +28,23 @@ public:
     {
     }
 
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return false;      // @todo - COULD be seekable if underlying fRealIn_ was!!!
+    }
+    virtual SeekOffsetType  GetReadOffset () const override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else

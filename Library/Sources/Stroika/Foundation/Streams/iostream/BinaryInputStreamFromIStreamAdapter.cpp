@@ -25,7 +25,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION(IRep_);
 
@@ -37,8 +37,13 @@ public:
     }
 
 protected:
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return true;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -57,15 +62,13 @@ protected:
         }
         return n;
     }
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetReadOffset () const override
     {
         // instead of tellg () - avoids issue with EOF where fail bit set???
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
-
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {

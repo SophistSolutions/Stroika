@@ -12,6 +12,7 @@
 
 #include    "BinaryInputStream.h"
 #include    "BinaryOutputStream.h"
+#include    "BinaryInputOutputStream.h"
 
 
 
@@ -33,6 +34,14 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
+
+
+//@todo - REPALCE THIS WITH RELAXED DEFINITION OF BinaryInputOutputStream - not necesarily so closely related
+
+
+#if 1
+            using BinaryTiedStreams = BinaryInputOutputStream;
+#else
 
 
             /**
@@ -68,6 +77,7 @@ namespace   Stroika {
                  */
                 BinaryTiedStreams (const BinaryInputStream& in, const BinaryOutputStream& out);
             };
+#endif
 
 
         }

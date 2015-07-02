@@ -12,7 +12,7 @@
 #include    "../Memory/Common.h"
 
 #include    "BinaryStream.h"
-
+#include    "OutputStream.h"
 
 
 /**
@@ -54,7 +54,34 @@ namespace   Stroika {
             class   BinaryInputOutputStream;
 
 
-            /**
+#if 1
+            class   BinaryOutputStream : public OutputStream<Byte> {
+                using inherited = OutputStream<Byte>;
+
+            protected:
+                /**
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 */
+                explicit BinaryOutputStream (const _SharedIRep& rep)
+                    : inherited (rep)
+                {
+                }
+            public:
+                BinaryOutputStream () = default;
+                BinaryOutputStream (nullptr_t)
+                    : inherited (nullptr)
+                {
+                }
+            public:
+                nonvirtual  void    Write (const Byte* start, const Byte* end) const
+                {
+                    inherited::Write (start, end);
+                }
+                nonvirtual  void    Write (const Memory::BLOB& blob) const;
+
+            };
+
+#else            /**
              * Design Overview:
              *
              *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
@@ -149,6 +176,7 @@ namespace   Stroika {
                  */
                 virtual void    Flush ()         =   0;
             };
+#endif
 
 
         }

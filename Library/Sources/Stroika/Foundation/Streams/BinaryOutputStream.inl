@@ -18,6 +18,12 @@ namespace   Stroika {
         namespace   Streams {
 
 
+#if 1
+            inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
+            {
+                Write (blob.begin (), blob.end ());
+            }
+#else
             /*
              ********************************************************************************
              ************************** BinaryOutputStream::_IRep ***************************
@@ -58,14 +64,11 @@ namespace   Stroika {
                     _GetRep ()->Write (start, end);
                 }
             }
-            inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
-            {
-                Write (blob.begin (), blob.end ());
-            }
             inline  void    BinaryOutputStream::Flush () const
             {
                 _GetRep ()->Flush ();
             }
+#endif
 
 
         }

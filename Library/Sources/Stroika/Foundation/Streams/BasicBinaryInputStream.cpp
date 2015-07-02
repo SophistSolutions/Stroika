@@ -23,7 +23,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   BasicBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+class   BasicBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
 public:
     IRep_ (const Byte* start, const Byte* end)
         : fCriticalSection_ ()
@@ -42,8 +42,13 @@ public:
     IRep_ (const IRep_&) = delete;
     nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
-    virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return true;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -61,7 +66,7 @@ public:
         return nCopied; // this can be zero on EOF
     }
 
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetReadOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -71,7 +76,7 @@ public:
         return fCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType    SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -118,12 +123,12 @@ public:
                 break;
         }
         Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
-        return GetOffset ();
+        return GetReadOffset ();
     }
 
 private:
     // round size of usage up to around 1k (include vtableptr) - no real good reason - # doesnt matter much...
-    DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
+    DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep));
 
     mutable recursive_mutex                             fCriticalSection_;
     Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;

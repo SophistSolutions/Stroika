@@ -34,10 +34,12 @@ namespace   Stroika {
              */
             inline  BinaryInputOutputStream::_SharedIRep BinaryInputOutputStream::_GetRep () const
             {
-                _SharedIRep   result  =   dynamic_pointer_cast<_SharedIRep::element_type> (BinaryStream::_GetRep ());
+                // NB: could have used base BinaryOutputStream - either way same - @todo add assert
+                _SharedIRep   result  =   dynamic_pointer_cast<_SharedIRep::element_type> (BinaryInputStream::_GetRep ());
                 RequireNotNull (result.get ());
                 return result;
             }
+#if 0
             inline  size_t  BinaryInputOutputStream::Read (Byte* intoStart, Byte* intoEnd)
             {
                 return _GetRep ()->Read (intoStart, intoEnd);
@@ -66,6 +68,7 @@ namespace   Stroika {
             {
                 return _GetRep ()->WriteSeek (whence, offset);
             }
+#endif
 
 
         }

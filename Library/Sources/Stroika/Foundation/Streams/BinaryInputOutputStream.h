@@ -33,6 +33,12 @@ namespace   Stroika {
 
 
             /**
+            **** @todo NOTE - MAJOR API deparature - combined old BinaryInputOutputStream with binaryTiedStream - so now
+            *   we COULD have two sides related as in MemoryBuffer/BasicInputOutputStream - write from one side read from the other, or
+            * more unrelated - like socket stream - where write on one side read by other system (often other computer) but two still somehow
+            * logically related. Very little though in relation between the two.
+
+
              *  \brief  BinaryInputOutputStream is a stream that acts much as a BinaryInputStream and an BinaryOutputStream.
              *
              *  BinaryInputOutputStream might have inherited from BinaryInputStream and
@@ -52,13 +58,17 @@ namespace   Stroika {
              *  pushed through to the associated other direction stream. For most predictable buffering results
              *  use @BufferedBinaryInputOutputStream
              */
-            class   BinaryInputOutputStream : public Streams::BinaryStream {
+            class   BinaryInputOutputStream /*: public Streams::BinaryStream*/
+
+                // could do without inheritenace - not sure whats best - expierment
+                : public BinaryInputStream, public BinaryOutputStream {
             protected:
                 class   _IRep;
                 using   _SharedIRep     =   shared_ptr<_IRep>;
 
             protected:
                 /**
+                @todo update docs about Seekable
                  *  _SharedIRep must NOT inherit from Seekable. However, the resulting BinaryInputOutputStream is always seekable.
                  *
                  *  \pre dynamic_cast(rep.get (), Seekable*) == nullptr
@@ -72,6 +82,14 @@ namespace   Stroika {
                  */
                 nonvirtual  _SharedIRep _GetRep () const;
 
+
+            public:
+                // @todo move to INL file and assert same as binaryoutputstream value
+                bool    empty () const { return BinaryInputStream::empty (); }
+            public:
+                // @todo move to INL file and assert same as binaryoutputstream value
+                bool    IsSeekable () const { return BinaryInputStream::IsSeekable (); }
+#if 0
             public:
                 /**
                  * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
@@ -83,7 +101,22 @@ namespace   Stroika {
                  * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
                  */
                 nonvirtual  operator BinaryOutputStream () const;
+#endif
 
+
+            public:
+                nonvirtual  SeekOffsetType  GetReadOffset () const { return BinaryInputStream::GetOffset (); }
+
+            public:
+                nonvirtual  SeekOffsetType  GetWriteOffset () const { return BinaryOutputStream::GetOffset (); }
+
+            public:
+                _DeprecatedFunction_ (nonvirtual  SeekOffsetType  ReadGetOffset () const { return BinaryInputStream::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
+
+            public:
+                _DeprecatedFunction_ (nonvirtual  SeekOffsetType  WriteGetOffset () const { return BinaryOutputStream::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
+
+#if 0
             public:
                 /**
                  *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
@@ -136,20 +169,21 @@ namespace   Stroika {
                  *  @see Seekable::Seek
                  */
                 nonvirtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset);
+#endif
             };
 
 
             /**
              *  This MUST NOT inherit from Seekable. It mimics parts of the interface (EXPLAIN WHY)
              */
-            class   BinaryInputOutputStream::_IRep : public virtual BinaryStream::_IRep, public std::enable_shared_from_this<BinaryInputOutputStream::_IRep> {
+            class   BinaryInputOutputStream::_IRep : public InputStream<Byte>::_IRep, public OutputStream<Byte>::_IRep { /*, public std::enable_shared_from_this<BinaryInputOutputStream::_IRep>*/
             public:
                 _IRep ();
                 _IRep (const _IRep&) = delete;
 
             public:
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
-
+#if 0
             public:
                 /**
                  *  @see BinaryInputStream::Read
@@ -197,6 +231,7 @@ namespace   Stroika {
                  *  @see Seekable::_IRep::Seek
                  */
                 virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset)      =   0;
+#endif
             };
 
 

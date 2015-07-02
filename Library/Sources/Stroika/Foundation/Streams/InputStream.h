@@ -13,6 +13,7 @@
 #include    "../Memory/Optional.h"
 
 #include    "BinaryStream.h"
+#include    "Stream.h"
 
 
 
@@ -52,8 +53,8 @@ namespace   Stroika {
              */
             template    <typename   ELEMENT_TYPE>
             class   InputStream : public Stream<ELEMENT_TYPE> {
-			private:
-				using	inherited = Stream<ELEMENT_TYPE>;
+            private:
+                using   inherited = Stream<ELEMENT_TYPE>;
 
             protected:
                 class   _IRep;

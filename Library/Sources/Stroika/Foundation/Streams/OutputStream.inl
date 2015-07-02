@@ -41,7 +41,7 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType  OutputStream<ELEMENT_TYPE>::GetOffset () const
             {
-                return _GetRep ()->GetOffset ();
+                return _GetRep ()->GetWriteOffset ();
             }
             template    <typename ELEMENT_TYPE>
             SeekOffsetType  OutputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -56,12 +56,12 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType    OutputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->Seek (Whence::eFromStart, offset);
+                return _GetRep ()->SeekWrite (Whence::eFromStart, offset);
             }
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType    OutputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->Seek (whence, offset);
+                return _GetRep ()->SeekWrite (whence, offset);
             }
             template    <typename ELEMENT_TYPE>
             inline  void    OutputStream<ELEMENT_TYPE>::Write (const ElementType* start, const ElementType* end) const

@@ -20,7 +20,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
 public:
     IRep_ () = delete;
     IRep_ (const IRep_&) = delete;
@@ -36,8 +36,13 @@ public:
     nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
 protected:
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return true;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -50,14 +55,12 @@ protected:
         fCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
     }
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetReadOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };  // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
         return fCursor_ - fStart_;
     }
-
-    virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType            SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
@@ -97,7 +100,7 @@ protected:
                 break;
         }
         Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
-        return GetOffset ();
+        return GetReadOffset ();
     }
 
 private:

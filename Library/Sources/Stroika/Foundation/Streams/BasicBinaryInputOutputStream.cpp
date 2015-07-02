@@ -37,8 +37,14 @@ public:
     }
     IRep_ (const IRep_&) = delete;
     nonvirtual  IRep_& operator= (const IRep_&) = delete;
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+
+    virtual bool    IsSeekable () const override
     {
+        return true;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -84,13 +90,13 @@ public:
         // nothing todo - write 'writes thru'
     }
 
-    virtual SeekOffsetType      ReadGetOffset () const override
+    virtual SeekOffsetType      GetReadOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fReadCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
@@ -136,13 +142,13 @@ public:
         return fReadCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      WriteGetOffset () const override
+    virtual SeekOffsetType      GetWriteOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fWriteCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType      SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {

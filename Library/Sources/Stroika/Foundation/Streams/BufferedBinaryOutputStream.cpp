@@ -75,6 +75,20 @@ public:
     }
 
     //
+    virtual bool    IsSeekable () const override
+    {
+        return false;      // @todo - COULD be seekable if underlying fRealOut_ was!!!
+    }
+    virtual SeekOffsetType  GetWriteOffset () const override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();
+        return 0;
+    }
     virtual  void    Flush () override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow

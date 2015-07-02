@@ -23,7 +23,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   BasicBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep, public Seekable::_IRep {
+class   BasicBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION(IRep_);
 
@@ -37,38 +37,11 @@ public:
     IRep_ (const IRep_&) = delete;
     nonvirtual  IRep_& operator= (const IRep_&) = delete;
 
-    virtual void    Write (const Byte* start, const Byte* end) override
+    virtual bool    IsSeekable () const override
     {
-        Require (start != nullptr or start == end);
-        Require (end != nullptr or start == end);
-        if (start != end) {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
-            size_t  roomLeft        =   fData_.end () - fCursor_;
-            size_t  roomRequired    =   end - start;
-            if (roomLeft < roomRequired) {
-                size_t  curOffset = fCursor_ - fData_.begin ();
-                const size_t    kChunkSize_     =   128;        // WAG: @todo tune number...
-                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft, kChunkSize_);
-                fData_.resize (curOffset + roomRequired);
-                fCursor_ = fData_.begin () + curOffset;
-                Assert (fCursor_ < fData_.end ());
-            }
-            (void)::memcpy (Traversal::Iterator2Pointer (fCursor_), start, roomRequired);
-            fCursor_ += roomRequired;
-            Assert (fCursor_ <= fData_.end ());
-        }
+        return true;
     }
-
-    virtual void     Flush () override
-    {
-        // nothing todo - write 'writes thru'
-    }
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetWriteOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -77,8 +50,7 @@ public:
 #endif
         return fCursor_ - fData_.begin ();
     }
-
-    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -126,6 +98,37 @@ public:
         }
         Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         return fCursor_ - fData_.begin ();
+    }
+
+    virtual void    Write (const Byte* start, const Byte* end) override
+    {
+        Require (start != nullptr or start == end);
+        Require (end != nullptr or start == end);
+        if (start != end) {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
+            size_t  roomLeft        =   fData_.end () - fCursor_;
+            size_t  roomRequired    =   end - start;
+            if (roomLeft < roomRequired) {
+                size_t  curOffset = fCursor_ - fData_.begin ();
+                const size_t    kChunkSize_     =   128;        // WAG: @todo tune number...
+                Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft, kChunkSize_);
+                fData_.resize (curOffset + roomRequired);
+                fCursor_ = fData_.begin () + curOffset;
+                Assert (fCursor_ < fData_.end ());
+            }
+            (void)::memcpy (Traversal::Iterator2Pointer (fCursor_), start, roomRequired);
+            fCursor_ += roomRequired;
+            Assert (fCursor_ <= fData_.end ());
+        }
+    }
+
+    virtual void     Flush () override
+    {
+        // nothing todo - write 'writes thru'
     }
 
     Memory::BLOB   AsBLOB () const

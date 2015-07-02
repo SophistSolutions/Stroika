@@ -179,15 +179,20 @@ namespace {
             : BinaryInputStream (_SharedIRep (make_shared<REP> (b)))
         {
         }
-        struct REP : BinaryInputStream::_IRep, public Seekable::_IRep  {
+        struct REP : BinaryInputStream::_IRep  {
             REP (const Memory::BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
                 , fEnd (b.end ())
             {
             }
-            virtual size_t  Read (Byte* intoStart, Byte* intoEnd)  override
+            virtual bool    IsSeekable () const override
             {
+                return true;
+            }
+            virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+            {
+                // @todo implement 'offset' support
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
@@ -198,11 +203,11 @@ namespace {
                 fCur += bytesToRead;
                 return bytesToRead;
             }
-            virtual SeekOffsetType  GetOffset () const override
+            virtual SeekOffsetType  GetReadOffset () const override
             {
                 return fCur - fStart;
             }
-            virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+            virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 switch (whence) {
                     case    Whence::eFromStart: {
@@ -241,7 +246,7 @@ namespace {
                         break;
                 }
                 Ensure ((fStart <= fCur) and (fCur <= fEnd));
-                return GetOffset ();
+                return GetReadOffset ();
             }
             const Byte* fCur;
             const Byte* fStart;

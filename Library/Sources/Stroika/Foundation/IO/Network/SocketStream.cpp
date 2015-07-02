@@ -30,20 +30,42 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-class   SocketStream::IRep_ : public virtual BinaryInputStream::_IRep, public virtual BinaryOutputStream::_IRep {
+class   SocketStream::IRep_ : public BinaryInputOutputStream::_IRep {
 public:
     IRep_ (Socket sd)
-        : BinaryInputStream::_IRep ()
-        , BinaryOutputStream::_IRep ()
+        : BinaryInputOutputStream::_IRep ()
         , fSD_ (sd)
     {
     }
-
-    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return false;
+    }
+    virtual SeekOffsetType  GetReadOffset () const override
+    {
+        RequireNotReached ();   // not seekable
+        return 0;
+    }
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();   // not seekable
+        return 0;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        Require (offset == nullptr);    // not seekable
         return fSD_.Read (intoStart, intoEnd);
     }
-
+    virtual SeekOffsetType  GetWriteOffset () const override
+    {
+        RequireNotReached ();   // not seekable
+        return 0;
+    }
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();   // not seekable
+        return 0;
+    }
     virtual void     Write (const Byte* start, const Byte* end) override
     {
         fSD_.Write (start, end);
@@ -69,6 +91,6 @@ private:
  ********************************************************************************
  */
 SocketStream::SocketStream (Socket sd)
-    : BinaryTiedStreams (BinaryStream::_SharedIRep (new IRep_ (sd)))
+    : BinaryTiedStreams (make_shared<IRep_> (sd))
 {
 }

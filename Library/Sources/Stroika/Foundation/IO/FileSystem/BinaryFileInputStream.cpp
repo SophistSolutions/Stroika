@@ -32,6 +32,7 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 
 using   Execution::make_unique_lock;
 using   Streams::BinaryInputStream;
+using   Streams::SeekOffsetType;
 
 
 
@@ -47,13 +48,14 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  *********************** FileSystem::BinaryFileInputStream **********************
  ********************************************************************************
  */
-class   BinaryFileInputStream::Rep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+class   BinaryFileInputStream::Rep_ : public BinaryInputStream::_IRep {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
-    Rep_ (const String& fileName)
+    Rep_ (const String& fileName, SeekableFlag seekable)
         : fCriticalSection_ ()
         , fFD_ (-1)
+        , fSeekable_ (seekable)
     {
         try {
 #if     qPlatform_Windows
@@ -78,8 +80,13 @@ public:
     }
     nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
-    virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return fSeekable_ == eSeekable;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -95,7 +102,7 @@ public:
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
     }
-    virtual Streams::SeekOffsetType  GetOffset () const override
+    virtual Streams::SeekOffsetType  GetReadOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -108,7 +115,7 @@ public:
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
 #endif
     }
-    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+    virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -152,6 +159,7 @@ public:
 private:
     mutable mutex   fCriticalSection_;
     int             fFD_;
+    SeekableFlag    fSeekable_;
 };
 
 
@@ -162,12 +170,12 @@ private:
 
 
 BinaryFileInputStream::BinaryFileInputStream (const String& fileName, SeekableFlag seekable)
-    : BinaryFileInputStream (make_shared<Rep_> (fileName), seekable)
+    : BinaryFileInputStream (make_shared<Rep_> (fileName, seekable))
 {
 }
 
-BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep, SeekableFlag seekable)
-    : inherited (rep, seekable == eSeekable ? rep.get () : nullptr)
+BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep)
+    : inherited (rep)
 {
 }
 

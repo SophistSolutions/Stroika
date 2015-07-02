@@ -41,7 +41,7 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType  InputStream<ELEMENT_TYPE>::GetOffset () const
             {
-                return _GetRep ()->GetOffset ();
+                return _GetRep ()->GetReadOffset ();
             }
             template    <typename ELEMENT_TYPE>
             SeekOffsetType  InputStream<ELEMENT_TYPE>::GetOffsetToEndOfStream () const
@@ -56,18 +56,19 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType    InputStream<ELEMENT_TYPE>::Seek (SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->Seek (Whence::eFromStart, offset);
+                return _GetRep ()->SeekRead (Whence::eFromStart, offset);
             }
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType    InputStream<ELEMENT_TYPE>::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
-                return _GetRep ()->Seek (whence, offset);
+                return _GetRep ()->SeekRead (whence, offset);
             }
             template    <typename ELEMENT_TYPE>
             inline  auto  InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType> {
                 ElementType b {};
                 RequireNotNull (_GetRep ().get ());
-                if (_GetRep ()->Read (&b, &b + 1) == 0) {
+                if (_GetRep ()->Read (&b, &b + 1) == 0)
+                {
                     return Memory::Optional<ElementType> ();
                 }
                 else {
@@ -80,17 +81,13 @@ namespace   Stroika {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->Read (intoStart, intoEnd);
+                return _GetRep ()->Read (nullptr, intoStart, intoEnd);
             }
             template    <typename ELEMENT_TYPE>
             size_t  InputStream<ELEMENT_TYPE>::Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) const
             {
-                SeekOffsetType  savedOffset =   GetOffset ();
-                Seek (*offset);
-                size_t  result = Read (intoStart, intoEnd);
-                Seek (savedOffset);
-                *offset += result;
-                return result;
+                RequireNotNull (offset);
+                return GetRep ()->Read (offset, intoStart, intoEnd);
             }
 
 

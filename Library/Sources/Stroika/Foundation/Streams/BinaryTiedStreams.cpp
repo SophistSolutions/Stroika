@@ -14,7 +14,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-
+#if 0
 /*
  ********************************************************************************
  ************************* Streams::BinaryTiedStreams ***************************
@@ -33,3 +33,4 @@ BinaryTiedStreams::BinaryTiedStreams (const BinaryInputStream& in, const BinaryO
     , BinaryOutputStream (out)
 {
 }
+#endif

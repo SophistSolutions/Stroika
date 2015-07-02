@@ -52,8 +52,8 @@ namespace   Stroika {
              */
             template    <typename   ELEMENT_TYPE>
             class   OutputStream : public Stream<ELEMENT_TYPE> {
-			private:
-				using	inherited = Stream<ELEMENT_TYPE>;
+            private:
+                using   inherited = Stream<ELEMENT_TYPE>;
 
             protected:
                 class   _IRep;

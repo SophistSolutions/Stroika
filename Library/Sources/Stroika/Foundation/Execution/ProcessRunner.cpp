@@ -777,7 +777,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
             // for now while we write BOM, dont write empty string as just a BOM!
             Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
         }
-        Assert (useStdIn.ReadGetOffset () == 0);
+        Assert (useStdIn.GetReadOffset () == 0);
 
         SetStdIn (useStdIn);
         SetStdOut (useStdOut);
@@ -788,7 +788,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
         SetStdOut (oldStdOut);
 
         // get from 'useStdOut'
-        Assert (useStdOut.ReadGetOffset () == 0);
+        Assert (useStdOut.GetReadOffset () == 0);
         return Streams::TextInputStreamBinaryAdapter (useStdOut).ReadAll ();
     }
     catch (...) {

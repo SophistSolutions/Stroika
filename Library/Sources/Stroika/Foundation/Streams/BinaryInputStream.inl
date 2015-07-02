@@ -17,6 +17,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
+#if 0
             /*
              ********************************************************************************
              *************************** BinaryInputStream::_IRep ***************************
@@ -80,6 +81,7 @@ namespace   Stroika {
                 *offset += result;
                 return result;
             }
+#endif
 
 
         }

@@ -48,7 +48,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-class   BinaryFileOutputStream::Rep_ : public BinaryOutputStream::_IRep, public Seekable::_IRep {
+class   BinaryFileOutputStream::Rep_ : public BinaryOutputStream::_IRep {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
@@ -81,6 +81,10 @@ public:
 #endif
     }
     nonvirtual  Rep_& operator= (const Rep_&) = delete;
+    virtual bool    IsSeekable () const override
+    {
+        return true;
+    }
     virtual void    Write (const Byte* start, const Byte* end) override
     {
         Require (start != nullptr or start == end);
@@ -114,7 +118,7 @@ public:
 #endif
         }
     }
-    virtual Streams::SeekOffsetType  GetOffset () const override
+    virtual Streams::SeekOffsetType  GetWriteOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
 #if     qPlatform_Windows
@@ -123,7 +127,7 @@ public:
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
 #endif
     }
-    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+    virtual Streams::SeekOffsetType    SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
         auto    critSec { make_unique_lock (fCriticalSection_) };

@@ -61,7 +61,7 @@ namespace   Stroika {
                     BinaryFileInputStream (const String& fileName, SeekableFlag seekable = eSeekable);
 
                 private:
-                    BinaryFileInputStream (const shared_ptr<Rep_>& rep, SeekableFlag seekable);
+                    BinaryFileInputStream (const shared_ptr<Rep_>& rep);
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };

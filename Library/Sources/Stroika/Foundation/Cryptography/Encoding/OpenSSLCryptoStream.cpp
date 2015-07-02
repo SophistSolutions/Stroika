@@ -113,38 +113,50 @@ public:
         , fRealIn_ (realIn)
     {
     }
-
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
-        {
-            /*
-             *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
-             *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
-             *  and use that to re-populate fOutBuf_.
-             */
-            Require (intoStart < intoEnd);
-            auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
-            if (fOutBufStart_ == fOutBufEnd_) {
-                Byte toDecryptBuf[kInBufSize_];
-                size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
-                if (n2Decrypt == 0) {
-                    size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
-                    fOutBufStart_ = fOutBuf_.begin ();
-                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
-                }
-                else {
-                    fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
-                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
-                    fOutBufStart_ = fOutBuf_.begin ();
-                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
-                }
+        return false;
+    }
+    virtual SeekOffsetType  GetReadOffset () const override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    {
+        Require (offset == nullptr);    // not seekable
+        /*
+         *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
+         *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
+         *  and use that to re-populate fOutBuf_.
+         */
+        Require (intoStart < intoEnd);
+        auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
+        if (fOutBufStart_ == fOutBufEnd_) {
+            Byte toDecryptBuf[kInBufSize_];
+            size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
+            if (n2Decrypt == 0) {
+                size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                fOutBufStart_ = fOutBuf_.begin ();
+                fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
             }
-            if (fOutBufStart_ < fOutBufEnd_) {
-                size_t  n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
-                (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
-                fOutBufStart_ += n2Copy;
-                return n2Copy;
+            else {
+                fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                fOutBufStart_ = fOutBuf_.begin ();
+                fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
             }
+        }
+        if (fOutBufStart_ < fOutBufEnd_) {
+            size_t  n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
+            (void)::memcpy (intoStart, fOutBufStart_, n2Copy);
+            fOutBufStart_ += n2Copy;
+            return n2Copy;
         }
         return 0;   // EOF
     }
@@ -173,7 +185,6 @@ public:
         , fRealOut_ (realOut)
     {
     }
-
     virtual ~IRep_ ()
     {
         // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
@@ -184,7 +195,20 @@ public:
             // not great to do in DTOR, because we must drop exceptions on the floor!
         }
     }
-
+    virtual bool    IsSeekable () const override
+    {
+        return false;
+    }
+    virtual SeekOffsetType  GetWriteOffset () const override
+    {
+        RequireNotReached ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();
+        return 0;
+    }
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
     virtual void    Write (const Byte* start, const Byte* end) override
@@ -318,7 +342,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ********************************************************************************
  */
 OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn)
-    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (cryptoParams, direction, realIn)))
+    : BinaryInputStream (make_shared<IRep_> (cryptoParams, direction, realIn))
 {
 }
 #endif
@@ -334,7 +358,7 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
  ********************************************************************************
  */
 OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut)
-    : BinaryOutputStream (_SharedIRep (new IRep_ (cryptoParams, direction, realOut)))
+    : BinaryOutputStream (make_shared<IRep_> (cryptoParams, direction, realOut))
 {
 }
 #endif

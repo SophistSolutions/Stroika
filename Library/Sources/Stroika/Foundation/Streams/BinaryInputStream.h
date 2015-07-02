@@ -13,7 +13,7 @@
 #include    "../Memory/Optional.h"
 
 #include    "BinaryStream.h"
-
+#include    "InputStream.h"
 
 
 /**
@@ -72,6 +72,37 @@ namespace   Stroika {
 
             class   BinaryInputOutputStream;
 
+
+#if 1
+            class   BinaryInputStream : public InputStream<Byte> {
+                using inherited = InputStream<Byte>;
+            protected:
+                /**
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 */
+                explicit BinaryInputStream (const _SharedIRep& rep)
+                    : inherited (rep)
+                {
+                }
+
+            public:
+                /**
+                 *  defaults to null (empty ())
+                 */
+                BinaryInputStream () = default;
+                BinaryInputStream (nullptr_t)
+                    : inherited (nullptr)
+                {
+                }
+
+            public:
+                /**
+                 *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+                 */
+                nonvirtual  Memory::BLOB ReadAll () const;
+            };
+
+#else
 
             /**
              *  \brief  BinaryInputStream is an 'abstract' class defining the interface to reading from
@@ -196,6 +227,7 @@ namespace   Stroika {
                  */
                 virtual size_t  Read (Byte* intoStart, Byte* intoEnd)          =   0;
             };
+#endif
 
 
         }
