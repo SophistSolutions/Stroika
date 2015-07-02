@@ -65,7 +65,7 @@ namespace   Stroika {
                  */
                 nonvirtual  _SharedIRep _GetRep () const;
 
-          public:
+            public:
                 // @todo move to INL file and assert same as binaryoutputstream value
                 bool    empty () const { return BinaryInputStream::empty (); }
             public:
@@ -88,7 +88,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
-			};
+            };
 
 
         }
