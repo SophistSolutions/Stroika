@@ -87,7 +87,7 @@ namespace   Stroika {
             size_t  InputStream<ELEMENT_TYPE>::Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (offset);
-                return GetRep ()->Read (offset, intoStart, intoEnd);
+                return _GetRep ()->Read (offset, intoStart, intoEnd);
             }
 
 
