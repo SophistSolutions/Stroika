@@ -22,6 +22,19 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a97">v2.0a97x</a><br/>2015-06-??</td>
 <td>
 	<ul>
+		<li>Major Design and Name Changes for Streams library ((REVIEW SOME UNCERTAIN))
+			<ul>
+				<li>New templates Stream<ELEMENT_TYPE> replaces BinaryStream and TextStream</li>
+				<li>New templates InputStream<ELEMENT_TYPE> and OutputStream<ELEMENT_TYPE> replace BinaryInputStream, BinaryOutputStream, TextInputStream, TextOutputStream</li>
+				<li>Lose Seekable base class, and instead have that functionality built into InputStream and OutputStream, so that the virtual methods for offset and seek can be different, allowing virtual mixins that permit separate read/write seek pointers.</li>
+				<li>Combined BasicBinaryInputOutputStream, BasicBinaryInputStream, and BasicBinaryOutputStream, and the three text stream variations, into
+				MemoryStream (in such a way as to generalize them ALL and allow of Memory streams of structured objects)</li>
+				<li>Lose explicit promise that all streams are synchonized, and instead added 'Synchnonized' method to InputStream<ELEMENT_TYPE> and OutputStream<ELEMENT_TYPE>
+				which creates synchonized streams, and other ones merely use Debug::AssertExternallySynchonized</li>
+				<li>Lose BinaryTiedStream, and instead, generalized BinaryInputOutputStream to the case where writes to one end COULD map to reads from the other, or just
+				to some (e.g. remote) endpoint (so case of Memory based input/output stream same base class as socket streams).</li>
+			</ul>
+		</li>
 		<li>TODO</li>
 	</ul>
 </td>
