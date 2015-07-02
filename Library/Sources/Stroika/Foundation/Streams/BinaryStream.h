@@ -34,6 +34,8 @@ namespace   Stroika {
         namespace   Streams {
 
 
+#if 0
+
             /**
              *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink
              *          of data.
@@ -111,6 +113,7 @@ namespace   Stroika {
             public:
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
             };
+#endif
 
 
         }
@@ -124,6 +127,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BinaryStream.inl"
+//#include    "BinaryStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BinaryStream_h_*/

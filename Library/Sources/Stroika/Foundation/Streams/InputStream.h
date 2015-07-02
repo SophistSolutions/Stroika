@@ -23,7 +23,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo
+ *      @todo   Bake Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) into REP
+ *              API so its operation can be atomic.
  *
  */
 

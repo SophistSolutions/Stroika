@@ -24,15 +24,6 @@
  *  TODO:
  *      @todo   Either #include Memory/BLOB.h or document in the forward declare why not.
  *
- *      @todo   Bake Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) into REP
- *              API so its operation can be atomic.
- *
- *      @todo   Explain in docs how Stroika streams differ from iostream
- *              o   MUCH MUCH easier to implement your own complaint stream
- *              o   Separarate interface from implementation (thats why easier to implement)
- *              o   Doesn’t mix text with binary APIs. Keeps them logically separate (view as
- *                  you will – diff – if better or worse)
- *
  *      @todo   Redo BinaryInputStream::ReadAll() more efficiently checking isSeekable() and the
  *              precomputing size and doing just one read.
  *

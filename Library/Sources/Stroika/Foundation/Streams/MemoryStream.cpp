@@ -96,18 +96,18 @@ public:
     virtual SeekOffsetType      GetReadOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         return fReadCursor_ - fData_.begin ();
     }
     virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         switch (whence) {
             case    Whence::eFromStart: {
@@ -154,18 +154,18 @@ public:
     virtual SeekOffsetType      GetWriteOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         return fWriteCursor_ - fData_.begin ();
     }
     virtual SeekOffsetType      SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         switch (whence) {
             case    Whence::eFromStart: {
@@ -209,27 +209,27 @@ public:
     Memory::BLOB   AsBLOB () const
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         return Memory::BLOB (fData_);
     }
     vector<Byte>   AsVector () const
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         return fData_;
     }
     string   AsString () const
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
-            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+        auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }
