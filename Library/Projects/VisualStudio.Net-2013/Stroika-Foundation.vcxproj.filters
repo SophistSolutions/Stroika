@@ -759,6 +759,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1758,6 +1761,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2656,6 +2662,9 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
