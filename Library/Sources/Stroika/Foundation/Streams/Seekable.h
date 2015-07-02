@@ -11,6 +11,10 @@
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Enumeration.h"
 
+#include    "Stream.h"  //tmphack - this file going a way
+
+
+// soon obsolete file
 
 
 /**
@@ -38,36 +42,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
-
-
-            /**
-             *  When seeking, you can see an offset from the start (typical/start) or from the end of the
-             *  stream, or from the current position)
-             */
-            enum    class   Whence : uint8_t {
-                eFromStart,
-                eFromCurrent,
-                eFromEnd,
-
-                Stroika_Define_Enum_Bounds(eFromStart, eFromEnd)
-            };
-
-
-            /**
-             *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
-             *  @see SignedSeekOffsetType.
-             */
-            using       SeekOffsetType          =   uint64_t;
-
-
-            /**
-             *  SignedSeekOffsetType is signed variant of SeekOffsetType - used to specify a seek
-             *  offset which can sometimes negative (backwards).
-             *
-             *  @see SignedSeekOffsetType.
-             */
-            using       SignedSeekOffsetType    =   int64_t;
-
 
             /**
              * Design Overview:
