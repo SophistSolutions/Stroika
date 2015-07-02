@@ -24,7 +24,7 @@ History
 	<ul>
 		<li>Major Design and Name Changes for Streams library ((REVIEW SOME UNCERTAIN))
 			<ul>
-				<li>New templates Stream<ELEMENT_TYPE> replaces BinaryStream and TextStream</li>
+				<li>New template Stream<ELEMENT_TYPE> replaces BinaryStream and TextStream</li>
 				<li>New templates InputStream<ELEMENT_TYPE> and OutputStream<ELEMENT_TYPE> replace BinaryInputStream, BinaryOutputStream, TextInputStream, TextOutputStream</li>
 				<li>Lose Seekable base class, and instead have that functionality built into InputStream and OutputStream, so that the virtual methods for offset and seek can be different, allowing virtual mixins that permit separate read/write seek pointers.</li>
 				<li>Combined BasicBinaryInputOutputStream, BasicBinaryInputStream, and BasicBinaryOutputStream, and the three text stream variations, into
@@ -35,7 +35,11 @@ History
 				to some (e.g. remote) endpoint (so case of Memory based input/output stream same base class as socket streams).</li>
 			</ul>
 		</li>
-		<li>TODO</li>
+		<li>Minor FileSystem fixes: FileSystem::RemoveFile () etc - use wunlink() if qTargetPlatformSDKUseswchar_t/windows</li>
+		<li>use Range<DurationSecondsType> instead DateTimeRange in SystemPerformance/MeasurementSet to get higher resolution</li>
+		<li>Use openssl 1.0.1o</li>
+		<li>Improved STLContainerWrapper support for vectors patching; and use that to fix patching bugs in Sequence_stdvector</li>
+		<li>Added and refactored ReserveSpeedTweekAddNCapacity() to Containers common code</li>
 	</ul>
 </td>
 </tr>
