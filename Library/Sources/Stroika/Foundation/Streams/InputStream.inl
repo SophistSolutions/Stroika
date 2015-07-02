@@ -25,12 +25,12 @@ namespace   Stroika {
              */
             template    <typename ELEMENT_TYPE>
             inline  InputStream<ELEMENT_TYPE>::InputStream (const _SharedIRep& rep)
-                : Stream (rep)
+                : inherited (rep)
             {
             }
             template    <typename ELEMENT_TYPE>
             inline  InputStream<ELEMENT_TYPE>::InputStream (nullptr_t)
-                : Stream (nullptr)
+                : inherited (nullptr)
             {
             }
             template    <typename ELEMENT_TYPE>
@@ -67,8 +67,7 @@ namespace   Stroika {
             inline  auto  InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType> {
                 ElementType b {};
                 RequireNotNull (_GetRep ().get ());
-                if (_GetRep ()->Read (&b, &b + 1) == 0)
-                {
+                if (_GetRep ()->Read (&b, &b + 1) == 0) {
                     return Memory::Optional<ElementType> ();
                 }
                 else {
