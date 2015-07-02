@@ -36,7 +36,7 @@ namespace   Stroika {
             template    <typename ELEMENT_TYPE>
             inline  auto    OutputStream<ELEMENT_TYPE>::_GetRep () const -> _SharedIRep
             {
-                return dynamic_pointer_cast<_IRep> (Stream::_GetRep ());
+                return dynamic_pointer_cast<_IRep> (inherited::_GetRep ());
             }
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType  OutputStream<ELEMENT_TYPE>::GetOffset () const
