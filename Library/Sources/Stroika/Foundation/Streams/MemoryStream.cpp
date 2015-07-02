@@ -10,7 +10,7 @@
 #include    "../Memory/BlockAllocated.h"
 #include    "../Traversal/Iterator.h"
 
-#include    "BasicBinaryInputOutputStream.h"
+#include    "MemoryStream.h"
 
 
 
@@ -23,20 +23,22 @@ using   Execution::make_unique_lock;
 
 
 
-class   BasicBinaryInputOutputStream::IRep_ : public BinaryInputOutputStream::_IRep {
+class   MemoryStream::Rep_ : public BinaryInputOutputStream::_IRep {
 public:
-    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
-
-public:
-    IRep_ ()
+    Rep_ ()
         : fCriticalSection_ ()
         , fData_ ()
         , fReadCursor_ (fData_.begin ())
         , fWriteCursor_ (fData_.begin ())
     {
     }
-    IRep_ (const IRep_&) = delete;
-    nonvirtual  IRep_& operator= (const IRep_&) = delete;
+    Rep_ (const Byte* start, const Byte* end)
+        : Rep_ ()
+    {
+        Write (start, end);
+    }
+    Rep_ (const Rep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
     virtual bool    IsSeekable () const override
     {
@@ -59,13 +61,16 @@ public:
         fReadCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
     }
-
     virtual void    Write (const Byte* start, const Byte* end) override
     {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
             auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
             size_t  roomLeft        =   fData_.end () - fWriteCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
@@ -84,21 +89,26 @@ public:
             Assert (fWriteCursor_ <= fData_.end ());
         }
     }
-
     virtual void     Flush () override
     {
         // nothing todo - write 'writes thru'
     }
-
     virtual SeekOffsetType      GetReadOffset () const override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return fReadCursor_ - fData_.begin ();
     }
-
     virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -141,16 +151,22 @@ public:
         Ensure ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
         return fReadCursor_ - fData_.begin ();
     }
-
     virtual SeekOffsetType      GetWriteOffset () const override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return fWriteCursor_ - fData_.begin ();
     }
-
     virtual SeekOffsetType      SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -190,25 +206,38 @@ public:
         Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
         return fWriteCursor_ - fData_.begin ();
     }
-
     Memory::BLOB   AsBLOB () const
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return Memory::BLOB (fData_);
     }
-
     vector<Byte>   AsVector () const
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return fData_;
     }
-
     string   AsString () const
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+            MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
+#else
+            auto    critSec { make_unique_lock (fCriticalSection_) };
+#endif
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }
 
+    // @todo - COULD redo using
+    //      DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
+    //      Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
+    // Or Stroika chunked array code
 private:
     mutable mutex           fCriticalSection_;
     vector<Byte>            fData_;
@@ -222,38 +251,48 @@ private:
 
 /*
  ********************************************************************************
- ************* Streams::iostream::BasicBinaryInputOutputStream ******************
+ ********************** Streams::Streams::MemoryStream **************************
  ********************************************************************************
  */
-BasicBinaryInputOutputStream::BasicBinaryInputOutputStream ()
-    : BinaryInputOutputStream (shared_ptr<IRep_> (new IRep_ ()))
+MemoryStream::MemoryStream ()
+    : BinaryInputOutputStream (make_shared<Rep_> ())
+{
+}
+
+MemoryStream::MemoryStream (const Byte* start, const Byte* end)
+    : BinaryInputOutputStream (make_shared<Rep_> (start, end))
+{
+}
+
+MemoryStream::MemoryStream (const Memory::BLOB& blob)
+    : BinaryInputOutputStream (make_shared<Rep_> (blob.begin (), blob.end ()))
 {
 }
 
 template    <>
-Memory::BLOB   BasicBinaryInputOutputStream::As () const
+Memory::BLOB   MemoryStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), IRep_);
-    const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
+    AssertMember (_GetRep ().get (), Rep_);
+    const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
     return rep.AsBLOB ();
 }
 
 template    <>
-vector<Byte>   BasicBinaryInputOutputStream::As () const
+vector<Byte>   MemoryStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), IRep_);
-    const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
+    AssertMember (_GetRep ().get (), Rep_);
+    const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
     return rep.AsVector ();
 }
 
 template    <>
-string   BasicBinaryInputOutputStream::As () const
+string   MemoryStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-    AssertMember (_GetRep ().get (), IRep_);
-    const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
+    AssertMember (_GetRep ().get (), Rep_);
+    const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
     return rep.AsString ();
 }
 

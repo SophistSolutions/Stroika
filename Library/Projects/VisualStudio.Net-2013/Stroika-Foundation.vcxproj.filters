@@ -447,9 +447,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp">
       <Filter>Sources\Execution\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -457,9 +454,6 @@
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp">
@@ -474,9 +468,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
@@ -488,9 +479,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp">
       <Filter>Sources\Execution</Filter>
@@ -623,9 +611,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.cpp">
       <Filter>Sources\DataExchange\INI</Filter>
@@ -769,6 +754,12 @@
       <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1188,9 +1179,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
@@ -1205,9 +1193,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
@@ -1232,9 +1217,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1566,9 +1548,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
@@ -1780,6 +1759,9 @@
       <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2109,16 +2091,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl">
       <Filter>Sources\Execution\Resources\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
       <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl">
@@ -2142,9 +2118,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl">
       <Filter>Sources\Configuration</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
       <Filter>Sources\Configuration</Filter>
     </None>
@@ -2165,9 +2138,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -2502,9 +2472,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl">
       <Filter>Sources\Math</Filter>
     </None>
@@ -2695,6 +2662,9 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>

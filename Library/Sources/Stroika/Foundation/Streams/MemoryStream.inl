@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_BasicBinaryOutputStream_inl_
-#define _Stroika_Foundation_Streams_BasicBinaryOutputStream_inl_  1
+#ifndef _Stroika_Foundation_Streams_MemoryStream_inl_
+#define _Stroika_Foundation_Streams_MemoryStream_inl_  1
 
 
 /*
@@ -21,7 +21,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T>
-            T   BasicBinaryOutputStream::As () const
+            T   MemoryStream::As () const
             {
 #if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
                 RequireNotReached ();
@@ -34,4 +34,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_BasicBinaryOutputStream_inl_*/
+#endif  /*_Stroika_Foundation_Streams_MemoryStream_inl_*/

@@ -14,6 +14,7 @@
 
 #include    "BinaryInputStream.h"
 #include    "Seekable.h"
+#include    "MemoryStream.h"
 
 
 
@@ -40,6 +41,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
+#if 1
+            using BasicBinaryInputStream = MemoryStream;
+#else
 
             /**
              *  \brief  Simplest to use BinaryInputStream; BasicBinaryInputStream takes a block of binary data and exposes it as a
@@ -75,6 +80,7 @@ namespace   Stroika {
                 BasicBinaryInputStream (const ITERATOR_TYPE& start, const ITERATOR_TYPE& end);
 #endif
             };
+#endif
 
 
         }
@@ -88,6 +94,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BasicBinaryInputStream.inl"
+//#include    "BasicBinaryInputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BasicBinaryInputStream_h_*/

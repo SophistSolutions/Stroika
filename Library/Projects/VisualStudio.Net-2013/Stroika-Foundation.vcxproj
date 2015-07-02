@@ -883,15 +883,11 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.cpp" />
@@ -923,6 +919,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Streams-iostream-Utilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Streams-iostream-Utilities.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Stream.cpp" />
@@ -1265,10 +1262,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
@@ -1286,6 +1279,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Stream.h" />
@@ -1597,21 +1591,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />

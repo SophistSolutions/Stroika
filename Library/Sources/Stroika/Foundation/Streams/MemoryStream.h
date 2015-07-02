@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_BasicBinaryInputOutputStream_h_
-#define _Stroika_Foundation_Streams_BasicBinaryInputOutputStream_h_  1
+#ifndef _Stroika_Foundation_Streams_MemoryStream_h_
+#define _Stroika_Foundation_Streams_MemoryStream_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -13,8 +13,25 @@
 #include    "../Memory/BLOB.h"
 
 #include    "BinaryInputOutputStream.h"
-#include    "MemoryStream.h"
 #include    "Seekable.h"
+
+
+
+/*
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
+ *
+ *      @todo   Once we redo BinaryStream/TextStream to be Stream<Byte>, Stream<Character>, we can redo this
+ *              class to be fully templated and support BOTH.
+ *
+ *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
+ *              class (when I implement it) based on Led chunked arrays).
+ *
+ *      @todo   explain about read/write at same time / threadsa, nd logic for shared SEEK OFFSET
+ *
+ */
 
 
 
@@ -23,39 +40,35 @@ namespace   Stroika {
         namespace   Streams {
 
 
-//@todo pragma obsolete
-
-#if 1
-            using BasicBinaryInputOutputStream = MemoryStream;
-#else
-
             /**
-             *  \brief  Simplest to use BinaryInputOutputStream; BasicBinaryInputOutputStream can be written to, and then the BLOB of data retrieved.
+             *  \brief  Simplest to use BinaryInputOutputStream; MemoryStream can be written to, and then the BLOB of data retrieved.
              *
              *  BinaryInputOutputStream is threadsafe - meaning Read () or Write() can safely be called from
              *  multiple threads at a time freely, and the results are interleaved without corruption. There
              *  is no guarantee of ordering, but one will finish before the next starts writing (so if they
              *  are writing structured messages, those will remain in-tact).
              *
-             *  BasicBinaryInputOutputStream is Seekable.
+             *  MemoryStream is Seekable.
              *
-             *  Since BasicBinaryInputOutputStream keeps its data all in memory, it has the limitation that
+             *  Since MemoryStream keeps its data all in memory, it has the limitation that
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
              *  NB: This class COULD have been called MemoryStream, or MemoryInputOutputStream.
              */
-            class   BasicBinaryInputOutputStream : public BinaryInputOutputStream {
+            class   MemoryStream : public BinaryInputOutputStream {
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   IRep_;
+                class   Rep_;
             public:
-                BasicBinaryInputOutputStream ();
+                MemoryStream ();
+                MemoryStream (const Memory::BLOB& blob);
+                MemoryStream (const Byte* start, const Byte* end);
 
             public:
                 /**
-                 *  Convert the current contents of this BasicBinaryInputOutputStream into one of the "T" representations.
+                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
                  *  T can be one of:
                  *      Memory::BLOB
                  *      vector<Byte>
@@ -67,12 +80,11 @@ namespace   Stroika {
 
 
             template    <>
-            Memory::BLOB    BasicBinaryInputOutputStream::As () const;
+            Memory::BLOB    MemoryStream::As () const;
             template    <>
-            vector<Byte>    BasicBinaryInputOutputStream::As () const;
+            vector<Byte>    MemoryStream::As () const;
             template    <>
-            string          BasicBinaryInputOutputStream::As () const;
-#endif
+            string          MemoryStream::As () const;
 
 
         }
@@ -86,6 +98,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include    "BasicBinaryInputOutputStream.inl"
+#include    "MemoryStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_BasicBinaryInputOutputStream_h_*/
+#endif  /*_Stroika_Foundation_Streams_MemoryStream_h_*/

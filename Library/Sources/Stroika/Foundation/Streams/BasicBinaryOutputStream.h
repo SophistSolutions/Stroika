@@ -14,6 +14,7 @@
 
 #include    "BinaryOutputStream.h"
 #include    "Seekable.h"
+#include    "MemoryStream.h"
 
 
 
@@ -34,6 +35,9 @@ namespace   Stroika {
         namespace   Streams {
 
 
+#if 1
+            using BasicBinaryOutputStream = MemoryStream;
+#else
             /**
              *  \brief  Simplest to use BinaryOutputStream; BasicBinaryOutputStream can be written to, and then the BLOB of data retrieved.
              *
@@ -79,6 +83,7 @@ namespace   Stroika {
             vector<Byte>    BasicBinaryOutputStream::As () const;
             template    <>
             string          BasicBinaryOutputStream::As () const;
+#endif
 
 
         }
@@ -92,6 +97,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BasicBinaryOutputStream.inl"
+//#include    "BasicBinaryOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BasicBinaryOutputStream_h_*/
