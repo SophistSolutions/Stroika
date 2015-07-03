@@ -29,9 +29,16 @@ namespace   Stroika {
 
 
 
-            class   xBinaryInputOutputStream : InputOutputStream<Byte> {
+            class   xBinaryInputOutputStream : public InputOutputStream<Byte> {
             private:
                 using inherited = InputOutputStream<Byte>;
+
+
+            public:
+                using   _IRep = InputOutputStream<Byte>;
+                using   _SharedIRep     =   InputOutputStream<Byte>::_SharedIRep;
+
+
             protected:
                 /**
                 @todo update docs about Seekable
