@@ -12,7 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/BLOB.h"
 
-#include    "BinaryInputOutputStream.h"
+#include    "InputOutputStream.h"
 #include    "Seekable.h"
 
 
@@ -40,6 +40,8 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            using Memory::Byte; //tmphack til I templateize Memory steream
+
             /**
              *  \brief  Simplest to use BinaryInputOutputStream; MemoryStream can be written to, and then the BLOB of data retrieved.
              *
@@ -55,7 +57,7 @@ namespace   Stroika {
              *
              *  NB: This class COULD have been called MemoryStream, or MemoryInputOutputStream.
              */
-            class   MemoryStream : public BinaryInputOutputStream {
+            class   MemoryStream : public InputOutputStream<Byte> {
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:

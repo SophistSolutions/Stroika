@@ -23,7 +23,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   MemoryStream::Rep_ : public BinaryInputOutputStream::_IRep {
+class   MemoryStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
     Rep_ ()
         : fCriticalSection_ ()
@@ -255,17 +255,17 @@ private:
  ********************************************************************************
  */
 MemoryStream::MemoryStream ()
-    : BinaryInputOutputStream (make_shared<Rep_> ())
+    : InputOutputStream<Byte> (make_shared<Rep_> ())
 {
 }
 
 MemoryStream::MemoryStream (const Byte* start, const Byte* end)
-    : BinaryInputOutputStream (make_shared<Rep_> (start, end))
+    : InputOutputStream<Byte> (make_shared<Rep_> (start, end))
 {
 }
 
 MemoryStream::MemoryStream (const Memory::BLOB& blob)
-    : BinaryInputOutputStream (make_shared<Rep_> (blob.begin (), blob.end ()))
+    : InputOutputStream<Byte> (make_shared<Rep_> (blob.begin (), blob.end ()))
 {
 }
 

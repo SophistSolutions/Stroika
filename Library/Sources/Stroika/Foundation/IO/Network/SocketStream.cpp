@@ -30,10 +30,10 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-class   SocketStream::Rep_ : public BinaryInputOutputStream::_IRep {
+class   SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
     Rep_ (Socket sd)
-        : BinaryInputOutputStream::_IRep ()
+        : InputOutputStream<Byte>::_IRep ()
         , fSD_ (sd)
     {
     }
