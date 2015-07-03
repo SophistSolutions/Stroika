@@ -75,6 +75,12 @@ namespace   Stroika {
                  *
                  */
                 nonvirtual  bool    IsSeekable () const;
+
+            public:
+                nonvirtual  SeekOffsetType  GetReadOffset () const { return InputStream<ELEMENT_TYPE>::GetOffset (); }
+
+            public:
+                nonvirtual  SeekOffsetType  GetWriteOffset () const { return OutputStream<ELEMENT_TYPE>::GetOffset (); }
             };
 
 

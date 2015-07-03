@@ -84,6 +84,7 @@ namespace   Stroika {
                     : inherited (nullptr)
                 {
                 }
+                BinaryOutputStream (const OutputStream<Byte>& from);
             public:
                 nonvirtual  void    Write (const Byte* start, const Byte* end) const
                 {

@@ -47,12 +47,40 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Stream is an 'abstract' class defining the interface...
+             *  @todo CLEANUP - VERY ROUGH OLD DOCS DRAFT
+             *
+             *  \brief  InputStream<> is an 'abstract' class defining the interface to reading from
+             *          a binary source of data.
              *
              * Design Overview:
              *
-             *      o   ...
+             *      o   See BinaryStream for details about memory management, but the basic idea is
+             *          that BinaryInputStream acts as a smart-pointer to an abstract
+             *          BinaryInputStream::_IRep.
              *
+             *      o   All read's on a BinaryInputStream are BLOCKING. If there is a desire to have a
+             *          non-blocking read, then create a new mixin interface and through that interface
+             *          you can do non-blocking reads, but this Read() method must always block.
+             *
+             *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
+             *          calls to Read () will return EOF (unless some other mechanism is used to tweak
+             *          the state of the object, like a mixed in Seekable class and calling SEEK).
+             *
+             *      o   Exceptions indicate something went wrong - like an IO error, or possibly in some cases
+             *          a formatting effort (e.g. if the source is encrypted, and the stream is decrypting,
+             *          then it might detect a format error and throw).
+             *
+             *      o   BinaryInputStream and BinaryOutputStream CAN be logically be mixed togehter to make an
+             *          input/output stream in one of two ways:
+             *              @see BinaryInputOutputStream
+             *              @see BinaryTiedStreams
+             *
+             *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
+             *
+             *      @see BasicBinaryInputStream for most common stream applications.
+             *
+             *      @see ExternallyOwnedMemoryBinaryInputStream for a more efficient, but slightly less safe
+             *          mapping to streams.
              */
             template    <typename   ELEMENT_TYPE>
             class   InputStream : public Stream<ELEMENT_TYPE> {

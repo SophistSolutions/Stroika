@@ -19,6 +19,10 @@ namespace   Stroika {
 
 
 #if 1
+            inline  BinaryOutputStream::BinaryOutputStream (const OutputStream<Byte>& from)
+                : inherited (from._GetRep ())
+            {
+            }
             inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
             {
                 Write (blob.begin (), blob.end ());

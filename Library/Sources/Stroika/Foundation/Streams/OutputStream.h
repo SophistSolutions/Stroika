@@ -85,8 +85,9 @@ namespace   Stroika {
                  */
                 explicit OutputStream (const _SharedIRep& rep);
 
-            protected:
+            public:
                 /**
+                 *      @todo - IF THIS MUST BE PUBLIC, then rename to not have _GetRep....
                  *
                  */
                 nonvirtual  _SharedIRep _GetRep () const;

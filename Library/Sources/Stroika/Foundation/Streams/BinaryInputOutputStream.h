@@ -28,6 +28,53 @@ namespace   Stroika {
         namespace   Streams {
 
 
+
+            class   xBinaryInputOutputStream : InputOutputStream<Byte> {
+            private:
+                using inherited = InputOutputStream<Byte>;
+            protected:
+                /**
+                @todo update docs about Seekable
+                 *  _SharedIRep must NOT inherit from Seekable. However, the resulting BinaryInputOutputStream is always seekable.
+                 *
+                 *  \pre dynamic_cast(rep.get (), Seekable*) == nullptr
+                 */
+                explicit xBinaryInputOutputStream (const _SharedIRep& rep)
+                    : InputOutputStream<Byte> (rep)
+                {
+                }
+
+            public:
+                _DeprecatedFunction_ (nonvirtual  SeekOffsetType  ReadGetOffset () const { return InputStream<Byte>::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
+
+            public:
+                _DeprecatedFunction_ (nonvirtual  SeekOffsetType  WriteGetOffset () const { return OutputStream<Byte>::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
+
+#if 0
+            public:
+                /**
+                 * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
+                 */
+                nonvirtual  operator BinaryInputStream () const
+                {
+                    return BinaryInputStream { *this };
+                }
+
+            public:
+                /**
+                 * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
+                 */
+                nonvirtual  operator BinaryOutputStream () const
+                {
+                    return BinaryOutputStream { *this };
+                }
+#endif
+            };
+
+#if 0
+            using BinaryInputOutputStream = xBinaryInputOutputStream;
+#else
+
             /**
             **** @todo NOTE - MAJOR API deparature - combined old BinaryInputOutputStream with binaryTiedStream - so now
             *   we COULD have two sides related as in MemoryBuffer/BasicInputOutputStream - write from one side read from the other, or
@@ -151,6 +198,7 @@ namespace   Stroika {
             public:
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
             };
+#endif
 
 
         }
