@@ -6,9 +6,7 @@
 
 #include    <sstream>
 
-#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
@@ -31,13 +29,13 @@ namespace   {
         void    TestBasicConstruction_ ()
         {
             {
-                BasicBinaryInputStream  s (nullptr, nullptr);
+                MemoryStream<Byte>  s (nullptr, nullptr);
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
             }
             {
                 const char  kData[] =   "1";
-                BasicBinaryInputStream  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
+                MemoryStream<Byte>  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 Byte    result[100] = { 0 };
@@ -65,12 +63,12 @@ namespace   {
         void    TestBasicConstruction_ ()
         {
             {
-                BasicBinaryOutputStream  s;
+                MemoryStream<Byte>  s;
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
             }
             {
-                BasicBinaryOutputStream  s;
+                MemoryStream<Byte>  s;
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
 
@@ -98,14 +96,14 @@ namespace   {
         void    TestBasicConstruction_ ()
         {
             {
-                BasicBinaryInputOutputStream  s;
+                MemoryStream<Byte>  s;
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 VerifyTestResult (static_cast<BinaryInputStream> (s).IsSeekable ());
                 VerifyTestResult (static_cast<BinaryOutputStream> (s).IsSeekable ());
             }
             {
-                BasicBinaryInputOutputStream  s;
+                MemoryStream<Byte>  s;
                 VerifyTestResult (not s.empty ());
 
                 const Byte  kData_[] = { 3, 53, 43, 23, 3 };
@@ -115,7 +113,7 @@ namespace   {
                 VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
             {
-                BasicBinaryInputOutputStream  s;
+                MemoryStream<Byte>  s;
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == 0);
                 const Byte  kData_[] = { 3, 53, 43, 23, 3 };

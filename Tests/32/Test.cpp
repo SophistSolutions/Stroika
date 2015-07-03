@@ -8,8 +8,7 @@
 #if     qPlatform_POSIX
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -26,14 +25,14 @@ using   Characters::String;
 namespace   {
     void    RegressionTest1_ ()
     {
-        Streams::BasicBinaryOutputStream myStdOut;
+        Streams::MemoryStream<Byte> myStdOut;
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
         pr.Run ();
     }
     void    RegressionTest2_ ()
     {
-        Streams::BasicBinaryOutputStream myStdOut;
+        Streams::MemoryStream<Byte> myStdOut;
         // quickie about to test..
         ProcessRunner pr (L"echo hi mom");
         String out = pr.Run (L"");
@@ -41,14 +40,14 @@ namespace   {
     }
     void    RegressionTest3_Pipe_ ()
     {
-        Streams::BasicBinaryOutputStream myStdOut;
+        Streams::MemoryStream<Byte> myStdOut;
         ProcessRunner pr1 (L"echo hi mom");
-        Streams::BasicBinaryInputOutputStream pipe;
+        Streams::MemoryStream<Byte> pipe;
         ProcessRunner pr2 (L"cat");
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 
-        Streams::BasicBinaryOutputStream pr2Out;
+        Streams::MemoryStream<Byte> pr2Out;
         pr2.SetStdOut (pr2Out);
 
         pr1.Run ();

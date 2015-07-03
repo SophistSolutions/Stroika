@@ -23,56 +23,9 @@ namespace   Stroika {
         namespace   Streams {
 
 
-//@todo pragma obsolete
+//@todo pragma obsolete??
 
-#if 1
-            using BasicBinaryInputOutputStream = MemoryStream;
-#else
-
-            /**
-             *  \brief  Simplest to use BinaryInputOutputStream; BasicBinaryInputOutputStream can be written to, and then the BLOB of data retrieved.
-             *
-             *  BinaryInputOutputStream is threadsafe - meaning Read () or Write() can safely be called from
-             *  multiple threads at a time freely, and the results are interleaved without corruption. There
-             *  is no guarantee of ordering, but one will finish before the next starts writing (so if they
-             *  are writing structured messages, those will remain in-tact).
-             *
-             *  BasicBinaryInputOutputStream is Seekable.
-             *
-             *  Since BasicBinaryInputOutputStream keeps its data all in memory, it has the limitation that
-             *  attempts to seek or write more than will fit in RAM will fail (with an exception).
-             *
-             *  NB: This class COULD have been called MemoryStream, or MemoryInputOutputStream.
-             */
-            class   BasicBinaryInputOutputStream : public BinaryInputOutputStream {
-            private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
-                class   IRep_;
-            public:
-                BasicBinaryInputOutputStream ();
-
-            public:
-                /**
-                 *  Convert the current contents of this BasicBinaryInputOutputStream into one of the "T" representations.
-                 *  T can be one of:
-                 *      Memory::BLOB
-                 *      vector<Byte>
-                 *      string
-                 */
-                template    <typename   T>
-                nonvirtual  T   As () const;
-            };
-
-
-            template    <>
-            Memory::BLOB    BasicBinaryInputOutputStream::As () const;
-            template    <>
-            vector<Byte>    BasicBinaryInputOutputStream::As () const;
-            template    <>
-            string          BasicBinaryInputOutputStream::As () const;
-#endif
+            using BasicBinaryInputOutputStream = MemoryStream<Memory::Byte>;
 
 
         }

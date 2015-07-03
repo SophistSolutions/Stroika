@@ -41,46 +41,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+//@todo pragma obsolete??
 
-#if 1
-            using BasicBinaryInputStream = MemoryStream;
-#else
-
-            /**
-             *  \brief  Simplest to use BinaryInputStream; BasicBinaryInputStream takes a block of binary data and exposes it as a
-             *          BinaryInputStream (copies)
-             *
-             *  BasicBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream.
-             *  It copies the data - so after construction, there is no requirement on the data bounded by
-             *  start/end.
-             *
-             *  BasicBinaryInputStream is threadsafe - meaning Read() can safely be called from
-             *  multiple threads at a time freely.
-             *
-             *  BasicBinaryInputStream is Seekable.
-             *
-             *  @see ExternallyOwnedBasicBinaryInputStream
-             */
-            class   BasicBinaryInputStream : public BinaryInputStream {
-            private:
-                class   IRep_;
-            public:
-#if     0
-                template    <typename RandomAccessIteratorT>
-                BasicBinaryInputStream (RandomAccessIteratorT start, RandomAccessIteratorT end);
-                template    <typename ContainerOfT>
-                BasicBinaryInputStream (const ContainerOfT& c);
-#else
-                BasicBinaryInputStream (const vector<Byte>& v);
-#endif
-                BasicBinaryInputStream (const Memory::BLOB& blob);
-                BasicBinaryInputStream (const Byte* start, const Byte* end);
-#if 0
-                template    <typename ITERATOR_TYPE>
-                BasicBinaryInputStream (const ITERATOR_TYPE& start, const ITERATOR_TYPE& end);
-#endif
-            };
-#endif
+            using BasicBinaryInputStream = MemoryStream<Memory::Byte>;
 
 
         }

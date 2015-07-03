@@ -33,7 +33,7 @@
 #include    "../../../Foundation/IO/FileSystem/PathName.h"
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
-#include    "../../../Foundation/Streams/BasicBinaryInputOutputStream.h"
+#include    "../../../Foundation/Streams/MemoryStream.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"

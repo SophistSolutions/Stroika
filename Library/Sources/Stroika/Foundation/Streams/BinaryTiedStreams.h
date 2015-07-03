@@ -14,7 +14,7 @@
 #include    "BinaryInputOutputStream.h"
 
 
-#pragma message ("Warning: FILE DEPRECATED")
+#pragma message ("Warning: BinaryTiedStreams FILE DEPRECATED")
 
 
 namespace   Stroika {

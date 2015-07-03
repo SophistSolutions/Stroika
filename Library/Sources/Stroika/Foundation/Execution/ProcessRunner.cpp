@@ -27,7 +27,7 @@
 #include    "../IO/FileSystem/FileSystem.h"
 #include    "../IO/FileSystem/FileUtils.h"
 #include    "../IO/FileSystem/PathName.h"
-#include    "../Streams/BasicBinaryInputOutputStream.h"
+#include    "../Streams/MemoryStream.h"
 #include    "../Streams/TextOutputStreamBinaryAdapter.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
 
@@ -768,8 +768,8 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
     Streams::BinaryInputStream  oldStdIn    =   GetStdIn ();
     Streams::BinaryOutputStream oldStdOut   =   GetStdOut ();
     try {
-        Streams::BasicBinaryInputOutputStream   useStdIn;
-        Streams::BasicBinaryInputOutputStream   useStdOut;
+        Streams::MemoryStream<Memory::Byte>   useStdIn;
+        Streams::MemoryStream<Memory::Byte>   useStdOut;
 
         // Prefill stream
         // @todo - decide if we should use Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM

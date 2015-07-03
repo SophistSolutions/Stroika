@@ -13,7 +13,6 @@
 #include    "../Memory/BLOB.h"
 
 #include    "InputOutputStream.h"
-#include    "Seekable.h"
 
 
 
@@ -57,7 +56,8 @@ namespace   Stroika {
              *
              *  NB: This class COULD have been called MemoryStream, or MemoryInputOutputStream.
              */
-            class   MemoryStream : public InputOutputStream<Byte> {
+            template    <typename   ELEMENT_TYPE>
+            class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -65,28 +65,37 @@ namespace   Stroika {
                 class   Rep_;
             public:
                 MemoryStream ();
+                MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+                template    <typename ENABLE_IF_TEST = typename enable_if <is_same<ELEMENT_TYPE, Memory::Byte>::value>::type>
                 MemoryStream (const Memory::BLOB& blob);
-                MemoryStream (const Byte* start, const Byte* end);
 
             public:
                 /**
                  *  Convert the current contents of this MemoryStream into one of the "T" representations.
                  *  T can be one of:
-                 *      Memory::BLOB
-                 *      vector<Byte>
-                 *      string
+                 *      o   vector<ElementType>
+                 *
+                 *  And if ElementType is Memory::Byte, then T can also be one of:
+                 *      o   Memory::BLOB
+                 *      o   string
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
             };
 
 
+#if 0
+            template    <typename   ELEMENT_TYPE>
             template    <>
-            Memory::BLOB    MemoryStream::As () const;
+            vector<ELEMENT_TYPE>    MemoryStream<ELEMENT_TYPE>::As () const;
+#endif
+
             template    <>
-            vector<Byte>    MemoryStream::As () const;
             template    <>
-            string          MemoryStream::As () const;
+            Memory::BLOB    MemoryStream<Byte>::As () const;
+            template    <>
+            template    <>
+            string          MemoryStream<Byte>::As () const;
 
 
         }

@@ -23,7 +23,7 @@
  */
 
 
-#pragma message ("Warning: FILE DEPRECATED")
+#pragma message ("Warning: BinaryInputOutputStream FILE DEPRECATED")
 
 
 

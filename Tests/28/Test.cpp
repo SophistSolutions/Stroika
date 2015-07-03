@@ -15,7 +15,7 @@
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
 #include    "Stroika/Foundation/Time/Duration.h"
@@ -148,7 +148,7 @@ namespace   {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -232,7 +232,7 @@ namespace   {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -305,7 +305,7 @@ namespace   {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -412,7 +412,7 @@ namespace   {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::BasicBinaryInputOutputStream   tmpStream;
+            Streams::MemoryStream<Byte>   tmpStream;
             JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
@@ -452,7 +452,7 @@ namespace   {
             // at this point - we should have VariantValue object with "Enabled" field.
             // This can then be serialized using
 
-            Streams::BasicBinaryInputOutputStream   tmpStream;
+            Streams::MemoryStream<Byte>   tmpStream;
             JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
@@ -537,7 +537,7 @@ namespace   {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -602,7 +602,7 @@ namespace   {
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
@@ -712,7 +712,7 @@ namespace   {
         tmp.fSet1_.Add (193);
         VariantValue v = mapper.FromObject (tmp);
 
-        Streams::BasicBinaryInputOutputStream   tmpStream;
+        Streams::MemoryStream<Byte>   tmpStream;
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {

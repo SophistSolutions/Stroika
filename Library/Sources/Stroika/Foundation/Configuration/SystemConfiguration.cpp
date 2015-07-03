@@ -25,7 +25,7 @@
 #endif
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
-#include    "../Streams/BasicBinaryInputOutputStream.h"
+#include    "../Streams/MemoryStream.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "SystemConfiguration.h"
