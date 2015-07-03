@@ -23,6 +23,9 @@ namespace   Stroika {
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
             public:
+                using   ElementType = ELEMENT_TYPE;
+
+            public:
                 Rep_ ()
                     : fCriticalSection_ ()
                     , fData_ ()
