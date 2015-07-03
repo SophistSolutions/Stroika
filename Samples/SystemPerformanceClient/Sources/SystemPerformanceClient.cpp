@@ -14,7 +14,7 @@
 #endif
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include    "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
 #include    "Stroika/Frameworks/SystemPerformance/Capturer.h"
@@ -29,6 +29,7 @@ using   namespace Stroika::Frameworks::SystemPerformance;
 using   Characters::Character;
 using   Characters::String;
 using   Containers::Sequence;
+using   Memory::Byte;
 using   Memory::Optional;
 
 
@@ -36,7 +37,7 @@ using   Memory::Optional;
 namespace {
     string  Serialize_ (VariantValue v, bool oneLineMode)
     {
-        Streams::BasicBinaryOutputStream    out;
+        Streams::MemoryStream<Byte>    out;
         DataExchange::JSON::Writer ().Write (v, out);
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());
