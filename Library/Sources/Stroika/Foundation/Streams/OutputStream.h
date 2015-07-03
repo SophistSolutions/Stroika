@@ -12,11 +12,13 @@
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 
-#include    "BinaryStream.h"
+#include    "Stream.h"
 
 
 
 /**
+ &* @TODO CELANUP ALL THESE DOCS
+ *
  *  \file
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
@@ -31,7 +33,21 @@
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
  *
+ *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
  *
+ *              (maybe close/flush ignored).
+ *
+ *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
+ *              have flush/close allowed, and anything else generate an assert error?
+ *
+ *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
+ *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
+ *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
+ *              PullBackEOF() or RestrictEOF() or RemovePast(); OR ResetEOFToCurrentPosiiton(). Later maybe best API.
+ *
+ *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where
+ *              it was a PROPERTY OF THE CLASS (or alternate API) where writes timeout after
+ *              a certain point.
  */
 
 
@@ -51,12 +67,26 @@ namespace   Stroika {
 
 
             /**
+             *  @todo CLEANUP ALL OLD OBSOLETE DOCS
+             *
              *  \brief  Stream is an 'abstract' class defining the interface...
              *
              * Design Overview:
              *
              *      o   ...
+            **
+             * Design Overview:
              *
+             *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
+             *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
+             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *
+             *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
+             *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
+             *  instead of inserting.
+             *
+             *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
+             *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
              */
             template    <typename   ELEMENT_TYPE>
             class   OutputStream : public Stream<ELEMENT_TYPE> {

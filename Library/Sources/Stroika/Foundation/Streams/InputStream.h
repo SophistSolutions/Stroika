@@ -12,7 +12,6 @@
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 
-#include    "BinaryStream.h"
 #include    "Stream.h"
 
 

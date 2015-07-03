@@ -11,7 +11,6 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
 
-#include    "BinaryStream.h"
 #include    "OutputStream.h"
 
 
