@@ -81,11 +81,9 @@ namespace   Stroika {
                  */
                 explicit InputStream (const _SharedIRep& rep);
 
-            protected:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
-#endif
                 /**
+                 *      @todo - IF THIS MUST BE PUBLIC, then rename to not have _GetRep....
                  *
                  */
                 nonvirtual  _SharedIRep _GetRep () const;
