@@ -12,7 +12,7 @@
 
 #include    "BinaryInputStream.h"
 #include    "BinaryOutputStream.h"
-
+#include    "InputOutputStream.h"
 
 
 /**

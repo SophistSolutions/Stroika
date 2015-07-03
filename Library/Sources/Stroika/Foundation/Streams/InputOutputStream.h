@@ -66,11 +66,16 @@ namespace   Stroika {
                 nonvirtual  _SharedIRep _GetRep () const;
 
             public:
-                // @todo move to INL file and assert same as binaryoutputstream value
-                bool    empty () const { return BinaryInputStream::empty (); }
+                /**
+                 *
+                 */
+                nonvirtual  bool    empty () const;
+
             public:
-                // @todo move to INL file and assert same as binaryoutputstream value
-                bool    IsSeekable () const { return BinaryInputStream::IsSeekable (); }
+                /**
+                 *
+                 */
+                nonvirtual  bool    IsSeekable () const;
             };
 
 

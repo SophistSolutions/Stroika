@@ -37,6 +37,18 @@ namespace   Stroika {
             {
                 return dynamic_pointer_cast<_IRep> (InputOutputStream<ELEMENT_TYPE>::_GetRep ());
             }
+            template    <typename ELEMENT_TYPE>
+            inline  bool    InputOutputStream<ELEMENT_TYPE>::empty () const
+            {
+                // @todo move to INL file and assert same as binaryoutputstream value
+                return InputStream<ELEMENT_TYPE>::empty ();
+            }
+            template    <typename ELEMENT_TYPE>
+            inline  bool    InputOutputStream<ELEMENT_TYPE>::IsSeekable () const
+            {
+                // @todo move to INL file and assert same as binaryoutputstream value
+                return InputStream<ELEMENT_TYPE>::IsSeekable ();
+            }
 #if 0
             template    <typename ELEMENT_TYPE>
             inline  SeekOffsetType  InputStream<ELEMENT_TYPE>::GetOffset () const
