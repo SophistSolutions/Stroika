@@ -21,6 +21,8 @@
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
+ *      @todo   Must get MemoryStream<ELEMENT_TYPE>::As () working - at least for case of binary/text streams
+ *
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
  *              class (when I implement it) based on Led chunked arrays).
  *

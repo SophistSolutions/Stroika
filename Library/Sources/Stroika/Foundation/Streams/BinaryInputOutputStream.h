@@ -56,6 +56,10 @@ namespace   Stroika {
             public:
                 _DeprecatedFunction_ (nonvirtual  SeekOffsetType  WriteGetOffset () const { return OutputStream<Byte>::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
             };
+            inline  BinaryInputOutputStream::BinaryInputOutputStream (const _SharedIRep& rep)
+                : InputOutputStream<Byte> (rep)
+            {
+            }
 
 
         }
@@ -69,6 +73,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BinaryInputOutputStream.inl"
+//#include    "BinaryInputOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BinaryInputOutputStream_h_*/

@@ -4,7 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../../Foundation/Characters/Format.h"
-#include    "../../../Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "../../../Foundation/Streams/MemoryStream.h"
 #include    "../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 #include    "../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
@@ -31,7 +31,7 @@ Memory::BLOB        SSDP::Serialize (const String& headLine, SearchOrNotify sear
     Require (not headLine.Contains (L"\n"));
     Require (not headLine.Contains (L"\r"));
     Require (headLine.StartsWith (L"NOTIFY") or (headLine == L"HTTP/1.1 200 OK"));
-    Streams::BasicBinaryOutputStream    out;
+    Streams::MemoryStream<Byte>    out;
     Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
 
     //// SUPER ROUGH FIRST DRAFT

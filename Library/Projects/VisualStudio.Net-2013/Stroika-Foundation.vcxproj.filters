@@ -2052,9 +2052,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md">
       <Filter>Sources\Containers\STL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl">
       <Filter>Sources\Characters\CString</Filter>
     </None>

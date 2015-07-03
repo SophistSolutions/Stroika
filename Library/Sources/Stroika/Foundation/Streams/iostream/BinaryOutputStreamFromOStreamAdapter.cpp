@@ -23,9 +23,9 @@ using   Execution::make_unique_lock;
 
 
 
-class   BinaryOutputStreamFromOStreamAdapter::IRep_ : public BinaryOutputStream::_IRep {
+class   BinaryOutputStreamFromOStreamAdapter::Rep_ : public BinaryOutputStream::_IRep {
 public:
-    IRep_ (ostream& originalStream)
+    Rep_ (ostream& originalStream)
         : fCriticalSection_ ()
         , fOriginalStream_ (originalStream)
     {
@@ -93,7 +93,7 @@ private:
  ********************************************************************************
  */
 BinaryOutputStreamFromOStreamAdapter::BinaryOutputStreamFromOStreamAdapter (ostream& originalStream)
-    : BinaryOutputStream (shared_ptr<_IRep> (new IRep_ (originalStream)))
+    : BinaryOutputStream (make_shared<Rep_> (originalStream))
 {
 }
 

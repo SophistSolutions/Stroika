@@ -50,6 +50,16 @@ namespace   Stroika {
             {
                 return InputStream<ELEMENT_TYPE>::IsSeekable ();
             }
+            template    <typename ELEMENT_TYPE>
+            inline  SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::GetReadOffset () const
+            {
+                return InputStream<ELEMENT_TYPE>::GetOffset ();
+            }
+            template    <typename ELEMENT_TYPE>
+            inline  SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::GetWriteOffset () const
+            {
+                return OutputStream<ELEMENT_TYPE>::GetOffset ();
+            }
 
 
         }

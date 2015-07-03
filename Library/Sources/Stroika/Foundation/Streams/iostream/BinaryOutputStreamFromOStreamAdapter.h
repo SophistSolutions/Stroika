@@ -21,6 +21,8 @@
  *  \file
  *
  * TODO:
+ *      @todo   Redo as template so handles wchar_t basic_stream too.
+ *
  *      @todo   Consider mixing in Seekable here. Would be easy.
  *
  *      @todo   Consider thread-safety. For now, a non-standard choice?
@@ -52,7 +54,8 @@ namespace   Stroika {
                  */
                 class   BinaryOutputStreamFromOStreamAdapter : public BinaryOutputStream {
                 private:
-                    class   IRep_;
+                    class   Rep_;
+
                 public:
                     BinaryOutputStreamFromOStreamAdapter (ostream& originalStream);
                 };

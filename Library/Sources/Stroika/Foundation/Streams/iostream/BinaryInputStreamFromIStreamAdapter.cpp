@@ -25,12 +25,9 @@ using   Execution::make_unique_lock;
 
 
 
-class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep {
+class   BinaryInputStreamFromIStreamAdapter::Rep_ : public BinaryInputStream::_IRep {
 public:
-    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
-
-public:
-    IRep_ (istream& originalStream)
+    Rep_ (istream& originalStream)
         : fCriticalSection_ ()
         , fOriginalStream_ (originalStream)
     {
@@ -99,7 +96,7 @@ private:
  ********************************************************************************
  */
 BinaryInputStreamFromIStreamAdapter::BinaryInputStreamFromIStreamAdapter (std::istream& originalStream)
-    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (originalStream)))
+    : BinaryInputStream (make_shared<Rep_> (originalStream))
 {
 }
 

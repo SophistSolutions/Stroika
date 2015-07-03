@@ -68,6 +68,7 @@ namespace   Stroika {
              *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
              */
             class   BinaryOutputStream : public OutputStream<Byte> {
+            private:
                 using inherited = OutputStream<Byte>;
 
             protected:

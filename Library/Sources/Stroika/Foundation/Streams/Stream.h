@@ -15,7 +15,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -30,6 +29,7 @@
  *
  *
  */
+
 
 
 namespace   Stroika {
@@ -64,6 +64,7 @@ namespace   Stroika {
              *  @see SignedSeekOffsetType.
              */
             using       SignedSeekOffsetType    =   int64_t;
+
 
             /**
               *  @todo CLEANUP DOCS

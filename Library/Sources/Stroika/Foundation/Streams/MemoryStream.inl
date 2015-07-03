@@ -267,8 +267,8 @@ namespace   Stroika {
             }
             template    <typename   ELEMENT_TYPE>
             template    <typename   ENABLE_IF_TEST>
-            MemoryStream<ELEMENT_TYPE>::MemoryStream (const Memory::BLOB& blob)
-                : InputOutputStream<Byte> (make_shared<Rep_> (blob.begin (), blob.end ()))
+            inline  MemoryStream<ELEMENT_TYPE>::MemoryStream (const Memory::BLOB& blob)
+                : MemoryStream<Byte> (blob.begin (), blob.end ())
             {
             }
 #if 0

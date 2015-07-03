@@ -21,7 +21,10 @@
  *  \file
  *
  * TODO:
- *      @todo   Consider mixing in Seekable here. Would be easy
+ *
+ *      @todo   Redo as template so handles wchar_t basic_stream too.
+ *
+ *      @todo   Support seek
  *
  *      @todo   Consider thread-safety. For now, a non-standard choice?
  */
@@ -56,7 +59,8 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
-                    class   IRep_;
+                    class   Rep_;
+
                 public:
                     BinaryInputStreamFromIStreamAdapter (istream& originalStream);
                 };
