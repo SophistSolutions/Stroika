@@ -35,7 +35,7 @@ namespace   Stroika {
 
 
             public:
-                using   _IRep = InputOutputStream<Byte>;
+                using   _IRep = InputOutputStream<Byte>::_IRep;
                 using   _SharedIRep     =   InputOutputStream<Byte>::_SharedIRep;
 
 
@@ -78,7 +78,7 @@ namespace   Stroika {
 #endif
             };
 
-#if 0
+#if 1
             using BinaryInputOutputStream = xBinaryInputOutputStream;
 #else
 
