@@ -260,18 +260,18 @@ namespace   Stroika {
             */
             template    <typename   ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream ()
-                : InputOutputStream<Byte> (make_shared<Rep_> ())
+                : InputOutputStream<ELEMENT_TYPE> (make_shared<Rep_> ())
             {
             }
             template    <typename   ELEMENT_TYPE>
             MemoryStream<ELEMENT_TYPE>::MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                : InputOutputStream<Byte> (make_shared<Rep_> (start, end))
+                : InputOutputStream<ELEMENT_TYPE> (make_shared<Rep_> (start, end))
             {
             }
             template    <typename   ELEMENT_TYPE>
             template    <typename   ENABLE_IF_TEST>
             inline  MemoryStream<ELEMENT_TYPE>::MemoryStream (const Memory::BLOB& blob)
-                : MemoryStream<Byte> (blob.begin (), blob.end ())
+                : MemoryStream<ELEMENT_TYPE> (blob.begin (), blob.end ())
             {
             }
 #if 0
