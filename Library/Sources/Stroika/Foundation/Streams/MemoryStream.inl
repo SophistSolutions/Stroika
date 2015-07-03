@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+
+#include    "../Traversal/Iterator.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
