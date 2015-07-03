@@ -26,6 +26,8 @@
  *      @todo   Bake Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) into REP
  *              API so its operation can be atomic.
  *
+ *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
+ *              and be safely atomic.
  */
 
 
@@ -80,6 +82,9 @@ namespace   Stroika {
                 explicit InputStream (const _SharedIRep& rep);
 
             protected:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 /**
                  *
                  */

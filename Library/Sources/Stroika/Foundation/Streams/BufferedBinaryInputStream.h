@@ -43,7 +43,7 @@ namespace   Stroika {
              */
             class   BufferedBinaryInputStream : public BinaryInputStream {
             private:
-                class   IRep_;
+                class   Rep_;
             public:
                 BufferedBinaryInputStream (const BinaryInputStream& realIn);
             };

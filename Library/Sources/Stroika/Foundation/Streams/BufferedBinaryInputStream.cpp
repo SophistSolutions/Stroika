@@ -19,15 +19,14 @@ using   Execution::make_unique_lock;
 
 
 
-class   BufferedBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
+class   BufferedBinaryInputStream::Rep_ : public BinaryInputStream::_IRep {
 public:
-    IRep_ (const BinaryInputStream& realIn)
+    Rep_ (const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
         , fCriticalSection_ ()
         , fRealIn_ (realIn)
     {
     }
-
     virtual bool    IsSeekable () const override
     {
         return false;      // @todo - COULD be seekable if underlying fRealIn_ was!!!
@@ -69,6 +68,6 @@ private:
  ********************************************************************************
  */
 BufferedBinaryInputStream::BufferedBinaryInputStream (const BinaryInputStream& realIn)
-    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (realIn)))
+    : BinaryInputStream (make_shared<Rep_> (realIn))
 {
 }

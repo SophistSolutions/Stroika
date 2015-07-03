@@ -884,9 +884,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.cpp" />
@@ -921,7 +919,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Stream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp" />

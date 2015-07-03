@@ -7,7 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryTiedStreams.h"
+#include    "../../Streams/BinaryInputOutputStream.h"
 #include    "Socket.h"
 
 
@@ -33,9 +33,10 @@ namespace   Stroika {
                  *  The only real conneciton is that they share a common socket, and if IT is closed,
                  *  then the whole SocketStream will stop working.
                  */
-                class   SocketStream : public Streams::BinaryTiedStreams {
+                class   SocketStream : public Streams::BinaryInputOutputStream {
                 private:
-                    class   IRep_;
+                    using   inherited = Streams::BinaryInputOutputStream;
+
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
                     // TODO:
@@ -43,6 +44,9 @@ namespace   Stroika {
                     //  away!
                     //
                     explicit SocketStream (Socket sd);
+
+                private:
+                    class   Rep_;
                 };
 
 

@@ -66,13 +66,39 @@ namespace   Stroika {
             using       SignedSeekOffsetType    =   int64_t;
 
             /**
-             *  \brief  Stream is an 'abstract' class defining the interface...
+              *  @todo CLEANUP DOCS
              *
-             * Design Overview:
-             *
-             *      o   ...
-             *
-             */
+              * Design Overview:
+              *
+              *      o   Designed to be a base for TextStream and BinaryStream.
+              *
+              *      o   Two basic parts - a 'smart-ish' pointer wrapper, and a virtual Rep.
+              *          The virtual Rep provides the API which implementers override. The
+              *          public part of the Seekable class itself provides the helpers
+              *          inherirted by the various Stream subclasses (e.g. BinaryInputStream
+              *          and TextOutputStream).
+              *
+              *      o   Seek called on an input stream that has already returned EOF, may cause
+              *          subsequent Read() calls to NOT be at EOF.
+              *
+              *      o   Offsets are in whatever unit makes sense for the kind of stream this is mixed into,
+              *          so for TextInputStreams, offsets are in CHARACTERS and in Binary streams, offsets
+              *          are in Bytes. This implies one CANNOT reasonably mix together Binary streams and Text
+              *          streams (one combines them by use of a special TextStream that refers to another
+              *          BinaryStream for actual IO).
+              *
+              *      o   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
+              *          was simpler and more elegant to just keep things separate and use mixin classes
+              *          like 'interfaces' - and use dynamic_cast<> to see what functionality is available
+              *          on a stream. At least thats so for the implementations. The wrapper class - Seekable -
+              *          does have an IsSeekable() method which just tests if we have a Seekable interface.
+              *
+              *      o   COULD have allowed for GetOffset() to work separately from Seek () - but decided
+              *          this was a simpler API, and I could think of no cases where it was particularly
+              *          useful to track a 'seek offset' but not be able to Seek() - and if it is useful -
+              *          its easy enuf to do another way (e.g. wrap the stream you are using, and track
+              *          read calls to it and increment your own offset).
+              */
             template    <typename   ELEMENT_TYPE>
             class   Stream {
             protected:

@@ -30,9 +30,9 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-class   SocketStream::IRep_ : public BinaryInputOutputStream::_IRep {
+class   SocketStream::Rep_ : public BinaryInputOutputStream::_IRep {
 public:
-    IRep_ (Socket sd)
+    Rep_ (Socket sd)
         : BinaryInputOutputStream::_IRep ()
         , fSD_ (sd)
     {
@@ -91,6 +91,6 @@ private:
  ********************************************************************************
  */
 SocketStream::SocketStream (Socket sd)
-    : BinaryTiedStreams (make_shared<IRep_> (sd))
+    : inherited (make_shared<Rep_> (sd))
 {
 }

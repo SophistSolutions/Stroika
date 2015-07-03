@@ -207,12 +207,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
@@ -416,9 +410,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <Filter>Sources\Characters\CString</Filter>

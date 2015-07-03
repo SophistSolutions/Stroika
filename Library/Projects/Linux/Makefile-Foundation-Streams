@@ -16,8 +16,6 @@ SubDirs	=	\
 Objs	=	\
 	$(ObjDir)BasicTextOutputStream.o\
 	$(ObjDir)BinaryInputStream.o\
-	$(ObjDir)BinaryInputOutputStream.o\
-	$(ObjDir)BinaryOutputStream.o\
 	$(ObjDir)BufferedBinaryInputStream.o\
 	$(ObjDir)BufferedBinaryOutputStream.o\
 	$(ObjDir)ExternallyOwnedMemoryBinaryInputStream.o\
@@ -25,7 +23,6 @@ Objs	=	\
 	$(ObjDir)InputOutputStream.o\
 	$(ObjDir)OutputStream.o\
 	$(ObjDir)MemoryStream.o\
-	$(ObjDir)Seekable.o\
 	$(ObjDir)Stream.o\
 	$(ObjDir)TextStream.o\
 	$(ObjDir)TextInputStream.o\

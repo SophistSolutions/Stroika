@@ -6,13 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <memory>
-
-#include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
-#include    "../Memory/Optional.h"
 
-#include    "BinaryStream.h"
 #include    "InputStream.h"
 
 
@@ -44,13 +39,8 @@
 
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace Memory {
-            class BLOB;
-        }
-    }
-}
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
+
 
 
 namespace   Stroika {
@@ -61,41 +51,9 @@ namespace   Stroika {
             using   Memory::Byte;
 
 
-            class   BinaryInputOutputStream;
-
-
-#if 1
-            class   BinaryInputStream : public InputStream<Byte> {
-                using inherited = InputStream<Byte>;
-            protected:
-                /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
-                 */
-                explicit BinaryInputStream (const _SharedIRep& rep)
-                    : inherited (rep)
-                {
-                }
-
-            public:
-                /**
-                 *  defaults to null (empty ())
-                 */
-                BinaryInputStream () = default;
-                BinaryInputStream (nullptr_t)
-                    : inherited (nullptr)
-                {
-                }
-
-            public:
-                /**
-                 *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
-                 */
-                nonvirtual  Memory::BLOB ReadAll () const;
-            };
-
-#else
-
             /**
+             @todo FIXUP DOCS - ALL OR MOSTYLY OBSOLETE
+             *
              *  \brief  BinaryInputStream is an 'abstract' class defining the interface to reading from
              *          a binary source of data.
              *
@@ -130,95 +88,30 @@ namespace   Stroika {
              *          mapping to streams.
              *
              */
-            class   BinaryInputStream : public BinaryStream {
-            protected:
-            public:
-                class   _IRep;
-
-            public:
-                /**
-                 *  defaults to null (empty ())
-                 */
-                BinaryInputStream ();
-                BinaryInputStream (nullptr_t);
-
-            protected:
-                using       _SharedIRep     =   shared_ptr<_IRep>;
+            class   BinaryInputStream : public InputStream<Byte> {
+            private:
+                using inherited = InputStream<Byte>;
 
             protected:
                 /**
                  * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 explicit BinaryInputStream (const _SharedIRep& rep);
-                explicit BinaryInputStream (const _SharedIRep& rep, Seekable::_IRep* seekable);
-
-            protected:
-                /**
-                 *
-                 */
-                nonvirtual  _SharedIRep _GetRep () const;
 
             public:
                 /**
-                 *  Read/0
-                 *      return IsMissing() on EOF.
-                 *
-                 *  Read/2
-                 *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *      bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-                 *      BLOCKING until data is available, but can return with fewer bytes than bufSize
-                 *      without prejudice about how much more is available.
-                 *
-                 *  Read/3
-                 *      TRIAL BALLOON IDEA FROM STERL - NYI.
-                 *
-                 *      \req IsSeekable()
-                 *
-                 *      Would be LIKE Read/2 () - except NOT update any intrinsic seek offset. Input offset
-                 *      would be where we read from, and would be updated to reflect where we read to. Change in
-                 *      offset would be the same as the returned value.
+                 *  defaults to null (empty ())
                  */
-                nonvirtual  Memory::Optional<Byte>  Read () const;
-                nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd) const;
-                nonvirtual  size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) const;
-
-            public:
-                /**
-                 */
+                BinaryInputStream () = default;
+                BinaryInputStream (nullptr_t);
+                BinaryInputStream (const InputStream<Byte>& from);
 
             public:
                 /**
                  *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
                  */
                 nonvirtual  Memory::BLOB ReadAll () const;
-
-            private:
-                friend  class   BinaryInputOutputStream;
             };
-
-
-            /**
-             *
-             */
-            class   BinaryInputStream::_IRep : public virtual BinaryStream::_IRep {
-            public:
-                _IRep ();
-                _IRep (const _IRep&) = delete;
-
-            public:
-                nonvirtual  _IRep& operator= (const _IRep&) = delete;
-
-
-            public:
-                /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-                 *  BLOCKING until data is available, but can return with fewer bytes than bufSize
-                 *  without prejudice about how much more is available.
-                 */
-                virtual size_t  Read (Byte* intoStart, Byte* intoEnd)          =   0;
-            };
-#endif
 
 
         }

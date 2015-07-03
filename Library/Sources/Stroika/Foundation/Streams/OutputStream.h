@@ -22,7 +22,15 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo
+*      @todo   Consider if Seek () past end of stream on writable stream should be
+ *              allowed. Often - like in UNIX - this works - and you can then write there,
+ *              and this creates a hole in teh file read back as zeros.
+ *
+ *              Its easier to DISALLOW this now, and then lift the restriction, and later allow it,
+ *              so since I'm unsure, disallow for now. This can always be simulated with an extra
+ *              zero write, and it assuming no seek past EOF makes implementations simpler, and
+ *              definition more consistent (read).
+ *
  *
  */
 

@@ -6,10 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <memory>
-
-#include    "../Configuration/Common.h"
-
 #include    "BinaryInputStream.h"
 #include    "BinaryOutputStream.h"
 #include    "InputOutputStream.h"
@@ -57,6 +53,31 @@ namespace   Stroika {
              *  @BinaryInputOutputStream (and subclasses), because the buffering in individual streams may not get
              *  pushed through to the associated other direction stream. For most predictable buffering results
              *  use @BufferedBinaryInputOutputStream
+
+
+
+             OLD OBSOLETE MOSLTY WRONG DOCS FROM BINARYTIEDSTREAM
+            * @todo CLEANUP
+             *
+             *  \brief  BinaryTiedStreams are logically two closely related streams - one input and one output
+             *
+             *  A BinaryTiedStreams is really two separate streams - tied together into one object. The typical
+             *  use-case for a BinaryTiedStream is a communications channel with another process. So for example,
+             *  pipes, or a TCP-socket-stream (IO::Network::SocketStream) would be 'tied'.
+             *
+             *  BinaryTiedStreams are generally not seekable, but if you want to seek, you must first cast to
+             *  the appropriate subobject (either the BinaryInputStream or BinaryOutputStream to get the right
+             *  stream object, and then seek on that.
+             *
+             *  Note that this is significantly different from a BinaryInputOutputStream (which represents
+             *  a single stream that can both be written two and read from).
+             *
+             *  The input and output streams MAY shared a common shared_ptr<> rep, but are not required to.
+             *
+             *  Note - this interpreation of the word "TIED" is perhaps misleading different from the meaning used in
+             *  std::iostream!
+
+
              */
             class   BinaryInputOutputStream /*: public Streams::BinaryStream*/
 
@@ -82,13 +103,13 @@ namespace   Stroika {
                  */
                 nonvirtual  _SharedIRep _GetRep () const;
 
-
             public:
                 // @todo move to INL file and assert same as binaryoutputstream value
                 bool    empty () const { return BinaryInputStream::empty (); }
             public:
                 // @todo move to INL file and assert same as binaryoutputstream value
                 bool    IsSeekable () const { return BinaryInputStream::IsSeekable (); }
+
 #if 0
             public:
                 /**
@@ -116,60 +137,6 @@ namespace   Stroika {
             public:
                 _DeprecatedFunction_ (nonvirtual  SeekOffsetType  WriteGetOffset () const { return BinaryOutputStream::GetOffset (); }, "Instead use IsMissing() - to be removed after v2.0a97");
 
-#if 0
-            public:
-                /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
-                 *  BLOCKING until data is available, but can return with fewer bytes than bufSize
-                 *  without prejudice about how much more is available.
-                 *
-                 *  \pre not empty()
-                 */
-                nonvirtual  size_t  Read (Byte* intoStart, Byte* intoEnd);
-
-            public:
-                /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  BufSize may be zero.
-                 *
-                 *  Writes always succeed fully or throw.
-                 *
-                 *  \pre not empty()
-                 */
-                nonvirtual  void    Write (const Byte* start, const Byte* end);
-
-
-            public:
-                /**
-                 *  @see BinaryOutputStream::Flush
-                 */
-                nonvirtual void    Flush ();
-
-            public:
-                /**
-                 *  @see Seekable::GetOffset
-                 */
-                nonvirtual SeekOffsetType      ReadGetOffset () const;
-
-            public:
-                /**
-                 *  @see Seekable:::Seek
-                 */
-                nonvirtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset);
-
-            public:
-                /**
-                 *  @see Seekable::GetOffset
-                 */
-                nonvirtual SeekOffsetType      WriteGetOffset () const;
-
-            public:
-                /**
-                 *  @see Seekable::Seek
-                 */
-                nonvirtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset);
-#endif
             };
 
 
@@ -178,60 +145,11 @@ namespace   Stroika {
              */
             class   BinaryInputOutputStream::_IRep : public InputStream<Byte>::_IRep, public OutputStream<Byte>::_IRep { /*, public std::enable_shared_from_this<BinaryInputOutputStream::_IRep>*/
             public:
-                _IRep ();
+                _IRep () = default;
                 _IRep (const _IRep&) = delete;
 
             public:
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
-#if 0
-            public:
-                /**
-                 *  @see BinaryInputStream::Read
-                 */
-                virtual size_t  Read (Byte* intoStart, Byte* intoEnd)                                   =   0;
-
-
-            public:
-                /**
-                 *  @see BinaryOutputStream::Write
-                 */
-                virtual void    Write (const Byte* start, const Byte* end)                              =   0;
-
-
-            public:
-                /**
-                 *  @see BinaryOutputStream::Flush
-                 */
-                virtual void    Flush ()                                                                =   0;
-
-
-            public:
-                /**
-                 *  @see Seekable::_IRep::GetOffset
-                 */
-                virtual SeekOffsetType      ReadGetOffset () const                                      =   0;
-
-
-            public:
-                /**
-                 *  @see Seekable::_IRep::Seek
-                 */
-                virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset)       =   0;
-
-
-            public:
-                /**
-                 *  @see Seekable::_IRep::GetOffset
-                 */
-                virtual SeekOffsetType      WriteGetOffset () const                                     =   0;
-
-
-            public:
-                /**
-                 *  @see Seekable::_IRep::Seek
-                 */
-                virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset)      =   0;
-#endif
             };
 
 
