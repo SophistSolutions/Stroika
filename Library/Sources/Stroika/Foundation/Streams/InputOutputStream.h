@@ -48,14 +48,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  defaults to null (empty ())
+                 *  defaults to null (aka empty ())
                  */
                 InputOutputStream () = default;
                 InputOutputStream (nullptr_t);
 
             protected:
                 /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
                 explicit InputOutputStream (const _SharedIRep& rep);
 

@@ -24,12 +24,14 @@ namespace   Stroika {
              */
             template    <typename ELEMENT_TYPE>
             inline  InputOutputStream<ELEMENT_TYPE>::InputOutputStream (const _SharedIRep& rep)
-                : inherited (rep)
+                : InputStream<ELEMENT_TYPE> (rep)
+                , OutputStream<ELEMENT_TYPE> (rep)
             {
             }
             template    <typename ELEMENT_TYPE>
             inline  InputOutputStream<ELEMENT_TYPE>::InputOutputStream (nullptr_t)
-                : inherited (nullptr)
+                : InputStream<ELEMENT_TYPE> (nullptr)
+                , OutputStream<ELEMENT_TYPE> (nullptr)
             {
             }
             template    <typename ELEMENT_TYPE>
