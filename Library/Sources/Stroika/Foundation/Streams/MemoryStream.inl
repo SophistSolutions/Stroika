@@ -15,8 +15,13 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            /*
+             ********************************************************************************
+             ********************** MemoryStream<ELEMENT_TYPE>::Rep_ ************************
+             ********************************************************************************
+             */
             template    <typename   ELEMENT_TYPE>
-            class   MemoryStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<Byte>::_IRep {
+            class   MemoryStream<ELEMENT_TYPE>::Rep_ : public InputOutputStream<ELEMENT_TYPE>::_IRep {
             public:
                 Rep_ ()
                     : fCriticalSection_ ()
@@ -60,7 +65,7 @@ namespace   Stroika {
                     fReadCursor_ += nCopied;
                     return nCopied; // this can be zero on EOF
                 }
-                virtual void    Write (const Byte* start, const Byte* end) override
+                virtual void    Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     using   Execution::make_unique_lock;
                     Require (start != nullptr or start == end);
@@ -210,7 +215,7 @@ namespace   Stroika {
                     Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
                     return fWriteCursor_ - fData_.begin ();
                 }
-                vector<Byte>   AsVector () const
+                vector<ElementType>   AsVector () const
                 {
                     using   Execution::make_unique_lock;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -231,20 +236,23 @@ namespace   Stroika {
                     return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
                 }
 
+            private:
                 // @todo - COULD redo using
                 //      DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
                 //      Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
                 // Or Stroika chunked array code
+
             private:
-                mutable mutex           fCriticalSection_;
-                vector<Byte>            fData_;
-                vector<Byte>::iterator  fReadCursor_;
-                vector<Byte>::iterator  fWriteCursor_;
+                mutable mutex                           fCriticalSection_;
+                vector<ElementType>                     fData_;
+                typename vector<ElementType>::iterator  fReadCursor_;
+                typename vector<ElementType>::iterator  fWriteCursor_;
             };
+
 
             /*
             ********************************************************************************
-            ***************************** MemoryStream<X> ***************************
+            **************************** MemoryStream<ELEMENT_TYPE> ************************
             ********************************************************************************
             */
             template    <typename   ELEMENT_TYPE>
@@ -263,17 +271,6 @@ namespace   Stroika {
                 : InputOutputStream<Byte> (make_shared<Rep_> (blob.begin (), blob.end ()))
             {
             }
-            template    <typename   ELEMENT_TYPE>
-            template    <typename   T>
-            T   MemoryStream<ELEMENT_TYPE>::As () const
-            {
-#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
-
 #if 0
             template    <typename   ELEMENT_TYPE>
             template    <>
@@ -285,6 +282,17 @@ namespace   Stroika {
                 return rep.AsVector ();
             }
 #endif
+            template    <typename   ELEMENT_TYPE>
+            template    <typename   T>
+            T   MemoryStream<ELEMENT_TYPE>::As () const
+            {
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                RequireNotReached ();
+#else
+                static_assert (false, "Only specifically specialized variants are supported");
+#endif
+            }
+
 
 
         }

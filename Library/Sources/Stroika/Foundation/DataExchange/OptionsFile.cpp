@@ -10,9 +10,7 @@
 #include    "../IO/FileSystem/PathName.h"
 #include    "../IO/FileSystem/ThroughTmpFileWriter.h"
 #include    "../IO/FileSystem/WellKnownLocations.h"
-
-#include    "../Streams/BasicBinaryInputStream.h"
-#include    "../Streams/BasicBinaryOutputStream.h"
+#include    "../Streams/MemoryStream.h"
 
 #include    "JSON/Reader.h"
 #include    "JSON/Writer.h"
@@ -210,7 +208,7 @@ template    <>
 Optional<VariantValue>  OptionsFile::Read ()
 {
     try {
-        Optional<VariantValue>  r   =   fReader_.Read (BasicBinaryInputStream (ReadRaw ()));
+        Optional<VariantValue>  r   =   fReader_.Read (MemoryStream<Byte> (ReadRaw ()));
         if (r.IsPresent ()) {
             r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
@@ -226,7 +224,7 @@ Optional<VariantValue>  OptionsFile::Read ()
 template    <>
 void        OptionsFile::Write (const VariantValue& optionsObject)
 {
-    BasicBinaryOutputStream tmp;
+    MemoryStream<Byte> tmp;
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());
 }

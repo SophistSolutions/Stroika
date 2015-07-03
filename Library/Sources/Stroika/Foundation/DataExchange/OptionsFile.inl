@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #include    "../Characters/Format.h"
-#include    "../Streams/BasicBinaryOutputStream.h"
+#include    "../Streams/MemoryStream.h"
 
 
 namespace   Stroika {
@@ -75,7 +75,7 @@ namespace   Stroika {
                                 Memory::BLOB    oldData =   ReadRaw (); // @todo could have saved from previous Read<T>
                                 Memory::BLOB    newData;
                                 {
-                                    Streams::BasicBinaryOutputStream outStream;
+                                    Streams::MemoryStream<Byte> outStream;
                                     fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
                                     // not sure needed? outStream.Flush();
                                     newData = outStream.As<Memory::BLOB> ();

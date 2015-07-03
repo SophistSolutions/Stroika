@@ -18,12 +18,13 @@
 
 
 
+#pragma message ("Warning: BasicBinaryInputOutputStream FILE DEPRECATED")
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
-//@todo pragma obsolete??
 
             using BasicBinaryInputOutputStream = MemoryStream<Memory::Byte>;
 

@@ -17,6 +17,7 @@
 #include    "MemoryStream.h"
 
 
+#pragma message ("Warning: BasicBinaryInputStream FILE DEPRECATED")
 
 /**
  *  \file

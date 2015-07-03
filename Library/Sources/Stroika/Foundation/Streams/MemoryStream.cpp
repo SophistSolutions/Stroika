@@ -18,21 +18,14 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
-
-
-
-
-
-
-
+using   Memory::Byte;
 
 
 /*
  ********************************************************************************
- ********************** Streams::Streams::MemoryStream **************************
+ ************************** Streams::MemoryStream *******************************
  ********************************************************************************
  */
-
 template    <>
 template    <>
 Memory::BLOB   MemoryStream<Byte>::As () const
@@ -43,7 +36,6 @@ Memory::BLOB   MemoryStream<Byte>::As () const
     return rep.AsVector ();
 }
 
-
 template    <>
 template    <>
 string   MemoryStream<Byte>::As () const
@@ -53,4 +45,3 @@ string   MemoryStream<Byte>::As () const
     const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
     return rep.AsString ();
 }
-

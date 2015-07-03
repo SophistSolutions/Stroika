@@ -77,7 +77,7 @@ namespace   Stroika {
              *
              *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.
              *
-             *      @see BasicBinaryInputStream for most common stream applications.
+             *      @see MemoryStream for most common stream applications.
              *
              *      @see ExternallyOwnedMemoryBinaryInputStream for a more efficient, but slightly less safe
              *          mapping to streams.

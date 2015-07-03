@@ -17,8 +17,7 @@
 #include    "Stroika/Foundation/DataExchange/XML/Reader.h"
 #include    "Stroika/Foundation/DataExchange/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 
@@ -90,7 +89,7 @@ namespace   {
         namespace Test_01_BasicWriterTests_ {
             void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
-                Streams::BasicBinaryOutputStream    out;
+                Streams::MemoryStream<Byte>    out;
                 DataExchange::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
@@ -232,7 +231,7 @@ namespace   {
             {
                 string  encodedRep;
                 {
-                    Streams::BasicBinaryOutputStream    out;
+                    Streams::MemoryStream<Byte>    out;
                     DataExchange::JSON::Writer ().Write (v, out);
                     encodedRep = out.As<string> ();
                 }
@@ -312,14 +311,14 @@ namespace   {
 
                     string  jsonExampleWithUpdatedMaxFilesReference;
                     {
-                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        Streams::MemoryStream<Byte>    tmpStrm;
                         DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
                     }
                     {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (locale ("C"));
-                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        Streams::MemoryStream<Byte>    tmpStrm;
                         DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
@@ -327,7 +326,7 @@ namespace   {
                     {
                         // Verify change of locale has no effect on results
                         Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
-                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        Streams::MemoryStream<Byte>    tmpStrm;
                         DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                     }
@@ -422,7 +421,7 @@ namespace   {
             void    DoIt ()
             {
                 try {
-                    VariantValue    vOut    =   DataExchange::JSON::Reader ().Read (Streams::BasicBinaryInputStream (nullptr, nullptr));
+                    VariantValue    vOut    =   DataExchange::JSON::Reader ().Read (Streams::MemoryStream<Byte> (nullptr, nullptr));
                     VerifyTestResult (false);
                 }
                 catch (const DataExchange::BadFormatException&) {
@@ -466,7 +465,7 @@ namespace   {
                 {
                     DataExchange::XML::Writer w;
                     VariantValue    v   =   VariantValue (44905.3);
-                    Streams::BasicBinaryOutputStream    out;
+                    Streams::MemoryStream<Byte>    out;
                     w.Write (v, out);
                     string x = out.As<string> ();
                     int breakhere = 1;
@@ -476,7 +475,7 @@ namespace   {
                     map<wstring, VariantValue>  mv;
                     mv[L"MaxFiles"] = VariantValue (405);
                     VariantValue    v   =    VariantValue (mv);
-                    Streams::BasicBinaryOutputStream    out;
+                    Streams::MemoryStream<Byte>    out;
                     w.Write (v, out);
                     string x = out.As<string> ();
                     int breakhere = 1;

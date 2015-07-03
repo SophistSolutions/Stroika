@@ -147,7 +147,7 @@ namespace   Stroika {
              *      // at this point - we should have VariantValue object with "Enabled" field.
              *      // This can then be serialized using
              *
-             *      Streams::BasicBinaryInputOutputStream   tmpStream;
+             *      Streams::MemoryStream<Byte>   tmpStream;
              *      DataExchange::JSON::PrettyPrint (v, tmpStream);
              *
              *      // THEN deserialized, and mapped back to C++ object form

@@ -21,10 +21,6 @@
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
- *
- *      @todo   Once we redo BinaryStream/TextStream to be Stream<Byte>, Stream<Character>, we can redo this
- *              class to be fully templated and support BOTH.
- *
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
  *              class (when I implement it) based on Led chunked arrays).
  *
@@ -38,8 +34,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
-            using Memory::Byte; //tmphack til I templateize Memory steream
 
             /**
              *  \brief  Simplest to use BinaryInputOutputStream; MemoryStream can be written to, and then the BLOB of data retrieved.
@@ -92,10 +86,10 @@ namespace   Stroika {
 
             template    <>
             template    <>
-            Memory::BLOB    MemoryStream<Byte>::As () const;
+            Memory::BLOB    MemoryStream<Memory::Byte>::As () const;
             template    <>
             template    <>
-            string          MemoryStream<Byte>::As () const;
+            string          MemoryStream<Memory::Byte>::As () const;
 
 
         }

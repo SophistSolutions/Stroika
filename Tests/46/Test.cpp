@@ -46,8 +46,8 @@
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -1334,7 +1334,7 @@ namespace {
         Memory::BLOB    doWrite_ (const ScanDetails_& scan)
         {
             using   namespace DataExchange;
-            Streams::BasicBinaryOutputStream    out;
+            Streams::MemoryStream<Byte>    out;
             static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();

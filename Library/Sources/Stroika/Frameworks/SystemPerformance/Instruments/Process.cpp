@@ -878,7 +878,7 @@ namespace {
             using   Execution::ProcessRunner;
             const   int kColCountIncludingCmd_ { 9 };
             ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
-            Streams::BasicBinaryInputOutputStream   useStdOut;
+            Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String out;
