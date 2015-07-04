@@ -12,9 +12,6 @@
  */
 
 
-#include    "../Traversal/Iterator.h"
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -66,11 +63,15 @@ namespace   Stroika {
                     Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
                     size_t  nAvail      =   fData_.end () - fReadCursor_;
                     size_t  nCopied     =   min (nAvail, nRequested);
-                    if (nCopied != 0) {
-                        //?@todo - fix
-                        (void)::memcpy (intoStart, Traversal::Iterator2Pointer (fReadCursor_), nCopied);
+                    {
+                        //(void)::memcpy (intoStart, Traversal::Iterator2Pointer (fReadCursor_), nCopied);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                        Memory::Private::VC_BWA_std_copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
+#else
+                        std::copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
+#endif
+                        fReadCursor_ = fReadCursor_ + nCopied;
                     }
-                    fReadCursor_ += nCopied;
                     return nCopied; // this can be zero on EOF
                 }
                 virtual void    Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
@@ -96,7 +97,12 @@ namespace   Stroika {
                             fWriteCursor_ = fData_.begin () + curWriteOffset;
                             Assert (fWriteCursor_ < fData_.end ());
                         }
-                        (void)::memcpy (Traversal::Iterator2Pointer (fWriteCursor_), start, roomRequired);
+                        //(void)::memcpy (Traversal::Iterator2Pointer (fWriteCursor_), start, roomRequired);
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                        Memory::Private::VC_BWA_std_copy (start, start + roomRequired, fWriteCursor_);
+#else
+                        std::copy (start, start + roomRequired, fWriteCursor_);
+#endif
                         fWriteCursor_ += roomRequired;
                         Assert (fReadCursor_ <= fData_.end ());
                         Assert (fWriteCursor_ <= fData_.end ());
@@ -300,7 +306,6 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
             }
-
 
 
         }
