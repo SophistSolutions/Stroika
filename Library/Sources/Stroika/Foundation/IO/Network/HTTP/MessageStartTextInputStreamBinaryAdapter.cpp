@@ -36,7 +36,7 @@ namespace {
 // but for now this seems and adequate hack
 
 
-class   MessageStartTextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep, public Seekable::_IRep {
+class   MessageStartTextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep {
 public:
     IRep_ (const BinaryInputStream& src)
         : fCriticalSection_ ()
@@ -48,8 +48,13 @@ public:
     }
 
 protected:
-    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override
+    virtual bool    IsSeekable () const
     {
+        return true;
+    }
+    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    {
+        // @todo SUPPORT 'offset'
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
 
@@ -86,14 +91,12 @@ protected:
         Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
         return outN;
     }
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetReadOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOffset_;
     }
-
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
@@ -139,7 +142,7 @@ protected:
                 break;
         }
         Ensure ((0 <= fOffset_) and (fOffset_ <= fBufferFilledUpValidBytes_));
-        return GetOffset ();
+        return GetReadOffset ();
     }
 
 private:

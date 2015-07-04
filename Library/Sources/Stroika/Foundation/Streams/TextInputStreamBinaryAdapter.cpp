@@ -24,9 +24,9 @@ using   Execution::make_unique_lock;
 
 
 
-class   TextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep, public Seekable::_IRep {
+class   TextInputStreamBinaryAdapter::Rep_ : public TextInputStream::_IRep {
 public:
-    IRep_ (const BinaryInputStream& src)
+    Rep_ (const BinaryInputStream& src)
         : fCriticalSection_ ()
         , fSource_ (src)
         , fTmpHackTextRemaining_ ()
@@ -35,8 +35,13 @@ public:
     }
 
 protected:
-    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override
+    virtual bool    IsSeekable () const override
     {
+        return true;
+    }
+    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    {
+        // @todo 'offset' param NYI
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -72,13 +77,13 @@ protected:
 #endif
     }
 
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetReadOffset () const override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
@@ -124,7 +129,7 @@ protected:
                 break;
         }
         Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
-        return GetOffset ();
+        return GetReadOffset ();
     }
 
 private:
@@ -149,5 +154,5 @@ TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (const BinaryInputStr
 
 shared_ptr<TextInputStreamBinaryAdapter::_IRep> TextInputStreamBinaryAdapter::mk_ (const BinaryInputStream& src)
 {
-    return shared_ptr<_IRep> (new IRep_ (src));
+    return make_shared<Rep_> (src);
 }

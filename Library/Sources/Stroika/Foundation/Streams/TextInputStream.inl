@@ -16,34 +16,42 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+#if 0
             //  class   TextInputStream::_IRep
             inline  TextInputStream::_IRep::_IRep ()
             {
             }
+#endif
 
-            //  class   TextInputStream
+            /*
+             ********************************************************************************
+             ***************************** TextInputStream **********************************
+             ********************************************************************************
+             */
             inline  TextInputStream::TextInputStream (const _SharedIRep& rep)
-                : TextStream (rep)
+                : inherited (rep)
             {
             }
+#if 0
             inline  TextInputStream::_SharedIRep  TextInputStream::_GetRep () const
             {
                 return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
             }
+#endif
             inline  size_t  TextInputStream::Read (wchar_t* intoStart, wchar_t* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
                 static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
-                return _GetRep ()->_Read (reinterpret_cast<Character*> (intoStart), reinterpret_cast<Character*> (intoEnd));
+                return _GetRep ()->Read (nullptr, reinterpret_cast<Character*> (intoStart), reinterpret_cast<Character*> (intoEnd));
             }
             inline  size_t  TextInputStream::Read (Character* intoStart, Character* intoEnd) const
             {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->_Read (intoStart, intoEnd);
+                return _GetRep ()->Read (nullptr, intoStart, intoEnd);
             }
             inline  Character   TextInputStream::Read () const
             {

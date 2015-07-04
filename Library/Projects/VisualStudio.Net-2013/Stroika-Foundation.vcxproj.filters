@@ -1755,6 +1755,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2653,6 +2656,9 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>

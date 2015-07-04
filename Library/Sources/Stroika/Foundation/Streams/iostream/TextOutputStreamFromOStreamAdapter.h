@@ -37,7 +37,7 @@ namespace   Stroika {
                  */
                 class   TextOutputStreamFromOStreamAdapter : public TextOutputStream {
                 private:
-                    class   IRep_;
+                    class   Rep_;
                 public:
                     TextOutputStreamFromOStreamAdapter (wostream& originalStream);
                 };

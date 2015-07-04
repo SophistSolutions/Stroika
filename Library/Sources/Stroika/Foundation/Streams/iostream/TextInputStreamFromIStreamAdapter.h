@@ -34,10 +34,10 @@ namespace   Stroika {
                  *
                  */
                 class   TextInputStreamFromIStreamAdapter : public TextInputStream {
-                private:
-                    class   IRep_;
                 public:
                     TextInputStreamFromIStreamAdapter (wistream& originalStream);
+                private:
+                    class   Rep_;
                 };
 
 

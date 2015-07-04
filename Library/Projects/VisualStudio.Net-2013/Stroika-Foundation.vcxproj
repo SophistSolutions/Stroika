@@ -1259,6 +1259,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h" />
@@ -1588,6 +1589,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />

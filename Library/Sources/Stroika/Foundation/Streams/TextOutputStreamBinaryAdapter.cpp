@@ -30,19 +30,33 @@ namespace {
 }
 #endif
 
-class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_IRep_ : public TextOutputStream::_IRep {
+class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_Rep_ : public TextOutputStream::_IRep {
 public:
-    UnSeekable_UTF8_IRep_ (const BinaryOutputStream& src, bool useBOM)
+    UnSeekable_UTF8_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : _fCriticalSection ()
         , _fSource (src)
     {
-        const   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
+        constexpr   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             _fSource.Write (std::begin (kBOM), std::end (kBOM));
         }
     }
 
 protected:
+    virtual bool    IsSeekable () const override
+    {
+        return false;
+    }
+    virtual SeekOffsetType  GetWriteOffset () const override
+    {
+        AssertNotImplemented ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    {
+        AssertNotImplemented ();
+        return 0;
+    }
     virtual void    Write (const Character* start, const Character* end)  override
     {
 #if     !qCompilerAndStdLib_string_conversions_Buggy
@@ -75,6 +89,10 @@ Again:
         _fSource.Write (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::Start (tmp) + tmp.length ()));
 #endif
     }
+    virtual void    Flush () override
+    {
+        // NYI
+    }
 
 protected:
     mutable recursive_mutex     _fCriticalSection;
@@ -82,21 +100,39 @@ protected:
 };
 
 
-class   TextOutputStreamBinaryAdapter::UnSeekable_WCharT_IRep_ : public TextOutputStream::_IRep {
+class   TextOutputStreamBinaryAdapter::UnSeekable_WCharT_Rep_ : public TextOutputStream::_IRep {
 public:
-    UnSeekable_WCharT_IRep_ (const BinaryOutputStream& src, bool useBOM)
+    UnSeekable_WCharT_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : _fSource (src)
     {
-        const   Character   kBOM    =    L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
+        constexpr   Character   kBOM    =    L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             Write (&kBOM, &kBOM + 1);
         }
     }
 
 protected:
+    virtual bool    IsSeekable () const override
+    {
+        return false;
+    }
+    virtual SeekOffsetType  GetWriteOffset () const override
+    {
+        AssertNotImplemented ();
+        return 0;
+    }
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    {
+        AssertNotImplemented ();
+        return 0;
+    }
     virtual void    Write (const Character* start, const Character* end)  override
     {
         _fSource.Write (reinterpret_cast<const Byte*> (start), reinterpret_cast<const Byte*> (end));
+    }
+    virtual void    Flush () override
+    {
+        _fSource.Flush ();
     }
 
 protected:
@@ -104,15 +140,19 @@ protected:
 };
 
 
-class   TextOutputStreamBinaryAdapter::Seekable_UTF8_IRep_ : public UnSeekable_UTF8_IRep_, public Seekable::_IRep {
+class   TextOutputStreamBinaryAdapter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
 public:
-    Seekable_UTF8_IRep_ (const BinaryOutputStream& src, bool useBOM)
-        : UnSeekable_UTF8_IRep_ (src, useBOM)
+    Seekable_UTF8_Rep_ (const BinaryOutputStream& src, bool useBOM)
+        : UnSeekable_UTF8_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
     }
 
 protected:
+    virtual bool    IsSeekable () const override
+    {
+        return true;
+    }
 #if 0
     virtual void    Write (const Character* start, const Character* end)  override
     {
@@ -121,13 +161,13 @@ protected:
     }
 #endif
 
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetWriteOffset () const override
     {
         AssertNotImplemented ();
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
         return 0;
@@ -138,15 +178,19 @@ private:
 };
 
 
-class   TextOutputStreamBinaryAdapter::Seekable_WCharT_IRep_ : public UnSeekable_WCharT_IRep_, public Seekable::_IRep {
+class   TextOutputStreamBinaryAdapter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
 public:
-    Seekable_WCharT_IRep_ (const BinaryOutputStream& src, bool useBOM)
-        : UnSeekable_WCharT_IRep_ (src, useBOM)
+    Seekable_WCharT_Rep_ (const BinaryOutputStream& src, bool useBOM)
+        : UnSeekable_WCharT_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
     }
 
 protected:
+    virtual bool    IsSeekable () const override
+    {
+        return true;
+    }
 #if 0
     virtual void    Write (const Character* start, const Character* end)  override
     {
@@ -155,13 +199,13 @@ protected:
     }
 #endif
 
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetWriteOffset () const override
     {
         AssertNotImplemented ();
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
         return 0;
@@ -190,10 +234,10 @@ shared_ptr<TextOutputStreamBinaryAdapter::_IRep> TextOutputStreamBinaryAdapter::
     switch (format) {
         case Format::eUTF8WithBOM:
         case Format::eUTF8WithoutBOM:
-            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_UTF8_IRep_ (src, withBOM) : new UnSeekable_UTF8_IRep_ (src, withBOM));
+            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_UTF8_Rep_ (src, withBOM) : new UnSeekable_UTF8_Rep_ (src, withBOM));
         case Format::eWCharTWithBOM:
         case Format::eWCharTWithoutBOM:
-            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_WCharT_IRep_ (src, withBOM) : new UnSeekable_WCharT_IRep_ (src, withBOM));
+            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_WCharT_Rep_ (src, withBOM) : new UnSeekable_WCharT_Rep_ (src, withBOM));
         default:
             RequireNotReached();
             return shared_ptr<_IRep> ();

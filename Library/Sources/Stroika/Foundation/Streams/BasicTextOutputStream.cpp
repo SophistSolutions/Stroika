@@ -19,20 +19,21 @@ using   Execution::make_unique_lock;
 
 
 
-class   BasicTextOutputStream::IRep_ : public TextOutputStream::_IRep, public Seekable::_IRep {
+class   BasicTextOutputStream::Rep_ : public TextOutputStream::_IRep {
 public:
-    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
-
-public:
-    IRep_ ()
+    Rep_ ()
         : fCriticalSection_ ()
         , fData_ ()
         , fCursor_ (fData_.begin ())
     {
     }
-    IRep_ (const IRep_&) = delete;
-    nonvirtual  IRep_& operator= (const IRep_&) = delete;
+    Rep_ (const Rep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
+    virtual bool    IsSeekable () const override
+    {
+        return true;
+    }
     virtual void    Write (const Character* start, const Character* end) override
     {
         Require (start != nullptr or start == end);
@@ -58,16 +59,11 @@ public:
             Assert (fCursor_ <= fData_.end ());
         }
     }
-
-#if 0
-    // @todo - when we add to TextStream!@!! See TextOutStreamTODO
     virtual void     Flush () override
     {
         // nothing todo - write 'writes thru'
     }
-#endif
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual SeekOffsetType  GetWriteOffset () const override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -77,7 +73,7 @@ public:
         return fCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType    SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -166,7 +162,7 @@ private:
  ********************************************************************************
  */
 BasicTextOutputStream::BasicTextOutputStream ()
-    : TextOutputStream (shared_ptr<_IRep> (new IRep_ ()))
+    : TextOutputStream (make_shared<Rep_> ())
 {
 }
 
@@ -174,7 +170,7 @@ template    <>
 String   BasicTextOutputStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-    const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
+    const Rep_&    rep =   *reinterpret_cast<const Rep_*> (_GetRep ().get ());
     return rep.AsString ();
 }
 

@@ -23,6 +23,10 @@ namespace   Stroika {
                 : inherited (from._GetRep ())
             {
             }
+            inline  BinaryOutputStream::BinaryOutputStream (nullptr_t)
+                : inherited (nullptr)
+            {
+            }
             inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
             {
                 Write (blob.begin (), blob.end ());
@@ -44,10 +48,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  BinaryOutputStream::BinaryOutputStream ()
-                : BinaryStream ()
-            {
-            }
-            inline  BinaryOutputStream::BinaryOutputStream (nullptr_t)
                 : BinaryStream ()
             {
             }

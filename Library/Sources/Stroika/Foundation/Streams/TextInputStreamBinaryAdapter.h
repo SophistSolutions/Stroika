@@ -54,7 +54,7 @@ namespace   Stroika {
             public:
                 TextInputStreamBinaryAdapter (const BinaryInputStream& src);
             private:
-                class   IRep_;
+                class   Rep_;
             private:
                 shared_ptr<_IRep> mk_ (const BinaryInputStream& src);
             };

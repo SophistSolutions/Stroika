@@ -55,7 +55,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   IRep_;
+                class   Rep_;
             public:
                 BasicTextOutputStream ();
 

@@ -9,6 +9,9 @@
 #include    "../Characters/Character.h"
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
+
+
+#include    "InputStream.h"
 #include    "TextStream.h"
 
 
@@ -37,6 +40,70 @@ namespace   Stroika {
             using   Characters::Character;
             using   Characters::String;
 
+
+#if 1
+            class   TextInputStream : public InputStream<Character> {
+            private:
+                using inherited = InputStream<Character>;
+
+            protected:
+                /**
+                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
+                 */
+                explicit TextInputStream (const _SharedIRep& rep);
+
+            public:
+                /**
+                 *  defaults to null (empty ())
+                 */
+                TextInputStream () = default;
+                TextInputStream (nullptr_t);
+                TextInputStream (const InputStream<Character>& from);
+
+            public:
+                /**
+                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must
+                 *  always be >= 1. Returns 0 iff EOF, and otherwise number of characters read BLOCKING until data
+                 *  is available, but can return with fewer bytes than bufSize without prejudice about how much
+                 *  more is available.
+                 */
+                nonvirtual  size_t  Read (wchar_t* intoStart, wchar_t* intoEnd) const;
+                nonvirtual  size_t  Read (Character* intoStart, Character* intoEnd) const;
+
+                /**
+                 *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+                 */
+                nonvirtual  Character   Read () const;
+
+            public:
+                /**
+                 * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
+                 * it encounters as part of the read line.
+                 *
+                 *  ReadLine() will return an empty string iff EOF.
+                 */
+                nonvirtual  String ReadLine () const;
+
+            public:
+                /**
+                 *  Returns Iterable<String> object, so you can
+                 *  write code:
+                 *          for (String line : stream.ReadLines ()) {
+                 *          }
+                 *
+                 *  Like ReadLine(), the returned lines include trailing newlines/etc.
+                 */
+                nonvirtual  Traversal::Iterable<String> ReadLines () const;
+
+            public:
+                /**
+                 *  Read from the current seek position, until EOF, and accumulate all of it into a String.
+                 *  Note - since the stream may not start at the beginning, this isn't necessarily ALL
+                 *  that was in the stream -just all that remains.
+                 */
+                nonvirtual  String ReadAll () const;
+            };
+#else
 
             /**
              * Design Overview:
@@ -172,6 +239,7 @@ namespace   Stroika {
                  */
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
             };
+#endif
 
 
         }

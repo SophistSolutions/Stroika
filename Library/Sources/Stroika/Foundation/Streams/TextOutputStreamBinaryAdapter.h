@@ -64,11 +64,12 @@ namespace   Stroika {
                 };
             public:
                 TextOutputStreamBinaryAdapter (const BinaryOutputStream& src, Format format = Format::eUTF8);
+
             private:
-                class   Seekable_UTF8_IRep_;
-                class   Seekable_WCharT_IRep_;
-                class   UnSeekable_UTF8_IRep_;
-                class   UnSeekable_WCharT_IRep_;
+                class   Seekable_UTF8_Rep_;
+                class   Seekable_WCharT_Rep_;
+                class   UnSeekable_UTF8_Rep_;
+                class   UnSeekable_WCharT_Rep_;
             private:
                 shared_ptr<_IRep> mk_ (const BinaryOutputStream& src, Format format);
             };

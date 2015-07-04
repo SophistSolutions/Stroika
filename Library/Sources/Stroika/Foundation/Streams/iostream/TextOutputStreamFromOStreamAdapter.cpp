@@ -23,9 +23,9 @@ using   Execution::make_unique_lock;
 
 
 
-class   TextOutputStreamFromOStreamAdapter::IRep_ : public TextOutputStream::_IRep, public Seekable::_IRep {
+class   TextOutputStreamFromOStreamAdapter::Rep_ : public TextOutputStream::_IRep {
 public:
-    IRep_ (wostream& originalStream)
+    Rep_ (wostream& originalStream)
         : fCriticalSection_ ()
         , fOriginalStream_ (originalStream)
     {
@@ -44,9 +44,6 @@ protected:
             Execution::DoThrow (Execution::StringException (String_Constant (L"Failed to write from ostream")));
         }
     }
-
-#if 0
-    // NYI in base class
     virtual void    Flush () override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -55,16 +52,17 @@ protected:
             Execution::DoThrow (Execution::StringException (L"Failed to flush ostream"));
         }
     }
-#endif
-
-    virtual SeekOffsetType  GetOffset () const override
+    virtual bool    IsSeekable () const override
+    {
+        return true;
+    }
+    virtual SeekOffsetType  GetWriteOffset () const override
     {
         // instead of tellg () - avoids issue with EOF where fail bit set???
         auto    critSec { make_unique_lock (fCriticalSection_) };
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
     }
-
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
         switch (whence) {
@@ -97,6 +95,6 @@ private:
  ********************************************************************************
  */
 TextOutputStreamFromOStreamAdapter::TextOutputStreamFromOStreamAdapter (std::wostream& originalStream)
-    : TextOutputStream (shared_ptr<_IRep> (new IRep_ (originalStream)))
+    : TextOutputStream (make_shared<Rep_> (originalStream))
 {
 }
