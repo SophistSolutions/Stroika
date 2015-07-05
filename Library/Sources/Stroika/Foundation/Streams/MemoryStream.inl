@@ -280,7 +280,7 @@ namespace   Stroika {
             {
             }
             template    <typename   ELEMENT_TYPE>
-            template    <typename   ENABLE_IF_TEST>
+            template    <typename TEST_TYPE, typename   ENABLE_IF_TEST>
             inline  MemoryStream<ELEMENT_TYPE>::MemoryStream (const Memory::BLOB& blob)
                 : MemoryStream<ELEMENT_TYPE> (blob.begin (), blob.end ())
             {
