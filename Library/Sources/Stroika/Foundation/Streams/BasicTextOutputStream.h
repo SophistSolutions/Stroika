@@ -30,6 +30,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
+#pragma message ("Warning: BasicTextOutputStream FILE DEPRECATED - use MemoryStream<Characters::Character>")
             using   Characters::Character;
             using   Characters::String;
 
@@ -90,6 +91,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BasicTextOutputStream.inl"
+//#include    "BasicTextOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BasicTextOutputStream_h_*/
