@@ -11,7 +11,6 @@
 #include    "../Memory/BLOB.h"
 
 #include    "BinaryOutputStream.h"
-#include    "Seekable.h"
 #include    "TextOutputStream.h"
 
 

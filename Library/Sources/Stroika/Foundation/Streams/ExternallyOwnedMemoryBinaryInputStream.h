@@ -13,7 +13,6 @@
 #include    "../Memory/BLOB.h"
 
 #include    "BinaryInputStream.h"
-#include    "Seekable.h"
 
 
 

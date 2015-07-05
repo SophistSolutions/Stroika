@@ -30,19 +30,13 @@ namespace   Stroika {
                 : inherited (rep)
             {
             }
-#if 0
-            inline  TextOutputStream::_SharedIRep  TextOutputStream::_GetRep () const
-            {
-                return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
-            }
-#endif
             inline  void    TextOutputStream::Write (const Character* start, const Character* end) const
             {
                 Require (start <= end);
                 Require (start != nullptr or start == end);
                 Require (end != nullptr or start == end);
                 if (start != end) {
-                    _GetRep ()->Write (start, end);
+                    inherited::Write (start, end);
                 }
             }
             inline  void    TextOutputStream::Write (const wchar_t* start, const wchar_t* end) const

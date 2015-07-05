@@ -13,7 +13,6 @@
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "../TextInputStream.h"
-#include    "../Seekable.h"
 
 
 

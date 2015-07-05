@@ -924,7 +924,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
@@ -1279,13 +1278,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Stream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h" />
@@ -1602,11 +1599,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />

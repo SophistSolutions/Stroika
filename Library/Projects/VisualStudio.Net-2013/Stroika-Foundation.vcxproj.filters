@@ -441,9 +441,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -831,9 +828,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
@@ -1163,9 +1157,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h">
       <Filter>Sources\IO\Network</Filter>
@@ -1817,9 +1808,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
@@ -2081,9 +2069,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.inl">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl">
       <Filter>Sources\IO\Network</Filter>

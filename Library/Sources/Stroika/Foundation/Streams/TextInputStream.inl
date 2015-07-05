@@ -16,12 +16,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-#if 0
-            //  class   TextInputStream::_IRep
-            inline  TextInputStream::_IRep::_IRep ()
-            {
-            }
-#endif
 
             /*
              ********************************************************************************
@@ -32,12 +26,6 @@ namespace   Stroika {
                 : inherited (rep)
             {
             }
-#if 0
-            inline  TextInputStream::_SharedIRep  TextInputStream::_GetRep () const
-            {
-                return dynamic_pointer_cast<_IRep> (TextStream::_GetRep ());
-            }
-#endif
             inline  size_t  TextInputStream::Read (wchar_t* intoStart, wchar_t* intoEnd) const
             {
                 RequireNotNull (intoStart);
@@ -61,6 +49,7 @@ namespace   Stroika {
                 }
                 return '\0';
             }
+
 
         }
     }

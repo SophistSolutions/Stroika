@@ -13,7 +13,6 @@
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "../BinaryInputStream.h"
-#include    "../Seekable.h"
 
 
 
