@@ -60,7 +60,7 @@ namespace   Stroika {
              *          extended so that an exception (or extra method to ask about last write) could include information
              *          about partial writes, but for now - I don't see any reason.
              *
-             *  @See TextStream
+             *  @See OutputStream
              */
             class   TextOutputStream : public OutputStream<Character> {
             private:

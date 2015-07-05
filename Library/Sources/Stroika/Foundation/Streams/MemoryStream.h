@@ -9,6 +9,7 @@
 #include    <mutex>
 #include    <vector>
 
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Memory/BLOB.h"
 
@@ -74,6 +75,9 @@ namespace   Stroika {
                  *  And if ElementType is Memory::Byte, then T can also be one of:
                  *      o   Memory::BLOB
                  *      o   string
+                 *
+                 *  And if ElementType is Characters::Character, then T can also be one of:
+                 *      o   String
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
@@ -88,11 +92,14 @@ namespace   Stroika {
 
             template    <>
             template    <>
-            Memory::BLOB    MemoryStream<Memory::Byte>::As () const;
+            Memory::BLOB        MemoryStream<Memory::Byte>::As () const;
             template    <>
             template    <>
-            string          MemoryStream<Memory::Byte>::As () const;
+            string              MemoryStream<Memory::Byte>::As () const;
 
+            template    <>
+            template    <>
+            Characters::String  MemoryStream<Characters::Character>::As () const;
 
         }
     }

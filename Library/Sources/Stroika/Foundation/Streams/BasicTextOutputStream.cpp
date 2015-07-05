@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
 
-
+#if 0
 
 
 class   BasicTextOutputStream::Rep_ : public TextOutputStream::_IRep {
@@ -174,3 +174,5 @@ String   BasicTextOutputStream::As () const
     return rep.AsString ();
 }
 
+
+#endif

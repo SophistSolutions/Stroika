@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 
 #include    "TextOutputStream.h"
+#include    "MemoryStream.h"
 
 
 
@@ -31,6 +32,10 @@ namespace   Stroika {
 
             using   Characters::Character;
             using   Characters::String;
+
+#if 1
+            using BasicTextOutputStream = MemoryStream<Characters::Character>;
+#else
 
             /**
              *  \brief  Simplest to use TextOutputStream; BasicTextOutputStream can be written to, and then the text (String) of data retrieved.
@@ -71,6 +76,7 @@ namespace   Stroika {
 
             template    <>
             String    BasicTextOutputStream::As () const;
+#endif
 
 
         }
