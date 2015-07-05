@@ -69,11 +69,11 @@ namespace   Stroika {
             public:
                 /**
                  */
-                Character ();
-                Character (char c);
-                Character (char16_t c);
-                Character (char32_t c);   // @todo decide how to handle surrogates
-                Character (wchar_t wc);
+                constexpr Character ();
+                constexpr Character (char c);
+                constexpr Character (char16_t c);
+                constexpr Character (char32_t c);   // @todo decide how to handle surrogates
+                constexpr Character (wchar_t wc);
 
             public:
                 /**

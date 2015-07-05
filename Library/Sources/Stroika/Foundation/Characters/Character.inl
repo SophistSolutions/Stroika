@@ -25,26 +25,41 @@ namespace   Stroika {
              *********************************** Character **********************************
              ********************************************************************************
              */
-            inline  Character::Character ()
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr 
+#endif
+			inline  Character::Character ()
                 : fCharacterCode_ ('\0')
             {
             }
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr 
+#endif
             inline  Character::Character (char c)
                 : fCharacterCode_ (c)
             {
             }
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr 
+#endif
             inline  Character::Character (char16_t c)
                 : fCharacterCode_ (c)
             {
             }
             DISABLE_COMPILER_MSC_WARNING_START(4244)
             // NB: THIS IS A REAL BUG/ISSUE. WE MUST DO WORK TO TRANSFORM. REDESIGN REQUIRED!!!
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr 
+#endif
             inline  Character::Character (char32_t c)
                 : fCharacterCode_ (c)
             {
             }
             DISABLE_COMPILER_MSC_WARNING_END(4244)
-            inline  Character::Character (wchar_t wc)
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr 
+#endif
+            inline	Character::Character (wchar_t wc)
                 : fCharacterCode_ (wc)
             {
                 static_assert (
