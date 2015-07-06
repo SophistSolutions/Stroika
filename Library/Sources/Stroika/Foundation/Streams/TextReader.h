@@ -47,7 +47,7 @@ namespace   Stroika {
 
 
             /**
-             *
+             *  WAS CALLED TextInputStreamBinaryAdapter
              */
             class   TextReader : public TextInputStream {
             public:

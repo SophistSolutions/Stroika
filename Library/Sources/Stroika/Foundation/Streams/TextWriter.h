@@ -44,6 +44,9 @@ namespace   Stroika {
              *  takes constructor arguments to decide how this will he handled.
              *
              *  TextWriter is Seekable iff its constructed with a BinaryOutputStream which is seekable.
+             *
+             *
+             *  WAS CALLED TextOutputStreamBinaryAdapter
              */
             class   TextWriter : public TextOutputStream {
             public:
