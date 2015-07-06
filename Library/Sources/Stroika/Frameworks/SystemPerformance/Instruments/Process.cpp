@@ -550,7 +550,7 @@ namespace {
             return results;
         }
         template    <typename T>
-        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream&)>& reader)
+        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream<>&)>& reader)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable)));
