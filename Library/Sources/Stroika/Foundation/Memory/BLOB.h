@@ -53,26 +53,14 @@
  *
  *      @todo   Do CTOR that uses iterator start/end not just const Byte* start, const Byte* end.
  *
- *      @todo   BLOB::As<BinaryInputStream>() should be seekable
+ *      @todo   BLOB::As<InputStream>() should be seekable
  *
  */
 
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Streams {
+namespace   Stroika { namespace   Foundation { namespace   Streams { template    <typename   ELEMENT_TYPE> class   InputStream; } } }
 
-
-            template    <typename   ELEMENT_TYPE>
-            class   InputStream;
-            template    <typename   BASESTREAM>
-            class   BinaryInputStream;
-
-
-        }
-    }
-}
 
 
 namespace   Stroika {
@@ -291,7 +279,7 @@ namespace   Stroika {
 
 
             template    <>
-            Streams::BinaryInputStream<Streams::InputStream<Byte>> BLOB::As () const;
+            Streams::InputStream<Byte>  BLOB::As () const;
 
 
             /**
