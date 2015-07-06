@@ -834,7 +834,7 @@ namespace {
 
 namespace   {
 
-    template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_CREATOR, typename STRING_EXTRACTOR>
+    template <typename STREAMISH_STRINGBUILDERIMPL, typename STRING_EXTRACTOR>
     void    Test_StreamBuilderStringBuildingWithExtract_ (STRING_EXTRACTOR extractor)
     {
         STREAMISH_STRINGBUILDERIMPL    out;
@@ -1620,14 +1620,11 @@ namespace   {
             2.6,
             &failedTests
         );
-
-#if 0
-        //tmphack til we fix
-#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
+#if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 97, 0)
         Tester (
             L"wstringstream versus BasicTextOutputStream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
-        [] () {Test_StreamBuilderStringBuildingWithExtract_<BasicTextOutputStream> ([](const BasicTextOutputStream & w) {return w.As<String> ();});}  , L"BasicTextOutputStream",
+        [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}  , L"MemoryStream<Characters::Character>",
         244000,
         4.0,
         &failedTests
@@ -1642,7 +1639,6 @@ namespace   {
         .14,
         &failedTests
         );
-#endif
 #endif
         Tester (
             L"Simple c_str() test",
