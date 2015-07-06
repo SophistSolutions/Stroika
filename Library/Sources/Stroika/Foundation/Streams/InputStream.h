@@ -166,6 +166,13 @@ namespace   Stroika {
                 nonvirtual  Memory::Optional<ElementType>  Read () const;
                 nonvirtual  size_t  Read (ElementType* intoStart, ElementType* intoEnd) const;
                 nonvirtual  size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) const;
+
+            public:
+                /**
+                 *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+                 */
+				template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual  Memory::BLOB ReadAll () const;
             };
 
 

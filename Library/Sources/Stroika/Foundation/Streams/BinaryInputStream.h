@@ -110,11 +110,13 @@ namespace   Stroika {
                 BinaryInputStream (nullptr_t);
                 BinaryInputStream (const InputStream<Byte>& from);
 
+#if 0
             public:
                 /**
                  *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
                  */
                 nonvirtual  Memory::BLOB ReadAll () const;
+#endif
             };
 
 
