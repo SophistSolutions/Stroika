@@ -9,7 +9,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/BinaryOutputStream.h"
+#include    "../../../Streams/OutputStream.h"
 
 
 
@@ -52,14 +52,14 @@ namespace   Stroika {
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryOutputStream<>   RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out);
+                    Streams::OutputStream<Byte>     RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out);
 #endif
 
 
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryOutputStream<>   RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out);
+                    Streams::OutputStream<Byte>     RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out);
 #endif
 
 

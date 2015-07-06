@@ -38,7 +38,8 @@
  */
 
 
-namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
+
+#pragma message ("Warning: BinaryOutputStream FILE DEPRECATED - use OutputStream<Byte>")
 
 
 
@@ -49,46 +50,8 @@ namespace   Stroika {
 
             using   Memory::Byte;
 
+            using BinaryOutputStream = OutputStream<Byte>;
 
-            /**
-             *  @todo CLEANUP DOCS
-             *
-             * Design Overview:
-             *
-             *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
-             *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
-             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
-             *
-             *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
-             *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
-             *  instead of inserting.
-             *
-             *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
-             *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
-             */
-            template    <typename   BASESTREAM = OutputStream<Byte>>
-            class   BinaryOutputStream : public BASESTREAM {
-            private:
-                using inherited = BASESTREAM;
-
-            protected:
-                using       _SharedIRep     =   typename BASESTREAM::_SharedIRep;
-
-            protected:
-                /**
-                 * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
-                 */
-                explicit BinaryOutputStream (const _SharedIRep& rep);
-
-            public:
-                BinaryOutputStream () = default;
-                BinaryOutputStream (nullptr_t);
-                BinaryOutputStream (const OutputStream<Byte>& from);
-
-            public:
-                nonvirtual  void    Write (const Byte* start, const Byte* end) const;
-                nonvirtual  void    Write (const Memory::BLOB& blob) const;
-            };
 
 
 
@@ -103,6 +66,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BinaryOutputStream.inl"
+//#include    "BinaryOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BinaryOutputStream_h_*/

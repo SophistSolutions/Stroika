@@ -1586,7 +1586,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl" />

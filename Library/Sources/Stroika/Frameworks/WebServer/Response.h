@@ -16,7 +16,7 @@
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/IO/Network/HTTP/Status.h"
-#include    "../../Foundation/Streams/BinaryOutputStream.h"
+#include    "../../Foundation/Streams/OutputStream.h"
 #include    "../../Foundation/Streams/BufferedBinaryOutputStream.h"
 
 
@@ -61,7 +61,7 @@ namespace   Stroika {
             public:
                 Response () = delete;
                 Response (const Response&) = delete;
-                Response (const IO::Network::Socket& s, Streams::BinaryOutputStream<> outStream, const InternetMediaType& ct);
+                Response (const IO::Network::Socket& s, Streams::OutputStream<Byte> outStream, const InternetMediaType& ct);
 
                 // Reponse must be completed (OK to Abort ()) before being destroyed
                 ~Response ();
@@ -208,7 +208,7 @@ namespace   Stroika {
                 State                                   fState_;
                 Status                                  fStatus_;
                 String                                  fStatusOverrideReason_;
-                Streams::BinaryOutputStream<>           fUnderlyingOutStream_;
+                Streams::OutputStream<Byte>             fUnderlyingOutStream_;
                 Streams::BufferedBinaryOutputStream     fUseOutStream_;
                 map<String, String>                     fHeaders_;
                 InternetMediaType                       fContentType_;

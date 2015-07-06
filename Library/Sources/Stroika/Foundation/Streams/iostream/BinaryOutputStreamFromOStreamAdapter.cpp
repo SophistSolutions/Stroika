@@ -20,10 +20,12 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 using   Characters::String_Constant;
 using   Execution::make_unique_lock;
+using   Memory::Byte;
 
 
 
-class   BinaryOutputStreamFromOStreamAdapter::Rep_ : public BinaryOutputStream<>::_IRep {
+
+class   BinaryOutputStreamFromOStreamAdapter::Rep_ : public OutputStream<Byte>::_IRep {
 public:
     Rep_ (ostream& originalStream)
         : fCriticalSection_ ()
@@ -93,7 +95,7 @@ private:
  ********************************************************************************
  */
 BinaryOutputStreamFromOStreamAdapter::BinaryOutputStreamFromOStreamAdapter (ostream& originalStream)
-    : BinaryOutputStream<> (make_shared<Rep_> (originalStream))
+    : OutputStream<Byte> (make_shared<Rep_> (originalStream))
 {
 }
 

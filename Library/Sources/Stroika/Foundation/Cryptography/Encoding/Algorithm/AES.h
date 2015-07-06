@@ -9,7 +9,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/BinaryOutputStream.h"
+#include    "../../../Streams/OutputStream.h"
 
 
 
@@ -79,7 +79,7 @@ namespace   Stroika {
                      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
                      *  to the returned output stream is decrypted before being passed to the argument output stream.
                      */
-                    Streams::BinaryOutputStream<>  AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Byte>  AESDecoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
@@ -88,7 +88,7 @@ namespace   Stroika {
                      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
                      *  to the returned output stream is encrpted before being passed to the argument output stream.
                      */
-                    Streams::BinaryOutputStream<>  AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Byte>  AESEncoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 

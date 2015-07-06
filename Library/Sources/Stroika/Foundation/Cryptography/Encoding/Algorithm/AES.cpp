@@ -120,7 +120,7 @@ Memory::BLOB  Algorithm::EncodeAES (const Memory::BLOB& key, const Memory::BLOB&
  **************************** Algorithm::AESEncoder *****************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream<>  Algorithm::AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out, AESOptions options)
+Streams::OutputStream<Byte>  Algorithm::AESDecoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options), Direction::eDecrypt, out);
 }
@@ -136,7 +136,7 @@ Streams::BinaryOutputStream<>  Algorithm::AESDecoder (const Memory::BLOB& key, S
  ****************************** Algorithm::AESEncoder ***************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream<>  Algorithm::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream<> out, AESOptions options)
+Streams::OutputStream<Byte>  Algorithm::AESEncoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options)
 {
     return OpenSSLOutputStream (cvt_ (key, options), Direction::eEncrypt, out);
 }

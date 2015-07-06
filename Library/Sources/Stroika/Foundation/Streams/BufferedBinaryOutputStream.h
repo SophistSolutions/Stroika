@@ -9,7 +9,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
-#include    "BinaryOutputStream.h"
+#include    "OutputStream.h"
 
 
 
@@ -43,15 +43,15 @@ namespace   Stroika {
              *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
              *              the data may be suppressed.
              */
-            class   BufferedBinaryOutputStream : public BinaryOutputStream<> {
+            class   BufferedBinaryOutputStream : public OutputStream<Memory::Byte> {
             private:
-                using   inherited   =   BinaryOutputStream<>;
+                using   inherited   =   OutputStream<Memory::Byte>;
 
             private:
                 class   IRep_;
 
             public:
-                BufferedBinaryOutputStream (const BinaryOutputStream<>& realOut);
+                BufferedBinaryOutputStream (const OutputStream<Memory::Byte>& realOut);
 
             public:
                 nonvirtual  size_t  GetBufferSize () const;

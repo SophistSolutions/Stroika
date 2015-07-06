@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
-
+using   Memory::Byte;
 
 
 namespace   {
@@ -28,10 +28,10 @@ namespace   {
 
 
 
-class   BufferedBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep {
+class   BufferedBinaryOutputStream::IRep_ : public OutputStream<Byte>::_IRep {
 public:
-    IRep_ (const BinaryOutputStream<>& realOut)
-        : BinaryOutputStream::_IRep ()
+    IRep_ (const OutputStream<Byte>& realOut)
+        : OutputStream<Byte>::_IRep ()
         , fCriticalSection_ ()
         , fBuffer_ ()
         , fRealOut_ (realOut)
@@ -113,7 +113,7 @@ public:
     // Writes always succeed fully or throw.
     virtual void            Write (const Byte* start, const Byte* end) override
     {
-        Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
+        Require (start < end);  // for OutputStream<Byte> - this funciton requires non-empty write
         Require (not fAborted_);
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
@@ -161,10 +161,10 @@ public:
     }
 
 private:
-    mutable recursive_mutex             fCriticalSection_;
-    vector<Byte>                        fBuffer_;
-    BinaryOutputStream<>                fRealOut_;
-    bool                                fAborted_;
+    mutable recursive_mutex     fCriticalSection_;
+    vector<Byte>                fBuffer_;
+    OutputStream<Byte>          fRealOut_;
+    bool                        fAborted_;
 };
 
 
@@ -173,11 +173,11 @@ private:
 
 /*
  ********************************************************************************
- *********************** Streams::BinaryOutputStream ****************************
+ *********************** Streams::BufferedBinaryOutputStream ********************
  ********************************************************************************
  */
-BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream<>& realOut)
-    : BinaryOutputStream (_SharedIRep (new IRep_ (realOut)))
+BufferedBinaryOutputStream::BufferedBinaryOutputStream (const OutputStream<Byte>& realOut)
+    : OutputStream<Byte> (_SharedIRep (new IRep_ (realOut)))
 {
 }
 

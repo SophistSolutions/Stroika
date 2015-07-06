@@ -48,7 +48,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-class   BinaryFileOutputStream::Rep_ : public BinaryOutputStream<>::_IRep {
+class   BinaryFileOutputStream::Rep_ : public OutputStream<Byte>::_IRep {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;

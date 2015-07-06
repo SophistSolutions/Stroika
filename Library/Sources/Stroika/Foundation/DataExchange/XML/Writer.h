@@ -8,7 +8,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryOutputStream.h"
+#include    "../../Streams/OutputStream.h"
 #include    "../../Streams/TextOutputStream.h"
 
 #include    "../Writer.h"

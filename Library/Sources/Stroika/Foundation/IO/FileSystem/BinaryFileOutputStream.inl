@@ -21,7 +21,7 @@ namespace   Stroika {
                  ***************************** BinaryFileOutputStream ***************************
                  ********************************************************************************
                  */
-                inline  Streams::BinaryOutputStream<>   BinaryFileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
+                inline  Streams::OutputStream<Memory::Byte>   BinaryFileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
                 {
                     return BinaryFileOutputStream (fileName, flushFlag);
                 }

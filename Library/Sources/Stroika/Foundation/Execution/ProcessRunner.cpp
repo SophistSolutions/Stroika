@@ -178,7 +178,7 @@ namespace {
 
 #if     qPlatform_Windows
 namespace {
-    void    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::BinaryOutputStream<> o)
+    void    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
     {
         Byte    buf[kReadBufSize];
 #if     qUsePeekNamedPipe
@@ -231,7 +231,7 @@ namespace {
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in, Streams::BinaryOutputStream<> out, Streams::BinaryOutputStream<> error)
+ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in, Streams::OutputStream<Byte> out, Streams::OutputStream<Byte> error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -242,7 +242,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<By
 {
 }
 
-ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in, Streams::BinaryOutputStream<> out, Streams::BinaryOutputStream<> error)
+ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in, Streams::OutputStream<Byte> out, Streams::OutputStream<Byte> error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
@@ -278,22 +278,22 @@ void     ProcessRunner:: SetStdIn (const Memory::BLOB& in)
     fStdIn_ = in.As<Streams::InputStream<Byte>> ();
 }
 
-Streams::BinaryOutputStream<> ProcessRunner::GetStdOut () const
+Streams::OutputStream<Byte> ProcessRunner::GetStdOut () const
 {
     return fStdOut_;
 }
 
-void    ProcessRunner::SetStdOut (const Streams::BinaryOutputStream<>& out)
+void    ProcessRunner::SetStdOut (const Streams::OutputStream<Byte>& out)
 {
     fStdOut_ = out;
 }
 
-Streams::BinaryOutputStream<> ProcessRunner::GetStdErr () const
+Streams::OutputStream<Byte> ProcessRunner::GetStdErr () const
 {
     return fStdErr_;
 }
 
-void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream<>& err)
+void    ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 {
     fStdErr_ = err;
 }
@@ -305,8 +305,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
     SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
 
     Streams::InputStream<Byte>    in  =   GetStdIn ();
-    Streams::BinaryOutputStream<>   out =   GetStdOut ();
-    Streams::BinaryOutputStream<>   err =   GetStdErr ();
+    Streams::OutputStream<Byte>   out =   GetStdOut ();
+    Streams::OutputStream<Byte>   err =   GetStdErr ();
 
     return [progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
@@ -765,8 +765,8 @@ void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSec
 
 Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    Streams::InputStream<Byte>      oldStdIn    =   GetStdIn ();
-    Streams::BinaryOutputStream<>   oldStdOut   =   GetStdOut ();
+    Streams::InputStream<Byte>  oldStdIn    =   GetStdIn ();
+    Streams::OutputStream<Byte> oldStdOut   =   GetStdOut ();
     try {
         Streams::MemoryStream<Memory::Byte>   useStdIn;
         Streams::MemoryStream<Memory::Byte>   useStdOut;

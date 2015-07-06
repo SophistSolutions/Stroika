@@ -1802,9 +1802,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>

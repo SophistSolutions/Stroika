@@ -12,7 +12,7 @@
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 #include    "../Streams/InputStream.h"
-#include    "../Streams/BinaryOutputStream.h"
+#include    "../Streams/OutputStream.h"
 
 #include    "Process.h"
 #include    "ProgressMonitor.h"
@@ -131,14 +131,14 @@ namespace   Stroika {
                 ProcessRunner () = delete;
                 ProcessRunner (const ProcessRunner&) = delete;
             public:
-                ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
-                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
+                ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr);
+                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr);
 #if     !qTargetPlatformSDKUseswchar_t && 0
-                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
+                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
                 {
                 }
-                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
+                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
                     : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
                 {
                 }
@@ -169,15 +169,15 @@ namespace   Stroika {
                 /**
                  *  If empty, stdout will not be captured (redirected to /dev/null)
                  */
-                nonvirtual  Streams::BinaryOutputStream<>   GetStdOut () const;
-                nonvirtual  void                            SetStdOut (const Streams::BinaryOutputStream<>& out);
+                nonvirtual  Streams::OutputStream<Byte>     GetStdOut () const;
+                nonvirtual  void                            SetStdOut (const Streams::OutputStream<Byte>& out);
 
             public:
                 /**
                  *  If empty, stderr will not be captured (redirected to /dev/null)
                  */
-                nonvirtual  Streams::BinaryOutputStream<>   GetStdErr () const;
-                nonvirtual  void                            SetStdErr (const Streams::BinaryOutputStream<>& err);
+                nonvirtual  Streams::OutputStream<Byte>   GetStdErr () const;
+                nonvirtual  void                            SetStdErr (const Streams::OutputStream<Byte>& err);
 
             public:
                 /**
@@ -207,8 +207,8 @@ namespace   Stroika {
                 Containers::Sequence<String>    fArgs_;         // ignored if fExecutable empty
                 String                          fWorkingDirectory_;
                 Streams::InputStream<Byte>      fStdIn_;
-                Streams::BinaryOutputStream<>   fStdOut_;
-                Streams::BinaryOutputStream<>   fStdErr_;
+                Streams::OutputStream<Byte>     fStdOut_;
+                Streams::OutputStream<Byte>     fStdErr_;
             };
 
 

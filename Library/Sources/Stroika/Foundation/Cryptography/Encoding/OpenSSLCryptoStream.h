@@ -18,7 +18,7 @@ extern "C" {
 #include    "../../Memory/Common.h"
 #include    "../../Memory/BLOB.h"
 #include    "../../Streams/InputStream.h"
-#include    "../../Streams/BinaryOutputStream.h"
+#include    "../../Streams/OutputStream.h"
 
 #include    "../OpenSSL/CipherAlgorithm.h"
 #include    "../OpenSSL/DigestAlgorithm.h"
@@ -143,11 +143,11 @@ namespace   Stroika {
                  *
                  *  @see OpenSSLInputStream
                  */
-                class   OpenSSLOutputStream : public Streams::BinaryOutputStream<> {
+                class   OpenSSLOutputStream : public Streams::OutputStream<Byte> {
                 private:
                     class   IRep_;
                 public:
-                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream<>& realOut);
+                    OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>& realOut);
                 };
 #endif
 

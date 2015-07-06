@@ -14,6 +14,7 @@ using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Streams;
 
 using   Characters::String_Constant;
+using   Memory::Byte;
 
 
 /*
@@ -33,7 +34,7 @@ public:
     {
         return String_Constant (L".ini");
     }
-    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream<>& out) override
+    virtual void    Write (const VariantValue& v, const Streams::OutputStream<Byte>& out) override
     {
         AssertNotImplemented ();
     }

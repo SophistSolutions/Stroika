@@ -7,7 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/String.h"
-#include    "../../Streams/BinaryOutputStream.h"
+#include    "../../Streams/OutputStream.h"
 
 #include    "../FileAccessMode.h"
 
@@ -50,9 +50,9 @@ namespace   Stroika {
 
                 /**
                  */
-                class BinaryFileOutputStream : public Streams::BinaryOutputStream<> {
+                class BinaryFileOutputStream : public Streams::OutputStream<Memory::Byte> {
                 private:
-                    using   inherited   =   BinaryOutputStream<>;
+                    using   inherited   =   OutputStream<Memory::Byte>;
                 private:
                     class   Rep_;
 
@@ -71,7 +71,7 @@ namespace   Stroika {
                     BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
 
                 public:
-                    static  BinaryOutputStream<>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
                 };
 
 

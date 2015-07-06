@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "../Memory/BLOB.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -72,6 +73,12 @@ namespace   Stroika {
                 if (start != end) {
                     _GetRep ()->Write (start, end);
                 }
+            }
+            template    <typename ELEMENT_TYPE>
+            template    <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline  void    OutputStream<ELEMENT_TYPE>::Write (const Memory::BLOB& blob) const
+            {
+                Write (blob.begin (), blob.end ());
             }
             template    <typename ELEMENT_TYPE>
             inline  void    OutputStream<ELEMENT_TYPE>::Flush () const

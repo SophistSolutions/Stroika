@@ -12,7 +12,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/BinaryOutputStream.h"
+#include    "../../../Streams/OutputStream.h"
 
 
 
@@ -43,7 +43,7 @@ namespace   Stroika {
 
 
                     Memory::BLOB    DecodeBase64 (const string& s);
-                    void            DecodeBase64 (const string& s, Streams::BinaryOutputStream<> out);
+                    void            DecodeBase64 (const string& s, Streams::OutputStream<Memory::Byte> out);
 
                     enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
                     string          EncodeBase64 (const Streams::InputStream<Memory::Byte>& from, LineBreak lb = LineBreak::eAuto_LB);

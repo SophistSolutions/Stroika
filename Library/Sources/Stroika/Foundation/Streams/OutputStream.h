@@ -158,6 +158,8 @@ namespace   Stroika {
                  *  Writes always succeed fully or throw (no partial writes).
                  */
                 nonvirtual  void    Write (const ElementType* start, const ElementType* end) const;
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual  void    Write (const Memory::BLOB& blob) const;
 
             public:
                 /**
