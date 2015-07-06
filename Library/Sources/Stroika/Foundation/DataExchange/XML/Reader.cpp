@@ -17,6 +17,7 @@ using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Memory::Byte;
+using   Characters::Character;
 using   Characters::String_Constant;
 
 
@@ -44,9 +45,8 @@ public:
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
     {
-
         // TODO - USE SAXREADER HERE!!!
 #if     qHasFeature_Xerces
         AssertNotImplemented ();

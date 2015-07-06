@@ -86,7 +86,7 @@ InputStream<Byte>       Response::GetDataBinaryInputStream () const
     return *fDataBinaryInputStream_;
 }
 
-TextInputStream       Response::GetDataTextInputStream () const
+InputStream<Character>  Response::GetDataTextInputStream () const
 {
     if (fDataTextInputStream_.IsMissing ()) {
         fDataTextInputStream_ = Streams::TextReader (GetDataBinaryInputStream ());

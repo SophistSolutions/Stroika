@@ -40,7 +40,12 @@ namespace   Stroika {
             using   Characters::Character;
             using   Characters::String;
 
+#pragma message ("Warning: TextInputStream.h FILE DEPRECATED - use InputStream<Character>")
 
+
+            using TextInputStream = InputStream<Character>;
+
+#if 0
             /**
              *  @todo DOCS OBSOLETE
              *
@@ -156,6 +161,7 @@ namespace   Stroika {
                 nonvirtual  String ReadAll () const;
 #endif
             };
+#endif
 
 
         }
@@ -168,6 +174,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TextInputStream.inl"
+//#include    "TextInputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_TextInputStream_h_*/

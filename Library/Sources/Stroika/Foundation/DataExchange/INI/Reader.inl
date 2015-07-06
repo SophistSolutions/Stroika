@@ -25,7 +25,7 @@ namespace   Stroika {
                 {
                     return Convert (Read (in));
                 }
-                inline  Profile Reader::ReadProfile (const Streams::TextInputStream& in)
+                inline  Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>& in)
                 {
                     return Convert (Read (in));
                 }

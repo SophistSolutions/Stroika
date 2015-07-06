@@ -15,7 +15,6 @@
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Memory/Optional.h"
 #include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/TextInputStream.h"
 #include    "../../../Time/Realtime.h"
 
 #include    "../URL.h"
@@ -85,7 +84,6 @@ namespace   Stroika {
                     using   Memory::Byte;
                     using   Memory::Optional;
                     using   Streams::InputStream;
-                    using   Streams::TextInputStream;
                     using   Time::DurationSecondsType;
 
 
@@ -209,7 +207,7 @@ namespace   Stroika {
                          *      Response r = clientConn.GET ();
                          *      String answer = r.GetDataTextInputStream ().ReadAll ();
                          */
-                        nonvirtual  TextInputStream       GetDataTextInputStream () const;
+                        nonvirtual  InputStream<Characters::Character>       GetDataTextInputStream () const;
 
                     public:
                         /**
@@ -238,12 +236,12 @@ namespace   Stroika {
                         nonvirtual  void    ThrowIfFailed () const;
 
                     private:
-                        BLOB                                    fData_;                     // usually empty, but provided for some methods like POST
-                        mutable Optional<InputStream<Byte>>     fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
-                        mutable Optional<TextInputStream>       fDataTextInputStream_;
-                        Mapping<String, String>                 fHeaders_;
-                        HTTP::Status                            fStatus_ {};
-                        Optional<SSLResultInfo>                 fServerEndpointSSLInfo_;
+                        BLOB                                                    fData_;                     // usually empty, but provided for some methods like POST
+                        mutable Optional<InputStream<Byte>>                     fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<InputStream<Characters::Character>>    fDataTextInputStream_;
+                        Mapping<String, String>                                 fHeaders_;
+                        HTTP::Status                                            fStatus_ {};
+                        Optional<SSLResultInfo>                                 fServerEndpointSSLInfo_;
                     };
 
 

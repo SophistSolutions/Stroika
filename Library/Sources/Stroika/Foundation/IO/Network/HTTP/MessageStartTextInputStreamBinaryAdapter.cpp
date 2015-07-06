@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::IO::Network::HTTP;
 using   namespace   Stroika::Foundation::Streams;
 
-
+using   Characters::Character;
 
 
 namespace {
@@ -36,7 +36,7 @@ namespace {
 // but for now this seems and adequate hack
 
 
-class   MessageStartTextInputStreamBinaryAdapter::Rep_ : public TextInputStream::_IRep {
+class   MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep {
 public:
     Rep_ (const InputStream<Byte>& src)
         : fCriticalSection_ ()
@@ -163,6 +163,6 @@ private:
  ********************************************************************************
  */
 MessageStartTextInputStreamBinaryAdapter::MessageStartTextInputStreamBinaryAdapter (const InputStream<Byte>& src)
-    : TextInputStream (make_shared<Rep_> (src))
+    : InputStream<Character> (make_shared<Rep_> (src))
 {
 }

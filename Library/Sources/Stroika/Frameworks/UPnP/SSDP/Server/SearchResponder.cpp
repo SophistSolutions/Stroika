@@ -55,7 +55,7 @@ SearchResponder::~SearchResponder ()
 }
 
 namespace {
-    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
+    void    ParsePacketAndRespond_ (Streams::InputStream<Character> in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 

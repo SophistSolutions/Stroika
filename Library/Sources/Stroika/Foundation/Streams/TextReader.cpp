@@ -17,6 +17,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Characters::String;
 using   Execution::make_unique_lock;
 using   Memory::Byte;
 
@@ -24,7 +25,7 @@ using   Memory::Byte;
 
 
 
-class   TextReader::Rep_ : public TextInputStream::_IRep {
+class   TextReader::Rep_ : public InputStream<Character>::_IRep {
 public:
     Rep_ (const InputStream<Byte>& src)
         : fCriticalSection_ ()
@@ -148,7 +149,7 @@ private:
  ********************************************************************************
  */
 TextReader::TextReader (const InputStream<Byte>& src)
-    : TextInputStream (mk_ (src))
+    : InputStream<Character> (mk_ (src))
 {
 }
 

@@ -56,12 +56,12 @@ public:
     {
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
     {
         AssertNotImplemented ();
         return VariantValue ();
     }
-    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::TextInputStream& in) const
+    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const
     {
         Sequence<Sequence<String>>  result;
         for (String line : in.ReadLines ()) {
@@ -77,7 +77,7 @@ public:
         return result;
     }
 #if 0
-    nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::TextInputStream& in) const
+    nonvirtual  Mapping<String, String>  ReadAsMapping (const Streams::InputStream<Character>& in) const
     {
         //tmphack
         return Mapping<String, String> ();
@@ -95,7 +95,7 @@ Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadM
     return ReadMatrix (Streams::TextReader (in));
 }
 
-Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::TextInputStream& in) const
+Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>& in) const
 {
     const _IRep& baseRep = _GetRep ();
     AssertMember (&baseRep, Rep_);

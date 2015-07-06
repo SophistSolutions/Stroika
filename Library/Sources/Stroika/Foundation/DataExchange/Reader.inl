@@ -43,7 +43,7 @@ namespace   Stroika {
             {
                 return fRep_->Read (in);
             }
-            inline  VariantValue    Reader::Read (const Streams::TextInputStream& in)
+            inline  VariantValue    Reader::Read (const Streams::InputStream<Characters::Character>& in)
             {
                 return fRep_->Read (in);
             }

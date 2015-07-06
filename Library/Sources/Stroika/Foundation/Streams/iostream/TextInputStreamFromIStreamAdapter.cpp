@@ -21,7 +21,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   TextInputStreamFromIStreamAdapter::Rep_ : public TextInputStream::_IRep {
+class   TextInputStreamFromIStreamAdapter::Rep_ : public InputStream<Character>::_IRep {
 public:
     Rep_ (wistream& originalStream)
         : fCriticalSection_ ()
@@ -92,6 +92,6 @@ private:
  ********************************************************************************
  */
 TextInputStreamFromIStreamAdapter::TextInputStreamFromIStreamAdapter (std::wistream& originalStream)
-    : TextInputStream (make_shared<Rep_> (originalStream))
+    : InputStream<Character> (make_shared<Rep_> (originalStream))
 {
 }

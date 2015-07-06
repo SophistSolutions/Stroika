@@ -21,7 +21,7 @@ namespace   Stroika {
              *********************************** TextOutputStream ***************************
              ********************************************************************************
              */
-            inline  TextReader::TextReader (const TextInputStream& src)
+            inline  TextReader::TextReader (const InputStream<Character>& src)
                 : inherited (src)
             {
             }

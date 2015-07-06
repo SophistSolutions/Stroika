@@ -12,7 +12,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
-#include    "../TextInputStream.h"
+#include    "../InputStream.h"
 
 
 
@@ -32,7 +32,7 @@ namespace   Stroika {
                 /**
                  *
                  */
-                class   TextInputStreamFromIStreamAdapter : public TextInputStream {
+                class   TextInputStreamFromIStreamAdapter : public InputStream<Characters::Character> {
                 public:
                     TextInputStreamFromIStreamAdapter (wistream& originalStream);
                 private:

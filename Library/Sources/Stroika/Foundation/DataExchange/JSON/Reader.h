@@ -8,7 +8,6 @@
 
 #include    "../../Configuration/Common.h"
 #include    "../../Streams/InputStream.h"
-#include    "../../Streams/TextInputStream.h"
 
 #include    "../Reader.h"
 #include    "../VariantValue.h"

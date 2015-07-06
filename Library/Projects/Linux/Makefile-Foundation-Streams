@@ -22,7 +22,6 @@ Objs	=	\
 	$(ObjDir)OutputStream.o\
 	$(ObjDir)MemoryStream.o\
 	$(ObjDir)Stream.o\
-	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextOutputStream.o\
 	$(ObjDir)TextReader.o\
 	$(ObjDir)TextWriter.o\

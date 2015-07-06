@@ -436,7 +436,7 @@ public:
     {
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Characters::Character>& in) override
     {
         wstring     tmp =   in.ReadAll ().As<wstring> ();
         wstring::const_iterator i = tmp.begin ();

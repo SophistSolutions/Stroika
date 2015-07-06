@@ -100,7 +100,7 @@ public:
             }
         }
     }
-    void    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStream in)
+    void    ParsePacketAndNotifyCallbacks_ (Streams::InputStream<Character> in)
     {
         String firstLine    =   in.ReadLine ().Trim ();
 

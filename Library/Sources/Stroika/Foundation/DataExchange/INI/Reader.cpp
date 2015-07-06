@@ -16,6 +16,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
+using   Characters::Character;
 using   Characters::String_Constant;
 using   Memory::Byte;
 
@@ -43,7 +44,7 @@ public:
     {
         return Read (Streams::TextReader (in));
     }
-    virtual VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
     {
         Profile  p;
         Optional<String>    readingSection;

@@ -7,7 +7,6 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Streams/InputStream.h"
-#include    "../../../Streams/TextInputStream.h"
 
 
 
@@ -35,13 +34,13 @@ namespace   Stroika {
                      * only reads the minimal amount needed and will be placed at the right position when handed
                      * to the next process to interpret.
                      *
-                     *  Though this TextInputStream is seekable, it only supports seeking backwards over materials
+                     *  Though this InputStream<Character> is seekable, it only supports seeking backwards over materials
                      *  already read. It never allows seeking past its last read point (throws not supported).
                      *
                      *  This adpater defines 0 seek offset as the point at which its constructed. And then you can seek to any locaiton
                      *  0 .. up to the max point ever read (with Read).
                      */
-                    class   MessageStartTextInputStreamBinaryAdapter : public Streams::TextInputStream {
+                    class   MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
                     public:
                         MessageStartTextInputStreamBinaryAdapter (const Streams::InputStream<Memory::Byte>& src);
                     private:

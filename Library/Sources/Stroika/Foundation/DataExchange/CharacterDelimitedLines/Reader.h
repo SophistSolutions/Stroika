@@ -10,7 +10,6 @@
 #include    "../../Containers/Sequence.h"
 #include    "../../Containers/Set.h"
 #include    "../../Streams/InputStream.h"
-#include    "../../Streams/TextInputStream.h"
 
 #include    "../Reader.h"
 #include    "../VariantValue.h"
@@ -59,7 +58,7 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Memory::Byte>& in) const;
-                    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::TextInputStream& in) const;
+                    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const;
                 };
 
 

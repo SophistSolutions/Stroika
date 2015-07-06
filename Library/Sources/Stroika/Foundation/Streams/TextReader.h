@@ -11,7 +11,6 @@
 #include    "../Memory/BLOB.h"
 
 #include    "InputStream.h"
-#include    "TextInputStream.h"
 
 
 
@@ -46,18 +45,21 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            using   Characters::Character;
+
+
             /**
              *  @todo CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
              *
              *  WAS CALLED TextInputStreamBinaryAdapter
              */
-            class   TextReader : public TextInputStream {
+            class   TextReader : public InputStream<Character> {
             private:
-                using   inherited = TextInputStream;
+                using   inherited = InputStream<Character>;
 
             public:
                 TextReader (const InputStream<Memory::Byte>& src);
-                TextReader (const TextInputStream& src);
+                TextReader (const InputStream<Character>& src);
 
             private:
                 class   Rep_;

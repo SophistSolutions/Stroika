@@ -204,9 +204,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
@@ -1801,9 +1798,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl">
       <Filter>Sources\Streams</Filter>
