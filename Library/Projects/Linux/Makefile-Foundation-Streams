@@ -24,9 +24,9 @@ Objs	=	\
 	$(ObjDir)MemoryStream.o\
 	$(ObjDir)Stream.o\
 	$(ObjDir)TextInputStream.o\
-	$(ObjDir)TextInputStreamBinaryAdapter.o\
-	$(ObjDir)TextOutputStreamBinaryAdapter.o\
 	$(ObjDir)TextOutputStream.o\
+	$(ObjDir)TextReader.o\
+	$(ObjDir)TextWriter.o\
 
 all:	$(Objs)  $(SubDirs)
 

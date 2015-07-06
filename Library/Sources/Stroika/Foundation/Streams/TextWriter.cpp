@@ -15,7 +15,7 @@
 #include    "../Execution/OperationNotSupportedException.h"
 #include    "../Memory/SmallStackBuffer.h"
 
-#include    "TextOutputStreamBinaryAdapter.h"
+#include    "TextWriter.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -30,7 +30,7 @@ namespace {
 }
 #endif
 
-class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_Rep_ : public TextOutputStream::_IRep {
+class   TextWriter::UnSeekable_UTF8_Rep_ : public TextOutputStream::_IRep {
 public:
     UnSeekable_UTF8_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : _fCriticalSection ()
@@ -100,7 +100,7 @@ protected:
 };
 
 
-class   TextOutputStreamBinaryAdapter::UnSeekable_WCharT_Rep_ : public TextOutputStream::_IRep {
+class   TextWriter::UnSeekable_WCharT_Rep_ : public TextOutputStream::_IRep {
 public:
     UnSeekable_WCharT_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : _fSource (src)
@@ -140,7 +140,7 @@ protected:
 };
 
 
-class   TextOutputStreamBinaryAdapter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
+class   TextWriter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
 public:
     Seekable_UTF8_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : UnSeekable_UTF8_Rep_ (src, useBOM)
@@ -178,7 +178,7 @@ private:
 };
 
 
-class   TextOutputStreamBinaryAdapter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
+class   TextWriter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
 public:
     Seekable_WCharT_Rep_ (const BinaryOutputStream& src, bool useBOM)
         : UnSeekable_WCharT_Rep_ (src, useBOM)
@@ -219,15 +219,15 @@ private:
 
 /*
  ********************************************************************************
- *************** Streams::TextOutputStreamBinaryAdapter *************************
+ *************** Streams::TextWriter *************************
  ********************************************************************************
  */
-TextOutputStreamBinaryAdapter::TextOutputStreamBinaryAdapter (const BinaryOutputStream& src, Format format)
+TextWriter::TextWriter (const BinaryOutputStream& src, Format format)
     : TextOutputStream (mk_ (src, format))
 {
 }
 
-shared_ptr<TextOutputStreamBinaryAdapter::_IRep> TextOutputStreamBinaryAdapter::mk_ (const BinaryOutputStream& src, Format format)
+shared_ptr<TextWriter::_IRep> TextWriter::mk_ (const BinaryOutputStream& src, Format format)
 {
     bool    newOneSeekable  =   src.IsSeekable ();
     bool    withBOM         =   (format == Format::eUTF8WithBOM or format == Format::eWCharTWithBOM);

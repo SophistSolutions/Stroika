@@ -12,32 +12,9 @@
 
 #include    "BinaryInputStream.h"
 #include    "TextInputStream.h"
+#include	"TextReader.h"
 
 
-
-/**
- *  \file
- *
- *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
- *
- *
- *      @todo   Cruddy, draft (but technically I think correct) implementation. Really need something
- *              smarter integrated with CodePage stuff - and Binary-Stream-based CodePage API, with
- *              an extra 'state' object to allow for pushing bytes in and getting none, and then one,
- *              or perhaps a pull API, where you pull (BinartInputStream) arg - or lambda - to
- *              pull text from.
- *
- *              BETTER YET - USE codecvt_utf8<> code in TextOutputStreamBinaryAdapter
- *
- *      @todo   BUGGY with seek fucntionality. We ASSUME we always get called to read with the source
- *              offset at zero. We dont even know that the source is seekable, but we
- *              certainly dont know that!
- *
- *      @todo   Ultimately - do several implementations upon construction, depending on whether
- *              or not the source is Seekable. Maybe also take configuration (CTOR) params to
- *              indicate whether or not caching is desired (required to implement seekability on
- *              non-seekable sources).
- */
 
 
 
@@ -46,17 +23,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-            /**
-             *
-             */
-            class   TextInputStreamBinaryAdapter : public TextInputStream {
-            public:
-                TextInputStreamBinaryAdapter (const BinaryInputStream& src);
-            private:
-                class   Rep_;
-            private:
-                shared_ptr<_IRep> mk_ (const BinaryInputStream& src);
-            };
+			using TextInputStreamBinaryAdapter = TextReader;
 
 
         }

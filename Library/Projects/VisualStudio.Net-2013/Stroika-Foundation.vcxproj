@@ -920,9 +920,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Stream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
@@ -1282,6 +1282,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h" />

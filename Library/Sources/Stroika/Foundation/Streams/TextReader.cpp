@@ -9,7 +9,7 @@
 #include    "../Execution/OperationNotSupportedException.h"
 #include    "../Memory/SmallStackBuffer.h"
 
-#include    "TextInputStreamBinaryAdapter.h"
+#include    "TextReader.h"
 
 
 
@@ -24,7 +24,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   TextInputStreamBinaryAdapter::Rep_ : public TextInputStream::_IRep {
+class   TextReader::Rep_ : public TextInputStream::_IRep {
 public:
     Rep_ (const BinaryInputStream& src)
         : fCriticalSection_ ()
@@ -147,12 +147,12 @@ private:
  ************************** Streams::TextInputStream ****************************
  ********************************************************************************
  */
-TextInputStreamBinaryAdapter::TextInputStreamBinaryAdapter (const BinaryInputStream& src)
+TextReader::TextReader (const BinaryInputStream& src)
     : TextInputStream (mk_ (src))
 {
 }
 
-shared_ptr<TextInputStreamBinaryAdapter::_IRep> TextInputStreamBinaryAdapter::mk_ (const BinaryInputStream& src)
+shared_ptr<TextReader::_IRep> TextReader::mk_ (const BinaryInputStream& src)
 {
     return make_shared<Rep_> (src);
 }

@@ -336,9 +336,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -690,9 +687,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.cpp">
       <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClCompile>
@@ -745,6 +739,12 @@
       <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1744,6 +1744,12 @@
       <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
   </ItemGroup>
