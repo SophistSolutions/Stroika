@@ -23,23 +23,28 @@ namespace   Stroika {
              ***************************** BinaryOutputStream *******************************
              ********************************************************************************
              */
-            inline  BinaryOutputStream::BinaryOutputStream (const OutputStream<Byte>& from)
+            template    <typename   BASESTREAM>
+            inline  BinaryOutputStream<BASESTREAM>::BinaryOutputStream (const OutputStream<Byte>& from)
                 : inherited (from._GetRep ())
             {
             }
-            inline  BinaryOutputStream::BinaryOutputStream (nullptr_t)
+            template    <typename   BASESTREAM>
+            inline  BinaryOutputStream<BASESTREAM>::BinaryOutputStream (nullptr_t)
                 : inherited (nullptr)
             {
             }
-            inline  BinaryOutputStream::BinaryOutputStream (const _SharedIRep& rep)
+            template    <typename   BASESTREAM>
+            inline  BinaryOutputStream<BASESTREAM>::BinaryOutputStream (const _SharedIRep& rep)
                 : inherited (rep)
             {
             }
-            inline  void    BinaryOutputStream::Write (const Memory::BLOB& blob) const
+            template    <typename   BASESTREAM>
+            inline  void    BinaryOutputStream<BASESTREAM>::Write (const Memory::BLOB& blob) const
             {
                 Write (blob.begin (), blob.end ());
             }
-            inline  void    BinaryOutputStream::Write (const Byte* start, const Byte* end) const
+            template    <typename   BASESTREAM>
+            inline  void    BinaryOutputStream<BASESTREAM>::Write (const Byte* start, const Byte* end) const
             {
                 inherited::Write (start, end);
             }

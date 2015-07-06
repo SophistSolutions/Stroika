@@ -61,7 +61,7 @@ namespace   Stroika {
             public:
                 Response () = delete;
                 Response (const Response&) = delete;
-                Response (const IO::Network::Socket& s, Streams::BinaryOutputStream outStream, const InternetMediaType& ct);
+                Response (const IO::Network::Socket& s, Streams::BinaryOutputStream<> outStream, const InternetMediaType& ct);
 
                 // Reponse must be completed (OK to Abort ()) before being destroyed
                 ~Response ();
@@ -208,7 +208,7 @@ namespace   Stroika {
                 State                                   fState_;
                 Status                                  fStatus_;
                 String                                  fStatusOverrideReason_;
-                Streams::BinaryOutputStream             fUnderlyingOutStream_;
+                Streams::BinaryOutputStream<>           fUnderlyingOutStream_;
                 Streams::BufferedBinaryOutputStream     fUseOutStream_;
                 map<String, String>                     fHeaders_;
                 InternetMediaType                       fContentType_;

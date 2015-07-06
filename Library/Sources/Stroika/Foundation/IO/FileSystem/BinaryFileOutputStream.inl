@@ -16,13 +16,12 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-
                 /*
                  ********************************************************************************
                  ***************************** BinaryFileOutputStream ***************************
                  ********************************************************************************
                  */
-                inline  Streams::BinaryOutputStream   BinaryFileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
+                inline  Streams::BinaryOutputStream<>   BinaryFileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
                 {
                     return BinaryFileOutputStream (fileName, flushFlag);
                 }

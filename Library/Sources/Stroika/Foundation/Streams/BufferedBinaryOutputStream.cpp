@@ -30,7 +30,7 @@ namespace   {
 
 class   BufferedBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep {
 public:
-    IRep_ (const BinaryOutputStream& realOut)
+    IRep_ (const BinaryOutputStream<>& realOut)
         : BinaryOutputStream::_IRep ()
         , fCriticalSection_ ()
         , fBuffer_ ()
@@ -163,7 +163,7 @@ public:
 private:
     mutable recursive_mutex             fCriticalSection_;
     vector<Byte>                        fBuffer_;
-    BinaryOutputStream                  fRealOut_;
+    BinaryOutputStream<>                fRealOut_;
     bool                                fAborted_;
 };
 
@@ -176,7 +176,7 @@ private:
  *********************** Streams::BinaryOutputStream ****************************
  ********************************************************************************
  */
-BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream& realOut)
+BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream<>& realOut)
     : BinaryOutputStream (_SharedIRep (new IRep_ (realOut)))
 {
 }

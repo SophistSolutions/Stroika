@@ -33,7 +33,7 @@ public:
     {
         return String_Constant (L".ini");
     }
-    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream<>& out) override
     {
         AssertNotImplemented ();
     }

@@ -162,7 +162,7 @@ public:
     {
         return String_Constant (L".xml");
     }
-    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream<>& out) override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::Type::eMap);

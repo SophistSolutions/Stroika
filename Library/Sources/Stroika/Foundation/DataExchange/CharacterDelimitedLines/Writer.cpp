@@ -44,7 +44,7 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream<>& out) override
     {
         TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         AssertNotImplemented ();

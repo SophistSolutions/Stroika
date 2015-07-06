@@ -176,10 +176,10 @@ private:
 
 
 #if     qHasFeature_OpenSSL
-class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, private InOutStrmCommon_ {
+class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream<>::_IRep, private InOutStrmCommon_ {
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const BinaryOutputStream& realOut)
-        : BinaryOutputStream::_IRep ()
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const BinaryOutputStream<>& realOut)
+        : BinaryOutputStream<>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fRealOut_ (realOut)
@@ -213,7 +213,7 @@ public:
     // Writes always succeed fully or throw.
     virtual void    Write (const Byte* start, const Byte* end) override
     {
-        Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
+        Require (start < end);  // for BinaryOutputStream<> - this funciton requires non-empty write
         Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
         auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
@@ -231,7 +231,7 @@ public:
 
 private:
     mutable recursive_mutex     fCriticalSection_;
-    BinaryOutputStream          fRealOut_;
+    BinaryOutputStream<>        fRealOut_;
 };
 #endif
 
@@ -357,8 +357,8 @@ OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams,
  ******************* Cryptography::OpenSSLOutputStream **************************
  ********************************************************************************
  */
-OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream& realOut)
-    : BinaryOutputStream (make_shared<IRep_> (cryptoParams, direction, realOut))
+OpenSSLOutputStream::OpenSSLOutputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryOutputStream<>& realOut)
+    : BinaryOutputStream<> (make_shared<IRep_> (cryptoParams, direction, realOut))
 {
 }
 #endif

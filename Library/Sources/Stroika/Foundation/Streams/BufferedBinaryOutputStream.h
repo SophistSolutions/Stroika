@@ -43,15 +43,15 @@ namespace   Stroika {
              *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
              *              the data may be suppressed.
              */
-            class   BufferedBinaryOutputStream : public BinaryOutputStream {
+            class   BufferedBinaryOutputStream : public BinaryOutputStream<> {
             private:
-                using   inherited   =   BinaryOutputStream;
+                using   inherited   =   BinaryOutputStream<>;
 
             private:
                 class   IRep_;
 
             public:
-                BufferedBinaryOutputStream (const BinaryOutputStream& realOut);
+                BufferedBinaryOutputStream (const BinaryOutputStream<>& realOut);
 
             public:
                 nonvirtual  size_t  GetBufferSize () const;

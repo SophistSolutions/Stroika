@@ -39,7 +39,7 @@ namespace   Stroika {
             {
                 return fRep_->GetDefaultFileSuffix ();
             }
-            inline  void    Writer::Write (const VariantValue& v, const Streams::BinaryOutputStream& out)
+            inline  void    Writer::Write (const VariantValue& v, const Streams::BinaryOutputStream<>& out)
             {
                 fRep_->Write (v, out);
             }

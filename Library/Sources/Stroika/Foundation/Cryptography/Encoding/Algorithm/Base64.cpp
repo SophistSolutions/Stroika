@@ -158,7 +158,7 @@ Memory::BLOB    Algorithm::DecodeBase64 (const string& s)
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
 
-void    Algorithm::DecodeBase64 (const string& s, Streams::BinaryOutputStream out)
+void    Algorithm::DecodeBase64 (const string& s, Streams::BinaryOutputStream<> out)
 {
     // QUICKIE implementation...
     Memory::BLOB   tmp = DecodeBase64 (s);

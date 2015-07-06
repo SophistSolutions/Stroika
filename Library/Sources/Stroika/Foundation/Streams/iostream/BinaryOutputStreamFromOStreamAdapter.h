@@ -51,7 +51,7 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying ostream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                class   BinaryOutputStreamFromOStreamAdapter : public BinaryOutputStream {
+                class   BinaryOutputStreamFromOStreamAdapter : public BinaryOutputStream<> {
                 private:
                     class   Rep_;
 

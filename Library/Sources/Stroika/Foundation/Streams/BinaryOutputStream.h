@@ -66,9 +66,13 @@ namespace   Stroika {
              *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
              *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
              */
-            class   BinaryOutputStream : public OutputStream<Byte> {
+            template    <typename   BASESTREAM = OutputStream<Byte>>
+            class   BinaryOutputStream : public BASESTREAM {
             private:
-                using inherited = OutputStream<Byte>;
+                using inherited = BASESTREAM;
+
+            protected:
+                using       _SharedIRep     =   typename BASESTREAM::_SharedIRep;
 
             protected:
                 /**

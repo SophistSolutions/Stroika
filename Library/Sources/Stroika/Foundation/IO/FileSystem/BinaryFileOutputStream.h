@@ -50,9 +50,9 @@ namespace   Stroika {
 
                 /**
                  */
-                class BinaryFileOutputStream : public Streams::BinaryOutputStream {
+                class BinaryFileOutputStream : public Streams::BinaryOutputStream<> {
                 private:
-                    using   inherited   =   BinaryOutputStream;
+                    using   inherited   =   BinaryOutputStream<>;
                 private:
                     class   Rep_;
 
@@ -71,7 +71,7 @@ namespace   Stroika {
                     BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
 
                 public:
-                    static  BinaryOutputStream   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
+                    static  BinaryOutputStream<>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
                 };
 
 

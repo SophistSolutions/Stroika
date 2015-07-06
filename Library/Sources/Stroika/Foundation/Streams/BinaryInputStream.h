@@ -91,7 +91,7 @@ namespace   Stroika {
             template    <typename   BASESTREAM = InputStream<Byte>>
             class   BinaryInputStream : public BASESTREAM {
             private:
-                using inherited = InputStream<Byte>;
+                using inherited = BASESTREAM;
 
             protected:
                 using       _SharedIRep     =   typename BASESTREAM::_SharedIRep;
