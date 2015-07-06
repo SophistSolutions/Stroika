@@ -10,7 +10,6 @@
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 
-//#include    "TextOutputStream.h"
 #include    "MemoryStream.h"
 
 
