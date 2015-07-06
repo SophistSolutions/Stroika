@@ -27,6 +27,11 @@
  *
  *      @todo   Thread/Locking...
  *
+ *      @todo   Consider adding locale feature. if you use narrow string (char* or string) it uses associated
+ *              locale. If none, use global locale? Could use codepage instead of locale, but propba
+ *              best to have one notion and extract that codepage from teh given (or global) locale.(ONLY FOR STREAM OF CHARCTETSD?? Maybe just in WRITER)
+ *
+ *
  */
 
 
