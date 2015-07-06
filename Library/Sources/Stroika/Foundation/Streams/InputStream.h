@@ -28,6 +28,9 @@
  *
  *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
  *              and be safely atomic.
+ *
+ *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
+ *              Then it would ONLY require Seekable() for CRLF or Auto.
  */
 
 

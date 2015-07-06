@@ -20,6 +20,10 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *
+ *      @todo   DOCUMENT why we put ReadLine etc in InputStream, instead of here. Gist of why - though more
+ *              logical here - requires no state - and so more flexible there. May reconsider.
+ *              -- LGP 2015-07-06
+ *
  *      @todo   Cruddy, draft (but technically I think correct) implementation. Really need something
  *              smarter integrated with CodePage stuff - and Binary-Stream-based CodePage API, with
  *              an extra 'state' object to allow for pushing bytes in and getting none, and then one,
