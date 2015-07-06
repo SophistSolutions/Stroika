@@ -23,6 +23,7 @@ using   namespace   Stroika::Frameworks::UPnP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP;
 
 
+using   Memory::Byte;
 
 
 

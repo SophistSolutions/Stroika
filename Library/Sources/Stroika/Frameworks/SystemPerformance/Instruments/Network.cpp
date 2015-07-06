@@ -22,7 +22,7 @@
 #endif
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
-#include    "../../../Foundation/Streams/BinaryInputStream.h"
+#include    "../../../Foundation/Streams/InputStream.h"
 
 #include    "Network.h"
 
