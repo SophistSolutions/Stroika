@@ -78,6 +78,58 @@ namespace   Stroika {
              *
              *      @see ExternallyOwnedMemoryBinaryInputStream for a more efficient, but slightly less safe
              *          mapping to streams.
+             *
+             *  OBSOLETE TEXTINPUTSTREAM DOCS BELOW:
+             *  @todo DOCS OBSOLETE
+             *
+             * Design Overview:
+             *
+             *      o   All read's on a TextInputStream are BLOCKING. If there is a desire to have a
+             *          non-blocking read, then create a new mixin interface and through that interface
+             *          you can do non-blocking reads, but this Read() method must always block.
+             *
+             *      o   EOF is handled by a return value of zero. Once EOF is returned - any subsequent
+             *          calls to Read () will return EOF (unless some other mechanism is used to tweak
+             *          the state of the object, like a mixed in Seekable class and calling SEEK).
+             *
+             *      o   Exceptions indicate something went wrong - like an IO error, or  formatting
+             *          effort (e.g. if the source is encrypted, and the stream is decrypting, then
+             *          it might detect a format error and throw).
+             *
+             *      o   TextInputStream and TextOutputStream CAN be naturally mixed togehter to make
+             *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
+             *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *
+             *  ReadString/Seekable/PutBack Design Choices:
+             *      o   Some common read methods with TextStreams (parsing) - involve some amount of lookahead.
+             *          Lookahead COULD be implemented a number of ways:
+             *          o   Seek backwards after fetching
+             *          o   Special 'put back' variable/API - which allows you to put back either one,
+             *              or a number of characters back into the input Q
+             *          o   A special proxy object which stores the extra data, and maintains the context
+             *              of the state of pre-reading.
+             *
+             *      Each of these approaches has some advantages and disadvantages. Just using Seek() is
+             *      the simplest approach. IF all your streams support seeking, there is no reason for another
+             *      mechanism. But we dont want to alwys require seeking.
+             *
+             *      PutBack () is like Seek, but then the question is - do we support just a PutBack of
+             *      one character? So only lookahead of one character? That deals with many cases, but not all.
+             *      And how does it interact with Seek - if the stream happens to be seekable? And is the
+             *      PutBack buffer stored in the letter or envelope class? If in Letter, thats extra work
+             *      in every rep (barrier to providing your own stream subtypes). If in the envelope, it doesn't
+             *      work intuitively if two variables have separate smart pointers to the same underlying stream.
+             *      Reads and writes affect each other EXCPET for the putback buffer!
+             *
+             *      A special Proxy object is a good choice - but requires the caller todo a lot of extra
+             *      work. To some extent that can be automated by somewhat automatically maanging
+             *      the proxy storage object in the smartpointer, but thats alot of work and concept
+             *      for very little gain.
+             *
+             *      In the end - at least for now - I've decided on KISS - ReadLine() simply requires it
+             *      is Seekable. And there are plenty of wrapper stream classes you can use with any stream
+             *      to make them Seekable.
+
              */
             template    <typename   ELEMENT_TYPE>
             class   InputStream : public Stream<ELEMENT_TYPE> {
@@ -180,6 +232,8 @@ namespace   Stroika {
                  * it encounters as part of the read line.
                  *
                  *  ReadLine() will return an empty string iff EOF.
+                 *
+                 *      \req IsSeekable ()
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual  Characters::String ReadLine () const;
@@ -192,6 +246,8 @@ namespace   Stroika {
                  *          }
                  *
                  *  Like ReadLine(), the returned lines include trailing newlines/etc.
+                 *
+                 *      \req IsSeekable ()
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual  Traversal::Iterable<Characters::String> ReadLines () const;
