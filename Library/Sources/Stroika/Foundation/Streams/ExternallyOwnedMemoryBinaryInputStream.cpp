@@ -17,14 +17,16 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
+using   Memory::Byte;
 
 
 
-class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public InputStream<Byte>::_IRep {
+
+class   ExternallyOwnedMemoryBinaryInputStream::Rep_ : public InputStream<Byte>::_IRep {
 public:
-    IRep_ () = delete;
-    IRep_ (const IRep_&) = delete;
-    IRep_ (const Byte* start, const Byte* end)
+    Rep_ () = delete;
+    Rep_ (const Rep_&) = delete;
+    Rep_ (const Byte* start, const Byte* end)
         : fCriticalSection_ ()
         , fStart_ (start)
         , fEnd_ (end)
@@ -33,7 +35,7 @@ public:
     }
 
 public:
-    nonvirtual  IRep_& operator= (const IRep_&) = delete;
+    nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
 protected:
     virtual bool    IsSeekable () const override
@@ -120,6 +122,6 @@ private:
  ********************************************************************************
  */
 ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end)
-    : InputStream<Byte> (shared_ptr<_IRep> (new IRep_ (start, end)))
+    : InputStream<Byte> (make_shared<Rep_> (start, end))
 {
 }

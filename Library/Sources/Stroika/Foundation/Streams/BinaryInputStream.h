@@ -51,7 +51,7 @@ namespace   Stroika {
 
             using   Memory::Byte;
 
-			using	BinaryInputStream = InputStream<Byte>
+            using   BinaryInputStream = InputStream<Byte>;
 
 
         }

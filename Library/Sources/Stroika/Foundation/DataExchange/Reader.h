@@ -9,7 +9,7 @@
 #include    <istream>
 
 #include    "../Memory/SharedByValue.h"
-#include    "../Streams/BinaryInputStream.h"
+#include    "../Streams/InputStream.h"
 #include    "../Streams/TextInputStream.h"
 
 #include    "VariantValue.h"

@@ -11,7 +11,7 @@
 #include    "../Containers/Sequence.h"
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
-#include    "../Streams/BinaryInputStream.h"
+#include    "../Streams/InputStream.h"
 #include    "../Streams/BinaryOutputStream.h"
 
 #include    "Process.h"

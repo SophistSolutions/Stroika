@@ -9,7 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Containers/Sequence.h"
 #include    "../../Containers/Set.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/InputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
 #include    "../Reader.h"

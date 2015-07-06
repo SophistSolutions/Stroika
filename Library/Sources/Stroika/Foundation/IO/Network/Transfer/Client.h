@@ -14,7 +14,7 @@
 #include    "../../../DataExchange/InternetMediaType.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Memory/Optional.h"
-#include    "../../../Streams/BinaryInputStream.h"
+#include    "../../../Streams/InputStream.h"
 #include    "../../../Streams/TextInputStream.h"
 #include    "../../../Time/Realtime.h"
 

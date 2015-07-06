@@ -12,7 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SmallStackBuffer.h"
 
-#include    "BinaryInputStream.h"
+#include    "InputStream.h"
 #include    "Seekable.h"
 #include    "MemoryStream.h"
 

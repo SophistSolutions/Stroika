@@ -10,7 +10,7 @@
 #include    "../../Containers/Mapping.h"
 #include    "../../Characters/String.h"
 #include    "../../Execution/ProgressMonitor.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/InputStream.h"
 
 #include    "../VariantValue.h"
 #include    "Common.h"

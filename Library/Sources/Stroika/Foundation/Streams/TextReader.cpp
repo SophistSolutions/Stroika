@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
-
+using   Memory::Byte;
 
 
 

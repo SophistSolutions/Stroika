@@ -6,13 +6,14 @@
 #include    <mutex>
 
 #include    "../Execution/Exceptions.h"
-#include    "../Streams/BinaryInputStream.h"
+#include    "../Streams/InputStream.h"
 
 #include    "BLOB.h"
 
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
 

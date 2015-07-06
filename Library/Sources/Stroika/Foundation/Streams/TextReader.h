@@ -10,7 +10,7 @@
 
 #include    "../Memory/BLOB.h"
 
-#include    "BinaryInputStream.h"
+#include    "InputStream.h"
 #include    "TextInputStream.h"
 
 
@@ -51,11 +51,11 @@ namespace   Stroika {
              */
             class   TextReader : public TextInputStream {
             public:
-                TextReader (const InputStream<Byte>& src);
+                TextReader (const InputStream<Memory::Byte>& src);
             private:
                 class   Rep_;
             private:
-                shared_ptr<_IRep> mk_ (const InputStream<Byte>& src);
+                shared_ptr<_IRep> mk_ (const InputStream<Memory::Byte>& src);
             };
 
 

@@ -12,7 +12,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
-#include    "../BinaryInputStream.h"
+#include    "../InputStream.h"
 
 
 
@@ -53,7 +53,7 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                class   BinaryInputStreamFromIStreamAdapter : public InputStream<Byte> {
+                class   BinaryInputStreamFromIStreamAdapter : public InputStream<Memory::Byte> {
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:

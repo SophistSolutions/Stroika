@@ -12,7 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/BLOB.h"
 
-#include    "BinaryInputStream.h"
+#include    "InputStream.h"
 
 
 
@@ -57,11 +57,11 @@ namespace   Stroika {
              *
              *  @see BasicBinaryInputStream
              */
-            class   ExternallyOwnedMemoryBinaryInputStream : public InputStream<Byte> {
+            class   ExternallyOwnedMemoryBinaryInputStream : public InputStream<Memory::Byte> {
             private:
-                class   IRep_;
+                class   Rep_;
             public:
-                ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end);
+                ExternallyOwnedMemoryBinaryInputStream (const Memory::Byte* start, const Memory::Byte* end);
                 template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
                 ExternallyOwnedMemoryBinaryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end);
             };

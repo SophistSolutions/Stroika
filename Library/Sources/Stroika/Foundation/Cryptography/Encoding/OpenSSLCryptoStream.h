@@ -17,7 +17,7 @@ extern "C" {
 #include    "../../Execution/StringException.h"
 #include    "../../Memory/Common.h"
 #include    "../../Memory/BLOB.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/InputStream.h"
 #include    "../../Streams/BinaryOutputStream.h"
 
 #include    "../OpenSSL/CipherAlgorithm.h"

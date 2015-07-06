@@ -7,7 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/InputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
 #include    "../Reader.h"

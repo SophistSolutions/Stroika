@@ -10,7 +10,7 @@
 
 #include    "../Memory/BLOB.h"
 
-#include    "BinaryInputStream.h"
+#include    "InputStream.h"
 #include    "TextInputStream.h"
 #include    "TextReader.h"
 

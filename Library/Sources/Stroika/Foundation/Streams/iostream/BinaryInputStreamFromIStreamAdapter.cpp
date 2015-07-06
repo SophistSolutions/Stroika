@@ -21,6 +21,7 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 using   Characters::String_Constant;
 using   Execution::make_unique_lock;
+using   Memory::Byte;
 
 
 

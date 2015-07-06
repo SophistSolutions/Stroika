@@ -10,7 +10,7 @@
 
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/BLOB.h"
-#include    "../../Streams/BinaryInputStream.h"
+#include    "../../Streams/InputStream.h"
 
 
 

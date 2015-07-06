@@ -9,7 +9,7 @@
 #include    <memory>
 
 #include    "../Configuration/Common.h"
-#include    "BinaryInputStream.h"
+#include    "InputStream.h"
 
 
 
@@ -43,11 +43,11 @@ namespace   Stroika {
              *          This is useful if calls to the underling stream source can be expensive. This class
              *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
              */
-            class   BufferedBinaryInputStream : public InputStream<Byte> {
+            class   BufferedBinaryInputStream : public InputStream<Memory::Byte> {
             private:
                 class   Rep_;
             public:
-                BufferedBinaryInputStream (const InputStream<Byte>& realIn);
+                BufferedBinaryInputStream (const InputStream<Memory::Byte>& realIn);
             };
 
 
