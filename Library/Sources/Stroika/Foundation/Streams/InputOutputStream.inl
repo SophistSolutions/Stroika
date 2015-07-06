@@ -60,6 +60,26 @@ namespace   Stroika {
             {
                 return OutputStream<ELEMENT_TYPE>::GetOffset ();
             }
+            template    <typename ELEMENT_TYPE>
+            inline    SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::SeekWrite (SignedSeekOffsetType offset) const
+            {
+                return OutputStream<ELEMENT_TYPE>::Seek (offset);
+            }
+            template    <typename ELEMENT_TYPE>
+            inline    SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::SeekWrite (Whence whence, SignedSeekOffsetType offset) const
+            {
+                return OutputStream<ELEMENT_TYPE>::Seek (whence, offset);
+            }
+            template    <typename ELEMENT_TYPE>
+            inline    SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::SeekRead (SignedSeekOffsetType offset) const
+            {
+                return InputStream<ELEMENT_TYPE>::Seek (offset);
+            }
+            template    <typename ELEMENT_TYPE>
+            inline    SeekOffsetType  InputOutputStream<ELEMENT_TYPE>::SeekRead (Whence whence, SignedSeekOffsetType offset) const
+            {
+                return InputStream<ELEMENT_TYPE>::Seek (whence, offset);
+            }
 
 
         }

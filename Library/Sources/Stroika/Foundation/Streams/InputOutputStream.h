@@ -130,6 +130,20 @@ namespace   Stroika {
                  *
                  */
                 nonvirtual  SeekOffsetType  GetWriteOffset () const;
+
+            public:
+                /**
+                 *
+                 */
+                nonvirtual  SeekOffsetType  SeekWrite (SignedSeekOffsetType offset) const;
+                nonvirtual  SeekOffsetType  SeekWrite (Whence whence, SignedSeekOffsetType offset) const;
+
+            public:
+                /**
+                 *
+                 */
+                nonvirtual  SeekOffsetType  SeekRead (SignedSeekOffsetType offset) const;
+                nonvirtual  SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) const;
             };
 
 
