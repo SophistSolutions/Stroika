@@ -42,7 +42,7 @@ namespace {
 
 
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::BinaryInputStream<>& from)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType  Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>& from)
 {
     uint32_t    hash    =   0;
     while (true) {

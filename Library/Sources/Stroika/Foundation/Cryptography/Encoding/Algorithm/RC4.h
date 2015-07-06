@@ -36,16 +36,16 @@ namespace   Stroika {
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryInputStream<>    DecodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream<> in);
-                    Memory::BLOB                    DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
+                    Streams::InputStream<Memory::Byte>  DecodeRC4 (const Memory::BLOB& key, Streams::InputStream<Memory::Byte> in);
+                    Memory::BLOB                        DecodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryInputStream<>    EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream<> in);
-                    Memory::BLOB                    EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
+                    Streams::InputStream<Memory::Byte>  EncodeRC4 (const Memory::BLOB& key, Streams::InputStream<Memory::Byte> in);
+                    Memory::BLOB                        EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in);
 #endif
 
 

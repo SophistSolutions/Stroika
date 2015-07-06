@@ -99,8 +99,8 @@ namespace   {
                 MemoryStream<Byte>  s;
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
-                VerifyTestResult (static_cast<BinaryInputStream<>> (s).IsSeekable ());
-                VerifyTestResult (static_cast<BinaryOutputStream> (s).IsSeekable ());
+                VerifyTestResult (static_cast<InputStream<Byte>> (s).IsSeekable ());
+                VerifyTestResult (static_cast<BinaryOutputStream<>> (s).IsSeekable ());
             }
             {
                 MemoryStream<Byte>  s;

@@ -75,8 +75,8 @@ namespace   Stroika {
                 public:
                     // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                     // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::BinaryInputStream<>& in);
-                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::BinaryInputStream<>& in);
+                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
 
                 private:
                     vector<shared_ptr<ObjectBase>> fStack_;

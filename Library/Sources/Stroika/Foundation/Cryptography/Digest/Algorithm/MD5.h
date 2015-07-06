@@ -42,7 +42,7 @@ namespace   Stroika {
                 struct  Digester<Algorithm::MD5, Result128BitType> {
                     using   ReturnType      =   Result128BitType;
 
-                    static  ReturnType  ComputeDigest (const Streams::BinaryInputStream<>& from);
+                    static  ReturnType  ComputeDigest (const Streams::InputStream<Byte>& from);
                     static  ReturnType  ComputeDigest (const Byte* from, const Byte* to);
                     static  ReturnType  ComputeDigest (const BLOB& from);
                 };

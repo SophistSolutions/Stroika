@@ -84,9 +84,11 @@ namespace   Stroika {
                 return _GetRep ()->Read (offset, intoStart, intoEnd);
             }
             template    <typename   BASESTREAM>
-			template    <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            template    <typename TEST_TYPE, typename ENABLE_IF_TEST>
             Memory::BLOB InputStream<BASESTREAM>::ReadAll () const
             {
+                using   Memory::BLOB;
+                using   Memory::Byte;
                 if (this->IsSeekable ()) {
                     SeekOffsetType  size = this->GetOffsetToEndOfStream ();
                     if (size >= numeric_limits<size_t>::max ()) {
@@ -94,12 +96,12 @@ namespace   Stroika {
                     }
                     size_t sb = static_cast<size_t> (size);
                     if (sb == 0) {
-                        return Memory::BLOB ();
+                        return BLOB ();
                     }
                     Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
                     size_t n = this->Read (b, b + sb);
                     Assert (n <= sb);
-                    return Memory::BLOB::Attach (b, b + n);
+                    return BLOB::Attach (b, b + n);
                 }
                 else {
                     // Less efficient implementation
@@ -109,7 +111,7 @@ namespace   Stroika {
                     while ( (n = this->Read (std::begin (buf), std::end (buf))) != 0) {
                         r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
                     }
-                    return Memory::BLOB (r);
+                    return BLOB (r);
                 }
             }
 

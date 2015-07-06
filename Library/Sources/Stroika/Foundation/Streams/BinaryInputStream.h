@@ -50,7 +50,9 @@ namespace   Stroika {
 
             using   Memory::Byte;
 
-
+            //       template    <typename   BASESTREAM = InputStream<Byte>>
+            //         using   BinaryInputStream = BASESTREAM;
+#if 0
             /**
              @todo FIXUP DOCS - ALL OR MOSTYLY OBSOLETE
              *
@@ -118,6 +120,7 @@ namespace   Stroika {
                 nonvirtual  Memory::BLOB ReadAll () const;
 #endif
             };
+#endif
 
 
         }

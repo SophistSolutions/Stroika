@@ -20,7 +20,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep {
+class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public InputStream<Byte>::_IRep {
 public:
     IRep_ () = delete;
     IRep_ (const IRep_&) = delete;
@@ -120,6 +120,6 @@ private:
  ********************************************************************************
  */
 ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end)
-    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (start, end)))
+    : InputStream<Byte> (shared_ptr<_IRep> (new IRep_ (start, end)))
 {
 }

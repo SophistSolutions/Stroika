@@ -37,13 +37,13 @@ namespace {
  ***************************** Algorithm::DecodeRC4 *****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream<>  Algorithm::DecodeRC4 (const BLOB& key, Streams::BinaryInputStream<> in)
+Streams::InputStream<Byte>  Algorithm::DecodeRC4 (const BLOB& key, Streams::InputStream<Byte> in)
 {
     return OpenSSLInputStream (cvt_ (key), Direction::eDecrypt, in);
 }
 Memory::BLOB  Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
 {
-    return DecodeRC4 (key, in.As<Streams::BinaryInputStream<>> ()).ReadAll ();
+    return DecodeRC4 (key, in.As<Streams::InputStream<Byte>> ()).ReadAll ();
 }
 #endif
 
@@ -57,13 +57,13 @@ Memory::BLOB  Algorithm::DecodeRC4 (const BLOB& key, const BLOB& in)
  ****************************** Algorithm::EncodeRC4 ****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream<>  Algorithm::EncodeRC4 (const Memory::BLOB& key, Streams::BinaryInputStream<> in)
+Streams::InputStream<Byte>  Algorithm::EncodeRC4 (const Memory::BLOB& key, Streams::InputStream<Byte> in)
 {
     return OpenSSLInputStream (cvt_ (key), Direction::eEncrypt, in);
 }
 Memory::BLOB  Algorithm::EncodeRC4 (const Memory::BLOB& key, const Memory::BLOB& in)
 {
-    return EncodeRC4 (key, in.As<Streams::BinaryInputStream<>> ()).ReadAll ();
+    return EncodeRC4 (key, in.As<Streams::InputStream<Byte>> ()).ReadAll ();
 }
 #endif
 

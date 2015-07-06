@@ -53,7 +53,7 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                class   BinaryInputStreamFromIStreamAdapter : public BinaryInputStream<> {
+                class   BinaryInputStreamFromIStreamAdapter : public InputStream<Byte> {
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:

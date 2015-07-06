@@ -31,13 +31,8 @@
 
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace Memory {
-            class BLOB;
-        }
-    }
-}
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
+
 
 
 namespace   Stroika {
@@ -171,7 +166,7 @@ namespace   Stroika {
                 /**
                  *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
                  */
-				template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual  Memory::BLOB ReadAll () const;
             };
 

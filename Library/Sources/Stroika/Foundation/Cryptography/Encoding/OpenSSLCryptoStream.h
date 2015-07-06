@@ -122,11 +122,11 @@ namespace   Stroika {
                  *
                  *  @see OpenSSLOutputStream
                  */
-                class   OpenSSLInputStream : public Streams::BinaryInputStream<> {
+                class   OpenSSLInputStream : public Streams::InputStream<Byte> {
                 private:
                     class   IRep_;
                 public:
-                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream<>& realIn);
+                    OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>& realIn);
                 };
 #endif
 

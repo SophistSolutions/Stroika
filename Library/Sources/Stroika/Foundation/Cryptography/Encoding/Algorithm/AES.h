@@ -61,16 +61,16 @@ namespace   Stroika {
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryInputStream<>    DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream<> in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                    DecodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte>  DecodeAES (const Memory::BLOB& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB                        DecodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::BinaryInputStream<>    EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream<> in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                    EncodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::InputStream<Memory::Byte>  EncodeAES (const Memory::BLOB& key, Streams::InputStream<Memory::Byte> in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB                        EncodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 

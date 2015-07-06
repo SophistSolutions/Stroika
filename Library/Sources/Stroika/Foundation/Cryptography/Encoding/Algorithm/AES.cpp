@@ -78,13 +78,13 @@ namespace {
  ***************************** Algorithm::DecodeAES *****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream<>  Algorithm::DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream<> in, AESOptions options)
+Streams::InputStream<Byte>  Algorithm::DecodeAES (const Memory::BLOB& key, Streams::InputStream<Byte> in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options), Direction::eDecrypt, in);
 }
 Memory::BLOB  Algorithm::DecodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
 {
-    return DecodeAES (key, in.As<Streams::BinaryInputStream<>> (), options).ReadAll ();
+    return DecodeAES (key, in.As<Streams::InputStream<Byte>> (), options).ReadAll ();
 }
 #endif
 
@@ -98,13 +98,13 @@ Memory::BLOB  Algorithm::DecodeAES (const Memory::BLOB& key, const Memory::BLOB&
  ****************************** Algorithm::EncodeAES ****************************
  ********************************************************************************
  */
-Streams::BinaryInputStream<>  Algorithm::EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream<> in, AESOptions options)
+Streams::InputStream<Byte>  Algorithm::EncodeAES (const Memory::BLOB& key, Streams::InputStream<Byte> in, AESOptions options)
 {
     return OpenSSLInputStream (cvt_ (key, options), Direction::eEncrypt, in);
 }
 Memory::BLOB  Algorithm::EncodeAES (const Memory::BLOB& key, const Memory::BLOB& in, AESOptions options)
 {
-    return EncodeAES (key, in.As<Streams::BinaryInputStream<>> (), options).ReadAll ();
+    return EncodeAES (key, in.As<Streams::InputStream<Byte>> (), options).ReadAll ();
 }
 #endif
 

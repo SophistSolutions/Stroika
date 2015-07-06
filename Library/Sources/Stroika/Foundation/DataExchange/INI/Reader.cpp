@@ -17,6 +17,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 using   Characters::String_Constant;
+using   Memory::Byte;
 
 
 
@@ -38,7 +39,7 @@ public:
     {
         return String_Constant (L".ini");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
     {
         return Read (Streams::TextReader (in));
     }

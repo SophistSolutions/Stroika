@@ -19,10 +19,10 @@ using   Execution::make_unique_lock;
 
 
 
-class   BufferedBinaryInputStream::Rep_ : public BinaryInputStream::_IRep {
+class   BufferedBinaryInputStream::Rep_ : public InputStream<Byte>::_IRep {
 public:
-    Rep_ (const BinaryInputStream& realIn)
-        : BinaryInputStream::_IRep ()
+    Rep_ (const InputStream<Byte>& realIn)
+        : InputStream<Byte>::_IRep ()
         , fCriticalSection_ ()
         , fRealIn_ (realIn)
     {
@@ -54,7 +54,7 @@ public:
 
 private:
     mutable mutex         fCriticalSection_;
-    BinaryInputStream     fRealIn_;
+    InputStream<Byte>     fRealIn_;
 };
 
 
@@ -67,7 +67,7 @@ private:
  ************************ Streams::BinaryInputStream ****************************
  ********************************************************************************
  */
-BufferedBinaryInputStream::BufferedBinaryInputStream (const BinaryInputStream& realIn)
-    : BinaryInputStream (make_shared<Rep_> (realIn))
+BufferedBinaryInputStream::BufferedBinaryInputStream (const InputStream<Byte>& realIn)
+    : InputStream<Byte> (make_shared<Rep_> (realIn))
 {
 }

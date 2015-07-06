@@ -43,7 +43,7 @@ namespace   Stroika {
                      */
                     class   MessageStartTextInputStreamBinaryAdapter : public Streams::TextInputStream {
                     public:
-                        MessageStartTextInputStreamBinaryAdapter (const Streams::BinaryInputStream<>& src);
+                        MessageStartTextInputStreamBinaryAdapter (const Streams::InputStream<Memory::Byte>& src);
                     private:
                         class   Rep_;
                     };

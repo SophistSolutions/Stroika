@@ -21,6 +21,7 @@ using   Containers::Sequence;
 using   Containers::Set;
 using   Characters::Character;
 using   Characters::String;
+using   Memory::Byte;
 using   Traversal::Iterable;
 
 
@@ -38,8 +39,6 @@ using   Traversal::Iterable;
  */
 class   DataExchange::CharacterDelimitedLines::Reader::Rep_ : public DataExchange::Reader::_IRep {
 public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-public:
     Set<Character>  fDelimiters_;
     Rep_ (const Set<Character>& columnDelimiters)
         : fDelimiters_ (columnDelimiters)
@@ -53,7 +52,7 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
     {
         return Read (Streams::TextReader (in));
     }
@@ -91,7 +90,7 @@ DataExchange::CharacterDelimitedLines::Reader::Reader (const Set<Character>& col
 {
 }
 
-Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::BinaryInputStream<>& in) const
+Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>& in) const
 {
     return ReadMatrix (Streams::TextReader (in));
 }

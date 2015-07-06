@@ -98,13 +98,13 @@ namespace {
 
 
 #if     qHasFeature_OpenSSL
-class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, private InOutStrmCommon_ {
+class   OpenSSLInputStream::IRep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
 private:
     DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
 
 public:
-    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const BinaryInputStream& realIn)
-        : BinaryInputStream::_IRep ()
+    IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>& realIn)
+        : InputStream<Byte>::_IRep ()
         , InOutStrmCommon_ (cryptoParams, d)
         , fCriticalSection_ ()
         , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
@@ -166,7 +166,7 @@ private:
     Memory::SmallStackBuffer < Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH >   fOutBuf_;
     Byte*                                                                   fOutBufStart_;
     Byte*                                                                   fOutBufEnd_;
-    BinaryInputStream                                                       fRealIn_;
+    InputStream<Byte>                                                       fRealIn_;
 };
 #endif
 
@@ -341,8 +341,8 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey&
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const BinaryInputStream& realIn)
-    : BinaryInputStream (make_shared<IRep_> (cryptoParams, direction, realIn))
+OpenSSLInputStream::OpenSSLInputStream (const OpenSSLCryptoParams& cryptoParams, Direction direction, const InputStream<Byte>& realIn)
+    : InputStream<Byte> (make_shared<IRep_> (cryptoParams, direction, realIn))
 {
 }
 #endif

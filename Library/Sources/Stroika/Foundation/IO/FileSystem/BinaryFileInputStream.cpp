@@ -31,7 +31,7 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
 using   Execution::make_unique_lock;
-using   Streams::BinaryInputStream;
+using   Streams::InputStream;
 using   Streams::SeekOffsetType;
 
 
@@ -48,7 +48,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  *********************** FileSystem::BinaryFileInputStream **********************
  ********************************************************************************
  */
-class   BinaryFileInputStream::Rep_ : public BinaryInputStream::_IRep {
+class   BinaryFileInputStream::Rep_ : public InputStream<Byte>::_IRep {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
@@ -179,9 +179,9 @@ BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep)
 {
 }
 
-BinaryInputStream<>   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
-    BinaryInputStream<>   in  =   BinaryFileInputStream (fileName, seekable);
+    InputStream<Byte>   in  =   BinaryFileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedBinaryInputStream (in);

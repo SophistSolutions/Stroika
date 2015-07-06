@@ -38,7 +38,7 @@ namespace {
 
 class   MessageStartTextInputStreamBinaryAdapter::Rep_ : public TextInputStream::_IRep {
 public:
-    Rep_ (const BinaryInputStream<>& src)
+    Rep_ (const InputStream<Byte>& src)
         : fCriticalSection_ ()
         , fSource_ (src)
         , fReadDataBuf_ (kDefaultBufSize_)
@@ -147,7 +147,7 @@ protected:
 
 private:
     mutable recursive_mutex         fCriticalSection_;
-    BinaryInputStream<>             fSource_;
+    InputStream<Byte>               fSource_;
     Memory::SmallStackBuffer<Byte>  fReadDataBuf_;                  // OK cuz typically this will be very small (1k) and not really grow...
     // but it can if we must
     size_t                          fOffset_;                       // text stream offset
@@ -162,7 +162,7 @@ private:
  ******* IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter ************
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::MessageStartTextInputStreamBinaryAdapter (const BinaryInputStream<>& src)
+MessageStartTextInputStreamBinaryAdapter::MessageStartTextInputStreamBinaryAdapter (const InputStream<Byte>& src)
     : TextInputStream (make_shared<Rep_> (src))
 {
 }

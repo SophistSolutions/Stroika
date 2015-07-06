@@ -84,7 +84,7 @@ namespace   Stroika {
                     using   Memory::BLOB;
                     using   Memory::Byte;
                     using   Memory::Optional;
-                    using   Streams::BinaryInputStream;
+                    using   Streams::InputStream;
                     using   Streams::TextInputStream;
                     using   Time::DurationSecondsType;
 
@@ -196,7 +196,7 @@ namespace   Stroika {
                          *      Response r = clientConn.GET ();
                          *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                          */
-                        nonvirtual  BinaryInputStream<>     GetDataBinaryInputStream () const;
+                        nonvirtual  InputStream<Byte>     GetDataBinaryInputStream () const;
 
                     public:
                         /**
@@ -239,7 +239,7 @@ namespace   Stroika {
 
                     private:
                         BLOB                                    fData_;                     // usually empty, but provided for some methods like POST
-                        mutable Optional<BinaryInputStream<>>   fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<InputStream<Byte>>     fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
                         mutable Optional<TextInputStream>       fDataTextInputStream_;
                         Mapping<String, String>                 fHeaders_;
                         HTTP::Status                            fStatus_ {};

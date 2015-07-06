@@ -131,14 +131,14 @@ namespace   Stroika {
                 ProcessRunner () = delete;
                 ProcessRunner (const ProcessRunner&) = delete;
             public:
-                ProcessRunner (const String& commandLine, Streams::BinaryInputStream<> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
-                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::BinaryInputStream<> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
+                ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
+                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr);
 #if     !qTargetPlatformSDKUseswchar_t && 0
-                ProcessRunner (const SDKString& commandLine, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
+                ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)
                 {
                 }
-                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
+                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::InputStream<Byte> in = nullptr, Streams::BinaryOutputStream<> out = nullptr, Streams::BinaryOutputStream<> error = nullptr)
                     : ProcessRunner (String::FromSDKString (executable), args, in, out, error)
                 {
                 }
@@ -161,8 +161,8 @@ namespace   Stroika {
                  *  Otherwise, the stream will be 'read' by the ProcessRunner and 'fed' downstream to
                  *  the running subprocess.
                  */
-                nonvirtual  Streams::BinaryInputStream<>    GetStdIn () const;
-                nonvirtual  void                            SetStdIn (const Streams::BinaryInputStream<>& in);
+                nonvirtual  Streams::InputStream<Byte>      GetStdIn () const;
+                nonvirtual  void                            SetStdIn (const Streams::InputStream<Byte>& in);
                 nonvirtual  void                            SetStdIn (const Memory::BLOB& in);
 
             public:
@@ -206,7 +206,7 @@ namespace   Stroika {
                 Memory::Optional<String>        fExecutable_;
                 Containers::Sequence<String>    fArgs_;         // ignored if fExecutable empty
                 String                          fWorkingDirectory_;
-                Streams::BinaryInputStream<>    fStdIn_;
+                Streams::InputStream<Byte>      fStdIn_;
                 Streams::BinaryOutputStream<>   fStdOut_;
                 Streams::BinaryOutputStream<>   fStdErr_;
             };

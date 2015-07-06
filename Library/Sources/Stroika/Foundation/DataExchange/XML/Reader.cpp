@@ -16,6 +16,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
+using   Memory::Byte;
 using   Characters::String_Constant;
 
 
@@ -38,7 +39,7 @@ public:
     {
         return String_Constant (L".xml");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader (in));

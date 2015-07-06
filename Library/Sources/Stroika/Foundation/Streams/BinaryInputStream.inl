@@ -17,7 +17,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-
+#if 0
 
             /*
              ********************************************************************************
@@ -39,6 +39,7 @@ namespace   Stroika {
                 : inherited (nullptr)
             {
             }
+#endif
 #if 0
             template    <typename   BASESTREAM>
             Memory::BLOB BinaryInputStream<BASESTREAM>::ReadAll () const

@@ -59,7 +59,7 @@ namespace   Stroika {
                 public:
                     /**
                     */
-                    nonvirtual  Profile ReadProfile (const Streams::BinaryInputStream<>& in);
+                    nonvirtual  Profile ReadProfile (const Streams::InputStream<Memory::Byte>& in);
                     nonvirtual  Profile ReadProfile (const Streams::TextInputStream& in);
                     nonvirtual  Profile ReadProfile (istream& in);
                     nonvirtual  Profile ReadProfile (wistream& in);

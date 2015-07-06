@@ -16,6 +16,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
+using   Memory::Byte;
 using   Characters::String_Constant;
 
 
@@ -431,7 +432,7 @@ public:
     {
         return String_Constant (L".json");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
+    virtual VariantValue    Read (const Streams::InputStream<Byte>& in) override
     {
         return Read (Streams::TextReader (in));
     }

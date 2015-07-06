@@ -35,14 +35,13 @@ namespace   Stroika {
             public:
                 Request () = delete;
                 Request (const Request&) = delete;
-                Request (const Streams::BinaryInputStream<>& inStream);
+                Request (const Streams::InputStream<Memory::Byte>& inStream);
 
             public:
                 nonvirtual  const Request& operator= (const Request&) = delete;
 
             public:
-                Streams::BinaryInputStream<>            fInputStream;
-//                Streams::TextInputStreamBinaryAdapter   fInputTextStream;
+                Streams::InputStream<Memory::Byte>      fInputStream;
 
             public:
                 String                                  fHTTPVersion;

@@ -39,7 +39,7 @@ namespace   Stroika {
             {
                 return fRep_->GetDefaultFileSuffix ();
             }
-            inline  VariantValue    Reader::Read (const Streams::BinaryInputStream<>& in)
+            inline  VariantValue    Reader::Read (const Streams::InputStream<Memory::Byte>& in)
             {
                 return fRep_->Read (in);
             }
