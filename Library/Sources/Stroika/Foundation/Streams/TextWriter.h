@@ -38,6 +38,8 @@ namespace   Stroika {
 
 
             /**
+             *  @todo CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
+             *
              *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
              *
              *  Obviously todo this, there may be some character set mapping/conversion needed. The object
@@ -49,6 +51,9 @@ namespace   Stroika {
              *  WAS CALLED TextOutputStreamBinaryAdapter
              */
             class   TextWriter : public TextOutputStream {
+            private:
+                using   inherited = TextOutputStream;
+
             public:
                 enum    class   Format : uint8_t    {
                     eUTF8WithBOM        =   1,
@@ -62,6 +67,7 @@ namespace   Stroika {
                 };
             public:
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
+                TextWriter (const TextOutputStream& src);
 
             private:
                 class   Seekable_UTF8_Rep_;
@@ -76,4 +82,14 @@ namespace   Stroika {
         }
     }
 }
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include    "TextWriter.inl"
+
 #endif  /*_Stroika_Foundation_Streams_TextWriter_h_*/

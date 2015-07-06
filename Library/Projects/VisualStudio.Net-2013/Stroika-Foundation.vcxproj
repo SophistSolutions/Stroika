@@ -1599,6 +1599,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />

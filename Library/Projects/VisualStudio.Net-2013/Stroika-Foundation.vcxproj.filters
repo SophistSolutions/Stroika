@@ -2637,5 +2637,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
   </ItemGroup>
 </Project>

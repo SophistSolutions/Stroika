@@ -47,11 +47,18 @@ namespace   Stroika {
 
 
             /**
+             *  @todo CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
+             *
              *  WAS CALLED TextInputStreamBinaryAdapter
              */
             class   TextReader : public TextInputStream {
+            private:
+                using   inherited = TextInputStream;
+
             public:
                 TextReader (const InputStream<Memory::Byte>& src);
+                TextReader (const TextInputStream& src);
+
             private:
                 class   Rep_;
             private:
@@ -62,4 +69,14 @@ namespace   Stroika {
         }
     }
 }
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include    "TextReader.inl"
+
 #endif  /*_Stroika_Foundation_Streams_TextReader_h_*/
