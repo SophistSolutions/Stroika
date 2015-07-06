@@ -49,7 +49,7 @@ namespace   Stroika {
                 RequireNotNull (_GetRep ().get ());
                 return _GetRep ()->Read (nullptr, intoStart, intoEnd);
             }
-            inline  Character   TextInputStream::Read () const
+            inline  Character   TextInputStream::ReadCharacter () const
             {
                 Character   c;
                 if (Read (&c, &c + 1) == 1) {

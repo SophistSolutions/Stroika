@@ -123,7 +123,7 @@ namespace   Stroika {
                 /**
                  *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
                  */
-                nonvirtual  Character   Read () const;
+                nonvirtual  Character   ReadCharacter () const;
 
             public:
                 /**

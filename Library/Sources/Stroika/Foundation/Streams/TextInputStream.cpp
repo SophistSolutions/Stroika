@@ -31,7 +31,7 @@ String TextInputStream::ReadLine () const
     Require (IsSeekable ());
     String      result;
     while (true) {
-        Character   c   =   Read ();
+        Character   c   =   ReadCharacter ();
         if (c.GetCharacterCode () == '\0') {
             // EOF
             return result;
@@ -41,7 +41,7 @@ String TextInputStream::ReadLine () const
             return result;
         }
         else if (c == '\r') {
-            Character   c   =   Read ();
+            Character   c   =   ReadCharacter ();
             // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
             if (c == '\n') {
                 result.push_back (c);
