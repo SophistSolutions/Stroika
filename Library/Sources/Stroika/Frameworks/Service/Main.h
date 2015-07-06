@@ -14,7 +14,7 @@
 #include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/Thread.h"
 #include    "../../Foundation/Memory/Optional.h"
-#include    "../../Foundation/Streams/TextOutputStream.h"
+#include    "../../Foundation/Streams/OutputStream.h"
 
 #if     qPlatform_POSIX
 #include    "../../Foundation/Execution/Signals.h"

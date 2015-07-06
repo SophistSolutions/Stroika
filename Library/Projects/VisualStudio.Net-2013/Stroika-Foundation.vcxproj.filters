@@ -1796,9 +1796,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl">
       <Filter>Sources\Math</Filter>
     </None>

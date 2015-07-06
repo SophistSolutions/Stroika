@@ -12,7 +12,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
-#include    "../TextOutputStream.h"
+#include    "../OutputStream.h"
 
 
 
@@ -34,7 +34,7 @@ namespace   Stroika {
                 /**
                  *
                  */
-                class   TextOutputStreamFromOStreamAdapter : public TextOutputStream {
+                class   TextOutputStreamFromOStreamAdapter : public OutputStream<Characters::Character> {
                 private:
                     class   Rep_;
                 public:
