@@ -9,7 +9,6 @@
 #include    <ostream>
 
 #include    "../Streams/OutputStream.h"
-#include    "../Streams/TextOutputStream.h"
 
 #include    "VariantValue.h"
 
@@ -60,7 +59,7 @@ namespace   Stroika {
                  *      Read (BinaryOutputStreamFromOStreamAdapter (some_ostream));
                  */
                 nonvirtual  void    Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out);
-                nonvirtual  void    Write (const VariantValue& v, const Streams::TextOutputStream& out);
+                nonvirtual  void    Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out);
                 nonvirtual  void    Write (const VariantValue& v, ostream& out);
                 nonvirtual  void    Write (const VariantValue& v, wostream& out);
 
@@ -84,10 +83,10 @@ namespace   Stroika {
 
             class   Writer::_IRep {
             public:
-                virtual _SharedPtrIRep  Clone () const                                                                  =   0;
-                virtual String          GetDefaultFileSuffix () const                                                   =   0;
-                virtual void            Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out)   =   0;
-                virtual void            Write (const VariantValue& v, const Streams::TextOutputStream& out)             =   0;
+                virtual _SharedPtrIRep  Clone () const                                                                          =   0;
+                virtual String          GetDefaultFileSuffix () const                                                           =   0;
+                virtual void            Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out)           =   0;
+                virtual void            Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out)  =   0;
             };
 
 

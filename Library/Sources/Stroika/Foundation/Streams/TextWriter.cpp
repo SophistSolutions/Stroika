@@ -30,7 +30,7 @@ namespace {
 }
 #endif
 
-class   TextWriter::UnSeekable_UTF8_Rep_ : public TextOutputStream::_IRep {
+class   TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep {
 public:
     UnSeekable_UTF8_Rep_ (const OutputStream<Byte>& src, bool useBOM)
         : _fCriticalSection ()
@@ -100,7 +100,7 @@ protected:
 };
 
 
-class   TextWriter::UnSeekable_WCharT_Rep_ : public TextOutputStream::_IRep {
+class   TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep {
 public:
     UnSeekable_WCharT_Rep_ (const OutputStream<Byte>& src, bool useBOM)
         : _fSource (src)
@@ -219,11 +219,11 @@ private:
 
 /*
  ********************************************************************************
- *************** Streams::TextWriter *************************
+ ****************************** Streams::TextWriter *****************************
  ********************************************************************************
  */
 TextWriter::TextWriter (const OutputStream<Byte>& src, Format format)
-    : TextOutputStream (mk_ (src, format))
+    : OutputStream<Character> (mk_ (src, format))
 {
 }
 

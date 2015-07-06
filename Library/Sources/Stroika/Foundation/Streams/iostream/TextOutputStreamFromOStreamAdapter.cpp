@@ -23,7 +23,7 @@ using   Execution::make_unique_lock;
 
 
 
-class   TextOutputStreamFromOStreamAdapter::Rep_ : public TextOutputStream::_IRep {
+class   TextOutputStreamFromOStreamAdapter::Rep_ : public OutputStream<Character>::_IRep {
 public:
     Rep_ (wostream& originalStream)
         : fCriticalSection_ ()
@@ -95,6 +95,6 @@ private:
  ********************************************************************************
  */
 TextOutputStreamFromOStreamAdapter::TextOutputStreamFromOStreamAdapter (std::wostream& originalStream)
-    : TextOutputStream (make_shared<Rep_> (originalStream))
+    : OutputStream<Character> (make_shared<Rep_> (originalStream))
 {
 }

@@ -81,11 +81,30 @@ namespace   Stroika {
                 Write (blob.begin (), blob.end ());
             }
             template    <typename ELEMENT_TYPE>
+            template    <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline  void    OutputStream<ELEMENT_TYPE>::Write (const wchar_t* cStr) const
+            {
+                Write (cStr, cStr + ::wcslen (cStr));
+            }
+            template    <typename ELEMENT_TYPE>
             inline  void    OutputStream<ELEMENT_TYPE>::Flush () const
             {
                 _GetRep ()->Flush ();
             }
-
+            template    <>
+            template    <>
+            inline  const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const Characters::String& write2TextStream) const
+            {
+                Write (write2TextStream);
+                return *this;
+            }
+            template    <>
+            template    <>
+            inline  const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const wchar_t* write2TextStream) const
+            {
+                Write (write2TextStream);
+                return *this;
+            }
 
 
         }

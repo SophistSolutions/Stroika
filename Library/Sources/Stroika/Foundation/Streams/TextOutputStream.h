@@ -46,6 +46,10 @@ namespace   Stroika {
             using   Characters::String;
 
 
+            using TextOutputStream = OutputStream<Character>;
+
+#if 0
+
             /**
              *  @todo DOCS OBSOLETE
              *
@@ -107,7 +111,7 @@ namespace   Stroika {
             const TextOutputStream& TextOutputStream::operator<< (const String& write2TextStream) const;
             template    <>
             const TextOutputStream& TextOutputStream::operator<< (const wchar_t* write2TextStream) const;
-
+#endif
 
         }
     }
@@ -120,6 +124,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "TextOutputStream.inl"
+//#include    "TextOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_TextOutputStream_h_*/

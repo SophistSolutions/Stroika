@@ -19,10 +19,10 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************************** TextOutputStream ***************************
+             *********************************** TextWriter *********************************
              ********************************************************************************
              */
-            inline    TextWriter::TextWriter (const TextOutputStream& src)
+            inline    TextWriter::TextWriter (const OutputStream<Characters::Character>& src)
                 : inherited (src)
             {
             }

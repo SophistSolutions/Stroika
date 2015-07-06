@@ -7,7 +7,6 @@
 #include    "../StroikaPreComp.h"
 
 #include    "OutputStream.h"
-#include    "TextOutputStream.h"
 
 
 
@@ -50,9 +49,9 @@ namespace   Stroika {
              *
              *  WAS CALLED TextOutputStreamBinaryAdapter
              */
-            class   TextWriter : public TextOutputStream {
+            class   TextWriter : public OutputStream<Characters::Character> {
             private:
-                using   inherited = TextOutputStream;
+                using   inherited = OutputStream<Characters::Character>;
 
             public:
                 enum    class   Format : uint8_t    {
@@ -67,7 +66,7 @@ namespace   Stroika {
                 };
             public:
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
-                TextWriter (const TextOutputStream& src);
+                TextWriter (const OutputStream<Characters::Character>& src);
 
             private:
                 class   Seekable_UTF8_Rep_;

@@ -13,6 +13,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Streams;
 
+using   Characters::Character;
 using   Characters::String_Constant;
 using   Memory::Byte;
 
@@ -38,7 +39,7 @@ public:
     {
         AssertNotImplemented ();
     }
-    virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
     {
         AssertNotImplemented ();
     }

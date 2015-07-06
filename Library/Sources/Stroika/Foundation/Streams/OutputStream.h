@@ -52,13 +52,10 @@
 
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace Memory {
-            class BLOB;
-        }
-    }
-}
+namespace Stroika { namespace Foundation { namespace Characters { class Character; } } }
+namespace Stroika { namespace Foundation { namespace Characters { class String; } } }
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
+
 
 
 namespace   Stroika {
@@ -80,6 +77,12 @@ namespace   Stroika {
              *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
              *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
              *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *
+             *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.
+             *          But not supporting partial writes makes use much simpler (since callers don't need
+             *          to worry about that case), and its practically never useful. In principle - this API could be
+             *          extended so that an exception (or extra method to ask about last write) could include information
+             *          about partial writes, but for now - I don't see any reason.
              *
              *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
              *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
@@ -160,6 +163,12 @@ namespace   Stroika {
                 nonvirtual  void    Write (const ElementType* start, const ElementType* end) const;
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual  void    Write (const Memory::BLOB& blob) const;
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  void    Write (const wchar_t* start, const wchar_t* end) const;
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  void    Write (const wchar_t* cStr) const;
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  void    Write (const Characters::String& s) const;
 
             public:
                 /**
@@ -173,7 +182,34 @@ namespace   Stroika {
                  *  to be propagated properly.
                  */
                 nonvirtual  void    Flush () const;
+
+            public:
+                /**
+                 * EXPERIEMNTAL API
+                 * done as template so third parties can externally extend, and have overloading work right..
+                 * @todo need overloads for basic types, std::string, int, float, etc...
+                 * But dont do except for string for now. Dont make same mistake as iostream - with formatting. Not clear how todo
+                 * right so dont dig a hole and do it wrong (yet).
+                 */
+                template    <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                const OutputStream<ELEMENT_TYPE>&     operator<< (T write2TextStream) const;
             };
+
+
+            template    <>
+            template    <>
+            void    OutputStream<Characters::Character>::Write (const Characters::String& s) const;
+            template    <>
+            template    <>
+            void    OutputStream<Characters::Character>::Write (const wchar_t* start, const wchar_t* end) const;
+
+
+            template    <>
+            template    <>
+            const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const Characters::String& write2TextStream) const;
+            template    <>
+            template    <>
+            const OutputStream<Characters::Character>& OutputStream<Characters::Character>::operator<< (const wchar_t* write2TextStream) const;
 
 
             /**

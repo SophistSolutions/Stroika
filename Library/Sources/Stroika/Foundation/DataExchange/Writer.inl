@@ -43,7 +43,7 @@ namespace   Stroika {
             {
                 fRep_->Write (v, out);
             }
-            inline  void    Writer::Write (const VariantValue& v, const Streams::TextOutputStream& out)
+            inline  void    Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out)
             {
                 fRep_->Write (v, out);
             }

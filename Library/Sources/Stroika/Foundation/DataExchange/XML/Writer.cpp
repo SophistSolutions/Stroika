@@ -24,7 +24,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 namespace   {
-    void    Indent_ (const TextOutputStream& out, int indentLevel)
+    void    Indent_ (const OutputStream<Character>& out, int indentLevel)
     {
         for (int i = 0; i < indentLevel; ++i) {
             out.Write (String_Constant (L"    "));
@@ -32,8 +32,8 @@ namespace   {
     }
 }
 namespace   {
-    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel);
-    void    PrettyPrint_ (bool v, const TextOutputStream& out)
+    void    PrettyPrint_ (const VariantValue& v, const OutputStream<Character>& out, int indentLevel);
+    void    PrettyPrint_ (bool v, const OutputStream<Character>& out)
     {
         if (v) {
             out.Write (String_Constant (L"true"));
@@ -42,19 +42,19 @@ namespace   {
             out.Write (String_Constant (L"false"));
         }
     }
-    void    PrettyPrint_ (long long int v, const TextOutputStream& out)
+    void    PrettyPrint_ (long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%lld", v);
         out.Write (buf);
     }
-    void    PrettyPrint_ (unsigned long long int v, const TextOutputStream& out)
+    void    PrettyPrint_ (unsigned long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
-    void    PrettyPrint_ (long double v, const TextOutputStream& out)
+    void    PrettyPrint_ (long double v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
@@ -67,7 +67,7 @@ namespace   {
         }
         out.Write (buf);
     }
-    void    PrettyPrint_ (const String& v, const TextOutputStream& out)
+    void    PrettyPrint_ (const String& v, const OutputStream<Character>& out)
     {
         // @todo need variant of QuoteForXML that ONLY quotes special cahracters, and not fancy (eg japaense, etc)
         // characters
@@ -75,7 +75,7 @@ namespace   {
         // then can clean this up
         out.Write (String::FromAscii (QuoteForXML (v)));
     }
-    void    PrettyPrint_ (const vector<VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const vector<VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
     {
         for (auto i = v.begin (); i != v.end (); ++i) {
             PrettyPrint_ (*i, out, indentLevel + 1);
@@ -83,7 +83,7 @@ namespace   {
         }
         Indent_ (out, indentLevel);
     }
-    void    PrettyPrint_ (const map<wstring, VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const map<wstring, VariantValue>& v, const OutputStream<Character>& out, int indentLevel)
     {
         //@@@@TODO - must validate first legit xml elt args
         out.Write (L"\n");
@@ -100,7 +100,7 @@ namespace   {
             out.Write (L"\n");
         }
     }
-    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const VariantValue& v, const OutputStream<Character>& out, int indentLevel)
     {
         switch (v.GetType ()) {
             case    VariantValue::Type::eNull:
@@ -174,7 +174,7 @@ public:
             PrettyPrint_ (v2, TextWriter (out, TextWriter::Format::eUTF8WithoutBOM), 0);
         }
     }
-    virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::OutputStream<Character>& out) override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::Type::eMap);

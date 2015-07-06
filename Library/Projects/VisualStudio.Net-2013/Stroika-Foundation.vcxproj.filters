@@ -204,9 +204,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>

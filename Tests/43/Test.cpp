@@ -11,7 +11,7 @@
 #include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 //#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
-#include    "Stroika/Foundation/Streams/TextOutputStream.h"
+#include    "Stroika/Foundation/Streams/OutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -171,25 +171,26 @@ namespace   {
     namespace   TestBasicTextOutputStream_ {
 
         namespace  Private_ {
+            using   Characters::Character;
+            using   Characters::String;
             void    T1_ ()
             {
                 MemoryStream<Character> out {};
-                TextOutputStream        writer  { out };
-                writer << L"abc";
+                out << L"abc";
                 VerifyTestResult (out.As<String> () == L"abc");
-                writer << L"123";
+                out << L"123";
                 VerifyTestResult (out.As<String> () == L"abc123");
             }
             void    T2_ ()
             {
                 MemoryStream<Character> out {};
-                TextOutputStream        writer  { out };
-                writer << L"abc";
+                out << L"abc";
                 VerifyTestResult (out.As<String> () == L"abc");
-                writer << L"123";
+                out << L"123";
                 VerifyTestResult (out.As<String> () == L"abc123");
-                writer.Seek (2);
-                writer << L"C";
+                out.SeekWrite (2);
+                out.SeekRead (3);   // safe but irrelevant, as we dont read
+                out << L"C";
                 VerifyTestResult (out.As<String> () == L"abC123");
             }
         }
