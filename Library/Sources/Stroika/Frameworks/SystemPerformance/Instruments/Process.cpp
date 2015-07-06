@@ -550,7 +550,7 @@ namespace {
             return results;
         }
         template    <typename T>
-        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::BinaryInputStream<>&)>& reader)
+        Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::InputStream<Byte>&)>& reader)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable)));
@@ -561,7 +561,7 @@ namespace {
         Sequence<String>  ReadFileStrings_(const String& fullPath)
         {
             Sequence<String>            results;
-            Streams::BinaryInputStream  in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
+            Streams::InputStream<Byte>  in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
             StringBuilder               sb;
             for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
                 if (*b == '\0') {
@@ -590,7 +590,7 @@ namespace {
         Optional<String>    ReadCmdLineString_(const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
-            auto ReadFileString_ = []   (const Streams::BinaryInputStream & in) ->String {
+            auto ReadFileString_ = []   (const Streams::InputStream<Byte>& in) ->String {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadCmdLineString_");
 #endif
@@ -704,7 +704,7 @@ namespace {
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
             StatFileInfo_    result {};
-            Streams::BinaryInputStream   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
+            Streams::InputStream<Byte>   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
             Byte    data[10 * 1024];
             size_t nBytes = in.Read (begin (data), end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
