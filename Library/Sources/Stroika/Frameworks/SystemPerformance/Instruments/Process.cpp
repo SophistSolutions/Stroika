@@ -35,7 +35,7 @@
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Streams/MemoryStream.h"
 #include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
-#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../../Foundation/Streams/TextReader.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 
 #include    "Process.h"
@@ -882,7 +882,7 @@ namespace {
             pr.SetStdOut (useStdOut);
             pr.Run ();
             String out;
-            Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
+            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
             bool    skippedHeader   = false;
             size_t  headerLen       =   0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {

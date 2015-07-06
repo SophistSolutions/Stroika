@@ -6,8 +6,8 @@
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Streams/MemoryStream.h"
 #include    "../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
-#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
-#include    "../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
+#include    "../../../Foundation/Streams/TextReader.h"
+#include    "../../../Foundation/Streams/TextWriter.h"
 
 #include    "Common.h"
 
@@ -32,7 +32,7 @@ Memory::BLOB        SSDP::Serialize (const String& headLine, SearchOrNotify sear
     Require (not headLine.Contains (L"\r"));
     Require (headLine.StartsWith (L"NOTIFY") or (headLine == L"HTTP/1.1 200 OK"));
     Streams::MemoryStream<Byte>    out;
-    Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
+    Streams::TextWriter  textOut (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
 
     //// SUPER ROUGH FIRST DRAFT
     textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
@@ -77,7 +77,7 @@ void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisemen
     RequireNotNull (advertisement);
     *advertisement = Advertisement ();
 
-    TextInputStreamBinaryAdapter in = TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (b.begin (), b.end ()));
+    TextReader in = TextReader (ExternallyOwnedMemoryBinaryInputStream (b.begin (), b.end ()));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {

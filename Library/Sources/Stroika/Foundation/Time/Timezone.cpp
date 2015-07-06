@@ -21,7 +21,7 @@
 #include    "DateTime.h"
 #include    "../Execution/ProcessRunner.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
-#include    "../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../Streams/TextReader.h"
 
 #include    "Timezone.h"
 
@@ -44,7 +44,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
     TimeZoneInformationType result;
 #if     qPlatform_POSIX
     try {
-        result.fID = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant { L"/etc/timezone" })).ReadAll ().Trim ();
+        result.fID = Streams::TextReader (IO::FileSystem::BinaryFileInputStream::mk (String_Constant { L"/etc/timezone" })).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");

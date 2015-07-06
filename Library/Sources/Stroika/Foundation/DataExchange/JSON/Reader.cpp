@@ -7,7 +7,7 @@
 #include    "../../Characters/String_Constant.h"
 #include    "../../Characters/String2Float.h"
 #include    "../../Characters/String2Int.h"
-#include    "../../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../Streams/TextReader.h"
 #include    "../BadFormatException.h"
 
 #include    "Reader.h"
@@ -433,7 +433,7 @@ public:
     }
     virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {
-        return Read (Streams::TextInputStreamBinaryAdapter (in));
+        return Read (Streams::TextReader (in));
     }
     virtual VariantValue    Read (const Streams::TextInputStream& in) override
     {

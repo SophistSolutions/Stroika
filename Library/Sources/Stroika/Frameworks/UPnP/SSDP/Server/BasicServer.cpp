@@ -12,7 +12,6 @@
 #include    "../../../../Foundation/IO/Network/LinkMonitor.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
 
 #include    "../Common.h"
 #include    "../Advertisement.h"

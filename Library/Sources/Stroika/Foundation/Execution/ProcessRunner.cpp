@@ -28,8 +28,8 @@
 #include    "../IO/FileSystem/FileUtils.h"
 #include    "../IO/FileSystem/PathName.h"
 #include    "../Streams/MemoryStream.h"
-#include    "../Streams/TextOutputStreamBinaryAdapter.h"
-#include    "../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../Streams/TextReader.h"
+#include    "../Streams/TextWriter.h"
 
 #include    "Sleep.h"
 #include    "Thread.h"
@@ -772,10 +772,10 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
         Streams::MemoryStream<Memory::Byte>   useStdOut;
 
         // Prefill stream
-        // @todo - decide if we should use Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM
+        // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
         if (not cmdStdInValue.empty ()) {
             // for now while we write BOM, dont write empty string as just a BOM!
-            Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
+            Streams::TextWriter (useStdIn).Write (cmdStdInValue.c_str ());
         }
         Assert (useStdIn.GetReadOffset () == 0);
 
@@ -789,7 +789,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
 
         // get from 'useStdOut'
         Assert (useStdOut.GetReadOffset () == 0);
-        return Streams::TextInputStreamBinaryAdapter (useStdOut).ReadAll ();
+        return Streams::TextReader (useStdOut).ReadAll ();
     }
     catch (...) {
         SetStdIn (oldStdIn);

@@ -27,7 +27,7 @@
 #include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../../Foundation/Streams/TextReader.h"
 
 #include    "Filesystem.h"
 
@@ -46,7 +46,7 @@ using   Characters::String_Constant;
 using   Characters::String2Int;
 using   Time::DurationSecondsType;
 using   IO::FileSystem::BinaryFileInputStream;
-using   Streams::TextInputStreamBinaryAdapter;
+using   Streams::TextReader;
 
 
 
@@ -389,7 +389,7 @@ namespace {
             if (o.IsMissing ()) {
                 String  fn = Characters::Format (L"/sys/block/%s/queue/hw_sector_size", deviceName.c_str ());
                 try {
-                    o = String2Int<uint32_t> (TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (fn, BinaryFileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                    o = String2Int<uint32_t> (TextReader (BinaryFileInputStream::mk (fn, BinaryFileInputStream::eNotSeekable)).ReadAll ().Trim ());
                     fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                 }
                 catch (...) {
@@ -423,7 +423,7 @@ namespace {
                 runException = current_exception ();
             }
             String out;
-            Streams::TextInputStreamBinaryAdapter   stdOut  =   Streams::TextInputStreamBinaryAdapter (useStdOut);
+            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
             bool skippedHeader = false;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {

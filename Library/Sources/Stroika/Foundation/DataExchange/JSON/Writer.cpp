@@ -6,7 +6,7 @@
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "../../Streams/TextOutputStreamBinaryAdapter.h"
+#include    "../../Streams/TextWriter.h"
 
 #include    "Writer.h"
 
@@ -202,8 +202,6 @@ namespace   {
  */
 class   DataExchange::JSON::Writer::Rep_ : public DataExchange::Writer::_IRep {
 public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-public:
     virtual _SharedPtrIRep  Clone () const override
     {
         return make_shared<Rep_> ();        // no instance data
@@ -214,7 +212,7 @@ public:
     }
     virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {
-        TextOutputStreamBinaryAdapter textOut (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
+        TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (v, textOut, 0);
         textOut.Write (L"\n");      // a single elt not LF terminated, but the entire doc SB.
     }

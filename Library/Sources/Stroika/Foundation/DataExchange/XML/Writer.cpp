@@ -5,7 +5,7 @@
 
 #include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "../../Streams/TextOutputStreamBinaryAdapter.h"
+#include    "../../Streams/TextWriter.h"
 
 #include    "WriterUtils.h"
 
@@ -166,12 +166,12 @@ public:
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::Type::eMap);
-            PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+            PrettyPrint_ (v, TextWriter (out, TextWriter::Format::eUTF8WithoutBOM), 0);
         }
         else {
             Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
-            PrettyPrint_ (v2, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+            PrettyPrint_ (v2, TextWriter (out, TextWriter::Format::eUTF8WithoutBOM), 0);
         }
     }
     virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override

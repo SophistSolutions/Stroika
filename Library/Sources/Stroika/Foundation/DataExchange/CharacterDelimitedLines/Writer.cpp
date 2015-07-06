@@ -5,7 +5,7 @@
 
 #include    "../../Characters/String_Constant.h"
 #include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "../../Streams/TextOutputStreamBinaryAdapter.h"
+#include    "../../Streams/TextWriter.h"
 
 #include    "Writer.h"
 
@@ -46,7 +46,7 @@ public:
     }
     virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {
-        TextOutputStreamBinaryAdapter textOut (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
+        TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
         AssertNotImplemented ();
         textOut.Write (L"\n");      // a single elt not LF terminated, but the entire doc SB.
     }

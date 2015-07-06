@@ -12,10 +12,11 @@
 
 #include    "BinaryInputStream.h"
 #include    "TextInputStream.h"
-#include	"TextReader.h"
+#include    "TextReader.h"
 
 
 
+#pragma message ("Warning: TextInputStreamBinaryAdapter FILE DEPRECATED - use TextReader")
 
 
 namespace   Stroika {
@@ -23,7 +24,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-			using TextInputStreamBinaryAdapter = TextReader;
+            using TextInputStreamBinaryAdapter = TextReader;
 
 
         }

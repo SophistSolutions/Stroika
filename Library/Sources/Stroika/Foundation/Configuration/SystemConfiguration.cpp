@@ -26,7 +26,7 @@
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../IO/FileSystem/BinaryFileInputStream.h"
 #include    "../Streams/MemoryStream.h"
-#include    "../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../Streams/TextReader.h"
 
 #include    "SystemConfiguration.h"
 
@@ -120,14 +120,14 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 
 #if     qPlatform_POSIX
     {
-        using   Streams::TextInputStreamBinaryAdapter;
+        using   Streams::TextReader;
         using   IO::FileSystem::BinaryFileInputStream;
         using   Characters::String2Int;
         const   String_Constant kProcCPUInfoFileName_ { L"/proc/cpuinfo" };
 
         CPU::CoreDetails    coreDetails;
         // Note - /procfs files always unseekable
-        for (String line : TextInputStreamBinaryAdapter (BinaryFileInputStream::mk (kProcCPUInfoFileName_, BinaryFileInputStream::eNotSeekable)).ReadLines ()) {
+        for (String line : TextReader (BinaryFileInputStream::mk (kProcCPUInfoFileName_, BinaryFileInputStream::eNotSeekable)).ReadLines ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
@@ -457,7 +457,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         if (tmp.fShortPrettyName.empty ())
         {
             try {
-                String n = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
+                String n = Streams::TextReader (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
             }
@@ -468,7 +468,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         if (tmp.fShortPrettyName.empty ())
         {
             try {
-                String n = Streams::TextInputStreamBinaryAdapter (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
+                String n = Streams::TextReader (IO::FileSystem::BinaryFileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
             }

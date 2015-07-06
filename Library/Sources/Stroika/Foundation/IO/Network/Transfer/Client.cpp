@@ -7,7 +7,7 @@
 #include    "../../../Characters/String_Constant.h"
 #include    "../../../Execution/Exceptions.h"
 #include    "../../../Execution/RequiredComponentMissingException.h"
-#include    "../../../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../../Streams/TextReader.h"
 #include    "../HTTP/Headers.h"
 #include    "../HTTP/Methods.h"
 
@@ -89,7 +89,7 @@ BinaryInputStream       Response::GetDataBinaryInputStream () const
 TextInputStream       Response::GetDataTextInputStream () const
 {
     if (fDataTextInputStream_.IsMissing ()) {
-        fDataTextInputStream_ = Streams::TextInputStreamBinaryAdapter (GetDataBinaryInputStream ());
+        fDataTextInputStream_ = Streams::TextReader (GetDataBinaryInputStream ());
     }
     return *fDataTextInputStream_;
 }

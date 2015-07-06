@@ -13,7 +13,10 @@
 #include    "BinaryOutputStream.h"
 #include    "TextOutputStream.h"
 
-#include	"TextWriter.h"
+#include    "TextWriter.h"
+
+
+#pragma message ("Warning: TextOutputStreamBinaryAdapter FILE DEPRECATED - use TextWriter")
 
 
 namespace   Stroika {
@@ -21,7 +24,7 @@ namespace   Stroika {
         namespace   Streams {
 
 
-			using TextOutputStreamBinaryAdapter = TextWriter;
+            using TextOutputStreamBinaryAdapter = TextWriter;
 
 
 

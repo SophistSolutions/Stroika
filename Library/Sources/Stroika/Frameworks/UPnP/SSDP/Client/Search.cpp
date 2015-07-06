@@ -12,7 +12,7 @@
 #include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
-#include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../../../Foundation/Streams/TextReader.h"
 #include    "../Common.h"
 
 #include    "Search.h"
@@ -106,7 +106,7 @@ public:
                 size_t nBytesRead = fSocket_.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ReadPacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)));
+                ReadPacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)));
             }
             catch (const Execution::Thread::AbortException&) {
                 Execution::DoReThrow ();

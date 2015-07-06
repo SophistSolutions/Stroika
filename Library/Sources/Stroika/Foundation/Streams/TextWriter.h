@@ -6,11 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-
-#include    "../Memory/BLOB.h"
-
-#include    "BinaryOutputStream.h"
+#include    "OutputStream.h"
 #include    "TextOutputStream.h"
 
 
@@ -62,7 +58,7 @@ namespace   Stroika {
 
                 };
             public:
-                TextWriter (const BinaryOutputStream& src, Format format = Format::eUTF8);
+                TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
 
             private:
                 class   Seekable_UTF8_Rep_;
@@ -70,7 +66,7 @@ namespace   Stroika {
                 class   UnSeekable_UTF8_Rep_;
                 class   UnSeekable_WCharT_Rep_;
             private:
-                shared_ptr<_IRep> mk_ (const BinaryOutputStream& src, Format format);
+                shared_ptr<_IRep> mk_ (const OutputStream<Memory::Byte>& src, Format format);
             };
 
 

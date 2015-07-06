@@ -5,7 +5,7 @@
 
 #include    "../../Characters/Format.h"
 #include    "../../Characters/String_Constant.h"
-#include    "../../Streams/TextInputStreamBinaryAdapter.h"
+#include    "../../Streams/TextReader.h"
 
 #include    "../BadFormatException.h"
 
@@ -41,7 +41,7 @@ public:
     virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
-        return Read (Streams::TextInputStreamBinaryAdapter (in));
+        return Read (Streams::TextReader (in));
     }
     virtual VariantValue    Read (const Streams::TextInputStream& in) override
     {
