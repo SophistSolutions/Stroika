@@ -34,6 +34,7 @@ namespace   Stroika {
                 : inherited (from._GetRep ())
             {
             }
+#if 0
             inline  size_t  TextInputStream::Read (wchar_t* intoStart, wchar_t* intoEnd) const
             {
                 RequireNotNull (intoStart);
@@ -57,6 +58,7 @@ namespace   Stroika {
                 }
                 return '\0';
             }
+#endif
 
 
         }

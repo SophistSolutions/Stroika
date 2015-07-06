@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
+#include    "../Traversal/Iterable.h"
 
 #include    "Stream.h"
 
@@ -31,6 +32,8 @@
 
 
 
+namespace Stroika { namespace Foundation { namespace Characters { class Character; } } }
+namespace Stroika { namespace Foundation { namespace Characters { class String; } } }
 namespace Stroika { namespace Foundation { namespace Memory { class BLOB; } } }
 
 
@@ -164,11 +167,65 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @todo Consider if we should lose this. Optional appraoch maybe better.
+                 *
+                 *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
+                 */
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  Characters::Character   ReadCharacter () const;
+
+            public:
+                /**
+                 * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
+                 * it encounters as part of the read line.
+                 *
+                 *  ReadLine() will return an empty string iff EOF.
+                 */
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  Characters::String ReadLine () const;
+
+            public:
+                /**
+                 *  Returns Iterable<String> object, so you can
+                 *  write code:
+                 *          for (String line : stream.ReadLines ()) {
+                 *          }
+                 *
+                 *  Like ReadLine(), the returned lines include trailing newlines/etc.
+                 */
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  Traversal::Iterable<Characters::String> ReadLines () const;
+
+            public:
+                /**
+                 *  Read from the current seek position, until EOF, and accumulate all of it into a String.
+                 *  Note - since the stream may not start at the beginning, this isn't necessarily ALL
+                 *  that was in the stream -just all that remains.
+                 *
                  *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
                  */
+                template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual  Characters::String ReadAll () const;
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual  Memory::BLOB ReadAll () const;
             };
+
+
+            template    <>
+            template    <>
+            Characters::Character   InputStream<Characters::Character>::ReadCharacter () const;
+            template    <>
+            template    <>
+            Characters::String InputStream<Characters::Character>::ReadLine () const;
+            template    <>
+            template    <>
+            Traversal::Iterable<Characters::String> InputStream<Characters::Character>::ReadLines () const;
+            template    <>
+            template    <>
+            Characters::String InputStream<Characters::Character>::ReadAll () const;
+            template    <>
+            template    <>
+            Memory::BLOB InputStream<Memory::Byte>::ReadAll () const;
 
 
             /**

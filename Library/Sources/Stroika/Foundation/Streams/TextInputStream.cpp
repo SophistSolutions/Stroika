@@ -19,7 +19,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-
+#if 0
 
 /*
  ********************************************************************************
@@ -86,3 +86,4 @@ String TextInputStream::ReadAll () const
     }
     return result.str ();
 }
+#endif

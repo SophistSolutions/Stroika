@@ -110,6 +110,8 @@ namespace   Stroika {
                 TextInputStream (nullptr_t);
                 TextInputStream (const InputStream<Character>& from);
 
+
+#if 0
             public:
                 /**
                  *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr. bufSize must
@@ -152,6 +154,7 @@ namespace   Stroika {
                  *  that was in the stream -just all that remains.
                  */
                 nonvirtual  String ReadAll () const;
+#endif
             };
 
 
