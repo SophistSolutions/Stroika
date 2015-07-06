@@ -20,6 +20,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::Streams::iostream;
 
+using   Memory::Byte;
 
 
 
@@ -100,7 +101,7 @@ namespace   {
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 VerifyTestResult (static_cast<InputStream<Byte>> (s).IsSeekable ());
-                VerifyTestResult (static_cast<BinaryOutputStream<>> (s).IsSeekable ());
+                VerifyTestResult (static_cast<OutputStream<Byte>> (s).IsSeekable ());
             }
             {
                 MemoryStream<Byte>  s;

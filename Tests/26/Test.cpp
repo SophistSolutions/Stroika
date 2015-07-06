@@ -39,6 +39,8 @@ using   namespace   Stroika::Foundation::Cryptography;
 using   namespace   Stroika::Foundation::Streams;
 
 
+using   Memory::Byte;
+
 
 
 

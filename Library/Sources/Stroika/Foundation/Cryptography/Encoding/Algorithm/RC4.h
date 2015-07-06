@@ -52,14 +52,14 @@ namespace   Stroika {
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::OutputStream<Byte>     RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out);
+                    Streams::OutputStream<Memory::Byte> RC4Decoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte> out);
 #endif
 
 
 #if     qHasFeature_OpenSSL
                     /**
                      */
-                    Streams::OutputStream<Byte>     RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out);
+                    Streams::OutputStream<Memory::Byte> RC4Encoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte> out);
 #endif
 
 

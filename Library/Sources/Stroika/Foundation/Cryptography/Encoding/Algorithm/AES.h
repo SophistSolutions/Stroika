@@ -79,7 +79,7 @@ namespace   Stroika {
                      *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
                      *  to the returned output stream is decrypted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Byte>  AESDecoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte>  AESDecoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
@@ -88,7 +88,7 @@ namespace   Stroika {
                      *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
                      *  to the returned output stream is encrpted before being passed to the argument output stream.
                      */
-                    Streams::OutputStream<Byte>  AESEncoder (const Memory::BLOB& key, Streams::OutputStream<Byte> out, AESOptions options = AESOptions::eDEFAULT);
+                    Streams::OutputStream<Memory::Byte>  AESEncoder (const Memory::BLOB& key, Streams::OutputStream<Memory::Byte> out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 
