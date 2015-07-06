@@ -18,8 +18,7 @@
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
- *
- *      @todo   make threadsafe
+ *      @todo   REDO as template so can support text AND binary streams.
  *
  *      @todo   Think out Seekable. Probably MUST mixin Seekable, and properly handle
  *              (vai throw OperaitonNotSupported) if one constructs a BufferedBinaryOutputStream

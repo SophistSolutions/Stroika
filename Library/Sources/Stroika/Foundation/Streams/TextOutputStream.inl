@@ -30,6 +30,10 @@ namespace   Stroika {
                 : inherited (rep)
             {
             }
+            inline  TextOutputStream::TextOutputStream (const OutputStream<Character>& from)
+                : inherited (from._GetRep ())
+            {
+            }
             inline  void    TextOutputStream::Write (const Character* start, const Character* end) const
             {
                 Require (start <= end);

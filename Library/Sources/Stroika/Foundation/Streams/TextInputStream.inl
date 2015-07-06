@@ -26,6 +26,14 @@ namespace   Stroika {
                 : inherited (rep)
             {
             }
+            inline  TextInputStream::TextInputStream (nullptr_t)
+                : inherited (nullptr)
+            {
+            }
+            inline  TextInputStream::TextInputStream (const InputStream<Character>& from)
+                : inherited (from._GetRep ())
+            {
+            }
             inline  size_t  TextInputStream::Read (wchar_t* intoStart, wchar_t* intoEnd) const
             {
                 RequireNotNull (intoStart);

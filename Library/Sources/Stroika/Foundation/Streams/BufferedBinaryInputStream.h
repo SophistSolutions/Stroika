@@ -19,6 +19,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *
+ *      @todo   REDO as template so can support text AND binary streams.
+ *
  *      @todo   BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED. It does no buffering!
  *
  *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.

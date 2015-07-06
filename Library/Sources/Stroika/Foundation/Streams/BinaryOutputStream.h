@@ -74,19 +74,15 @@ namespace   Stroika {
                 /**
                  * _SharedIRep arg - MAY also mixin Seekable - and if so - this automatically uses it.
                  */
-                explicit BinaryOutputStream (const _SharedIRep& rep)
-                    : inherited (rep)
-                {
-                }
+                explicit BinaryOutputStream (const _SharedIRep& rep);
+
             public:
                 BinaryOutputStream () = default;
                 BinaryOutputStream (nullptr_t);
                 BinaryOutputStream (const OutputStream<Byte>& from);
+
             public:
-                nonvirtual  void    Write (const Byte* start, const Byte* end) const
-                {
-                    inherited::Write (start, end);
-                }
+                nonvirtual  void    Write (const Byte* start, const Byte* end) const;
                 nonvirtual  void    Write (const Memory::BLOB& blob) const;
             };
 
