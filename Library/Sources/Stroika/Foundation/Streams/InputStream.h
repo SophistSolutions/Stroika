@@ -23,6 +23,11 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
+ *
+ *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
+ *              have flush/close allowed, and anything else generate an assert error?
+ *
  *      @todo   Bake Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) into REP
  *              API so its operation can be atomic.
  *
