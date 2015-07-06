@@ -78,10 +78,10 @@ void    Response::ThrowIfFailed () const
     HTTP::Exception::DoThrowIfError (fStatus_);
 }
 
-BinaryInputStream       Response::GetDataBinaryInputStream () const
+BinaryInputStream<>       Response::GetDataBinaryInputStream () const
 {
     if (fDataBinaryInputStream_.IsMissing ()) {
-        fDataBinaryInputStream_ = fData_.As<BinaryInputStream> ();
+        fDataBinaryInputStream_ = fData_.As<BinaryInputStream<>> ();
     }
     return *fDataBinaryInputStream_;
 }

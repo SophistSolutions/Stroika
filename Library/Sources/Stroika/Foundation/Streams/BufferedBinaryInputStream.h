@@ -43,11 +43,11 @@ namespace   Stroika {
              *          This is useful if calls to the underling stream source can be expensive. This class
              *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
              */
-            class   BufferedBinaryInputStream : public BinaryInputStream {
+            class   BufferedBinaryInputStream : public BinaryInputStream<> {
             private:
                 class   Rep_;
             public:
-                BufferedBinaryInputStream (const BinaryInputStream& realIn);
+                BufferedBinaryInputStream (const BinaryInputStream<>& realIn);
             };
 
 

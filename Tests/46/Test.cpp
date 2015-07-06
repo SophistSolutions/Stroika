@@ -1328,7 +1328,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
-        ScanDetails_    doRead_ (const BinaryInputStream in)
+        ScanDetails_    doRead_ (const BinaryInputStream<> in)
         {
             using   namespace DataExchange;
             VariantValue o { JSON::Reader ().Read (in) };

@@ -26,7 +26,7 @@ using   Execution::make_unique_lock;
 
 class   TextReader::Rep_ : public TextInputStream::_IRep {
 public:
-    Rep_ (const BinaryInputStream& src)
+    Rep_ (const BinaryInputStream<>& src)
         : fCriticalSection_ ()
         , fSource_ (src)
         , fTmpHackTextRemaining_ ()
@@ -134,7 +134,7 @@ protected:
 
 private:
     mutable recursive_mutex     fCriticalSection_;
-    BinaryInputStream           fSource_;
+    BinaryInputStream<>         fSource_;
     String                      fTmpHackTextRemaining_;
     size_t                      fOffset_;
 };
@@ -144,15 +144,15 @@ private:
 
 /*
  ********************************************************************************
- ************************** Streams::TextInputStream ****************************
+ ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
-TextReader::TextReader (const BinaryInputStream& src)
+TextReader::TextReader (const BinaryInputStream<>& src)
     : TextInputStream (mk_ (src))
 {
 }
 
-shared_ptr<TextReader::_IRep> TextReader::mk_ (const BinaryInputStream& src)
+shared_ptr<TextReader::_IRep> TextReader::mk_ (const BinaryInputStream<>& src)
 {
     return make_shared<Rep_> (src);
 }

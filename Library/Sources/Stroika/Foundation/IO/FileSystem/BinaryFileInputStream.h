@@ -50,9 +50,9 @@ namespace   Stroika {
 
                 /**
                  */
-                class   BinaryFileInputStream : public Streams::BinaryInputStream {
+                class   BinaryFileInputStream : public Streams::BinaryInputStream<> {
                 private:
-                    using   inherited   =   BinaryInputStream;
+                    using   inherited   =   BinaryInputStream<>;
                 private:
                     class   Rep_;
 
@@ -65,8 +65,8 @@ namespace   Stroika {
 
                 public:
                     enum BufferFlag { eBuffered, eUnbuffered };
-                    static  BinaryInputStream   mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
-                    static  BinaryInputStream   mk (const String& fileName, BufferFlag bufferFlag);
+                    static  BinaryInputStream<> mk (const String& fileName, SeekableFlag seekable = eSeekable, BufferFlag bufferFlag = eBuffered);
+                    static  BinaryInputStream<> mk (const String& fileName, BufferFlag bufferFlag);
                 };
 
 

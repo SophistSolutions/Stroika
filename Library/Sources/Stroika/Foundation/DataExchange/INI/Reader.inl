@@ -21,7 +21,7 @@ namespace   Stroika {
                  ************************************ INI::Reader *******************************
                  ********************************************************************************
                  */
-                inline  Profile Reader::ReadProfile (const Streams::BinaryInputStream& in)
+                inline  Profile Reader::ReadProfile (const Streams::BinaryInputStream<>& in)
                 {
                     return Convert (Read (in));
                 }

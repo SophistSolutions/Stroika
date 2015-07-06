@@ -196,7 +196,7 @@ namespace   Stroika {
                          *      Response r = clientConn.GET ();
                          *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                          */
-                        nonvirtual  BinaryInputStream       GetDataBinaryInputStream () const;
+                        nonvirtual  BinaryInputStream<>     GetDataBinaryInputStream () const;
 
                     public:
                         /**
@@ -238,12 +238,12 @@ namespace   Stroika {
                         nonvirtual  void    ThrowIfFailed () const;
 
                     private:
-                        BLOB                                fData_;                     // usually empty, but provided for some methods like POST
-                        mutable Optional<BinaryInputStream> fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
-                        mutable Optional<TextInputStream>   fDataTextInputStream_;
-                        Mapping<String, String>             fHeaders_;
-                        HTTP::Status                        fStatus_ {};
-                        Optional<SSLResultInfo>             fServerEndpointSSLInfo_;
+                        BLOB                                    fData_;                     // usually empty, but provided for some methods like POST
+                        mutable Optional<BinaryInputStream<>>   fDataBinaryInputStream_;    // store so subsequent calls to GetBinaryStream() returns same offset/pointer
+                        mutable Optional<TextInputStream>       fDataTextInputStream_;
+                        Mapping<String, String>                 fHeaders_;
+                        HTTP::Status                            fStatus_ {};
+                        Optional<SSLResultInfo>                 fServerEndpointSSLInfo_;
                     };
 
 

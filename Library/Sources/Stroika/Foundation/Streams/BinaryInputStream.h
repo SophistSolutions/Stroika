@@ -88,9 +88,13 @@ namespace   Stroika {
              *          mapping to streams.
              *
              */
-            class   BinaryInputStream : public InputStream<Byte> {
+            template    <typename   BASESTREAM = InputStream<Byte>>
+            class   BinaryInputStream : public BASESTREAM {
             private:
                 using inherited = InputStream<Byte>;
+
+            protected:
+                using       _SharedIRep     =   typename BASESTREAM::_SharedIRep;
 
             protected:
                 /**

@@ -38,7 +38,7 @@ public:
     {
         return String_Constant (L".xml");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader (in));

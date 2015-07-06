@@ -231,7 +231,7 @@ namespace {
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const String& commandLine, Streams::BinaryInputStream<> in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -242,7 +242,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, Streams::BinaryInputStr
 {
 }
 
-ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::BinaryInputStream<> in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
@@ -263,19 +263,19 @@ void    ProcessRunner::SetWorkingDirectory (const String& d)
     fWorkingDirectory_ = d;
 }
 
-Streams::BinaryInputStream  ProcessRunner::GetStdIn () const
+Streams::BinaryInputStream<>  ProcessRunner::GetStdIn () const
 {
     return fStdIn_;
 }
 
-void      ProcessRunner::SetStdIn (const Streams::BinaryInputStream& in)
+void      ProcessRunner::SetStdIn (const Streams::BinaryInputStream<>& in)
 {
     fStdIn_ = in;
 }
 
 void     ProcessRunner:: SetStdIn (const Memory::BLOB& in)
 {
-    fStdIn_ = in.As<Streams::BinaryInputStream> ();
+    fStdIn_ = in.As<Streams::BinaryInputStream<>> ();
 }
 
 Streams::BinaryOutputStream ProcessRunner::GetStdOut () const
@@ -304,9 +304,9 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
     String      cmdLine     =   fCommandLine_.Value ();
     SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
 
-    Streams::BinaryInputStream  in  =   GetStdIn ();
-    Streams::BinaryOutputStream out =   GetStdOut ();
-    Streams::BinaryOutputStream err =   GetStdErr ();
+    Streams::BinaryInputStream<>    in  =   GetStdIn ();
+    Streams::BinaryOutputStream     out =   GetStdOut ();
+    Streams::BinaryOutputStream     err =   GetStdErr ();
 
     return [progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
@@ -765,8 +765,8 @@ void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSec
 
 Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
-    Streams::BinaryInputStream  oldStdIn    =   GetStdIn ();
-    Streams::BinaryOutputStream oldStdOut   =   GetStdOut ();
+    Streams::BinaryInputStream<>    oldStdIn    =   GetStdIn ();
+    Streams::BinaryOutputStream     oldStdOut   =   GetStdOut ();
     try {
         Streams::MemoryStream<Memory::Byte>   useStdIn;
         Streams::MemoryStream<Memory::Byte>   useStdOut;

@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Memory/BLOB.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -22,17 +24,48 @@ namespace   Stroika {
              ******************************* BinaryInputStream ******************************
              ********************************************************************************
              */
-            inline  BinaryInputStream::BinaryInputStream (const _SharedIRep& rep)
+            template    <typename   BASESTREAM>
+            inline  BinaryInputStream<BASESTREAM>::BinaryInputStream (const _SharedIRep& rep)
                 : inherited (rep)
             {
             }
-            inline  BinaryInputStream::BinaryInputStream (const InputStream<Byte>& from)
+            template    <typename   BASESTREAM>
+            inline  BinaryInputStream<BASESTREAM>::BinaryInputStream (const InputStream<Byte>& from)
                 : inherited (from._GetRep ())
             {
             }
-            inline   BinaryInputStream::BinaryInputStream (nullptr_t)
+            template    <typename   BASESTREAM>
+            inline   BinaryInputStream<BASESTREAM>::BinaryInputStream (nullptr_t)
                 : inherited (nullptr)
             {
+            }
+            template    <typename   BASESTREAM>
+            Memory::BLOB BinaryInputStream<BASESTREAM>::ReadAll () const
+            {
+                if (IsSeekable ()) {
+                    SeekOffsetType  size = GetOffsetToEndOfStream ();
+                    if (size >= numeric_limits<size_t>::max ()) {
+                        Execution::DoThrow<bad_alloc> (bad_alloc ());
+                    }
+                    size_t sb = static_cast<size_t> (size);
+                    if (sb == 0) {
+                        return Memory::BLOB ();
+                    }
+                    Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
+                    size_t n = Read (b, b + sb);
+                    Assert (n <= sb);
+                    return Memory::BLOB::Attach (b, b + n);
+                }
+                else {
+                    // Less efficient implementation
+                    vector<Byte>    r;
+                    size_t          n;
+                    Byte            buf[32 * 1024];
+                    while ( (n = Read (std::begin (buf), std::end (buf))) != 0) {
+                        r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
+                    }
+                    return Memory::BLOB (r);
+                }
             }
 
 

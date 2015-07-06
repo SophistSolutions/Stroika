@@ -246,7 +246,7 @@ namespace {
     void    DoCommonHasherTest_ (const Byte* dataStart, const Byte* dataEnd, uint32_t answer)
     {
         VerifyTestResult (HASHER::ComputeDigest (dataStart, dataEnd) == answer);
-        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::BinaryInputStream> ()) == answer);
+        VerifyTestResult (HASHER::ComputeDigest (Memory::BLOB (dataStart, dataEnd).As<Streams::BinaryInputStream<>> ()) == answer);
     }
 
 }
@@ -370,8 +370,8 @@ namespace {
             using   namespace   Stroika::Foundation::Cryptography::Encoding;
 
             auto roundTripTester_ = [] (const OpenSSLCryptoParams & cryptoParams, BLOB src) -> void {
-                BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::BinaryInputStream> ()).ReadAll ();
-                BLOB    decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::BinaryInputStream> ()).ReadAll ();
+                BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::BinaryInputStream<>> ()).ReadAll ();
+                BLOB    decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::BinaryInputStream<>> ()).ReadAll ();
                 VerifyTestResult (src == decodedData);
             };
 

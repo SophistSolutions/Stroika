@@ -179,9 +179,9 @@ BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep)
 {
 }
 
-BinaryInputStream   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+BinaryInputStream<>   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
-    BinaryInputStream   in  =   BinaryFileInputStream (fileName, seekable);
+    BinaryInputStream<>   in  =   BinaryFileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedBinaryInputStream (in);

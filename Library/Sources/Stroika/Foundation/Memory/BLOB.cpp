@@ -174,12 +174,12 @@ int  Memory::BLOB::Compare (const BLOB& rhs) const
 namespace {
     using namespace Streams;
     // @todo - add seekability to this helper!!!
-    struct BLOBBINSTREAM_ : BinaryInputStream {
+    struct BLOBBINSTREAM_ : BinaryInputStream<> {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
-            : BinaryInputStream (_SharedIRep (make_shared<REP> (b)))
+            : BinaryInputStream<> (_SharedIRep (make_shared<REP> (b)))
         {
         }
-        struct REP : BinaryInputStream::_IRep  {
+        struct REP : BinaryInputStream<>::_IRep  {
             REP (const Memory::BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
@@ -257,7 +257,7 @@ namespace {
 }
 
 template    <>
-Streams::BinaryInputStream Memory::BLOB::As () const
+Streams::BinaryInputStream<> Memory::BLOB::As () const
 {
     return BLOBBINSTREAM_ (*this);
 }

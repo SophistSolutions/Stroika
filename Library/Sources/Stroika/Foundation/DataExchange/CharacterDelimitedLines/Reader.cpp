@@ -53,7 +53,7 @@ public:
     {
         return String_Constant (L".txt");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
     {
         return Read (Streams::TextReader (in));
     }
@@ -91,7 +91,7 @@ DataExchange::CharacterDelimitedLines::Reader::Reader (const Set<Character>& col
 {
 }
 
-Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::BinaryInputStream& in) const
+Iterable<Sequence<String>>  DataExchange::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::BinaryInputStream<>& in) const
 {
     return ReadMatrix (Streams::TextReader (in));
 }

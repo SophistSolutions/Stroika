@@ -58,7 +58,7 @@ namespace   Stroika {
                     Reader (const Set<Character>& columnDelimiters);
 
                 public:
-                    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::BinaryInputStream& in) const;
+                    nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::BinaryInputStream<>& in) const;
                     nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::TextInputStream& in) const;
                 };
 

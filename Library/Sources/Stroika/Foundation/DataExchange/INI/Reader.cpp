@@ -38,7 +38,7 @@ public:
     {
         return String_Constant (L".ini");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
     {
         return Read (Streams::TextReader (in));
     }

@@ -432,7 +432,7 @@ namespace   {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public :
-            StdIStream_InputStream (BinaryInputStream in)
+            StdIStream_InputStream (BinaryInputStream<> in)
                 : fSource (in)
             {
 #if     qDebug
@@ -459,11 +459,11 @@ namespace   {
                 return nullptr;
             }
         protected:
-            BinaryInputStream    fSource;
+            BinaryInputStream<>    fSource;
         };
 
     public :
-        StdIStream_InputSource (BinaryInputStream in, const XMLCh* const bufId = nullptr)
+        StdIStream_InputSource (BinaryInputStream<> in, const XMLCh* const bufId = nullptr)
             : InputSource (bufId)
             , fSource (in)
         {
@@ -473,7 +473,7 @@ namespace   {
             return new (getMemoryManager ()) StdIStream_InputStream (fSource);
         }
     protected:
-        BinaryInputStream   fSource;
+        BinaryInputStream<>   fSource;
     };
 
 
@@ -482,7 +482,7 @@ namespace   {
     protected:
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
         public :
-            ISWithProg (const BinaryInputStream& in, ProgressMonitor::Updater progressCallback)
+            ISWithProg (const BinaryInputStream<>& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream (in)
                 , fProgress (progressCallback, 0.0f, 1.0f)
                 , fTotalSize (0.0f)
@@ -524,7 +524,7 @@ namespace   {
         };
 
     public :
-        StdIStream_InputSourceWithProgress (BinaryInputStream in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr):
+        StdIStream_InputSourceWithProgress (BinaryInputStream<> in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr):
             StdIStream_InputSource (in, bufId),
             fProgressCallback (progressCallback)
         {
@@ -634,7 +634,7 @@ namespace   {
 }
 #endif
 
-void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
+void    XML::SAXParse (const Streams::BinaryInputStream<>& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
 {
 #if     qHasFeature_Xerces
     SAX2PrintHandlers_  handler (callback);

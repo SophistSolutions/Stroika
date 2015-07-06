@@ -51,11 +51,11 @@ namespace   Stroika {
              */
             class   TextReader : public TextInputStream {
             public:
-                TextReader (const BinaryInputStream& src);
+                TextReader (const BinaryInputStream<>& src);
             private:
                 class   Rep_;
             private:
-                shared_ptr<_IRep> mk_ (const BinaryInputStream& src);
+                shared_ptr<_IRep> mk_ (const BinaryInputStream<>& src);
             };
 
 

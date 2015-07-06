@@ -127,7 +127,7 @@ namespace   {
         }
     };
 }
-void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::BinaryInputStream& in)
+void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::BinaryInputStream<>& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);
@@ -142,7 +142,7 @@ void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const
     Ensure (fStack_.size () == 0);
 }
 
-void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::BinaryInputStream& in)
+void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::BinaryInputStream<>& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);

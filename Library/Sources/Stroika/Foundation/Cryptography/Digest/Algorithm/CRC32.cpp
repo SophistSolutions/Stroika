@@ -93,7 +93,7 @@ namespace {
 
 
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType  Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Streams::BinaryInputStream& from)
+Digester<Algorithm::CRC32, uint32_t>::ReturnType  Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Streams::BinaryInputStream<>& from)
 {
     uint32_t    hash    =   0xFFFFFFFF;
     while (true) {

@@ -204,9 +204,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>

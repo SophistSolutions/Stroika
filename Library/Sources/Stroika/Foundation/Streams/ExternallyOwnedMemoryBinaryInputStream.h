@@ -57,7 +57,7 @@ namespace   Stroika {
              *
              *  @see BasicBinaryInputStream
              */
-            class   ExternallyOwnedMemoryBinaryInputStream : public BinaryInputStream {
+            class   ExternallyOwnedMemoryBinaryInputStream : public BinaryInputStream<> {
             private:
                 class   IRep_;
             public:

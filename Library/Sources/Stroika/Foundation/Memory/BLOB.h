@@ -64,6 +64,9 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            template    <typename   ELEMENT_TYPE>
+            class   InputStream;
+            template    <typename   BASESTREAM>
             class   BinaryInputStream;
 
 
@@ -288,7 +291,7 @@ namespace   Stroika {
 
 
             template    <>
-            Streams::BinaryInputStream BLOB::As () const;
+            Streams::BinaryInputStream<Streams::InputStream<Byte>> BLOB::As () const;
 
 
             /**

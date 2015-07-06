@@ -431,7 +431,7 @@ public:
     {
         return String_Constant (L".json");
     }
-    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream<>& in) override
     {
         return Read (Streams::TextReader (in));
     }
