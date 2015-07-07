@@ -14,9 +14,6 @@ SubDirs	=	\
 
 
 Objs	=	\
-	$(ObjDir)BufferedBinaryInputStream.o\
-	$(ObjDir)BufferedBinaryOutputStream.o\
-	$(ObjDir)ExternallyOwnedMemoryBinaryInputStream.o\
 	$(ObjDir)InputStream.o\
 	$(ObjDir)InputOutputStream.o\
 	$(ObjDir)OutputStream.o\
