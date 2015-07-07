@@ -200,7 +200,7 @@ Main::~Main ()
     fServiceRep_->_Attach (nullptr);
 }
 
-void    Main::Run (const CommandArgs& args, Streams::TextOutputStream out)
+void    Main::Run (const CommandArgs& args, Streams::OutputStream<Characters::Character> out)
 {
     for (String i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);
