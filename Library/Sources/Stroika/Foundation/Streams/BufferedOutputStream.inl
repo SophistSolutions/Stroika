@@ -26,7 +26,7 @@ namespace   Stroika {
                 static  const   size_t  kDefaultBufSize =   16 * 1024;
             public:
                 Rep_ (const OutputStream<ELEMENT_TYPE>& realOut)
-                    : OutputStream<Byte>::_IRep ()
+                    : OutputStream<ELEMENT_TYPE>::_IRep ()
                     , fCriticalSection_ ()
                     , fBuffer_ ()
                     , fRealOut_ (realOut)
