@@ -182,7 +182,7 @@ namespace   Stroika {
              */
             template    <typename ELEMENT_TYPE>
             BufferedOutputStream<ELEMENT_TYPE>::BufferedOutputStream (const OutputStream<ELEMENT_TYPE>& realOut)
-                : OutputStream<Byte> (make_shared<Rep_> (realOut))
+                : OutputStream<ELEMENT_TYPE> (make_shared<Rep_> (realOut))
             {
             }
             template    <typename ELEMENT_TYPE>
