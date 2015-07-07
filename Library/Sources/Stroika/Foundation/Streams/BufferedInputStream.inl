@@ -45,6 +45,7 @@ namespace   Stroika {
                 }
                 virtual size_t  Read (SeekOffsetType* offset, ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
+                    using   Execution::make_unique_lock;
                     // @todo implement 'offset' support
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
