@@ -19,10 +19,10 @@ History
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a97">v2.0a97x</a><br/>2015-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a97">v2.0a97</a><br/>2015-07-07</td>
 <td>
 	<ul>
-		<li>Major Design and Name Changes for Streams library ((REVIEW SOME UNCERTAIN))
+		<li>Major Design and Name Changes for Streams library
 			<ul>
 				<li>New template Stream<ELEMENT_TYPE> replaces BinaryStream and TextStream</li>
 				<li>New templates InputStream<ELEMENT_TYPE> and OutputStream<ELEMENT_TYPE> replace BinaryInputStream, BinaryOutputStream, TextInputStream, TextOutputStream</li>
@@ -40,6 +40,8 @@ History
 		<li>Use openssl 1.0.1o</li>
 		<li>Improved STLContainerWrapper support for vectors patching; and use that to fix patching bugs in Sequence_stdvector</li>
 		<li>Added and refactored ReserveSpeedTweekAddNCapacity() to Containers common code</li>
+		<li>Generate new performance regression test results</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, arm-linux-gnueabihf-g++-4.9(regtest44 failed), and valgrind, and built and most tests OK on VC++2k15</li>
 	</ul>
 </td>
 </tr>
