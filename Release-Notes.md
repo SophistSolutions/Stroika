@@ -16,6 +16,18 @@ History
 
 
 
+     
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a98">v2.0a98x</a><br/>2015-07-??</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
    
 <tr>
