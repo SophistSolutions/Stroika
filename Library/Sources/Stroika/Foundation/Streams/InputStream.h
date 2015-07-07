@@ -175,6 +175,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *     Create a synchonized (thread safe) copy of this stream. Note - this still refers to the same
+                 *  underlying stream.
+                 */
+                nonvirtual  InputStream<ELEMENT_TYPE>   Synchronized () const;
+
+            public:
+                /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
