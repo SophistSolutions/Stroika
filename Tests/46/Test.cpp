@@ -1626,7 +1626,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}  , L"MemoryStream<Characters::Character>",
         244000,
-        4.0,
+        3.0,
         &failedTests
         );
 #endif
