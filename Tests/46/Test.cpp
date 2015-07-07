@@ -1617,7 +1617,7 @@ namespace   {
             Test_StringSubStr_<wstring>, L"wstring",
             Test_StringSubStr_<String>, L"Charactes::String",
             3740000,
-            2.6,
+            2.7,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 97, 0)
@@ -1734,7 +1734,7 @@ namespace   {
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
             5950000,
-            1.6,
+            1.7,
             &failedTests
         );
 #endif
@@ -1744,7 +1744,7 @@ namespace   {
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
             3570000,
-            1.9,
+            2.0,
             &failedTests
         );
 #endif
