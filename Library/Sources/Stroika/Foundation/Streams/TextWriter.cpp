@@ -132,6 +132,7 @@ protected:
     }
     virtual void    Flush () override
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         _fSource.Flush ();
     }
 
