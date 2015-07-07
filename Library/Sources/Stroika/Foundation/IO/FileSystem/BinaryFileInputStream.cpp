@@ -13,6 +13,7 @@
 #include    <unistd.h>
 #endif
 
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
@@ -48,13 +49,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
  *********************** FileSystem::BinaryFileInputStream **********************
  ********************************************************************************
  */
-class   BinaryFileInputStream::Rep_ : public InputStream<Byte>::_IRep {
+class   BinaryFileInputStream::Rep_ : public InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName, SeekableFlag seekable)
-        : fCriticalSection_ ()
-        , fFD_ (-1)
+        : fFD_ (-1)
         , fSeekable_ (seekable)
     {
         try {
@@ -91,11 +91,7 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-        auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
@@ -104,11 +100,7 @@ public:
     }
     virtual Streams::SeekOffsetType  GetReadOffset () const override
     {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-        auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
@@ -118,11 +110,7 @@ public:
     virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-        auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -157,7 +145,6 @@ public:
     }
 
 private:
-    mutable mutex   fCriticalSection_;
     int             fFD_;
     SeekableFlag    fSeekable_;
 };

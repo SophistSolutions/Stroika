@@ -13,6 +13,7 @@
 #include    <unistd.h>
 #endif
 
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
@@ -48,13 +49,12 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-class   BinaryFileOutputStream::Rep_ : public OutputStream<Byte>::_IRep {
+class   BinaryFileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName, FlushFlag flushFlag)
-        : fCriticalSection_ ()
-        , fFD_ (-1)
+        : fFD_ (-1)
         , fFlushFlag (flushFlag)
     {
         try {
@@ -91,7 +91,7 @@ public:
         Require (end != nullptr or start == end);
 
         if (start != end) {
-            auto    critSec { make_unique_lock (fCriticalSection_) };
+            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 
             const Byte* i = start;
             while (i < end) {
@@ -109,6 +109,7 @@ public:
     {
         // normally nothing todo - write 'writes thru' (except if fFlushFlag)
         if (fFlushFlag == FlushFlag::eToDisk) {
+            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
             ThrowIfFalseGetLastError (::FlushFileBuffers (reinterpret_cast<HANDLE> (_get_osfhandle (fFD_))));
 #elif   qPlatform_POSIX
@@ -120,7 +121,7 @@ public:
     }
     virtual Streams::SeekOffsetType  GetWriteOffset () const override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
@@ -130,7 +131,7 @@ public:
     virtual Streams::SeekOffsetType    SeekWrite (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -164,7 +165,6 @@ public:
         return 0;
     }
 private:
-    mutable mutex   fCriticalSection_;
     int             fFD_;
     FlushFlag       fFlushFlag;
 };

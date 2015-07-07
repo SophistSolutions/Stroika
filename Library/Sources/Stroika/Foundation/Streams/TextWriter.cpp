@@ -10,6 +10,7 @@
 #include    "../Characters/CodePage.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Common.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/StringException.h"
 #include    "../Execution/OperationNotSupportedException.h"
@@ -30,11 +31,10 @@ namespace {
 }
 #endif
 
-class   TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep {
+class   TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
 public:
     UnSeekable_UTF8_Rep_ (const OutputStream<Byte>& src, bool useBOM)
-        : _fCriticalSection ()
-        , _fSource (src)
+        : _fSource (src)
     {
         constexpr   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
@@ -68,7 +68,7 @@ protected:
 
         char  outBuf[10 * 1024];
         //char    outBuf[10]; // to test
-        auto    critSec { make_unique_lock (_fCriticalSection) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 Again:
         char*   p   =   std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
@@ -95,12 +95,11 @@ Again:
     }
 
 protected:
-    mutable recursive_mutex     _fCriticalSection;
     OutputStream<Byte>          _fSource;
 };
 
 
-class   TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep {
+class   TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
 public:
     UnSeekable_WCharT_Rep_ (const OutputStream<Byte>& src, bool useBOM)
         : _fSource (src)
@@ -128,6 +127,7 @@ protected:
     }
     virtual void    Write (const Character* start, const Character* end)  override
     {
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         _fSource.Write (reinterpret_cast<const Byte*> (start), reinterpret_cast<const Byte*> (end));
     }
     virtual void    Flush () override

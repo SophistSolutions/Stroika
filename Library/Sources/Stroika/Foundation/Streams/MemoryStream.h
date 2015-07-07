@@ -6,7 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
 #include    <vector>
 
 #include    "../Characters/String.h"

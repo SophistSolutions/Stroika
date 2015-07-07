@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Streams_ExternallyOwnedMemoryInputStream_inl_ 1
 
 
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Traversal/Iterator.h"
 
 
@@ -24,13 +25,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename ELEMENT_TYPE>
-            class   ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+            class   ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
             public:
                 Rep_ () = delete;
                 Rep_ (const Rep_&) = delete;
                 Rep_ (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end)
-                    : fCriticalSection_ ()
-                    , fStart_ (start)
+                    : fStart_ (start)
                     , fEnd_ (end)
                     , fCursor_ (start)
                 {
@@ -51,12 +51,7 @@ namespace   Stroika {
                     RequireNotNull (intoEnd);
                     Require (intoStart < intoEnd);
                     size_t  nRequested  =   intoEnd - intoStart;
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
                     size_t  nAvail      =   fEnd_ - fCursor_;
                     size_t  nCopied     =   min (nAvail, nRequested);
@@ -70,22 +65,12 @@ namespace   Stroika {
                 }
                 virtual SeekOffsetType  GetReadOffset () const override
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     return fCursor_ - fStart_;
                 }
                 virtual SeekOffsetType            SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     switch (whence) {
                         case    Whence::eFromStart: {
                                 if (offset < 0) {
@@ -123,7 +108,7 @@ namespace   Stroika {
                             break;
                     }
                     Ensure ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
-                    return GetReadOffset ();
+                    return fCursor_ - fStart_;
                 }
 
             private:

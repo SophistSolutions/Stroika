@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+
+#include    "../Debug/AssertExternallySynchronizedLock.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -21,11 +26,10 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename ELEMENT_TYPE>
-            class   BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep {
+            class   BufferedInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
             public:
                 Rep_ (const InputStream<ELEMENT_TYPE>& realIn)
                     : InputStream<ELEMENT_TYPE>::_IRep ()
-                    , fCriticalSection_ ()
                     , fRealIn_ (realIn)
                 {
                 }
@@ -45,13 +49,7 @@ namespace   Stroika {
                 }
                 virtual size_t  Read (SeekOffsetType* offset, ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
-                    using   Execution::make_unique_lock;
-                    // @todo implement 'offset' support
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     return fRealIn_.Read (intoStart, intoEnd);
                 }
 

@@ -5,6 +5,7 @@
 
 #include    "../Characters/CodePage.h"
 #include    "../Containers/Common.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/OperationNotSupportedException.h"
 #include    "../Memory/SmallStackBuffer.h"
@@ -25,11 +26,10 @@ using   Memory::Byte;
 
 
 
-class   TextReader::Rep_ : public InputStream<Character>::_IRep {
+class   TextReader::Rep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
 public:
     Rep_ (const InputStream<Byte>& src)
-        : fCriticalSection_ ()
-        , fSource_ (src)
+        : fSource_ (src)
         , fTmpHackTextRemaining_ ()
         , fOffset_ (0)
     {
@@ -45,7 +45,7 @@ protected:
         // @todo 'offset' param NYI
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if 1
         if (fTmpHackTextRemaining_.empty ()) {
             // only happens once
@@ -80,13 +80,13 @@ protected:
 
     virtual SeekOffsetType  GetReadOffset () const override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         return fOffset_;
     }
 
     virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        auto    critSec { make_unique_lock (fCriticalSection_) };
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -130,11 +130,10 @@ protected:
                 break;
         }
         Ensure ((0 <= fOffset_) and (fOffset_ <= fTmpHackTextRemaining_.size ()));
-        return GetReadOffset ();
+        return fOffset_;
     }
 
 private:
-    mutable recursive_mutex     fCriticalSection_;
     InputStream<Byte>           fSource_;
     String                      fTmpHackTextRemaining_;
     size_t                      fOffset_;

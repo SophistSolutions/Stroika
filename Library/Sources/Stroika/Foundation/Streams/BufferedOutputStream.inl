@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+
+#include    "../Debug/AssertExternallySynchronizedLock.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -21,13 +26,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename ELEMENT_TYPE>
-            class   BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep {
+            class   BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
                 static  const   size_t  kMinBufSize_    =   1 * 1024;
                 static  const   size_t  kDefaultBufSize =   16 * 1024;
             public:
                 Rep_ (const OutputStream<ELEMENT_TYPE>& realOut)
                     : OutputStream<ELEMENT_TYPE>::_IRep ()
-                    , fCriticalSection_ ()
                     , fBuffer_ ()
                     , fRealOut_ (realOut)
                     , fAborted_ (false)
@@ -43,22 +47,12 @@ namespace   Stroika {
             public:
                 nonvirtual  size_t  GetBufferSize () const
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     return fBuffer_.capacity ();
                 }
                 nonvirtual  void    SetBufferSize (size_t bufSize)
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     bufSize = max (bufSize, kMinBufSize_);
                     if (bufSize < fBuffer_.size ()) {
                         Flush ();
@@ -70,12 +64,7 @@ namespace   Stroika {
                 // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
                 nonvirtual  void    Abort ()
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     fAborted_ = true;   // for debug sake track this
                     fBuffer_.clear ();
                 }
@@ -97,12 +86,7 @@ namespace   Stroika {
                 }
                 virtual  void    Flush () override
                 {
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     if (fAborted_) {
                         fBuffer_.clear ();
                     }
@@ -121,12 +105,7 @@ namespace   Stroika {
                 {
                     Require (start < end);  // for OutputStream<Byte> - this funciton requires non-empty write
                     Require (not fAborted_);
-                    using   Execution::make_unique_lock;
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
-#else
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
-#endif
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     /*
                      * Minimize the number of writes at the possible cost of extra copying.
                      *
@@ -168,7 +147,6 @@ namespace   Stroika {
                 }
 
             private:
-                mutable recursive_mutex     fCriticalSection_;
                 vector<ELEMENT_TYPE>        fBuffer_;
                 OutputStream<ELEMENT_TYPE>  fRealOut_;
                 bool                        fAborted_;
