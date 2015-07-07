@@ -883,8 +883,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp" />
@@ -1261,6 +1259,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
@@ -1584,8 +1584,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />

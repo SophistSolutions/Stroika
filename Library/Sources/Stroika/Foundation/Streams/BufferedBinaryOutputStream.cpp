@@ -12,7 +12,7 @@
 #include    "BufferedBinaryOutputStream.h"
 
 
-
+ddd
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;

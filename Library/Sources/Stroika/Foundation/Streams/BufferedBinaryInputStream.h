@@ -10,26 +10,12 @@
 
 #include    "../Configuration/Common.h"
 #include    "InputStream.h"
+#include    "BufferedInputStream.h"
 
 
 
-/**
- *  \file
- *
- *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
- *
- *
- *      @todo   REDO as template so can support text AND binary streams.
- *
- *      @todo   BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED. It does no buffering!
- *
- *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.
- *              I THINK if one SEEKS this, but the underlying
- *              class doesn't support seeking, we MAY need to either BUFFER MORE, or throw not supported.
- *
- *      @todo   Add tuning parameters, such as buffer size
- *
- */
+
+#pragma message ("Warning: BufferedBinaryInputStream FILE DEPRECATED - use BufferedInputStream<Memory::Byte>")
 
 
 
@@ -38,6 +24,9 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            using BufferedBinaryInputStream = BufferedInputStream<Memory::Byte>;
+
+#if 0
             /**
              *  @brief  BufferedBinaryInputStream is a BinaryInputStream which provides buffered access.
              *          This is useful if calls to the underling stream source can be expensive. This class
@@ -49,6 +38,7 @@ namespace   Stroika {
             public:
                 BufferedBinaryInputStream (const InputStream<Memory::Byte>& realIn);
             };
+#endif
 
 
         }
@@ -62,6 +52,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BufferedBinaryInputStream.inl"
+//#include    "BufferedBinaryInputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BufferedBinaryInputStream_h_*/

@@ -20,7 +20,7 @@
 #include    "../../Execution/Platform/Windows/Exception.h"
 #endif
 #include    "../../IO/FileAccessException.h"
-#include    "../../Streams/BufferedBinaryInputStream.h"
+#include    "../../Streams/BufferedInputStream.h"
 
 #include    "BinaryFileInputStream.h"
 
@@ -184,7 +184,7 @@ InputStream<Byte>   BinaryFileInputStream::mk (const String& fileName, SeekableF
     InputStream<Byte>   in  =   BinaryFileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedBinaryInputStream (in);
+            return Streams::BufferedInputStream<Byte> (in);
         case eUnbuffered:
             return in;
         default:

@@ -13,7 +13,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
-
+            ddd
 
         }
     }

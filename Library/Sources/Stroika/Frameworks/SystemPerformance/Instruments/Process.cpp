@@ -34,7 +34,7 @@
 #include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/BufferedBinaryInputStream.h"
+#include    "../../../Foundation/Streams/BufferedInputStream.h"
 #include    "../../../Foundation/Streams/TextReader.h"
 #include    "../../../Foundation/Streams/iostream/FStreamSupport.h"
 

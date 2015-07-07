@@ -309,12 +309,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -1743,6 +1737,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1909,12 +1909,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
       <Filter>Sources\Time</Filter>
@@ -2629,6 +2623,12 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl">
+      <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
