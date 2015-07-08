@@ -112,7 +112,6 @@ namespace   Stroika {
                 }
 
             private:
-                mutable recursive_mutex fCriticalSection_;
                 const ELEMENT_TYPE*     fStart_;
                 const ELEMENT_TYPE*     fEnd_;
                 const ELEMENT_TYPE*     fCursor_;

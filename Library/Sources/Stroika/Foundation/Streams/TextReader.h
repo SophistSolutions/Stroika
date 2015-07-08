@@ -67,8 +67,6 @@ namespace   Stroika {
 
             private:
                 class   Rep_;
-            private:
-                shared_ptr<_IRep> mk_ (const InputStream<Memory::Byte>& src);
             };
 
 

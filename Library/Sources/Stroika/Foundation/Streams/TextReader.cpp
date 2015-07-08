@@ -148,11 +148,6 @@ private:
  ********************************************************************************
  */
 TextReader::TextReader (const InputStream<Byte>& src)
-    : InputStream<Character> (mk_ (src))
+    : InputStream<Character> (make_shared<Rep_> (src))
 {
-}
-
-shared_ptr<TextReader::_IRep> TextReader::mk_ (const InputStream<Byte>& src)
-{
-    return make_shared<Rep_> (src);
 }

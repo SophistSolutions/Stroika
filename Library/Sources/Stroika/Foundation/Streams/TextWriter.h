@@ -67,7 +67,6 @@ namespace   Stroika {
                     eWCharTWithBOM      =   3,
                     eWCharTWithoutBOM   =   4,
                     eWCharT             =   eWCharTWithBOM,
-
                 };
             public:
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);

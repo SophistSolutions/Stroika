@@ -48,7 +48,6 @@ string   MemoryStream<Byte>::As () const
     return rep.AsString ();
 }
 
-
 template    <>
 template    <>
 Characters::String   MemoryStream<Characters::Character>::As () const
