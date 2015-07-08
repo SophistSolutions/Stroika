@@ -10,7 +10,7 @@
 #include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include    "../../../../Foundation/Streams/TextReader.h"
 
 #include    "../Advertisement.h"
@@ -184,7 +184,7 @@ Again:
                 size_t nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryBinaryInputStream (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
             }
             catch (const Execution::Thread::AbortException&) {
                 Execution::DoReThrow ();

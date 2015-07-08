@@ -5,7 +5,7 @@
 
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Streams/MemoryStream.h"
-#include    "../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "../../../Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include    "../../../Foundation/Streams/TextReader.h"
 #include    "../../../Foundation/Streams/TextWriter.h"
 
@@ -78,7 +78,7 @@ void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisemen
     RequireNotNull (advertisement);
     *advertisement = Advertisement ();
 
-    TextReader in = TextReader (ExternallyOwnedMemoryBinaryInputStream (b.begin (), b.end ()));
+    TextReader in = TextReader (ExternallyOwnedMemoryInputStream<Byte> (b.begin (), b.end ()));
 
     *headLine = in.ReadLine ().Trim ();
     while (true) {
