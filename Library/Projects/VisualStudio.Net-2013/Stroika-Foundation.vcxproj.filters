@@ -801,18 +801,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
@@ -984,12 +972,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryInputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedBinaryOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
@@ -1001,9 +983,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStreamBinaryAdapter.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h">
       <Filter>Sources\Execution</Filter>
@@ -1034,9 +1013,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
       <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryBinaryInputStream.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
@@ -1101,9 +1077,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryInputOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h">
       <Filter>Sources\Characters\CString</Filter>
     </ClInclude>
@@ -1127,9 +1100,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h">
       <Filter>Sources\Execution\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BinaryTiedStreams.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
       <Filter>Sources\Memory</Filter>
@@ -1635,9 +1605,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.h">
       <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClInclude>
@@ -1723,9 +1690,6 @@
       <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicTextOutputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h">
