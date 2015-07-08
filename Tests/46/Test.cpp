@@ -46,7 +46,7 @@
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -1345,11 +1345,11 @@ namespace {
         }
         void    DoRunPerfTest ()
         {
-            ScanDetails_    sd = doRead_ (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
+            ScanDetails_    sd = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (kSAMPLE_FILE_), end (kSAMPLE_FILE_)));
             Assert (sd.fAuxData.ContainsKey (L"Sample-Pressure"));
             Assert (sd.fScanID == 5856);
             Memory::BLOB    b = doWrite_ (sd);
-            ScanDetails_    sd2 = doRead_ (Streams::ExternallyOwnedMemoryBinaryInputStream (begin (b), end (b)));
+            ScanDetails_    sd2 = doRead_ (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (b), end (b)));
             Assert (sd2.fScanID == sd.fScanID);
             Assert (sd2.fAuxData == sd.fAuxData);
             Assert (sd2.fRawSpectrum == sd.fRawSpectrum);

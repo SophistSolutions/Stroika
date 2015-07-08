@@ -18,7 +18,7 @@
 #include    "Stroika/Foundation/DataExchange/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -301,7 +301,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
                     VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();

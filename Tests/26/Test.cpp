@@ -26,7 +26,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 #include    "Stroika/Foundation/Streams/iostream/SerializeItemToBLOB.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -136,8 +136,8 @@ namespace  {
                 inline  void    VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
                 {
 #if     qPlatform_Windows
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
-                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
 #endif
                 }
                 inline  void    VERIFY_ATL_DECODE_ ()
@@ -151,14 +151,14 @@ namespace  {
             namespace   {
                 void    VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
                 {
-                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (bytes), end (bytes)))) == bytes);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (bytes), end (bytes)))) == bytes);
                 }
             }
 
             namespace   {
                 void    DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
                 {
-                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte> (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
                     Verify (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
