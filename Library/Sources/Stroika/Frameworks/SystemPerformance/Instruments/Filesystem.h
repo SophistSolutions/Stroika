@@ -135,6 +135,10 @@ namespace   Stroika {
                         Optional<IOStats>   fReadIOStats;
                         Optional<IOStats>   fWriteIOStats;
                         Optional<IOStats>   fCombinedIOStats;
+                        /**
+                         *  This is the average length - in 'requests' - of the IO Q. This combine input and output requests (read/write).
+                         */
+                        Optional<double>    fIOQLength;
                     };
 
 

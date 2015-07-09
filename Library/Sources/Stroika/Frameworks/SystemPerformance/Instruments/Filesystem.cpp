@@ -136,6 +136,7 @@ namespace {
             double  fSectorsWritten;
             double  fTimeSpentWriting;
             double  fWritesCompleted;
+            double  fWeightedTimeInQ;       // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
         };
         Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
         Optional<Mapping<dev_t, PerfStats_>>    fContextStats_;
@@ -371,6 +372,8 @@ namespace {
                                 vi.fReadIOStats = readStats;
                                 vi.fWriteIOStats = writeStats;
                                 vi.fCombinedIOStats = combinedStats;
+
+                                vi.fIOQLength = oNew->fWeightedTimeInQ - oOld->fWeightedTimeInQ;    // divide by time between 2 and * 1000 - NYI
                             }
                         }
                     }
@@ -494,18 +497,28 @@ namespace {
                 if (line.size () >= 13) {
                     String  majorDevNumber = line[1 - 1];
                     String  minorDevNumber = line[2 - 1];
-                    //String  devName = line[3 - 1];
+                    String  devName = line[3 - 1];
                     String  readsCompleted = line[4 - 1];
                     String  sectorsRead = line[6 - 1];
                     String  timeSpentReadingMS = line[7 - 1];
                     String  writesCompleted = line[8 - 1];
                     String  sectorsWritten = line[10 - 1];
                     String  timeSpentWritingMS = line[11 - 1];
+                    constexpr bool kAlsoReadQLen_ { true };
+                    Optional<double>    aveQLen;
+                    if (kAlsoReadQLen_) {
+                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + "/stats", FileInputStream::eNotSeekable))) {
+                            if (ll.size () >= 11) {
+                                aveQLen = String2Float (ll[11 - 1]);
+                            }
+                        }
+                    }
                     result.Add (
                         ::makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
                     PerfStats_ {
                         String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
-                        String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted)
+                        String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
+                        aveQLen
                     }
                     );
                 }
@@ -788,6 +801,8 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOQLength), String_Constant (L"IO-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit  },
+
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
