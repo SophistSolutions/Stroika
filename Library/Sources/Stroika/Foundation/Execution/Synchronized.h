@@ -190,7 +190,7 @@ namespace   Stroika {
                     RequireNotNull (t);
                     RequireNotNull (m);
                 }
-                WritableReference (const WritableReference& src) = default;
+                WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
                 WritableReference (WritableReference&& src)
                     : fT (src.fT)
                     , l { move (src.l) } {
