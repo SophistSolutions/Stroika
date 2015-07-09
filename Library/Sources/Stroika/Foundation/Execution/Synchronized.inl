@@ -68,12 +68,13 @@ namespace   Stroika {
             }
             template    <typename   T, typename TRAITS>
             inline  auto    Synchronized<T, TRAITS>::GetReference () -> WritableReference {
-                return move (WritableReference (&fDelegate_, &fLock_));
+                return WritableReference (&fDelegate_, &fLock_);
             }
             template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::GetReference () const -> const WritableReference
             {
-                return move (WritableReference (&fDelegate_, &fLock_));
+                auto nonConstThis = const_cast<Synchronized<T, TRAITS>*> (this);
+                return WritableReference (&nonConstThis->fDelegate_, &nonConstThis->fLock_);
             }
             template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::operator-> () const -> const WritableReference

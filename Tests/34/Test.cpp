@@ -550,6 +550,8 @@ namespace {
         int counter =   0;
         BlockingQueue<function<void()>> q;
 
+        Verify (q.GetLength () == 0);
+
         Thread  producerThread ([&q, &counter] () {
             for (int incBy = START; incBy <= END; ++incBy) {
                 q.AddTail ([&counter, incBy] () { counter += incBy; });
