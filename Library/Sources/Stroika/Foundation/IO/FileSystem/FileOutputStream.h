@@ -49,15 +49,15 @@ namespace   Stroika {
 
 
                 /**
-				 *	EXAMPLE USAGE:
-				 *		String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-				 *		JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::mk (fileName));
+                 *  EXAMPLE USAGE:
+                 *      String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
+                 *      JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::mk (fileName));
                  */
-                class	FileOutputStream : public Streams::OutputStream<Memory::Byte> {
+                class   FileOutputStream : public Streams::OutputStream<Memory::Byte> {
                 private:
                     using   inherited   =   OutputStream<Memory::Byte>;
 
-				public:
+                public:
                     /**
                      *  This flag is used to configure if BinaryOutputStream::Flush will invoke the OS fsync() funciton
                      *  to force data to disk (by default Flush just forces the data out of this object to the next object,
@@ -74,7 +74,7 @@ namespace   Stroika {
                 public:
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eToOperatingSystem);
 
-				private:
+                private:
                     class   Rep_;
                 };
 

@@ -24,7 +24,7 @@ namespace   Stroika {
 
                 using   Characters::String;
 
-				using BinaryFileInputStream = FileInputStream;
+                using BinaryFileInputStream = FileInputStream;
 
 
             }

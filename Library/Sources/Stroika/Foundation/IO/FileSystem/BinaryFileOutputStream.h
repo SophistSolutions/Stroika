@@ -23,7 +23,7 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-     				using BinaryFileOutputStream = FileOutputStream;
+                using BinaryFileOutputStream = FileOutputStream;
 
 
             }
