@@ -27,7 +27,7 @@
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include    "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
-#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include    "../../../Foundation/IO/FileSystem/PathName.h"
@@ -58,7 +58,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance::Instruments;
 using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Process;
 
 using   Characters::String_Constant;
-using   IO::FileSystem::BinaryFileInputStream;
+using   IO::FileSystem::FileInputStream;
 using   Time::DurationSecondsType;
 
 
@@ -553,7 +553,7 @@ namespace {
         Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T(const Streams::InputStream<Byte>&)>& reader)
         {
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return reader (BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::mk (fullPath, FileInputStream::eNotSeekable)));
             }
             return Optional<T> ();
         }
@@ -561,7 +561,7 @@ namespace {
         Sequence<String>  ReadFileStrings_(const String& fullPath)
         {
             Sequence<String>            results;
-            Streams::InputStream<Byte>  in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
+            Streams::InputStream<Byte>  in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
             StringBuilder               sb;
             for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
                 if (*b == '\0') {
@@ -617,7 +617,7 @@ namespace {
                 }
             };
             if (IO::FileSystem::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (BinaryFileInputStream::mk (fullPath2CmdLineFile, BinaryFileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (FileInputStream::mk (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
             }
             return Optional<String> ();
         }
@@ -704,7 +704,7 @@ namespace {
             DbgTrace (L"fullPath=%s", fullPath.c_str ());
 #endif
             StatFileInfo_    result {};
-            Streams::InputStream<Byte>   in = BinaryFileInputStream::mk (fullPath, BinaryFileInputStream::eNotSeekable);
+            Streams::InputStream<Byte>   in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
             Byte    data[10 * 1024];
             size_t nBytes = in.Read (begin (data), end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_

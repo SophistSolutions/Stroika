@@ -5,7 +5,7 @@
 
 #include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Memory/BLOB.h"
-#include    "../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../Foundation/IO/FileSystem/FileInputStream.h"
 
 #include    "Config.h"
 
@@ -253,7 +253,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_FILEData (
     size_t from, size_t to
 )
 {
-    Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromSDKString (fileName)).ReadAll ();
+    Memory::BLOB    b = IO::FileSystem::FileInputStream (String::FromSDKString (fileName)).ReadAll ();
     const Byte* fileBuf = b.begin ();
     size_t      fileLen = b.size ();
 

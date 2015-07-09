@@ -22,7 +22,7 @@
 #endif
 #include    "../../IO/FileAccessException.h"
 
-#include    "BinaryFileOutputStream.h"
+#include    "FileOutputStream.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -41,7 +41,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  ********************************************************************************
- *********************** FileSystem::BinaryFileOutputStream **********************
+ *********************** FileSystem::FileOutputStream **********************
  ********************************************************************************
  */
 
@@ -49,7 +49,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-class   BinaryFileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class   FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
@@ -169,7 +169,7 @@ private:
     FlushFlag       fFlushFlag;
 };
 
-BinaryFileOutputStream::BinaryFileOutputStream (const String& fileName, FlushFlag flushFlag)
+FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
     : inherited (make_shared<Rep_> (fileName, flushFlag))
 {
 }

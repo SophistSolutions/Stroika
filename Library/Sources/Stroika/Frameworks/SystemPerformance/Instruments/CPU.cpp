@@ -12,7 +12,7 @@
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
-#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Math/Common.h"
 
 #include    "CPU.h"
@@ -203,12 +203,12 @@ namespace {
         static  inline  POSIXSysTimeCaptureContext_    GetSysTimes_ ()
         {
             POSIXSysTimeCaptureContext_   result;
-            using   IO::FileSystem::BinaryFileInputStream;
+            using   IO::FileSystem::FileInputStream;
             using   Characters::String2Float;
             DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
             const   String_Constant kFileName_ { L"/proc/stat" };
             // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::CPU::capture_GetSysTimes_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif

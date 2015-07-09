@@ -22,13 +22,12 @@
  *
  */
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-            class   Duration;
-        }
-    }
-}
+
+
+namespace   Stroika { namespace   Foundation { namespace   Time { class   Duration; } } }
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {

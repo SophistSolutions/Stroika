@@ -10,8 +10,8 @@
 #include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Memory/BLOB.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
-#include    "../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
-#include    "../../Foundation/IO/FileSystem/BinaryFileOutputStream.h"
+#include    "../../Foundation/IO/FileSystem/FileInputStream.h"
+#include    "../../Foundation/IO/FileSystem/FileOutputStream.h"
 
 #include    "SpellCheckEngine_Basic.h"
 
@@ -1179,7 +1179,7 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromSDKString (fUDName)).ReadAll ();
+        Memory::BLOB    b = IO::FileSystem::FileInputStream (String::FromSDKString (fUDName)).ReadAll ();
 #if     qWideCharacters
         size_t              fileLen     =   b.size ();
         CodePage            useCodePage =   CodePagesGuesser ().Guess (b.begin (), fileLen);
@@ -1204,7 +1204,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
 #if     qPlatform_MacOS
     FileWriter  writer (&fUDName);
 #else
-    IO::FileSystem::BinaryFileOutputStream  writer (String::FromSDKString (fUDName));
+    IO::FileSystem::FileOutputStream  writer (String::FromSDKString (fUDName));
 #endif
 
 #if     qWideCharacters

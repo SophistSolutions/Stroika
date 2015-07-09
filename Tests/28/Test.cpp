@@ -12,8 +12,8 @@
 #include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
-#include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
@@ -152,12 +152,12 @@ namespace   {
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::FileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::FileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
         }
 
@@ -237,8 +237,8 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -310,8 +310,8 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -417,8 +417,8 @@ namespace   {
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+                JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -457,8 +457,8 @@ namespace   {
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+                JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
@@ -542,8 +542,8 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -607,8 +607,8 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
@@ -717,8 +717,8 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form

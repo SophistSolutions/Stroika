@@ -5,8 +5,8 @@
 
 #include    "../Characters/Format.h"
 #include    "../Execution/Logger.h"
-#include    "../IO/FileSystem/BinaryFileInputStream.h"
-#include    "../IO/FileSystem/BinaryFileOutputStream.h"
+#include    "../IO/FileSystem/FileInputStream.h"
+#include    "../IO/FileSystem/FileOutputStream.h"
 #include    "../IO/FileSystem/PathName.h"
 #include    "../IO/FileSystem/ThroughTmpFileWriter.h"
 #include    "../IO/FileSystem/WellKnownLocations.h"
@@ -186,14 +186,14 @@ OptionsFile::OptionsFile (
 
 BLOB    OptionsFile::ReadRaw () const
 {
-    return IO::FileSystem::BinaryFileInputStream::mk (GetReadFilePath_ ()).ReadAll ();
+    return IO::FileSystem::FileInputStream::mk (GetReadFilePath_ ()).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
     try {
         IO::FileSystem::ThroughTmpFileWriter    tmpFile (GetWriteFilePath_ ());
-        IO::FileSystem::BinaryFileOutputStream  outStream (tmpFile.GetFilePath ());
+        IO::FileSystem::FileOutputStream  outStream (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Flush ();
         outStream.clear ();     // so any errors can be displayed as exceptions, and so closed before commit/rename

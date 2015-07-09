@@ -49,7 +49,7 @@ namespace   Stroika {
                  *
                  *  Example usage:
                  *      VariantValue v (3);
-                 *      JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream ("fred.json"));
+                 *      JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream ("fred.json"));
                  *
                  *  Example usage:
                  *      Mapping<String, VariantValue> m;

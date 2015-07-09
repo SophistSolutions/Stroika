@@ -450,12 +450,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp">
       <Filter>Sources\Common</Filter>
     </ClCompile>
@@ -728,6 +722,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp">
       <Filter>Sources\Streams</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1707,6 +1707,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2132,12 +2138,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl">
       <Filter>Sources\Common</Filter>
@@ -2594,6 +2594,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
 </Project>

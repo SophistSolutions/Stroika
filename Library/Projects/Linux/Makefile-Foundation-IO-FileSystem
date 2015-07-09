@@ -9,8 +9,8 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)BinaryFileInputStream.o\
-	$(ObjDir)BinaryFileOutputStream.o\
+	$(ObjDir)FileInputStream.o\
+	$(ObjDir)FileOutputStream.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)Directory.o\
 	$(ObjDir)DirectoryIterable.o\

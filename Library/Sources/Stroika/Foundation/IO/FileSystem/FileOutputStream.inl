@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_IO_FileSystem_BinaryFileInputStream_inl_
-#define _Stroika_Foundation_IO_FileSystem_BinaryFileInputStream_inl_    1
+#ifndef _Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_
+#define _Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_    1
 
 
 /*
@@ -18,12 +18,12 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************** BinaryInputStream ***************************
+                 ***************************** FileOutputStream ***************************
                  ********************************************************************************
                  */
-                inline  Streams::InputStream<Memory::Byte>   BinaryFileInputStream::mk (const String& fileName, BufferFlag bufferFlag)
+                inline  Streams::OutputStream<Memory::Byte>   FileOutputStream::mk (const String& fileName, FlushFlag flushFlag)
                 {
-                    return mk (fileName, eSeekable, bufferFlag);
+                    return FileOutputStream (fileName, flushFlag);
                 }
 
 
@@ -31,4 +31,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileSystem_BinaryFileInputStream_inl_*/
+#endif  /*_Stroika_Foundation_IO_FileSystem_FileOutputStream_inl_*/

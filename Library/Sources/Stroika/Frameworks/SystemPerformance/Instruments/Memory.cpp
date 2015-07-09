@@ -15,7 +15,7 @@
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Execution/Sleep.h"
-#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Streams/InputStream.h"
 
 #include    "Memory.h"
@@ -36,7 +36,7 @@ using   Characters::String_Constant;
 using   Containers::Mapping;
 using   Containers::Sequence;
 using   Containers::Set;
-using   IO::FileSystem::BinaryFileInputStream;
+using   IO::FileSystem::FileInputStream;
 using   Time::DurationSecondsType;
 
 
@@ -148,7 +148,7 @@ namespace {
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             // Note - /procfs files always unseekable
             Optional<uint64_t>  SwapCached;
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcMemInfoFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -187,7 +187,7 @@ namespace {
                 Optional<uint64_t>  pgfault;
                 // Note - /procfs files always unseekable
                 DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
-                for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcVMStatFileName_, BinaryFileInputStream::eNotSeekable))) {
+                for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif

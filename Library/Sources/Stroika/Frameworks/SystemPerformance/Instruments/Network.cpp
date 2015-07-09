@@ -21,7 +21,7 @@
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 #include    "../../../Foundation/Execution/Sleep.h"
-#include    "../../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Streams/InputStream.h"
 
 #include    "Network.h"
@@ -43,7 +43,7 @@ using   Characters::String_Constant;
 using   Containers::Mapping;
 using   Containers::Sequence;
 using   Containers::Set;
-using   IO::FileSystem::BinaryFileInputStream;
+using   IO::FileSystem::FileInputStream;
 using   Time::DurationSecondsType;
 
 
@@ -216,7 +216,7 @@ namespace {
             // Note - /procfs files always unseekable
             unsigned int    nLine   = 0;
             unsigned int    n2Skip  = 2;
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -270,7 +270,7 @@ namespace {
             // Note - /procfs files always unseekable
             bool    firstTime = true;
             Mapping<String, size_t> labelMap;
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_netstat_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
@@ -303,7 +303,7 @@ namespace {
             bool    firstTime = true;
             Mapping<String, size_t> labelMap;
             Optional<uint64_t>  totalTCPSegments;
-            for (Sequence<String> line : reader.ReadMatrix (BinaryFileInputStream::mk (kProcFileName_, BinaryFileInputStream::eNotSeekable))) {
+            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif

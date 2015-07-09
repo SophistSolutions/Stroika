@@ -766,8 +766,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
@@ -791,6 +789,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp" />
@@ -1207,6 +1207,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h" />
@@ -1518,12 +1520,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl" />

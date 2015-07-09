@@ -23,7 +23,7 @@
 #include    "../../IO/FileAccessException.h"
 #include    "../../Streams/BufferedInputStream.h"
 
-#include    "BinaryFileInputStream.h"
+#include    "FileInputStream.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -46,10 +46,10 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  ********************************************************************************
- *********************** FileSystem::BinaryFileInputStream **********************
+ *********************** FileSystem::FileInputStream **********************
  ********************************************************************************
  */
-class   BinaryFileInputStream::Rep_ : public InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class   FileInputStream::Rep_ : public InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
@@ -156,19 +156,19 @@ private:
 
 
 
-BinaryFileInputStream::BinaryFileInputStream (const String& fileName, SeekableFlag seekable)
-    : BinaryFileInputStream (make_shared<Rep_> (fileName, seekable))
+FileInputStream::FileInputStream (const String& fileName, SeekableFlag seekable)
+    : FileInputStream (make_shared<Rep_> (fileName, seekable))
 {
 }
 
-BinaryFileInputStream::BinaryFileInputStream (const shared_ptr<Rep_>& rep)
+FileInputStream::FileInputStream (const shared_ptr<Rep_>& rep)
     : inherited (rep)
 {
 }
 
-InputStream<Byte>   BinaryFileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<Byte>   FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
-    InputStream<Byte>   in  =   BinaryFileInputStream (fileName, seekable);
+    InputStream<Byte>   in  =   FileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
             return Streams::BufferedInputStream<Byte> (in);
