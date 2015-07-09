@@ -154,8 +154,8 @@ namespace   Stroika {
                  *
                  *  Except that the former only does the lock once, and works even with a non-recursive mutex.
                  */
-                nonvirtual  WritableReference GetReference ();
                 nonvirtual  const WritableReference GetReference () const;
+                nonvirtual  WritableReference GetReference ();
 
             public:
                 nonvirtual  const WritableReference operator-> () const;
