@@ -6,7 +6,6 @@
 #if     qPlatform_POSIX
 #include    <sys/statvfs.h>
 #include    <sys/stat.h>
-#include    <sys/sysinfo.h>
 #include    <sys/types.h>
 #include    <unistd.h>
 #elif   qPlatform_Windows
@@ -137,7 +136,7 @@ namespace {
             double  fSectorsWritten;
             double  fTimeSpentWriting;
             double  fWritesCompleted;
-            double  fWeightedTimeInQ;       // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
+            double  fWeightedTimeInQSeconds;       // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
         };
         Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
         Optional<Mapping<dev_t, PerfStats_>>    fContextStats_;
@@ -324,7 +323,8 @@ namespace {
         void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
         {
             try {
-                Mapping<dev_t, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
+                Mapping<dev_t, PerfStats_>  diskStats = ReadProcFS_diskstats_ ();
+                DurationSecondsType         timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
                 for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                     VolumeInfo vi = *i;
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
@@ -334,7 +334,6 @@ namespace {
                             if (i != string::npos) {
                                 devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
                             }
-#if 1
                             dev_t   useDevT;
                             {
                                 struct stat sbuf;
@@ -346,13 +345,8 @@ namespace {
                                     continue;
                                 }
                             }
-
                             Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
                             Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
-#else
-                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (devNameLessSlashes);
-                            Optional<PerfStats_>    oNew = diskStats.Lookup (devNameLessSlashes);
-#endif
                             if (oOld.IsPresent () and oNew.IsPresent ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 VolumeInfo::IOStats readStats;
@@ -374,7 +368,8 @@ namespace {
                                 vi.fWriteIOStats = writeStats;
                                 vi.fCombinedIOStats = combinedStats;
 
-                                vi.fIOQLength = oNew->fWeightedTimeInQ - oOld->fWeightedTimeInQ;    // divide by time between 2 and * 1000 - NYI
+                                // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
+                                vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
                             }
                         }
                     }
@@ -387,18 +382,42 @@ namespace {
             }
         }
     private:
+        Optional<String>    GetSysBlockDirPathForDevice_ (const String& deviceName)
+        {
+            Require (not deviceName.empty ());
+            Require (not deviceName.Contains (L"/"));
+            // Sometimes the /sys/block directory appears to have data for the each major/minor pair, and sometimes it appears
+            // to only have it for the top level (minor=0) one without the digit after in the name.
+            //
+            // I dont understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
+            //tmphack
+            String  tmp { L"/sys/block/" + deviceName + L"/" };
+            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
+                return tmp;
+            }
+            //tmphack - try using one char less
+            tmp = L"/sys/block/" + deviceName.CircularSubString (0, -1) + L"/";
+            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
+                return tmp;
+            }
+            return Optional<String> ();
+        }
+    private:
         uint32_t    GetSectorSize_ (const String& deviceName)
         {
             auto    o   =   fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (o.IsMissing ()) {
-                String  fn = Characters::Format (L"/sys/block/%s/queue/hw_sector_size", deviceName.c_str ());
-                try {
-                    o = String2Int<uint32_t> (TextReader (FileInputStream::mk (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
-                    fDeviceName2SectorSizeMap_.Add (deviceName, *o);
-                }
-                catch (...) {
-                    DbgTrace (L"Unknown error reading %s", fn.c_str ());
-                    // ignore
+                Optional<String>    blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
+                if (blockDeviceInfoPath) {
+                    String  fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
+                    try {
+                        o = String2Int<uint32_t> (TextReader (FileInputStream::mk (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                        fDeviceName2SectorSizeMap_.Add (deviceName, *o);
+                    }
+                    catch (...) {
+                        DbgTrace (L"Unknown error reading %s", fn.c_str ());
+                        // ignore
+                    }
                 }
             }
             if (o.IsMissing ()) {
@@ -506,16 +525,15 @@ namespace {
                     String  sectorsWritten = line[10 - 1];
                     String  timeSpentWritingMS = line[11 - 1];
                     constexpr bool kAlsoReadQLen_ { true };
-                    Optional<double>    aveQLen;
+                    Optional<double>    weightedTimeInQSeconds;
                     if (kAlsoReadQLen_) {
-                        static  const time_t    kSecsSinceBoot_ = [] () {
-                            struct sysinfo info;
-                            ::sysinfo (&info);
-                            return time(NULL) - info.uptime;
-                        } ();
-                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + L"/stat", FileInputStream::eNotSeekable))) {
-                            if (ll.size () >= 11) {
-                                aveQLen = String2Float (ll[11 - 1]) / GetSecondsSinceBoot_ ();
+                        Optional<String>    sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
+                        if (sysBlockInfoPath) {
+                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
+                                if (ll.size () >= 11) {
+                                    weightedTimeInQSeconds = String2Float (ll[11 - 1]) / 1000.0;    // we record in seconds, but the value in file in milliseconds
+                                    break;
+                                }
                             }
                         }
                     }
@@ -524,19 +542,12 @@ namespace {
                     PerfStats_ {
                         String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
                         String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
-                        aveQLen.Value ()
+                        weightedTimeInQSeconds.Value ()
                     }
                     );
                 }
             }
             return result;
-        }
-        double  GetSecondsSinceBoot_ ()
-        {
-            // @todo - get subsecnd accuracy from /proc/uptime
-            struct sysinfo info;
-            ::sysinfo (&info);
-            return ::time (NULL) - info.uptime;
         }
     };
 }
