@@ -468,16 +468,16 @@ namespace {
                         static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
-                            static  const time_t    kSecsSinceBoot_ = [] () {
+                            static  const time_t    kUNIXEpochTimeOfBoot_ = [] () {
                                 struct sysinfo info;
                                 ::sysinfo (&info);
-                                return time(NULL) - info.uptime;
+                                return ::time (NULL) - info.uptime;
                             } ();
                             //starttime %llu (was %lu before Linux 2.6)
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
                             // this value was expressed in jiffies. Since Linux 2.6,
                             // the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
-                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kSecsSinceBoot_));
+                            processDetails.fProcessStartedAt = DateTime (static_cast<time_t> (stats.start_time / kClockTick_ + kUNIXEpochTimeOfBoot_));
                         }
 
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
