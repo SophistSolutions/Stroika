@@ -6,6 +6,7 @@
 #if     qPlatform_POSIX
 #include    <sys/statvfs.h>
 #include    <sys/stat.h>
+#include    <sys/sysinfo.h>
 #include    <sys/types.h>
 #include    <unistd.h>
 #elif   qPlatform_Windows
