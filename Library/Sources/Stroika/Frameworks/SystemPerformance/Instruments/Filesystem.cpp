@@ -507,9 +507,14 @@ namespace {
                     constexpr bool kAlsoReadQLen_ { true };
                     Optional<double>    aveQLen;
                     if (kAlsoReadQLen_) {
-                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + L"/stats", FileInputStream::eNotSeekable))) {
+                        static  const time_t    kSecsSinceBoot_ = [] () {
+                            struct sysinfo info;
+                            ::sysinfo (&info);
+                            return time(NULL) - info.uptime;
+                        } ();
+                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + L"/stat", FileInputStream::eNotSeekable))) {
                             if (ll.size () >= 11) {
-                                aveQLen = String2Float (ll[11 - 1]);
+                                aveQLen = String2Float (ll[11 - 1]) / GetSecondsSinceBoot_ ();
                             }
                         }
                     }
@@ -524,6 +529,13 @@ namespace {
                 }
             }
             return result;
+        }
+        double  GetSecondsSinceBoot_ ()
+        {
+            // @todo - get subsecnd accuracy from /proc/uptime
+            struct sysinfo info;
+            ::sysinfo (&info);
+            return ::time (NULL) - info.uptime;
         }
     };
 }
