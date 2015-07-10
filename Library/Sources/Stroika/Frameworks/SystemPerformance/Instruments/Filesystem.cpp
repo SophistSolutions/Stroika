@@ -507,7 +507,7 @@ namespace {
                     constexpr bool kAlsoReadQLen_ { true };
                     Optional<double>    aveQLen;
                     if (kAlsoReadQLen_) {
-                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + "/stats", FileInputStream::eNotSeekable))) {
+                        for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (L"/sys/block/" + devName + L"/stats", FileInputStream::eNotSeekable))) {
                             if (ll.size () >= 11) {
                                 aveQLen = String2Float (ll[11 - 1]);
                             }
@@ -518,7 +518,7 @@ namespace {
                     PerfStats_ {
                         String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
                         String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
-                        aveQLen
+                        aveQLen.Value ()
                     }
                     );
                 }
