@@ -1262,6 +1262,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h" />
@@ -1580,6 +1581,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl" />

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_BinaryInputStreamFromIStreamAdapter_h_
-#define _Stroika_Foundation_Streams_iostream_BinaryInputStreamFromIStreamAdapter_h_ 1
+#ifndef _Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_
+#define _Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -15,7 +15,6 @@
 #include    "../InputStream.h"
 
 
-#include    "InputStreamAdapter.h"
 
 /**
  *  \file
@@ -31,18 +30,16 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
             namespace   iostream {
 
 
-#if 1
-                using BinaryInputStreamFromIStreamAdapter = InputStreamAdapter<Memory::Byte>;
-#else
                 /**
-                 *  BinaryInputStreamFromIStreamAdapter creates a BinaryInputSteam wrapper
+                 *      @todo OBSOLETE DOCS
+                 *
+                 *  InputStreamAdapter creates a BinaryInputSteam wrapper
                  *  on an existing std::istream object. It is required (but un-enforced)
                  *  that the caller assure the lifetime of the original (argument) istream
                  *  is longer than the lifetiem of this created BinaryInputStream (smart pointer).
@@ -53,21 +50,18 @@ namespace   Stroika {
                  *  concurrently.
                  *
                  *  \note   \em Thread-Safety
-                 *      BinaryInputStreamFromIStreamAdapter is not necessarily thread safe.
+                 *      InputStreamAdapter is not necessarily thread safe.
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                class   BinaryInputStreamFromIStreamAdapter : public InputStream<Memory::Byte> {
-                private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+                template    <typename   ELEMENT_TYPE>
+                class   InputStreamAdapter : public InputStream<ELEMENT_TYPE> {
                 public:
-#endif
-                    class   Rep_;
+                    InputStreamAdapter (istream& originalStream);
 
-                public:
-                    BinaryInputStreamFromIStreamAdapter (istream& originalStream);
+                private:
+                    class   Rep_;
                 };
-#endif
 
 
             }
@@ -82,5 +76,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "InputStreamAdapter.inl"
 
-#endif  /*_Stroika_Foundation_Streams_iostream_BinaryInputStreamFromIStreamAdapter_h_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_*/

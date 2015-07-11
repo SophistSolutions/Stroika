@@ -24,6 +24,8 @@ using   Execution::make_unique_lock;
 using   Memory::Byte;
 
 
+#if 0
+
 
 
 class   BinaryInputStreamFromIStreamAdapter::Rep_ : public InputStream<Byte>::_IRep {
@@ -101,3 +103,4 @@ BinaryInputStreamFromIStreamAdapter::BinaryInputStreamFromIStreamAdapter (std::i
 {
 }
 
+#endif
