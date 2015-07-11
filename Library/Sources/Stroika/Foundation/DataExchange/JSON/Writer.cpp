@@ -5,7 +5,6 @@
 
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Characters/String_Constant.h"
-#include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "../../Streams/TextWriter.h"
 
 #include    "Writer.h"

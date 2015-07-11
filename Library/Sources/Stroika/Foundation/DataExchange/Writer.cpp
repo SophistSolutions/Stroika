@@ -4,7 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
-#include    "../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
+#include    "../Streams/iostream/OutputStreamAdapter.h"
 #include    "../Streams/iostream/TextOutputStreamFromOStreamAdapter.h"
 
 #include    "Writer.h"
@@ -14,7 +14,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-using   Streams::iostream::BinaryOutputStreamFromOStreamAdapter;
+using   Streams::iostream::OutputStreamAdapter;
 using   Streams::iostream::TextOutputStreamFromOStreamAdapter;
 
 
@@ -26,7 +26,7 @@ using   Streams::iostream::TextOutputStreamFromOStreamAdapter;
  */
 void    Writer::Write (const VariantValue& v, ostream& out)
 {
-    Write (v, BinaryOutputStreamFromOStreamAdapter (out));
+    Write (v, OutputStreamAdapter<Memory::Byte> (out));
 }
 
 void    Writer::Write (const VariantValue& v, wostream& out)

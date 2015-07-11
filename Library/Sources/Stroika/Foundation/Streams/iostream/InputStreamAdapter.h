@@ -7,10 +7,9 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <istream>
-#include    <mutex>
+#include    <ostream>
 
 #include    "../../Configuration/Common.h"
-#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "../InputStream.h"
 
@@ -21,11 +20,6 @@
  *
  * TODO:
  *
- *      @todo   Redo as template so handles wchar_t basic_stream too.
- *
- *      @todo   Support seek
- *
- *      @todo   Consider thread-safety. For now, a non-standard choice?
  */
 
 
@@ -36,7 +30,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                namespace Support {
+                namespace   InputStreamAdapterSupport {
                     template    <typename ELEMENT_TYPE>
                     struct  TraitsType {
                         using   IStreamType = basic_istream<ELEMENT_TYPE>;
@@ -70,12 +64,13 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                template    <typename   ELEMENT_TYPE, typename TRAITS = Support::TraitsType<ELEMENT_TYPE>>
+                template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamAdapterSupport::TraitsType<ELEMENT_TYPE>>
                 class   InputStreamAdapter : public InputStream<ELEMENT_TYPE> {
-                private:
-                    using   StreamType_ = typename TRAITS::IStreamType;
                 public:
-                    InputStreamAdapter (StreamType_& originalStream);
+                    using   IStreamType = typename TRAITS::IStreamType;
+
+                public:
+                    InputStreamAdapter (IStreamType& originalStream);
 
                 private:
                     class   Rep_;

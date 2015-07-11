@@ -56,7 +56,7 @@ namespace   Stroika {
                  *      m.Add (L"max-files", 10);
                  *      m.Add (L"max-processes", 3);
                  *      stringstream stringBuf;
-                 *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::BinaryOutputStreamFromOStreamAdapter (stringBuf));
+                 *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamAdapter (stringBuf));
                  */
                 class Writer : public DataExchange::Writer {
                 private:

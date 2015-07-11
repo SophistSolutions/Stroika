@@ -426,9 +426,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
@@ -1710,6 +1707,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamAdapter.h">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2599,6 +2599,9 @@
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.inl">
+      <Filter>Sources\Streams\iostream</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamAdapter.inl">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
   </ItemGroup>

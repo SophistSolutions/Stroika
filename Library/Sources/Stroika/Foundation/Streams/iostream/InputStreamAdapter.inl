@@ -30,10 +30,10 @@ namespace   Stroika {
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
                 class   InputStreamAdapter<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
                 private:
-                    using   StreamType_ = typename TRAITS::IStreamType;
+                    using   IStreamType = typename TRAITS::IStreamType;
 
                 public:
-                    Rep_ (StreamType_& originalStream)
+                    Rep_ (IStreamType& originalStream)
                         : fOriginalStream_ (originalStream)
                     {
                     }
@@ -55,7 +55,7 @@ namespace   Stroika {
                             return 0;
                         }
                         size_t  maxToRead   =   intoEnd - intoStart;
-                        using StreamElementType = typename StreamType_::char_type;
+                        using StreamElementType = typename IStreamType::char_type;
                         fOriginalStream_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
                         size_t  n   =    static_cast<size_t> (fOriginalStream_.gcount ());      // cast safe cuz amount asked to read was also size_t
 
@@ -89,7 +89,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    StreamType_&    fOriginalStream_;
+                    IStreamType&    fOriginalStream_;
                 };
 
 
@@ -99,7 +99,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
-                InputStreamAdapter<ELEMENT_TYPE, TRAITS>::InputStreamAdapter (StreamType_& originalStream)
+                InputStreamAdapter<ELEMENT_TYPE, TRAITS>::InputStreamAdapter (IStreamType& originalStream)
                     : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
                 {
                 }
