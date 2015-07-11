@@ -58,7 +58,7 @@ namespace   Stroika {
             private:
                 class   Rep_;
 
-			public:
+            public:
                 MemoryStream ();
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
