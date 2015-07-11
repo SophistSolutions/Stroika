@@ -351,9 +351,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -416,9 +413,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
       <Filter>Sources\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp">
       <Filter>Sources\IO\Network</Filter>

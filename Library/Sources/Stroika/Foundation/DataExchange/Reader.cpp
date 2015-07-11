@@ -4,8 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
-#include    "../Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "../Streams/iostream/TextInputStreamFromIStreamAdapter.h"
+#include    "../Streams/iostream/InputStreamAdapter.h"
 
 #include    "Reader.h"
 
@@ -15,8 +14,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
-using   Streams::iostream::TextInputStreamFromIStreamAdapter;
+using   Streams::iostream::InputStreamAdapter;
 
 
 
@@ -27,10 +25,10 @@ using   Streams::iostream::TextInputStreamFromIStreamAdapter;
  */
 VariantValue    Reader::Read (istream& in)
 {
-    return Read (BinaryInputStreamFromIStreamAdapter (in));
+    return Read (InputStreamAdapter<Memory::Byte> (in));
 }
 
 VariantValue    Reader::Read (wistream& in)
 {
-    return Read (TextInputStreamFromIStreamAdapter (in));
+    return Read (InputStreamAdapter<Characters::Character> (in));
 }

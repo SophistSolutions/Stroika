@@ -16,11 +16,9 @@
 
 
 
-/**
- * TODO:
- *          o   Consider mixing in Seekable here. Would be easy
- */
+#include    "InputStreamAdapter.h"
 
+#pragma message ("Warning: TextInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamAdapter")
 
 
 namespace   Stroika {
@@ -29,6 +27,9 @@ namespace   Stroika {
             namespace   iostream {
 
 
+#if 1
+                using TextInputStreamFromIStreamAdapter = InputStreamAdapter<Characters::Character>;
+#else
                 /**
                  *
                  */
@@ -38,6 +39,7 @@ namespace   Stroika {
                 private:
                     class   Rep_;
                 };
+#endif
 
 
             }

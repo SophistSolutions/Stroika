@@ -14,7 +14,6 @@ Objs	=	\
 	$(ObjDir)CommonInsertersAndExtractors.o\
 	$(ObjDir)FStreamSupport.o\
 	$(ObjDir)SerializeItemToBLOB.o\
-	$(ObjDir)TextInputStreamFromIStreamAdapter.o\
 	$(ObjDir)TextOutputStreamFromOStreamAdapter.o\
 	$(ObjDir)Utilities.o\
 	

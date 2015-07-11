@@ -55,7 +55,8 @@ namespace   Stroika {
                             return 0;
                         }
                         size_t  maxToRead   =   intoEnd - intoStart;
-                        fOriginalStream_.read (reinterpret_cast<char*> (intoStart), maxToRead);
+						using StreamElementType = typename StreamType_::char_type;
+                        fOriginalStream_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
                         size_t  n   =    static_cast<size_t> (fOriginalStream_.gcount ());      // cast safe cuz amount asked to read was also size_t
 
                         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
