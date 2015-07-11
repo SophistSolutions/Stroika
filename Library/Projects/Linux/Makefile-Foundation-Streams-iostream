@@ -13,7 +13,6 @@ Objs	=	\
 	$(ObjDir)CommonInsertersAndExtractors.o\
 	$(ObjDir)FStreamSupport.o\
 	$(ObjDir)SerializeItemToBLOB.o\
-	$(ObjDir)TextOutputStreamFromOStreamAdapter.o\
 	$(ObjDir)Utilities.o\
 	
 

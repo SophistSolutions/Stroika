@@ -462,9 +462,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>

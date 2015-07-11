@@ -7,7 +7,6 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <istream>
-#include    <ostream>
 
 #include    "../../Configuration/Common.h"
 

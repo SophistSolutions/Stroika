@@ -12,17 +12,10 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
-#include    "../OutputStream.h"
+#include    "OutputStreamAdapter.h"
 
 
-
-/**
- * TODO:
- *      @todo   Totally untested - just a draft implementations
- *
- *      @todo   Consider mixing in Seekable here. Would be easy
- */
-
+#pragma message ("Warning: TextOutputStreamFromOStreamAdapter FILE DEPRECATED - use OutputStreamAdapter")
 
 
 namespace   Stroika {
@@ -31,15 +24,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                /**
-                 *
-                 */
-                class   TextOutputStreamFromOStreamAdapter : public OutputStream<Characters::Character> {
-                private:
-                    class   Rep_;
-                public:
-                    TextOutputStreamFromOStreamAdapter (wostream& originalStream);
-                };
+                using TextOutputStreamFromOStreamAdapter = OutputStreamAdapter<Characters::Character>;
 
 
             }

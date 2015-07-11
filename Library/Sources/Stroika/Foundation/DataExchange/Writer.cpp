@@ -5,7 +5,6 @@
 
 #include    "../Characters/Format.h"
 #include    "../Streams/iostream/OutputStreamAdapter.h"
-#include    "../Streams/iostream/TextOutputStreamFromOStreamAdapter.h"
 
 #include    "Writer.h"
 
@@ -15,7 +14,6 @@ using   namespace   Stroika::Foundation::DataExchange;
 
 
 using   Streams::iostream::OutputStreamAdapter;
-using   Streams::iostream::TextOutputStreamFromOStreamAdapter;
 
 
 
@@ -32,6 +30,6 @@ void    Writer::Write (const VariantValue& v, ostream& out)
 void    Writer::Write (const VariantValue& v, wostream& out)
 {
     AssertNotImplemented ();    // just because we never implemented
-    Write (v, TextOutputStreamFromOStreamAdapter (out));
+    Write (v, OutputStreamAdapter<Characters::Character> (out));
 }
 

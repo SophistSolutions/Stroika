@@ -7,9 +7,8 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/iostream/OutputStreamAdapter.h"
+//#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 //#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/OutputStream.h"
 
@@ -146,7 +145,7 @@ namespace   {
         {
             {
                 stringstream s;
-                BinaryOutputStreamFromOStreamAdapter  so (s);
+                OutputStreamAdapter<Memory::Byte>  so (s);
                 const char kData_[] = "ddasdf3294234";
                 so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
                 VerifyTestResult (s.str () == kData_);

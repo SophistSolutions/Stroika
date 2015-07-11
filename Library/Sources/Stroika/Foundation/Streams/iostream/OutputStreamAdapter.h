@@ -6,11 +6,9 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <istream>
 #include    <ostream>
 
 #include    "../../Configuration/Common.h"
-#include    "../../Memory/SmallStackBuffer.h"
 
 #include    "../OutputStream.h"
 
