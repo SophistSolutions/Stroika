@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_OutputStreamAdapter_h_
-#define _Stroika_Foundation_Streams_iostream_OutputStreamAdapter_h_ 1
+#ifndef _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_
+#define _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -28,7 +28,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                namespace  OutputStreamAdapterSupport {
+                namespace  OutputStreamFromStdOStreamSupport {
                     template    <typename ELEMENT_TYPE>
                     struct  TraitsType {
                         using   IStreamType = basic_ostream<ELEMENT_TYPE>;
@@ -47,7 +47,7 @@ namespace   Stroika {
                 /**
                  *      @todo OBSOLETE DOCS
                  *
-                 *  OutputStreamAdapter creates a BinaryOutputSteam wrapper
+                 *  OutputStreamFromStdOStream creates a BinaryOutputSteam wrapper
                  *  on an existing std::ostream object. It is required (but un-enforced)
                  *  that the caller assure the lifetime of the original (argument) ostream
                  *  is longer than the lifetiem of this created BinaryOutputStream (smart pointer).
@@ -58,17 +58,17 @@ namespace   Stroika {
                  *  concurrently.
                  *
                  *  \note   \em Thread-Safety
-                 *      OutputStreamAdapter is not necessarily thread safe.
+                 *      OutputStreamFromStdOStream is not necessarily thread safe.
                  *      Its roughly as safe as the underlying ostream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                template    <typename   ELEMENT_TYPE, typename TRAITS = OutputStreamAdapterSupport::TraitsType<ELEMENT_TYPE>>
-                class   OutputStreamAdapter : public OutputStream<ELEMENT_TYPE> {
+                template    <typename   ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
+                class   OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
                 public:
                     using   OStreamType = typename TRAITS::OStreamType;
 
                 public:
-                    OutputStreamAdapter (OStreamType& originalStream);
+                    OutputStreamFromStdOStream (OStreamType& originalStream);
 
                 private:
                     class   Rep_;
@@ -88,6 +88,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "OutputStreamAdapter.inl"
+#include    "OutputStreamFromStdOStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_iostream_OutputStreamAdapter_h_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_h_*/

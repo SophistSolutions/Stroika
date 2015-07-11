@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_OutputStreamAdapter_inl_
-#define _Stroika_Foundation_Streams_iostream_OutputStreamAdapter_inl_   1
+#ifndef _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_
+#define _Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_   1
 
 
 /*
@@ -24,11 +24,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************** OutputStreamAdapter<ELEMENT_TYPE>::Rep_ ********************
+                 *************** OutputStreamFromStdOStream<ELEMENT_TYPE>::Rep_ *****************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
-                class   OutputStreamAdapter<ELEMENT_TYPE, TRAITS>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+                class   OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
                 private:
                     using   OStreamType = typename TRAITS::OStreamType;
 
@@ -94,11 +94,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** InputStreamAdapter<ELEMENT_TYPE> ***********************
+                 *********************** OutputStreamFromStdOStream<ELEMENT_TYPE> ***************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
-                OutputStreamAdapter<ELEMENT_TYPE, TRAITS>::OutputStreamAdapter (OStreamType& originalStream)
+                OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::OutputStreamFromStdOStream (OStreamType& originalStream)
                     : OutputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
                 {
                 }
@@ -108,4 +108,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_iostream_OutputStreamAdapter_inl_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_*/

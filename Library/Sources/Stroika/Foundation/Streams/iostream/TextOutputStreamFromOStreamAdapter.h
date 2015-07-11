@@ -12,10 +12,10 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
-#include    "OutputStreamAdapter.h"
+#include    "OutputStreamFromStdOStream.h"
 
 
-#pragma message ("Warning: TextOutputStreamFromOStreamAdapter FILE DEPRECATED - use OutputStreamAdapter")
+#pragma message ("Warning: TextOutputStreamFromOStreamAdapter FILE DEPRECATED - use OutputStreamFromStdOStream")
 
 
 namespace   Stroika {
@@ -24,7 +24,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using TextOutputStreamFromOStreamAdapter = OutputStreamAdapter<Characters::Character>;
+                using TextOutputStreamFromOStreamAdapter = OutputStreamFromStdOStream<Characters::Character>;
 
 
             }

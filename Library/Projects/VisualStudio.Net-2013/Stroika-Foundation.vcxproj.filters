@@ -1701,10 +1701,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamAdapter.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2595,10 +2595,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamAdapter.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.inl">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamAdapter.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.inl">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
   </ItemGroup>

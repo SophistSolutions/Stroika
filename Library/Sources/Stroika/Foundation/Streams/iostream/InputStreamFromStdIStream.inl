@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_InputStreamAdapter_inl_
-#define _Stroika_Foundation_Streams_iostream_InputStreamAdapter_inl_   1
+#ifndef _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_inl_
+#define _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_inl_   1
 
 
 /*
@@ -24,11 +24,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************** InputStreamAdapter<ELEMENT_TYPE>::Rep_ ********************
+                 ******************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ ********************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
-                class   InputStreamAdapter<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+                class   InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
                 private:
                     using   IStreamType = typename TRAITS::IStreamType;
 
@@ -95,11 +95,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** InputStreamAdapter<ELEMENT_TYPE> ***********************
+                 *********************** InputStreamFromStdIStream<ELEMENT_TYPE> ***********************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
-                InputStreamAdapter<ELEMENT_TYPE, TRAITS>::InputStreamAdapter (IStreamType& originalStream)
+                InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream)
                     : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
                 {
                 }
@@ -109,4 +109,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamAdapter_inl_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_inl_*/

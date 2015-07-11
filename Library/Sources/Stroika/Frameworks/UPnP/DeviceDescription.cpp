@@ -6,7 +6,7 @@
 #include    <sstream>
 
 #include    "../../Foundation/DataExchange/XML/WriterUtils.h"
-#include    "../../Foundation/Streams/iostream/InputStreamAdapter.h"
+#include    "../../Foundation/Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "DeviceDescription.h"
 
@@ -163,7 +163,7 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     }
     tmp << "	</device>" << endl;
     tmp << "</root>" << endl;
-    Streams::iostream::InputStreamAdapter<Memory::Byte> tmp2 (tmp);
+    Streams::iostream::InputStreamFromStdIStream<Memory::Byte> tmp2 (tmp);
     return tmp2.ReadAll ();
 }
 

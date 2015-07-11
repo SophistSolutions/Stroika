@@ -4,7 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
-#include    "../Streams/iostream/InputStreamAdapter.h"
+#include    "../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "Reader.h"
 
@@ -14,7 +14,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-using   Streams::iostream::InputStreamAdapter;
+using   Streams::iostream::InputStreamFromStdIStream;
 
 
 
@@ -25,10 +25,10 @@ using   Streams::iostream::InputStreamAdapter;
  */
 VariantValue    Reader::Read (istream& in)
 {
-    return Read (InputStreamAdapter<Memory::Byte> (in));
+    return Read (InputStreamFromStdIStream<Memory::Byte> (in));
 }
 
 VariantValue    Reader::Read (wistream& in)
 {
-    return Read (InputStreamAdapter<Characters::Character> (in));
+    return Read (InputStreamFromStdIStream<Characters::Character> (in));
 }

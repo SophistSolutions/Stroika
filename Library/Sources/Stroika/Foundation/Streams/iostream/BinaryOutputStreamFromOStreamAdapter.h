@@ -6,10 +6,10 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "OutputStreamAdapter.h"
+#include    "OutputStreamFromStdOStream.h"
 
 
-#pragma message ("Warning: BinaryOutputStreamFromOStreamAdapter FILE DEPRECATED - use OutputStreamAdapter")
+#pragma message ("Warning: BinaryOutputStreamFromOStreamAdapter FILE DEPRECATED - use OutputStreamFromStdOStream")
 
 
 namespace   Stroika {
@@ -18,7 +18,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using BinaryOutputStreamFromOStreamAdapter = OutputStreamAdapter<Memory::Byte>;
+                using BinaryOutputStreamFromOStreamAdapter = OutputStreamFromStdOStream<Memory::Byte>;
 
 
             }

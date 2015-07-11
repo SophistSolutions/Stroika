@@ -6,10 +6,10 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "InputStreamAdapter.h"
+#include    "InputStreamFromStdIStream.h"
 
 
-#pragma message ("Warning: TextInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamAdapter")
+#pragma message ("Warning: TextInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamFromStdIStream")
 
 
 namespace   Stroika {
@@ -18,7 +18,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using TextInputStreamFromIStreamAdapter = InputStreamAdapter<Characters::Character>;
+                using TextInputStreamFromIStreamAdapter = InputStreamFromStdIStream<Characters::Character>;
 
 
             }

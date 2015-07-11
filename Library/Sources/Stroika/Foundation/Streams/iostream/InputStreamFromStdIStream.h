@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_
-#define _Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_ 1
+#ifndef _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_
+#define _Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -29,7 +29,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                namespace   InputStreamAdapterSupport {
+                namespace   InputStreamFromStdIStreamSupport {
                     template    <typename ELEMENT_TYPE>
                     struct  TraitsType {
                         using   IStreamType = basic_istream<ELEMENT_TYPE>;
@@ -48,7 +48,7 @@ namespace   Stroika {
                 /**
                  *      @todo OBSOLETE DOCS
                  *
-                 *  InputStreamAdapter creates a BinaryInputSteam wrapper
+                 *  InputStreamFromStdIStream creates a BinaryInputSteam wrapper
                  *  on an existing std::istream object. It is required (but un-enforced)
                  *  that the caller assure the lifetime of the original (argument) istream
                  *  is longer than the lifetiem of this created BinaryInputStream (smart pointer).
@@ -59,17 +59,17 @@ namespace   Stroika {
                  *  concurrently.
                  *
                  *  \note   \em Thread-Safety
-                 *      InputStreamAdapter is not necessarily thread safe.
+                 *      InputStreamFromStdIStream is not necessarily thread safe.
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamAdapterSupport::TraitsType<ELEMENT_TYPE>>
-                class   InputStreamAdapter : public InputStream<ELEMENT_TYPE> {
+                template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
+                class   InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
                 public:
                     using   IStreamType = typename TRAITS::IStreamType;
 
                 public:
-                    InputStreamAdapter (IStreamType& originalStream);
+                    InputStreamFromStdIStream (IStreamType& originalStream);
 
                 private:
                     class   Rep_;
@@ -88,6 +88,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "InputStreamAdapter.inl"
+#include    "InputStreamFromStdIStream.inl"
 
-#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamAdapter_h_*/
+#endif  /*_Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_h_*/

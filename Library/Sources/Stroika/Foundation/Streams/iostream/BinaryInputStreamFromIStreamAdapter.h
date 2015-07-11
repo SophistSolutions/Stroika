@@ -6,11 +6,11 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "InputStreamAdapter.h"
+#include    "InputStreamFromStdIStream.h"
 
 
 
-#pragma message ("Warning: BinaryInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamAdapter")
+#pragma message ("Warning: BinaryInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamFromStdIStream")
 
 
 
@@ -20,7 +20,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using BinaryInputStreamFromIStreamAdapter = InputStreamAdapter<Memory::Byte>;
+                using BinaryInputStreamFromIStreamAdapter = InputStreamFromStdIStream<Memory::Byte>;
 
 
             }
