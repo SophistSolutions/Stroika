@@ -11,7 +11,6 @@
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Enumeration.h"
 #include    "../Memory/Common.h"
-#include    "../Memory/Optional.h"
 
 
 
@@ -21,11 +20,19 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Explain in docs how Stroika streams differ from iostream
- *              o   MUCH MUCH easier to implement your own complaint stream
- *              o   Separarate interface from implementation (thats why easier to implement)
- *              o   Doesn’t mix text with binary APIs. Keeps them logically separate (view as
- *                  you will – diff – if better or worse)
+ *      @todo   Consdier the design of 'force always blocking' for Streams API. Is that too harsh?
+ *              Maybe have some non-blocking API variants?
+ *
+              *ELSEHWERE
+              *      o   Seek called on an input stream that has already returned EOF, may cause
+              *          subsequent Read() calls to NOT be at EOF.
+              *
+              *      o   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
+              *          was simpler and more elegant to just keep things separate and use mixin classes
+              *          like 'interfaces' - and use dynamic_cast<> to see what functionality is available
+              *          on a stream. At least thats so for the implementations. The wrapper class - Seekable -
+              *          does have an IsSeekable() method which just tests if we have a Seekable interface.
+              *
  *
  *
  */
@@ -67,38 +74,49 @@ namespace   Stroika {
 
 
             /**
-              *  @todo CLEANUP DOCS
-             *
               * Design Overview:
+              *     o   A Streams is a sequence of data elements made available over time. These elements
+              *         are typically 'Bytes' - or 'Characters' - but can be any type.
               *
-              *      o   Designed to be a base for TextStream and BinaryStream.
+              *     o   Streams are created, and then handled ONLY through smart pointers. Assigning Streams
+              *         merely copies the 'smart pointer' to that same underlying stream. This means that offsets
+              *         and underlying data, are all shared.
               *
-              *      o   Two basic parts - a 'smart-ish' pointer wrapper, and a virtual Rep.
-              *          The virtual Rep provides the API which implementers override. The
-              *          public part of the Seekable class itself provides the helpers
-              *          inherirted by the various Stream subclasses (e.g. BinaryInputStream
-              *          and TextOutputStream).
+              *     o   Streams have two parallel hierarchies, which mirror one another, of smart pointers and related
+              *         'virtual rep' objects which provide the API which implementers override.
               *
-              *      o   Seek called on an input stream that has already returned EOF, may cause
-              *          subsequent Read() calls to NOT be at EOF.
+              *     o   Seek Offsets are in elements of the kind of stream (e.g in Bytes for a Stream<Byte>, and
+              *         in Characters for a Stream<Character>).
               *
-              *      o   Offsets are in whatever unit makes sense for the kind of stream this is mixed into,
-              *          so for TextInputStreams, offsets are in CHARACTERS and in Binary streams, offsets
-              *          are in Bytes. This implies one CANNOT reasonably mix together Binary streams and Text
-              *          streams (one combines them by use of a special TextStream that refers to another
-              *          BinaryStream for actual IO).
+              *     o   Two important subclasses of Stream<> are InputStream<> (for reading) and OutputStream<> for
+              *         writing. So that each can maintain its own intrinsic current offset (separate seek offset
+              *         for reading and writing) in mixed (input/output) streams, the actual offset APIs and
+              *         logic are in those subclasses.
               *
-              *      o   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
-              *          was simpler and more elegant to just keep things separate and use mixin classes
-              *          like 'interfaces' - and use dynamic_cast<> to see what functionality is available
-              *          on a stream. At least thats so for the implementations. The wrapper class - Seekable -
-              *          does have an IsSeekable() method which just tests if we have a Seekable interface.
+              *     o   Stream APIs are intrinsically blocking. This makes working with them much simpler, since code
+              *         using Streams doesnt need to be written to handle both blocking and non-blocking behavior, and be
+              *         surprised when a 'mode' is set on a stream making it non-blocking.
               *
-              *      o   COULD have allowed for GetOffset() to work separately from Seek () - but decided
-              *          this was a simpler API, and I could think of no cases where it was particularly
-              *          useful to track a 'seek offset' but not be able to Seek() - and if it is useful -
-              *          its easy enuf to do another way (e.g. wrap the stream you are using, and track
-              *          read calls to it and increment your own offset).
+              *     o   Relationship with std iostream:
+              *             Stroika streams are in many ways similar to iostreams. They are interoperable with iostreams
+              *             through the Streams::iostream::(InputStreamFromStdIStream, InputStreamToStdIStream,
+              *             OutputStreamFromStdIStream, OutputStreamToStdIStream) classes.
+              *
+              *             o   Stroika Streams are much easier to create (just a few intuitive virtual methods
+              *                 to override.
+              *
+              *             o   Stroika streams are unrelated to formatting of text (@todo what other mechanism do we offer?)
+              *
+              *             o   Stroika Streams are much easier to use and understand, with better internal error checking,
+              *                 (like thread safety), and simpler, more consistent naming for offets/seeking, and seekability.
+              *
+              *             o   Stroika supports non-seekable streams (needed for things like sockets, and certain specail files, like
+              *                 Linux procfs files).
+              *
+              *             o   Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream
+              *                 to another (such as binary streams to streams of text, like the .net TextReader).
+              *
+              *             o   (@todo - fill in more differences if there are any more?)
               */
             template    <typename   ELEMENT_TYPE>
             class   Stream {
@@ -127,7 +145,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  empty() doesn't check the data in the stream, but instead checks if the BinaryStream
+                 *  empty() doesn't check the data in the stream, but instead checks if this Stream
                  *  smart pointer references any actual stream.
                  *
                  *  @see clear()
@@ -136,8 +154,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  clear () doesn't clear the data in the stream, but unreferences the Stream
-                 *  smart pointer.
+                 *  clear () doesn't clear the data in the stream, or close the steram, but unreferences the Stream
+                 *  smart pointer. Only if this Stream smartpointer is the last reference to the underlying stream
+                 *  data does this clear () close the underlying stream.
                  *
                  *  @see empty()
                  */
@@ -160,6 +179,8 @@ namespace   Stroika {
 
             private:
                 _SharedIRep fRep_;
+
+            private:
                 bool        fSeekable_;
             };
 
@@ -183,7 +204,9 @@ namespace   Stroika {
                 nonvirtual  _IRep& operator= (const _IRep&) = delete;
 
             public:
-                // cannot change value - called once and value cached
+                /**
+                 *  cannot change value - called once and value cached
+                 */
                 virtual bool    IsSeekable () const = 0;
             };
 

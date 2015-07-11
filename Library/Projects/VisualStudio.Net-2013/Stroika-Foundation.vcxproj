@@ -910,7 +910,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Stream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />

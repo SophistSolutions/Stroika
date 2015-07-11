@@ -690,9 +690,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\Stream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
