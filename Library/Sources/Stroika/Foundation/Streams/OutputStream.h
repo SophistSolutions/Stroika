@@ -65,31 +65,28 @@ namespace   Stroika {
 
 
             /**
-             *  @todo CLEANUP ALL OLD OBSOLETE DOCS
-             *
-             *  \brief  Stream is an 'abstract' class defining the interface...
+             *  \brief  OutputStream<> is Smart pointer (with abstract Rep) class defining the interface to writing to
+             *          a Stream sink of data.
              *
              * Design Overview:
              *
              *      o   @See Stream
              *
-             *      o   InputStream and OutputStream may be logically be mixed togehter to make an
+             *      o   InputStream and OutputStream may logically be mixed togehter to make an
              *          input/output stream: @see InputOutputStream<>
-             *&&&&& DOC CLEANUP BELOW
-
-
+             *
              *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.
              *          But not supporting partial writes makes use much simpler (since callers don't need
              *          to worry about that case), and its practically never useful. In principle - this API could be
              *          extended so that an exception (or extra method to ask about last write) could include information
              *          about partial writes, but for now - I don't see any reason.
              *
-             *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
+             *  Note - when you Seek() away from the end of an output stream, and then write, you automatically
              *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
              *  instead of inserting.
              *
              *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
-             *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
+             *  the destructor on the OutputStream (last reference goes away) or until you call Flush ().
              */
             template    <typename   ELEMENT_TYPE>
             class   OutputStream : public Stream<ELEMENT_TYPE> {

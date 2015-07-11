@@ -6,10 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-
-#include    "../Memory/BLOB.h"
-
 #include    "InputStream.h"
 
 
@@ -19,6 +15,7 @@
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
+ *      @todo   CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
  *
  *      @todo   DOCUMENT why we put ReadLine etc in InputStream, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
@@ -53,15 +50,20 @@ namespace   Stroika {
 
 
             /**
-             *  @todo CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
+             *  \note   This was called TextInputStreamBinaryAdapter
              *
-             *  WAS CALLED TextInputStreamBinaryAdapter
+             *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
+             *          much of the 'reading' API is baked into InputStream<Character>.
              */
             class   TextReader : public InputStream<Character> {
             private:
                 using   inherited = InputStream<Character>;
 
             public:
+                /**
+                 * IF handed 'bytes' - the TextReader interprets the bytes (@todo add support for code page spec, and autodetect etc)
+                 * If handled an InputStream<Character> - it just passes through characters.
+                 */
                 TextReader (const InputStream<Memory::Byte>& src);
                 TextReader (const InputStream<Character>& src);
 

@@ -14,6 +14,20 @@
  *  \file
  *
  *  TODO:
+ *
+ *      @todo   Sterl comments:
+ *          class   TextOutputStreamBinaryAdapter : public TextOutputStream {
+ *          public:
+ *              enum    class   Format : uint8_t    {
+ *                  eUTF8WithBOM        =   1,
+ * ...
+ *                  eWCharT             =   eWChar
+ *
+ *              CHANGE DEFAULT TO NOT WITH BOM..
+ *              (I’m NOT SURE ABOUT THIS CHANGE)
+ *              Probably REPLACE the 'Format' stuff with the same sort of parameters we passed to our older code converison code,
+ *              either a locale, or a code page, and a separate overload with flags for BOM.
+ *
  *      @todo   Extend format with eUTF16... and eUTF32, and note that wWCharT could be same as eUTF16/32 depending
  *              on system defaults.
  *
@@ -49,10 +63,9 @@ namespace   Stroika {
              *  Obviously todo this, there may be some character set mapping/conversion needed. The object
              *  takes constructor arguments to decide how this will he handled.
              *
-             *  TextWriter is Seekable iff its constructed with a BinaryOutputStream which is seekable.
+             *  TextWriter is Seekable iff its constructed with a OutputStream<> which is seekable.
              *
-             *
-             *  WAS CALLED TextOutputStreamBinaryAdapter
+             *  \npte   This API was called TextOutputStreamAdapter
              */
             class   TextWriter : public OutputStream<Characters::Character> {
             private:
@@ -69,6 +82,10 @@ namespace   Stroika {
                     eWCharT             =   eWCharTWithBOM,
                 };
             public:
+                /**
+                 * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
+                 * If handled an OutputStream<Character> - it just passes through characters.
+                 */
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
                 TextWriter (const OutputStream<Characters::Character>& src);
 

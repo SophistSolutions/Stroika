@@ -18,6 +18,10 @@
  *  \file
  *
  * TODO:
+ *      @todo   names iostream:: InputStreamFromStdIStream = reason is cuz we want to also have InputStreamAsStdIStream –
+ *              something that IS an iostream (PITA to write)
+ *
+ *      @todo   IMPLEMENT InputStreamFromStdIStream and OutputStreamFromStdOStream
  *
  */
 
