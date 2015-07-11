@@ -17,19 +17,9 @@
 
 #include    "InputStreamAdapter.h"
 
-/**
- *  \file
- *
- * TODO:
- *
- *      @todo   Redo as template so handles wchar_t basic_stream too.
- *
- *      @todo   Support seek
- *
- *      @todo   Consider thread-safety. For now, a non-standard choice?
- */
 
 
+#pragma message ("Warning: BinaryInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamAdapter")
 
 
 namespace   Stroika {

@@ -27,10 +27,13 @@ namespace   Stroika {
                  ******************** InputStreamAdapter<ELEMENT_TYPE>::Rep_ ********************
                  ********************************************************************************
                  */
-                template    <typename   ELEMENT_TYPE>
-                class   InputStreamAdapter<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
-                public:
-                    Rep_ (istream& originalStream)
+                template    <typename   ELEMENT_TYPE, typename TRAITS>
+                class   InputStreamAdapter<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
+				private:
+					using	StreamType_ = typename TRAITS::IStreamType;
+
+				public:
+                    Rep_ (StreamType_& originalStream)
                         : fOriginalStream_ (originalStream)
                     {
                     }
@@ -57,7 +60,7 @@ namespace   Stroika {
 
                         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
                         if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-                            Execution::DoThrow (Execution::StringException (Characters::String_Constant (L"Failed to read from istream")));
+							Execution::DoThrow (Execution::StringException (Characters::String_Constant { L"Failed to read from istream" }));
                         }
                         return n;
                     }
@@ -85,7 +88,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    istream&        fOriginalStream_;
+                    StreamType_&	fOriginalStream_;
                 };
 
 
@@ -94,8 +97,8 @@ namespace   Stroika {
                  *********************** InputStreamAdapter<ELEMENT_TYPE> ***********************
                  ********************************************************************************
                  */
-                template    <typename   ELEMENT_TYPE>
-                InputStreamAdapter<ELEMENT_TYPE>::InputStreamAdapter (std::istream& originalStream)
+                template    <typename   ELEMENT_TYPE, typename TRAITS>
+                InputStreamAdapter<ELEMENT_TYPE, TRAITS>::InputStreamAdapter (StreamType_& originalStream)
                     : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
                 {
                 }

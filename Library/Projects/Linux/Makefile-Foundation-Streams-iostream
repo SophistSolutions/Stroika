@@ -10,7 +10,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)BinaryInputStreamFromIStreamAdapter.o\
 	$(ObjDir)BinaryOutputStreamFromOStreamAdapter.o\
 	$(ObjDir)CommonInsertersAndExtractors.o\
 	$(ObjDir)FStreamSupport.o\

@@ -36,6 +36,22 @@ namespace   Stroika {
             namespace   iostream {
 
 
+				namespace Support {
+					template	<typename ELEMENT_TYPE>
+					struct	TraitsType {
+						using	IStreamType = basic_istream<ELEMENT_TYPE>;
+					};
+					template	<>
+					struct	TraitsType<Memory::Byte> {
+						using	IStreamType = istream;
+					};
+					template	<>
+					struct	TraitsType<Characters::Character> {
+						using	IStreamType = wistream;
+					};
+				}
+
+
                 /**
                  *      @todo OBSOLETE DOCS
                  *
@@ -54,10 +70,12 @@ namespace   Stroika {
                  *      Its roughly as safe as the underlying istream implementation, except
                  *      that we call read, followed by gcount () - which could be a race.
                  */
-                template    <typename   ELEMENT_TYPE>
+                template    <typename   ELEMENT_TYPE, typename TRAITS = Support::TraitsType<ELEMENT_TYPE>>
                 class   InputStreamAdapter : public InputStream<ELEMENT_TYPE> {
+				private:
+					using	StreamType_ = typename TRAITS::IStreamType;
                 public:
-                    InputStreamAdapter (istream& originalStream);
+                    InputStreamAdapter (StreamType_& originalStream);
 
                 private:
                     class   Rep_;
