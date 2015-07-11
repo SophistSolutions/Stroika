@@ -21,12 +21,13 @@
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
- *      @todo   Must get MemoryStream<ELEMENT_TYPE>::As () working - at least for case of binary/text streams
- *
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
  *              class (when I implement it) based on Led chunked arrays).
  *
  *      @todo   explain about read/write at same time / threadsa, nd logic for shared SEEK OFFSET
+ *
+ *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
+ *              multiple explicit template specailizations.
  *
  */
 
@@ -55,11 +56,9 @@ namespace   Stroika {
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 class   Rep_;
-            public:
+
+			public:
                 MemoryStream ();
                 MemoryStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
@@ -83,22 +82,23 @@ namespace   Stroika {
             };
 
 
-#if 0
-            template    <typename   ELEMENT_TYPE>
             template    <>
-            vector<ELEMENT_TYPE>    MemoryStream<ELEMENT_TYPE>::As () const;
-#endif
+            template    <>
+            Memory::BLOB                    MemoryStream<Memory::Byte>::As () const;
+            template    <>
+            template    <>
+            string                          MemoryStream<Memory::Byte>::As () const;
+            template    <>
+            template    <>
+            vector<Memory::Byte>            MemoryStream<Memory::Byte>::As () const;
 
             template    <>
             template    <>
-            Memory::BLOB        MemoryStream<Memory::Byte>::As () const;
+            Characters::String              MemoryStream<Characters::Character>::As () const;
             template    <>
             template    <>
-            string              MemoryStream<Memory::Byte>::As () const;
+            vector<Characters::Character>   MemoryStream<Characters::Character>::As () const;
 
-            template    <>
-            template    <>
-            Characters::String  MemoryStream<Characters::Character>::As () const;
 
         }
     }

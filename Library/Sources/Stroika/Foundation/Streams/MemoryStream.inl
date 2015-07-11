@@ -244,17 +244,6 @@ namespace   Stroika {
                 : MemoryStream<ELEMENT_TYPE> (blob.begin (), blob.end ())
             {
             }
-#if 0
-            template    <typename   ELEMENT_TYPE>
-            template    <>
-            inline  vector<ELEMENT_TYPE>   MemoryStream<ELEMENT_TYPE>::As () const
-            {
-                RequireNotNull (_GetRep ().get ());
-                AssertMember (_GetRep ().get (), Rep_);
-                const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
-                return rep.AsVector ();
-            }
-#endif
             template    <typename   ELEMENT_TYPE>
             template    <typename   T>
             T   MemoryStream<ELEMENT_TYPE>::As () const
@@ -264,6 +253,24 @@ namespace   Stroika {
 #else
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
+            }
+            template    <>
+            template    <>
+            inline  vector<Memory::Byte>   MemoryStream<Memory::Byte>::As () const
+            {
+                RequireNotNull (_GetRep ().get ());
+                AssertMember (_GetRep ().get (), Rep_);
+                const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                return rep.AsVector ();
+            }
+            template    <>
+            template    <>
+            inline  vector<Characters::Character>   MemoryStream<Characters::Character>::As () const
+            {
+                RequireNotNull (_GetRep ().get ());
+                AssertMember (_GetRep ().get (), Rep_);
+                const Rep_&    rep =   *dynamic_cast<const Rep_*> (_GetRep ().get ());
+                return rep.AsVector ();
             }
 
 
