@@ -36,20 +36,20 @@ namespace   Stroika {
             namespace   iostream {
 
 
-				namespace Support {
-					template	<typename ELEMENT_TYPE>
-					struct	TraitsType {
-						using	IStreamType = basic_istream<ELEMENT_TYPE>;
-					};
-					template	<>
-					struct	TraitsType<Memory::Byte> {
-						using	IStreamType = istream;
-					};
-					template	<>
-					struct	TraitsType<Characters::Character> {
-						using	IStreamType = wistream;
-					};
-				}
+                namespace Support {
+                    template    <typename ELEMENT_TYPE>
+                    struct  TraitsType {
+                        using   IStreamType = basic_istream<ELEMENT_TYPE>;
+                    };
+                    template    <>
+                    struct  TraitsType<Memory::Byte> {
+                        using   IStreamType = istream;
+                    };
+                    template    <>
+                    struct  TraitsType<Characters::Character> {
+                        using   IStreamType = wistream;
+                    };
+                }
 
 
                 /**
@@ -72,8 +72,8 @@ namespace   Stroika {
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS = Support::TraitsType<ELEMENT_TYPE>>
                 class   InputStreamAdapter : public InputStream<ELEMENT_TYPE> {
-				private:
-					using	StreamType_ = typename TRAITS::IStreamType;
+                private:
+                    using   StreamType_ = typename TRAITS::IStreamType;
                 public:
                     InputStreamAdapter (StreamType_& originalStream);
 

@@ -6,17 +6,8 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <istream>
-#include    <mutex>
-
-#include    "../../Configuration/Common.h"
-#include    "../../Memory/SmallStackBuffer.h"
-
-#include    "../InputStream.h"
-
-
-
 #include    "InputStreamAdapter.h"
+
 
 #pragma message ("Warning: TextInputStreamFromIStreamAdapter FILE DEPRECATED - use InputStreamAdapter")
 
@@ -27,19 +18,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-#if 1
                 using TextInputStreamFromIStreamAdapter = InputStreamAdapter<Characters::Character>;
-#else
-                /**
-                 *
-                 */
-                class   TextInputStreamFromIStreamAdapter : public InputStream<Characters::Character> {
-                public:
-                    TextInputStreamFromIStreamAdapter (wistream& originalStream);
-                private:
-                    class   Rep_;
-                };
-#endif
 
 
             }

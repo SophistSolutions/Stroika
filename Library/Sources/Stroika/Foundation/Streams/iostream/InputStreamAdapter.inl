@@ -29,10 +29,10 @@ namespace   Stroika {
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
                 class   InputStreamAdapter<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
-				private:
-					using	StreamType_ = typename TRAITS::IStreamType;
+                private:
+                    using   StreamType_ = typename TRAITS::IStreamType;
 
-				public:
+                public:
                     Rep_ (StreamType_& originalStream)
                         : fOriginalStream_ (originalStream)
                     {
@@ -55,13 +55,13 @@ namespace   Stroika {
                             return 0;
                         }
                         size_t  maxToRead   =   intoEnd - intoStart;
-						using StreamElementType = typename StreamType_::char_type;
+                        using StreamElementType = typename StreamType_::char_type;
                         fOriginalStream_.read (reinterpret_cast<StreamElementType*> (intoStart), maxToRead);
                         size_t  n   =    static_cast<size_t> (fOriginalStream_.gcount ());      // cast safe cuz amount asked to read was also size_t
 
                         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
                         if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-							Execution::DoThrow (Execution::StringException (Characters::String_Constant { L"Failed to read from istream" }));
+                            Execution::DoThrow (Execution::StringException (Characters::String_Constant { L"Failed to read from istream" }));
                         }
                         return n;
                     }
@@ -89,7 +89,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    StreamType_&	fOriginalStream_;
+                    StreamType_&    fOriginalStream_;
                 };
 
 
