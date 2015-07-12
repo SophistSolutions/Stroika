@@ -24,11 +24,6 @@
  *      @todo   ADD TO DOCUMENTATION AND IMPLEMNENTATION - when CONTAINER (smartptr)
  *              goes out of scope - AUTO-CLOSE the stream (so any future reads just return
  *              EOF, or special 'CLOSED'? Or ASSERT ERROR? DECIDE AND DOCUMENT AND DO.
- *
- *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
- *
- *      @todo   USE CONSTRUCTOR DELegation! : like BasicBinaryInputStream constructors
- *              and replace vector<Byte> ctor
  */
 
 
@@ -55,7 +50,7 @@ namespace   Stroika {
              *
              *  ExternallyOwnedMemoryInputStream is Seekable.
              *
-             *  @see BasicBinaryInputStream
+             *  @see MemoryStream
              */
             template    <typename ELEMENT_TYPE>
             class   ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
@@ -65,7 +60,7 @@ namespace   Stroika {
             public:
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
-                ExternallyOwnedMemoryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end);
+                _DeprecatedFunction_ (ExternallyOwnedMemoryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end), "dangerous - to be removed after v2.0a99");
 
             private:
                 class   Rep_;

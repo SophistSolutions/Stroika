@@ -45,6 +45,9 @@ namespace   Stroika {
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
              *  \note   NB: This class COULD have been called MemoryInputOutputStream.
+             *
+             *  See Also:
+             *      @see ExternallyOwnedMemoryInputStream
              */
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
