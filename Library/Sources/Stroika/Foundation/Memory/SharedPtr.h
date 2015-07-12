@@ -93,7 +93,7 @@ namespace   Stroika {
 
 /// See why??? not working for gcc?
 /// ALSO not working on VS2k15RC, so my guess its MY bug and a bug in VS2k13 that allows it to work.
-///     -- Just disable altogehter for now!!!
+///     -- Just disable altogether for now!!!
 ///     --  LGP 2015-05-16
 //#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
 //#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       defined (_MSC_VER)

@@ -80,7 +80,7 @@ namespace   Stroika {
              *          a formatting effort (e.g. if the source is encrypted, and the stream is decrypting,
              *          then it might detect a format error and throw).
              *
-             *      o   InputStream and OutputStream may be logically be mixed togehter to make an
+             *      o   InputStream and OutputStream may be logically be mixed together to make an
              *          input/output stream: @see InputOutputStream<>
              *
              *      @see Stroika::Foundation::Streams::iostream for adapters to work with std::iostream.

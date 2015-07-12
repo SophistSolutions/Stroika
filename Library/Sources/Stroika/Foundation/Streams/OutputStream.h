@@ -72,7 +72,7 @@ namespace   Stroika {
              *
              *      o   @See Stream
              *
-             *      o   InputStream and OutputStream may logically be mixed togehter to make an
+             *      o   InputStream and OutputStream may logically be mixed together to make an
              *          input/output stream: @see InputOutputStream<>
              *
              *      o   One (potential) slight design flaw with this API, is that its not possible to have legal partial writes.

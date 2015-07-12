@@ -16,15 +16,25 @@ History
 
 
 
+
+
+
+
+
      
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a98">v2.0a98x</a><br/>2015-07-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a98">v2.0a98</a><br/>2015-07-11</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Major cleanup of Streams code. Mostly just polishing, and completing the work started in the last release.</li>
+		<li>Fixed bugs with Synchonized<>/WritableReference - copying and const indirection</li>
+		<li>POSIX SystemPerformance/Instruments/Filesystem aveQLen code</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind, and built and most tests OK on VC++2k15</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 
