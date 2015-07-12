@@ -999,9 +999,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1089,9 +1086,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
@@ -1106,9 +1100,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
       <Filter>Sources\Configuration</Filter>
@@ -1218,12 +1209,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
@@ -1271,9 +1256,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h">
       <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h">
       <Filter>Sources\DataExchange\XML</Filter>

@@ -1196,8 +1196,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h" />
@@ -1253,15 +1251,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryInputStreamFromIStreamAdapter.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h" />
