@@ -14,7 +14,6 @@
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
