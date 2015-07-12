@@ -128,12 +128,14 @@ namespace   Stroika {
                 : inherited (make_shared<Rep_> (start, end))
             {
             }
+#if 0
             template    <typename ELEMENT_TYPE>
             template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
             inline  ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::ExternallyOwnedMemoryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end)
                 : ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> (static_cast<const Memory::Byte*> (Traversal::Iterator2Pointer (start)), static_cast<const Memory::Byte*> (Traversal::Iterator2Pointer (start) + (end - start)))
             {
             }
+#endif
 
 
         }

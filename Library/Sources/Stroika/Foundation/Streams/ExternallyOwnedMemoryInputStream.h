@@ -59,8 +59,10 @@ namespace   Stroika {
 
             public:
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+#if 0
                 template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
                 _DeprecatedFunction_ (ExternallyOwnedMemoryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end), "dangerous - to be removed after v2.0a99");
+#endif
 
             private:
                 class   Rep_;
