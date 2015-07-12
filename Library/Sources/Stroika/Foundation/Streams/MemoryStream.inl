@@ -59,7 +59,6 @@ namespace   Stroika {
                     size_t  nAvail      =   fData_.end () - fReadCursor_;
                     size_t  nCopied     =   min (nAvail, nRequested);
                     {
-                        //(void)::memcpy (intoStart, Traversal::Iterator2Pointer (fReadCursor_), nCopied);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                         Memory::Private::VC_BWA_std_copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
 #else
@@ -87,7 +86,6 @@ namespace   Stroika {
                             fWriteCursor_ = fData_.begin () + curWriteOffset;
                             Assert (fWriteCursor_ < fData_.end ());
                         }
-                        //(void)::memcpy (Traversal::Iterator2Pointer (fWriteCursor_), start, roomRequired);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                         Memory::Private::VC_BWA_std_copy (start, start + roomRequired, fWriteCursor_);
 #else

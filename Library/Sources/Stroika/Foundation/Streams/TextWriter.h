@@ -39,12 +39,9 @@
  *                  Clarify behavior if src (CTOR ARG) stream is or is not seekable. And also what about if src is not
  *                  seeked to beginning for BOM? Clarify exact semantics!!!
  *
- *      @todo   Thread/Locking...
- *
  *      @todo   Consider adding locale feature. if you use narrow string (char* or string) it uses associated
  *              locale. If none, use global locale? Could use codepage instead of locale, but propba
  *              best to have one notion and extract that codepage from teh given (or global) locale.(ONLY FOR STREAM OF CHARCTETSD?? Maybe just in WRITER)
- *
  *
  */
 
@@ -56,8 +53,6 @@ namespace   Stroika {
 
 
             /**
-             *  @todo CLEANUP DOCS - EXPLAIN WHY TAKES BIN OR TEXT STREAM - PASSTHROUGH TEXTSTREAM AND MAP/ENCODE BINSTREAM.
-             *
              *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
              *
              *  Obviously todo this, there may be some character set mapping/conversion needed. The object
