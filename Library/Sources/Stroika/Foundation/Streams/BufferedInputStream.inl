@@ -54,7 +54,6 @@ namespace   Stroika {
                 }
 
             private:
-                mutable mutex               fCriticalSection_;
                 InputStream<ELEMENT_TYPE>   fRealIn_;
             };
 
