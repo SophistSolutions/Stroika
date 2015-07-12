@@ -22,6 +22,8 @@
  *              something that IS an iostream (PITA to write)
  *
  *      @todo   IMPLEMENT InputStreamFromStdIStream and OutputStreamFromStdOStream
+ *              see http://stackoverflow.com/questions/772355/how-to-inherit-from-stdostream
+ *              http://www.math.utah.edu/docs/info/iostream_5.html
  *
  */
 
