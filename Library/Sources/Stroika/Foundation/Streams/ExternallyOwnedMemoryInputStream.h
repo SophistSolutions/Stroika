@@ -58,11 +58,13 @@ namespace   Stroika {
                 using   inherited = InputStream<ELEMENT_TYPE>;
 
             public:
+                /**
+                 *	\note	The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
+				 *			random access iterators and (for now convert to pointers, but that may not be safe????).
+                 */
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-#if 0
-                template    <typename   BYTE_RANDOM_ACCESS_ITERATOR>
-                _DeprecatedFunction_ (ExternallyOwnedMemoryInputStream (BYTE_RANDOM_ACCESS_ITERATOR start, BYTE_RANDOM_ACCESS_ITERATOR end), "dangerous - to be removed after v2.0a99");
-#endif
+                template    <typename   ELEMENT_RANDOM_ACCESS_ITERATOR>
+                ExternallyOwnedMemoryInputStream (ELEMENT_RANDOM_ACCESS_ITERATOR start, ELEMENT_RANDOM_ACCESS_ITERATOR end);
 
             private:
                 class   Rep_;
