@@ -21,10 +21,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a99">v2.0a99x</a><br/>2015-07-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a99">v2.0a99</a><br/>2015-07-12</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>A few minor Streams cleanups</li>
+		<li>Very little testing</li>
 	</ul>
 </td>
 </tr>
