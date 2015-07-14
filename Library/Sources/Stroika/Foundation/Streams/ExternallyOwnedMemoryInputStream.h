@@ -59,8 +59,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *	\note	The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
-				 *			random access iterators and (for now convert to pointers, but that may not be safe????).
+                 *  \note   The CTOR with ELEMENT_RANDOM_ACCESS_ITERATOR is safe because you can (always take diff between two
+                 *          random access iterators and (for now convert to pointers, but that may not be safe????).
                  */
                 ExternallyOwnedMemoryInputStream (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template    <typename   ELEMENT_RANDOM_ACCESS_ITERATOR>

@@ -23,18 +23,11 @@
  *      @todo   Consdier the design of 'force always blocking' for Streams API. Is that too harsh?
  *              Maybe have some non-blocking API variants?
  *
-              *ELSEHWERE
-              *      o   Seek called on an input stream that has already returned EOF, may cause
-              *          subsequent Read() calls to NOT be at EOF.
-              *
-              *      o   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
-              *          was simpler and more elegant to just keep things separate and use mixin classes
-              *          like 'interfaces' - and use dynamic_cast<> to see what functionality is available
-              *          on a stream. At least thats so for the implementations. The wrapper class - Seekable -
-              *          does have an IsSeekable() method which just tests if we have a Seekable interface.
-              *
- *
- *
+ *      @todo   Considered doing something like .Net CanSeek (), CanRead(), etc, but I decided it
+ *              was simpler and more elegant to just keep things separate and use mixin classes
+ *              like 'interfaces' - and use dynamic_cast<> to see what functionality is available
+ *              on a stream. At least thats so for the implementations. The wrapper class - Seekable -
+ *              does have an IsSeekable() method which just tests if we have a Seekable interface.
  */
 
 
@@ -76,7 +69,7 @@ namespace   Stroika {
             /**
               * Design Overview:
               *     o   A Streams is a sequence of data elements made available over time. These elements
-              *         are typically 'Bytes' - or 'Characters' - but can be any type.
+              *         are typically 'Bytes' - or 'Characters' - but can be any copyable type.
               *
               *     o   Streams are created, and then handled ONLY through smart pointers. Assigning Streams
               *         merely copies the 'smart pointer' to that same underlying stream. This means that offsets
@@ -154,7 +147,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  clear () doesn't clear the data in the stream, or close the steram, but unreferences the Stream
+                 *  clear () doesn't clear the data in the stream, or close the stream, but unreferences the Stream
                  *  smart pointer. Only if this Stream smartpointer is the last reference to the underlying stream
                  *  data does this clear () close the underlying stream.
                  *
