@@ -3,13 +3,11 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <mutex>
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
@@ -23,8 +21,6 @@ using   namespace Stroika::Foundation::IO::Network;
 using   namespace Stroika::Frameworks::WebServer;
 
 using   Characters::String;
-using   Containers::Sequence;
-using   Memory::Optional;
 
 
 
@@ -46,7 +42,7 @@ int main (int argc, const char* argv[])
                 conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
                 conn.GetResponse ().End ();
             });
-            runConnectionOnAnotherThread.SetThreadName (L"Connection Thread");  // SHOULD use a fancier name (connection#)
+            runConnectionOnAnotherThread.SetThreadName (L"Connection Thread");  // Could use a fancier name (connection#, from remote address?)
             runConnectionOnAnotherThread.Start ();
             runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
         };

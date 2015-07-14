@@ -246,9 +246,9 @@ int main (int argc, const char* argv[])
      */
 #if     qUseLogger
 #if     qHas_Syslog
-    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
+    Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-SimpleService"));
 #elif   qPlatform_Windows
-    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::WindowsEventLogAppender (L"Stroika-Sample-SimpleService")));
+    Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-SimpleService"));
 #endif
 #endif
 
@@ -262,7 +262,7 @@ int main (int argc, const char* argv[])
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
 #if     qUseLogger
-    serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::LoggerServiceWrapper (serviceIntegrationRep));
+    serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
 #endif
 
     /*
