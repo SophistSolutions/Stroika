@@ -8,9 +8,10 @@ Overview
 
 Quick Start
 -----------
-
 	#include "Stroika/Foundation/Containers/Seqeunce.h"
-	using Stroika::Foundation::Containers;
+
+	using namespace Stroika::Foundation::Containers;
+
 	Sequence<int> x = { 1, 3, 4 };
 	Assert (x.length () == 3);
 	x.push_back (3);
@@ -19,18 +20,19 @@ Quick Start
 
 Rejected Ideas
 --------------
-	Make KEYs a UNIFYING concept for containers
-		*	Think about somehow making KEYs a UNIFYING concept for containers? Special case of unsticky keys –
-			like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact, an interator is
-			somewhat better than a key. 
-			*	We may want Find() to (optionally) return an iterator positioned at the first entry
-				(unclear what ++ would do).
-			*	We may want a[i] or some rough analog for sequnces to get a sequence – offset by I.
-		*	Reason Rejected:
-			This really only applies to randomly accessed containers (so not stack, deque etc).
-			Though its possible to define for them, not usefully. Its probably better to just keep key as a
-			'key' concept for Map<>, and use 'index' - which is analagous - but different -
-			for sequence (important difference is stickiness of assocation when container is modified).
+    *    Make KEYs a UNIFYING concept for containers
+        *    Think about somehow making KEYs a UNIFYING concept for containers? 
+             Special case of unsticky keys -
+             like array indexes? In that sense, a KEY is almost like an ITERATOR. In fact, 
+             an interator is somewhat better than a key. 
+        *    We may want Find() to (optionally) return an iterator positioned at the first entry
+             (unclear what ++ would do).
+        *    We may want a[i] or some rough analog for sequnces to get a sequence - offset by I.
+        *    Reason Rejected:
+             This really only applies to randomly accessed containers (so not stack, deque etc).
+             Though its possible to define for them, not usefully. Its probably better to just
+             keep key as a 'key' concept for Map<>, and use 'index' - which is analagous - but different -
+             for sequence (important difference is stickiness of assocation when container is modified).
 
 
 
