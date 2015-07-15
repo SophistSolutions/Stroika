@@ -27,7 +27,7 @@ Modules
 
   *   SharedPtr&lt;T&gt;
 
-      Add Notes someplace on history of shared_ptr&lt;T&gt versus SharedPtr&lt;T&gt. And in those notes, consider re-instating
+      Add Notes someplace on history of shared_ptr&lt;T&gt; versus SharedPtr&lt;T&gt;. And in those notes, consider re-instating
       my SharedPtr variant, as it maybe more performant. AND - I just tought of how it COULD be interoperable.
       When given a shared_ptr<T> - I could do a special rep that bumps refcount of shared_ptr, and has a refcnt.
       And similarly - that can produce a shared_ptr containing OURs (not thought through totally - careful about
