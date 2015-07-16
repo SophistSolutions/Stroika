@@ -107,7 +107,7 @@ namespace   Stroika {
              *  has_beginend<T>::value is true iff T has a begin/end method
              *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
              */
-            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginend, (x.begin () != x.end ()));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginend, (begin (x) != end (x)));
 
 
             /**
