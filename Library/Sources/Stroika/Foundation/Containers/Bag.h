@@ -41,6 +41,11 @@ namespace   Stroika {
              *  You put stuff in, you iterate, and you take stuff out not knowing about ordering. The ordering (of iteration)
              *  is sticky, but not known (like with a physical bag). So you can 'shake' and that changes the order, or you
              *  can COPY a bag (which preserves order).
+             *
+             *  This could have been called 'RandomizedCollection'.
+             &
+             *
+                    @todo CRITICAL - NEVER ADDED SHAKE METHOD - !!!! THATS THE POINT!
              */
             template    <typename T>
             class   Bag : public Iterable<T> {
