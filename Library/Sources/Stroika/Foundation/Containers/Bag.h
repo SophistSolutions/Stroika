@@ -22,6 +22,14 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Seriously consider renaming this file to RandomizedCollection<>. Maybe can
+ *              even SUBCLASS from Collection then.
+ *
+ *              Issue is the Bag name carries lots of 'baggage'. Unclear which bag meaning.
+ *              Not a critical issue, but motivating.
+ *          &&&&& TODO FIRST &&&&&&&&&
+ *              I THINK NEW NAME IS BEST!!!
+ *              --LGP 2015-07-16
  */
 
 
