@@ -21,6 +21,9 @@
  *
  *
  *  TODO:
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Support EachWith?
  *
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
@@ -130,9 +133,9 @@ namespace   Stroika {
                 SortedCollection ();
                 SortedCollection (const SortedCollection<T, TRAITS>& src);
                 SortedCollection (const std::initializer_list<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit SortedCollection (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:

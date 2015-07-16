@@ -18,6 +18,9 @@
  *
  *
  *  TODO:
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Support EachWith?
  *
  *      @todo   CRITICAL - need version where you can pass in a lambda to compare two things for <, so
@@ -100,9 +103,9 @@ namespace   Stroika {
                 SortedSet ();
                 SortedSet (const SortedSet<T, TRAITS>& src);
                 SortedSet (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit SortedSet (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:

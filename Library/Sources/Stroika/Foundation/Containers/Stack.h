@@ -21,6 +21,9 @@
  *
  *
  *  TODO:
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Add AddAll()  for now - that creates a temporary stack to revserse. But then use
  *              enable_if - to check if you can create reverse iterator, and then use that to go backwards?
  *
@@ -94,9 +97,9 @@ namespace   Stroika {
                  */
                 Stack ();
                 Stack (const Stack<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Stack (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:

@@ -34,7 +34,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Stack<T>::Stack (const CONTAINER_OF_T& src)
                 : inherited (move<inherited> (Concrete::Stack_Factory<T>::mk ()))
             {

@@ -40,7 +40,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Deque<T>::Deque (const CONTAINER_OF_T& src)
                 : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
             {

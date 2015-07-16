@@ -18,6 +18,9 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *
  */
 
@@ -80,9 +83,9 @@ namespace   Stroika {
                 SortedMultiSet (const SortedMultiSet<T, TRAITS>& src);
                 SortedMultiSet (const initializer_list<T>& src);
                 SortedMultiSet (const initializer_list<MultiSetEntry<T>>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit SortedMultiSet (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:

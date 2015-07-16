@@ -25,6 +25,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   use
  *              using   CountType = size_t;
  *              But tricky part is has to be folded into MultiSetEntry<>...
@@ -171,7 +174,7 @@ namespace   Stroika {
                 MultiSet (const MultiSet<T, TRAITS>& src);
                 MultiSet (const initializer_list<T>& src);
                 MultiSet (const initializer_list<MultiSetEntry<T>>& src);
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit MultiSet (const CONTAINER_OF_T& src);
                 MultiSet (const T* start, const T* end);
                 MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);

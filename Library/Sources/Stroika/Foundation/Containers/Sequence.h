@@ -29,6 +29,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo       Sequence<T> x;
  *                  x[3] = T();     // This compiles but does the wrong thing (because the return value is rvalue not lvalue)
  *                  Find a safe reliable way to turn this into a warning (not needed to work).
@@ -223,9 +226,9 @@ namespace   Stroika {
                 Sequence (Sequence<T>&& src);
                 Sequence (const initializer_list<T>& src);
                 Sequence (const vector<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Sequence (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:

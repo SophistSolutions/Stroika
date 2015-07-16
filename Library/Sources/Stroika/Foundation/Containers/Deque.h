@@ -17,6 +17,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Add CTOR(Iterator<T>) after next release....
  *
  *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
@@ -78,7 +81,7 @@ namespace   Stroika {
                 Deque ();
                 Deque (const Deque<T>& src);
                 Deque (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Deque (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

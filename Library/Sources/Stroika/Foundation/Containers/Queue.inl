@@ -42,7 +42,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Queue<T>::Queue (const CONTAINER_OF_T& src)
                 : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {

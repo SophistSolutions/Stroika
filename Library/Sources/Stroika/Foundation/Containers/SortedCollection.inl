@@ -54,7 +54,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  SortedCollection<T, TRAITS>::SortedCollection (const CONTAINER_OF_T& src)
                 : inherited (move<inherited> (Concrete::SortedCollection_Factory<T, TRAITS>::mk ()))
             {

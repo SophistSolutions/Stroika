@@ -24,6 +24,9 @@
  *  TODO:
  *
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Consider adding 'max-size' feature to Q. With this set, attempt to add item past
  *              max size would throw. This can be handy with stuff like blocking q? and probably
  *              other cases as well (when you dont want q to grow indefinitely).
@@ -127,9 +130,9 @@ namespace   Stroika {
                 Queue ();
                 Queue (const Queue<T>& src);
                 Queue (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Queue (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
