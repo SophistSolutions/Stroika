@@ -40,13 +40,18 @@ namespace   Stroika {
              *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
              *
              *  This class is a simple wrapper on the std::wregex class.
+             *
+             *  EXAMPLES:
+             *   const  RegularExpression   kMatchNone (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
+             *   const  RegularExpression   kMatchAll (L".*", RegularExpression::SyntaxType::eECMAScript);
+             *
              */
             class   RegularExpression {
             public:
                 /**
                  *  not sure what these types mean - find out and document clearly
                  *
-                 **** @todo MAYBE REDO SO DEFAULT IS ECMASCRIPT?
+                 *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
                  */
                 enum    class   SyntaxType {
                     eECMAScript     =   regex_constants::ECMAScript,
@@ -55,10 +60,12 @@ namespace   Stroika {
                     eAwk            =   regex_constants::awk,
                     eGrep           =   regex_constants::grep,
                     eEGrep          =   regex_constants::egrep,
+
+                    eDefault        =   eECMAScript,
                 };
 
             public:
-                explicit RegularExpression (const String& re, SyntaxType syntaxType, CompareOptions co = CompareOptions::eWithCase);
+                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDefault, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
 
             public:

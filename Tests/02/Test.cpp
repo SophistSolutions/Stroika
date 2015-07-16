@@ -723,6 +723,21 @@ namespace   {
             VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
             VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
         }
+        void    Test17_RegExpMatch_ ()
+        {
+#if     !qCompilerAndStdLib_regex_Buggy
+            {
+                //const RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
+                const   RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
+                const   RegularExpression   kMatchAll_ (L".*", RegularExpression::SyntaxType::eECMAScript);
+                for (String i : Sequence<String> { L"01-23-45-67-89", L"", L"a" })
+                {
+                    VerifyTestResult (not i.Match (kMatchNone_));
+                    VerifyTestResult (i.Match (kMatchAll_));
+                }
+            }
+#endif
+        }
         void    Test17_RegExp_Search_ ()
         {
 #if     !qCompilerAndStdLib_regex_Buggy
@@ -754,6 +769,7 @@ namespace   {
             Test17_Find_ ();
             Test17_FindEach_ ();
             Test17_RegExp_Search_ ();
+            Test17_RegExpMatch_ ();
 #if     !qCompilerAndStdLib_regex_Buggy
             VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
             vector<RegularExpressionMatch>  r   =   String (L"<h2>Egg prices</h2>").FindEachMatch (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
