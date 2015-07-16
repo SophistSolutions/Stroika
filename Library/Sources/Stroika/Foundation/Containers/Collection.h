@@ -217,6 +217,11 @@ namespace   Stroika {
                  *  \em EXPERIMENTAL API (2014-01-08)
                  *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 *
+                 *  @todo This is the same as Iterbale<T>::Where() - so unclear its useful - except that you know the
+                 *      return type.... Consider if thats enough. PROBABLY Iterable::Where should take a destination target container
+                 *      as oiptional arg.
+                 *
                  */
                 nonvirtual  Collection<T>    EachWith (const function<bool(const T& item)>& doToElement) const;
 

@@ -22,6 +22,11 @@
  *
  *  TODO:
  *
+ *      @todo   For Iterable<T>::Where() - and probably many similar methods,
+ *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
+ *          Where... But tricky to unformly add to differnt container types. Maybe only ones you can say add, or the adder is
+ *          a template paraM?
+ *
  *      @todo   Consider if we should use range_error, some other error, or assertion errors for invalid use
  *              cases of Mean/Median, etc.
  *
