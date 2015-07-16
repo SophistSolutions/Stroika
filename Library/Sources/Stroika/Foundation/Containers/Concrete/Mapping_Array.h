@@ -42,7 +42,7 @@ namespace   Stroika {
                 public:
                     Mapping_Array ();
                     Mapping_Array (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                    template    <typename CONTAINER_OF_PAIR_KEY_T>
+                    template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
                     explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

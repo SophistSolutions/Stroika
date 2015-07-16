@@ -260,7 +260,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {

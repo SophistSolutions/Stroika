@@ -275,7 +275,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
                 inline  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {

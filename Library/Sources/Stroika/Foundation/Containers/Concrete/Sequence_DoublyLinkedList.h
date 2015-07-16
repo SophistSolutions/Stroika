@@ -46,9 +46,9 @@ namespace   Stroika {
                     Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& src);
                     Sequence_DoublyLinkedList (const initializer_list<T>& src);
                     Sequence_DoublyLinkedList (const vector<T>& src);
-                    template <typename CONTAINER_OF_T>
+                    template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                     explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:

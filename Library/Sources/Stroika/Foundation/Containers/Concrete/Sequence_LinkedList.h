@@ -44,9 +44,9 @@ namespace   Stroika {
                 public:
                     Sequence_LinkedList ();
                     Sequence_LinkedList (const Sequence_LinkedList<T>& s);
-                    template <typename CONTAINER_OF_T>
+                    template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                     explicit Sequence_LinkedList (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:

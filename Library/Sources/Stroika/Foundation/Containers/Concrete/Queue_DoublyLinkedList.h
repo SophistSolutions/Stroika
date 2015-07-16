@@ -44,9 +44,9 @@ namespace   Stroika {
                 public:
                     Queue_DoublyLinkedList ();
                     Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src);
-                    template <typename CONTAINER_OF_T>
+                    template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                     explicit Queue_DoublyLinkedList (const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:

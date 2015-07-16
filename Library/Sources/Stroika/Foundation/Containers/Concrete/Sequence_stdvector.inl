@@ -308,7 +308,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
                     : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
                 {
