@@ -21,6 +21,10 @@ namespace   Stroika {
              ********************** Characters::RegularExpression ***************************
              ********************************************************************************
              */
+            inline  RegularExpression::RegularExpression ()
+                :  fCompiledRegExp_ ()
+            {
+            }
             inline  RegularExpression::RegularExpression (const wregex& regEx)
                 :  fCompiledRegExp_ (regEx)
             {
