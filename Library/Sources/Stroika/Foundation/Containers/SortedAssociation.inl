@@ -46,7 +46,7 @@ namespace   Stroika {
                 this->AddAll (src);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move (Concrete::SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {

@@ -27,6 +27,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
  *              like Equals()
  *
@@ -162,7 +165,7 @@ namespace   Stroika {
                 Mapping (const map<KEY_TYPE, VALUE_TYPE>& src);
                 template    <typename TRAITS2>
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

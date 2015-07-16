@@ -26,6 +26,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   Support EachWith?
  *
  *      @todo   Bijection_InjectivityViolationPolicy not respected.
@@ -172,7 +175,7 @@ namespace   Stroika {
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
                 Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
                 explicit Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

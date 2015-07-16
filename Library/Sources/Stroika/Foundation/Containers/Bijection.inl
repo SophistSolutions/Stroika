@@ -54,7 +54,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {

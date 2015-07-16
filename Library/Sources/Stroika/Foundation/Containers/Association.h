@@ -133,7 +133,7 @@ namespace   Stroika {
                 Association (const multimap<KEY_TYPE, VALUE_TYPE>& src);
                 template    <typename TRAITS2>
                 Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
                 explicit Association (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

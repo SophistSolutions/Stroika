@@ -48,7 +48,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
             inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (move<inherited> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
