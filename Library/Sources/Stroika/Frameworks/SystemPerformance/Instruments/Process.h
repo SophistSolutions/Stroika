@@ -21,6 +21,8 @@
  *  TODO:
  *      @todo   In POSIX/fAllowUse_PS mode add or fix support for Command-Line (done badly), EXE-Path, Process-Started-At,
  *              Percent-CPUTime-Used.
+ *
+ *      @todo   Consider replacing fIncluidePIDs and fOMitPIDs with FilterFunctionType...
  */
 
 
@@ -206,7 +208,7 @@ namespace   Stroika {
                      */
                     struct  Options {
                         /**
-						 *	If FilterFunctionType is nullptr, then treat this as false.
+                         *  If FilterFunctionType is nullptr, then treat this as false.
                          */
                         using   FilterFunctionType = function<bool(pid_t pid, const String& processPath)>;
 
