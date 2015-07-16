@@ -66,7 +66,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
                 : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
             {
