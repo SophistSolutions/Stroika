@@ -16,6 +16,12 @@ Quick Start
 	Assert (x.length () == 3);
 	x.push_back (3);
 	Assert (x.length () == 4);
+	Assert (x[1] == 3);
+	x = Sequence_LinkedList<int> (x);      // convert x to use a linked-list representation
+	Assert (x[1] == 3);                    // all data same as before
+	x = Sequence_stdvector<int> (x);       // convert x to use a std::vector representation
+	Assert (x.length () == 4);             // all data same as before
+	std::list<int> y = x.As<list<int>> (); // convert to STL types
 
 
 Rejected Ideas
