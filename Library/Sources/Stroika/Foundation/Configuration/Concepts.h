@@ -103,6 +103,23 @@ namespace   Stroika {
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(neq, (x != x));
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(lt, (x < x));
 
+            /*
+             *  has_beginend<T>::value is true iff T has a begin/end method
+             *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+             */
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginend, (x.begin () != x.end ()));
+
+
+            /**
+             *  See http://en.cppreference.com/w/cpp/concept/Container
+             */
+            template    <typename T>
+            constexpr bool  Container ()
+            {
+                // no where near enough, but a start...
+                return has_beginend<T>::value;
+            }
+
 
             /**
              *  See http://en.cppreference.com/w/cpp/concept/EqualityComparable
