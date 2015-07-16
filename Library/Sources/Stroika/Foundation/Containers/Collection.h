@@ -22,6 +22,9 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
  *              returns something of same underlying data structure  type.
  *
@@ -119,7 +122,7 @@ namespace   Stroika {
                 Collection (const Collection<T>& src);
                 Collection (Collection<T>&& src);
                 Collection (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Collection (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
