@@ -70,6 +70,7 @@ namespace   Stroika {
                  */
                 explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDefault, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
+                RegularExpression (wregex&& regEx);
 
             public:
                 nonvirtual  const wregex&   GetCompiled () const;

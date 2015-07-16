@@ -24,6 +24,7 @@ namespace   {
         if (co == CompareOptions::eCaseInsensitive) {
             f |= regex_constants::icase;
         }
+        f |= regex_constants::optimize;
         return f;
     }
 }

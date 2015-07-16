@@ -25,6 +25,10 @@ namespace   Stroika {
                 :  fCompiledRegExp_ (regEx)
             {
             }
+            inline  RegularExpression::RegularExpression (wregex&& regEx)
+                :  fCompiledRegExp_ (move (regEx))
+            {
+            }
             inline  const wregex&  RegularExpression::GetCompiled () const
             {
                 return fCompiledRegExp_;
