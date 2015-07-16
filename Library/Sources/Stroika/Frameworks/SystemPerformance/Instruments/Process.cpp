@@ -440,7 +440,7 @@ namespace {
                          */
                         processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
                         // Note - many kernel processes have commandline, so dont filter here based on that
-                        if (fOptions_.fCaptureCommandLine) {
+                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
                             processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
@@ -923,9 +923,6 @@ namespace {
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
                     cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
-                    if (fOptions_.fCaptureCommandLine) {
-                        processDetails.fCommandLine = cmdLine;
-                    }
                 }
                 {
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
@@ -934,6 +931,9 @@ namespace {
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
                         processDetails.fEXEPath = t[0];
                     }
+                }
+                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
+                    processDetails.fCommandLine = cmdLine;
                 }
                 result.Add (pid, processDetails);
             }
@@ -1066,12 +1066,10 @@ namespace {
                             Optional<pid_t>     parentProcessID;
                             Optional<String>    cmdLine;
                             Optional<String>    userName;
-                            LookupProcessPath_ (hProcess,  &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
+                            LookupProcessPath_ (pid, hProcess,  &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
                             parentProcessID.CopyToIf (&processInfo.fParentProcessID);
-                            if (fOptions_.fCaptureCommandLine) {
-                                cmdLine.CopyToIf (&processInfo.fCommandLine);
-                            }
+                            cmdLine.CopyToIf (&processInfo.fCommandLine);
                             userName.CopyToIf (&processInfo.fUserName);
                         }
                         {
@@ -1133,7 +1131,7 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ (HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
+        void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
@@ -1149,7 +1147,11 @@ namespace {
                     *processEXEPath =  String::FromSDKString (moduleFullPath);
                 }
             }
-
+            if (cmdLine != nullptr) {
+                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, processEXEPath->Value ())) {
+                    cmdLine = nullptr;
+                }
+            }
             {
                 const   ULONG   ProcessBasicInformation  = 0;
                 static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");

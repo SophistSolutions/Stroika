@@ -206,11 +206,16 @@ namespace   Stroika {
                      */
                     struct  Options {
                         /**
+						 *	If FilterFunctionType is nullptr, then treat this as false.
+                         */
+                        using   FilterFunctionType = function<bool(pid_t pid, const String& processPath)>;
+
+                        /**
                          *  \req fMinimumAveragingInterval >= 0
                          */
                         Time::DurationSecondsType       fMinimumAveragingInterval       { 1.0 };
 
-                        bool                            fCaptureCommandLine             { true };
+                        FilterFunctionType              fCaptureCommandLine             { [] (pid_t pid, const String & processPath) -> bool { return true; } };
                         bool                            fCaptureEnvironmentVariables    { true };
                         bool                            fCaptureCurrentWorkingDirectory { true };
                         bool                            fCaptureRoot                    { true };
