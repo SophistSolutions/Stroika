@@ -25,11 +25,13 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-// Very primitive, and unsatistifacotry - but perhaps usable -draft implemenation
-//      -- LGP 2011-09-24
 
 
-
+/*
+ ********************************************************************************
+ ************************* Streams::SocketStream::Rep_ **************************
+ ********************************************************************************
+ */
 class   SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
     Rep_ (Socket sd)
@@ -70,7 +72,6 @@ public:
     {
         fSD_.Write (start, end);
     }
-
     virtual void     Flush () override
     {
         // socket has no flush API, so write must do the trick...
