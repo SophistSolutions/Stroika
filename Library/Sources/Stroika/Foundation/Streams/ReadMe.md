@@ -8,7 +8,7 @@ Overview
 
 Design Overview
 --------
-   *   A Streams is a sequence of data elements made available over time.
+   *   A Stream&lt;ELEMENT_TYPE&gt; is a sequence of data elements made available over time.
        These elements are typically 'Bytes' - or 'Characters' - but can be 
        any copyable type.
 
