@@ -2,7 +2,7 @@ Overview
 --------
   This folder contains all the Stroika Library Foundation::Streams source code..
 
-  A Stream is a sequence of data elements made available over time. These elements
+  A Stream&lt;ELEMENT_TYPE&gt; is a sequence of data elements made available over time. These elements
   are typically 'Bytes' - or 'Characters' - but can be any copyable type.
 
 
