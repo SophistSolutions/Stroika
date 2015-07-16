@@ -65,6 +65,9 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 *  \note this throws std::regex_error () if provided an invalid regular expression.
+                 */
                 explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDefault, CompareOptions co = CompareOptions::eWithCase);
                 RegularExpression (const wregex& regEx);
 
