@@ -28,6 +28,9 @@
  *
  *  TODO:
  *
+ *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
+ *              concepts and that it USES that for the appropriate overloaded constructors.
+ *
  *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
  *              returns something of same underlying data structure  type.
  *
@@ -146,7 +149,7 @@ namespace   Stroika {
                 Set (Set<T, TRAITS>&& src);
                 Set (const initializer_list<T>& src);
                 Set (const set<T>& src);
-                template <typename CONTAINER_OF_T>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 explicit Set (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
