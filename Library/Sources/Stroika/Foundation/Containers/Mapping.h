@@ -328,6 +328,16 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Remove all items from this container UNLESS the are in the argument set to RetainAll().
+                 *
+                 *  \note   Java comparison
+                 *          mapping.keySet.retainAll(collection);
+                 */
+                template    <typename CONTAINER_OF_KEY>
+                nonvirtual  void    RetainAll (const CONTAINER_OF_KEY& items);
+
+            public:
+                /**
                  *  This function should work for any container which accepts
                  *  (ITERATOR_OF<KeyValuePair<Key,Value>>,ITERATOR_OF<KeyValuePair<Key,Value>>) OR
                  *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).

@@ -9,6 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <set>
+
 #include    "../Debug/Assertions.h"
 
 #include    "Concrete/Mapping_Factory.h"
@@ -248,6 +250,17 @@ namespace   Stroika {
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_KEY>
+            void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY& items)
+            {
+                set<KEY_TYPE>   tmp { items.begin (), items.end () };   // weak implementation because of 'comparison' function - @todo
+                for (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
+                    if (tmp.find (i->fKey) == tmp.end ()) {
+                        Remove (i);
+                    }
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
