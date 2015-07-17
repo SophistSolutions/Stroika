@@ -119,18 +119,13 @@ namespace   Stroika {
                          *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
                          *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.
                          *
-                         *  fTimeTransfering is the number of seconds spent doing the transfers.
-                         *  From https://www.kernel.org/doc/Documentation/iostats.txt:
-                         *      This is the total number of milliseconds spent by all [sic] (as
-                         *      measured from __make_request() to end_that_request_last()).
-                         *
                          *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
                          *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
                          */
                         struct  IOStats {
                             Optional<double>    fBytesTransfered;
                             Optional<double>    fTotalTransfers;
-                            Optional<double>    fTimeTransfering;
+                            Optional<double>    fAverageQLength;
                         };
                         Optional<IOStats>   fReadIOStats;
                         Optional<IOStats>   fWriteIOStats;
@@ -139,6 +134,16 @@ namespace   Stroika {
                          *  This is the average length - in 'requests' - of the IO Q. This combine input and output requests (read/write).
                          */
                         Optional<double>    fIOQLength;
+
+                        Optional<double>    EstimatedPercentInUse () const
+                        {
+                            // %InUse = QL / (1 + QL).
+                            if (fCombinedIOStats and fCombinedIOStats->fAverageQLength) {
+                                double QL = fCombinedIOStats->fAverageQLength.value ();
+                                return 100.0 * (QL / (1 + QL));
+                            }
+                            return Optional<double> ();
+                        }
                     };
 
 

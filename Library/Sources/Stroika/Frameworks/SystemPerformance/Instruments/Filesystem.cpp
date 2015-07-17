@@ -352,17 +352,17 @@ namespace {
                                 VolumeInfo::IOStats readStats;
                                 readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                readStats.fTimeTransfering = (oNew->fTimeSpentReading - oOld->fTimeSpentReading);
+                                readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
 
                                 VolumeInfo::IOStats writeStats;
                                 writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                writeStats.fTimeTransfering = oNew->fTimeSpentWriting - oOld->fTimeSpentWriting;
+                                writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
 
                                 VolumeInfo::IOStats combinedStats;
                                 combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
                                 combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                                combinedStats.fTimeTransfering = *readStats.fTimeTransfering + *writeStats.fTimeTransfering;
+                                combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
 
                                 vi.fReadIOStats = readStats;
                                 vi.fWriteIOStats = writeStats;
@@ -670,6 +670,12 @@ namespace {
                             result.push_back (v);
                         }
                         else {
+                            auto pctInUse2QL_ = [] (double pctInUse) {
+                                // %InUse = QL / (1 + QL).
+                                pctInUse /= 100;
+                                Require (0 <= pctInUse and pctInUse <= 1.0);
+                                return pctInUse / (1 - pctInUse);
+                            };
                             for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
                                 v.fMountedOnName = String::FromSDKString (NameIdx);
                                 {
@@ -696,7 +702,7 @@ namespace {
                                             readStats.fTotalTransfers = *o * timeCollecting;
                                         }
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                            readStats.fTimeTransfering = *o * timeCollecting / 100;
+                                            readStats.fAverageQLength = pctInUse2QL_ (*o);
                                         }
 
                                         VolumeInfo::IOStats writeStats;
@@ -707,21 +713,21 @@ namespace {
                                             writeStats.fTotalTransfers = *o * timeCollecting;
                                         }
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                            writeStats.fTimeTransfering = *o * timeCollecting / 100;
+                                            writeStats.fAverageQLength = pctInUse2QL_ (*o);
                                         }
 
                                         VolumeInfo::IOStats combinedStats = readStats;
                                         combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
                                         combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
-                                        combinedStats.fTimeTransfering.AccumulateIf (writeStats.fTimeTransfering);
+                                        combinedStats.fAverageQLength.AccumulateIf (writeStats.fAverageQLength);
 
-                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fTimeTransfering) {
+                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fAverageQLength) {
                                             v.fReadIOStats = readStats;
                                         }
-                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fTimeTransfering) {
+                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fAverageQLength) {
                                             v.fWriteIOStats = writeStats;
                                         }
-                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fTimeTransfering) {
+                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fAverageQLength) {
                                             v.fCombinedIOStats = combinedStats;
                                         }
                                     }
@@ -809,7 +815,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fBytesTransfered), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTimeTransfering), String_Constant (L"Time-Transfering"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fAverageQLength), String_Constant (L"Average-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTotalTransfers), String_Constant (L"Total-Transfers"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         mapper.AddCommonType<Optional<VolumeInfo::IOStats>> ();
