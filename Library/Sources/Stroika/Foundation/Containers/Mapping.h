@@ -328,13 +328,19 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Remove all items from this container UNLESS the are in the argument set to RetainAll().
+                 *  Remove all items from this container UNLESS they are in the argument set to RetainAll().
+                 *
+                 *  This restricts the 'Keys' list of Mapping to the argument data, but preserving
+                 *  any associations.
                  *
                  *  \note   Java comparison
-                 *          mapping.keySet.retainAll(collection);
+                 *          mapping.keySet.retainAll (collection);
+                 *
+                 *  \note EXAMPLE USE:
+                 *      fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
                  */
-                template    <typename CONTAINER_OF_KEY>
-                nonvirtual  void    RetainAll (const CONTAINER_OF_KEY& items);
+                template    <typename CONTAINER_OF_KEY_TYPE>
+                nonvirtual  void    RetainAll (const CONTAINER_OF_KEY_TYPE& items);
 
             public:
                 /**
