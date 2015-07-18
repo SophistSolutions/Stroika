@@ -130,20 +130,15 @@ namespace   Stroika {
                         Optional<IOStats>   fReadIOStats;
                         Optional<IOStats>   fWriteIOStats;
                         Optional<IOStats>   fCombinedIOStats;
+
                         /**
                          *  This is the average length - in 'requests' - of the IO Q. This combine input and output requests (read/write).
                          */
                         Optional<double>    fIOQLength;
 
-                        Optional<double>    EstimatedPercentInUse () const
-                        {
-                            // %InUse = QL / (1 + QL).
-                            if (fCombinedIOStats and fCombinedIOStats->fAverageQLength) {
-                                double QL = fCombinedIOStats->fAverageQLength.value ();
-                                return 100.0 * (QL / (1 + QL));
-                            }
-                            return Optional<double> ();
-                        }
+                        /**
+                         */
+                        nonvirtual  Optional<double>    EstimatedPercentInUse () const;
                     };
 
 

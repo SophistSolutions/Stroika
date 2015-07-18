@@ -61,6 +61,31 @@ using   Streams::TextReader;
 
 
 
+/*
+ ********************************************************************************
+ ********** Instruments::Filesystem::VolumeInfo::EstimatedPercentInUse **********
+ ********************************************************************************
+ */
+Optional<double>    VolumeInfo::EstimatedPercentInUse () const
+{
+    // %InUse = QL / (1 + QL).
+    if (fCombinedIOStats and fCombinedIOStats->fAverageQLength) {
+        double QL = *fCombinedIOStats->fAverageQLength;
+        Require (0 <= QL);
+        return 100.0 * (QL / (1 + QL));
+    }
+    return Optional<double> ();
+}
+
+
+
+
+
+
+
+
+
+
 // for io stats
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows
@@ -84,6 +109,12 @@ namespace {
     const   String_Constant     kDiskWritesPerSec_      { L"Disk Writes/sec" };
     const   String_Constant     kPctDiskReadTime_       { L"% Disk Read Time" };
     const   String_Constant     kPctDiskWriteTime_      { L"% Disk Write Time" };
+    const   String_Constant     kAveDiskReadQLen_       { L"Avg. Disk Read Queue Length" };
+    const   String_Constant     kAveDiskWriteQLen_      { L"Avg. Disk Write Queue Length" };
+    const   String_Constant     kPctIdleTime_           { L"% Idle Time" };
+
+    constexpr bool kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ { false };
+
 #endif
 }
 
@@ -571,7 +602,14 @@ namespace {
         CapturerWithContext_Windows_ (Options options)
             : CapturerWithContext_COMMON_ (options)
 #if     qUseWMICollectionSupport_
-            , fLogicalDiskWMICollector_ { String_Constant { L"LogicalDisk" }, {},  {kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,  kPctDiskReadTime_, kPctDiskWriteTime_ } }
+            , fLogicalDiskWMICollector_ {
+            String_Constant { L"LogicalDisk" }, {},  {
+                kDiskReadBytesPerSec_, kDiskWriteBytesPerSec_, kDiskReadsPerSec_, kDiskWritesPerSec_,
+                (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskReadTime_ : kAveDiskReadQLen_),
+                (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ ? kPctDiskWriteTime_ : kAveDiskWriteQLen_),
+                kPctIdleTime_
+            }
+        }
 #endif
         {
 #if   qUseWMICollectionSupport_
@@ -701,8 +739,15 @@ namespace {
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskReadsPerSec_)) {
                                             readStats.fTotalTransfers = *o * timeCollecting;
                                         }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                            readStats.fAverageQLength = pctInUse2QL_ (*o);
+                                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
+                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                                                readStats.fAverageQLength = pctInUse2QL_ (*o);
+                                            }
+                                        }
+                                        else {
+                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
+                                                readStats.fAverageQLength = *o;
+                                            }
                                         }
 
                                         VolumeInfo::IOStats writeStats;
@@ -712,14 +757,36 @@ namespace {
                                         if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kDiskWritesPerSec_)) {
                                             writeStats.fTotalTransfers = *o * timeCollecting;
                                         }
-                                        if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                            writeStats.fAverageQLength = pctInUse2QL_ (*o);
+                                        if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
+                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                                writeStats.fAverageQLength = pctInUse2QL_ (*o);
+                                            }
+                                        }
+                                        else {
+                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
+                                                writeStats.fAverageQLength = *o;
+                                            }
                                         }
 
                                         VolumeInfo::IOStats combinedStats = readStats;
                                         combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
                                         combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
                                         combinedStats.fAverageQLength.AccumulateIf (writeStats.fAverageQLength);
+
+                                        constexpr   bool    kUsePctIdleIimeForAveQLen_ = true;
+                                        if (kUsePctIdleIimeForAveQLen_) {
+                                            if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
+                                                double  aveCombinedQLen = pctInUse2QL_ (100.0 - *o);
+                                                if (readStats.fAverageQLength and writeStats.fAverageQLength) {
+                                                    // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
+                                                    // asusme ratio rate, and scale
+                                                    double  correction = aveCombinedQLen / *combinedStats.fAverageQLength;
+                                                    readStats.fAverageQLength *= correction;
+                                                    writeStats.fAverageQLength *= correction;
+                                                }
+                                                combinedStats.fAverageQLength = aveCombinedQLen;
+                                            }
+                                        }
 
                                         if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fAverageQLength) {
                                             v.fReadIOStats = readStats;
