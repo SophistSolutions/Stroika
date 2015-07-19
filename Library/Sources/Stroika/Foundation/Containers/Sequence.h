@@ -226,7 +226,7 @@ namespace   Stroika {
                 Sequence (Sequence<T>&& src);
                 Sequence (const initializer_list<T>& src);
                 Sequence (const vector<T>& src);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value >::type >
                 explicit Sequence (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

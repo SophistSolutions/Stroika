@@ -130,7 +130,7 @@ namespace   Stroika {
                 Queue ();
                 Queue (const Queue<T>& src);
                 Queue (const initializer_list<T>& src);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value >::type >
                 explicit Queue (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

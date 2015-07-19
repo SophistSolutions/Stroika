@@ -133,7 +133,7 @@ namespace   Stroika {
                 SortedCollection ();
                 SortedCollection (const SortedCollection<T, TRAITS>& src);
                 SortedCollection (const std::initializer_list<T>& src);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value >::type >
                 explicit SortedCollection (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

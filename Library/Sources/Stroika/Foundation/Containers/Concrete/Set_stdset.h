@@ -73,7 +73,7 @@ namespace   Stroika {
                     Set_stdset ();
                     Set_stdset (const Set_stdset<T, TRAITS>& src);
                     Set_stdset (const std::initializer_list<T>& src);
-                    template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value >::type >
                     explicit Set_stdset (const CONTAINER_OF_T& src);
                     template    <typename COPY_FROM_ITERATOR_T>
                     explicit Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);

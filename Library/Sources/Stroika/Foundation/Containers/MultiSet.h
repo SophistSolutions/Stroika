@@ -174,7 +174,7 @@ namespace   Stroika {
                 MultiSet (const MultiSet<T, TRAITS>& src);
                 MultiSet (const initializer_list<T>& src);
                 MultiSet (const initializer_list<MultiSetEntry<T>>& src);
-                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T>*>::value >::type >
                 explicit MultiSet (const CONTAINER_OF_T& src);
                 MultiSet (const T* start, const T* end);
                 MultiSet (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);

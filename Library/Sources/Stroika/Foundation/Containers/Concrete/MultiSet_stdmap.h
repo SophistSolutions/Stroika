@@ -63,7 +63,7 @@ namespace   Stroika {
 
                 public:
                     MultiSet_stdmap ();
-                    template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
+                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>::value >::type >
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
                     MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src);
                     MultiSet_stdmap (const initializer_list<T>& src);
