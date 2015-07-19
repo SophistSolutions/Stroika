@@ -21,7 +21,8 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *
+ *      @todo   PROBABLY DEPRECATE THIS FILE/MODULE. No point given new Synchonized<> design - I think...
+ *              -- LGP 2015-07-18
  */
 
 
