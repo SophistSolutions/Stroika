@@ -92,7 +92,7 @@ namespace   Stroika {
                 SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 SortedMapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
                 explicit SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

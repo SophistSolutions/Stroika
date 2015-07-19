@@ -29,7 +29,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (const Queue<T>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
@@ -53,14 +53,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+                : inherited (rep)
             {
                 _AssertRepValidType ();
                 RequireNotNull (rep);
             }
             template    <typename T>
             inline  Queue<T>::Queue (_SharedPtrIRep&& rep)
-                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+                : inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -68,7 +68,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast < const inherited&& > (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAllToTail (start, end);

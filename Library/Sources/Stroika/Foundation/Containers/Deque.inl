@@ -21,19 +21,19 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Deque<T>::Deque ()
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
+                : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Deque<T>::Deque (const Deque<T>& src)
-                : inherited (static_cast < const inherited&& > (src))
+                : inherited (static_cast<const inherited&> (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Deque<T>::Deque (const initializer_list<T>& src)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
+                : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (src);
@@ -42,7 +42,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Deque<T>::Deque (const CONTAINER_OF_T& src)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
+                : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (src);
@@ -50,14 +50,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Deque<T>::Deque (const _SharedPtrIRep& src)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
+                : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Deque<T>::Deque (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -65,7 +65,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast < const inherited&& > (Concrete::Deque_Factory<T>::mk ()))
+                : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAllToTail (start, end);

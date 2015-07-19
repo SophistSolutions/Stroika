@@ -27,7 +27,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 EnsureMember (&inherited::_ConstGetRep (), _IRep);
             }

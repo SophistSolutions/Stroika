@@ -287,13 +287,13 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const T* start, const T* end)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (start, end);
@@ -301,13 +301,13 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src) :
-                    inherited (static_cast<const inherited&> (src))
+                    inherited (static_cast<const inherited&> (src)) // explicit cast to avoid copy
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -315,16 +315,16 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

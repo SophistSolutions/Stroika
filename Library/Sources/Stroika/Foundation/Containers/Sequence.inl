@@ -22,25 +22,25 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Sequence<T>::Sequence ()
-                : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (Sequence<T>&& src)
-                : inherited (static_cast < inherited&& > (src))
+                : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const initializer_list<T>& src)
-                : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AppendAll (src);
@@ -48,7 +48,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const vector<T>& src)
-                : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AppendAll (src);
@@ -57,7 +57,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src)
-                : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AppendAll (src);
@@ -65,14 +65,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (rep))
+                : inherited (rep)
             {
                 RequireNotNull (rep);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (_SharedPtrIRep&& rep)
-                : inherited (move<typename inherited::_SharedPtrIRep> (rep))
+                : inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -80,7 +80,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (move<inherited> (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AppendAll (start, end);

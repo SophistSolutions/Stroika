@@ -48,7 +48,7 @@ namespace   Stroika {
                     SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src);
                     SortedMultiSet_stdmap (const std::initializer_list<T>& src);
                     SortedMultiSet_stdmap (const std::initializer_list<MultiSetEntry<T>>& src);
-                    template <typename CONTAINER_OF_T>
+                    template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>::value >::type >
                     explicit SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
                     SortedMultiSet_stdmap (const T* start, const T* end);
                     SortedMultiSet_stdmap (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);

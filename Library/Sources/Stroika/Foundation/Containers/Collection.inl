@@ -27,39 +27,39 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Collection<T>::Collection ()
-                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const Collection<T>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (Collection<T>&& src)
-                : inherited (static_cast < inherited&& > (src))
+                : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const _SharedPtrIRep& src)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
+                : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Collection<T>::Collection (const initializer_list<T>& src)
-                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -68,7 +68,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
-                : inherited (move<inherited> (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);

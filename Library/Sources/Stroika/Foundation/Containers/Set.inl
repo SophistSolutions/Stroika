@@ -21,25 +21,25 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set ()
-                : inherited (move<inherited> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (Set<T, TRAITS>&& src)
-                : inherited (static_cast < const inherited&& > (src))
+                : inherited (move (src))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const initializer_list<T>& src)
-                : inherited (move<inherited> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -47,7 +47,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const set<T>& src)
-                : inherited (move<inherited> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -56,7 +56,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
-                : inherited (move<inherited> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (src);
@@ -64,13 +64,13 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const _SharedPtrIRep& src)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -78,7 +78,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (move<inherited> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 AddAll (start, end);

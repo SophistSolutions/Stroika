@@ -21,33 +21,33 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet ()
-                : inherited (move<inherited> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const SortedSet<T, TRAITS>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const _SharedPtrIRep& src)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
+                : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
-                : inherited (move<inherited> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -56,7 +56,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
-                : inherited (move<inherited> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
@@ -65,7 +65,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (move<inherited> (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
                 this->AddAll (start, end);

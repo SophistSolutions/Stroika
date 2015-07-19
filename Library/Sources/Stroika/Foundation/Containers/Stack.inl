@@ -23,20 +23,20 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Stack<T>::Stack ()
-                : inherited (move<inherited> (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Stack<T>::Stack (const Stack<T>& src)
-                : inherited (static_cast<const inherited&> (src))
+                : inherited (src)
             {
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Stack<T>::Stack (const CONTAINER_OF_T& src)
-                : inherited (move<inherited> (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
@@ -44,14 +44,14 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Stack<T>::Stack (const _SharedPtrIRep& src)
-                : inherited (static_cast<const typename inherited::_SharedPtrIRep&> (src))
+                : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             inline  Stack<T>::Stack (_SharedPtrIRep&& src)
-                : inherited (move<typename inherited::_SharedPtrIRep> (src))
+                : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
@@ -59,7 +59,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (move<inherited> (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();

@@ -74,7 +74,7 @@ namespace   Stroika {
                      */
                     Mapping_stdmap ();
                     Mapping_stdmap (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                    template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
+                    template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
                     explicit Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_stdmap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
