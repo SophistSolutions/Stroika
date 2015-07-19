@@ -196,7 +196,7 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEYVALUE>
+            template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
             inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*

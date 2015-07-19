@@ -359,10 +359,9 @@ namespace   Stroika {
                 /**
                  *  \brief Insert all the given items into this sequence, starting at offset 'i'.
                  */
-                nonvirtual  void    InsertAll (size_t i, const Iterable<T>& items);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T>
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
                 nonvirtual  void    InsertAll (size_t i, const CONTAINER_OF_T& s);
 
             public:
@@ -373,7 +372,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
                 nonvirtual  void    PrependAll (const CONTAINER_OF_T& s);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
@@ -392,7 +391,7 @@ namespace   Stroika {
                  *  the appended items wont necesarily all get appended at once, since other threads could make
                  *  changes in between.
                  */
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
                 nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

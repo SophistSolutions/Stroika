@@ -503,7 +503,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             void    MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
             {
                 for (auto i : src) {

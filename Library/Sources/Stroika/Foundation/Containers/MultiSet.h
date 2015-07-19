@@ -219,7 +219,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    AddAll (const T* start, const T* end);
                 nonvirtual  void    AddAll (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& src);
 
             public:

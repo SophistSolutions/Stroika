@@ -16,7 +16,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** Set<T, TRAITS> ***********************************
+             ******************************* Set<T, TRAITS> *********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -139,10 +139,10 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  void    Set<T, TRAITS>::AddAll (const CONTAINER_OF_T& s)
             {
-                // Note - unlike Bag<T, TRAITS> - we dont need to check for this != &s because if we
+                // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we
                 // attempt to add items that already exist, it would do nothing, and not lead to
                 // an infinite loop
                 AddAll (std::begin (s), std::end (s));

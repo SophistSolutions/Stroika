@@ -125,7 +125,7 @@ namespace   Stroika {
                 return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveHead ();
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  void    Queue<T>::AddAllToTail (const CONTAINER_OF_T& s)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp { this };

@@ -301,7 +301,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_KEYVALUE>
+                template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type >
                 nonvirtual  void    AddAll (const CONTAINER_OF_KEYVALUE& items);
                 template    <typename COPY_FROM_ITERATOR_KEYVALUE>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);

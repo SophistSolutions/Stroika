@@ -230,7 +230,7 @@ namespace   Stroika {
                 }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEYVALUE>
+            template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*

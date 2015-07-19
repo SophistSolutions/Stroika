@@ -210,7 +210,7 @@ namespace   Stroika {
                 /**
                  *
                  */
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value>::type >
                 nonvirtual  void    AddAllToTail (const CONTAINER_OF_T& s);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

@@ -208,11 +208,11 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_KEYVALUE>
+            template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
-                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                 *  Note - unlike other containers - we dont need to check for this != &s because if we
                  *  attempt to add items that already exist, it would do nothing to our iteration
                  *  and therefore not lead to an infinite loop.
                  */

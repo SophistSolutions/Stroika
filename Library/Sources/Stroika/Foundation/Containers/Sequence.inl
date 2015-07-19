@@ -203,7 +203,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  void    Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_T& s)
             {
                 Require (i <= this->GetLength ());
@@ -215,7 +215,7 @@ namespace   Stroika {
                 Insert (0, item);
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  void    Sequence<T>::PrependAll (const CONTAINER_OF_T& s)
             {
                 InsertAll (0, s);
@@ -232,7 +232,7 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Insert (kBadSequenceIndex, &item, &item + 1);
             }
             template    <typename T>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp = { this };

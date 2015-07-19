@@ -175,7 +175,7 @@ namespace   Stroika {
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
                 Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
                 explicit Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 explicit Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -334,7 +334,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename CONTAINER_OF_KEYVALUE>
+                template    <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type >
                 nonvirtual  void    AddAll (const CONTAINER_OF_KEYVALUE& items);
                 template    <typename COPY_FROM_ITERATOR_KEYVALUE>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
