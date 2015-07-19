@@ -130,7 +130,7 @@ namespace   Stroika {
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp { this };
                 for (auto i : s) {
-                    tmp._GetWriteableRep ().AddTail ( &i, &i + 1);
+                    tmp._GetWriteableRep ().AddTail (i);
                 }
             }
             template    <typename T>
@@ -139,7 +139,7 @@ namespace   Stroika {
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp { this };
                 for (auto i = start; i != end; ++i) {
-                    tmp._GetWriteableRep ().AddTail (Iterator2Pointer (i), Iterator2Pointer (i) + 1);
+                    tmp._GetWriteableRep ().AddTail (*i);
                 }
             }
             template    <typename T>
