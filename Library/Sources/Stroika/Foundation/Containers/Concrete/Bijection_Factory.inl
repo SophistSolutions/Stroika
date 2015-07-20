@@ -21,7 +21,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *******************
+                 *********** Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *****************
                  ********************************************************************************
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>

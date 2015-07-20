@@ -301,7 +301,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src) :
-                    inherited (static_cast<const inherited&> (src)) // explicit cast to avoid copy
+                    inherited (src)
                 {
                     AssertRepValidType_ ();
                 }

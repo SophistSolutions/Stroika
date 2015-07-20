@@ -286,20 +286,20 @@ namespace   Stroika {
                 */
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -307,7 +307,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -315,7 +315,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

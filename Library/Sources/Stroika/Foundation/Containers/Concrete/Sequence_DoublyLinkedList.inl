@@ -44,6 +44,9 @@ namespace   Stroika {
                 public:
                     nonvirtual  Rep_& operator= (const Rep_&) = delete;
 
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override;
@@ -312,19 +315,19 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -332,7 +335,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const vector<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -341,7 +344,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -350,7 +353,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (start, end);

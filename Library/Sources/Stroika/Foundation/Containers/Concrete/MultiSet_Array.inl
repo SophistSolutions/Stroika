@@ -347,13 +347,13 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     SetCapacity (end - start);
@@ -362,13 +362,13 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet_Array<T, TRAITS>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     SetCapacity (src.GetLength ());
@@ -377,7 +377,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -385,7 +385,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<MultiSetEntry<T>>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

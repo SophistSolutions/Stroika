@@ -252,20 +252,20 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     AssertNotImplemented ();        // @todo - use new EnqueueAll()
@@ -274,7 +274,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (Iterable<T>::template MakeSharedPtr<Rep_> ()))
+                    : inherited (Iterable<T>::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     Append (start, end);
