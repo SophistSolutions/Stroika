@@ -162,8 +162,14 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Deque<T>::_IRep : public Queue<T>::_IRep {
+            private:
+                using   inherited = Queue<T>::_IRep;
+
             public:
-                virtual void        AddHead (T item)                        =   0;
+                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
+
+            public:
+                virtual void        AddHead (PassTArgByValueType item)      =   0;
                 virtual T           RemoveTail ()                           =   0;
                 virtual T           Tail () const                           =   0;
             };

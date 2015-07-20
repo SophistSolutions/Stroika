@@ -283,18 +283,24 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Queue<T>::_IRep : public Iterable<T>::_IRep {
+            private:
+                using   inherited = Iterable<T>::_IRep;
+
             protected:
                 _IRep () = default;
+
+            public:
+                virtual ~_IRep () = default;
 
             protected:
                 using   _SharedPtrIRep = typename Queue<T>::_SharedPtrIRep;
 
             public:
-                virtual ~_IRep () = default;
+                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
             public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                AddTail (T item)                                                        =   0;
+                virtual void                AddTail (PassTArgByValueType item)                                      =   0;
                 virtual T                   RemoveHead ()                                                           =   0;
                 virtual Memory::Optional<T> RemoveHeadIf ()                                                         =   0;
                 virtual T                   Head () const                                                           =   0;

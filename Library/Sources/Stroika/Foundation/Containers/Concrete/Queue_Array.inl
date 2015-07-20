@@ -34,6 +34,7 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -58,7 +59,7 @@ namespace   Stroika {
                     // Queue<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                AddTail (T item) override;
+                    virtual void                AddTail (PassTArgByValueType item) override;
                     virtual T                   RemoveHead () override;
                     virtual Memory::Optional<T> RemoveHeadIf () override;
                     virtual T                   Head () const override;
@@ -184,7 +185,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Queue_Array<T>::Rep_::AddTail (T item)
+                void    Queue_Array<T>::Rep_::AddTail (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.InsertAt (fData_.GetLength (), item);

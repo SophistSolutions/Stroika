@@ -34,6 +34,7 @@ namespace   Stroika {
                     using   _QueueSharedPtrIRep = typename Queue<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -58,7 +59,7 @@ namespace   Stroika {
                     // Queue<T>::_IRep overrides
                 public:
                     virtual _QueueSharedPtrIRep     CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                    AddTail (T item) override;
+                    virtual void                    AddTail (PassTArgByValueType item) override;
                     virtual T                       RemoveHead () override;
                     virtual Memory::Optional<T>     RemoveHeadIf () override;
                     virtual T                       Head () const override;
@@ -69,7 +70,7 @@ namespace   Stroika {
 
                     // Deque<T>::_IRep overrides
                 public:
-                    virtual void        AddHead (T item) override;
+                    virtual void        AddHead (PassTArgByValueType item) override;
                     virtual T           RemoveTail () override;
                     virtual T           Tail () const override;
 
@@ -187,7 +188,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Deque_DoublyLinkedList<T>::Rep_::AddTail (T item)
+                void    Deque_DoublyLinkedList<T>::Rep_::AddTail (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Append (item);
@@ -247,7 +248,7 @@ namespace   Stroika {
                 }
 #endif
                 template    <typename T>
-                void    Deque_DoublyLinkedList<T>::Rep_::AddHead (T item)
+                void    Deque_DoublyLinkedList<T>::Rep_::AddHead (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Append (item);
