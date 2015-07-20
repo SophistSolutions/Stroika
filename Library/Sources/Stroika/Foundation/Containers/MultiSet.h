@@ -363,18 +363,21 @@ namespace   Stroika {
             protected:
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;
 
+            public:
+                using   PassTArgByValueType = typename Configuration::ArgByValueType<T>;    // intentionally DONT use inherited, since it has a differnt 'T'
+
             protected:
                 _IRep () = default;
 
             public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;
-                virtual bool                Contains (T item) const                                                 =   0;
-                virtual void                Add (T item, size_t count)                                              =   0;
-                virtual void                Remove (T item, size_t count)                                           =   0;
+                virtual bool                Contains (PassTArgByValueType item) const                               =   0;
+                virtual void                Add (PassTArgByValueType item, size_t count)                            =   0;
+                virtual void                Remove (PassTArgByValueType item, size_t count)                         =   0;
                 virtual void                Remove (const Iterator<MultiSetEntry<T>>& i)                            =   0;
                 virtual void                UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)      =   0;
-                virtual size_t              OccurrencesOf (T item) const                                            =   0;
+                virtual size_t              OccurrencesOf (PassTArgByValueType item) const                          =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T>         Elements (const _SharedPtrIRep& rep) const                              =   0;

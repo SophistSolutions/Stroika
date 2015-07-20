@@ -41,6 +41,7 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -66,12 +67,12 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep              CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                        Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool                        Contains (T item) const override;
-                    virtual void                        Add (T item, size_t count) override;
-                    virtual void                        Remove (T item, size_t count) override;
+                    virtual bool                        Contains (PassTArgByValueType item) const override;
+                    virtual void                        Add (PassTArgByValueType item, size_t count) override;
+                    virtual void                        Remove (PassTArgByValueType item, size_t count) override;
                     virtual void                        Remove (const Iterator<MultiSetEntry<T>>& i) override;
                     virtual void                        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) override;
-                    virtual size_t                      OccurrencesOf (T item) const override;
+                    virtual size_t                      OccurrencesOf (PassTArgByValueType item) const override;
                     virtual Iterable<T>                 Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                 UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
 #if     qDebug
@@ -162,7 +163,7 @@ namespace   Stroika {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T, typename TRAITS>
-                bool    MultiSet_stdmap<T, TRAITS>::Rep_::Contains (T item) const
+                bool    MultiSet_stdmap<T, TRAITS>::Rep_::Contains (PassTArgByValueType item) const
                 {
                     MultiSetEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -180,7 +181,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_stdmap<T, TRAITS>::Rep_::Add (T item, size_t count)
+                void    MultiSet_stdmap<T, TRAITS>::Rep_::Add (PassTArgByValueType item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -198,7 +199,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_stdmap<T, TRAITS>::Rep_::Remove (T item, size_t count)
+                void    MultiSet_stdmap<T, TRAITS>::Rep_::Remove (PassTArgByValueType item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -245,7 +246,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t  MultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (T item) const
+                size_t  MultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (PassTArgByValueType item) const
                 {
                     MultiSetEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
