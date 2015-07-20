@@ -924,8 +924,15 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             public:
-                using   _APPLY_ARGTYPE      =   const function<void(const T& item)>& ;
-                using   _APPLYUNTIL_ARGTYPE =   const function<bool(const T& item)>& ;
+                /**
+                 *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal paraemter
+                 *
+                 */
+                using   PassTArgByValueType = typename std::conditional < (sizeof(T) <= sizeof(int)) && std::is_trivial<T>::value, T, const T& >::type;
+
+            public:
+                using   _APPLY_ARGTYPE      =   const function<void(PassTArgByValueType item)>& ;
+                using   _APPLYUNTIL_ARGTYPE =   const function<bool(PassTArgByValueType item)>& ;
 
             public:
                 virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const                           =   0;
