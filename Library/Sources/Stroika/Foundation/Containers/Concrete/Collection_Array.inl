@@ -61,7 +61,7 @@ namespace   Stroika {
                     // Collection<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                Add (T item) override;
+                    virtual void                Add (PassTArgByValueType item) override;
                     virtual void                Update (const Iterator<T>& i, T newValue) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
@@ -183,7 +183,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Collection_Array<T>::Rep_::Add (T item)
+                void    Collection_Array<T>::Rep_::Add (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // Appending is fastest

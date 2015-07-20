@@ -299,6 +299,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Collection<T>::_IRep : public UpdatableIterable<T>::_IRep {
+            private:
+                using   inherited = UpdatableIterable<T>::_IRep;
+
             protected:
                 _IRep () = default;
 
@@ -309,8 +312,11 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
 
             public:
+                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
+
+            public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                Add (T item)                                                            =   0;
+                virtual void                Add (PassTArgByValueType item)                                          =   0;
                 virtual void                Update (const Iterator<T>& i, T newValue)                               =   0;
                 virtual void                Remove (const Iterator<T>& i)                                           =   0;
 #if     qDebug

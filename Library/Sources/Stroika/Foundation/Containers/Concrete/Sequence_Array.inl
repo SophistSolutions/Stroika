@@ -38,6 +38,8 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
+
 
                 public:
                     Rep_ () = default;
@@ -46,9 +48,6 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -63,10 +62,10 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual T                   GetAt (size_t i) const override;
-                    virtual void                SetAt (size_t i, const T& item) override;
+                    virtual void                SetAt (size_t i, PassTArgByValueType item) override;
                     virtual size_t              IndexOf (const Iterator<T>& i) const override;
                     virtual void                Remove (const Iterator<T>& i) override;
-                    virtual void                Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue) override;
                     virtual void                Insert (size_t at, const T* from, const T* to) override;
                     virtual void                Remove (size_t from, size_t to) override;
 #if     qDebug
@@ -200,7 +199,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Sequence_Array<T>::Rep_::SetAt (size_t i, const T& item)
+                void    Sequence_Array<T>::Rep_::SetAt (size_t i, PassTArgByValueType item)
                 {
                     Require (i < GetLength ());
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -231,7 +230,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Sequence_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                void    Sequence_Array<T>::Rep_::Update (const Iterator<T>& i, PassTArgByValueType newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -306,19 +305,19 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_Array<T>::Sequence_Array ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -326,7 +325,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const vector<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -335,7 +334,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (src);
@@ -344,7 +343,7 @@ namespace   Stroika {
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AppendAll (start, end);

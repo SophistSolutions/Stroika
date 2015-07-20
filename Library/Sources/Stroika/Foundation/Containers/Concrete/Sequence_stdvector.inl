@@ -35,6 +35,7 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -60,10 +61,10 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual T                   GetAt (size_t i) const override;
-                    virtual void                SetAt (size_t i, const T& item) override;
+                    virtual void                SetAt (size_t i, PassTArgByValueType item) override;
                     virtual size_t              IndexOf (const Iterator<T>& i) const override;
                     virtual void                Remove (const Iterator<T>& i) override;
-                    virtual void                Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue) override;
                     virtual void                Insert (size_t at, const T* from, const T* to) override;
                     virtual void                Remove (size_t from, size_t to) override;
 #if     qDebug
@@ -197,7 +198,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Sequence_stdvector<T>::Rep_::SetAt (size_t i, const T& item)
+                void    Sequence_stdvector<T>::Rep_::SetAt (size_t i, PassTArgByValueType item)
                 {
                     Require (i < GetLength ());
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -228,7 +229,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Sequence_stdvector<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                void    Sequence_stdvector<T>::Rep_::Update (const Iterator<T>& i, PassTArgByValueType newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);

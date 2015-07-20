@@ -40,6 +40,8 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
+
 
                 public:
                     Rep_ () = default;
@@ -64,7 +66,7 @@ namespace   Stroika {
                     // Collection<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                Add (T item) override;
+                    virtual void                Add (PassTArgByValueType item) override;
                     virtual void                Update (const Iterator<T>& i, T newValue) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
@@ -186,7 +188,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Collection_LinkedList<T>::Rep_::Add (T item)
+                void    Collection_LinkedList<T>::Rep_::Add (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Prepend (item);
