@@ -113,8 +113,13 @@ namespace {
     const   String_Constant     kAveDiskWriteQLen_      { L"Avg. Disk Write Queue Length" };
     const   String_Constant     kPctIdleTime_           { L"% Idle Time" };
 
-    constexpr bool kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_ { false };
-
+    constexpr	bool	kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_	{ false };
+	/*
+	 *	No logical reason todo this. Its probably masking a real bug. But empirically it produces
+	 *	values closer to those reported by Windows Task Mgr.
+	 *		-- LGP 2015-07-20
+	 */
+	constexpr	bool    kUsePctIdleIimeForAveQLen_							{ true };
 #endif
 }
 
@@ -708,10 +713,10 @@ namespace {
                             result.push_back (v);
                         }
                         else {
-                            auto pctInUse2QL_ = [] (double pctInUse) {
+                            auto safePctInUse2QL_ = [] (double pctInUse) {
                                 // %InUse = QL / (1 + QL).
                                 pctInUse /= 100;
-                                Require (0 <= pctInUse and pctInUse <= 1.0);
+                                pctInUse = Math::PinInRange<double> (pctInUse, 0, 1);
                                 return pctInUse / (1 - pctInUse);
                             };
                             for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
@@ -741,7 +746,7 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                                readStats.fAverageQLength = pctInUse2QL_ (*o);
+                                                readStats.fAverageQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
@@ -759,7 +764,7 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                                writeStats.fAverageQLength = pctInUse2QL_ (*o);
+                                                writeStats.fAverageQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
@@ -773,10 +778,9 @@ namespace {
                                         combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
                                         combinedStats.fAverageQLength.AccumulateIf (writeStats.fAverageQLength);
 
-                                        constexpr   bool    kUsePctIdleIimeForAveQLen_ = true;
                                         if (kUsePctIdleIimeForAveQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
-                                                double  aveCombinedQLen = pctInUse2QL_ (100.0 - *o);
+                                                double  aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
                                                 if (readStats.fAverageQLength and writeStats.fAverageQLength) {
                                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
                                                     // asusme ratio rate, and scale
