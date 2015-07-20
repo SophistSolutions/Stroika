@@ -23,7 +23,7 @@ namespace   Stroika {
              *      add bug define or?? not worries - not much differnt)
              */
             template    <typename   T>
-            using   ArgByValueType = typename std::conditional < (sizeof(T) <= sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
+            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2*sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
 
 
         }
