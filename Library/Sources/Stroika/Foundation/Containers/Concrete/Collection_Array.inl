@@ -37,6 +37,7 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -62,7 +63,7 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual void                Add (PassTArgByValueType item) override;
-                    virtual void                Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -192,7 +193,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Collection_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                void    Collection_Array<T>::Rep_::Update (const Iterator<T>& i, PassTArgByValueType newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
