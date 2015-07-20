@@ -8,6 +8,17 @@
 
 
 
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *
+ * TODO:
+ *
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -21,9 +32,13 @@ namespace   Stroika {
              *
              *  @todo SHOULD use is_trivially_copyable<> but didnt work on gcc47 (and maybe more - look into which and iether
              *      add bug define or?? not worries - not much differnt)
+             *
+             *  \note   Use sizeof(T) <= 2*sizeof(void*) - because passing by reference involves copying one pointer and then if you
+             *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
+             *          releative cost of main memory access versus stack).
              */
             template    <typename   T>
-            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2*sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
+            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2 * sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
 
 
         }
