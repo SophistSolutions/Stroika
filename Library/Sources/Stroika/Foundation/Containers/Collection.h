@@ -300,7 +300,7 @@ namespace   Stroika {
             template    <typename T>
             class   Collection<T>::_IRep : public UpdatableIterable<T>::_IRep {
             private:
-                using   inherited = UpdatableIterable<T>::_IRep;
+                using   inherited = typename UpdatableIterable<T>::_IRep;
 
             protected:
                 _IRep () = default;

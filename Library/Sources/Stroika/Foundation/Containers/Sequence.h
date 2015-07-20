@@ -524,7 +524,7 @@ namespace   Stroika {
             template    <typename T>
             class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = Iterable<T>::_IRep;
+                using   inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
