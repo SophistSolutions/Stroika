@@ -52,6 +52,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
 
@@ -476,10 +477,6 @@ namespace   Stroika {
             protected:
                 using   _SharedPtrIRep = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_SharedPtrIRep;
 
-            public:
-                using   PassDomainArgByValueType = Configuration::ArgByValueType<DOMAIN_TYPE>;
-                using   PassRangeArgByValueType = Configuration::ArgByValueType<RANGE_TYPE>;
-
             protected:
                 _IRep () = default;
 
@@ -487,21 +484,21 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             public:
-                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                  =   0;
-                virtual bool                    Equals (const _IRep& rhs) const                                                         =   0;
-                virtual  Iterable<DomainType>   Preimage () const                                                                       =   0;
-                virtual  Iterable<RangeType>    Image () const                                                                          =   0;
+                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                      =   0;
+                virtual bool                    Equals (const _IRep& rhs) const                                                             =   0;
+                virtual  Iterable<DomainType>   Preimage () const                                                                           =   0;
+                virtual  Iterable<RangeType>    Image () const                                                                              =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (PassDomainArgByValueType key, Memory::Optional<RangeType>* item) const          =   0;
-                virtual  bool                   InverseLookup (PassRangeArgByValueType key, Memory::Optional<DomainType>* item) const   =   0;
-                virtual  void                   Add (PassDomainArgByValueType key, PassRangeArgByValueType newElt)                      =   0;
-                virtual  void                   RemoveDomainElement (PassDomainArgByValueType d)                                        =   0;
-                virtual  void                   RemoveRangeElement (PassRangeArgByValueType r)                                          =   0;
-                virtual  void                   Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                               =   0;
+                virtual  bool                   Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const           =   0;
+                virtual  bool                   InverseLookup (ArgByValueType<RANGE_TYPE> key, Memory::Optional<DomainType>* item) const    =   0;
+                virtual  void                   Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)                    =   0;
+                virtual  void                   RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                                         =   0;
+                virtual  void                   RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                           =   0;
+                virtual  void                   Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                                   =   0;
 
 #if     qDebug
-                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const                                   =   0;
+                virtual void    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const                                       =   0;
 #endif
 
                 /*

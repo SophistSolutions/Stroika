@@ -40,7 +40,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -66,10 +65,10 @@ namespace   Stroika {
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                Equals (const typename Set<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool                Contains (PassTArgByValueType item) const override;
-                    virtual Memory::Optional<T> Lookup (PassTArgByValueType item) const override;
-                    virtual void                Add (PassTArgByValueType item) override;
-                    virtual void                Remove (PassTArgByValueType item) override;
+                    virtual bool                Contains (ArgByValueType<T> item) const override;
+                    virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override;
+                    virtual void                Add (ArgByValueType<T> item) override;
+                    virtual void                Remove (ArgByValueType<T> item) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -194,7 +193,7 @@ namespace   Stroika {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T, typename TRAITS>
-                bool    Set_LinkedList<T, TRAITS>::Rep_::Contains (PassTArgByValueType item) const
+                bool    Set_LinkedList<T, TRAITS>::Rep_::Contains (ArgByValueType<T> item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.Lookup (item) != nullptr;
@@ -202,7 +201,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Memory::Optional<T> Set_LinkedList<T, TRAITS>::Rep_::Lookup (PassTArgByValueType item) const
+                Memory::Optional<T> Set_LinkedList<T, TRAITS>::Rep_::Lookup (ArgByValueType<T> item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         const T*    l = fData_.Lookup (item);
@@ -211,7 +210,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    Set_LinkedList<T, TRAITS>::Rep_::Add (PassTArgByValueType item)
+                void    Set_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
@@ -225,7 +224,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    Set_LinkedList<T, TRAITS>::Rep_::Remove (PassTArgByValueType item)
+                void    Set_LinkedList<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {

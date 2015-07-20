@@ -57,6 +57,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
 
@@ -312,12 +313,9 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
 
             public:
-                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
-
-            public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
-                virtual void                Add (PassTArgByValueType item)                                          =   0;
-                virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue)             =   0;
+                virtual void                Add (ArgByValueType<T> item)                                            =   0;
+                virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue)               =   0;
                 virtual void                Remove (const Iterator<T>& i)                                           =   0;
 #if     qDebug
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;

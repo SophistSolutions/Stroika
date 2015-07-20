@@ -42,7 +42,6 @@ namespace   Stroika {
                     using   _MultisetSharedPtrIRep = typename MultiSetType::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -68,12 +67,12 @@ namespace   Stroika {
                 public:
                     virtual _MultisetSharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                        Equals (const typename MultiSetType::_IRep& rhs) const override;
-                    virtual bool                        Contains (PassTArgByValueType item) const override;
-                    virtual void                        Add (PassTArgByValueType item, size_t count) override;
-                    virtual void                        Remove (PassTArgByValueType item, size_t count) override;
+                    virtual bool                        Contains (ArgByValueType<T> item) const override;
+                    virtual void                        Add (ArgByValueType<T> item, size_t count) override;
+                    virtual void                        Remove (ArgByValueType<T> item, size_t count) override;
                     virtual void                        Remove (const Iterator<MultiSetEntry<T>>& i) override;
                     virtual void                        UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) override;
-                    virtual size_t                      OccurrencesOf (PassTArgByValueType item) const override;
+                    virtual size_t                      OccurrencesOf (ArgByValueType<T> item) const override;
                     virtual Iterable<T>                 Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                 UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
 #if     qDebug
@@ -164,7 +163,7 @@ namespace   Stroika {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Contains (PassTArgByValueType item) const
+                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Contains (ArgByValueType<T> item) const
                 {
                     MultiSetEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -182,7 +181,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Add (PassTArgByValueType item, size_t count)
+                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -200,7 +199,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Remove (PassTArgByValueType item, size_t count)
+                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -247,7 +246,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t  SortedMultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (PassTArgByValueType item) const
+                size_t  SortedMultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const
                 {
                     MultiSetEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {

@@ -40,8 +40,6 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename Collection<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
-
 
                 public:
                     Rep_ () = default;
@@ -66,8 +64,8 @@ namespace   Stroika {
                     // Collection<T>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                Add (PassTArgByValueType item) override;
-                    virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue) override;
+                    virtual void                Add (ArgByValueType<T> item) override;
+                    virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -188,7 +186,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    Collection_LinkedList<T>::Rep_::Add (PassTArgByValueType item)
+                void    Collection_LinkedList<T>::Rep_::Add (ArgByValueType<T> item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Prepend (item);
@@ -196,7 +194,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void    Collection_LinkedList<T>::Rep_::Update (const Iterator<T>& i, PassTArgByValueType newValue)
+                void    Collection_LinkedList<T>::Rep_::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);

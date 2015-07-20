@@ -33,6 +33,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
 
@@ -166,10 +167,7 @@ namespace   Stroika {
                 using   inherited = Queue<T>::_IRep;
 
             public:
-                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
-
-            public:
-                virtual void        AddHead (PassTArgByValueType item)      =   0;
+                virtual void        AddHead (ArgByValueType<T> item)        =   0;
                 virtual T           RemoveTail ()                           =   0;
                 virtual T           Tail () const                           =   0;
             };

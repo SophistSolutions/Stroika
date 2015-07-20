@@ -71,6 +71,9 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            using   Configuration::ArgByValueType;
+
+
             /**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  can be configured (at compile time) to use one or the other, but not both.
@@ -925,14 +928,8 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             public:
-                /**
-                 *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal paraemter
-                 */
-                using   PassTArgByValueType = Configuration::ArgByValueType<T>;
-
-            public:
-                using   _APPLY_ARGTYPE      =   const function<void(PassTArgByValueType item)>& ;
-                using   _APPLYUNTIL_ARGTYPE =   const function<bool(PassTArgByValueType item)>& ;
+                using   _APPLY_ARGTYPE      =   const function<void(ArgByValueType<T> item)>& ;
+                using   _APPLYUNTIL_ARGTYPE =   const function<bool(ArgByValueType<T> item)>& ;
 
             public:
                 virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const                           =   0;

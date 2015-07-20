@@ -39,6 +39,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
 

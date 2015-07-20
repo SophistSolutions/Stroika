@@ -52,6 +52,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
 
@@ -481,21 +482,17 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
 
             public:
-                using   PassKeyArgByValueType = Configuration::ArgByValueType<KEY_TYPE>;
-                using   PassValueByValueType = Configuration::ArgByValueType<VALUE_TYPE>;
-
-            public:
-                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                      =   0;
-                virtual  Iterable<KeyType>      Keys () const                                                               =   0;
-                virtual  Iterable<ValueType>    Values () const                                                             =   0;
+                virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                          =   0;
+                virtual  Iterable<KeyType>      Keys () const                                                                   =   0;
+                virtual  Iterable<ValueType>    Values () const                                                                 =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (PassKeyArgByValueType key, Memory::Optional<ValueType>* item) const =   0;
-                virtual  void                   Add (PassKeyArgByValueType key, PassValueByValueType newElt)                =   0;
-                virtual  void                   Remove (PassKeyArgByValueType key)                                          =   0;
-                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)              =   0;
+                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<ValueType>* item) const  =   0;
+                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt)           =   0;
+                virtual  void                   Remove (ArgByValueType<KEY_TYPE> key)                                           =   0;
+                virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)                  =   0;
 #if     qDebug
-                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const       =   0;
+                virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const           =   0;
 #endif
 
             protected:
