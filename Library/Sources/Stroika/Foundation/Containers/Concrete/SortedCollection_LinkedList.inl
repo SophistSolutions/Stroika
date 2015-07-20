@@ -64,7 +64,7 @@ namespace   Stroika {
                 public:
                     virtual typename Collection<T>::_SharedPtrIRep  CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual void                                    Add (PassTArgByValueType item) override;
-                    virtual void                                    Update (const Iterator<T>& i, T newValue) override;
+                    virtual void                                    Update (const Iterator<T>& i, PassTArgByValueType newValue) override;
                     virtual void                                    Remove (const Iterator<T>& i) override;
 #if     qDebug
                     virtual void                                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -216,7 +216,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, PassTArgByValueType newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
