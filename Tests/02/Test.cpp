@@ -1235,6 +1235,7 @@ namespace {
         }
         VerifyTestResult (result.size () == 4 * 10);
         VerifyTestResult (result == L"abcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
+        Verify (L"a" + String () == L"a");  // we had bug in v2.0a100 and earlier with null string on RHS of operator+
     }
 }
 

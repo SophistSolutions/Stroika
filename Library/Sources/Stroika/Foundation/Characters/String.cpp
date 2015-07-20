@@ -1241,7 +1241,9 @@ String  Characters::operator+ (const wchar_t* lhs, const String& rhs)
     size_t  lhsLen      =   ::wcslen (lhs);
     size_t  totalLen    =   lhsLen + (rhsD.second - rhsD.first);
     auto    sRep =  String::MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
-    sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
+    if (rhsD.first != rhsD.second) {
+        sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
+    }
     return String (move (sRep));
 }
 
