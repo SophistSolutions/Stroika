@@ -36,6 +36,8 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassKeyArgByValueType = typename inherited::PassKeyArgByValueType;
+                    using   PassValueByValueType = typename inherited::PassValueByValueType;
 
                 public:
                     Rep_ () = default;
@@ -62,9 +64,9 @@ namespace   Stroika {
                     virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual Iterable<KEY_TYPE>      Keys () const override;
                     virtual Iterable<VALUE_TYPE>    Values () const override;
-                    virtual bool                    Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
-                    virtual void                    Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual void                    Remove (KEY_TYPE key) override;
+                    virtual bool                    Lookup (PassKeyArgByValueType key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                    Add (PassKeyArgByValueType key, PassValueByValueType newElt) override;
+                    virtual void                    Remove (PassKeyArgByValueType key) override;
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override;
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;

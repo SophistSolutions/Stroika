@@ -10,6 +10,7 @@
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
+#include    "../Configuration/TypeHints.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Memory/SharedPtr.h"
 
@@ -926,9 +927,8 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal paraemter
-                 *
                  */
-                using   PassTArgByValueType = typename std::conditional < (sizeof(T) <= sizeof(int)) && std::is_trivial<T>::value, T, const T& >::type;
+                using   PassTArgByValueType = Configuration::ArgByValueType<T>;
 
             public:
                 using   _APPLY_ARGTYPE      =   const function<void(PassTArgByValueType item)>& ;

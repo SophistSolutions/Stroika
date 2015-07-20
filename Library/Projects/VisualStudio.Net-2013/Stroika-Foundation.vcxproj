@@ -972,6 +972,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h" />

@@ -40,6 +40,8 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassKeyArgByValueType = typename inherited::PassKeyArgByValueType;
+                    using   PassValueByValueType = typename inherited::PassValueByValueType;
 
                 public:
                     Rep_ ();
@@ -66,9 +68,9 @@ namespace   Stroika {
                     virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual Iterable<KEY_TYPE>      Keys () const override;
                     virtual Iterable<VALUE_TYPE>    Values () const override;
-                    virtual bool                    Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
-                    virtual void                    Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual void                    Remove (KEY_TYPE key) override;
+                    virtual bool                    Lookup (PassKeyArgByValueType key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                    Add (PassKeyArgByValueType key, PassValueByValueType newElt) override;
+                    virtual void                    Remove (PassKeyArgByValueType key) override;
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override;
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -186,7 +188,7 @@ namespace   Stroika {
                     return this->_Values_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const
+                bool    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (PassKeyArgByValueType key, Memory::Optional<VALUE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (key);
@@ -206,7 +208,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
+                void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (PassKeyArgByValueType key, PassValueByValueType newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
@@ -223,7 +225,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
+                void    Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (PassKeyArgByValueType key)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
