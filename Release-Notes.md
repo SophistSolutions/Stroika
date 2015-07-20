@@ -26,6 +26,9 @@ History
 		<li>TODO</li>
 		<li>Rework Containers to use enable_if so constructor taking container is more restricive. This allowed greatly simplfying other uses of constructors, possibly improving perofrmance, but defintely making much simple and more robust.</li>
 		<li>New ArgByValueType&lt;T&gt; template to improve performance (for now just used in container reps)</li>
+		<li>SystemPerofrmance framework: filesystem imporvements (e.g. fAverageQLength), and Process (fCaptureCommandLine regexp)</li>
+		<li>Mapping<>::RetainAll()</li>
+		<li>ReguglarExpression cleanups</li>
 	</ul>
 </td>
 </tr>
