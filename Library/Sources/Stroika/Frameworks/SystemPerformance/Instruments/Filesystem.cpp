@@ -113,13 +113,13 @@ namespace {
     const   String_Constant     kAveDiskWriteQLen_      { L"Avg. Disk Write Queue Length" };
     const   String_Constant     kPctIdleTime_           { L"% Idle Time" };
 
-    constexpr	bool	kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_	{ false };
-	/*
-	 *	No logical reason todo this. Its probably masking a real bug. But empirically it produces
-	 *	values closer to those reported by Windows Task Mgr.
-	 *		-- LGP 2015-07-20
-	 */
-	constexpr	bool    kUsePctIdleIimeForAveQLen_							{ true };
+    constexpr   bool    kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_  { false };
+    /*
+     *  No logical reason todo this. Its probably masking a real bug. But empirically it produces
+     *  values closer to those reported by Windows Task Mgr.
+     *      -- LGP 2015-07-20
+     */
+    constexpr   bool    kUsePctIdleIimeForAveQLen_                          { true };
 #endif
 }
 

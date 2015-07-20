@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Time/DateTimeRange.h"
+#include    "Stroika/Foundation/Time/DurationRange.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/DisjointDiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/DisjointRange.h"
@@ -785,6 +786,21 @@ namespace {
 
 
 
+namespace {
+    void    Test17_DurationRange_ ()
+    {
+        using   Time::DurationRange;
+        using   Time::Duration;
+
+        {
+            DurationRange   a  {Duration ("PT.5S"), Duration ("PT2M") };
+            DurationRange   b  {Duration ("PT1S"), Duration ("PT2M") };
+            Verify ((a ^ b) == b);
+        }
+    }
+}
+
+
 
 
 
@@ -807,6 +823,7 @@ namespace   {
         Test14_Format_ ();
         Test15_Partition_ ();
         Test16_LinqLikeFunctions_ ();
+        Test17_DurationRange_ ();
     }
 }
 
