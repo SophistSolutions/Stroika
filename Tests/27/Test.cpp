@@ -363,6 +363,33 @@ namespace   {
         }
 
 
+        namespace Test_05_ParseRegressionTest_3_ {
+            void    DoIt ()
+            {
+                {
+                    const char  kJSONExample_[] =
+                        "{"
+                        "        \"T1\" : \"\","
+                        "        \"T2\" : null,"
+                        "        \"T3\" : {"
+                        "            \"DefaultBackupDirectory\" : true,"
+                        "            \"PrintName\" : \"{Default Backup Directory}\""
+                        "        }"
+                        "    }"
+                        "}"
+                        ;
+                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    Mapping<String, VariantValue>  mv  =   v.As<Mapping<String, VariantValue>> ();
+                    VerifyTestResult (mv[L"T1"].GetType () == VariantValue::Type::eString);
+                    VerifyTestResult (mv[L"T1"] == String ());
+                    VerifyTestResult (mv[L"T2"].GetType () == VariantValue::Type::eNull);
+                    VerifyTestResult (mv[L"T3"].GetType () == VariantValue::Type::eMap);
+                }
+            }
+        }
+
+
+
         namespace Test_07_ParserTestReadWriteBasictypes_ {
             void    DoIt ()
             {
@@ -439,6 +466,7 @@ namespace   {
             Test_04_CheckStringQuoting_::DoIt ();
             Test_05_ParseRegressionTest_1_::DoIt ();
             Test_06_ParseRegressionTest_2_::DoIt ();
+            Test_05_ParseRegressionTest_3_::DoIt ();
             Test_07_ParserTestReadWriteBasictypes_::DoIt ();
             Test_08_ReadEmptyStreamShouldNotFail_::DoIt ();
         }
