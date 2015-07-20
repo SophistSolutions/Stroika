@@ -40,6 +40,7 @@ namespace   Stroika {
                     using   _SetSharedPtrIRep = typename Set<T, typename TRAITS::SetTraitsType>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassTArgByValueType = typename inherited::PassTArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -48,9 +49,6 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -65,10 +63,10 @@ namespace   Stroika {
                 public:
                     virtual _SetSharedPtrIRep   CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override;
-                    virtual bool                Contains (T item) const override;
-                    virtual Memory::Optional<T> Lookup (T item) const override;
-                    virtual void                Add (T item) override;
-                    virtual void                Remove (T item) override;
+                    virtual bool                Contains (PassTArgByValueType item) const override;
+                    virtual Memory::Optional<T> Lookup (PassTArgByValueType item) const override;
+                    virtual void                Add (PassTArgByValueType item) override;
+                    virtual void                Remove (PassTArgByValueType item) override;
                     virtual void                Remove (const Iterator<T>& i) override;
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -174,7 +172,7 @@ namespace   Stroika {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedSet_stdset<T, TRAITS>::Rep_::Contains (T item) const
+                bool    SortedSet_stdset<T, TRAITS>::Rep_::Contains (PassTArgByValueType item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.Contains (item);
@@ -182,7 +180,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Memory::Optional<T>    SortedSet_stdset<T, TRAITS>::Rep_::Lookup (T item) const
+                Memory::Optional<T>    SortedSet_stdset<T, TRAITS>::Rep_::Lookup (PassTArgByValueType item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto    i    = fData_.find (item);
@@ -191,7 +189,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedSet_stdset<T, TRAITS>::Rep_::Add (T item)
+                void    SortedSet_stdset<T, TRAITS>::Rep_::Add (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.insert (item);
@@ -200,7 +198,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedSet_stdset<T, TRAITS>::Rep_::Remove (T item)
+                void    SortedSet_stdset<T, TRAITS>::Rep_::Remove (PassTArgByValueType item)
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
@@ -241,19 +239,19 @@ namespace   Stroika {
                 */
                 template    <typename T, typename TRAITS>
                 SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& src)
-                    : inherited (static_cast<const inherited&> (src))
+                    : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const initializer_list<T>& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);
@@ -262,7 +260,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src)
-                    : inherited (typename inherited::_SharedPtrIRep (inherited::template MakeSharedPtr<Rep_> ()))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                     this->AddAll (src);

@@ -374,6 +374,9 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Set<T, TRAITS>::_IRep : public UpdatableIterable<T>::_IRep {
+            private:
+                using   inherited = UpdatableIterable<T>::_IRep;
+
             protected:
                 _IRep () = default;
 
@@ -384,12 +387,15 @@ namespace   Stroika {
                 using   _SharedPtrIRep = typename Set<T, TRAITS>::_SharedPtrIRep;
 
             public:
+                using   PassTArgByValueType = typename inherited::PassTArgByValueType;
+
+            public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;
-                virtual bool                Contains (T item) const                                                 =   0;
-                virtual Memory::Optional<T> Lookup (T item) const                                                   =   0;
-                virtual void                Add (T item)                                                            =   0;
-                virtual void                Remove (T item)                                                         =   0;
+                virtual bool                Contains (PassTArgByValueType item) const                               =   0;
+                virtual Memory::Optional<T> Lookup (PassTArgByValueType item) const                                 =   0;
+                virtual void                Add (PassTArgByValueType item)                                          =   0;
+                virtual void                Remove (PassTArgByValueType item)                                       =   0;
                 virtual void                Remove (const Iterator<T>& i)                                           =   0;
 #if     qDebug
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
