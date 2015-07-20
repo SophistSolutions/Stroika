@@ -375,7 +375,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             class   Set<T, TRAITS>::_IRep : public UpdatableIterable<T>::_IRep {
             private:
-                using   inherited = UpdatableIterable<T>::_IRep;
+                using   inherited = typename UpdatableIterable<T>::_IRep;
 
             protected:
                 _IRep () = default;
