@@ -317,7 +317,7 @@ namespace   Stroika {
             public:
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual void                Add (PassTArgByValueType item)                                          =   0;
-                virtual void                Update (const Iterator<T>& i, T newValue)                               =   0;
+                virtual void                Update (const Iterator<T>& i, PassTArgByValueType newValue)             =   0;
                 virtual void                Remove (const Iterator<T>& i)                                           =   0;
 #if     qDebug
                 virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const   =   0;
