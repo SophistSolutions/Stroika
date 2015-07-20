@@ -37,6 +37,8 @@ namespace   Stroika {
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   PassDomainArgByValueType = typename inherited::PassDomainArgByValueType;
+                    using   PassRangeArgByValueType = typename inherited::PassRangeArgByValueType;
 
                 public:
                     Rep_ () = default;
@@ -64,11 +66,11 @@ namespace   Stroika {
                     virtual bool                    Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const override;
                     virtual Iterable<DOMAIN_TYPE>   Preimage () const override;
                     virtual Iterable<RANGE_TYPE>    Image () const override;
-                    virtual bool                    Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
-                    virtual bool                    InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
-                    virtual void                    Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
-                    virtual void                    RemoveDomainElement (DOMAIN_TYPE d) override;
-                    virtual void                    RemoveRangeElement (RANGE_TYPE r) override;
+                    virtual bool                    Lookup (PassDomainArgByValueType key, Memory::Optional<RANGE_TYPE>* item) const override;
+                    virtual bool                    InverseLookup (PassRangeArgByValueType key, Memory::Optional<DOMAIN_TYPE>* item) const override;
+                    virtual void                    Add (PassDomainArgByValueType key, PassRangeArgByValueType newElt) override;
+                    virtual void                    RemoveDomainElement (PassDomainArgByValueType d) override;
+                    virtual void                    RemoveRangeElement (PassRangeArgByValueType r) override;
                     virtual void                    Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override;
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
@@ -209,7 +211,7 @@ namespace   Stroika {
                     return *(Iterable<RANGE_TYPE>*)nullptr;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const
+                bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Lookup (PassDomainArgByValueType key, Memory::Optional<RANGE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename ExternallySynchronizedDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -228,7 +230,7 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const
+                bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::InverseLookup (PassRangeArgByValueType key, Memory::Optional<DOMAIN_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename ExternallySynchronizedDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -247,7 +249,7 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Add (DOMAIN_TYPE key, RANGE_TYPE newElt)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Add (PassDomainArgByValueType key, PassRangeArgByValueType newElt)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -262,7 +264,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveDomainElement (DOMAIN_TYPE d)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveDomainElement (PassDomainArgByValueType d)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -276,7 +278,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveRangeElement (RANGE_TYPE r)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveRangeElement (PassRangeArgByValueType r)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
