@@ -28,7 +28,8 @@ History
 		<li>New ArgByValueType&lt;T&gt; template to improve performance (for now just used in container reps)</li>
 		<li>SystemPerofrmance framework: filesystem imporvements (e.g. fAverageQLength), and Process (fCaptureCommandLine regexp)</li>
 		<li>Mapping<>::RetainAll()</li>
-		<li>ReguglarExpression cleanups</li>
+		<li>RegularExpression cleanups</li>
+		<li>fixed serious/subtle bug with DataExchange/ObjectVariantMapper read of 'empty' variant value mapped to 'null' (missing) data. That means null in the JSON (or a missing field) was treated the same as an  empty string (or nan float); Dangerous fix, but significant improvement</li>
 	</ul>
 </td>
 </tr>
