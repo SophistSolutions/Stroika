@@ -113,6 +113,18 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Linux';
 	}
 	if ("$^O" eq "cygwin") {
+		# try vs 2k15
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 14.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
+			}
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
+			}
+		}
+
 		# try vs 2k13
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
@@ -125,33 +137,6 @@ sub	SetInitialDefaults_
 			}
 		}
 
-		# try vs 2k12
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 11.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2012';
-			}
-			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 11.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2012';
-			}
-		}
-
-		# try vs 2k10 (NOTE - OBSOLETE)
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 10.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
-			}
-			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 10.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
-			}
-			if ("$PROJECTPLATFORMSUBDIR" eq "VisualStudio.Net-2010") {
-				print ("****ERRROR - WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
-				exit (1);
-			}
-		}
 	}
 
 	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
@@ -194,10 +179,10 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "g++ -V4.6";
 		$platform = "Platform_Linux";
 	}
-	if ($PROJECTPLATFORMSUBDIR eq 'VisualStudio.Net-2012') {
-		$COMPILER_DRIVER = "CL";
-		$platform = "Windows";
-	}
+	#if ($PROJECTPLATFORMSUBDIR eq 'VisualStudio.Net-2012') {
+	#	$COMPILER_DRIVER = "CL";
+	#	$platform = "Windows";
+	#}
 	
 	SetDefaultForCompilerDriver_();
 }
@@ -455,6 +440,9 @@ sub	CHECK_OPTIONS_
 	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
+	}
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2012") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012\n");
 	}
   	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
