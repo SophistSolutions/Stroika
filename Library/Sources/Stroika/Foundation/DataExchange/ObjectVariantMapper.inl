@@ -246,7 +246,8 @@ namespace   Stroika {
                 auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     Optional<T, TRAITS>*    actualInto  =   reinterpret_cast<Optional<T, TRAITS>*> (intoObjOfTypeT);
-                    if (d.empty ())
+                    // NOTE - until v2.0a100, this read if (d.empty ()) - but thats wrong beacuse it maps empty strings to null (missing) values
+                    if (d.GetType () == VariantValue::Type::eNull)
                     {
                         actualInto->clear ();
                     }
