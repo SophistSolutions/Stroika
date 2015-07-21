@@ -28,6 +28,15 @@ using   Time::TimeOfDay;
 
 
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 /*
  ********************************************************************************
  ********************* DataExchange::ObjectVariantMapper ************************
@@ -340,11 +349,15 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
 #endif
 
     auto toVariantMapper = [fields] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
+#endif
         Mapping<String, VariantValue> m;
         for (auto i : fields)
         {
-            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
+#endif
             const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
             VariantValue    vv = mapper.FromObjectMapper (i.fTypeInfo) (mapper, fromObjOfTypeT + i.fOffset);
             if (i.fNullFields == ObjectVariantMapper::StructureFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
@@ -354,15 +367,19 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         return VariantValue (m);
     };
     auto fromVariantMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-        //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
+#endif
         VariantValue v2Decode = d;
         preflightBeforeToObject (&v2Decode);
         Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
         for (auto i : fields)
         {
-            //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-            if (not o.IsMissing ()) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"(fieldname = %s, offset=%d, present=%d)", i.fSerializedFieldName.c_str (), i.fOffset, o.IsPresent ());
+#endif
+            if (o) {
                 switch (i.fSpecialArrayHandling) {
                     case StructureFieldInfo::ArrayElementHandling::eExact: {
                             mapper.ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
