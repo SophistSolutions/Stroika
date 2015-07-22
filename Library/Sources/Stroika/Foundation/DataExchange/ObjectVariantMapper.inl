@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../Characters/String_Constant.h"
+#include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 
 #include    "BadFormatException.h"

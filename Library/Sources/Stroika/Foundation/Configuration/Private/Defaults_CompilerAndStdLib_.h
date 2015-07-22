@@ -962,7 +962,7 @@ EXAMPLE:
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
 #endif
@@ -977,7 +977,7 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
+#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        0
 #endif
@@ -1000,7 +1000,7 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // first broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RC_FULLVER_)
+#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RC_FULLVER_ || _MSC_FULL_VER == _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        0
 #endif
