@@ -298,8 +298,8 @@ namespace {
                     }
                 };
                 // wait long time cuz of debuggers etc
-                adder.WaitForDone(100);
-                reader.WaitForDone(100);
+                adder.WaitForDone(200);
+                reader.WaitForDone(200);
                 VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
