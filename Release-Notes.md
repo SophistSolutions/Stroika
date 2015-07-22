@@ -19,6 +19,18 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a101">v2.0a101x</a><br/>2015-07-?</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
   
 <tr>
@@ -32,7 +44,7 @@ History
 		<li>RegularExpression cleanups</li>
 		<li>fixed serious/subtle bug with DataExchange/ObjectVariantMapper read of 'empty' variant value mapped to 'null' (missing) data. That means null in the JSON (or a missing field) was treated the same as an  empty string (or nan float); Dangerous fix, but significant improvement</li>
 		<li>Generate new performance regression test results</li>
-		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, arm-linux-gnueabihf-g++-4.9(regtest44 failed), and valgrind, and next rev should work with VC++2k15</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind, and next rev should work with VC++2k15</li>
 	</ul>
 </td>
 </tr>
