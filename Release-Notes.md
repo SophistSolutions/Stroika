@@ -18,18 +18,21 @@ History
 
 
 
+
+
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a100">v2.0a100x</a><br/>2015-07-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a100">v2.0a100</a><br/>2015-07-21</td>
 <td>
 	<ul>
-		<li>TODO</li>
 		<li>Rework Containers to use enable_if so constructor taking container is more restricive. This allowed greatly simplfying other uses of constructors, possibly improving perofrmance, but defintely making much simple and more robust.</li>
 		<li>New ArgByValueType&lt;T&gt; template to improve performance (for now just used in container reps)</li>
 		<li>SystemPerofrmance framework: filesystem imporvements (e.g. fAverageQLength), and Process (fCaptureCommandLine regexp)</li>
 		<li>Mapping<>::RetainAll()</li>
 		<li>RegularExpression cleanups</li>
 		<li>fixed serious/subtle bug with DataExchange/ObjectVariantMapper read of 'empty' variant value mapped to 'null' (missing) data. That means null in the JSON (or a missing field) was treated the same as an  empty string (or nan float); Dangerous fix, but significant improvement</li>
+		<li>Generate new performance regression test results</li>
+		<li>Tested (passed regtests) on vc++2k13, gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, arm-linux-gnueabihf-g++-4.9(regtest44 failed), and valgrind, and next rev should work with VC++2k15</li>
 	</ul>
 </td>
 </tr>
