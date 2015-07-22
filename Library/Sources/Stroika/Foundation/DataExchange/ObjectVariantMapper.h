@@ -83,7 +83,7 @@
  *                  Probably relatively LOW priority to fix, however.
  *
  *      @todo   NOTE and TODO
- *              The cast to Byte* loses some type safety (we may want to store the class size htrough template magic)
+ *              The cast to Byte* loses some type safety (we may want to store the class size through template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
  *
  *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to VariantValue
