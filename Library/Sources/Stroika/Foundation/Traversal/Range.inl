@@ -109,11 +109,18 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_Buggy && !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
             constexpr
 #endif
             inline  Range<T, TRAITS>::Range ()
+#if     qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
+                : fBegin_ (TRAITS::kUpperBound)
+                , fEnd_ (TRAITS::kLowerBound)
+                , fBeginOpenness_ (TRAITS::kLowerBoundOpenness)
+                , fEndOpenness_ (TRAITS::kUpperBoundOpenness)
+#else
                 : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+#endif
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure (empty ());
@@ -133,7 +140,14 @@ namespace   Stroika {
             constexpr
 #endif
             inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
+#if     qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
+                : fBegin_ (begin)
+                , fEnd_ (end)
+                , fBeginOpenness_ (TRAITS::kLowerBoundOpenness)
+                , fEndOpenness_ (TRAITS::kUpperBoundOpenness)
+#else
                 : Range (begin, end, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
+#endif
             {
             }
             template    <typename T, typename TRAITS>
@@ -178,7 +192,11 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
+            inline
+#if     !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+            constexpr
+#endif
+            Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
             {
                 return Range<T, TRAITS> (
                            TraitsType::kLowerBound, TraitsType::kUpperBound,
@@ -449,7 +467,6 @@ namespace   Stroika {
                 }
                 return out.str ();
             }
-
 
 
             /*

@@ -242,7 +242,7 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_Buggy && !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
                 constexpr
 #endif
                 explicit Range ();
@@ -273,7 +273,11 @@ namespace   Stroika {
                  *              TraitsType::kLowerBoundOpenness, TraitsType::kUpperBoundOpenness
                  *          );
                  */
+#if     qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+                static  Range<T, TRAITS> FullRange ();
+#else
                 static  constexpr   Range<T, TRAITS> FullRange ();
+#endif
 
             public:
                 /**

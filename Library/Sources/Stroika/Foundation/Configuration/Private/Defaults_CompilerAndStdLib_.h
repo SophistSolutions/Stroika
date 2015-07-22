@@ -313,7 +313,27 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_arrays_Buggy
+>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): error C3256: 'kUpperBound': variable use does not produce a constant expression
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(582): note: see reference to function template instantiation 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)' being compiled
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(447): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_Range_<Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>>(void)' being compiled
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(180): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>(const Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_> &)' being compiled
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.cpp(275): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer<Stroika::Foundation::Time::DateRange>(void)' being compiled
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(118): error C3256: 'kLowerBound': variable use does not produce a constant expression
+*/
+#ifndef qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#endif
+
+#endif
+
+
+/*
 */
 #ifndef qCompilerAndStdLib_constexpr_arrays_Buggy
 
@@ -325,6 +345,26 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 #endif
+
+
+
+
+/*
+*/
+#ifndef qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#endif
+
+#endif
+
+
+
+
 
 
 
