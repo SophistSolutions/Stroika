@@ -121,7 +121,7 @@ namespace   Stroika {
 
 #if     qDebug
             private:
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_arrays_Buggy
                 static  const   Byte    kGuard1_[8];
                 static  const   Byte    kGuard2_[8];
 #else

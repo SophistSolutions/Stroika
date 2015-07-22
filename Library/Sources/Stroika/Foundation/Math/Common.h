@@ -37,6 +37,14 @@ namespace   Stroika {
             T  nan ();
 
 
+#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
+            template    <typename T>
+            inline  constexpr T numeric_limits_epsilon_BWA_ ()
+            {
+                return numeric_limits<T>::epsilon();
+            }
+#endif
+
             constexpr   double  kE  =   2.71828182845904523536;
             constexpr   double  kPi =   3.14159265358979323846;
 
@@ -71,8 +79,13 @@ namespace   Stroika {
              *          meant to address floating point rounding error. This zero value mimics the behavior NearlyEquals for other
              *          non-floating point values.
              */
+#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
+            template    <typename   T>
+            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits_epsilon_BWA_<T> ()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
+#else
             template    <typename   T>
             bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
+#endif
             template    <typename   T>
             bool    NearlyEquals (T l, T r, T epsilon = 0, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
             template    <typename   T>
@@ -90,10 +103,15 @@ namespace   Stroika {
              *  This helper allows values near a special value (like the endpoint of that range) to 'pin' to be
              *  exactly that endpoint.
              *
-             *  But PinToSpecialPoint () always returns its first argument, or someting NearlyEqual() to it.
+             *  But PinToSpecialPoint () always returns its first argument, or something NearlyEqual() to it.
              */
+#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
+            template    <typename   T>
+            T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits_epsilon_BWA_<T> ()));
+#else
             template    <typename   T>
             T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits<T>::epsilon ()));
+#endif
 
 
             /**
