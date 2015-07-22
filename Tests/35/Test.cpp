@@ -200,7 +200,11 @@ namespace   {
 
             const unsigned int kRepeatCount_ = 250;
 
+#if     qCompilerAndStdLib_constexpr_stdinitializer_Buggy
+            static const        initializer_list<int>   kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+#else
             static constexpr    initializer_list<int>   kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+#endif
             static const        initializer_list<int>   kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
 
             no_lock_ lock;

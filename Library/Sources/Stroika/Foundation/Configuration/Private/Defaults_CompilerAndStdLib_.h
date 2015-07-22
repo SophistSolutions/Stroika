@@ -347,6 +347,20 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 
+/*
+>c:\sandbox\stroikadev\tests\35\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
+*/
+#ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      0
+#endif
+
+#endif
+
 
 
 /*
