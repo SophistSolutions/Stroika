@@ -261,7 +261,7 @@ const wchar_t*  String::_IRep::c_str_peek () const  noexcept
  ********************************************************************************
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-#if     !qCompilerAndStdLib_constexpr_STL_Buggy
+#if     !qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
 constexpr   size_t    String::kBadIndex;
 #endif
 

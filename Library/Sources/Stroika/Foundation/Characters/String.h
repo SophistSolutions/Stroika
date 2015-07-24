@@ -342,7 +342,7 @@ namespace   Stroika {
                 using   inherited   =   Iterable<Character>;
 
             public:
-#if     qCompilerAndStdLib_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
                 DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
 #elif   qCompilerAndStdLib_constexpr_STL_Buggy
                 static  constexpr size_t    kBadIndex = -1;

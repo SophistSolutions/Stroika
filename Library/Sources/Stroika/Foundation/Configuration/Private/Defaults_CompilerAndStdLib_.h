@@ -211,14 +211,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_uninitialized_copy_n_Buggy
 @DESCRIPTION:   Just annowing warning workaround
+1>c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(210): warning C4996: 'std::_Uninitialized_copy_n': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+1>  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(190): note: see declaration of 'std::_Uninitialized_copy_n'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\containers\externallysynchronizeddatastructures\array.inl(215): note: see reference to function template instantiation '_FwdIt std::uninitialized_copy_n<T*,size_t,T*>(_InIt,_Diff,_FwdIt)' being compiled
 */
 #ifndef qCompilerAndStdLib_uninitialized_copy_n_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
+// still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy   0
@@ -276,6 +279,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
                         int        i;
                         long int  li;
                     } u4 = {.li=3};
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(79): error C2059: syntax error: '.'
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(79): error C2612: trailing '}' illegal in base/member initializer list
 */
 #ifndef qCompilerAndStdLib_union_designators_Buggy
 
@@ -283,6 +288,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
+// still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
@@ -303,6 +309,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
+// Fixed (ish) in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_Buggy      0
@@ -334,6 +341,10 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\memory\smallstackbuffer.h(128): error C4579: 'Stroika::Foundation::Memory::SmallStackBuffer<wchar_t,2048>::kGuard1_': in-class initialization for type 'const Stroika::Foundation::Memory::Byte [8]' is not yet implemented; static member will remain uninitialized at runtime but use in constant-expressions is supported
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\stringbuilder.h(180): note: see reference to class template instantiation 'Stroika::Foundation::Memory::SmallStackBuffer<wchar_t,2048>' being compiled
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\memory\smallstackbuffer.h(128): error C2131: expression did not evaluate to a constant
+                static  constexpr   Byte    kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
 */
 #ifndef qCompilerAndStdLib_constexpr_arrays_Buggy
 
@@ -345,6 +356,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 #endif
+
+
 
 
 /*
@@ -364,6 +377,10 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): error C3256: 'kUpperBound': variable use does not produce a constant expression
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(124): note: see reference to function template instantiation 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)' being compiled
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(122): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)'
 */
 #ifndef qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
 
@@ -384,6 +401,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\math\common.h(113): error C2064: term does not evaluate to a function taking 0 arguments
 */
 #ifndef qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
 
@@ -400,18 +418,19 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_STL_Buggy
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): error C2131: expression did not evaluate to a constant
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): note: failure was caused by non-constant arguments or reference to a non-constant symbol
 */
-#ifndef qCompilerAndStdLib_constexpr_STL_Buggy
+#ifndef qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
-#define qCompilerAndStdLib_constexpr_STL_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_STL_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #endif
 
 #endif
@@ -422,8 +441,11 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C2079: 'public: static Stroika::Foundation::Time::Date const Stroika::Foundation::Time::Date::kMin' uses undefined class 'Stroika::Foundation::Time::Date'
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C4579: 'Stroika::Foundation::Time::Date::kMin': in-class initialization for type 'const Stroika::Foundation::Time::Date' is not yet implemented; static member will remain uninitialized at runtime but use in constant-expressions is supported
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): error C2440: 'initializing': cannot convert from 'initializer list' to 'const Stroika::Foundation::Time::Date'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\time\date.h(289): note: Source or target has incomplete type
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
@@ -462,8 +484,11 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_union_variants_Buggy
-@DESCRIPTION:
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
+1>  SocketAddress.cpp
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
+1>  Socket.cpp
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
@@ -575,10 +600,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
+// still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
@@ -784,6 +807,7 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // Still broken in _MS_VS_2k13_Update4_FULLVER_
+// Still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_inet_ntop_const_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_inet_ntop_const_Buggy          0
@@ -830,14 +854,19 @@ EXAMPLE:
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-@DESCRIPTION:
+1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): error C2244: 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone': unable to match function definition to an existing declaration
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(29): note: see declaration of 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: definition
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: 'Iterator<T,std::iterator<std::forward_iterator_tag,T,ptrdiff_t,_Ty*,_Ty&>>::SharedIRepPtr Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone(void) const'
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: existing declarations
+1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: 'std::shared_ptr<SHARED_T> Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone(void) const'
 */
 #ifndef qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
 
 #if   defined (_MSC_VER)
 // Still broken in _MS_VS_2k13_Update4_FULLVER_
 // Still broken in _MS_VS_2k15_RC_FULLVER_
+// Still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          0
@@ -962,7 +991,8 @@ EXAMPLE:
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+// FIXED in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
 #endif
@@ -977,7 +1007,8 @@ EXAMPLE:
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+// appears fixed in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
 #else
 #define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        0
 #endif
@@ -996,6 +1027,14 @@ EXAMPLE:
 // gcc is right, but I'm uncertain.
 //
 //  -- LGP 2015-05-18
+/*
+47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2143: syntax error: missing ';' before '&'
+47>  c:\sandbox\stroikadev\tests\46\test.cpp(1312): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<`anonymous-namespace'::Test_JSONReadWriteFile_::SpectrumType,double,double>(void)' being compiled
+47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2461: 'Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey::<lambda_8ffbcf425fc80a60fcc9f2e3e4588588>': constructor syntax missing formal parameters
+47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2238: unexpected token(s) preceding ';'
+47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2143: syntax error: missing ',' before '&'
+*/
 #ifndef qCompilerAndStdLib_DotTemplateDisambiguator_Buggy
 
 #if     defined (_MSC_VER)
@@ -1597,6 +1636,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
+// still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qDecoratedNameLengthExceeded_Buggy      0
