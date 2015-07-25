@@ -5,7 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-require "../../../Library/Projects/VisualStudio.Net-2013/SetupBuildCommonVars.pl";
+require "../../../Library/Projects/VisualStudio.Net-2015/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 
