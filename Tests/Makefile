@@ -70,6 +70,8 @@ clobber:
 project-files:
 	@echo "Building VisualStudio.Net-2013 project files..."
 	@(cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
+	@echo "Building VisualStudio.Net-2015 project files..."
+	@(cd Projects/VisualStudio.Net-2015 && perl BuildProjectsFiles.pl)
 
 tests:
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff

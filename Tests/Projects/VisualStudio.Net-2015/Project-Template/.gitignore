@@ -1,0 +1,11 @@
+Debug-A-32/
+Release-A-32/
+Debug-U-32/
+Release-U-32/
+Debug-U-64/
+Release-U-64/
+Output/
+*.sdf
+*.suo
+*.vcxproj.user
+ipch/
