@@ -36,6 +36,6 @@ if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleService.sln /p:$curConfig /target:$useBld");
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleService.vcxproj /p:$curConfig /target:$useBld");
 	}
 }
