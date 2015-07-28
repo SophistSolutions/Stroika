@@ -129,6 +129,8 @@
 @DESCRIPTION:   <p>Using tmput on Release, and 64bit builds core dumps. Just started. Not sure why.
             But using narrow string succeeds so workaround.
             </p>
+
+    APPEARS FIXED IN MSVC2k15 RTM
 */
 #ifndef qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
 
@@ -151,6 +153,8 @@
     ErroniousReportFailWhenDateBefore1900
 
     >>> TO TEST IF FIXED - RUN TIME REGRESSION TESTS (Foundation::Time - currently #44) <<<
+
+    VERIFIED FIXED in VS 2k15 RTM
 */
 #ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
 
@@ -181,6 +185,7 @@
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
+// VERIFIED fixed in VS 2k15 RTM
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
