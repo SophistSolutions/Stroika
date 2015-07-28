@@ -195,4 +195,4 @@ clean:
 
 clobber:
 	@rm -rf $(TRGDIR)
-	@rm -f BUILD.OUT
+	@rm -f BUILD.OUT PATCHING.OUT
