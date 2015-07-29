@@ -101,9 +101,20 @@ if (! (-e toCygPath_ ($WindowsSdkDir))) {
 } 
 $ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
 
+my $UniversalCRTSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\10";
+if (! (-e toCygPath_ ($UniversalCRTSdkDir))) {
+	$UniversalCRTSdkDir = "C\:\\Program Files\\Windows Kits\\10";
+} 
+$ENV{'UniversalCRTSdkDir'}="$UniversalCRTSdkDir\\";
+
+my $UCRTVersion="10.0.10150.0";
+
+
 $ENV{'INCLUDE'}	=	"";
 $ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\INCLUDE;";
 $ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\ATLMFC\\INCLUDE;";
+$ENV{'INCLUDE'} 	.=	"$UniversalCRTSdkDir\\include\\$UCRTVersion\\ucrt;";
+#skipped but may need ...Kits\NETFXSDK\4.6\include\um
 $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\shared;";
 $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\um;";
 $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
