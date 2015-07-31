@@ -66,11 +66,21 @@ else {if ("$^O" eq "cygwin") {
 	
 			print (" ...Make Release...\n");
 			#nb: lose -s to see each compile line
-			RunAndStopOnFailure ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS= 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
+			#RunAndStopOnFailure ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS= 2>&1) > NT.MAK.BUILD-Output.txt");
+			open(my $fh, '>', 'doRun32NDB.bat');
+			print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
+			print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun32NDB.bat 2>&1) > NT32.MAK.BUILD-Output.txt");
 	
 			print (" ...Make Debug...\n");
 			#nb: lose -s to see each compile line
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak MAKEFLAGS=  2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
+			##system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak MAKEFLAGS=  2>&1) > NT-DBG.MAK.BUILD-Output.txt");
+			open(my $fh, '>', 'doRun32Dbg.bat');
+			print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
+			print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun32Dbg.bat 2>&1) > NT32-DBG.MAK.BUILD-Output.txt");
 	
 			print (" ...Running openssl tests...");
 			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
@@ -96,18 +106,18 @@ else {if ("$^O" eq "cygwin") {
 			system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
 	
 			print (" ...Make Release64...\n");
-			open(my $fh, '>', 'doRunNDB.bat');
+			open(my $fh, '>', 'doRun64NDB.bat');
 			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
 			print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
 			close $fh;
-			RunAndStopOnFailure ("(cmd /c doRunNDB.bat 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
+			RunAndStopOnFailure ("(cmd /c doRun64NDB.bat 2>&1) > NT64.MAK.BUILD-Output.txt");
 	
 			print (" ...Make Debug64...\n");
-			open(my $fh, '>', 'doRunDbg.bat');
+			open(my $fh, '>', 'doRun64Dbg.bat');
 			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
 			print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
 			close $fh;
-			RunAndStopOnFailure ("(cmd /c doRunDbg.bat 2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
+			RunAndStopOnFailure ("(cmd /c doRun64Dbg.bat 2>&1) > NT64-DBG.MAK.BUILD-Output.txt");
 
 			print (" ...Running openssl tests...");
 			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");

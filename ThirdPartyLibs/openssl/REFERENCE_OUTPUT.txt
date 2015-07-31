@@ -73,16 +73,19 @@ test 2 done
 test 3 done
 test 4 done
 dhtest
-.+.+...++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*
+.+...+.+.+...+.....+...+..++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*
 
-p    =999BCEBA5CE0E20B
+p    =D7BB7FA3CE56DD7B
 g    =5
-pri 1=5F33DC75D03D75B5
-pub 1=567183AD364020E2
-pri 2=488619E7F667218A
-pub 2=6DDF76FFFC856A2
-key1 =0145C8BF0E7BAABB
-key2 =0145C8BF0E7BAABB
+pri 1=58A14908DD254FFC
+pub 1=13D45A3D38E81E8F
+pri 2=6072B59A7107A93A
+pub 2=6A7ABFE49341325E
+key1 =A82B320C4CBB4809
+key2 =A82B320C4CBB4809
+RFC5114 parameter test 1 OK
+RFC5114 parameter test 2 OK
+RFC5114 parameter test 3 OK
 exptest
 ........................................................................................................................................................................................................
 done
@@ -264,11 +267,11 @@ verify group order .... ok
 long/negative scalar tests allowing precomputation ... without precomputation ... ok
 combined multiplication ..... ok
 
-testing internal curves: ................................................................... ok
+testing internal curves: ................................................................................. ok
 
 testenc
 start testenc
-C:\Sandbox\Stroika\DevRoot\ThirdPartyLibs\openssl\CURRENT\out32
+C:\Sandbox\StroikaDev\ThirdPartyLibs\openssl\CURRENT\out32
 test enc      
 test base64 enc      
 test rc4      
@@ -361,8 +364,8 @@ testss
 make a certificate request using 'req'
 Loading 'screen' into random state - done
 Generating a 2048 bit RSA private key
-...................................................................................................................+++
-.................................+++
+............................................................+++
+......................................................................................................................................+++
 writing new private key to 'keyCA.ss'
 -----
 You are about to be asked to enter information that will be incorporated
@@ -392,8 +395,8 @@ certCA.ss: OK
 make another certificate request using 'req'
 Loading 'screen' into random state - done
 Generating a 2048 bit RSA private key
-.+++
-............................................................+++
+....................................................+++
+..................+++
 writing new private key to 'keyU.ss'
 -----
 You are about to be asked to enter information that will be incorporated
@@ -418,8 +421,8 @@ certU.ss: OK
 Certificate details
 subject= /C=AU/O=Dodgy Brothers/CN=Brother 1/CN=Brother 2
 issuer= /C=AU/O=Dodgy Brothers/CN=Dodgy CA
-notBefore=Apr 12 22:30:40 2015 GMT
-notAfter=May 12 22:30:40 2015 GMT
+notBefore=Jul 31 10:43:32 2015 GMT
+notAfter=Aug 30 10:43:32 2015 GMT
 Everything appeared to work
 --
 The generated CA certificate is certCA.ss

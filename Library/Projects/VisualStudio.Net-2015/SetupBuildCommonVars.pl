@@ -121,10 +121,12 @@ $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 #print "INCLUDES=", $ENV{'INCLUDE'}, "\n";
 
 
-$ENV{'LIB'} 	=	"";
-$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
-$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+#$ENV{'LIB'} 	=	"";
+#$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
+#$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
+#$ENV{'LIB'} 	.=	"$UniversalCRTSdkDir\\lib\\$UCRTVersion\\ucrt\\x86;";
+#$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+#print "LIB=", $ENV{'LIB'}, "\n";
 
 
 #Mostly for debugging - make sure paths setup properly
@@ -160,6 +162,15 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 }
 $ENV{'LIB_32'} 	=	"$x";
 $ENV{'LIB_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/lib";
+
+sub GetString2InsertIntoBatchFileToInit32BitCompiles
+{
+	my $result = "";
+	$result 	.=	"call \"";
+	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
+	$result 	.=	"\" amd64_x86;\n";
+	return $result;
+}
 
 sub GetString2InsertIntoBatchFileToInit64BitCompiles
 {

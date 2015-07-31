@@ -3,7 +3,12 @@
 #
 .PHONY:	all clean clobber check
 
-VERSION=1.0.1o
+#VERSION=1.0.1o
+VERSION=1.0.2d
+
+#appears needed for 1.0.2d
+BAD_TARFILE_BUG_WORKAROUND_=i
+
 BASENAME=openssl-$(VERSION)
 TRGDIR=CURRENT
 EXTRACTED_DIRNAME=$(BASENAME)
@@ -123,8 +128,8 @@ $(TRGDIR):	$(ZIPPEDFILE)
 doPatch:
 	@echo -n "      ...Patching OpenSSL...   "
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@echo -n .
-	@patch --quiet -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
+	@#echo -n .
+	@#patch --quiet -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 endif
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
@@ -139,7 +144,7 @@ doCreate:	$(ZIPEDFILE)
 		echo "      ...CURRENT dir already exists";\
 	else\
 		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		tar xf $(ZIPEDFILE) --no-same-owner;\
+		tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner;\
 		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 		$(MAKE) --no-print-directory doPatch;\
@@ -183,5 +188,5 @@ endif
 
 
 ORIG:	$(ZIPEDFILE)
-	@tar xf $(ZIPEDFILE) --no-same-owner
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) ORIGS
