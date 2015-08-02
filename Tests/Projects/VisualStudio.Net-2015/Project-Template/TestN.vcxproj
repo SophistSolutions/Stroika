@@ -642,7 +642,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Foundation.vcxproj">
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2015\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
       <Private>false</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
