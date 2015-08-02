@@ -90,7 +90,7 @@ doCreate:	$(ZIPPEDFILE)
 		echo "      ...Patching Xerces...";\
 		(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);\
 		(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
-		chmod --recursive +rwx CURRENT/projects;\
+		(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);\
 	fi
 
 

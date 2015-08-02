@@ -135,7 +135,7 @@ else {
 		$myBinOutDir = 'VC12';
 	}
 	if ($myPlatformSubDir eq 'VisualStudio.Net-2015') {
-		$myBinOutDir = 'VC12';
+		$myBinOutDir = 'VC14';
 	}
 	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
 }
