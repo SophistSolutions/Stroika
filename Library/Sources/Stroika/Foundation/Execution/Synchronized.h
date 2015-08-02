@@ -7,6 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    <mutex>
+#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include    <shared_mutex>
+#endif
 
 #include    "../Configuration/Common.h"
 #include    "../Debug/Assertions.h"         // while RequireNotNull etc in headers --LGP 2015-06-11
@@ -22,6 +25,10 @@
  * Description:
  *
  * TODO:
+ *      @todo   KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
+ *              and WritableReference pass in lock not using base class, and have it construct writable lock
+ *              But all in a way that works when shared_lock not avaialble and degrades gracefully with template SFINAE traits crap.
+ *
  *      @todo   More operator<, and other operator overloads
  *
  *      @todo   Tons of cleanups, orthoganiality, docs, etc.
@@ -108,6 +115,9 @@ namespace   Stroika {
                 using   MutexType = typename TRAITS::MutexType;
 
             public:
+                struct  ReadableReference;
+
+            public:
                 struct  WritableReference;
 
             public:
@@ -116,7 +126,6 @@ namespace   Stroika {
                 Synchronized (const Synchronized& src);
 
             public:
-                // use template forwarding variadic CTOR formward
                 nonvirtual  Synchronized&   operator= (const Synchronized& rhs);
                 nonvirtual  Synchronized&   operator= (const T& rhs);
 
@@ -158,6 +167,10 @@ namespace   Stroika {
                 nonvirtual  WritableReference GetReference ();
 
             public:
+                /*
+                 *UNCLEAR BUT MAYBE DEPRECATE??? CONFUSING? OR overload const readonly and no-const writable, but with other stuff
+                 * like SharedByValue() I found that I accidentally got the wrong one alot.
+                 */
                 nonvirtual  const WritableReference operator-> () const;
                 nonvirtual  WritableReference operator-> ();
 
@@ -178,36 +191,26 @@ namespace   Stroika {
 
 
             /**
+            * @todo KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
              */
             template    <typename   T, typename TRAITS>
-            struct  Synchronized<T, TRAITS>::WritableReference {
-                T*                      fT;
+            struct  Synchronized<T, TRAITS>::ReadableReference {
+                const T*                fT;
                 unique_lock<MutexType>  l;
-                WritableReference (T* t, MutexType* m)
+                ReadableReference (const T* t, MutexType* m)
                     : fT (t)
                     , l (*m)
                 {
                     RequireNotNull (t);
                     RequireNotNull (m);
                 }
-                WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
-                WritableReference (WritableReference&& src)
+                ReadableReference (const ReadableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
+                ReadableReference (ReadableReference&& src)
                     : fT (src.fT)
                     , l { move (src.l) } {
                     src.fT = nullptr;
                 }
-                const WritableReference& operator= (const WritableReference& rhs) = delete;
-                const WritableReference& operator= (T rhs)
-                {
-                    RequireNotNull (fT);
-                    *fT = rhs;
-                    return *this;
-                }
-                T* operator-> ()
-                {
-                    EnsureNotNull (fT);
-                    return fT;
-                }
+                const ReadableReference& operator= (const ReadableReference& rhs) = delete;
                 const T* operator-> () const
                 {
                     EnsureNotNull (fT);
@@ -220,6 +223,39 @@ namespace   Stroika {
                 }
             };
 
+
+            /**
+             */
+            template    <typename   T, typename TRAITS>
+            struct  Synchronized<T, TRAITS>::WritableReference : Synchronized<T, TRAITS>::ReadableReference {
+                WritableReference (T* t, MutexType* m)
+                    : ReadableReference (t, m)
+                {
+                }
+                WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
+                WritableReference (WritableReference&& src)
+                    : ReadableReference (move (src))
+                {
+                }
+                const WritableReference& operator= (const WritableReference& rhs) = delete;
+                const WritableReference& operator= (T rhs)
+                {
+                    RequireNotNull (fT);
+                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                    *const_cast<T*> (fT) = rhs;
+                    return *this;
+                }
+                T* operator-> ()
+                {
+                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                    EnsureNotNull (fT);
+                    return const_cast<T*> (fT);
+                }
+                const T* operator-> () const
+                {
+                    return ReadableReference::operator-> ();
+                }
+            };
 
 
             /**
@@ -324,6 +360,29 @@ namespace   Stroika {
             auto    operator- (T lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {});
             template    <typename   T, typename TRAITS>
             auto    operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T {} - T {});
+
+
+
+            /**
+             * @todo  prototype - think out
+			 *	maybe based on ifdef use mutex or SpinLock.
+			 *
+			 *	Tentative definition is quick non recursive. Use like 'atomic'.
+             */
+            template    <typename   T>
+            using   QuickSynchonized = Synchronized<T, Synchronized_Traits<T, mutex>>;
+
+
+            /**
+             * @todo  prototype - think out
+             */
+#if     qCompilerAndStdLib_shared_mutex_module_Buggy
+            template    <typename   T>
+            using   RWSynchonized = Synchronized<T, Synchronized_Traits<T, recursive_mutex>>;
+#else
+            template    <typename   T>
+            using   RWSynchonized = Synchronized<T, Synchronized_Traits<T, shared_timed_mutex>>;
+#endif
 
 
         }
