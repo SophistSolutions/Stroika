@@ -301,9 +301,9 @@ namespace {
                         adder.AbortAndWaitForDone ();
                     }
                 };
-                // wait long time cuz of debuggers etc
-                adder.WaitForDone(200);
-                reader.WaitForDone(200);
+                // wait long time cuz of debuggers (esp valgrind) etc
+                adder.WaitForDone(300);
+                reader.WaitForDone(300);
                 VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
