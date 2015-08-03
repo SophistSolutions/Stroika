@@ -1,8 +1,8 @@
-ACTIVE_CONFIGURATION 	?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
-ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(ACTIVE_CONFIGURATION) ProjectPlatformSubdir)
+CONFIGURATION 			?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
-ALL_CONFIGURATIONS		=	$(ACTIVE_CONFIGURATION)
+ALL_CONFIGURATIONS		=	$(CONFIGURATION)
 else
 ALL_CONFIGURATIONS		=	Debug-U-32 Debug-U-64 Release-DbgMemLeaks-U-32 Release-Logging-U-32 Release-Logging-U-64 Release-U-32 Release-U-64
 endif
@@ -42,19 +42,19 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries t
 
 
 check:
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
-	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
 	@(cd Tools && perl checkall.pl)
-	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
-	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
+	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
 
 
 clean:
-	@make --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
+	@make --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 	@(cd Tools; perl buildall.pl clean)
-	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 
 
 clobber:
@@ -69,11 +69,11 @@ documentation:
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
-	@$(MAKE) --directory Library --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
+	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) all
 
 
 third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) all
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) all
 
 
 project-files:	project-files-visual-studio project-files-qt-creator
@@ -98,13 +98,13 @@ tools:	libraries
 
 
 tests:	tools libraries
-	@$(MAKE) --directory Tests --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) tests
+	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) tests
 
 samples:	tools libraries
-	@$(MAKE) --directory Samples --no-print-directory ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) samples
+	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) samples
 
 run-tests:	tests
-	@$(MAKE) --directory Tests --no-print-directory run-tests ACTIVE_CONFIGURATION=$(ACTIVE_CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 
 ASTYLE_ARGS=
 ASTYLE_ARGS+=	--style=stroustrup
@@ -171,24 +171,24 @@ apply-configurations-if-needed:
 apply-configurations:
 	@for i in $(ALL_CONFIGURATIONS);\
 	do\
-		$(MAKE) --no-print-directory ACTIVE_CONFIGURATION=$$i apply-configuration;\
+		$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
 	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 apply-configuration:
-	@echo "Applying configuration $(ACTIVE_CONFIGURATION)..."
+	@echo "Applying configuration $(CONFIGURATION)..."
 ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@#tmphack
 	@mkdir -p IntermediateFiles/DefaultConfiguration
 endif
 	@#todo - must enahnce ApplyConfiguration to support configuration arg
-	@mkdir -p "IntermediateFiles/$(ACTIVE_CONFIGURATION)/"
+	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl
-	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h\""
-	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
-	@echo "   ...Writing \"IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h\""
+	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
+	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
+	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Configuration.h\""
 ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@cp IntermediateFiles/DefaultConfiguration/Stroika-Current-Configuration.h IntermediateFiles/$(ACTIVE_CONFIGURATION)/Stroika-Current-Configuration.h
+	@cp IntermediateFiles/DefaultConfiguration/Stroika-Current-Configuration.h IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Configuration.h
 endif
 
 default-configuration:
