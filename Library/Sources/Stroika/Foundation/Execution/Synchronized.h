@@ -85,13 +85,13 @@ namespace   Stroika {
              *
              *  EXAMPLE:
              *      Synchonized<String> n;                                                  // SAME
-             *      Synchonized<String,Synchronized_Traits<String>> n;                      // SAME
-             *      Synchonized<String,Synchronized_Traits<String, recursive_mutex>>    n;  // SAME
+             *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
+             *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
-             *      Synchonized<String,Synchronized_Traits<String, SpinLock>>   n;
+             *      Synchonized<String,Synchronized_Traits<SpinLock>>   n;
              */
-            template    <typename   T, typename MUTEX = recursive_mutex>
+            template    <typename MUTEX = recursive_mutex>
             struct  Synchronized_Traits {
                 using   MutexType   =   MUTEX;
             };
@@ -100,16 +100,16 @@ namespace   Stroika {
             /**
              *  EXAMPLE:
              *      Synchonized<String> n;                                                  // SAME
-             *      Synchonized<String,Synchronized_Traits<String>> n;                      // SAME
-             *      Synchonized<String,Synchronized_Traits<String, recursive_mutex>>    n;  // SAME
+             *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
+             *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
-             *      Synchonized<String,Synchronized_Traits<String, SpinLock>>   n;
+             *      Synchonized<String,Synchronized_Traits<SpinLock>>           n;
              *
              *  or to allow timed locks
-             *      Synchonized<String,Synchronized_Traits<String, timed_recursive_mutex>>  n;
+             *      Synchonized<String,Synchronized_Traits<timed_recursive_mutex>>  n;
              */
-            template    <typename   T, typename TRAITS = Synchronized_Traits<T>>
+            template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
             public:
                 using   MutexType = typename TRAITS::MutexType;
@@ -370,7 +370,7 @@ namespace   Stroika {
              *  Tentative definition is quick non recursive. Use like 'atomic'.
              */
             template    <typename   T>
-            using   QuickSynchonized = Synchronized<T, Synchronized_Traits<T, mutex>>;
+            using   QuickSynchonized = Synchronized<T, Synchronized_Traits<mutex>>;
 
 
             /**
@@ -378,10 +378,10 @@ namespace   Stroika {
              */
 #if     qCompilerAndStdLib_shared_mutex_module_Buggy
             template    <typename   T>
-            using   RWSynchonized = Synchronized<T, Synchronized_Traits<T, recursive_mutex>>;
+            using   RWSynchonized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
 #else
             template    <typename   T>
-            using   RWSynchonized = Synchronized<T, Synchronized_Traits<T, shared_timed_mutex>>;
+            using   RWSynchonized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 #endif
 
 

@@ -298,8 +298,8 @@ namespace   {
     {
         //template <typename T> using Synchonized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
         using namespace Execution;
-        using syncofdata = Synchronized<data_, Synchronized_Traits<data_, recursive_mutex>>;
-        using syncofint = Synchronized<int, Synchronized_Traits<int, recursive_mutex>>;
+        using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
+        using syncofint = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
 
 
         Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
