@@ -240,16 +240,16 @@ namespace   Stroika {
                 const WritableReference& operator= (const WritableReference& rhs) = delete;
                 const WritableReference& operator= (T rhs)
                 {
-                    RequireNotNull (fT);
+                    RequireNotNull (this->fT);
                     // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                    *const_cast<T*> (fT) = rhs;
+                    *const_cast<T*> (this->fT) = rhs;
                     return *this;
                 }
                 T* operator-> ()
                 {
                     // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                    EnsureNotNull (fT);
-                    return const_cast<T*> (fT);
+                    EnsureNotNull (this->fT);
+                    return const_cast<T*> (this->fT);
                 }
                 const T* operator-> () const
                 {
@@ -365,9 +365,9 @@ namespace   Stroika {
 
             /**
              * @todo  prototype - think out
-			 *	maybe based on ifdef use mutex or SpinLock.
-			 *
-			 *	Tentative definition is quick non recursive. Use like 'atomic'.
+             *  maybe based on ifdef use mutex or SpinLock.
+             *
+             *  Tentative definition is quick non recursive. Use like 'atomic'.
              */
             template    <typename   T>
             using   QuickSynchonized = Synchronized<T, Synchronized_Traits<T, mutex>>;

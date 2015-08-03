@@ -22,6 +22,12 @@
 #define kStrokia_Foundation_Configuration_cplusplus_11  201103
 
 
+/**
+ *
+ */
+#define kStrokia_Foundation_Configuration_cplusplus_14  201402
+
+
 
 
 /*
@@ -551,7 +557,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_shared_mutex_module_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
-#define qCompilerAndStdLib_shared_mutex_module_Buggy      0
+#define qCompilerAndStdLib_shared_mutex_module_Buggy      (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
 #endif
 
 #endif
