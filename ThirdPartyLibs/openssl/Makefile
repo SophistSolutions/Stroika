@@ -20,8 +20,6 @@ ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURL=http://www.openssl.org/source/$(BASENAME).tar.gz
 	
-UNAME := $(shell uname)
-
 BUILDS_ROOT=../../Builds/
 
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
