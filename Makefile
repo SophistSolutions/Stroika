@@ -65,6 +65,9 @@ clobber:
 
 
 documentation:
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+	@(type doxygen) > /dev/null
+endif
 	@cd Documentation/Doxygen && perl ./RunDoxygen.pl
 
 
