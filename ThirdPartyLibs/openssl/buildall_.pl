@@ -23,10 +23,12 @@ sub	CopyBuilds2Out
 {
 	my $trgDir = $_[0];
 	my $bldOutDir = $_[1];
+	my $tmpSymOutDir = $_[2];
 	system ("mkdir -p CURRENT/Builds/$trgDir");
 	system ("cp -r CURRENT/inc32/ CURRENT/Builds/$trgDir/Includes");
 	system ("cp CURRENT/$bldOutDir/libeay32.* CURRENT/Builds/$trgDir/");
 	system ("cp CURRENT/$bldOutDir/ssleay32.* CURRENT/Builds/$trgDir/");
+	system ("cp CURRENT/$tmpSymOutDir/lib.pdb CURRENT/$tmpSymOutDir/app.pdb CURRENT/Builds/$trgDir/");
 	system ("cp CURRENT/$bldOutDir/openssl.* CURRENT/Builds/$trgDir/");
 }
 
@@ -87,8 +89,8 @@ else {if ("$^O" eq "cygwin") {
 			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");
 			print ("\n");
 		chdir ("..");
-		CopyBuilds2Out ("Release32", "out32");
-		CopyBuilds2Out ("Debug32", "out32.dbg");
+		CopyBuilds2Out ("Release32", "out32", "tmp32");
+		CopyBuilds2Out ("Debug32", "out32.dbg", "tmp32.dbg");
 	}
 
 
@@ -125,7 +127,7 @@ else {if ("$^O" eq "cygwin") {
 			print ("\n");
 		chdir ("..");
 	
-		CopyBuilds2Out ("Release64", "out32");
-		CopyBuilds2Out ("Debug64", "out32.dbg");
+		CopyBuilds2Out ("Release64", "out32", "tmp32");
+		CopyBuilds2Out ("Debug64", "out32.dbg", "tmp32.dbg");
 	}
 }}
