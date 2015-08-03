@@ -160,7 +160,7 @@ using   Debug::TraceContextBumper;
 
 #if     qPlatform_POSIX
 namespace   {
-    Synchronized<bool, Synchronized_Traits<bool, recursive_mutex>>  sHandlerInstalled_      { false };
+    Synchronized<bool, Synchronized_Traits<recursive_mutex>>  sHandlerInstalled_      { false };
 }
 #endif
 
