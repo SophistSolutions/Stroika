@@ -3,6 +3,8 @@
 #### NOTE - DONT CALL DIRECTLY - LEGACY CODE FROM OLD MAKE PROCESS TO BE MERGED
 #### INTO MAKEFILE
 
+#@todo FIX SO BUILDS ASM VERISON FOR WINDOWS!
+
 
 require ("../../ScriptsLib/BuildUtils.pl");
 require ("../../ScriptsLib/StringUtils.pl");
@@ -56,7 +58,9 @@ else {if ("$^O" eq "cygwin") {
 	}
 	else {
 		chdir ("CURRENT");
+			print ("\n ...Configuring openssl 32-bit...\n");
 			RunAndStopOnFailure ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
+			#RunAndStopOnFailure ("perl Configure VC-WIN32 --prefix=c:/some/openssl/dir");
 			## BASED ON ms\do_ms.bat
 			system ("perl util/mkfiles.pl >MINFO");
 			system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
@@ -84,10 +88,10 @@ else {if ("$^O" eq "cygwin") {
 			close $fh;
 			RunAndStopOnFailure ("(cmd /c doRun32Dbg.bat 2>&1) > NT32-DBG.MAK.BUILD-Output.txt");
 	
-			print (" ...Running openssl tests...");
-			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST32-OUT.txt");
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST32-DBG-OUT.txt");
-			print ("\n");
+			print (" ...Running openssl tests (output TEST32-OUT.txt, TEST32-DBG-OUT.txt)...");
+			system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST32-OUT.txt");
+			system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST32-DBG-OUT.txt");
+			print ("done\n");
 		chdir ("..");
 		CopyBuilds2Out ("Release32", "out32", "tmp32");
 		CopyBuilds2Out ("Debug32", "out32.dbg", "tmp32.dbg");
@@ -99,10 +103,47 @@ else {if ("$^O" eq "cygwin") {
 	}
 	else {
 		chdir ("CURRENT");
-			#system ("perl Configure VC-WIN64A no-asm --prefix=c:/some/openssl/dir");
-			system ("perl Configure no-asm VC-WIN64A");
+			print ("\n ...Configuring openssl 64-bit...\n");
+			#RunAndStopOnFailure ("perl Configure VC-WIN64A no-asm --prefix=c:/some/openssl/dir");
+			RunAndStopOnFailure ("perl Configure no-asm VC-WIN64A");
+			#RunAndStopOnFailure ("perl Configure VC-WIN64A");
+			
+			open(my $fh, '>', 'doRun64Configure.bat');
+			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
+			print $fh "ms\\do_win64a.bat\n";
+			#script values copied inline 1.0.2d (2015-08-04 cuz they didnt quite work with my perl)
+			#		perl util\mkfiles.pl >MINFO
+			#		
+			#		cmd /c "nasm -f win64 -v" >NUL 2>&1
+			#		if %errorlevel% neq 0 goto ml64
+			#		
+			#		perl ms\uplink-x86_64.pl nasm > ms\uptable.asm
+			#		nasm -f win64 -o ms\uptable.obj ms\uptable.asm
+			#		goto proceed
+			#		
+			#		:ml64
+			#		perl ms\uplink-x86_64.pl masm > ms\uptable.asm
+			#		ml64 -c -Foms\uptable.obj ms\uptable.asm
+			#		
+			#		:proceed
+			#		perl util\mk1mf.pl VC-WIN64A >ms\nt.mak
+			#		perl util\mk1mf.pl dll VC-WIN64A >ms\ntdll.mak
+			#		
+			#		perl util\mkdef.pl 32 libeay > ms\libeay32.def
+			#		perl util\mkdef.pl 32 ssleay > ms\ssleay32.def
+			
+			#print $fh "perl util\\mkfiles.pl >MINFO\n";
+			#print $fh "perl ms\\uplink-x86_64.pl masm > ms\\uptable.asm\n";
+			#print $fh "ml64 -c -Foms\\uptable.obj ms\\uptable.asm\n";
+			#print $fh "perl util\\mk1mf.pl VC-WIN64A >ms\\nt.mak\n";
+			#print $fh "perl util\\mk1mf.pl dll VC-WIN64A >ms\\ntdll.mak\n";
+			#print $fh "perl util\\mkdef.pl 32 libeay > ms\\libeay32.def\n";
+			#print $fh "perl util\\mkdef.pl 32 ssleay > ms\\ssleay32.def\n";
+			#close $fh;
+			#RunAndStopOnFailure ("cmd /c doRun64Configure.bat");
+
 			system ("cmd /c \"ms\\do_win64a.bat\"");
-			system ("perl util/mk1mf.pl debug no-asm VC-WIN64A >ms/nt-DBG.mak");
+			#I THINK OBSOLETE/UNNEEDED - BAD COPY FROM 32-bit days...system ("perl util/mk1mf.pl debug no-asm VC-WIN64A >ms/nt-DBG.mak");
 
 			system ("rm -f NUL");
 			system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
@@ -121,10 +162,10 @@ else {if ("$^O" eq "cygwin") {
 			close $fh;
 			RunAndStopOnFailure ("(cmd /c doRun64Dbg.bat 2>&1) > NT64-DBG.MAK.BUILD-Output.txt");
 
-			print (" ...Running openssl tests...");
-			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS= 2>&1) > TEST64-OUT.txt");
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST64-DBG-OUT.txt");
-			print ("\n");
+			print (" ...Running openssl tests (output TEST64-OUT.txt, TEST64-DBG-OUT.txt)...");
+			system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST64-OUT.txt");
+			system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST64-DBG-OUT.txt");
+			print ("done\n");
 		chdir ("..");
 	
 		CopyBuilds2Out ("Release64", "out32", "tmp32");
