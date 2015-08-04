@@ -21,7 +21,7 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a101">v2.0a101x</a><br/>2015-07-?</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a101">v2.0a101</a><br/>2015-08-03</td>
 <td>
 	<ul>
 		<li>Got nearly fully working with VisualStudio.net 2k15 (one serious 64 lib bug exists, and I must report 
@@ -31,7 +31,7 @@ History
 		 instead of patch todo /Z7</li>
 		<li>Started cleanup of Synchonized&lt;&gt; code now that we have shared_lock stuff in MSVC. Got a decent
 		start at supporting read/write locks in this code, but still needs a bit more to be testable</li>
-		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug, and VS2k15 Express not working), gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind</li>
 	</ul>
 </td>
 </tr>
