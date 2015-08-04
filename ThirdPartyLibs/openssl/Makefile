@@ -177,7 +177,7 @@ doBuilds:
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		./buildall_.pl > BUILD.OUT 2>&1;\
 	fi
-	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
+	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/apps/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libcrypto.a CURRENT/libssl.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
