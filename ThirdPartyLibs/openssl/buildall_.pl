@@ -85,8 +85,8 @@ else {if ("$^O" eq "cygwin") {
 			RunAndStopOnFailure ("(cmd /c doRun32Dbg.bat 2>&1) > NT32-DBG.MAK.BUILD-Output.txt");
 	
 			print (" ...Running openssl tests...");
-			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");
+			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST32-OUT.txt");
+			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST32-DBG-OUT.txt");
 			print ("\n");
 		chdir ("..");
 		CopyBuilds2Out ("Release32", "out32", "tmp32");
@@ -122,8 +122,8 @@ else {if ("$^O" eq "cygwin") {
 			RunAndStopOnFailure ("(cmd /c doRun64Dbg.bat 2>&1) > NT64-DBG.MAK.BUILD-Output.txt");
 
 			print (" ...Running openssl tests...");
-			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
-			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");
+			system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS= 2>&1) > TEST64-OUT.txt");
+			system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST64-DBG-OUT.txt");
 			print ("\n");
 		chdir ("..");
 	
