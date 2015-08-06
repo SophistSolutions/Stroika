@@ -60,14 +60,18 @@ namespace   Stroika {
 
                 struct  ContainerRepLockDataSupport_ {
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-                    // NB: using std::mutex instead of std::recursive_mutex for performance reasons and because our use is
-                    // simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
-                    // if its helpful for some containers
-                    mutable std::mutex  fMutex_;
+                    /*
+                     *  We used std::mutex instead of std::recursive_mutex for performance reasons until v2.0a102.
+                     *
+                     *  However, this was a mistake. It CAN break black box modularity, because you can assign a container to
+                     *  another and lose track of what 'rep' is being used, and end up with a deadlock (or at least easily
+                     *  uneasily viewable blocking).
+                     *
+                     *  With very limited empirical testing, on WinDoze / VS2k13, it made no obvious performance differnce
+                     *  anyhow.
+                     */
+                    mutable std::recursive_mutex  fMutex_;
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
-                    // NB: using std::mutex instead of std::recursive_mutex for performance reasons and because our use is
-                    // simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
-                    // if its helpful for some containers
                     mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () = default;
@@ -80,7 +84,7 @@ namespace   Stroika {
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
-        std::lock_guard<std::mutex> lg (CRLDS.fMutex_);\
+        std::lock_guard<std::recursive_mutex> lg (CRLDS.fMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_END()\
 }\

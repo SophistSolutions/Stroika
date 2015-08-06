@@ -32,6 +32,8 @@ namespace   Stroika {
 
                     /**
                      *  (reason is to test if perofrmance better than msvc mutex)
+                     *
+                     *  Note - this is a recursive_mutex!
                      */
                     class   CriticalSectionMutex {
                     public:

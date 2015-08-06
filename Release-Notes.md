@@ -24,6 +24,12 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
+		<li>Big/Subtle change in thread safety rules for container reps. They now use a recursive mutex, instead
+			of the former non-recursive mutex.
+
+			This then lifted the restriction on access the underlying iterable from inside an Apply() method.
+			(ContainerRepLockDataSupport_)
+		</li>
 	</ul>
 </td>
 </tr>

@@ -514,12 +514,8 @@ namespace   Stroika {
                  *          std::for_each (), except for not taking iterators as arguments, and not having
                  *          any return value.
                  *
-                 *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
-                 *              directly or indirectly access the Iterable<> being iterated over.
-                 *
-                 *              Doing so MAY result in a deadlock.
-                 *
-                 *              If there is a need to do this, just use explicit iteration instead.
+                 *  \note   \em Thread-Safety   The argument function (lambda) may
+                 *              directly (or indirectly) access the Iterable<> being iterated over.
                  */
                 nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
 
@@ -549,13 +545,8 @@ namespace   Stroika {
                  *
                  *  @see Apply
                  *
-                 *  \note   \em Thread-Safety   It is critical the argument function (lambda) must not
-                 *              directly or indirectly access the Iterable<> being iterated over.
-                 *
-                 *              Doing so MAY result in a deadlock.
-                 *
-                 *              If there is a need to do this, just use explicit iteration instead.
-                 *
+                 *  \note   \em Thread-Safety   The argument function (lambda) may
+                 *              directly (or indirectly) access the Iterable<> being iterated over.
                  *  EXAMPLE USAGE:
                  *      bool IsAllWhitespace (String s) const
                  *      {
