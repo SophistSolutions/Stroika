@@ -54,6 +54,11 @@ namespace   Stroika {
              *
              *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
              *          much of the 'reading' API is baked into InputStream<Character>.
+             *
+             *  EXAMPLE USE:
+             *      for (String line : TextReader (FileInputStream::mk (L"/tmp/foo")).ReadLines ()) {
+             *      }
+             *
              */
             class   TextReader : public InputStream<Character> {
             private:
