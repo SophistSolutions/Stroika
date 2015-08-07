@@ -73,6 +73,7 @@ namespace   {
     }
     void    PrettyPrint_ (long double v, const OutputStream<Character>& out)
     {
+        Require (not isnan (v));
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
         Assert (::wcslen (buf) >= 1);

@@ -17,6 +17,9 @@
  *  \file
  *
  * TODO:
+ *      @todo   Add SerializationOptions
+ *              o   POSSIBLY add option to configure handling of NAN flaoting point values
+ *                  (throw or convert to null? instead of assertion error)
  *
  */
 
@@ -44,7 +47,9 @@ namespace   Stroika {
                  *
                  *  Other types are illegal an JSON and will trigger a 'Require' failure.
                  *
-                 * Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
+                 *  \note   Note - NAN values (if floating point) - are also illegal, and generate a 'Require' failure.
+                 *
+                 * \note    Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
                  *
                  *
                  *  Example usage:
