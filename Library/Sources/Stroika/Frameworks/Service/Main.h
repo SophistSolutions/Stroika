@@ -504,7 +504,7 @@ namespace   Stroika {
                  *
                  *  See the Samples/SimpleService example code for a functional example.
                  */
-                virtual void                MainLoop (function<void()> startedCB) = 0;
+                virtual void                MainLoop (const function<void()>& startedCB) = 0;
 
             public:
                 virtual void                OnReReadConfigurationRequest ();

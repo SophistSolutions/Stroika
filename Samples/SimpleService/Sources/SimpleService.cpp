@@ -132,7 +132,7 @@ namespace {
         }
 
     public:
-        virtual void  MainLoop (std::function<void()> startedCB) override
+        virtual void  MainLoop (const std::function<void()>& startedCB) override
         {
 
             Execution::Finally cleanup ([this] () {
