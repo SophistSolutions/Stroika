@@ -72,7 +72,9 @@ Optional<double>    VolumeInfo::EstimatedPercentInUse () const
     if (fCombinedIOStats and fCombinedIOStats->fAverageQLength) {
         double QL = *fCombinedIOStats->fAverageQLength;
         Require (0 <= QL);
-        return 100.0 * (QL / (1 + QL));
+        double  pct     { 100.0 * (QL / (1 + QL)) };
+        Require (0 <= pct and pct <= 100.0);
+        return pct;
     }
     return Optional<double> ();
 }
