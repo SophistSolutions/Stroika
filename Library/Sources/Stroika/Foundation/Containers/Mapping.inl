@@ -256,7 +256,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_KEY_TYPE>
             void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::RetainAll (const CONTAINER_OF_KEY_TYPE& items)
             {
-                set<KEY_TYPE>   tmp { items.begin (), items.end () };   // weak implementation because of 'comparison' function - @todo
+                set<KEY_TYPE>   tmp (items.begin (), items.end ());   // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
                 for (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i = this->begin (); i != this->end (); ++i) {
                     if (tmp.find (i->fKey) == tmp.end ()) {
                         Remove (i);

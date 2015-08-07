@@ -223,6 +223,8 @@ namespace CommonTests {
             }
         }
 
+
+
         namespace Test_8_Iteration_With_Value_Comparer {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
@@ -273,6 +275,26 @@ namespace CommonTests {
         }
 
 
+        namespace Test9_RetainAll {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_MAPPING_CONTAINER c;
+                for (int i = 0; i < 100; ++i) {
+                    c.Add (i, i);
+                }
+                VerifyTestResult (c.Keys ().length () == 100);
+
+                using KT = typename USING_MAPPING_CONTAINER::KeyType;
+                c.RetainAll (initializer_list<KT> { 1, 3, 5 });
+                VerifyTestResult (c.Keys ().length () == 3);
+                VerifyTestResult (c.Keys ().SetEquals (Iterable<KT> { 1, 3, 5 }) );
+
+                c.RetainAll (Iterable<KT> { 3 });
+                VerifyTestResult (not c.Keys ().SetEquals (Iterable<KT> { 1, 3, 5 }) );
+                VerifyTestResult (c.Keys ().SetEquals (Iterable<KT> { 3 }) );
+            }
+        }
 
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
@@ -283,12 +305,14 @@ namespace CommonTests {
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test6_AsSTLVector::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test7_Keys::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+
         }
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void    SimpleMappingTest_AllTestsRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
         {
             Test5_ToFromSTLMap::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+            Test9_RetainAll::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
