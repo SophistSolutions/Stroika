@@ -142,7 +142,7 @@ endif
 	@echo "   Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
 
 $(ZIPEDFILE):
-	@echo -n "      ..." 
+	@echo -n "      ..."
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPPEDFILE)
