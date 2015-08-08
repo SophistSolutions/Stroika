@@ -105,18 +105,11 @@ check:
 		fi;\
 	done
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
+	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 2236 ]; then\
 		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
 		echo "    Diff should be less than 2236 to be safe.";\
-		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
-		exit 1;\
-	 fi
-	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 2236 ]; then\
-		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
-		echo "    Diff should be less than 2236 to be safe.";\
-		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
+		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
 		exit 1;\
 	 fi
 else
