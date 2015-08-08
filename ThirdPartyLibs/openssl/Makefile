@@ -120,22 +120,13 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		exit 1;\
 	 fi
 else
-	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	 X2=`diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
 		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
 		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
-		echo "      diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
-		exit 1;\
-	 fi
-	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
-		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
-		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
-		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
+		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
+		echo "      diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
 endif
