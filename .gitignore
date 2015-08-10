@@ -5,3 +5,4 @@ ConfigurationFiles/
 .cproject
 .externalToolBuilders
 StroikaDevRoot.*
+*.sdf
