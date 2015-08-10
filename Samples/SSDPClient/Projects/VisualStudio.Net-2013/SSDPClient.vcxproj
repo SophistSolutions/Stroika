@@ -51,7 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}</ProjectGuid>
+    <ProjectGuid>{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>SSDPClient</ProjectName>
