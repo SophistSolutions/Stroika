@@ -51,7 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}</ProjectGuid>
+    <ProjectGuid>{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>SimpleService</ProjectName>

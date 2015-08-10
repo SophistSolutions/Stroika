@@ -51,7 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}</ProjectGuid>
+    <ProjectGuid>{5BD6F3C4-C037-43F4-9849-5751D35B8A76}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>SystemPerformanceClient</ProjectName>

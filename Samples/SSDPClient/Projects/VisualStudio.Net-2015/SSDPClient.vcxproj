@@ -51,10 +51,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}</ProjectGuid>
+    <ProjectGuid>{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
     <ProjectName>SSDPClient</ProjectName>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="Configuration">
