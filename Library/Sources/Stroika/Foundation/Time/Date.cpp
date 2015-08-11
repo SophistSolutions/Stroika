@@ -7,12 +7,11 @@
 #include    <ctime>
 #include    <sstream>
 
-#if     qPlatform_Windows
-#include    <atlbase.h>     // For CComBSTR
-#endif
-
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#if     qPlatform_Windows
+#include    "../Characters/Platform/Windows/SmartBSTR.h"
+#endif
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -373,7 +372,7 @@ Date    Date::Parse (const String& rep, LCID lcid)
     DATE        d;
     (void)::memset (&d, 0, sizeof (d));
     try {
-        ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
+        ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
     }
     catch (...) {
         Execution::DoThrow (FormatException ());

@@ -938,6 +938,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />

@@ -7,13 +7,12 @@
 #include    <ctime>
 #include    <sstream>
 
-#if     qPlatform_Windows
-#include    <atlbase.h>     // For CComBSTR
-#endif
-
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/StringBuilder.h"
+#if     qPlatform_Windows
+#include    "../Characters/Platform/Windows/SmartBSTR.h"
+#endif
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -374,7 +373,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
     DATE        d;
     (void)::memset (&d, 0, sizeof (d));
     try {
-        ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+        ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
     }
     catch (...) {
         // Apparently military time (e.g. 1300 hours - where colon missing) - is rejected as mal-formed.
@@ -384,7 +383,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
                 newRep[0].IsDigit () and newRep[1].IsDigit () and newRep[2].IsDigit () and newRep[3].IsDigit ()
            ) {
             newRep = newRep.substr (0, 2) + L":" + newRep.substr (2, 2);
-            ThrowIfErrorHRESULT (::VarDateFromStr (CComBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
+            ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
         }
         else {
             Execution::DoThrow (FormatException ());

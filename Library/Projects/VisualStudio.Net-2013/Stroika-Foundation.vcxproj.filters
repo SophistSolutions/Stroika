@@ -1689,6 +1689,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h">
+      <Filter>Sources\Characters\Platform\Windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
