@@ -15,6 +15,11 @@
         <p>Support basic configuration defines for the operating system, and compiler, and some basic features
     (like character set).
     </p>
+ *
+ *  TODO:
+ *      @todo   MAJOR CLAENAUP here required. Still alot of this overlaps with Stroika stuff (like qDebug) - LOSE
+ *              overalaps and configs no longer used.
+ *
  */
 
 
@@ -57,6 +62,17 @@
 #define qLed_ShortVersionString             "4.0d1x"
 
 #define qLed_FullVersion        Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
+
+
+
+
+/// Don't think we need/use this anymore. maybe never did? Not sure.... Probably started to
+// move towards this in some branch of the code, but not sure that ever got ported/integrated into Stroika.
+// I thoght I used it for SpellCheck ActiveX control?? Not sure I ever ported that to Stroika?
+//
+// Would like to automatically compute this correctly? Not not sure how without has_include, or some such?
+/// --LGP 2015-08-11
+#define qStroika_Framework_Led_Support_ATL    0
 
 
 

@@ -14,10 +14,13 @@
 
 #include    "../../../Foundation/StroikaPreComp.h"
 
+#include    "../Config.h"
+
+#if     qStroika_Framework_Led_Support_ATL
 #include    <atlbase.h>
 #include    <atlcom.h>
+#endif
 
-#include    "../Config.h"
 #include    "../Support.h"
 
 
@@ -29,6 +32,7 @@ namespace   Stroika {
 
 
 
+#if     qStroika_Framework_Led_Support_ATL
                 /*
                 @CLASS:         CComObjectWithARGS<BASE,CTOR_ARGS>
                 @DESCRIPTION:   <p>Virtually identical to the ATL class @'CComObject<Base>', except that this is used
@@ -102,8 +106,7 @@ namespace   Stroika {
                     //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
                     return _InternalQueryInterface(iid, ppvObject);
                 }
-
-
+#endif
 
 
             }
