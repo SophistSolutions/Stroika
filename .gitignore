@@ -7,3 +7,4 @@ ConfigurationFiles/
 StroikaDevRoot.*
 *.sdf
 *.opensdf
+*.suo
