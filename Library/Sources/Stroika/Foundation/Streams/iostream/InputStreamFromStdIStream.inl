@@ -24,7 +24,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ ********************
+                 **************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ *****************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
@@ -85,7 +85,8 @@ namespace   Stroika {
                                 fOriginalStream_.seekg (offset, ios::end);
                                 break;
                         }
-                        return fOriginalStream_.tellg ();
+                        // instead of tellg () - avoids issue with EOF where fail bit set???
+                        return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
                     }
 
                 private:
@@ -95,7 +96,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** InputStreamFromStdIStream<ELEMENT_TYPE> ***********************
+                 ********************* InputStreamFromStdIStream<ELEMENT_TYPE> ******************
                  ********************************************************************************
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS>

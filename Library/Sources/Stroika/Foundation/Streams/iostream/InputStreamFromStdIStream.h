@@ -21,6 +21,8 @@
  *      @todo   names iostream:: InputStreamFromStdIStream = reason is cuz we want to also have InputStreamAsStdIStream –
  *              something that IS an iostream (PITA to write)
  *
+ *      @todo   Better handle failbit / eofbit etc. Not correct, but maybe OK for now... Not sure right answer.
+ *
  *      @todo   IMPLEMENT InputStreamFromStdIStream and OutputStreamFromStdOStream
  *              see http://stackoverflow.com/questions/772355/how-to-inherit-from-stdostream
  *              http://www.math.utah.edu/docs/info/iostream_5.html
