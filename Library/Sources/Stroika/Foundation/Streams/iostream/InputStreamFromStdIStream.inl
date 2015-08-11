@@ -36,7 +36,7 @@ namespace   Stroika {
                     SeekableFlag    DefaultSeekable_ (IStreamType& originalStream)
                     {
                         // SB something like lseek(fd, CURRENT, 0) not an error, but that doesnt work wtih seekg() on
-                        // MSVC2k13. Not sure of a good portable way...
+                        // MSVC2k13. Not sure of a good portable, and yet non-destructive way...
                         return eSeekable;
                     }
                 public:
@@ -102,8 +102,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    SeekableFlag    fSeekable_;
                     IStreamType&    fOriginalStream_;
+                    SeekableFlag    fSeekable_;
                 };
 
 

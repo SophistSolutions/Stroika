@@ -54,22 +54,18 @@ namespace   Stroika {
 
 
                 /**
-                 *      @todo OBSOLETE DOCS
-                 *
-                 *  InputStreamFromStdIStream creates a BinaryInputSteam wrapper
-                 *  on an existing std::istream object. It is required (but un-enforced)
-                 *  that the caller assure the lifetime of the original (argument) istream
-                 *  is longer than the lifetiem of this created BinaryInputStream (smart pointer).
+                 *  InputStreamFromStdIStream creates a InputStream<ELEMENT_TYPE> wrapper
+                 *  on an existing basic_istream<CHARTYPE (e.g. std::istream) object.
+                 *  It is required (but un-enforced) that the caller assure the lifetime of the original (argument)
+                 *  istream is longer than the lifetiem of this created InputStream (smart pointer).
                  *
                  *  It is also up to the caller to assure no references to or calls to that istream
-                 *  be made from another thread. However, no date is cached in this class - it just
+                 *  be made from another thread. However, no data is cached in this class - it just
                  *  delegates, so calls CAN be made the the underlying istream - so long as not
                  *  concurrently.
                  *
                  *  \note   \em Thread-Safety
-                 *      InputStreamFromStdIStream is not necessarily thread safe.
-                 *      Its roughly as safe as the underlying istream implementation, except
-                 *      that we call read, followed by gcount () - which could be a race.
+                 *      InputStreamFromStdIStream must be externally synchonized, except for purely read-only operations.
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class   InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
@@ -81,7 +77,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Default seekability should be determinted automatically, but for now, I cannot figure out how...
+                     *  Default seekability should be determined automatically, but for now, I cannot figure out how...
                      */
                     InputStreamFromStdIStream (IStreamType& originalStream);
                     InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);

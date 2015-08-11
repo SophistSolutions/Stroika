@@ -1226,7 +1226,7 @@ void    Led_Tablet_::RecolorHelper::DoRecolor_SimplePATINVERT (const Led_Rect& h
 
 void    Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (const Led_Rect& hilightArea)
 {
-    // By commenting stuff in and out - I determinted that virtuall ALL the time is spent in this first
+    // By commenting stuff in and out - I determined that virtuall ALL the time is spent in this first
     // BitBlt () - LGP 2003-03-11
     // I also found that qUseDIBSectionForOffscreenBitmap made this BitBlt go much faster - to the point of acceptable speed
     // LGP - 2003-03-12

@@ -202,7 +202,7 @@ namespace   Stroika {
                      *
                      *  Note that returned in_addr, in_addr_t addresses already in network byte order (for the no-arg overload).
                      *
-                     *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determinted by the parameter.
+                     *  As<T> (ByteOrder) is only defined for T==in_addr, and then the byte order is determined by the parameter.
                      *
                      *  As<tuple<uint8_t,uint8_t,uint8_t,uint8_t>> () returns the high order (in this case 'network') byte
                      *  in the first part of the tuple, so
