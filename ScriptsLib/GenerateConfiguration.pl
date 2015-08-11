@@ -51,6 +51,7 @@ my $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46 = 'Wno-future-compat ';
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
+my $FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -78,6 +79,7 @@ sub	DoHelp_
         print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
         print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
+        print("	    --ATLMFC {use-system|no}                   /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib for this configuration [default use] */\n");
         print("	    --trace2file { enable|disable|default }    /* Enables/disable trace2file feature */\n");
@@ -144,6 +146,9 @@ sub	SetInitialDefaults_
 	}
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+	}
+	if ("$^O" eq "cygwin") {
+		$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 	}
 }
 
@@ -326,6 +331,11 @@ sub	ParseCommandLine_Remaining_
             $i++;
             $var = $ARGV[$i];
             $FEATUREFLAG_WinHTTP = $var;
+        }
+        elsif ((lc ($var) eq "-atlmfc") or (lc ($var) eq "--atlmfc")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_ATLMFC = $var;
         }
         elsif ((lc ($var) eq "-xerces") or (lc ($var) eq "--xerces")) {
             $i++;
@@ -510,6 +520,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
+	print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 

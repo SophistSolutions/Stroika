@@ -113,6 +113,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
 	$FEATUREFLAG_WinHTTP = GetConfigurationParameter("qFeatureFlag_WinHTTP");
+	$FEATUREFLAG_ATLMFC = GetConfigurationParameter("qFeatureFlag_ATLMFC");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
@@ -362,6 +363,16 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
+    print (OUT "//--ATLMFC {use-system|no}\n");
+	if ($FEATUREFLAG_ATLMFC eq $LIBFEATUREFLAG_UseSystem) {
+		print (OUT "#define	qHasFeature_ATLMFC 1\n");
+	}	
+	else {
+		print (OUT "#define	qHasFeature_ATLMFC 0\n");
+	}	
+	print (OUT "\n");
+
+
     print (OUT "//--Xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_Xerces	1\n");
@@ -497,6 +508,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
 	print (OUT "qFeatureFlag_OpenSSL='$FEATUREFLAG_OpenSSL'\n");
 	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
+	print (OUT "qFeatureFlag_ATLMFC='$FEATUREFLAG_ATLMFC'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 	print (OUT "qFeatureFlag_LibZLib='$FEATUREFLAG_ZLib'\n");
 

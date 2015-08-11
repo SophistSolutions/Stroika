@@ -109,6 +109,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_WinHTTP'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_ATLMFC>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_ATLMFC'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<IncludeDebugSymbolsInExecutables>");
 		if (defined $pps) {
 			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;
