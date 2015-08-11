@@ -77,7 +77,14 @@ namespace   Stroika {
                     using   IStreamType = typename TRAITS::IStreamType;
 
                 public:
+                    enum SeekableFlag { eSeekable, eNotSeekable };
+
+                public:
+                    /**
+                     *  Default seekability should be determinted automatically, but for now, I cannot figure out how...
+                     */
                     InputStreamFromStdIStream (IStreamType& originalStream);
+                    InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable);
 
                 private:
                     class   Rep_;

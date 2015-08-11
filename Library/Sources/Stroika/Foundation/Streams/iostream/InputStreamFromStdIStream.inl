@@ -32,16 +32,28 @@ namespace   Stroika {
                 private:
                     using   IStreamType = typename TRAITS::IStreamType;
 
+                private:
+                    SeekableFlag    DefaultSeekable_ (IStreamType& originalStream)
+                    {
+                        // SB something like lseek(fd, CURRENT, 0) not an error, but that doesnt work wtih seekg() on
+                        // MSVC2k13. Not sure of a good portable way...
+                        return eSeekable;
+                    }
                 public:
                     Rep_ (IStreamType& originalStream)
+                        : Rep_ (originalStream, DefaultSeekable_ (originalStream))
+                    {
+                    }
+                    Rep_ (IStreamType& originalStream, SeekableFlag seekable)
                         : fOriginalStream_ (originalStream)
+                        , fSeekable_ (seekable)
                     {
                     }
 
                 protected:
                     virtual bool    IsSeekable () const override
                     {
-                        return true;
+                        return fSeekable_ == eSeekable;
                     }
                     virtual size_t  Read (SeekOffsetType* offset, ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
@@ -90,6 +102,7 @@ namespace   Stroika {
                     }
 
                 private:
+                    SeekableFlag    fSeekable_;
                     IStreamType&    fOriginalStream_;
                 };
 
@@ -102,6 +115,11 @@ namespace   Stroika {
                 template    <typename   ELEMENT_TYPE, typename TRAITS>
                 InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream)
                     : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream))
+                {
+                }
+                template    <typename   ELEMENT_TYPE, typename TRAITS>
+                InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::InputStreamFromStdIStream (IStreamType& originalStream, SeekableFlag seekable)
+                    : InputStream<ELEMENT_TYPE> (make_shared<Rep_> (originalStream, seekable))
                 {
                 }
 
