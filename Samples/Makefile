@@ -1,18 +1,26 @@
+-include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
+
 .PHONY:	samples all check clobber skel
 
 UNAME := $(shell uname)
 
+SUBPROJECTS=
 
-SUBPROJECTS=\
-	ActiveLedIt\
-	LedIt\
-	LedLineIt\
-	SimpleLedTest\
-	SSDPClient\
-	SSDPServer\
-	SimpleService\
-	SystemPerformanceClient\
-	WebServer	
+ifeq ($(qFeatureFlag_ATLMFC), 'use-system')
+SUBPROJECTS+=	ActiveLedIt
+SUBPROJECTS+=	LedIt
+SUBPROJECTS+=	LedLineIt
+endif
+# SOMEDAY SOON GET THIS FROM .PL FILE!!!
+ifneq (,$(findstring CYGWIN,$(UNAME)))
+SUBPROJECTS+=	SimpleLedTest
+endif
+SUBPROJECTS+=	SSDPClient
+SUBPROJECTS+=	SSDPServer
+SUBPROJECTS+=	SimpleService
+SUBPROJECTS+=	SystemPerformanceClient
+SUBPROJECTS+=	WebServer
+
 
 
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
