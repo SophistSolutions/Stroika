@@ -88,7 +88,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Marker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\MultiRowTextImager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\PartitioningTextImager.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC_WordProcessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp" />
