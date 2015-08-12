@@ -28,6 +28,10 @@
 
 
 
+namespace Stroika { namespace Foundation { namespace Streams { template    <typename   ELEMENT_TYPE> class   OutputStream; } } }
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -78,6 +82,7 @@ namespace   Stroika {
                 class   SysLogAppender;
 #endif
                 class   FileAppender;
+                class   StreamAppender;
 #if     qPlatform_Windows
                 class   WindowsEventLogAppender;
 #endif
@@ -257,9 +262,22 @@ namespace   Stroika {
 
             /**
              */
+            class   Logger::StreamAppender : public Logger::IAppenderRep {
+            public:
+                StreamAppender (const Streams::OutputStream<Byte>& out);
+            public:
+                virtual void    Log (Priority logLevel, const String& message) override;
+            private:
+                struct  Rep_;
+                shared_ptr<Rep_>    fRep_;
+            };
+
+
+            /**
+             */
             class   Logger::FileAppender : public Logger::IAppenderRep {
             public:
-                FileAppender (const String& fileName);
+                FileAppender (const String& fileName, bool truncateOnOpen = true);
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
             private:

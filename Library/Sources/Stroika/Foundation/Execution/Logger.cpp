@@ -339,6 +339,40 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 
 
 
+/*
+ ********************************************************************************
+ ************************** Execution::StreamAppender ***************************
+ ********************************************************************************
+ */
+struct  Logger::StreamAppender::Rep_ {
+    using   TextWriter = Streams::TextWriter;
+public:
+    Rep_ (Streams::OutputStream<Byte> out)
+        : fWriter_ (out)
+    {
+    }
+    void    Log (Priority logLevel, const String& message)
+    {
+        //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
+        fWriter_.Write (message + L"\n");
+    }
+private:
+    TextWriter          fWriter_;
+};
+
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>& out)
+    : fRep_ (make_shared<Rep_> (out))
+{
+}
+
+void    Logger::StreamAppender::Log (Priority logLevel, const String& message)
+{
+    fRep_->Log (logLevel, message);
+}
+
+
+
+
 
 /*
  ********************************************************************************
@@ -347,24 +381,21 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
  */
 struct  Logger::FileAppender::Rep_ {
     using   FileOutputStream = IO::FileSystem::FileOutputStream;
-    using   TextWriter = Streams::TextWriter;
 public:
-    Rep_ (const String& fileName)
-        : fOut_ (fileName)
-        , fWriter_ (fOut_)
+    Rep_ (const String& fileName, bool truncateOnOpen)
+        : fOut_ (StreamAppender (FileOutputStream::mk (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
     void    Log (Priority logLevel, const String& message)
     {
-        fWriter_.Write (message + L"\n");//tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
+        fOut_.Log (logLevel, message);
     }
 private:
-    FileOutputStream    fOut_;
-    TextWriter          fWriter_;
+    StreamAppender    fOut_;
 };
 
-Logger::FileAppender::FileAppender (const String& fileName)
-    : fRep_ (make_shared<Rep_> (fileName))
+Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)
+    : fRep_ (make_shared<Rep_> (fileName, truncateOnOpen))
 {
 }
 
