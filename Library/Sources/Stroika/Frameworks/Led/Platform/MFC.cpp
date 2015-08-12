@@ -5,6 +5,9 @@
 
 #include    <climits>
 
+#if     qHasFeature_ATLMFC
+
+
 #include    <afxext.h>
 #include    <afxole.h>
 
@@ -387,4 +390,4 @@ void    Led_DrawText (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap)
 
 
 
-
+#endif

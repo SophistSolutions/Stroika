@@ -14,6 +14,7 @@
  */
 
 
+static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC_WordProcessor code requires the ATLMFC feature to be set true");
 
 #if     _MSC_VER == 1200
 //A bit of a hack for MSVC60, cuz this needs to be done before including <set> - otherwise we get

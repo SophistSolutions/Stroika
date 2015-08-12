@@ -14,14 +14,16 @@
 
 #include    "../../../Foundation/StroikaPreComp.h"
 
-#if     qHasFeature_ATLMFC
+static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform ATL code requires the ATLMFC feature to be set true");
+
 #include    <atlbase.h>
 #include    <atlcom.h>
-#endif
 
 #include    "../Config.h"
 
 #include    "../Support.h"
+
+
 
 
 
@@ -31,8 +33,6 @@ namespace   Stroika {
             namespace   Platform {
 
 
-
-#if     qHasFeature_ATLMFC
                 /*
                 @CLASS:         CComObjectWithARGS<BASE,CTOR_ARGS>
                 @DESCRIPTION:   <p>Virtually identical to the ATL class @'CComObject<Base>', except that this is used
@@ -106,7 +106,6 @@ namespace   Stroika {
                     //if _InternalQueryInterface is undefined then you forgot BEGIN_COM_MAP
                     return _InternalQueryInterface(iid, ppvObject);
                 }
-#endif
 
 
             }

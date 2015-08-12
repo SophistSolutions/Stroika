@@ -5,6 +5,8 @@
 
 #include    <climits>
 
+#if     qHasFeature_ATLMFC
+
 #include    <afxext.h>
 #include    <afxole.h>
 
@@ -620,4 +622,5 @@ Led_MFC&    Led_MFC_ControlItem::GetActiveView () const
 
 set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed;
 
+#endif
 #endif

@@ -96,9 +96,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\Windows.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\ATL.cpp">
-      <Filter>Source\Platform</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Led\Platform\MFC.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>

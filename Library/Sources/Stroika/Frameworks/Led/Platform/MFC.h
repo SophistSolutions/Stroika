@@ -21,6 +21,8 @@
     tested as a replacemnt edit control inheriting from CWnd (@LEC).</p>
  */
 
+static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC code requires the ATLMFC feature to be set true");
+
 #include    <afxwin.h>
 #include    <afxole.h>
 #include    <oleidl.h>

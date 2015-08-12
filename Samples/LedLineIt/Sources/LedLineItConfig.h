@@ -12,7 +12,7 @@
 
 #if     defined (__cplusplus)
 
-static_assert (qHasFeature_ATLMFC, "Error: LedLineIt requires the ATLMFC feature to be set true when building Stroika")
+static_assert (qHasFeature_ATLMFC, "Error: LedLineIt requires the ATLMFC feature to be set true when building Stroika");
 
 // Test a bit, but I think undo information no longer consumes lots of memory, so we can keep a larger
 // (effictively infinite) undo buffer (SPR#1565) - LGP 2003-11-26
