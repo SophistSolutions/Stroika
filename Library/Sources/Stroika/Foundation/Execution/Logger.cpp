@@ -347,7 +347,8 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 struct  Logger::StreamAppender::Rep_ {
     using   TextWriter = Streams::TextWriter;
 public:
-    Rep_ (Streams::OutputStream<Byte> out)
+    template    <typename T>
+    Rep_ (Streams::OutputStream<T> out)
         : fWriter_ (out)
     {
     }
@@ -361,6 +362,11 @@ private:
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>& out)
+    : fRep_ (make_shared<Rep_> (out))
+{
+}
+
+Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Characters::Character>& out)
     : fRep_ (make_shared<Rep_> (out))
 {
 }

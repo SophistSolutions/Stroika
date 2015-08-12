@@ -265,6 +265,7 @@ namespace   Stroika {
             class   Logger::StreamAppender : public Logger::IAppenderRep {
             public:
                 StreamAppender (const Streams::OutputStream<Byte>& out);
+                StreamAppender (const Streams::OutputStream<Characters::Character>& out);
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
             private:
