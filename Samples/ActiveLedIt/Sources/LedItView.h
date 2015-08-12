@@ -25,6 +25,7 @@ using   namespace   Stroika::Frameworks::Led::Platform;
 
 
 
+
 class   LedItViewController {
 public:
     LedItViewController ();

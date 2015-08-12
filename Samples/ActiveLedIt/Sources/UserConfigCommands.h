@@ -6,7 +6,8 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <afxctl.h>
+#include    <atlbase.h>
+#include    <atlcom.h>
 
 #include    "Stroika/Frameworks/Led/Platform/ATL.h"
 #include    "Stroika/Frameworks/Led/TextInteractor.h"

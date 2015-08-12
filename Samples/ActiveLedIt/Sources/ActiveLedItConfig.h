@@ -151,6 +151,8 @@ const   unsigned    int kMaxNumUndoLevels   =   512;
 #define kVERSResourceVersionNumber  qLed_Version_MajorMinor,qLed_Version_Stage,qLed_Version_SubStage,1+qMagicVersionExtra
 #endif
 #if     defined (__cplusplus)
+static_assert (qHasFeature_ATLMFC, "Error: ActiveLedIt requires the ATLMFC feature to be set true when building Stroika")
+
 inline  unsigned long   mkActiveLedItVersion_ (unsigned int majorMinor, unsigned int versStage, unsigned int subStage, unsigned int nonDemoFlag)
 {
     Require (majorMinor <= 256);
