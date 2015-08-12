@@ -262,6 +262,9 @@ namespace   Stroika {
                 FileAppender (const String& fileName);
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
+            private:
+                struct  Rep_;
+                shared_ptr<Rep_>    fRep_;
             };
 
 

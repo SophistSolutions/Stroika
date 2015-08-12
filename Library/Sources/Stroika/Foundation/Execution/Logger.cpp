@@ -16,6 +16,8 @@
 #include    "Synchronized.h"
 #include    "Thread.h"
 #include    "TimeOutException.h"
+#include    "../IO/FileSystem/FileOutputStream.h"
+#include    "../Streams/TextWriter.h"
 
 #include    "Logger.h"
 
@@ -343,14 +345,32 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
  ************************** Execution::FileAppender *****************************
  ********************************************************************************
  */
+struct  Logger::FileAppender::Rep_ {
+    using   FileOutputStream = IO::FileSystem::FileOutputStream;
+    using   TextWriter = Streams::TextWriter;
+public:
+    Rep_ (const String& fileName)
+        : fOut_ (fileName)
+        , fWriter_ (fOut_)
+    {
+    }
+    void    Log (Priority logLevel, const String& message)
+    {
+        fWriter_.Write (message + L"\n");//tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
+    }
+private:
+    FileOutputStream    fOut_;
+    TextWriter          fWriter_;
+};
+
 Logger::FileAppender::FileAppender (const String& fileName)
+    : fRep_ (make_shared<Rep_> (fileName))
 {
-    AssertNotImplemented ();
 }
 
 void    Logger::FileAppender::Log (Priority logLevel, const String& message)
 {
-    AssertNotImplemented ();
+    fRep_->Log (logLevel, message);
 }
 
 
