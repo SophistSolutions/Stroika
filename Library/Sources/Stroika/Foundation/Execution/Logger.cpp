@@ -18,6 +18,7 @@
 #include    "TimeOutException.h"
 #include    "../IO/FileSystem/FileOutputStream.h"
 #include    "../Streams/TextWriter.h"
+#include    "../Time/DateTime.h"
 
 #include    "Logger.h"
 
@@ -355,7 +356,7 @@ public:
     void    Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.Write (message + L"\n");
+        fWriter_.Write (Characters::Format (L"[%5s][%16s] %s\n", Stroika_Enum_Names(Priority).GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
 private:
     TextWriter          fWriter_;
