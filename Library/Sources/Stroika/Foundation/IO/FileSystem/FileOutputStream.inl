@@ -25,6 +25,10 @@ namespace   Stroika {
                 {
                     return FileOutputStream (fileName, flushFlag);
                 }
+                inline  Streams::OutputStream<Memory::Byte>   FileOutputStream::mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
+                {
+                    return FileOutputStream (fileName, appendFlag, flushFlag);
+                }
 
 
             }

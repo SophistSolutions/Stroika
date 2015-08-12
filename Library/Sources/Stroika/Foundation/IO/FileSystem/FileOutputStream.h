@@ -68,14 +68,22 @@ namespace   Stroika {
                      */
                     enum    FlushFlag {
                         eToOperatingSystem,
-                        eToDisk
+                        eToDisk,
+                    };
+
+                public:
+                    enum    AppendFlag {
+                        eStartFromStart,
+                        eAppend,
                     };
 
                 public:
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
+                    FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
+                    static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
 
                 private:
                     class   Rep_;

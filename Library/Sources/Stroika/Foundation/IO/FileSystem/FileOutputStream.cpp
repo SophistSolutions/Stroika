@@ -53,20 +53,22 @@ class   FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug
 public:
     Rep_ () = delete;
     Rep_ (const Rep_&) = delete;
-    Rep_ (const String& fileName, FlushFlag flushFlag)
+    Rep_ (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
         : fFD_ (-1)
         , fFlushFlag (flushFlag)
     {
         try {
 #if     qPlatform_Windows
-            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+            int appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
+            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag, _SH_DENYNO, _S_IREAD | _S_IWRITE);
             if (e != 0) {
                 Execution::errno_ErrorException::DoThrow (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else
+            int appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
             const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC, kCreateMode_));
+            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag, kCreateMode_));
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
@@ -170,6 +172,11 @@ private:
 };
 
 FileOutputStream::FileOutputStream (const String& fileName, FlushFlag flushFlag)
-    : inherited (make_shared<Rep_> (fileName, flushFlag))
+    : inherited (make_shared<Rep_> (fileName, eStartFromStart, flushFlag))
+{
+}
+
+FileOutputStream::FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag)
+    : inherited (make_shared<Rep_> (fileName, appendFlag, flushFlag))
 {
 }
