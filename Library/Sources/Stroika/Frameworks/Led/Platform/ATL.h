@@ -14,12 +14,12 @@
 
 #include    "../../../Foundation/StroikaPreComp.h"
 
-#include    "../Config.h"
-
-#if     qStroika_Framework_Led_Support_ATL
+#if     qHasFeature_ATLMFC
 #include    <atlbase.h>
 #include    <atlcom.h>
 #endif
+
+#include    "../Config.h"
 
 #include    "../Support.h"
 
@@ -32,7 +32,7 @@ namespace   Stroika {
 
 
 
-#if     qStroika_Framework_Led_Support_ATL
+#if     qHasFeature_ATLMFC
                 /*
                 @CLASS:         CComObjectWithARGS<BASE,CTOR_ARGS>
                 @DESCRIPTION:   <p>Virtually identical to the ATL class @'CComObject<Base>', except that this is used

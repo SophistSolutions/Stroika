@@ -66,16 +66,6 @@
 
 
 
-/// Don't think we need/use this anymore. maybe never did? Not sure.... Probably started to
-// move towards this in some branch of the code, but not sure that ever got ported/integrated into Stroika.
-// I thoght I used it for SpellCheck ActiveX control?? Not sure I ever ported that to Stroika?
-//
-// Would like to automatically compute this correctly? Not not sure how without has_include, or some such?
-/// --LGP 2015-08-11
-#define qStroika_Framework_Led_Support_ATL    0
-
-
-
 
 
 /*
