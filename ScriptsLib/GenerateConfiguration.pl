@@ -125,6 +125,13 @@ sub	SetInitialDefaults_
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2015';
 			}
+			#autodetect ATLMFC (Express verison missing it)
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 14.0/VC/atlmfc") {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+			}
+			else  {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+			}
 		}
 
 		# try vs 2k13
@@ -137,6 +144,13 @@ sub	SetInitialDefaults_
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 12.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2013';
 			}
+			#autodetect ATLMFC (Express verison missing it)
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 12.0/VC/atlmfc") {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+			}
+			else  {
+				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
+			}
 		}
 
 	}
@@ -147,9 +161,9 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
-	if ("$^O" eq "cygwin") {
-		$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-	}
+	#if ("$^O" eq "cygwin") {
+	#	$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
+	#}
 }
 
 
