@@ -60,7 +60,7 @@ namespace   Stroika {
              *
              *  TextWriter is Seekable iff its constructed with a OutputStream<> which is seekable.
              *
-             *  \npte   This API was called TextOutputStreamAdapter
+             *  \note   This API was called TextOutputStreamAdapter
              */
             class   TextWriter : public OutputStream<Characters::Character> {
             private:
