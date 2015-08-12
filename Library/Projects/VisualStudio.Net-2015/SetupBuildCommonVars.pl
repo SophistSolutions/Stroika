@@ -1,4 +1,4 @@
-﻿#TRY THESE AGAIN, but for now generate too many problems...
+#TRY THESE AGAIN, but for now generate too many problems...
 #use strict;
 #use warnings;
 
@@ -168,7 +168,8 @@ sub GetString2InsertIntoBatchFileToInit32BitCompiles
 	my $result = "";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
-	$result 	.=	"\" amd64_x86;\n";
+	$result 	.=	"\" x86_amd64;\n";
+	#$result 	.=	"\" amd64_x86;\n";
 	return $result;
 }
 
