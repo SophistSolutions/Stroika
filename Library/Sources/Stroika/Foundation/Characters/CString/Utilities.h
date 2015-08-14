@@ -118,7 +118,7 @@ namespace   Stroika {
                  *                  a)  Microsoft has this interpretation.
                  *                  b)  Its a BETTER interpretation (allowing for stuff like (Format (SDKSTR("time%s"), count==1? SDKSTR (""): SDKSTR ("s"));
                  *
-                 *      See also qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
+                 *  @see qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
                  */
                 string  FormatV (const char* format, va_list argsList);
                 wstring FormatV (const wchar_t* format, va_list argsList);

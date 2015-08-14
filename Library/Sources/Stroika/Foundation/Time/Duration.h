@@ -107,7 +107,7 @@ namespace   Stroika {
              *  one P...T...3S). As far as I know - XML always uses the later. For now - this implementation
              *  only supports the later.
              *
-             *      See also: http://bugzilla/show_bug.cgi?id=468
+             *  @see    http://bugzilla/show_bug.cgi?id=468
              *
              *  This class is roughly equivalent to the .Net Timespan class, and also might be called
              *  "time period", or "timespan".

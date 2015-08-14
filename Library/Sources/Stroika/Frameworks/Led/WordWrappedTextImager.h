@@ -131,7 +131,7 @@ namespace   Stroika {
                         }
                     </code>
                     </p>
-                    <p>See also @'TrivialImager<TEXTSTORE,IMAGER>', and @'TrivialImager_Interactor<TEXTSTORE,IMAGER>'.</p>
+             *  @see    @'TrivialImager<TEXTSTORE,IMAGER>', and @'TrivialImager_Interactor<TEXTSTORE,IMAGER>'.</p>
              */
             template    <typename TEXTSTORE, typename   IMAGER = WordWrappedTextImager>
             class   TrivialWordWrappedImager : public TrivialImager<TEXTSTORE, IMAGER> {

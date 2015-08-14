@@ -2689,7 +2689,7 @@ namespace   Stroika {
             }
             /*
             @METHOD:        WordProcessor::SetSmartQuoteMode
-            @DESCRIPTION:   <p>See also @'WordProcessor::GetSmartQuoteMode'</p>
+            @DESCRIPTION:   @see     @'WordProcessor::GetSmartQuoteMode'</p>
             */
             inline  void    WordProcessor::SetSmartQuoteMode (bool smartQuoteMode)
             {
@@ -2736,7 +2736,7 @@ namespace   Stroika {
                         WordProcessor::SetCommandNames.</p>
                             <p> The point of this is to allow for different UI-language localizations,
                         without having to change Led itself.</p>
-                            <p>See also @'WordProcessor::CommandNames'.</p>
+            *   @see    @'WordProcessor::CommandNames'.
             */
             inline  const WordProcessor::CommandNames&  WordProcessor::GetCommandNames ()
             {

@@ -53,7 +53,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
                         depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
                         on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
-                            <p>See also @'qDebug' and @'DebugTrace'</p>
+            *   @see    qDebug
+            *   @see    DebugTrace
 
                         Note ALSO - many Stroika modules (CPP files) contain a private
                             // Comment this in to turn on tracing in this module

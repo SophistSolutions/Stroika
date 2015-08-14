@@ -46,8 +46,7 @@ namespace   Stroika {
              *
              *  \note   NB: This class COULD have been called MemoryInputOutputStream.
              *
-             *  See Also:
-             *      @see ExternallyOwnedMemoryInputStream
+             *  @see ExternallyOwnedMemoryInputStream
              */
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {

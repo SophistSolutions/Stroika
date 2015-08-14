@@ -456,7 +456,7 @@ String Date::Format (PrintFormat pf) const
                  *          The following rules govern what the parse method can successfully parse:
                  *          Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96".
                  *
-                 *  See also        explicit Date (const String& rep, Javascript);
+                 *  @see    explicit Date (const String& rep, Javascript);
                  */
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)
                 MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;

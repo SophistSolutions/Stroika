@@ -167,7 +167,7 @@ namespace   Stroika {
              *  TODO: CHECK EXACT API DIFFERENCES WITH shared_ptr - BUT - they should be reasonably small -
              *  neglecting the weak_ptr stuff
              *
-             *  See also @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
+             *  @see    @SharedPtrBase module for how to do much FANCIER SharedPtr<> usage
              */
             template    <typename   T>
             class   SharedPtr : public SharedPtrBase {

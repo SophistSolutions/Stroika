@@ -49,8 +49,7 @@ namespace   Stroika {
              *  a file access exception. This helpful macro can rebild the filename, so its captured in the
              *  exception.
              *
-             *  See Also:
-             *      @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER
+             *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER
              *
              *  EXAMPLE USAGE:
              *      try {
@@ -71,10 +70,8 @@ namespace   Stroika {
 
             /**
              *  Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER()
-             *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
              *
-             *  See Also:
-             *      @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
+             *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
              *
              *  EXAMPLE USAGE:
              *      try {

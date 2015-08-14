@@ -274,11 +274,10 @@ namespace   Stroika {
                  *  \note   Time::GetTickCount () normally returns a positive number but if you go back in time before
                  *          its zero point, ToTickCount () will return negative numbers.
                  *
-                 *  EXAMPLE:
+                 *  \note EXAMPLE:
                  *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
                  *
-                 *  See Also:
-                 *      @see FromTickCount
+                 *  @see FromTickCount
                  */
                 nonvirtual  DurationSecondsType    ToTickCount () const;
 
@@ -287,8 +286,7 @@ namespace   Stroika {
                  *  This is like a constructor, but with a more specific static name to avoid confusion with overloads.
                  *  This returns a datetime in localtime.
                  *
-                 *  See Also:
-                 *      @see ToTickCount
+                 *  @see ToTickCount
                  */
                 static  DateTime    FromTickCount (DurationSecondsType tickCount);
 

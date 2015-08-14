@@ -148,8 +148,7 @@ namespace   Stroika {
                      *  Remove the given file. The filename can be a relative pathname, or absolute.
                      *  This throws on failure (e.g. because the file is not found).
                      *
-                     *  See Also:
-                     *      @see RemoveFileIf
+                     *  @see RemoveFileIf
                      */
                     nonvirtual  void        RemoveFile (const String& fileName);
 
@@ -158,8 +157,7 @@ namespace   Stroika {
                      *  Remove the given file if it exists. The filename can be a relative pathname, or absolute.
                      *  This throws if the remove fails, but has no effect (no throw) if the file doesn't exist.
                      *
-                     *  See Also:
-                     *      @see RemoveFile
+                     *  @see RemoveFile
                      */
                     nonvirtual  void        RemoveFileIf (const String& fileName);
                 };
