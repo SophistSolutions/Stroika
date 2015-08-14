@@ -137,11 +137,14 @@ namespace   Stroika {
              *      typically, the end result - last filter step - will be to produce an iterable (which can be trivially converted to another
              *      container type).
              *
-             *  EXAMPLES:
+             *  \par Example Usage
+             *      \code
              *      COMMON/SETUP:
              *          Sequence<int> s = { 1, 2, 3 };
+             *      \endcode
              *
-             *      DANGEROUS/BAD EXAMPLE:
+             *  \par DANGEROUS/BAD EXAMPLE
+             *      \code
              *      {
              *          int countSoFar = 0;
              *          int answer =
@@ -152,12 +155,14 @@ namespace   Stroika {
              *          ;
              *          VerifyTestResult (answer == 2);
              *      }
+             *      \endcode
              *
              *      This will work, but ONLY because all resulting objects from the compuation will be destroyed before
              *      the countSoFar goes out of scope. Since FunctionalApplicationContext<> is often used to produce an
              *      iterable that is 'returned' - its best to use a smart-pointer to store any catpured values.
              *
-             *      EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      {
              *          shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
              *          int answer =
@@ -168,7 +173,9 @@ namespace   Stroika {
              *          ;
              *          VerifyTestResult (answer == 2);
              *      }
-             *      EXAMPLE:
+             *      \endcode
+             *  \par Example Usage
+             *      \code
              *      {
              *          shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
              *          Sequence<int> r = Sequence<int> (
@@ -179,6 +186,7 @@ namespace   Stroika {
              *          VerifyTestResult (r.length () == 2);
              *          VerifyTestResult (r[0] == 6 and r[1] == 8);
              *      }
+             *      \endcode
              *
              *  So you create a FunctionalApplicationContext<> - with the template parameter refering to the type of
              *  the input container.

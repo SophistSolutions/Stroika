@@ -58,7 +58,8 @@ namespace   Stroika {
              *  utility that will often be useful, and will save some typing. If it does fit your needs, dont use it, and
              *  use ObjectVariantMapper and the reader abstractions directly.
              *
-             *  Example:
+             *  \par Example Usage
+             *      \code
              *      struct  MyData_ {
              *          bool                fEnabled = false;
              *          DateTime            fLastSynchronizedAt;
@@ -80,6 +81,7 @@ namespace   Stroika {
              *      };
              *      MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
              *      of.Write (m);                               // test writing
+             *      \endcode
              */
             class   OptionsFile {
             public:

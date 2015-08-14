@@ -113,9 +113,11 @@ namespace   Stroika {
                 /**
                  *  Push the given task into the queue.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      ThreadPool p;
                  *      p.AddTask ([] () {doIt ();});
+                 *      \endcode
                  *
                  *  \note   Design Note:
                  *      The reason this returns as TaskType is that its easy to convert a lambda or whatever into a TaskType, but if you do

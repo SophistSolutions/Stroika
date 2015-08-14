@@ -343,15 +343,19 @@ namespace   Stroika {
                  *
                  *  but can be done in a single line.
                  *
-                 *  EXAMPLE-USE:
+                 *  \par Example Usage
+                 *      \code
                  *      int curValue = 3;
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
                  *      oVal.CopyToIf (&curValue);
+                 *      \endcode
                  *
-                 *  EXAMPLE-USE:
+                 *  \par Example Usage
+                 *      \code
                  *      Optional<int> curValue;
                  *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
                  *      oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
+                 *      \endcode
                  *
                  *  @see Value
                  */
@@ -369,15 +373,19 @@ namespace   Stroika {
                  *  \brief  AccumulateIf () add in the argument value to this optional, but if both were missing leave 'this'
                  *          as still missing.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Optional<int>   accumulator;
                  *      Optional<int>   SomeFunctionToGetOptionalValue();
                  *
                  *      if (accumulator or (tmp = SomeFunctionToGetOptionalValue())) {
                  *              accumulator = accumulator.Value () + tmp;
                  *      }
+                 *      \endcode
                  *      VERSUS
+                 *      \code
                  *      accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
+                 *      \endcode
                  *
                  *      \note   ITS CONFUSING direction of iftest for this versus CopyToIf
                  */

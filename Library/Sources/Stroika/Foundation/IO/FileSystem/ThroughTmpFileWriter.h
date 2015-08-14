@@ -60,14 +60,17 @@ namespace   Stroika {
                  * it is REQUIRED you call Commit () after all writing to tmpfile is done (and closed),
                  * otherwise the changes are abandoned.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      ThroughTmpFileWriter    tmpFile (targetFileName);
                  *      FileOutputStream  out (tmpFile.GetTmpFilePath ());
                  *      YourCodeToWriteDataToStream (your_data, out);
                  *      out.clear();        // close like this so we can throw exception - cannot throw if we count on DTOR
                  *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+                 *      \endcode
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      ThroughTmpFileWriter    tmpFile (targetFileName);
                  *      {
                  *          FileOutputStream  out (tmpFile.GetTmpFilePath ());
@@ -75,6 +78,7 @@ namespace   Stroika {
                  *          // use scope (braces) to force close before commit (or call out.clear())
                  *      }
                  *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
+                 *      \endcode
                  *
                  */
                 class   ThroughTmpFileWriter {

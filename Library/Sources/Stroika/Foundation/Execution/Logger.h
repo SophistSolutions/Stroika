@@ -155,10 +155,14 @@ namespace   Stroika {
                  *  reasons, so the caller can freely log things, and not have their thread blocked.
                  *
                  *      Beware, this feature CAN mean that something you log, wont make it out of the application if
-                 *  the appliaction terminates before the log can be flushed. For example:
+                 *  the appliaction terminates before the log can be flushed.
                  *
+                 *  \par Example Usage
+                 *      \code
                  *              Log ("QUITTING");
                  *              exit (0);
+                 *      \endcode
+                 *
                  *      probably won't get logged. To avoid this issue, call SetBufferingEnabled(false) before quitting, or
                  *      call FlushBuffer();
                  *

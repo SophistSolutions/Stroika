@@ -274,8 +274,10 @@ namespace   Stroika {
                  *  \note   Time::GetTickCount () normally returns a positive number but if you go back in time before
                  *          its zero point, ToTickCount () will return negative numbers.
                  *
-                 *  \note EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Assert (Math::NearlyEquals (Time::GetTickCount (), DateTime::Now ().ToTickCount ());    // roughly true
+                 *      \endcode
                  *
                  *  @see FromTickCount
                  */

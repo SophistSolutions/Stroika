@@ -689,11 +689,13 @@ namespace   Stroika {
                  *  returns true if the expression matches the ENTIRE string - all the way to the end.
                  *  @see FindEach() or @see Find - to find a set of things which match.
                  *
-                 *  For example:
+                 *  \par Example Usage
+                 *      \code
                  *      Assert (String (L"abc").Match (L"abc"));
                  *      Assert (not (String (L"abc").Match (L"bc")));
                  *      Assert (String (L"abc").Match (L".*bc"));
                  *      Assert (not String (L"abc").Match (L"b.*c"));
+                 *      \endcode
                  *
                  *  Details on the regular expression language/format can be found at:
                  *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions

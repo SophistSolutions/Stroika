@@ -76,11 +76,11 @@ namespace   Stroika {
                  *      "Network Interface"
                  *      "LogicalDisk"
                  *
-                 *  Example:
+                 *  \par Example Usage
                  *      WMICollector  tmp { L"Processor", {L"_Total"}, {L"% Processor Time"} };
                  *      double x = tmp.GetCurrentValue ( L"_Total", L"% Processor Time");
                  *
-                 *  Example:
+                 *  \par Example Usage
                  *      WMICollector  tmp { L"LogicalDisk", {L"E:"},  {L"% Free Space"} };
                  *      double x = tmp.GetCurrentValue (L"E:", L"% Free Space");
                  *

@@ -461,20 +461,23 @@ namespace   Stroika {
                  *  begin ()/end() are similar to MakeIterator(), except that they allow for iterators to be
                  *  used in an STL-style, which is critical for using C++ ranged iteration.
                  *
-                 *  For example:
-                 *
+                 *  \par Example Usage
+                 *      \code
                  *      for (Iterator<T> i = c.begin (); i != c.end (); ++i) {
                  *          if (*i = T ()) {
                  *              break;
                  *          }
                  *      }
+                 *      \endcode
                  *
                  * OR
+                 *      \code
                  *      for (T& i : c) {
                  *          if (*i = T ()) {
                  *              break;
                  *          }
                  *      }
+                 *      \endcode
                  *
                  */
                 nonvirtual  Iterator<T> begin () const;
@@ -580,9 +583,11 @@ namespace   Stroika {
                  *
                  *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
+                 *      \endcode
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
 
@@ -593,9 +598,11 @@ namespace   Stroika {
                  *
                  *  This returns an Iterable<T> that contains just the subset of the items which are distinct (equality comparer)
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
                  *      VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
+                 *      \endcode
                  *
                  *  @todo need overloads taking lambda that projects
                  *  @todo for now use builtin stl set to accumulate, but need flexability on where compare and maybe also redo with hash?
@@ -611,9 +618,11 @@ namespace   Stroika {
                  *
                  *  EXPERIMENTAL
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
                  *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+                 *      \endcode
                  *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
                  */
@@ -633,12 +642,13 @@ namespace   Stroika {
                  *  If the number of items skipped is greater or equal to the length of the original Iterable, then
                  *  an empty Iterable is returned.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
+                 *      \endcode
                  *
-                 *  See:
-                 *      https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Take
                  */
                 nonvirtual  Iterable<T> Skip (size_t nItems) const;
@@ -651,12 +661,13 @@ namespace   Stroika {
                  *  This returns an Iterable<T> with up to nItems taken from the front of this starting iterable. If this Iterable
                  *  is shorter, Take () returns just the original Iterable
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+                 *      \endcode
                  *
-                 *  See:
-                 *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
+                 *  @see    https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Skip
                  */
                 nonvirtual  Iterable<T> Take (size_t nItems) const;
@@ -673,9 +684,11 @@ namespace   Stroika {
                  *
                  *  @todo FOR NOW VERY LIMITED API. Linq has params to let you select just the KEY to use in compare. Could add overloads
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
                  *      VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+                 *      \endcode
                  *
                  *  See:
                  */
@@ -692,9 +705,11 @@ namespace   Stroika {
                  *  EXPERIMENTAL
                  *  BASED ON Microsoft .net Linq.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Min () == 1);
+                 *      \endcode
                  *
                  *  Throws (docuemnt what) exception if list is empty.
                  *
@@ -710,8 +725,10 @@ namespace   Stroika {
                  *  BASED ON Microsoft .net Linq.
                  *
                  *  EXAMPLE:
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Max () == 6);
+                 *      \endcode
                  *
                  *  Throws (docuemnt what) exception if list is empty.
                  *
@@ -726,9 +743,11 @@ namespace   Stroika {
                  *  EXPERIMENTAL
                  *  BASED ON Microsoft .net Linq.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
                  *      VerifyTestResult (c.Mean () == 4);
+                 *      \endcode
                  *
                  *  Throws (docuemnt what) exception if list is empty.
                  *
@@ -744,9 +763,11 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Iterable<int> c { 1, 2, 9, 4, 5, 3 };
                  *      VerifyTestResult (NearlyEquals (c.Median (), 3.5));
+                 *      \endcode
                  *
                  *  Throws (docuemnt what) exception if list is empty.
                  */

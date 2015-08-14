@@ -34,9 +34,11 @@ namespace   Stroika {
              *  Throws BadFormatException if data bad. This is handy for 'file' reading, as most of the
              *  Stroika type constructors assert valid data (e.g. String::FromUTF8 ()).
              *
-             *  EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      string tmpMaybeGoodUTF8FromFile;
              *      String s = CheckedConverter<String, UTF8> (tmpMaybeGoodUTF8FromFile);   // throws if invalid UTF8
+             *      \endcode
              */
             template    <typename TO, typename EXTRA_DATA, typename FROM>
             TO  CheckedConverter (FROM from, const EXTRA_DATA& extraData = EXTRA_DATA ());

@@ -49,9 +49,11 @@ namespace   Stroika {
              *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtoll etc directly to see if the string parsed properly.
              *
-             *  EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      uint32_t    n1      =   String2Int<uint32_t> (L"33");
              *      int         n2      =   String2Int (L"33");
+             *      \endcode
              */
             template    <typename T = int>
             T     String2Int (const String& s);

@@ -83,10 +83,12 @@ namespace   Stroika {
              *
              *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
              *
-             *  EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      Synchonized<String> n;                                                  // SAME
              *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
              *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
+             *      \endcode
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      Synchonized<String,Synchronized_Traits<SpinLock>>   n;
@@ -98,16 +100,22 @@ namespace   Stroika {
 
 
             /**
-             *  EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      Synchonized<String> n;                                                  // SAME
              *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
              *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
+             *      \endcode
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
+             *      \code
              *      Synchonized<String,Synchronized_Traits<SpinLock>>           n;
+             *      \endcode
              *
              *  or to allow timed locks
+             *      \code
              *      Synchonized<String,Synchronized_Traits<timed_recursive_mutex>>  n;
+             *      \endcode
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
@@ -151,7 +159,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * EXAMPLE:
+                 *  \par Example Usage
                  *      auto    lockedConfigData = fConfig_.GetReference ();
                  *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
                  *      fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);

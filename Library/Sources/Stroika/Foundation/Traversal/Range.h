@@ -413,9 +413,11 @@ namespace   Stroika {
                  *  Print a displayable rendition of the given range, using the argument funciton to format
                  *  the basic ElementType.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      Assert (Range<int> (3, 4).Format () == L"[3 ... 4)");
                  *      Assert (Range<int> (3, 4).Format ([] (int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
+                 *      \endcode
                  */
                 nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*TraitsType::Format*/) const;
 

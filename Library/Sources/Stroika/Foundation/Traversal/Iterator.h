@@ -184,20 +184,26 @@ namespace   Stroika {
              *  traverse any items added after the current traversal index, and will never traverse items
              *  added with an index before the current traversal index.
              *
-             *  For example:
+             *  \par Example Usage
+             *      \code
              *          for (Iterator<T> i = container.MakeIterator (); not i.Done (); i.Next ())  {
              *              f (i.Current ());
              *          }
+             *      \endcode
              *
              *  or:
+             *      \code
              *          for (Iterator<T> i = container.begin (); i != container.end (); ++i)  {
              *              f (*i);
              *          }
+             *      \endcode
              *
              *  or:
+             *      \code
              *          for (T i : container)  {
              *              f (i);
              *          }
+             *      \endcode
              *
              *  Key Differences between Stroika Iterators and STL Iterators:
              *

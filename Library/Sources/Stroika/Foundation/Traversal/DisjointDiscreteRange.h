@@ -94,10 +94,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Use Example:
+                 *  \par Example Usage
+                 *      \code
                  *      DisjointDiscreteRange<DiscreteRange<int>> t;
                  *      for (T i : t.Elements ()) {
                  *      }
+                 *      \endcode
                  *
                  *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
                  *  appear in the Elements() Iterable<T>.

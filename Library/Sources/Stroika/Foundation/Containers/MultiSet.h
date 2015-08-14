@@ -267,10 +267,12 @@ namespace   Stroika {
                  * This is like the MultiSet was a Bag<T>. If something is in there N times,
                  *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
                  *
-                 *  Use Example:
+                 *  \par Example Usage
+                 *      \code
                  *      MultiSet<T> t;
                  *      for (T i : t.Elements ()) {
                  *      }
+                 *      \endcode
                  *
                  *  Elements () makes no guarantess about whether or not modifications to the underlying MultiSet<> will
                  *  appear in the Elements() Iterable<T>.
@@ -281,10 +283,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Use Example:
+                 *  \par Example Usage
+                 *      \code
                  *      MultiSet<T> t;
                  *      for (T i : t.UniqueElements ()) {
                  *      }
+                 *      \endcode
                  *
                  *  UniqueElements () makes no guarantess about whether or not modifications to the underlying MultiSet<>
                  *  will appear in the UniqueElements() Iterable<T>.

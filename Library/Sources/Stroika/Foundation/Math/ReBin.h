@@ -188,14 +188,17 @@ namespace   Stroika {
                  *          The reason to NOT clear (null) the target in this variant is that the caller may want to accumulate sereral
                  *          ReBin sources into one.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2, 0, 0, 0 };
                  *      double  resultData[4];
                  *      ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
                  *      VerifyTestResult (NearlyEquals ((3 + (5 * ((7.0 / 4.0) - 1))), resultData[0]));
                  *      VerifyTestResult (0 == resultData[3]);
+                 *      \endcode
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2 };
                  *      double  resultData[8];
                  *      ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
@@ -203,8 +206,10 @@ namespace   Stroika {
                  *      VerifyTestResult (NearlyEquals (1.5, resultData[1]));
                  *      VerifyTestResult (NearlyEquals (2.5, resultData[2]));
                  *      VerifyTestResult (NearlyEquals (2.5, resultData[3]));
+                 *      \endcode
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      // Shifting by partial bin (1/10 of 4, or by 2/5)
                  *      uint32_t srcBinData[] = { 3, 5, 19, 2 };
                  *      double  resultData[4];
@@ -219,6 +224,7 @@ namespace   Stroika {
                  *      // SO... resultData[0] = 3 * (pct of src bucket 0) + 5 * (pct of src bucket 1)
                  *      //                     = 3 * (1.5/2.5) + 5 * (1/2.5) = 1.8 + 2
                  *      VerifyTestResult (NearlyEquals (3.8, resultData[0]));
+                 *      \endcode
                  *
                  *  @todo SHOW MORE COMPLICATED EXAMPLE BASED ON:...
                  *      struct SRC_DATA_DESCRIPTOR : BasicDataDescriptor<double, double> {

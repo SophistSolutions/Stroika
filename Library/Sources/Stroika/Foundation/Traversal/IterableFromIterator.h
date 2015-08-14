@@ -56,7 +56,8 @@ namespace   Stroika {
              *                                  then your subclass must explicitly override the
              *                                  Iterator<T>::IRep_::MakeIterator() method.
              *
-             *  EXAMPLE:
+             *  \par Example Usage
+             *      \code
              *      template    <typename T>
              *      struct   MyIterable_ : public Iterable<T> {
              *          struct   Rep : public IterableFromIterator<T>::_Rep {
@@ -79,6 +80,7 @@ namespace   Stroika {
              *          {
              *          }
              *      };
+             *      \endcode
              *
              *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will
              *  want to override to provide a more efficeint IsEmpty () and GetLength () implementation.

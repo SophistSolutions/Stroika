@@ -209,10 +209,12 @@ namespace   Stroika {
                  *  Note - we chose to return true in the case of addition because this is the case most likely
                  *  when a caller would want to take action.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      if (s.AddIf (n)) {
                  *          write_to_disk(n);
                  *      }
+                 *      \endcode
                  */
                 nonvirtual  bool    AddIf (T item);
 
@@ -239,10 +241,12 @@ namespace   Stroika {
                  *  Note - we chose to return true in the case of removeal because this is the case most likely
                  *  when a caller would want to take action.
                  *
-                 *  EXAMPLE:
+                 *  \par Example Usage
+                 *      \code
                  *      if (s.RemoveIf (n)) {
                  *          write_to_disk(n);
                  *      }
+                 *      \endcode
                  */
                 nonvirtual  bool    RemoveIf (T item);
 
