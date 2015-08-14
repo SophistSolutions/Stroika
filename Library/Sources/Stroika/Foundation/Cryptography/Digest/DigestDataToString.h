@@ -38,9 +38,11 @@ namespace   Stroika {
                  *  case, taking a data object and using operator << to insert it into a stream, and then
                  *  taking THAT and digesting it, and taking its result to compute a string of the hash (hex).
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
+                 *      \endcode
                  */
                 template    <typename DIGESTER, typename T, typename RESULT_TYPE = string>
                 RESULT_TYPE  DigestDataToString (const T& t);

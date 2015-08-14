@@ -213,7 +213,7 @@ namespace   Stroika {
              *          (timeTaken=3.4 seconds)
              *      \endcode
              *
-             *  EXAMPLE-USAGE:
+             *  \par Example Usage
              *      \code
              *      {
              *          TraceContextBumper ctx ("do_some_call");

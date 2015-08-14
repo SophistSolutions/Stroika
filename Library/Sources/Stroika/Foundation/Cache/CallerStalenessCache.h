@@ -79,11 +79,13 @@ namespace   Stroika {
                  *
                  *  \req backThisTime >= 0
                  *
-                 *  Example Usage:
+                 *  \par Example Usage
+                 *      \code
                  *      CallerStalenessCache<> cc;
                  *      if (Optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
                  *          // look key, but throw disregard if older than 5 seconds (from now)
                  *      }
+                 *      \endcode
                  */
                 static  TimeStampType   Ago (TimeStampType backThisTime);
 

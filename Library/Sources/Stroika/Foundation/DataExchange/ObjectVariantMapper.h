@@ -124,7 +124,8 @@ namespace   Stroika {
              *  serialized/ToObject
              *
              *
-             * EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      struct  SharedContactsConfig_ {
              *          bool                    fEnabled = false;
              *          DateTime                fLastSynchronizedAt;
@@ -155,8 +156,7 @@ namespace   Stroika {
              *      if (tmp.fEnabled) {
              *          ...
              *      }
-             *
-             *
+             *      \endcode
              */
             class   ObjectVariantMapper {
             public:

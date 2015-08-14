@@ -123,8 +123,10 @@ namespace   Stroika {
             // looping over reads/writes/selects etc).
             //
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      String name = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
+             *      \encode
              */
             class ProcessRunner {
             public:

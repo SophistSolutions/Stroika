@@ -52,18 +52,24 @@ namespace   Stroika {
                  *  RETURN_TYPE is typically uint32_t, uint64_t, or Result128BitType, Result128BitType etc,
                  *  but could in principle be anything.
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      string digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (s, e));
+                 *      \endcode
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (Streams::iostream::SerializeItemToBLOB (tmp)));
+                 *      \endcode
                  *
                  *  @see  DigestDataToString ()
-                 *  EXAMPLE USAGE:
+                 *
+                 *  \par Example Usage
+                 *      \code
                  *      SourceDefinition    tmp;    // some struct which defines ostream operator>>
                  *      string  digestStr = DigestDataToString<Digester<Algorithm::MD5>> (tmp);
-                 *
+                 *      \endcode
                  */
                 template    <typename ALGORITHM, typename RETURN_TYPE = typename Algorithm::DigesterDefaultTraitsForAlgorithm<ALGORITHM>::ReturnType>
                 struct  Digester {

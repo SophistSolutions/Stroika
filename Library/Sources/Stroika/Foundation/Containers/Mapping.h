@@ -337,8 +337,10 @@ namespace   Stroika {
                  *  \note   Java comparison
                  *          mapping.keySet.retainAll (collection);
                  *
-                 *  \note EXAMPLE USE:
+                 *  \par Example Usage
+                 *      \code
                  *      fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
+                 *      \endcode
                  */
                 template    <typename CONTAINER_OF_KEY_TYPE>
                 nonvirtual  void    RetainAll (const CONTAINER_OF_KEY_TYPE& items);

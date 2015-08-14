@@ -52,16 +52,20 @@ namespace   Stroika {
                  * \note    Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
                  *
                  *
-                 *  Example usage:
+                 *  \par Example Usage
+                 *      \code
                  *      VariantValue v (3);
                  *      JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream ("fred.json"));
+                 *      \endcode
                  *
-                 *  Example usage:
+                 *  \par Example Usage
+                 *      \code
                  *      Mapping<String, VariantValue> m;
                  *      m.Add (L"max-files", 10);
                  *      m.Add (L"max-processes", 3);
                  *      stringstream stringBuf;
                  *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamAdapterFromOStream (stringBuf));
+                 *      \endcode
                  */
                 class Writer : public DataExchange::Writer {
                 private:

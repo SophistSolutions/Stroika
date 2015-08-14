@@ -67,10 +67,12 @@ namespace   Stroika {
             /*
              *  Wait until the tickCount is >= the given value.
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      Time::DurationSeconds startedAt =   Time::GetTickCount ();
              *      do_someting_dont_know_how_long_it_will_take();
              *      Execution::SleepUntil (1.0 + startedAt);        // make sure do_someting_dont_know_how_long_it_will_take () took at least one second
+             *      \endcode
              *
              *  @see Sleep ();
              *

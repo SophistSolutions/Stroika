@@ -182,11 +182,13 @@ namespace   Stroika {
                     /**
                      *  This instrument produce a measurement of type kProcessMapMeasurement, whcih can be converted to ProcessMapType.
                      *
-                     *  EXAMPLE USAGE:
+                     *  \par Example Usage
+                     *      \code
                      *       for (Measurement m : ms.fMeasurements) {
                      *          if (m.fType == SystemPerformance::Instruments::Process::kProcessMapMeasurement) {
                      *              AccumulateMeasurement_Process_ (m);
                      *          }
+                     *      \endcode
                      */
                     extern  const   MeasurementType kProcessMapMeasurement;
 

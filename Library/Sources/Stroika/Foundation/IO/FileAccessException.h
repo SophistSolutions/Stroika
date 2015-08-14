@@ -51,11 +51,13 @@ namespace   Stroika {
              *
              *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      try {
              *          Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
              *      }
              *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
+             *      \endcode
              *
              *  \note   Design Note:
              *      We chose to use this try/catch approach rather than setting a thread_local variable with the filename
@@ -73,11 +75,13 @@ namespace   Stroika {
              *
              *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      try {
              *          Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
              *      }
              *      Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(fileName);
+             *      \endcode
              */
 #define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(USEFILENAME) \
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME,e.GetFileAccessMode())

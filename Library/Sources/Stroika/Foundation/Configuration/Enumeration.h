@@ -113,7 +113,8 @@ namespace   Stroika {
              *  \def Stroika_Enum_Names
              *
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      enum class Priority { a, b, c };
              *      const EnumNames<Priority>   Stroika_Enum_Names(Priority);
              *      const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = {
@@ -121,8 +122,10 @@ namespace   Stroika {
              *          { Priority::b, L"b" },
              *          { Priority::c, L"c" },
              *  };
+             *      \endcode
              *
-             *  OR
+             *  \par OR
+             *      \code
              *      constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
              *      {
              *          Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
@@ -134,6 +137,7 @@ namespace   Stroika {
              *              }
              *          }
              *      };
+             *      \endcode
              *
              */
 #define Stroika_Enum_Names(ENUMNAME)\

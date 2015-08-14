@@ -132,9 +132,11 @@ namespace   Stroika {
              *  call something taking int, and given how these types might be differnt sizes, it simplifies picking
              *  the right size to call write with.
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      size_t  nRequested  =   intoEnd - intoStart;
              *      return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
+             *      \endcode
              */
             template    <typename NEW_T, typename   T>
             NEW_T   PinToMaxForType (T initialValue);

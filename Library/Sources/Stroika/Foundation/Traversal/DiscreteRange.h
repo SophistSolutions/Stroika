@@ -144,14 +144,18 @@ namespace   Stroika {
 
 
             /**
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      vector<int> v = DiscreteRange<int> (1,10).As<vector<int>> ();
              *      // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+             *      \endcode
              *
-             *  OR:
+             *  \par OR
+             *      \code
              *      for (auto i : DiscreteRange<int> (1,10)) {
              *          ...i = 1..10
              *      }
+             *      \endcode
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
             class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {

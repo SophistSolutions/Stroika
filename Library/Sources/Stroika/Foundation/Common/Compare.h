@@ -175,8 +175,10 @@ namespace   Stroika {
 
 
             /**
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *        return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+             *      \endcode
              */
             template    <typename INTEGERLIKETYPE>
             int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)

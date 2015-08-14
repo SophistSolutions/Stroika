@@ -572,11 +572,14 @@ namespace   Stroika {
                  *  \req  (from <= to);
                  *  \req  (to <= GetLength ());     // for 2-arg variant
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      String tmp { L"This is good" };
                  *      Assert (tmp.SubString (5) == L"is good");
+                 *      \endcode
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      const String_Constant kTest_ { L"a=b" };
                  *      const String_Constant kLbl2LookFor_ { L"a=" };
                  *      size_t i = resultLine.Find (kLbl2LookFor_);
@@ -584,6 +587,7 @@ namespace   Stroika {
                  *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
                  *      }
                  *      Assert (tmp == L"b");
+                 *      \endcode
                  *
                  *  @see substr
                  *  @see SafeSubString
@@ -724,7 +728,8 @@ namespace   Stroika {
                  *
                  *  \req (startAt <= GetLength ());
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      const String_Constant kTest_ { L"a=b" };
                  *      const String_Constant kLbl2LookFor_ { L"a=" };
                  *      size_t i = kTest_.Find (kLbl2LookFor_);
@@ -732,6 +737,7 @@ namespace   Stroika {
                  *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
                  *      }
                  *      Assert (tmp == L"b");
+                 *      \endcode
                  *
                  *  @see FindEach ()
                  *  @see FindEachString ()
@@ -772,18 +778,22 @@ namespace   Stroika {
                 /**
                  *  @todo CLEANUP DOCS
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      const String_Constant kTest_    { L"a=b," };
                  *      const RegularExpression kRE_    { L"a=(.*)[, ]", RegularExpression::SyntaxType::eECMAScript };
                  *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
                  *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
                  *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
-                  *     Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+                 *      Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+                 *      \endcode
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      const String_Constant kTest_ { L"a=b, c=d" };
                  *      const RegularExpression kRE_ { L"(.)=(.)", RegularExpression::SyntaxType::eECMAScript };
                  *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+                 *      \endcode
                  *
                  */
                 nonvirtual  vector<RegularExpressionMatch>  FindEachMatch (const RegularExpression& regEx) const;
@@ -826,16 +836,20 @@ namespace   Stroika {
                  *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
                  *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
                  *
-                 *  EXAMPLE USE:
+                 *  \par Example Usage
+                 *      \code
                  *      String  t { L"ABC DEF G" };
                  *      Assert (t.Tokenize ().length () == 3);
                  *      Assert (t.Tokenize ()[1] == L"DEF");
+                 *      \endcode
                  *
-                 *  EXAMPLE USE:
+                 *  \par Example Usage
+                 *      \code
                  *      String  t { L"foo=   7" };
                  *      auto    tt = t.Tokenize (Set<Character> { '=' });
                  *      Assert (t.length () == 2);
                  *      Assert (t[1] == L"7");
+                 *      \endcode
                  *
                  *  @see Find
                  *
@@ -877,8 +891,10 @@ namespace   Stroika {
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
                  *
-                 *  Example Usage:
+                 *  \par Example Usage
+                 *      \code
                  *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
+                 *      \endcode
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
                 /**

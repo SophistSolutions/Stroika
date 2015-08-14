@@ -190,9 +190,11 @@ namespace   Stroika {
                          *  TBD how this will work - use with caution. Unclear if you call twice you get same stream. Want to evanutaly
                          *  support delayed read (so return before all data read.
                          *
-                         *  EXAMPLE USAGE:
+                         *  \par Example Usage
+                         *      \code
                          *      Response r = clientConn.GET ();
                          *      VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                         *      \endcode
                          */
                         nonvirtual  InputStream<Byte>     GetDataBinaryInputStream () const;
 
@@ -203,9 +205,11 @@ namespace   Stroika {
                          *      (as of 2014-10-08 - this is PLANED decoding, and not necesarily fully implemented).
                          *      @todo FIX to take into account codepage/etc from MIME content type!
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Response r = clientConn.GET ();
                          *      String answer = r.GetDataTextInputStream ().ReadAll ();
+                         *      \endcode
                          */
                         nonvirtual  InputStream<Characters::Character>       GetDataTextInputStream () const;
 
@@ -294,10 +298,12 @@ namespace   Stroika {
                         /*
                          *  This returns a response object, which possibly contains an http error.
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.Send (Request (...));
                          *      r.ThrowIfFailed ();
                          *      ...
+                         *      \endcode
                          */
                         nonvirtual  Response    Send (const Request& r);
 
@@ -305,10 +311,12 @@ namespace   Stroika {
                         /*
                          *  Simple wrapper on Send () for method GET
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.GET ();
                          *      r.ThrowIfFailed ();
                          *      ...
+                         *      \endcode
                          */
                         nonvirtual  Response    GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -316,10 +324,12 @@ namespace   Stroika {
                         /*
                          *  Simple wrapper on Send () for method POST
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.POST (data);
                          *      r.ThrowIfFailed ();
                          *      ...
+                         *      \endcode
                          */
                         nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -327,10 +337,12 @@ namespace   Stroika {
                         /*
                          *  Simple wrapper on Send () for method DELETE
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.Delete ();
                          *      r.ThrowIfFailed ();
                          *      ...
+                         *      \endcode
                          */
                         nonvirtual  Response    DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -338,10 +350,12 @@ namespace   Stroika {
                         /*
                          *  Simple wrapper on Send () for method PUT
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.PUT (data);
                          *      r.ThrowIfFailed ();
                          *      ...
+                         *      \endcode
                          */
                         nonvirtual  Response    PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -349,9 +363,11 @@ namespace   Stroika {
                         /*
                          *  Simple wrappers, with hardwired methods
                          *
-                         *  Example usage:
+                         *  \par Example Usage
+                         *      \code
                          *      Request r = conn.OPTIONS ();
                          *      r.ThrowIfFailed ();
+                         *      \endcode
                          */
                         nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 

@@ -127,8 +127,10 @@ namespace   Stroika {
              *          relevant only in case where the objects use significant resources, or where their lifetime has
              *          externally visible (e.g. lockfiles) impact.
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
+             *      \encode
              */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
             class   LRUCache : private Debug::AssertExternallySynchronizedLock {
@@ -194,7 +196,8 @@ namespace   Stroika {
                  *              return v;
                  *          }
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      struct Details_ {
                  *      };
                  *      using DetailsID = int;
@@ -210,6 +213,7 @@ namespace   Stroika {
                  *                  [] (DetailsID id) -> Details_ { return ReadDetailsFromFile_ (id); }
                  *              );
                  *      }
+                 *      \endcode
                  */
                 nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
 

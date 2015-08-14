@@ -505,12 +505,14 @@ namespace   Stroika {
                  *  Apply () also MAY be much faster than normal iteration (some simple tests
                  *  - around 2015-02-15 - suggest Apply  () is perhaps 10x faster than using an iterator).
                  *
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      unsigned int cnt { 0 };
                  *      s.Apply ([&cnt] (int i) {
                  *         cnt += i;
                  *      });
                  *      DbgTrace ("cnt=%d", cnt);
+                 *      \endcode
                  *
                  *  \note   Aliases:
                  *      o   Apply could have logically been called ForEach, and is nearly identical to
@@ -550,11 +552,13 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   The argument function (lambda) may
                  *              directly (or indirectly) access the Iterable<> being iterated over.
-                 *  EXAMPLE USAGE:
+                 *  \par Example Usage
+                 *      \code
                  *      bool IsAllWhitespace (String s) const
                  *      {
                  *          return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
                  *      }
+                 *      \endcode
                  */
                 nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
                 nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (const T& item)>& doToElement) const;

@@ -56,7 +56,8 @@ namespace   Stroika {
              *          size and shall occupy one or more bytes of storage. Base class subobjects may
              *          have zero size"
              *
-             *  EXAMPLE USAGE:
+             *  \par Example Usage
+             *      \code
              *      struct foo : private Debug::AssertExternallySynchronizedLock {
              *          inline  void    DoStuffOnData ()
              *          {
@@ -64,6 +65,7 @@ namespace   Stroika {
              *              // now do what you usually do for DOStuffOnData...
              *          }
              *      };
+             *      \endcode
              */
             class   AssertExternallySynchronizedLock {
             public:
