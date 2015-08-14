@@ -6,8 +6,6 @@
 
 require ("ScriptsLib/StringUtils.pl");
 
-############### NOTE - STILL NOT READY TO BE USED - DRAFT...
-
 use constant false => 0;
 use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
@@ -93,16 +91,6 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
-        print("	    --only-if-unconfigured                     /* DEPREACETED */\n");
-        print("	    --enable-assertions                        /* DEPREACETED: use --assertions enable */\n");
-        print("	    --disable-assertions                       /* DEPREACETED: use --assertions disable */\n");
-        print("	    --default-assertions                       /* DEPREACETED: use --assertions disable */\n");
-        print("	    --enable-GLIBCXX_DEBUG                     /* DEPREACETED: use --GLIBCXX_DEBUG enable  */\n");
-        print("	    --disable-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG disable */\n");
-        print("	    --default-GLIBCXX_DEBUG                    /* DEPREACETED: use --GLIBCXX_DEBUG default */\n");
-        print("	    --default-for-platform                     /* DEPREACETED */\n");
-        print("	    --enable-trace2file                        /* DEPREACETED: use --trace2file enaable */\n");
-        print("	    --disable-trace2file                       /* DEPREACETED: use --trace2file disable */\n");
 
 	exit (0);
 }
@@ -220,11 +208,6 @@ sub	ParseCommandLine_Platform_
 			$platform = $var;
 			SetDefaultForPlatform_ ();
 		}
-		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-			###SetDefaultForPlatform_ ();
-		}
 	}
 }
 
@@ -245,12 +228,7 @@ sub	ParseCommandLine_Remaining_
 {
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
-		if ((lc ($var) eq "-only-if-unconfigured") or (lc ($var) eq "--only-if-unconfigured")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-			###$forceWriteConfig = false;
-		}
-		elsif (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
+		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraCDefines[@useExtraCDefines] = $var;
@@ -259,18 +237,6 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
-		}
-		elsif ((lc ($var) eq "-enable-assertions") or (lc ($var) eq "--enable-assertions")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
-		elsif ((lc ($var) eq "-disable-assertions") or (lc ($var) eq "--disable-assertions")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
-		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
@@ -285,7 +251,7 @@ sub	ParseCommandLine_Remaining_
 				$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 			}
 			else  {
-                print ("UNRECOGNIZED enable-assertions ARG: $var\n");
+                print ("UNRECOGNIZED assertions ARG: $var\n");
                 DoHelp_ ();
 			}
 		}
@@ -305,18 +271,6 @@ sub	ParseCommandLine_Remaining_
                 print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
                 DoHelp_ ();
 			}
-		}
-		elsif ((lc ($var) eq "-enable-glibcxx_debug") or (lc ($var) eq "--enable-glibcxx_debug")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
-		elsif ((lc ($var) eq "-disable-glibcxx_debug") or (lc ($var) eq "--disable-glibcxx_debug")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
-		elsif ((lc ($var) eq "-default-glibcxx_debug") or (lc ($var) eq "--default-glibcxx_debug")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
 		}
 		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
 			$i++;
@@ -378,14 +332,6 @@ sub	ParseCommandLine_Remaining_
                 DoHelp_ ();
 			}
 		}
-		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
-		elsif ((lc ($var) eq "-disable-trace2file") or (lc ($var) eq "--disable-trace2file")) {
-            print ("DEPRECATED $var\n");
-            DoHelp_ ();
-		}
 		elsif ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
 			$STATIC_LINK_GCCRUNTIME = 1;
 		}
@@ -432,10 +378,6 @@ sub	ParseCommandLine_Remaining_
         else {
             if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
                 $i++;
-            }
-            elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-				print ("DEPRECATED $var\n");
-				DoHelp_ ();
             }
             elsif (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
                 $i++;
