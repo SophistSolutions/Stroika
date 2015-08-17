@@ -20,19 +20,34 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a102">v2.0a102x</a><br/>2015-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a102">v2.0a102</a><br/>2015-08-17</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>added new Debug/CompileTimeFlagChecker and used for qDebug qDefaultTracingOn ... etc</li>
+		<li>cleanup docs: doxygen - Example Usage and code declaration around bodies</li>
+		<li>Lose some deprecated options from make default-configuration</li>
+		<li>implemented Logger::FileAppender - and Logger::StreamAppender</li>
+		<li>Added FileOutputStream optional AppendFlag support</li>
+		<li>More varied build tweaks (project files) for MSVC2k15</li>
+		<li>use define qFeatureFlag_ATLMFC instead of qStroika_Framework_Led_SupportATL</li>
+		<li>use new Characters::Platform::Windows::SmartBSTR () instead of CComBStr - cuz VS Express has no ATL</li>
+		<li>Add optional parameter to InputStreamFromStdIStream<> for seekability (e.g. for cin)</li>
+		<li>Replace SLN file per sample with one big SLN file for all of them</li>
+		<li>Fixed small but serious bug with Mapping<>::RetainAll ()</li>
+		<li>JSON Writer - handling (document todo and added assert) for NAN values</li>
+		<li>Tweak openssl builds</li>
 		<li>Big/Subtle change in thread safety rules for container reps. They now use a recursive mutex, instead
 			of the former non-recursive mutex.
 
 			This then lifted the restriction on access the underlying iterable from inside an Apply() method.
 			(ContainerRepLockDataSupport_)
 		</li>
+		<li>Generate new performance regression test results (no interesting changes)</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro&&Community} (except some crashers in 64 bit code due to MSFT lib bug), gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind</li>
 	</ul>
 </td>
 </tr>
+
 
 
 
