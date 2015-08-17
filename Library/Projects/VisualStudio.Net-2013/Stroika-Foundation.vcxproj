@@ -1102,6 +1102,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
@@ -1446,6 +1447,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />

@@ -43,9 +43,14 @@ using   Execution::make_unique_lock;
 /*
  * TODO:
  *
- *      (o)     The buffering code here maybe now correct, but isn't simple/clear, so rewrite/improve...
+ *      @todo   The buffering code here maybe now correct, but isn't simple/clear, so rewrite/improve...
  *              -- LGP 2011-10-03
  */
+
+
+
+CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
+CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
 
 
 

@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "CompileTimeFlag.h"
 
 
 
@@ -303,8 +304,12 @@ namespace   Stroika {
 #define Verify(c)       (c)
 #endif
 
+            CompileTimeFlag_HEADER(qDebug, qDebug);
+
 
         }
     }
 }
+
+
 #endif  /*_Stroika_Foundation_Debug_Assertions_h_*/

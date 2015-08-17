@@ -15,6 +15,7 @@
 #include    "../Characters/SDKChar.h"
 #include    "../Characters/SDKString.h"
 #include    "../Configuration/Common.h"
+#include    "CompileTimeFlag.h"
 #include    "../Execution/ModuleInit.h"
 #include    "../Time/Realtime.h"
 
@@ -46,6 +47,7 @@ namespace   Stroika {
 #if     !defined (qTraceToFile)
 #error "qTraceToFile should normally be defined indirectly by StroikaConfig.h"
 #endif
+            CompileTimeFlag_HEADER(qTraceToFile, qTraceToFile);
 
 
             /**
@@ -71,6 +73,7 @@ namespace   Stroika {
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
 
+            CompileTimeFlag_HEADER(qDefaultTracingOn, qDefaultTracingOn);
 
             namespace Private_ {
                 struct  TraceModuleData_;

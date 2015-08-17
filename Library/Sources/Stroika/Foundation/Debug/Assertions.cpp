@@ -21,6 +21,13 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Debug;
 
 
+
+
+CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qDebug, qDebug);
+
+
+
+
 #if     qDebug
 
 namespace   {
