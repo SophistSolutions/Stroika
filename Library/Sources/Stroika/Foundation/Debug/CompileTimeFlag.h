@@ -67,9 +67,9 @@ namespace   Stroika {
             /**
              */
 #define CompileTimeFlag_HEADER(NAME,VALUE)\
-    CompileTimeCheck_HEADER_INTERNAL_(##NAME,VALUE);
+    CompileTimeCheck_HEADER_INTERNAL_(##NAME,VALUE)
 #define CompileTimeCheck_HEADER_INTERNAL_(NAME,VALUE)\
-    extern Stroika::Foundation::Debug::CompileTimeFlag::HiddenValueType NAME##VALUE;\
+    extern  Stroika::Foundation::Debug::CompileTimeFlag::HiddenValueType NAME##VALUE;\
     namespace {\
         struct  tester_##NAME {\
             tester_##NAME () {\
