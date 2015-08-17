@@ -15,6 +15,8 @@
  *
  *      @todo   Did super crudy implementation: try to redo with templates...
  *
+ *      @todo   Make sure not actually generating code in release builds
+ *
  */
 
 namespace   Stroika {
@@ -71,13 +73,13 @@ namespace   Stroika {
 #define CompileTimeCheck_HEADER_INTERNAL_(NAME,VALUE)\
     extern  Stroika::Foundation::Debug::CompileTimeFlag::HiddenValueType NAME##VALUE;\
     namespace {\
-        struct  tester_##NAME {\
-            tester_##NAME () {\
+        struct  tester_##NAME##_ {\
+            tester_##NAME##_ () {\
                 using   Stroika::Foundation::Debug::CompileTimeFlag;\
                 CompileTimeFlag::HiddenValueType a =  NAME##VALUE;\
-            }\
+            };\
         };\
-        tester_##NAME t_##NAME##_;\
+        tester_##NAME##_ t_##NAME##_;\
     }\
      
 
