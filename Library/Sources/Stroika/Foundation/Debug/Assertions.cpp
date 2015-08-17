@@ -23,7 +23,7 @@ using   namespace   Stroika::Foundation::Debug;
 
 
 
-CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qDebug, qDebug);
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qDebug, qDebug);
 
 
 

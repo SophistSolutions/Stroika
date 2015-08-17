@@ -49,8 +49,8 @@ using   Execution::make_unique_lock;
 
 
 
-CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
-CompileTimeFlag_SOURCE(Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
 
 
 

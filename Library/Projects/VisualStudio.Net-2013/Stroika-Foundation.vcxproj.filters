@@ -1692,7 +1692,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\SmartBSTR.h">
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlag.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2589,7 +2589,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.inl">
       <Filter>Sources\Streams\iostream</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlag.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl">
       <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
