@@ -67,7 +67,7 @@ namespace   Stroika {
             /**
              */
 #define CompileTimeFlag_HEADER(NAME,VALUE)\
-    CompileTimeCheck_HEADER_INTERNAL_(##NAME,VALUE)
+    CompileTimeCheck_HEADER_INTERNAL_(CompileTimeCheck_##NAME,VALUE)
 #define CompileTimeCheck_HEADER_INTERNAL_(NAME,VALUE)\
     extern  Stroika::Foundation::Debug::CompileTimeFlag::HiddenValueType NAME##VALUE;\
     namespace {\
@@ -84,7 +84,7 @@ namespace   Stroika {
             /**
              */
 #define CompileTimeFlag_SOURCE(NS_PREFIX,NAME,VALUE)\
-    CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,##NAME,VALUE)
+    CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,CompileTimeCheck_##NAME,VALUE)
 #define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,NAME,VALUE)\
     Stroika::Foundation::Debug::CompileTimeFlag::HiddenValueType    NS_PREFIX :: NAME##VALUE = 1;
 
