@@ -7,6 +7,8 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include	<mutex>
+
 #include    "../../Configuration/Common.h"
 
 #include    "../Common.h"
