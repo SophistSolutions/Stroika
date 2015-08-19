@@ -600,7 +600,7 @@ if ($forceRecreate) {
     system ("rm -f $configFileCName $configFileMakeName");
 }
 
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
     MakeUnixDirs ();
 }
 

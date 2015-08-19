@@ -99,7 +99,7 @@ sub	DoHelp_
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
-	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
 		$PROJECTPLATFORMSUBDIR = 'Linux';
 	}
 	if ("$^O" eq "cygwin") {
@@ -143,7 +143,7 @@ sub	SetInitialDefaults_
 
 	}
 
-	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 	if ("$^O" eq "cygwin") {
