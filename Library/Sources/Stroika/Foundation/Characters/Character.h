@@ -137,7 +137,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Character   ToUpperCase () const;
 
-
             public:
                 /**
                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
