@@ -600,9 +600,8 @@ if ($forceRecreate) {
     system ("rm -f $configFileCName $configFileMakeName");
 }
 
-if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
-    MakeUnixDirs ();
-}
+#Really only for UNIX (for now) but harmless on WinDoze
+MakeUnixDirs ();
 
 unless (-e $intermediateFiles) {
     mkdir ($intermediateFiles);
