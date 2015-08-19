@@ -135,6 +135,8 @@
 @CONFIGVAR:     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
 @DESCRIPTION:   <p>Using tmput on Release, and 64bit builds core dumps. Just started. Not sure why.
             But using narrow string succeeds so workaround.
+
+			Crashes in Test46 (performance regtest)
             </p>
 
     APPEARS FIXED IN MSVC2k15 RTM
@@ -142,7 +144,9 @@
 #ifndef qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update4_FULLVER_)
+// Still broken in _MS_VS_2k13_Update4_FULLVER_
+// Still broken in _MS_VS_2k13_Update5_FULLVER_
+#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     0
 #endif
