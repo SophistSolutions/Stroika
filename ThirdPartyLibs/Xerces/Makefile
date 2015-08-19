@@ -75,7 +75,7 @@ clobber:
 
 $(ZIPPEDFILE):
 	@echo -n "      ..."
-	wget --quiet --tries=10 --no-check-certificate -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
+	wget --quiet --tries=10 -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
 
 
 doCreate:	$(ZIPPEDFILE)
