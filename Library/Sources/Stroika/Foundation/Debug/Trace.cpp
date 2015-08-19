@@ -370,16 +370,21 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
 }
 
+namespace {
+    inline  Time::DurationSecondsType   GetStartOfEpoch_ ()
+    {
+        // factored out of template Emitter::DoEmitMessage_ so we have ONE start of epoch - instead of one per type CHARTYPE!
+        static  Time::DurationSecondsType   sStartOfTime_    =   Time::GetTickCount (); // always set just once, and threadsafe
+        return sStartOfTime_;
+    }
+}
+
 template    <typename   CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 {
     auto    critSec { make_unique_lock (GetCritSection_ ()) };
     FlushBufferedCharacters_ ();
-    static  Time::DurationSecondsType   sStartOfTime    =   0.0;
-    if (sStartOfTime == 0.0) {
-        sStartOfTime = Time::GetTickCount ();
-    }
-    Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - sStartOfTime;
+    Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - GetStartOfEpoch_ ();
     {
         char    buf[1024];
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
@@ -424,7 +429,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         Assert ((e - p) > static_cast<ptrdiff_t> (bufferLastNChars));
         BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
         DoEmit_ (p, e - bufferLastNChars);
-        fLastNCharBuf_WriteTickcount_ = curRelativeTime + sStartOfTime;
+        fLastNCharBuf_WriteTickcount_ = curRelativeTime + GetStartOfEpoch_ ();
         fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
     }
     return fLastNCharBuf_Token_;
