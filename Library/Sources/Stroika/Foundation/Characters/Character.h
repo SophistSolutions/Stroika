@@ -34,18 +34,6 @@
 
 
 
-/*
-@CONFIGVAR:     qNBytesPerWCharT
-@DESCRIPTION:   <p>2 or 4</p>
-*/
-#if     !defined (qNBytesPerWCharT)
-#error "qNBytesPerWCharT should normally be defined indirectly by StroikaConfig.h"
-#endif
-#if     qNBytesPerWCharT != 2 && qNBytesPerWCharT != 4
-#error "qNBytesPerWCharT invalid value"
-#endif
-
-
 
 namespace   Stroika {
     namespace   Foundation {

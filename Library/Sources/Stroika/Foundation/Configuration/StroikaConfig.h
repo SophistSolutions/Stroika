@@ -21,7 +21,6 @@
 //Out of alphabetic order because other defaults depend on qDebug
 #include    "Private/Defaults_Debug_Assertions_.h"
 
-#include    "Private/Defaults_Characters_Character_.h"
 #include    "Private/Defaults_Characters_StringUtils_.h"
 #include    "Private/Defaults_Characters_TChar_.h"
 #include    "Private/Defaults_CompilerAndStdLib_.h"
