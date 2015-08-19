@@ -864,9 +864,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h">
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
