@@ -63,21 +63,21 @@ namespace   Stroika {
             }
             inline  void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
             {
-                static_assert ((sizeof (char16_t) == sizeof (wchar_t)) or (sizeof (char32_t) == sizeof (wchar_t)), "(sizeof (char16_t) == sizeof (wchar_t)) or (sizeof (char32_t) == sizeof (wchar_t))");
-                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+                if (sizeof (wchar_t) == sizeof (char16_t)) {
                     MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
                 }
-                else if (sizeof (char32_t) == sizeof (wchar_t)) {
+                else if (sizeof (wchar_t) == sizeof (char32_t)) {
                     MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char32_t*> (outChars), outCharCnt);
                 }
             }
             inline  void    UTF8Converter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
             {
-                static_assert ((sizeof (char16_t) == sizeof (wchar_t)) or (sizeof (char32_t) == sizeof (wchar_t)), "(sizeof (char16_t) == sizeof (wchar_t)) or (sizeof (char32_t) == sizeof (wchar_t))");
-                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+                if (sizeof (wchar_t) == sizeof (char16_t)) {
                     MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
                 }
-                else if (sizeof (char32_t) == sizeof (wchar_t)) {
+                else if (sizeof (wchar_t) == sizeof (char32_t)) {
                     MapFromUNICODE (reinterpret_cast<const char32_t*> (inChars), inCharCnt, outChars, outCharCnt);
                 }
             }
@@ -116,23 +116,23 @@ namespace   Stroika {
             }
             inline  void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const
             {
-#if     qNBytesPerWCharT == 2
-                MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
-#elif   qNBytesPerWCharT == 4
-                MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char32_t*> (outChars), outCharCnt);
-#else
-                AssertNotReached ();
-#endif
+                static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+                if (sizeof (wchar_t) == sizeof (char16_t)) {
+                    MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char16_t*> (outChars), outCharCnt);
+                }
+                else if (sizeof (wchar_t) == sizeof (char32_t)) {
+                    MapToUNICODE (inMBChars, inMBCharCnt, reinterpret_cast<char32_t*> (outChars), outCharCnt);
+                }
             }
             inline  void    CodePageConverter::MapFromUNICODE (const wchar_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
             {
-#if     qNBytesPerWCharT == 2
-                MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
-#elif   qNBytesPerWCharT == 4
-                MapFromUNICODE (reinterpret_cast<const char32_t*> (inChars), inCharCnt, outChars, outCharCnt);
-#else
-                AssertNotReached ();
-#endif
+                static_assert ((sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t)), "(sizeof (wchar_t) == sizeof (char16_t)) or (sizeof (wchar_t) == sizeof (char32_t))");
+                if (sizeof (wchar_t) == sizeof (char16_t)) {
+                    MapFromUNICODE (reinterpret_cast<const char16_t*> (inChars), inCharCnt, outChars, outCharCnt);
+                }
+                else if (sizeof (wchar_t) == sizeof (char32_t)) {
+                    MapFromUNICODE (reinterpret_cast<const char32_t*> (inChars), inCharCnt, outChars, outCharCnt);
+                }
             }
 
 
