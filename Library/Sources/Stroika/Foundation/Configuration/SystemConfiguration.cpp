@@ -476,6 +476,16 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 DbgTrace ("Failure reading /etc/redhat-release");
             }
         }
+        if (tmp.fShortPrettyName.empty () and tmp.fTokenName == L"aix")
+        {
+            try {
+                tmp.fShortPrettyName = L"AIX";
+                tmp.fPrettyNameWithMajorVersion =  L"AIX " + Execution::ProcessRunner (L"oslevel").Run (String ()).Trim ();
+            }
+            catch (...) {
+                DbgTrace ("Failure reading oslevel");
+            }
+        }
         if (tmp.fShortPrettyName.empty ())
         {
             tmp.fShortPrettyName = tmp.fTokenName;
