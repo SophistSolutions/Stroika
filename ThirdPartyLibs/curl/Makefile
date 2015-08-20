@@ -56,7 +56,7 @@ doCreate:	$(ZIPPEDFILE)
 		echo "      ...CURRENT dir already exists";\
 	else\
 		echo "      ...Creating $(TRGDIR)...";\
-		tar xf $(ZIPPEDFILE) --no-same-owner;\
+		gunzip $(ZIPPEDFILE) --stdout | tar xf - --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 	fi
 

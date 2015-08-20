@@ -84,7 +84,7 @@ doCreate:	$(ZIPPEDFILE)
 	else\
 		echo "      ...Creating $(TRGDIR)...";\
 		rm -rf $(USE_DIRNAME) CURRENT;\
-		tar xf $(ZIPPEDFILE) --no-same-owner;\
+		gunzip --stdout $(ZIPPEDFILE) | tar xf - --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 		#ln -s CURRENT $(SLINKDIRNAME);\
 		echo "      ...Patching Xerces...";\
