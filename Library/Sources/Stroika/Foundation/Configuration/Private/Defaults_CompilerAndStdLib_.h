@@ -136,7 +136,7 @@
 @DESCRIPTION:   <p>Using tmput on Release, and 64bit builds core dumps. Just started. Not sure why.
             But using narrow string succeeds so workaround.
 
-			Crashes in Test46 (performance regtest)
+            Crashes in Test46 (performance regtest)
             </p>
 
     APPEARS FIXED IN MSVC2k15 RTM
