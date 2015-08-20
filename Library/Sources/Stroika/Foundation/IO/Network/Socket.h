@@ -86,6 +86,8 @@ namespace   Stroika {
                     /**
                      *  Note - socket is CLOSED (filesystem close for now) in DTOR
                      *
+                     *  \note copying a Socket just copies the 'smart pointer' to the underlying OS socket object.
+                     *
                      *  TODO:
                      *          We will need an abstract Socket object, and maybe have  it refernce
                      *          counted so close can happen when last refernce goes
