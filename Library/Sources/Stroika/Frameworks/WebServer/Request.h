@@ -20,6 +20,9 @@
 /*
  * TODO:
  *      @todo   Redo fHeaders as Stroika Association (not Mapping, cuz things like Set-Cookie headers can appear more than once).
+ *
+ *      @todo   Think out if these should be Copy By Value or reference, and about thread safety. For now avoid by saying not
+ *              copyable, but still mus tthink out thread safety
  */
 
 namespace   Stroika {
