@@ -111,7 +111,7 @@ doCreate:	$(ZIPEDFILE)
 		echo "      ...CURRENT dir already exists";\
 	else\
 		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		gunzip --stdout $(ZIPEDFILE) | tar xf - --no-same-owner;\
+		tar xf $(ZIPEDFILE) --no-same-owner;\
 		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
 		$(MAKE) --no-print-directory doPatch;\
