@@ -22,6 +22,12 @@
 /**
  *  TODO:
  *
+ *      @todo   Current IMPL throws on UNIX if bad status but doesnt on WINDoze. FIX TO THROW ON BOTH, and throw
+ *              useful value, and be clear in docs and behavior!!!
+ *
+ *              However, EVEN IF WE THROW BAD VALUE, still try to read all output from process first, so that is available
+ *              in the output stream object (like printout to stderr!!!)
+ *
  *      @todo   Redo POSIX impl using vfork () or http://linux.die.net/man/3/posix_spawn
  *
  *      @todo   Need EXCEPTION TYPE that includes PROCESS_STATUS and throw that instead of current exception
@@ -178,7 +184,7 @@ namespace   Stroika {
                 /**
                  *  If empty, stderr will not be captured (redirected to /dev/null)
                  */
-                nonvirtual  Streams::OutputStream<Byte>   GetStdErr () const;
+                nonvirtual  Streams::OutputStream<Byte>     GetStdErr () const;
                 nonvirtual  void                            SetStdErr (const Streams::OutputStream<Byte>& err);
 
             public:
