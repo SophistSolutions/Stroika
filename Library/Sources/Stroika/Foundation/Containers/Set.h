@@ -212,7 +212,7 @@ namespace   Stroika {
                  *  \par Example Usage
                  *      \code
                  *      if (s.AddIf (n)) {
-                 *          write_to_disk(n);
+                 *          write_to_disk (n);
                  *      }
                  *      \endcode
                  */
