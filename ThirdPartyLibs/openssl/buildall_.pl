@@ -12,13 +12,18 @@ require ("../../ScriptsLib/StringUtils.pl");
 #print "PATH=";
 #print (" $ENV{'PATH'};");
 
-# these environment flags appear to confuse nmake
-delete $ENV{'MAKEFLAGS'};
-delete $ENV{'MAKELEVEL'};
-delete $ENV{'MAKE_TERMERR'};
-delete $ENV{'MAKE_TERMOUT'};
-delete $ENV{'SHLVL'};
-delete $ENV{'MFLAGS'};
+my $projectPlatformSubdir = GetProjectPlatformSubdir();
+
+
+if (index($projectPlatformSubdir, "VisualStudio") != -1) {
+	# these environment flags appear to confuse nmake
+	delete $ENV{'MAKEFLAGS'};
+	delete $ENV{'MAKELEVEL'};
+	delete $ENV{'MAKE_TERMERR'};
+	delete $ENV{'MAKE_TERMOUT'};
+	delete $ENV{'SHLVL'};
+	delete $ENV{'MFLAGS'};
+}
 
 
 sub	CopyBuilds2Out
@@ -36,7 +41,7 @@ sub	CopyBuilds2Out
 
 
 #REM - only reconfigure if we just did the extract
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	unless (-e "CURRENT/CONFIG.OUT") {
 		print ("Creating CURRENT/CONFIG.OUT - new configuration\n");
 		system ("cd CURRENT ; ./config -no-shared 2>&1  > CONFIG.OUT");
@@ -52,7 +57,7 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	system ("make --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>& 1");
 	print ("\n");
 }
-else {if ("$^O" eq "cygwin") {
+else {
 	if ((-e 'CURRENT/Builds/Debug32') && (-e 'CURRENT/Builds/Release32')) {
 		print (" ...Skipping 32-bit build (already built)\n");
 	}
@@ -171,4 +176,4 @@ else {if ("$^O" eq "cygwin") {
 		CopyBuilds2Out ("Release64", "out32", "tmp32");
 		CopyBuilds2Out ("Debug64", "out32.dbg", "tmp32.dbg");
 	}
-}}
+}
