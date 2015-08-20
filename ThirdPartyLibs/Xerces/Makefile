@@ -24,18 +24,18 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/xerces-c_static_3D.lib				\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp			\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib	\
 	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp	\
 	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
 	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/xerces-c_static_3D.lib				\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
 	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp			\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
 endif
