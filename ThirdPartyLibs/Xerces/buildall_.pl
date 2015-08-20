@@ -9,19 +9,12 @@ if ($BLD_TRG eq '') {
 }
 
 
+
+
 my $BASENAME	=	"xerces-c-3.1.1";
 
 my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
-my $SLINKDIRNAME	=		$BASENAME;
-
-# DoCreateSymLink - this isn't currently used, and doesn't work well with windows (sets sys file attribute which casues
-# DOS delete file issues) - and slink doesnt really work except in cygwin tools
-my $DoCreateSymLink = 0;
-
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
-	$DoCreateSymLink = 1;
-}
 
 
 #print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
@@ -44,6 +37,11 @@ if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
 require "../../ScriptsLib/ConfigurationReader.pl";
 
 
+
+my $projectPlatformSubdir = GetProjectPlatformSubdir();
+
+print ($projectPlatformSubdir);
+
 # Only extract if its not already extracted. Make clobber if its partly 
 # extracted
 if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
@@ -55,9 +53,6 @@ if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
 	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 	system ("mv $EXTRACTED_DIRNAME CURRENT");
 	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	if ($DoCreateSymLink) {
-		system ("ln -s CURRENT $SLINKDIRNAME");
-	}
 	
 	print ("Patching Xerces...\n");
 	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
@@ -105,7 +100,7 @@ sub BuildVCDotNet
 
 
 
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	if (-e "CURRENT/config.status") {
 		print ("No need to re-Configure Xerces\n");
 	}
@@ -118,7 +113,7 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 }
 
 print ("Building Xerces...\n");
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	system ("make --directory CURRENT --no-print-directory -s all");
 }
 else {
