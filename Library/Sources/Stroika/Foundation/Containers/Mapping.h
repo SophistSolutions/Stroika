@@ -27,6 +27,12 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   Consider adding optional way to add that ASSERTS (or throws?) AddIfNotPresnet()??? --
+ *              if the value not presnet.
+ *
+ *              See Set<>::AddIf()
+ *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
