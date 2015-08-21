@@ -88,10 +88,13 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
 SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootInformation ()
 {
     SystemConfiguration::BootInformation    result;
-#if     qPlatform_POSIX
+#if     qPlatform_Linux
     struct  sysinfo     info;
     ::sysinfo (&info);
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
+#elif   qPlatform_POSIX
+    // COULD read /proc/uptime - but not available on AIX...
+    AssertNotImplemented ();   // but leave out crasher til I test a bit more
 #elif   qPlatform_Windows
     // ::GetTickCount () is defined to return #seconds since boot
 #if     _WIN32_WINNT >= 0x0600
