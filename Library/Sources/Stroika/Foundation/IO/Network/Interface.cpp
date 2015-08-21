@@ -7,17 +7,15 @@
 #include    <random>
 
 #if     qPlatform_POSIX
+//@todo see how many of these includes are needed
 #include    <unistd.h>
-#include    <sys/socket.h>
-#include    <sys/ioctl.h>
+#include    <arpa/inet.h>
 #include    <net/if.h>
 #include    <netinet/in.h>
 #include    <netdb.h>
-#include    <arpa/inet.h>
-#include    <netinet/in.h>
+#include    <sys/socket.h>
+#include    <sys/ioctl.h>
 #if     qPlatform_Linux
-#include    <linux/netlink.h>
-#include    <linux/rtnetlink.h>
 #include    <linux/ethtool.h>
 #include    <linux/sockios.h>
 #endif
