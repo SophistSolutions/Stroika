@@ -476,7 +476,7 @@ namespace {
                                 return ::time (NULL) - info.uptime;
                             } ();
 #else
-                            static  const time_t    kUNIXEpochTimeOfBoot_   =   Configuration::GetSystemConfiguration_BootInformation ().As<time_t> ();
+                            static  const time_t    kUNIXEpochTimeOfBoot_   =   Configuration::GetSystemConfiguration_BootInformation ().fBootedAt.As<time_t> ();
 #endif
                             //starttime %llu (was %lu before Linux 2.6)
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
