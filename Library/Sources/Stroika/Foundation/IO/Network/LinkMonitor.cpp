@@ -14,8 +14,10 @@
 #include    <netdb.h>
 #include    <arpa/inet.h>
 #include    <netinet/in.h>
+#if     qPlatform_Linux
 #include    <linux/netlink.h>
 #include    <linux/rtnetlink.h>
+#endif
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
@@ -315,8 +317,7 @@ struct  LinkMonitor::Rep_ {
         if (fMonitorHandler_ == INVALID_HANDLE_VALUE) {
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::NotifyUnicastIpAddressChange (AF_INET, &CB_, this, FALSE, &fMonitorHandler_));
         }
-#elif   qPlatform_POSIX
-        /// WRONG - not really if posix - if LINUX - must have sep define for LINUX or at least for NETLINK!!!
+#elif   qPlatform_Linux
         if (fMonitorThread_.GetStatus () == Execution::Thread::Status::eNull) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread ([this] () {
