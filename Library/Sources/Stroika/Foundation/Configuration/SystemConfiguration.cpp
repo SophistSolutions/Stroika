@@ -508,7 +508,15 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         // Quite uncertain - this is not a good reference
         //      --LGP 2014-10-18
         //
+#if     defined ( _POSIX_V6_LP64_OFF64)
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
+#elif   defined ( _V6_LP64_OFF64)
+        //AIX
+        tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _V6_LP64_OFF64 ? 64 : 32;
+#else
+        // could be a C+++ const - let it not compile if not available, and we'll dig...
+        tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
+#endif
 #elif   qPlatform_Windows
         tmp.fTokenName = String_Constant (L"Windows");
         /*
