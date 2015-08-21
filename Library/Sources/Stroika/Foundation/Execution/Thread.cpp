@@ -34,6 +34,8 @@
 #include    "Thread.h"
 
 
+using   std::thread;    // disambiguate for AIX7.1
+
 
 using   namespace   Stroika::Foundation;
 
