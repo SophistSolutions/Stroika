@@ -16,10 +16,12 @@
 #include    <netdb.h>
 #include    <arpa/inet.h>
 #include    <netinet/in.h>
+#if     qPlatform_Linux
 #include    <linux/netlink.h>
 #include    <linux/rtnetlink.h>
 #include    <linux/ethtool.h>
 #include    <linux/sockios.h>
+#endif
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
