@@ -1,0 +1,19 @@
+*** configure.ORIG	Wed Mar 18 08:37:53 2015
+--- configure	Fri Aug 21 14:27:16 2015
+***************
+*** 3970,3976 ****
+      else
+  	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+  $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+! as_fn_error $? "cannot run C++ compiled programs.
+  If you meant to cross compile, use \`--host'.
+  See \`config.log' for more details" "$LINENO" 5; }
+      fi
+--- 3970,3976 ----
+      else
+  	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+  $as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+! as_echo $? "cannot run C++ compiled programs.
+  If you meant to cross compile, use \`--host'.
+  See \`config.log' for more details" "$LINENO" 5; }
+      fi
