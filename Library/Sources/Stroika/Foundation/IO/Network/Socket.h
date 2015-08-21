@@ -7,8 +7,11 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qPlatform_POSIX
-#include    <sys/types.h>
+//#include    <sys/types.h>
 #include    <sys/socket.h>
+#endif
+#if     defined (RAW)
+#undef  RAW                 // defined in AIX 7.1 ioctl.h, included by sys/socket.h
 #endif
 
 #include    "../../Characters/String.h"
