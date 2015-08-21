@@ -183,14 +183,14 @@ namespace   Stroika {
                 /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
                  */
-                using   IDType              =   thread::id;
+                using   IDType              =   std::thread::id;
 
             public:
                 /**
                  *  Thread::native_handle is the type of the underlying handle to a native thread
                  *  which can allow for using platform APIs.
                  */
-                using   NativeHandleType    =   thread::native_handle_type;
+                using   NativeHandleType    =   std::thread::native_handle_type;
 
             public:
                 enum    AutoStartFlag { eAutoStart };
