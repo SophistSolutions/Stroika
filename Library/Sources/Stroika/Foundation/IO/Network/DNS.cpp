@@ -7,7 +7,6 @@
 
 #if     qPlatform_POSIX
 #include    <unistd.h>
-#include    <sys/types.h>
 #include    <sys/socket.h>
 #include    <netdb.h>
 #elif   qPlatform_Windows
