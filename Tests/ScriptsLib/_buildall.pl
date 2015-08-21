@@ -11,6 +11,7 @@ sub signal_handler {
 }
 
 my $activeConfig = GetActiveConfigurationName ();
+my $projectPlatformSubdir = GetProjectPlatformSubdir();
 
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
@@ -25,7 +26,7 @@ print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...\n");
 my $useBld = lc ($BLD_TRG);
 
 
-if ("$^O" eq "linux") {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	if ($useBld eq "build") {
 		$useBld = "all";
 	}
@@ -62,7 +63,7 @@ else {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
-    	my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+    	my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 	chdir ($useProjectDir);
 		system ("perl BuildProjectsFiles.pl");
 		foreach $tst (GetAllTests ()) {
