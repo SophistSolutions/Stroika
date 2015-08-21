@@ -179,6 +179,9 @@ sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Linux') {
 		$COMPILER_DRIVER = "g++";
+		if ("$^O" eq "aix") {
+			$COMPILER_DRIVER = "g++ -pthread";
+		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++-4.6";
