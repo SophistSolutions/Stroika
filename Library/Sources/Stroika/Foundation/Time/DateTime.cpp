@@ -178,19 +178,28 @@ DateTime::DateTime (const tm& tmTime, Timezone tz)
 }
 
 #if     qPlatform_POSIX
+DateTime::DateTime (const timeval& tmTime, Timezone tz)
+    : fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
+{
+    time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
+    struct  tm  tmTimeData;
+    memset (&tmTimeData, 0, sizeof (tmTimeData));
+    (void)::gmtime_r  (&unixTime, &tmTimeData);
+    fDate_ = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
+    fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
+}
+
 DateTime::DateTime (const timespec& tmTime, Timezone tz)
     : fTimezone_ (tz)
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_nsec because we currently don't support fractional seconds in DateTime
+    time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
     struct  tm  tmTimeData;
     memset (&tmTimeData, 0, sizeof (tmTimeData));
-#if qPlatform_Windows
-    (void)::_gmtime64_s (&tmTimeData, &unixTime);
-#else
     (void)::gmtime_r  (&unixTime, &tmTimeData);
-#endif
     fDate_ = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
 }

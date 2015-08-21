@@ -170,8 +170,10 @@ namespace   Stroika {
                  */
                 explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown);
 
+
 #if     qPlatform_POSIX
             public:
+                explicit DateTime (const timeval& tmTime, Timezone tz = Timezone::eUnknown);
                 explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown);
 #endif
 
