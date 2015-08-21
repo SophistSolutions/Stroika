@@ -144,7 +144,7 @@
 // LINUX support
 #if     !defined (qPlatform_Linux)
 // not sure
-#if     qPlatform_Linux && defined (__linux)
+#if     qPlatform_POSIX && defined (__linux)
 #define qPlatform_Linux 1
 #else
 #define qPlatform_Linux 0

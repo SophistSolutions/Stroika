@@ -88,12 +88,12 @@ const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(
 
 
 
-#if     qPlatform_POSIX
+#if     qPlatform_Linux
 // Hack for centos5 support:
 //      Overload with linux version so other one wins, but this gets called if other doesnt exist
 //      TRY --LGP 2015-05-19
 template    <typename HACK = int>
-static __inline__ __u32 ethtool_cmd_speed(const struct ethtool_cmd* ep, HACK i = 0)
+static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i = 0)
 {
     //return (ep->speed_hi << 16) | ep->speed;
     return ep->speed;
@@ -153,6 +153,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
 
+#if     qPlatform_Linux
         {
             auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
                 struct ifreq ifreq;
@@ -189,6 +190,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fTransmitSpeedBaud = getSpeed (sd, ifreqs[i].ifr_name);
             newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
         }
+#endif
 
         {
             Containers::Set<Interface::Status>  status;
