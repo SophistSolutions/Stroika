@@ -235,7 +235,8 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
         // @todo
         return printMacAddr (pi->Address);
     }
-#elif qPlatform_POSIX
+#elif qPlatform_Linux
+    // This counts on SIOCGIFHWADDR, which appears to be Linux specific
     Socket s = Socket (Socket::SocketKind::DGRAM);
 
     ifconf   ifc;
@@ -257,6 +258,8 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
             }
         }
     }
+#else
+    AssertNotImplemented ();
 #endif
     return String ();
 }
