@@ -17,6 +17,7 @@
 #include    "../Characters/SDKString.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/String2Float.h"
 #include    "../Characters/String2Int.h"
 #include    "../Containers/Set.h"
 #if     qPlatform_POSIX
@@ -26,6 +27,7 @@
 #endif
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../IO/FileSystem/FileInputStream.h"
+#include    "../IO/FileSystem/FileSystem.h"
 #include    "../Streams/MemoryStream.h"
 #include    "../Streams/TextReader.h"
 
@@ -126,10 +128,10 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              */
             Execution::Finally cleanup ([] () {
                 ::endutxent ();
-            };
-            setutent ();
-            for (utmpx* i = getutxent (); i != nullptr; i = getutxent ()) {
-            if (i->ut_type == BOOT_TIME) {
+            });
+            ::setutxent ();
+            for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
+                if (i->ut_type == BOOT_TIME) {
                     result.fBootedAt = DateTime (i->ut_tv);
                     succeeded = true;
                 }
