@@ -120,11 +120,14 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *
              *  http://pubs.opengroup.org/onlinepubs/009695399/basedefs/utmpx.h.html
              *
-             *  This isn't threadsafe, or in any way reasonable...
+             *  This isn't threadsafe, or in any way reasonable. AIX has a non-standard threadsafe API, but I'm not sure of the
+             *  need to fix this..????
+             *      --LGP 2015-08-21
              */
             Execution::Finally cleanup ([] () {
                 ::endutxent ();
             };
+            setutent ();
             for (utmpx* i = getutxent (); i != nullptr; i = getutxent ()) {
             if (i->ut_type == BOOT_TIME) {
                     result.fBootedAt = DateTime (i->ut_tv);
