@@ -9,6 +9,7 @@
 #include    <unistd.h>
 #include    <fstream>
 #include    <sys/sysinfo.h>
+#include    <utmpx.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
@@ -93,8 +94,46 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
     ::sysinfo (&info);
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif   qPlatform_POSIX
-    // COULD read /proc/uptime - but not available on AIX...
-    AssertNotImplemented ();   // but leave out crasher til I test a bit more
+    {
+        bool    succeeded { false };
+        const   String_Constant kProcUptimeFileName_ { L"/proc/uptime" };
+        if (IO::FileSystem::FileSystem::Default ().Access (kProcUptimeFileName_)) {
+            /*
+             *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
+             *      "The first number is the total number of seconds the system has been up"
+             */
+            using   Streams::TextReader;
+            using   IO::FileSystem::FileInputStream;
+            using   Characters::String2Int;
+            for (String line : TextReader (FileInputStream::mk (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+                Sequence<String>    t = line.Tokenize ();
+                if (t.size () >= 2) {
+                    result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::String2Float<double> (t[0]));
+                    succeeded = true;
+                }
+                break;
+            }
+        }
+        if (not succeeded) {
+            /*
+             *  The hard way is to read /etc/utmp
+             *
+             *  http://pubs.opengroup.org/onlinepubs/009695399/basedefs/utmpx.h.html
+             *
+             *  This isn't threadsafe, or in any way reasonable...
+             */
+            Execution::Finally cleanup ([] () {
+                ::endutxent ();
+            };
+            for (utmpx* i = getutxent (); i != nullptr; i = getutxent ()) {
+            if (i->ut_type == BOOT_TIME) {
+                    result.fBootedAt = DateTime (i->ut_tv);
+                    succeeded = true;
+                }
+            }
+        }
+        Assert (succeeded); // not a real assert, but sort of a warning if this ever gets triggered
+    }
 #elif   qPlatform_Windows
     // ::GetTickCount () is defined to return #seconds since boot
 #if     _WIN32_WINNT >= 0x0600
