@@ -139,6 +139,20 @@
 #endif
 
 
+
+
+// LINUX support
+#if     !defined (qPlatform_Linux)
+// not sure
+#if     qPlatform_Linux && defined (__linux)
+#define qPlatform_Linux 1
+#else
+#define qPlatform_Linux 0
+#endif
+#endif
+
+
+
 #if     qPlatform_Windows && qPlatform_POSIX
 #warning "Shouldn't have both Windows and POSIX platform flags set"
 #endif
