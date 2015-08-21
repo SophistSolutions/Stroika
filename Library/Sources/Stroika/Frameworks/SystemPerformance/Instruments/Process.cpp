@@ -15,6 +15,7 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Characters/StringBuilder.h"
+#include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
@@ -468,11 +469,15 @@ namespace {
                         static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
+#if     qPlatform_Linux
                             static  const time_t    kUNIXEpochTimeOfBoot_ = [] () {
                                 struct sysinfo info;
                                 ::sysinfo (&info);
                                 return ::time (NULL) - info.uptime;
                             } ();
+#else
+                            static  const time_t    kUNIXEpochTimeOfBoot_   =   Configuration::GetSystemConfiguration_BootInformation ().As<time_t> ();
+#endif
                             //starttime %llu (was %lu before Linux 2.6)
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
                             // this value was expressed in jiffies. Since Linux 2.6,
