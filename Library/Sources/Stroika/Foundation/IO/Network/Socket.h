@@ -6,6 +6,11 @@
 
 #include    "../../StroikaPreComp.h"
 
+#if     qPlatform_POSIX
+#include    <sys/types.h>
+#include    <sys/socket.h>
+#endif
+
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Execution/ErrNoException.h"
