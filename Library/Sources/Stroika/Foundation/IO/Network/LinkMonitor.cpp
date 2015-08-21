@@ -7,7 +7,6 @@
 
 #if     qPlatform_POSIX
 #include    <unistd.h>
-#include    <sys/types.h>
 #include    <sys/socket.h>
 #include    <sys/ioctl.h>
 #include    <net/if.h>
@@ -58,7 +57,6 @@ using   namespace   Stroika::Foundation::IO::Network;
 #include <string.h>
 #include <assert.h>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>

@@ -7,7 +7,6 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qPlatform_POSIX
-//#include    <sys/types.h>
 #include    <sys/socket.h>
 #endif
 #if     defined (RAW)
