@@ -92,7 +92,7 @@ doCreate:	$(ZIPPEDFILE)
 		(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
 		(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);\
 	fi
-ifeq (aix,$(UNAME))
+ifeq (AIX,$(UNAME))
 	@patch --quiet -p0 CURRENT/configure < Patches/AIX-autoconf-fail.PATCH
 endif
 
