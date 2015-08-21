@@ -11,6 +11,7 @@
 #include    "Signals.h"
 
 
+
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
@@ -91,7 +92,7 @@ Characters::String Execution::SignalToName (SignalID signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-errno_t    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
+errno_t    Execution::SendSignal (std::thread::native_handle_type h, SignalID signal)
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::Execution::SendSignal");
 #if     qPlatform_POSIX

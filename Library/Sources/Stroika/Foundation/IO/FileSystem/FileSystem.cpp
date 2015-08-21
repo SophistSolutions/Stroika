@@ -222,7 +222,11 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
 String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
 {
 #if     qPlatform_POSIX
-    char*   tmp { ::canonicalize_file_name (path2FileOrShortcut.AsSDKString ().c_str ()) };
+    //  We used to call canonicalize_file_name() - but this doesnt work with AIX 7.1/g++4.9.2, and
+    //  according to http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html:
+    //  The call canonicalize_file_name(path) is equivalent to the call:
+    //      realpath(path, NULL)
+    char*   tmp { ::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr) };
     if (tmp == nullptr) {
         errno_ErrorException::DoThrow (errno);
     }
