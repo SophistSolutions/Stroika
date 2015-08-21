@@ -9,7 +9,6 @@
 #if     qPlatform_POSIX
 #include    <arpa/inet.h>
 #include    <sys/socket.h>      // for AF_INET etc
-#endif
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <inaddr.h>
