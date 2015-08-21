@@ -44,22 +44,22 @@ print ($projectPlatformSubdir);
 
 # Only extract if its not already extracted. Make clobber if its partly 
 # extracted
-if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
-	
-	print ("Extracting Xerces...\n");
-	
-	system ("rm -rf $trgDirName CURRENT");
-	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
-	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	system ("mv $EXTRACTED_DIRNAME CURRENT");
-	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	
-	print ("Patching Xerces...\n");
-	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
-	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
-	system ("chmod -R +rw CURRENT/projects");
-	system ("chmod -R +rwx CURRENT/projects CURRENT/projects/Win32 CURRENT/projects/Win32/VC* CURRENT/projects/Win32/VC*/xerces-all CURRENT/projects/Win32/VC*/xerces-all/*");
-}
+#if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
+#	
+#	print ("Extracting Xerces...\n");
+#	
+#	system ("rm -rf $trgDirName CURRENT");
+#	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
+#	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+#	system ("mv $EXTRACTED_DIRNAME CURRENT");
+#	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+#	
+#	print ("Patching Xerces...\n");
+#	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
+#	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
+#	system ("chmod -R +rw CURRENT/projects");
+#	system ("chmod -R +rwx CURRENT/projects CURRENT/projects/Win32 CURRENT/projects/Win32/VC* CURRENT/projects/Win32/VC*/xerces-all CURRENT/projects/Win32/VC*/xerces-all/*");
+#}
 
 
 
@@ -135,8 +135,6 @@ else {
 	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
 }
 
-#system ("perl checkall.pl");
 
 DONE:
-#print (">>>>>>>>******************** ENDING ThirdPartyLibs/Xerces ******************\n");
 
