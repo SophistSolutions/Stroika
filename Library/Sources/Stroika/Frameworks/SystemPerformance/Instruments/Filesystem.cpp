@@ -8,6 +8,9 @@
 #include    <sys/stat.h>
 #include    <sys/types.h>
 #include    <unistd.h>
+#if     defined (_AIX)
+#include    <sys/sysmacros.h>
+#endif
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
