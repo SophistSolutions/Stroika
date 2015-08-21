@@ -34,9 +34,6 @@
 #include    "Thread.h"
 
 
-using   std::thread;    // disambiguate for AIX7.1
-
-
 using   namespace   Stroika::Foundation;
 
 using   Time::DurationSecondsType;
@@ -237,7 +234,7 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
      */
     SuppressInterruptionInContext  suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
-    (*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+    (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the
         // thread has started...
