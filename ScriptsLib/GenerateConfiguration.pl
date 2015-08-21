@@ -181,6 +181,7 @@ sub	SetDefaultForPlatform_
 		$COMPILER_DRIVER = "g++";
 		if ("$^O" eq "aix") {
 			$COMPILER_DRIVER = "g++ -pthread";
+			$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	// we seem to almost always get these big TOC errors -- LGP 2015-08-21
 		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
