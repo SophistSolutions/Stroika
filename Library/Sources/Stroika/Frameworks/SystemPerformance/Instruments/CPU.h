@@ -27,8 +27,9 @@ namespace   Stroika {
                 namespace   CPU {
 
 
+                    // @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  qPlatform_POSIX
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  qPlatform_Linux
 #endif
 
 
