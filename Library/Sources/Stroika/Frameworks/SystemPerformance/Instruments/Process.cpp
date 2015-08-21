@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_POSIX
+#if     qPlatform_Linux
 #include    <sys/sysinfo.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
