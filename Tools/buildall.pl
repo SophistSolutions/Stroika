@@ -8,9 +8,10 @@ if ($BLD_TRG eq '') {
 }
 
 print ("Building Stroika Tools...\n");
+my $projectPlatformSubdir = GetProjectPlatformSubdir();
 
 my $useBld = lc ($BLD_TRG);
-if ("$^O" eq "linux") {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	if ($useBld eq "build") {
 		$useBld = "all";
 	}
@@ -21,7 +22,7 @@ if ("$^O" eq "linux") {
     system ("make --directory ../IntermediateFiles/DefaultConfiguration/Tools/Frameworks/ --no-print-directory $useBld");
 }
 else {
-    my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
+    my $useProjectDir= "Projects/" . $projectPlatformSubdir;
     system ("cd $useProjectDir; perl buildall.pl $useBld");
 }
 print ("Building Stroika Tools...done\n");
