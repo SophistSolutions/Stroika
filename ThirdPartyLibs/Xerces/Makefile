@@ -86,15 +86,19 @@ doCreate:	$(ZIPPEDFILE)
 		rm -rf $(USE_DIRNAME) CURRENT;\
 		tar xf $(ZIPPEDFILE) --no-same-owner;\
 		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
-		#ln -s CURRENT $(SLINKDIRNAME);\
-		echo "      ...Patching Xerces...";\
-		(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);\
-		(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
-		(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);\
+		$(MAKE) --no-print-directory doPatching_;\
 	fi
+
+
+doPatching_:
+	@echo "      ...Patching Xerces...";
+	@(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);\
+	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
+	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);\
 ifeq (AIX,$(UNAME))
 	@patch --quiet -p0 CURRENT/configure < Patches/AIX-autoconf-fail.PATCH
 endif
+
 
 
 doBuilds:
