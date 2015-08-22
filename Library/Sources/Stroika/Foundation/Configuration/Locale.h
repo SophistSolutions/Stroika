@@ -21,6 +21,8 @@
  *
  * TODO:
  *
+ *      @todo   Create better subtype exception for locale not found (with fields for what not found).
+ *
  *      @todo   I think GetPlatformDefaultLocale() can be optimized to use a static copy of locale("") since
  *              I believe C++ now gaurantees multithreaded safe static construction and safe read only
  *              access to objects (even from multiple reader threads).

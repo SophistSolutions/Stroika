@@ -8,6 +8,7 @@
 #include    "StroikaConfig.h"
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/StringException.h"
@@ -114,7 +115,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
             }
         }
     }
-    Execution::DoThrow (Execution::StringException (String_Constant (L"Locale not found")));
+    Execution::DoThrow (Execution::StringException (Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())));
 }
 
 
