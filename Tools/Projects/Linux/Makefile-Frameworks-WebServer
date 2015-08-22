@@ -15,10 +15,9 @@ SubDirs=				\
 
 
 all:	$(SubDirs)
-	@for i in $(SubDirs);\
-	do\
-	    (cd $$i && make -s all)\
-	done
+	@for SUBPROJ in $(SubDirs) ; do \
+		($(MAKE) --directory $$SUBPROJ --no-print-directory all);\
+    	done	
 
 
 Build:	all
