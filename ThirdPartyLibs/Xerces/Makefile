@@ -92,9 +92,9 @@ doCreate:	$(ZIPPEDFILE)
 
 doPatching_:
 	@echo "      ...Patching Xerces...";
-	@(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);\
-	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);\
-	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);\
+	@(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);
+	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
+	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
 ifeq (AIX,$(UNAME))
 	@patch --quiet -p0 CURRENT/configure < Patches/AIX-autoconf-fail.PATCH
 endif

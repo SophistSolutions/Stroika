@@ -5,6 +5,7 @@ require "../../ScriptsLib/BuildUtils.pl";
 
 my $activeConfig = GetActiveConfigurationName ();
 my $projectPlatformSubdir = GetProjectPlatformSubdir();
+my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
@@ -15,7 +16,6 @@ my @kConfigurations = (
 					"Configuration=Release-U-64,Platform=x64",
 					);
 
-my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
 print("   Building Samples/SystemPerformanceClient...\n");
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {

@@ -3,6 +3,11 @@
 #use warnings;
 
 
+require "../../../ScriptsLib/ConfigurationReader.pl";
+
+
+my $projectPlatformSubdir = GetProjectPlatformSubdir ();
+
 #CRUDDY IMPL - but avoid runnign 64 bit binaries on 32-bit OS
 sub bitter {
      my $bit;
@@ -36,7 +41,7 @@ sub DoRunSimpleTestArgv
 	}
 
 	local $outDir = PrepareOutputDir();
-if ("$^O" eq "linux") {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 #TMPHACK...til we move stuff and get right targets list
 $dbgOrRel = '';
 }

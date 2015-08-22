@@ -4,6 +4,8 @@ require "../../ScriptsLib/ConfigurationReader.pl";
 require "../../ScriptsLib/BuildUtils.pl";
 
 my $activeConfig = GetActiveConfigurationName ();
+my $projectPlatformSubdir = GetProjectPlatformSubdir();
+my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
@@ -14,10 +16,9 @@ my @kConfigurations = (
 					"Configuration=Release-U-64,Platform=x64",
 					);
 
-my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
 print("   Building Samples/SSDPClient...\n");
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
+if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
@@ -32,7 +33,7 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	system ("cd Samples_SSDPClient; make -s $useBld");
 	chdir ($savedDir);
 }
-if ("$^O" eq "cygwin") {
+else {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();

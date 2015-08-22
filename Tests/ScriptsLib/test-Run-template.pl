@@ -3,6 +3,9 @@
 require "../../../ScriptsLib/SimpleRun.pl";
 require "../../../ScriptsLib/TestsList.pl";
 
+
+require "../../../ScriptsLib/ConfigurationReader.pl";
+
 sub DoRun {
 	my $testNumber = $_[0];
 	my $testName = GetTestName ($testNumber);
@@ -14,7 +17,7 @@ sub DoRun {
 		print "Starting regression test #[$testNumber] $testName Test: $date ------------------------------\r\n";
 	}
 	
-	if ("$^O" eq "linux") {
+	if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/DefaultConfiguration/", "Test$testNumber");
 	}
 	else {
