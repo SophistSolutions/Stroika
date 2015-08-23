@@ -18,10 +18,31 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a103">v2.0a103x</a><br/>2015-08-???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a103">v2.0a103</a><br/>2015-08-23</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Started attempts at support for AIX
+			<ul>
+				<li>Mostly makefile changes - losing some old perl scripts, and repalcing use of stuff like $^O with ConffigurationReader.pl and PlatformSubdir... variable</li>
+				<li>GetOSInfo/version</li>
+				<li>thread/std::thread conflicts</li>
+				<li>::sysconf (_SC_V6_LP64_OFF64)</li>
+				<li>Large number of qPlatform_Linux versus qPlatform_POSIX changes</li>
+				<li>lose unneeded sys/types.h includes</li>
+				<li>Added Xerces patch for AIX (configure)</li>
+				<li>sysinfo for reading uptime is Linux specifc</li>
+				<li>for AIX - set bigtoc option by default in GenerateConfiguration.pl</li>
+				<li>>makedev on AIX is a macro, so cannot use ::</li>
+			</li>
+		</li>
+		<li>curl 7.44</li>
+		<li>better exception message on locale not found (and other tweaks)</li>
+		<li>DateTime now supports timeval (in addition to timespec)</li>
+		<li>Support _MS_VS_2k13_Update5_FULLVER_</li>
+		<li>lose define qNBytesPerWCharT and Defaults_Characters_Character_.h - anachonisitic</li>
+		<li>factor GetStartOfEpoch_ () out of Emitter::DoEmitMessage_ () so we get one start-of-epoch</li>
+		<li>draft configure script (top level) - so for indirects. May leave it that way?</lI>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc47, gcc48, gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind; 3/4 regtests pass on AIX 7.1/gcc49</li>
 	</ul>
 </td>
 </tr>
