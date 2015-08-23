@@ -66,7 +66,7 @@ vector<Characters::String>    Configuration::GetAvailableLocales ()
     // horrible!!!! - see TOOD
     vector<Characters::String>  result;
     result.reserve (10);
-    IgnoreExceptionsForCall (result.push_back (FindLocaleName (String_Constant (L"en"), String_Constant (L"us"))));
+    IgnoreExceptionsForCall (result.push_back (FindLocaleName (String_Constant { L"en" }, String_Constant { L"us" })));
     return result;
 }
 
@@ -90,22 +90,26 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
     //  --LGP 2013-03-02
     //
     // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
-    set<String> part1;
-    part1.insert (iso2LetterLanguageCode);
-    part1.insert (iso2LetterLanguageCode.ToLowerCase ());
-    part1.insert (iso2LetterLanguageCode.ToUpperCase ());
-    set<String> part2;
-    part2.insert (String_Constant (L"-"));
-    part2.insert (String_Constant (L"_"));
-    part2.insert (String_Constant (L"."));
-    part2.insert (String_Constant (L" "));
-    set<String> part3;
-    part3.insert (iso2LetterTerritoryCode);
-    part3.insert (iso2LetterTerritoryCode.ToLowerCase ());
-    part3.insert (iso2LetterTerritoryCode.ToUpperCase ());
-    set<String> part4;
-    part4.insert (String_Constant (L""));
-    part4.insert (String_Constant (L".utf8"));
+    static  set<String> part1 {
+        iso2LetterLanguageCode,
+        iso2LetterLanguageCode.ToLowerCase (),
+        iso2LetterLanguageCode.ToUpperCase (),
+    };
+    static  const   set<String> part2 {
+        String_Constant { L"-" },
+        String_Constant { L"_" },
+        String_Constant { L"." },
+        String_Constant { L" " },
+    };
+    static  set<String> part3 {
+        iso2LetterTerritoryCode,
+        iso2LetterTerritoryCode.ToLowerCase (),
+        iso2LetterTerritoryCode.ToUpperCase (),
+    };
+    static  const   set<String> part4 {
+        String_Constant { L"" },
+        String_Constant { L".utf8" },
+    };
     for (String i1 : part1) {
         for (String i2 : part2) {
             for (String i3 : part3) {
