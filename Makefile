@@ -44,7 +44,7 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries t
 check:
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
 	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
-	@(cd Tools && perl checkall.pl)
+	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
 	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
 
@@ -97,8 +97,7 @@ project-files-qt-creator-save:
 	@echo "done"
 
 tools:	libraries
-	@cd Tools; perl buildall.pl build
-
+	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) all
 
 tests:	tools libraries
 	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) tests
