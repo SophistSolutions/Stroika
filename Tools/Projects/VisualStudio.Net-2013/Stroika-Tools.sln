@@ -1,8 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-Linux", "{BDB956CB-14E0-4DE1-A36E-C852F928E761}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\Makefile = ..\..\Makefile
 		..\Linux\Makefile-Frameworks = ..\Linux\Makefile-Frameworks
 		..\Linux\Makefile-Frameworks-WebServer = ..\Linux\Makefile-Frameworks-WebServer
 		..\Linux\Makefile-Frameworks-WebServer-HTMLViewCompiler = ..\Linux\Makefile-Frameworks-WebServer-HTMLViewCompiler
