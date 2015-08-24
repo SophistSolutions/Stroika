@@ -24,6 +24,16 @@ using   Characters::String_Constant;
 
 
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
+
 /*
 ********************************************************************************
 *********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
@@ -83,7 +93,12 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
 {
     using   Characters::String;
     Require (iso2LetterLanguageCode.length () == 2);
-    Require (iso2LetterTerritoryCode.length () == 2);       // may lift this in teh future and make it optional
+    Require (iso2LetterTerritoryCode.length () == 2);       // may lift this in the future and make it optional
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper  ctx ("Configuration::FindLocaleName");
+    DbgTrace (L"(%s,%s)", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ());
+#endif
 
     // This is a HORRIBLE way - but I know of no better (especially no better portable way).
     // See todo for planned fixes
@@ -114,6 +129,9 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
         for (String i2 : part2) {
             for (String i3 : part3) {
                 for (String i4 : part4) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"***trying locale (i1 + i2 + i3 + i4).AsUTF8 ().c_str ()=%s", (i1 + i2 + i3 + i4).c_str ());
+#endif
                     IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale ((i1 + i2 + i3 + i4).AsUTF8 ().c_str ()).name ()));
                 }
             }
