@@ -56,6 +56,16 @@ namespace   Stroika {
 
 
             /**
+             *  \par Example Usage
+             *      \code
+             *          Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+             *          if (arg.IsPresent ()) {
+             *              sTimeMultiplier_ = String2Float<double> (*arg);
+             *          }
+             *      \endcode
+             *
+             *      MyProgram.exe --x 3
+             *
              */
             Optional<String>    MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
             Optional<String>    MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
