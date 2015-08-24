@@ -311,7 +311,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx ("{}::Test_4_RefDocsTests_");
             try {
-                T1_get_ ();
+                Private_::T1_get_ ();
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
