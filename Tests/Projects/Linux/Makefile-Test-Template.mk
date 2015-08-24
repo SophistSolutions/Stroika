@@ -29,5 +29,3 @@ all:	$(TARGETEXE)
 
 $(TARGETEXE):	$(Objs)
 	$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
-
-
