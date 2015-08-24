@@ -991,6 +991,7 @@ namespace {
             VerifyTestResult (Float2String (3000.5) == L"3000.5");
             VerifyTestResult (Float2String (30000.5) == L"30000.5");
         };
+#if     !qCompilerAndStdLib_Locale_Buggy
         {
             // Verify change of locale has no effect on results
             locale  prevLocale  =   locale::global (locale ("C"));
@@ -1002,6 +1003,7 @@ namespace {
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             runLocaleIndepTest ();
         }
+#endif
     }
 }
 

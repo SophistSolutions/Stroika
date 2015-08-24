@@ -186,6 +186,23 @@
 
 
 /*
+ *  In initial testing I've found no cases where this works...
+ *      --LGP 2015-08-24
+ */
+#ifndef qCompilerAndStdLib_Locale_Buggy
+
+#if   defined (_AIX)
+#define qCompilerAndStdLib_Locale_Buggy             1
+#else
+#define qCompilerAndStdLib_Locale_Buggy             0
+#endif
+
+#endif
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
 @DESCRIPTION:
 

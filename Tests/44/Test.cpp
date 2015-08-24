@@ -50,7 +50,9 @@ namespace {
     {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
+#if     !qCompilerAndStdLib_Locale_Buggy
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
+#endif
 
         // should add test like this...
         //Verify (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
@@ -177,6 +179,7 @@ namespace   {
             VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
+#if     !qCompilerAndStdLib_Locale_Buggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
@@ -184,6 +187,7 @@ namespace   {
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
+#endif
         }
         {
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
@@ -292,12 +296,14 @@ namespace   {
             TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
         {
+#if     !qCompilerAndStdLib_Locale_Buggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
+#endif
         }
         {
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
@@ -350,6 +356,7 @@ namespace   {
 
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
+#if     !qCompilerAndStdLib_Locale_Buggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
@@ -357,6 +364,7 @@ namespace   {
             VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM" or dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/05/1903 12:01:41 AM");
             DateTime    dt2 (d, TimeOfDay (60));
             //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+#endif
         }
         {
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));

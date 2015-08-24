@@ -323,6 +323,7 @@ namespace   {
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
+#if     !qCompilerAndStdLib_Locale_Buggy
                     {
                         // Verify change of locale has no effect on results
                         Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
@@ -330,7 +331,7 @@ namespace   {
                         DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                     }
-
+#endif
                 }
             }
         }
@@ -355,10 +356,12 @@ namespace   {
                     VerifyTestResult (v1 == v);
                 };
                 f ();
+#if     !qCompilerAndStdLib_Locale_Buggy
                 {
                     Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     f ();
                 }
+#endif
             }
         }
 
@@ -437,8 +440,10 @@ namespace   {
                 };
                 {
                     doAll ();
+#if     !qCompilerAndStdLib_Locale_Buggy
                     Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     doAll ();
+#endif
                 }
             }
         }
