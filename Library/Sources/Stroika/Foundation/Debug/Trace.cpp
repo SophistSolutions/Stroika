@@ -140,7 +140,12 @@ namespace   {
         // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
         SDKString mfname;
         {
-            mfname = Execution::GetEXEPathT ();
+            try {
+                mfname = Execution::GetEXEPathT ();
+            }
+            catch (...) {
+                mfname = SDKSTR ("{unknown}");
+            }
             size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
             if (i != SDKString::npos) {
                 mfname = mfname.substr (i + 1);
