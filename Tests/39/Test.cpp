@@ -293,12 +293,50 @@ namespace {
 
 
 
+
+namespace {
+    namespace Test_4_RefDocsTests_ {
+        namespace Private_ {
+            void    T1_get_ ()
+            {
+                Connection  c   =   IO::Network::Transfer::CreateConnection ();
+                c.SetURL (URL::Parse (L"http://www.google.com"));
+                Response    r   =   c.GET ();
+                VerifyTestResult (r.GetSucceeded ());
+                VerifyTestResult (r.GetData ().size () > 1);
+            }
+
+        }
+        void    DoTests_ ()
+        {
+            Debug::TraceContextBumper ctx ("{}::Test_4_RefDocsTests_");
+            try {
+                T1_get_ ();
+            }
+            catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
+#else
+                Execution::DoReThrow ();
+#endif
+            }
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test_1_SimpleConnnectionTests_::DoTests_ ();
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
         Test3_TextStreamResponse_::DoTests_ ();
+        Test_4_RefDocsTests_::DoTests_ ();
     }
 }
 

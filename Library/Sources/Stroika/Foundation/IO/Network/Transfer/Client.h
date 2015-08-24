@@ -251,8 +251,18 @@ namespace   Stroika {
 
                     /**
                      * TODO:
-                     *      Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
-                     *      Could be confusing! CONSIDER
+                     *     @todo    Unclear about copyability - maybe if its a smartptr OK to copy - but would be copy-by-reference?
+                     *              Could be confusing! CONSIDER
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          Connection  c   =   IO::Network::Transfer::CreateConnection ();
+                     *          c.SetURL (URL::Parse (L"http://www.google.com"));
+                     *          Response    r   =   c.GET ();
+                     *          VerifyTestResult (r.GetSucceeded ());
+                     *          VerifyTestResult (r.GetData ().size () > 1);
+                     *      \endcode
+                     *
                      */
                     class   Connection {
                     protected:
