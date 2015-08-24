@@ -71,6 +71,13 @@ String Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
+namespace {
+    SDKString   AIX_GET_EXE_PATH_ ()
+    {
+        // /////http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
+        return SDKString ();
+    }
+}
 SDKString Execution::GetEXEPathT ()
 {
     // See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
@@ -101,6 +108,8 @@ SDKString Execution::GetEXEPathT ()
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return SDKString (buf.begin (), buf.begin () + n);
+#elif   defined (_AIX)
+    return AIX_GET_EXE_PATH_ ();
 #else
     AssertNotImplemented ();
     return SDKString ();
