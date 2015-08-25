@@ -12,6 +12,9 @@
 
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
+#if     defined (_AIX)
+#include    "../Execution/Process.h"
+#endif
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../IO/FileSystem/PathName.h"
 
@@ -71,13 +74,98 @@ String Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
+#if     defined (_AIX)
 namespace {
+    SDKString   myProcessRunnerFirstLine_ (const SDKString& cmdLine)
+    {
+        /*
+         *      NOTE - we intentionally use popen here avoid helpful Stroika code like ProcessRunner (), ThrowIfNull, etc,
+         *      so that this code remains low level, and doesnt invoke any tracelog code, which would result in a deadlock/loop....
+         *
+         */
+        FILE*   p = popen (cmdLine.c_str (), "r");
+        string  accum;
+        if (p != nullptr) {
+            char    buf[10 * 1024];
+            while (fgets (buf, NEltsOf (buf), p) != nullptr) {
+                accum += buf;
+                size_t i = accum.rfind ('\n');
+                if (i != -1) {
+                    accum.erase (i);
+                }
+                break;  // minor speed hack since we always use with just one line
+            }
+            int result  =   pclose (p);
+            // cannot report to avoid TRACE ;-(
+        }
+        return accum;
+    }
+    SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
+    {
+        /*
+         *  What a PITA!
+         *      http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
+         *
+         *  This is INSANELY slow and kludgey. If we need to support this, we will need to find a better way.
+         *  We can code all this direclty in C++, without popen, but with a bit of work.
+         *      --
+         *
+         *  NOTE - PART of this I think I can do better/faster with stat!!!
+         */
+        ino_t   inode {};
+        {
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "ls -i /proc/%d/object/a.out | cut -f 1 -d \" \"", pid);
+            SDKString   inodeStr = myProcessRunnerFirstLine_ (buf);
+            inode   =   strtoll (inodeStr.c_str (), nullptr, 10);
+        }
+        int majorDev { -1};
+        int minorDev { -1};
+        {
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "ls -li /proc/%d/object/ | egrep \"%lld$\"", pid, static_cast<long long> (inode));
+            SDKString deviceStr = myProcessRunnerFirstLine_ (buf);
+            int     beforeMajorIdx   =  deviceStr.find ('.');
+            int     beforeMinorIdx   =  deviceStr.find ('.', beforeMajorIdx + 1);
+            if (beforeMajorIdx != string::npos and beforeMinorIdx != string::npos) {
+                majorDev   =   strtoll (deviceStr.c_str () + beforeMajorIdx + 1, nullptr, 10);
+                minorDev   =   strtoll (deviceStr.c_str () + beforeMinorIdx + 1, nullptr, 10);
+            }
+        }
+        string  fsBlockName;
+        if (majorDev != -1 and minorDev != -1) {
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
+            SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
+            int     beforeFSName     =  devfsline.rfind (' ');
+            if (beforeFSName != string::npos) {
+                fsBlockName = devfsline.substr (beforeFSName + 1);
+            }
+        }
+        string  fsName;
+        if (not fsBlockName.empty ()) {
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());
+            SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
+            int     beforeFSName     =  devfsline.rfind (' ');
+            if (beforeFSName != string::npos) {
+                fsName = devfsline.substr (beforeFSName + 1);
+            }
+        }
+        string  exeName;
+        if (not fsName.empty ()) {
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "find %s -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
+            exeName = myProcessRunnerFirstLine_ (buf);
+        }
+        return exeName;
+    }
     SDKString   AIX_GET_EXE_PATH_ ()
     {
-        // /////http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
-        return SDKString ();
+        return  AIX_GET_EXE_PATH_ (Execution::GetCurrentProcessID ());
     }
 }
+#endif
 SDKString Execution::GetEXEPathT ()
 {
     // See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
