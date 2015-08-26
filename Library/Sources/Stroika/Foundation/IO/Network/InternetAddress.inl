@@ -161,12 +161,24 @@ namespace   Stroika {
                 inline  tuple<uint8_t, uint8_t, uint8_t, uint8_t> InternetAddress::As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> () const
                 {
                     Require (fAddressFamily_ == AddressFamily::V4);
-                    return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)),
-                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 8)),
-                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 8)),
-                               static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 8))
-                           );
+                    switch (Configuration::GetEndianness ()) {
+                        case    Configuration::Endian::eLittleByte:
+                            return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 8))
+                                   );
+                        case    Configuration::Endian::eBigByte:
+                            return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8))
+                                   );
+                        default:
+                            AssertNotImplemented ();
+                    }
                 }
                 template    <>
                 inline

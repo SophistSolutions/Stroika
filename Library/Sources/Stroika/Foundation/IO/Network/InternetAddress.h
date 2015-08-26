@@ -268,7 +268,7 @@ namespace   Stroika {
                 private:
                     AddressFamily   fAddressFamily_;
                     union   {
-                        in_addr         fV4_;
+                        in_addr         fV4_;       // Stored in network byte order
                         in6_addr        fV6_;
                     };
                 };
