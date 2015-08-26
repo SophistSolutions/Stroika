@@ -162,7 +162,8 @@ namespace {
     }
     SDKString   AIX_GET_EXE_PATH_ ()
     {
-        return  AIX_GET_EXE_PATH_ (Execution::GetCurrentProcessID ());
+        static  SDKString   kCached_    =   AIX_GET_EXE_PATH_ (Execution::GetCurrentProcessID ());  // since cannot change, and now very slow to compute
+        return  kCached_;
     }
 }
 #endif
