@@ -8,3 +8,4 @@ This Folder contains the Foundation::DataExchange source code.
 	Most of these modules will use VariantValue as a linga-franca to express structured data
 	going in/out of a module.
 
+	(e.g. JSON or XML) reader / writer <--> VariantValue <-- (via ObjectVariantMapper)--> C++ struct
