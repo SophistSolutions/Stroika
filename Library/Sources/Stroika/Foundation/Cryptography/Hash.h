@@ -47,6 +47,10 @@ namespace   Stroika {
              *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
              *  common forms, and then makes generic the actual hash computing algorithm.
              *
+             *  \note Endianness - the digest algorithms logically return an array of bytes, so if (typical case
+             *          HASH_RETURN_TYPE is a numeric type like uin32_t, then the hash numerical value will depend on
+             *          integer endianness of the machine.
+             *
              *  \par Example Usage
              *      \code
              *      using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;

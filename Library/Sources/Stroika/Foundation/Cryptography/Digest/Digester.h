@@ -52,6 +52,9 @@ namespace   Stroika {
                  *  RETURN_TYPE is typically uint32_t, uint64_t, or Result128BitType, Result128BitType etc,
                  *  but could in principle be anything.
                  *
+                 *  \note Endianness - these algorithms logically operate on bytes, so if you use RETURN_TYPE=uin32_t (or anything but byte array) -
+                 *          expect the actual numerical value will depend on endianness.
+                 *
                  *  \par Example Usage
                  *      \code
                  *      string digestStr = Format (Digester<Algorithm::MD5>::ComputeDigest (s, e));
