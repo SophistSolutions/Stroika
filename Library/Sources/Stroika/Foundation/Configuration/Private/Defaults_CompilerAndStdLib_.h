@@ -623,6 +623,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      1
 #elif   defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
