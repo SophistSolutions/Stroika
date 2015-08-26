@@ -4,6 +4,11 @@
 #ifndef _Stroika_Foundation_Configuration_Endian_h_
 #define _Stroika_Foundation_Configuration_Endian_h_ 1
 
+#include    "../StroikaPreComp.h"
+
+#include    <cstdint>
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -29,6 +34,17 @@ namespace   Stroika {
              */
             constexpr   Endian  GetEndianness ();
 
+
+            /**
+             *  Utility to convert endianness. Logically this can be defined on any numeric
+             *  integer type, but for now is restricted to uint32_t;
+             *
+             *  @todo - make this constexpr
+             */
+            template    <typename T>
+            T   EndianConverter (T value, Endian from, Endian to = GetEndianness ());
+            template    <>
+            uint32_t    EndianConverter (uint32_t value, Endian from, Endian to);
 
 
         }

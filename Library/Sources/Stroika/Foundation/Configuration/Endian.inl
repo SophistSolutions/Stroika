@@ -7,6 +7,7 @@
 
 #include    <cstdint>
 
+#include    "../Debug/Assertions.h"
 
 /*
  ********************************************************************************
@@ -45,7 +46,8 @@ namespace   Stroika {
                     Endian::eBigWord
                     ;
 #else
-#if     defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
+#if     (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) || \
+    (defined(__BYTE_ORDER) && __BYTE_ORDER == __ORDER_BIG_ENDIAN__) || \
     defined(__BIG_ENDIAN__) || \
     defined(__ARMEB__) || \
     defined(__THUMBEB__) || \
@@ -54,6 +56,7 @@ namespace   Stroika {
                 return Endian::eBigByte;
 #endif
 #if     defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+    (defined(__BYTE_ORDER) && __BYTE_ORDER == __ORDER_LITTLE_ENDIAN__) || \
     defined(__LITTLE_ENDIAN__) || \
     defined(__ARMEL__) || \
     defined(__THUMBEL__) || \
@@ -63,6 +66,32 @@ namespace   Stroika {
                 return Endian::eLittle;
 #endif
 #endif
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************* Configuration::EndianConverter ***********************
+             ********************************************************************************
+             */
+            template    <>
+            inline  uint32_t    EndianConverter (uint32_t value, Endian from, Endian to)
+            {
+                Require (from == Endian::eBig or from == Endian::eLittle);  // just cuz thats all thats implemented
+                Require (to == Endian::eBig or to == Endian::eLittle);      // just cuz thats all thats implemented
+                if (from == to) {
+                    return value;
+                }
+                else {
+                    Assert (sizeof (value) == 4);
+                    return
+                        ((value & 0x000000FF) << 24) +
+                        ((value & 0xFF000000) >> 24) +
+                        ((value & 0x0000FF00) << 8) +
+                        ((value & 0x00FF0000) >> 8)
+                        ;
+                }
+
             }
 
 
