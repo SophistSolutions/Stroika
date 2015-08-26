@@ -44,6 +44,20 @@ using   Memory::Byte;
 
 
 
+namespace {
+    uint32_t    ToLE_  (uint32_t n)
+    {
+        using Configuration::Endian;
+        using Configuration::EndianConverter;
+        return EndianConverter<uint32_t> (n, Configuration::GetEndianness (), Endian::eLittle);
+    }
+}
+
+
+
+
+
+
 
 namespace {
     namespace AESTest_ {
@@ -264,6 +278,7 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
+            // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             {
                 // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const   char    kSrc[] = "This is a very good test of a very good test";
@@ -283,19 +298,20 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
+            // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using   Configuration::Endian;
             using   Configuration::EndianConverter;
             using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
             {
-                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (1), Endian::eLittle) == 10338022);
-                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> ("1"), Endian::eLittle) == 2154528969);
-                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (Characters::String (L"1")), Endian::eLittle) == 2154528969);
-                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> ("1", "mysalt"), Endian::eLittle) == 2164173146);
-                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (93993), Endian::eLittle) == 1748544338);
+                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (1)) == 10338022);
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
+                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == 2154528969);
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == 2164173146);
+                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (93993)) == 1748544338);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), EndianConverter<uint32_t> (2786528596, Endian::eLittle, Configuration::GetEndianness ()));
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
             }
         }
 
@@ -334,10 +350,11 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
+            // @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
             using   USE_DIGESTER_     =   Digester<Algorithm::SuperFastHash>;
             {
-                VerifyTestResult (Hash<USE_DIGESTER_> (1) == 422304363);
-                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == 2489559407);
+                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (1)) == 422304363);
+                VerifyTestResult (Hash<USE_DIGESTER_> (ToLE_ (93993)) == 2489559407);
             }
             {
                 // special case where these collide

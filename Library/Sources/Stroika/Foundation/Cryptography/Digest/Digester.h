@@ -16,6 +16,10 @@
 
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *  TODO:
+ *      @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
+ *
  */
 
 
