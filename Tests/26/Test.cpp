@@ -283,19 +283,19 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-			using	Configuration::Endian;
-			using	Configuration::EndianConverter;
+            using   Configuration::Endian;
+            using   Configuration::EndianConverter;
             using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
             {
-                VerifyTestResult (Hash<USE_DIGESTER_> (1) == EndianConverter<uint32_t> (10338022, Endian::eLittle));
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == EndianConverter<uint32_t> (2154528969, Endian::eLittle));
-                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == EndianConverter<uint32_t> (2154528969, Endian::eLittle));
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == EndianConverter<uint32_t> (2164173146, Endian::eLittle));
-                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == EndianConverter<uint32_t> (1748544338, Endian::eLittle));
+                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (1), Endian::eLittle) == 10338022);
+                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> ("1"), Endian::eLittle) == 2154528969);
+                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (Characters::String (L"1")), Endian::eLittle) == 2154528969);
+                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> ("1", "mysalt"), Endian::eLittle) == 2164173146);
+                VerifyTestResult (EndianConverter<uint32_t> (Hash<USE_DIGESTER_> (93993), Endian::eLittle) == 1748544338);
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), EndianConverter<uint32_t> (2786528596, Endian::eLittle));
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), EndianConverter<uint32_t> (2786528596, Endian::eLittle, Configuration::GetEndianness ()));
             }
         }
 
