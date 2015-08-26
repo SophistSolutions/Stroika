@@ -43,8 +43,10 @@ my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
-my $DEFAULT_CWARNING_FLAGS = '-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Wno-unused-value -Wno-strict-aliasing -Wno-unused-local-typedefs -Wno-comment -Wno-unused-function -Wno-unknown-warning-option ';
+my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = '-Wall -Wno-switch -Wno-sign-compare -Wno-unused-variable -Wno-unused-but-set-variable  -Wno-unused-value -Wno-strict-aliasing -Wno-unused-local-typedefs -Wno-comment -Wno-unused-function ';
+my $DEFAULT_CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . ' -Wno-unknown-warning-option ';
 my $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46 = 'Wno-future-compat ';
+my $DEFAULT_CWARNING_FLAGS_GCC_AIX = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-cpp ';
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
@@ -165,6 +167,9 @@ sub	SetDefaultForCompilerDriver_
 		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS;
 		if ($COMPILER_DRIVER eq "clang++-4.6") {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46;
+		}
+		elsif ("$^O" eq "aix" and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 		}
 	}
 	if (!(defined $AR) and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
