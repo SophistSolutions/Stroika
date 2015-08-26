@@ -84,6 +84,22 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <>
+            inline  uint16_t    EndianConverter (uint16_t value, Endian from, Endian to)
+            {
+                Require (from == Endian::eBig or from == Endian::eLittle);  // just cuz thats all thats implemented
+                Require (to == Endian::eBig or to == Endian::eLittle);      // just cuz thats all thats implemented
+                if (from == to) {
+                    return value;
+                }
+                else {
+                    Assert (sizeof (value) == 2);
+                    return
+                        ((value & 0xFF) << 8)
+                        | ((value >> 8) & 0xFF)
+                        ;
+                }
+            }
+            template    <>
             inline  uint32_t    EndianConverter (uint32_t value, Endian from, Endian to)
             {
                 Require (from == Endian::eBig or from == Endian::eLittle);  // just cuz thats all thats implemented
@@ -94,13 +110,12 @@ namespace   Stroika {
                 else {
                     Assert (sizeof (value) == 4);
                     return
-                        ((value & 0x000000FF) << 24) +
-                        ((value & 0xFF000000) >> 24) +
-                        ((value & 0x0000FF00) << 8) +
-                        ((value & 0x00FF0000) >> 8)
+                        ((value & 0xFF) << 24)
+                        | ((value & 0xFF00) << 8)
+                        | ((value >> 8) & 0xFF00)
+                        | ((value >> 24) & 0xFF)
                         ;
                 }
-
             }
 
 

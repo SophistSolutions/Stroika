@@ -4,6 +4,7 @@
 //  TEST    Foundation::Configuration
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Configuration/Endian.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Configuration/Version.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -54,27 +55,40 @@ namespace {
     void    Test2_EnumNames_ ()
     {
         using namespace Test2_EnumNames_Private_;
-        Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-        Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+        VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+        VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         {
             const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
-            Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-            Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+            VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+            VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         }
         {
             const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
                 { fooEnum::eOne, L"eOne" },
                 { fooEnum::eTwo, L"eTwo" },
             };
-            Verify (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-            Verify (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+            VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
+            VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
         }
     }
 }
 
+
+
+
+
+
+namespace   {
+    void    Test3_Endian_ ()
+    {
+        using   namespace Configuration;
+        VerifyTestResult (EndianConverter<uint16_t> (0xAABB, Endian::eBig, Endian::eLittle) == 0xBBAA);
+        VerifyTestResult (EndianConverter<uint32_t> (0xAABBCCDD, Endian::eBig, Endian::eLittle) == 0xDDCCBBAA);
+    }
+}
 
 
 namespace   {
@@ -82,6 +96,7 @@ namespace   {
     {
         Test1_Version_ ();
         Test2_EnumNames_ ();
+        Test3_Endian_ ();
     }
 }
 
