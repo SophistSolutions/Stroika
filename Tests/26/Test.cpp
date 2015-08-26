@@ -12,6 +12,7 @@
 #endif
 
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Configuration/Endian.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/RC4.h"
@@ -282,17 +283,19 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
+			using	Configuration::Endian;
+			using	Configuration::EndianConverter;
             using   USE_DIGESTER_     =   Digester<Algorithm::Jenkins>;
             {
-                VerifyTestResult (Hash<USE_DIGESTER_> (1) == 10338022);
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == 2154528969);
-                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == 2154528969);
-                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == 2164173146);
-                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == 1748544338);
+                VerifyTestResult (Hash<USE_DIGESTER_> (1) == EndianConverter<uint32_t> (10338022, Endian::eLittle));
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1") == EndianConverter<uint32_t> (2154528969, Endian::eLittle));
+                VerifyTestResult (Hash<USE_DIGESTER_> (Characters::String (L"1")) == EndianConverter<uint32_t> (2154528969, Endian::eLittle));
+                VerifyTestResult (Hash<USE_DIGESTER_> ("1", "mysalt") == EndianConverter<uint32_t> (2164173146, Endian::eLittle));
+                VerifyTestResult (Hash<USE_DIGESTER_> (93993) == EndianConverter<uint32_t> (1748544338, Endian::eLittle));
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
+                DoCommonHasherTest_<USE_DIGESTER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), EndianConverter<uint32_t> (2786528596, Endian::eLittle));
             }
         }
 
