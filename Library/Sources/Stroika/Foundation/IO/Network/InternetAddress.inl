@@ -10,6 +10,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../../Configuration/Endian.h"
 #include    "../../Memory/Bits.h"
 
 
@@ -74,15 +75,18 @@ namespace   Stroika {
                 InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
                     : fAddressFamily_ (AddressFamily::V4)
 #if     qPlatform_POSIX
-                    , fV4_ { static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) }
+                    , fV4_ { Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24)) }
 #elif   qPlatform_Windows && !qCompilerAndStdLib_union_designators_Buggy
-                    , fV4_ ({{.S_addr = static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24))}})
+                    , fV4_ ({{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
 #endif
                 {
+                    // @todo - only these cases supported, and cannot static_assert cuz too many compiler bugs.... Soon... --LGP 2015-08-26
+                    // static_assert (Configuration::GetEndianness () == Configuration::Endian::eLittle or Configuration::GetEndianness () == Configuration::Endian::eBig, "NYI rare endian");
+
                     //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
                     // in left-to-right order. Network order is big-endian
 #if     qPlatform_Windows && qCompilerAndStdLib_union_designators_Buggy
-                    fV4_.s_addr = static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24));
+                    fV4_.s_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24));
 #endif
                 }
                 inline
