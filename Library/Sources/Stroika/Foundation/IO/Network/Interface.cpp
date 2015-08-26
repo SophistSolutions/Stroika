@@ -136,6 +136,17 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     Assert (r == 0);
 
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
+#if     defined (_AIX)
+        // I don't understand the logic behind this, but without this, we get errors
+        // in getFlags(). We could check there - and handle that with an extra return value, but this
+        // is simpler.
+        //
+        // And - its somewhat prescribed in https://www.ibm.com/developerworks/community/forums/html/topic?id=77777777-0000-0000-0000-000014698597
+        //
+        if (ifreqs[i].ifr_addr.sa_family != AF_INET) {
+            continue;
+        }
+#endif
         Interface   newInterface;
         String interfaceName { String::FromSDKString (ifreqs[i].ifr_name) };
         newInterface.fInternalInterfaceID = interfaceName;
