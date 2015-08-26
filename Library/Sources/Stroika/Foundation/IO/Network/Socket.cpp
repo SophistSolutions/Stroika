@@ -433,8 +433,8 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
     sockaddr_in useAddr;
     memset (&useAddr, 0, sizeof (useAddr));
     useAddr.sin_family = AF_INET;
-    useAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    useAddr.sin_port = htons((short)bindProperties.fPort);
+    useAddr.sin_addr.s_addr = htonl (INADDR_ANY);               //NB no ':' cuz some systems use macro
+    useAddr.sin_port = htons ((short)bindProperties.fPort);     //NB no ':' cuz some systems use macro
 
     Socket::PlatformNativeHandle sd;
 #if     qPlatform_POSIX

@@ -54,7 +54,7 @@ namespace   Stroika {
                                 sockaddr_in& as = reinterpret_cast<sockaddr_in&> (fSocketAddress_);
                                 as.sin_family = AF_INET;
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                as.sin_port = htons (portNumber);
+                                as.sin_port = htons (portNumber);                                                   //NB no ':' cuz some systems use macro
                                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");
                                 as.sin_addr = iaddr.As<in_addr> ();
                             }
@@ -64,7 +64,7 @@ namespace   Stroika {
                                 sockaddr_in6& as = reinterpret_cast<sockaddr_in6&> (fSocketAddress_);
                                 as.sin6_family = AF_INET6;
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                as.sin6_port = htons (portNumber);
+                                as.sin6_port = htons (portNumber);                                                  //NB no ':' cuz some systems use macro
                                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");
                                 as.sin6_addr = iaddr.As<in6_addr> ();
                             }
@@ -125,16 +125,16 @@ namespace   Stroika {
                                 static_assert (sizeof (sockaddr_in) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                return ntohs (as.sin_port);
-                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
+                                return ntohs (as.sin_port);                                                         //NB no ':' cuz some systems use macro
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");    // macro uses 'register' - htons not deprecated
                             }
                         case AF_INET6: {
                                 Require (fSocketAddress_.ss_family == AF_INET6 or fSocketAddress_.ss_family == AF_UNSPEC);
                                 static_assert (sizeof (sockaddr_in6) <= sizeof (fSocketAddress_), "sizeof (sockaddr_in6) <= sizeof (fSocketAddress_)");
                                 const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
                                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
-                                return ntohs (as.sin6_port);
-                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");  // macro uses 'register' - htons not deprecated
+                                return ntohs (as.sin6_port);                                                        //NB no ':' cuz some systems use macro
+                                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wdeprecated\"");    // macro uses 'register' - htons not deprecated
                             }
                         default: {
                                 AssertNotReached ();

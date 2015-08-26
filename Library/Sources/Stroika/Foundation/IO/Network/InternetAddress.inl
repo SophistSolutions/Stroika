@@ -46,7 +46,7 @@ namespace   Stroika {
                     , fV4_ { i } {
                     if (byteOrder == ByteOrder::Host)
                     {
-                        fV4_.s_addr = htonl (fV4_.s_addr);
+                        fV4_.s_addr = htonl (fV4_.s_addr);      //NB no ':' cuz some systems use macro
                     }
                 }
 #endif
@@ -64,7 +64,7 @@ namespace   Stroika {
                     , fV4_ (i)
                 {
                     if (byteOrder == ByteOrder::Host) {
-                        fV4_.s_addr = htonl (fV4_.s_addr);
+                        fV4_.s_addr = htonl (fV4_.s_addr);      //NB no ':' cuz some systems use macro
                     }
                 }
                 inline
