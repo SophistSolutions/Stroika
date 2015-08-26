@@ -168,7 +168,7 @@ sub	SetDefaultForCompilerDriver_
 		if ($COMPILER_DRIVER eq "clang++-4.6") {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46;
 		}
-		elsif ("$^O" eq "aix" and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+		elsif ("$^O" eq "aix" and (($COMPILER_DRIVER eq "g++ -pthread") || ($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 		}
 	}
