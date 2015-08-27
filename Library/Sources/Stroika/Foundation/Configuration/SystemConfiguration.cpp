@@ -15,9 +15,9 @@
 #endif
 
 #include    "../Characters/SDKString.h"
+#include    "../Characters/FloatConversion.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
-#include    "../Characters/String2Float.h"
 #include    "../Characters/String2Int.h"
 #include    "../Containers/Set.h"
 #if     qPlatform_POSIX

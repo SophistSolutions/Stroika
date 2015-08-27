@@ -8,7 +8,7 @@
 
 #include    "FloatConversion.h"
 
+_DeprecatedFile_ ("DEPRECATED in v2.0a104 - use FloatConversion.h");
 
-//// FILE DEPRECATED
 
 #endif  /*_Stroika_Foundation_Characters_FloatC2Str_h_*/

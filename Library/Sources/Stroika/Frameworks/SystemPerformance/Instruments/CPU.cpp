@@ -7,8 +7,8 @@
 #include    <Windows.h>
 #endif
 
+#include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"

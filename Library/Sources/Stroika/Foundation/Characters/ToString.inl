@@ -7,7 +7,7 @@
 #include    <wchar.h>
 
 #include    "../Configuration/Concepts.h"
-#include    "Float2String.h"
+#include    "FloatConversion.h"
 #include    "StringBuilder.h"
 
 /*

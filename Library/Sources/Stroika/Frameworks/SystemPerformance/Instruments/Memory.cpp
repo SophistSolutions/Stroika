@@ -3,8 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/Containers/Mapping.h"

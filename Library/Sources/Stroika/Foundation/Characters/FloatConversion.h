@@ -19,16 +19,16 @@
 /**
  * TODO:
  *
- *  @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
- *          correct.
+ *      @todo   Consider moving notion of Precision into Math module. And if so - and maybe otherwise - make
+ *              correct.
  *
- *          using PrecisionType = uint16_t;
+ *              using PrecisionType = uint16_t;
  *
- *  @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
- *          which is the number of decimals after the decimal point.
+ *      @todo   Consider augmenting the Float2StringOptions::Precision support with Float2StringOptions::MantisaLength
+ *              which is the number of decimals after the decimal point.
  *
- *  @todo   Consider more Float2StringOptions CTOR overloads (e.g. to specify precision and fTrimTrailingZeros
- *          at the same time).
+ *      @todo   Consider more Float2StringOptions CTOR overloads (e.g. to specify precision and fTrimTrailingZeros
+ *              at the same time).
  *
  *      @todo   Consdier if String2Float should take a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
@@ -81,7 +81,8 @@ namespace   Stroika {
              *  Convert the given decimal-format floating point string to an float,
              *  double, or long double.
              *
-             *  String2Float will return nan () if no valid parse (for example, -1.#INF000000000000 is invalid and returns nan)
+             *  String2Float will return nan () if no valid parse (for example, -1.#INF000000000000 is,
+             *  invalid and returns nan, despite the fact that this is often emitted by the MSFT sprintf() for inf values).
              *
              *  If the argument value is too large or too small to fit in 'T' (ERANGE) - then the value will be
              *  pinned to -numeric_limits<T>::infinity () or numeric_limits<T>::infinity ().

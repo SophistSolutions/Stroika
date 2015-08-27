@@ -8,7 +8,6 @@
 
 #include    "FloatConversion.h"
 
-//?TMPHACK BACKCWARD COMPAT - DEPRECAEE FILE
-
+_DeprecatedFile_ ("DEPRECATED in v2.0a104 - use FloatConversion.h");
 
 #endif  /*_Stroika_Foundation_Characters_String2Float_h_*/

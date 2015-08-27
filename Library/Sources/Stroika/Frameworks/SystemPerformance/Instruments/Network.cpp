@@ -8,8 +8,8 @@
 #include    <Iphlpapi.h>
 #endif
 
+#include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Sequence.h"

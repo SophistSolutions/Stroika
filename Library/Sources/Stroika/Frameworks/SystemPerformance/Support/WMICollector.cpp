@@ -12,9 +12,9 @@
 #endif
 
 #include    "../../../Foundation/Characters/CString/Utilities.h"
+#include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"

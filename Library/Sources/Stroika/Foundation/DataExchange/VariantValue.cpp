@@ -5,10 +5,9 @@
 
 #include    <sstream>
 
-#include    "../Characters/Float2String.h"
+#include    "../Characters/FloatConversion.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
-#include    "../Characters/String2Float.h"
 #include    "../Characters/String2Int.h"
 #include    "../DataExchange/BadFormatException.h"
 #include    "../Math/Common.h"
@@ -481,15 +480,29 @@ String  VariantValue::AsString_ () const
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
                 using   namespace   Characters;
+                /*
+                 *  numeric_limits<FloatType_>::digits gives the number of digits of the mantissa in radix units, but since we
+                 *  write the numbers as decimal, this doesn't come to an integral number of decimal digits.
+                 *
+                 *  So we either write too many digits of precision, or too few.
+                 *
+                 *  VERY VERY unsure what is best. From 2013-11-17 until 2015-08-27 I wrote digits10 + 2.
+                 *
+                 *  As of 2015-08-27 - I'm switching to digits10 + 1 - so effectively just rounding up instead of down.
+                 *  This means we will always write all the precision we have and then some ;-).
+                 *
+                 *  For a bit, I'll leave behind the older comment, which I think is not 100% right, but we can lose it soon.
+                    // given a number of digits of precision, its fractional (and rounded down). digits10 + 1 gives you the number
+                    // of actual digits after the decimal point. But there is one before the decimal point to give the precision we
+                    // use in iostream.
+                    //
+                    // Acutally - I'm really not sure of any of this. But this seems to work for now...
+                    //      -- LGP 2013-11-17
+                 */
                 //
-                // given a number of digits of precision, its fractional (and rounded down). digits10 + 1 gives you the number
-                // of actual digits after the decimal point. But there is one before the decimal point to give the precision we
-                // use in iostream.
                 //
-                // Acutally - I'm really not sure of any of this. But this seems to work for now...
-                //      -- LGP 2013-11-17
-                //
-                static  const   Float2StringOptions kFmtOptions_ = Float2StringOptions (Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2));
+                //????              static  const   Float2StringOptions kFmtOptions_ { Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 1) };
+                static  const   Float2StringOptions kFmtOptions_ { Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2) };
                 return Float2String (v->fVal, kFmtOptions_);
             }
         case    Type::eDate: {

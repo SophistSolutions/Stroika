@@ -4,8 +4,8 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Characters/FloatConversion.h"
 #include    "../../Characters/Format.h"
-#include    "../../Characters/String2Float.h"
 #include    "../../Characters/String2Int.h"
 #include    "../BadFormatException.h"
 

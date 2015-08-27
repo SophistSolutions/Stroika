@@ -16,8 +16,8 @@
 #endif
 
 #include    "../../../Foundation/Characters/CString/Utilities.h"
+#include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
-#include    "../../../Foundation/Characters/String2Float.h"
 #include    "../../../Foundation/Characters/String2Int.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Set.h"
