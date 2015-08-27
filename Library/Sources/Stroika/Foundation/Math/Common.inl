@@ -145,9 +145,24 @@ namespace   Stroika {
              **************************** Math::NearlyEquals ********************************
              ********************************************************************************
              */
+            namespace   Private_ {
+                template    <typename T>
+                constexpr   inline  T   mkCompareEpsilon_ (T l, T r)
+                {
+                    static_assert (std::is_floating_point<T>::value, "can only be used for float values");
+                    // @todo consider algorithm relating l/r
+#if 0
+                    if (l < -1 or l > 1) {
+                        return fabs (l) * numeric_limits<T>::epsilon () * 1000;
+                    }
+#endif
+                    return (10000 * numeric_limits<T>::epsilon ());
+                }
+            }
             template    <typename   T>
             inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
             {
+                Require (epsilon >= 0);
                 T diff = (l - r);
                 if (std::isnan (diff)) {
                     // nan-nan, or inf-inf
@@ -157,24 +172,15 @@ namespace   Stroika {
                 return std::fabs (diff) <= epsilon;
             }
             template    <typename   T>
-            inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_integral<T>::value >::type*)
+            inline  bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_integral<T>::value >::type*)
             {
-                return std::abs (l - r) <= epsilon;
+                return l == r;
             }
-#if     qCompilerAndStdLib_constexpr_Buggy
-            inline  bool   NearlyEquals (float l, float r, float epsilon = (10000 * numeric_limits<float>::epsilon ()))
+            template    <typename   T>
+            inline  bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_floating_point<T>::value >::type*)
             {
-                return NearlyEquals<float> (l, r, epsilon);
+                return NearlyEquals (l, r, Private_::mkCompareEpsilon_ (l, r));
             }
-            inline  bool    NearlyEquals (double l, double r, double epsilon = (10000 * numeric_limits<double>::epsilon ()))
-            {
-                return NearlyEquals<double> (l, r, epsilon);
-            }
-            inline  bool    NearlyEquals (long double l, long double r, double epsilon = (10000 * numeric_limits<long double>::epsilon ()))
-            {
-                return NearlyEquals<double> (l, r, epsilon);
-            }
-#endif
             template    <typename   T>
             inline  bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type*)
             {
@@ -188,6 +194,11 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T>
+            T   PinToSpecialPoint (T p, T special)
+            {
+                return PinToSpecialPoint (p, special, Private_::mkCompareEpsilon_ (special, p));
+            }
+            template    <typename   T>
             T   PinToSpecialPoint (T p, T special, T epsilon)
             {
                 if (Math::NearlyEquals (p, special, epsilon)) {
@@ -195,20 +206,6 @@ namespace   Stroika {
                 }
                 return p;
             }
-#if     qCompilerAndStdLib_constexpr_Buggy
-            inline float   PinToSpecialPoint (float p, float special, float epsilon = (100 * numeric_limits<float>::epsilon ()))
-            {
-                return PinToSpecialPoint<float> (p, special, epsilon);
-            }
-            inline double   PinToSpecialPoint (double p, double special, double epsilon = (100 * numeric_limits<double>::epsilon ()))
-            {
-                return PinToSpecialPoint<double> (p, special, epsilon);
-            }
-            inline long double   PinToSpecialPoint (long double p, long double special, long double epsilon = (100 * numeric_limits<long double>::epsilon ()))
-            {
-                return PinToSpecialPoint<long double> (p, special, epsilon);
-            }
-#endif
 
 
             /*

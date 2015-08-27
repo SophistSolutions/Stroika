@@ -37,14 +37,6 @@ namespace   Stroika {
             T  nan ();
 
 
-#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
-            template    <typename T>
-            inline  constexpr T numeric_limits_epsilon_BWA_ ()
-            {
-                return numeric_limits<T>::epsilon();
-            }
-#endif
-
             constexpr   double  kE  =   2.71828182845904523536;
             constexpr   double  kPi =   3.14159265358979323846;
 
@@ -73,27 +65,21 @@ namespace   Stroika {
 
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
-             *  But, so its more effective with templates, it can also be used with any type, and becomes require equality (==).
-             *
-             *  \note   The default (0) epsilon value for non-floating point numbers is chosen because this is really just
-             *          meant to address floating point rounding error. This zero value mimics the behavior NearlyEquals for other
-             *          non-floating point values.
+             *  But, so that it is more effective with templates, it can also be used with any type,
+             *  and becomes require equality (==).
              */
-#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
             template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits_epsilon_BWA_<T> ()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
-#else
+            bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
             template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
-#endif
+            bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
             template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon = 0, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
+            bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
             template    <typename   T>
             bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type* = 0);
 
 
             /**
-             *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEqual() to it (but better)
+             *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEquals() to it (but better)
              *
              *  Sometimes with floating point arithmatic you get points to move slightly. For example, if you
              *  want a number between 0.0 and 1.0, you might do some arithmatic and get -0.000000001; This might
@@ -103,15 +89,12 @@ namespace   Stroika {
              *  This helper allows values near a special value (like the endpoint of that range) to 'pin' to be
              *  exactly that endpoint.
              *
-             *  But PinToSpecialPoint () always returns its first argument, or something NearlyEqual() to it.
+             *  But PinToSpecialPoint () always returns its first argument, or something NearlyEquals() to it.
              */
-#if     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
             template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits_epsilon_BWA_<T> ()));
-#else
+            T   PinToSpecialPoint (T p, T special);
             template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits<T>::epsilon ()));
-#endif
+            T   PinToSpecialPoint (T p, T special, T epsilon);
 
 
             /**

@@ -433,27 +433,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\math\common.h(113): error C2064: term does not evaluate to a function taking 0 arguments
-*/
-#ifndef qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-#define qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy      qCompilerAndStdLib_constexpr_Buggy
-#endif
-
-#endif
-
-
-
-
 /*
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): error C2131: expression did not evaluate to a constant
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): note: failure was caused by non-constant arguments or reference to a non-constant symbol
