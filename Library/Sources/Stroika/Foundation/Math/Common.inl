@@ -147,12 +147,13 @@ namespace   Stroika {
              */
             namespace   Private_ {
                 template    <typename T>
-                constexpr   inline  T   mkCompareEpsilon_ (T l, T r)
+                // @todo see if we can make this constexpr somehow?
+                const   inline  T   mkCompareEpsilon_ (T l, T r)
                 {
                     static_assert (std::is_floating_point<T>::value, "can only be used for float values");
 #if 1
                     if (l < -10 or l > 10) {
-                        static  const   T   kScale_ { pow (static_cast <T> (10), - (numeric_limits<T>::digits10 - 1)) }; // @todo constexpr? is pow() constexpr?
+                        static  const   T   kScale_     =   pow (static_cast <T> (10), - (numeric_limits<T>::digits10 - 1)); // @todo constexpr? is pow() constexpr?
                         return fabs (l) * kScale_;
                     }
 #endif
