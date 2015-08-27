@@ -951,7 +951,7 @@ namespace   {
 namespace {
     namespace Test21_StringToIntEtc_Helper_ {
         template    <typename FLOAT_TYPE>
-        void    Verify_LL_ (FLOAT_TYPE l)
+        void    Verify_FloatStringRoundtripNearlyEquals_ (FLOAT_TYPE l)
         {
             VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision (numeric_limits<FLOAT_TYPE>::digits10 + 1)))));
         }
@@ -1004,17 +1004,17 @@ namespace {
             VerifyTestResult (std::isinf (CString::String2Float (L"+INF")));
             VerifyTestResult (std::isinf (CString::String2Float (L"+INFINITY")));
         }
-        if (false) {
+        {
             // roundtrip lossless
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::lowest ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::lowest ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::min ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::max ());
-            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::lowest ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<float>::lowest ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<double>::lowest ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_FloatStringRoundtripNearlyEquals_ (numeric_limits<long double>::lowest ());
         }
         {
             VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
