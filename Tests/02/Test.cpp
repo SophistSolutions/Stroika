@@ -986,7 +986,7 @@ namespace {
             VerifyTestResult (std::isnan (CString::String2Float (wstring (L""))));
             VerifyTestResult (std::isnan (String2Float<double> (String ())));
             VerifyTestResult (std::isnan (CString::String2Float ("     ")));
-            VerifyTestResult (std::isnan (String2Float<double> (L"-1.#INF000000000000")));
+            VerifyTestResult (std::isnan (String2Float<double> (L"-1.#INF000000000000")));  // MSFT sometimes generates these but they arent legal INF values!
             VerifyTestResult (std::isnan (CString::String2Float ("-1.#INF000000000000")));
             VerifyTestResult (std::isnan (String2Float<double> (L"1.#INF000000000000")));
             VerifyTestResult (std::isnan (CString::String2Float ("1.#INF000000000000")));
