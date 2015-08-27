@@ -107,7 +107,7 @@ namespace {
     // find %s -xdev -type f -inum %lld -print 2> /dev/null - but much faster.
     // @todo - xdev part. Not only possible speed hack, but also needed for correctness since
     // we could match the wrong inode if we crossed filesystems.
-    SDKString   FindPath2Inode_ (const SDKString& dir, ino_t inodeNumber)
+    SDKString   FindPath2Inode_ (const SDKString& dir, dev_t restrictToDev, ino_t inodeNumber)
     {
         DIR*       dirIt    { ::opendir (dir.c_str ()) };
         if (dirIt == nullptr) {
@@ -131,8 +131,12 @@ namespace {
             struct  stat    s;
             SDKString   filePath = dir + cur->d_name;
             if (::stat (filePath.c_str (), &s) == 0) {
+                if (s.st_dev != restrictToDev) {
+                    // another mounted volume
+                    continue;
+                }
                 if (s.st_mode & S_IFDIR) {
-                    SDKString   tmp = FindPath2Inode_ (filePath + "/", inodeNumber);
+                    SDKString   tmp = FindPath2Inode_ (filePath + "/", restrictToDev, inodeNumber);
                     if (not tmp.empty ()) {
                         return tmp;
                     }
@@ -143,6 +147,16 @@ namespace {
             }
         }
         return SDKString ();    // signal not found
+    }
+    SDKString   FindPath2Inode_ (const SDKString& dir, ino_t inodeNumber)
+    {
+        struct  stat    s;
+        if (::stat (dir.c_str (), &s) == 0) {
+            if (s.st_mode & S_IFDIR) {
+                return FindPath2Inode_ (dir, s.st_dev, inodeNumber);
+            }
+        }
+        return SDKString ();
     }
     SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
     {
