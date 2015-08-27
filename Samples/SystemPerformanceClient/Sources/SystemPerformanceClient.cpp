@@ -5,7 +5,7 @@
 
 #include    <iostream>
 
-#include    "Stroika/Foundation/Characters/String2Float.h"
+#include    "Stroika/Foundation/Characters/FloatConversion.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
