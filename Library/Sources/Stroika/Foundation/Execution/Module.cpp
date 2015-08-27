@@ -145,7 +145,7 @@ namespace {
         string  fsName;
         if (not fsBlockName.empty ()) {
             char buf[1024];
-            snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());
+            snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());    // not - unreliable - could match multiple...
             SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
             int     beforeFSName     =  devfsline.rfind (' ');
             if (beforeFSName != string::npos) {
@@ -155,7 +155,7 @@ namespace {
         string  exeName;
         if (not fsName.empty ()) {
             char buf[1024];
-            snprintf (buf, NEltsOf (buf), "find %s -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
+            snprintf (buf, NEltsOf (buf), "find %s -xdev -type f -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
             exeName = myProcessRunnerFirstLine_ (buf);
         }
         return exeName;
