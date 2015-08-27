@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_Float2String_inl_
-#define _Stroika_Foundation_Characters_Float2String_inl_  1
+#ifndef _Stroika_Foundation_Characters_FloatConversion_inl_
+#define _Stroika_Foundation_Characters_FloatConversion_inl_  1
 
 
 /*
@@ -20,11 +20,11 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ****************************** Float2StringOptions *****************************
+            *********************** Float2StringOptions::Precision *************************
             ********************************************************************************
             */
-            inline  Float2StringOptions::Precision::Precision (unsigned int p) :
-                fPrecision (p)
+            inline  Float2StringOptions::Precision::Precision (unsigned int p)
+                : fPrecision (p)
             {
             }
 
@@ -34,46 +34,23 @@ namespace   Stroika {
             ****************************** Float2StringOptions *****************************
             ********************************************************************************
             */
-            inline  Float2StringOptions::Float2StringOptions ()
-                : fPrecision ()
-                , fFmtFlags ()
-                , fUseLocale ()
-                , fTrimTrailingZeros (true)
-            {
-            }
             inline  Float2StringOptions::Float2StringOptions (UseCLocale)
-                : fPrecision ()
-                , fFmtFlags ()
-                , fUseLocale ()
-                , fTrimTrailingZeros (true)
             {
             }
             inline  Float2StringOptions::Float2StringOptions (UseCurrentLocale)
-                : fPrecision ()
-                , fFmtFlags ()
-                , fUseLocale (locale ())
-                , fTrimTrailingZeros (true)
+                : fUseLocale (locale ())
             {
             }
             inline  Float2StringOptions::Float2StringOptions (const std::locale& l)
-                : fPrecision ()
-                , fFmtFlags ()
-                , fUseLocale (l)
-                , fTrimTrailingZeros (true)
+                :  fUseLocale (l)
             {
             }
             inline  Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
-                : fPrecision ()
-                , fFmtFlags (fmtFlags)
-                , fUseLocale ()
-                , fTrimTrailingZeros (true)
+                : fFmtFlags (fmtFlags)
             {
             }
             inline  Float2StringOptions::Float2StringOptions (Precision precision)
                 : fPrecision (precision.fPrecision)
-                , fFmtFlags ()
-                , fUseLocale ()
-                , fTrimTrailingZeros (true)
             {
             }
 
@@ -81,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_Float2String_inl_*/
+#endif  /*_Stroika_Foundation_Characters_FloatConversion_inl_*/

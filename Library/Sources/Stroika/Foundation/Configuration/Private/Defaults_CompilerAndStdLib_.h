@@ -636,6 +636,23 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+#ifndef qCompilerAndStdLib_strtof_NAN_ETC_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update5_FULLVER_
+#define qCompilerAndStdLib_strtof_NAN_ETC_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
+#else
+#define qCompilerAndStdLib_strtof_NAN_ETC_Buggy   0
+#endif
+
+#endif
+
+
+
+
+
+
+
 
 
 

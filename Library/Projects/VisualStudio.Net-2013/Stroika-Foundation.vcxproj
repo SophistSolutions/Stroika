@@ -119,7 +119,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Characters-CString-Utilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Characters-CString-Utilities.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Characters-Format.obj</ObjectFileName>
@@ -164,7 +164,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
@@ -935,6 +934,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
@@ -1301,7 +1301,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
@@ -1310,7 +1310,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md" />
