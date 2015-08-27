@@ -11,7 +11,6 @@
 #include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Foundation/Characters/FloatConversion.h"
 #include    "Stroika/Foundation/Characters/Format.h"
-#include    "Stroika/Foundation/Characters/String2Float.h"
 #include    "Stroika/Foundation/Characters/String2Int.h"
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
@@ -950,6 +949,13 @@ namespace   {
 }
 
 namespace {
+    namespace Test21_StringToIntEtc_Helper_ {
+        template    <typename FLOAT_TYPE>
+        void    Verify_LL_ (FLOAT_TYPE l)
+        {
+            VerifyTestResult (Math::NearlyEquals (l, Characters::String2Float<FLOAT_TYPE> (Float2String (l, Float2StringOptions::Precision (numeric_limits<FLOAT_TYPE>::digits10 + 1)))));
+        }
+    }
     void    Test21_StringToIntEtc_ ()
     {
         {
@@ -981,31 +987,35 @@ namespace {
             VerifyTestResult (std::isnan (String2Float<double> (String ())));
             VerifyTestResult (std::isnan (CString::String2Float ("     ")));
             VerifyTestResult (std::isnan (String2Float<double> (L"-1.#INF000000000000")));
-            //@todo fix VerifyTestResult (std::isnan (CString::String2Float ("-1.#INF000000000000")));
+            VerifyTestResult (std::isnan (CString::String2Float ("-1.#INF000000000000")));
             VerifyTestResult (std::isnan (String2Float<double> (L"1.#INF000000000000")));
-            //@todo fix VerifyTestResult (std::isnan (CString::String2Float ("1.#INF000000000000")));
-
+            VerifyTestResult (std::isnan (CString::String2Float ("1.#INF000000000000")));
             VerifyTestResult (std::isinf (String2Float<double> (L"INF")));
             VerifyTestResult (std::isinf (String2Float<double> (L"INFINITY")));
             VerifyTestResult (std::isinf (String2Float<double> (L"-INF")));
             VerifyTestResult (std::isinf (String2Float<double> (L"-INFINITY")));
             VerifyTestResult (std::isinf (String2Float<double> (L"+INF")));
             VerifyTestResult (std::isinf (String2Float<double> (L"+INFINITY")));
+
+            VerifyTestResult (std::isinf (CString::String2Float (L"INF")));
+            VerifyTestResult (std::isinf (CString::String2Float (L"INFINITY")));
+            VerifyTestResult (std::isinf (CString::String2Float (L"-INF")));
+            VerifyTestResult (std::isinf (CString::String2Float (L"-INFINITY")));
+            VerifyTestResult (std::isinf (CString::String2Float (L"+INF")));
+            VerifyTestResult (std::isinf (CString::String2Float (L"+INFINITY")));
         }
-#if 0
-        {
+        if (false) {
             // roundtrip lossless
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<float>::max (), Characters::String2Float<float> (Float2String (numeric_limits<float>::max (), Float2StringOptions::Precision (numeric_limits<float>::digits10 + 1)))));
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<double>::max (), Characters::String2Float<double> (Float2String (numeric_limits<double>::max ()))));
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<long double>::max (), Characters::String2Float<long double> (Float2String (numeric_limits<long double>::max ()))));
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<float>::lowest ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<double>::lowest ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::min ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::max ());
+            Test21_StringToIntEtc_Helper_::Verify_LL_ (numeric_limits<long double>::lowest ());
         }
-        {
-            // roundtrip lossless
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<float>::lowest (), Characters::String2Float<float> (Float2String (numeric_limits<float>::lowest ()))));
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<double>::lowest (), Characters::String2Float<double> (Float2String (numeric_limits<double>::lowest ()))));
-            VerifyTestResult (Math::NearlyEquals (numeric_limits<long double>::lowest (), Characters::String2Float<long double> (Float2String (numeric_limits<long double>::lowest ()))));
-        }
-#endif
         {
             VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"-44.4"), -44.4));

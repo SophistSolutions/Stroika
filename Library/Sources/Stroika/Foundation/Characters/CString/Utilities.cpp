@@ -253,7 +253,13 @@ wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c
 wstring Characters::CString::Float2String (double f)
 {
     if (std::isnan (f)) {
-        return wstring ();
+        static  const   wstring     kNAN_STR_ { L"NAN" };
+        return kNAN_STR_;
+    }
+    if (std::isinf (f)) {
+        static  const   wstring     kNEG_INF_STR_   { L"-INF" };
+        static  const   wstring     kINF_STR_       { L"INF" };
+        return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
     }
     wstringstream s;
     s.imbue (locale ("C"));
@@ -366,8 +372,20 @@ unsigned long long int Characters::CString::Private_::String2UInt_ (const wstrin
  */
 double  Characters::CString::String2Float (const string& s)
 {
+#if     qCompilerAndStdLib_strtof_NAN_ETC_Buggy
+    if (s == "INF" or s == "+INF" or s == "INFINITY" or s == "+INFINITY") {
+        return numeric_limits<double>::infinity ();
+    }
+    if (s == "-INF" or s == "-INFINITY") {
+        return -numeric_limits<double>::infinity ();
+    }
+#endif
     char*   e   =   nullptr;
     double  d   =   strtod (s.c_str (), &e);
+    // if trailing crap - return nan
+    if (*e != '\0') {
+        return Math::nan<double> ();
+    }
     if (d == 0) {
         if (s.c_str () == e) {
             return Math::nan<double> ();
@@ -379,8 +397,19 @@ double  Characters::CString::String2Float (const string& s)
 double  Characters::CString::String2Float (const wchar_t* s)
 {
     RequireNotNull (s);
+#if     qCompilerAndStdLib_strtof_NAN_ETC_Buggy
+    if (::wcscmp (s, L"INF") == 0 or ::wcscmp (s,  L"+INF") == 0 or ::wcscmp (s, L"INFINITY") == 0 or ::wcscmp (s, L"+INFINITY") == 0) {
+        return numeric_limits<double>::infinity ();
+    }
+    if (::wcscmp (s, L"-INF") == 0 or ::wcscmp (s, L"-INFINITY") == 0) {
+        return -numeric_limits<double>::infinity ();
+    }
+#endif
     wchar_t*    e   =   nullptr;
     double  d   =   wcstod (s, &e);
+    if (*e != '\0') {
+        return Math::nan<double> ();
+    }
     if (d == 0) {
         if (s == e) {
             return Math::nan<double> ();
@@ -391,8 +420,19 @@ double  Characters::CString::String2Float (const wchar_t* s)
 
 double  Characters::CString::String2Float (const wstring& s)
 {
+#if     qCompilerAndStdLib_strtof_NAN_ETC_Buggy
+    if (s == L"INF" or s == L"+INF" or s == L"INFINITY" or s == L"+INFINITY") {
+        return numeric_limits<double>::infinity ();
+    }
+    if (s == L"-INF" or s == L"-INFINITY") {
+        return -numeric_limits<double>::infinity ();
+    }
+#endif
     wchar_t*    e   =   nullptr;
     double  d   =   wcstod (s.c_str (), &e);
+    if (*e != '\0') {
+        return Math::nan<double> ();
+    }
     if (d == 0) {
         if (s.c_str () == e) {
             return Math::nan<double> ();

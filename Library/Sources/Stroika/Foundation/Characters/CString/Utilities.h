@@ -206,6 +206,8 @@ namespace   Stroika {
 
                 /**
                  *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
+                 *
+                 *  @see Characters::Float2String
                  */
                 wstring Float2String (double f);
 
