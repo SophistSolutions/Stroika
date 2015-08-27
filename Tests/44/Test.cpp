@@ -395,7 +395,7 @@ namespace   {
 #endif
                 ds += now;
                 DateTime    dt  =   DateTime::FromTickCount (ds);
-                VerifyTestResult (dt == DateTime::FromTickCount (dt.ToTickCount ()));
+                VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
                 VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1));      // crazy large epsilon for now because we represent datetime to nearest second
             }
         }

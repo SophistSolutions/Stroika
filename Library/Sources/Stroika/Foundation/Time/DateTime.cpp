@@ -726,3 +726,21 @@ Duration    Time::operator- (const DateTime& lhs, const DateTime& rhs)
     // Define in .cpp file to avoid #include Duration in DateTime.h
     return lhs.Difference (rhs);
 }
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** Math::NearlyEquals **********************************
+ ********************************************************************************
+ */
+bool    Math::NearlyEquals (const Time::DateTime& l, const Time::DateTime& r)
+{
+    return NearlyEquals (l, r, 1.0);
+}
+bool    Math::NearlyEquals (const Time::DateTime& l, const Time::DateTime& r, Time::DurationSecondsType epsilon)
+{
+    return l == r or Math::NearlyEquals (l.ToTickCount (), r.ToTickCount (), epsilon);
+}
