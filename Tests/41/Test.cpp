@@ -151,6 +151,22 @@ namespace {
 }
 
 
+
+
+namespace {
+    void    Test7_NearlyEquals_ ()
+    {
+        VerifyTestResult (Math::NearlyEquals (1.0, 1.0 + numeric_limits<double>::epsilon ()));
+        VerifyTestResult (not Math::NearlyEquals (1.0, 1.1));
+        if (numeric_limits<double>::digits10 > 14) {
+            VerifyTestResult (Math::NearlyEquals (1.0e22, 1.000000000000001e22));
+        }
+        VerifyTestResult (not Math::NearlyEquals (1.0e22, 1.1e22));
+    }
+
+}
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -160,6 +176,7 @@ namespace   {
         Test4_OddEvenPrime_ ();
         Test5_ReBin_ ();
         Test6_Statistics_ ();
+        Test7_NearlyEquals_ ();
     }
 }
 

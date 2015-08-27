@@ -150,10 +150,10 @@ namespace   Stroika {
                 constexpr   inline  T   mkCompareEpsilon_ (T l, T r)
                 {
                     static_assert (std::is_floating_point<T>::value, "can only be used for float values");
-                    // @todo consider algorithm relating l/r
-#if 0
-                    if (l < -1 or l > 1) {
-                        return fabs (l) * numeric_limits<T>::epsilon () * 1000;
+#if 1
+                    if (l < -10 or l > 10) {
+                        static  const   T   kScale_ { pow (static_cast <T> (10), - (numeric_limits<T>::digits10 - 1)) }; // @todo constexpr? is pow() constexpr?
+                        return fabs (l) * kScale_;
                     }
 #endif
                     return (10000 * numeric_limits<T>::epsilon ());
@@ -168,6 +168,24 @@ namespace   Stroika {
                     // nan-nan, or inf-inf
                     // maybe other cases shouldnt be considered nearly equals?
                     return std::fpclassify (l) == std::fpclassify (r);
+                }
+                if (std::isinf (diff)) {
+                    static  const   T   kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<T>::max (), numeric_limits<T>::max ());
+                    if (not isinf (l) and std::fabs (l - numeric_limits<T>::max ()) <= kEpsilon_) {
+                        l = numeric_limits<T>::infinity ();
+                    }
+                    if (not isinf (l) and std::fabs (l - numeric_limits<T>::lowest ()) <= kEpsilon_) {
+                        l = -numeric_limits<T>::infinity ();
+                    }
+                    if (not isinf (r) and std::fabs (r - numeric_limits<T>::max ()) <= kEpsilon_) {
+                        r = numeric_limits<T>::infinity ();
+                    }
+                    if (not isinf (r) and std::fabs (r - numeric_limits<T>::lowest ()) <= kEpsilon_) {
+                        r = -numeric_limits<T>::infinity ();
+                    }
+                    if (isinf (l) and isinf (r)) {
+                        return (l > 0) == (r > 0);
+                    }
                 }
                 return std::fabs (diff) <= epsilon;
             }
