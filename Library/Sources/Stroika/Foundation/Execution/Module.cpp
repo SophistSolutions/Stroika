@@ -9,6 +9,10 @@
 #if     qPlatform_POSIX && qSupport_Proc_Filesystem
 #include    <unistd.h>
 #endif
+#if     defined (_AIX)
+#include    <dirent.h>
+#include    <unistd.h>
+#endif
 
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
@@ -100,6 +104,44 @@ namespace {
         }
         return accum;
     }
+    // test if this is faster than /bin/find (maybe cuz it stops after first find and AIX find cannot seem to be told todo that).
+    SDKString   FindPath2Inode_ (const SDKString& dir, ino_t inodeNumber)
+    {
+        DIR*       dirIt    { ::opendir (dir.c_str ()) };
+        if (dirIt == nullptr) {
+            return SDKString ();
+        }
+        struct CLEANUP_ {
+            DIR*       fDirIt_;
+            CLEANUP_ (DIR* d) : fDirIt_ (d) {}
+            ~CLEANUP_ ()
+            {
+                if (fDirIt_ != nullptr) {
+                    ::closedir (fDirIt_);
+                }
+            }
+        };
+        CLEANUP_ c { dirIt };
+        for (dirent* cur = ::readdir (dirIt); cur != nullptr; cur = ::readdir (dirIt)) {
+            if (::strcmp (cur->d_name, ".") == 0 or ::strcmp (cur->d_name, "..") == 0) {
+                continue;
+            }
+            struct  stat    s;
+            SDKString   filePath = dir + cur->d_name;
+            if (::stat (filePath.c_str (), &s) == 0) {
+                if (s.st_mode & S_IFDIR) {
+                    SDKString   tmp = FindPath2Inode_ (filePath + "/", inodeNumber);
+                    if (not tmp.empty ()) {
+                        return tmp;
+                    }
+                }
+                else if ((s.st_mode & S_IFREG) and s.st_ino == inodeNumber) {
+                    return filePath;
+                }
+            }
+        }
+        return SDKString ();    // signal not found
+    }
     SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
     {
         /*
@@ -154,9 +196,10 @@ namespace {
         }
         string  exeName;
         if (not fsName.empty ()) {
-            char buf[1024];
-            snprintf (buf, NEltsOf (buf), "find %s -xdev -type f -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
-            exeName = myProcessRunnerFirstLine_ (buf);
+            //char buf[1024];
+            //snprintf (buf, NEltsOf (buf), "find %s -xdev -type f -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
+            //exeName = myProcessRunnerFirstLine_ (buf);
+            exeName = FindPath2Inode_ (fsName + "/", inode);
         }
         return exeName;
     }
