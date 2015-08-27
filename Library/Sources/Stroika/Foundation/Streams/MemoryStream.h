@@ -47,6 +47,12 @@ namespace   Stroika {
              *  \note   NB: This class COULD have been called MemoryInputOutputStream.
              *
              *  @see ExternallyOwnedMemoryInputStream
+             *
+             *  \par Example Usage
+             *      \code
+             *          BLOB                    blob    =   ReadRaw ();
+             *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte> (blob));
+             *      \endcode
              */
             template    <typename   ELEMENT_TYPE>
             class   MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
