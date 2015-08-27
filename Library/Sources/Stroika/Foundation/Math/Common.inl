@@ -172,19 +172,19 @@ namespace   Stroika {
                 }
                 if (std::isinf (diff)) {
                     static  const   T   kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<T>::max (), numeric_limits<T>::max ());
-                    if (not isinf (l) and std::fabs (l - numeric_limits<T>::max ()) <= kEpsilon_) {
+                    if (not std::isinf (l) and std::fabs (l - numeric_limits<T>::max ()) <= kEpsilon_) {
                         l = numeric_limits<T>::infinity ();
                     }
-                    if (not isinf (l) and std::fabs (l - numeric_limits<T>::lowest ()) <= kEpsilon_) {
+                    if (not std::isinf (l) and std::fabs (l - numeric_limits<T>::lowest ()) <= kEpsilon_) {
                         l = -numeric_limits<T>::infinity ();
                     }
-                    if (not isinf (r) and std::fabs (r - numeric_limits<T>::max ()) <= kEpsilon_) {
+                    if (not std::isinf (r) and std::fabs (r - numeric_limits<T>::max ()) <= kEpsilon_) {
                         r = numeric_limits<T>::infinity ();
                     }
-                    if (not isinf (r) and std::fabs (r - numeric_limits<T>::lowest ()) <= kEpsilon_) {
+                    if (not std::isinf (r) and std::fabs (r - numeric_limits<T>::lowest ()) <= kEpsilon_) {
                         r = -numeric_limits<T>::infinity ();
                     }
-                    if (isinf (l) and isinf (r)) {
+                    if (std::isinf (l) and std::isinf (r)) {
                         return (l > 0) == (r > 0);
                     }
                 }
