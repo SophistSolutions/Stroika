@@ -104,7 +104,9 @@ namespace {
         }
         return accum;
     }
-    // test if this is faster than /bin/find (maybe cuz it stops after first find and AIX find cannot seem to be told todo that).
+    // find %s -xdev -type f -inum %lld -print 2> /dev/null - but much faster.
+    // @todo - xdev part. Not only possible speed hack, but also needed for correctness since
+    // we could match the wrong inode if we crossed filesystems.
     SDKString   FindPath2Inode_ (const SDKString& dir, ino_t inodeNumber)
     {
         DIR*       dirIt    { ::opendir (dir.c_str ()) };
@@ -196,9 +198,6 @@ namespace {
         }
         string  exeName;
         if (not fsName.empty ()) {
-            //char buf[1024];
-            //snprintf (buf, NEltsOf (buf), "find %s -xdev -type f -inum %lld -print 2> /dev/null", fsName.c_str (), static_cast<long long> (inode));
-            //exeName = myProcessRunnerFirstLine_ (buf);
             exeName = FindPath2Inode_ (fsName + "/", inode);
         }
         return exeName;
