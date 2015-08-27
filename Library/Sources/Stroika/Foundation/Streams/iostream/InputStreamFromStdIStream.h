@@ -66,6 +66,13 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety
                  *      InputStreamFromStdIStream must be externally synchonized, except for purely read-only operations.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      stringstream tmpStrm;
+                 *      tmpStrm << "some xml";
+                 *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte> (tmpStrm), MyCallback ());
+                 *      \endcode
                  */
                 template    <typename   ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class   InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {
