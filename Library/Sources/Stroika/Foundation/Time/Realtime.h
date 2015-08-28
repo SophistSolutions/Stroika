@@ -30,7 +30,10 @@ namespace   Stroika {
         namespace   Time {
 
 
-            using       DurationSecondsType     =   double;
+            /**
+             *  Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
+             */
+            using       DurationSecondsType     =   long double;
 
 
             /**
@@ -60,7 +63,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr   DurationSecondsType kInfinite   =   std::numeric_limits<DurationSecondsType>::max ();
 #else
-            const   DurationSecondsType kInfinite       =   DBL_MAX;
+            const   DurationSecondsType kInfinite       =   LDBL_MAX;
 #endif
 
 
