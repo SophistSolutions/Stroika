@@ -33,6 +33,9 @@
  *
  * TODO:
  *
+ *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
+ *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
+ *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
