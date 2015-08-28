@@ -40,6 +40,15 @@ using   Time::DurationSecondsType;
 
 
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 // Leave this off by default since I'm not sure its safe, and at best it uses some time. But make it
 // easy to turn on it release builds...
 //      -- LGP 2009-05-28
@@ -316,7 +325,10 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 sigset_t    mySet;
                 sigemptyset (&mySet);
                 (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
-                Verify (pthread_sigmask (SIG_UNBLOCK,  &mySet, nullptr) == 0);
+                Verify (pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("Just set SIG_UNBLOCK for signal %d in this thread", GetSignalUsedForThreadAbort ());
+#endif
             }
 #endif
 
@@ -482,8 +494,10 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 #if     qPlatform_POSIX
 void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
     // unsafe to call trace code - because called as unsafe handler
     //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
+#endif
 #if 1
 #if 0
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
