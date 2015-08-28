@@ -736,11 +736,11 @@ Duration    Time::operator- (const DateTime& lhs, const DateTime& rhs)
  ************************** Math::NearlyEquals **********************************
  ********************************************************************************
  */
-bool    Math::NearlyEquals (const Time::DateTime& l, const Time::DateTime& r)
+bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
 {
-    return NearlyEquals (l, r, 1.0);
+    return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
 }
-bool    Math::NearlyEquals (const Time::DateTime& l, const Time::DateTime& r, Time::DurationSecondsType epsilon)
+bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
 {
     return l == r or Math::NearlyEquals (l.ToTickCount (), r.ToTickCount (), epsilon);
 }

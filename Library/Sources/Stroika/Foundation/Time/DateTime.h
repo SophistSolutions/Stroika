@@ -468,8 +468,8 @@ namespace   Stroika {
 namespace Stroika {
     namespace Foundation {
         namespace Math {
-            bool    NearlyEquals (const Time::DateTime& l, const Time::DateTime& r);
-            bool    NearlyEquals (const Time::DateTime& l, const Time::DateTime& r, Time::DurationSecondsType epsilon);
+            bool    NearlyEquals (Time::DateTime l, Time::DateTime r);
+            bool    NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
         }
     }
 }
