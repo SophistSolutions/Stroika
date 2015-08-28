@@ -103,6 +103,7 @@ namespace {
 namespace   {
     void    Test_0_Test_VarDateFromStrOnFirstTry_()
     {
+        TraceContextBumper ctx ("Test_0_Test_VarDateFromStrOnFirstTry_");
         // TEST MUST BE FIRST - OR VERY NEAR START OF APP!
         //
         // Before any calls to VarDateFromStr ()...
@@ -121,6 +122,7 @@ namespace   {
 
     void    Test_1_TestTickCountGrowsMonotonically_ ()
     {
+        TraceContextBumper ctx ("Test_1_TestTickCountGrowsMonotonically_");
         DurationSecondsType start   =   Time::GetTickCount ();
         Execution::Sleep (0.1);
         VerifyTestResult (start <= Time::GetTickCount ());
@@ -133,6 +135,7 @@ namespace   {
 
     void    Test_2_TestTimeOfDay_ ()
     {
+        TraceContextBumper ctx ("Test_2_TestTimeOfDay_");
         {
             TimeOfDay   t;
             VerifyTestResult (t.empty ());
@@ -223,6 +226,7 @@ namespace   {
 
     void    Test_3_TestDate_ ()
     {
+        TraceContextBumper ctx ("Test_3_TestDate_");
         {
             Date    d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             TestRoundTripFormatThenParseNoChange_ (d);
@@ -324,6 +328,7 @@ namespace   {
 
     void    Test_4_TestDateTime_ ()
     {
+        TraceContextBumper ctx ("Test_4_TestDateTime_");
         {
             DateTime    d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1903-04-04");
@@ -409,6 +414,7 @@ namespace   {
 
     void    Test_5_DateTimeTimeT_ ()
     {
+        TraceContextBumper ctx ("Test_5_DateTimeTimeT_");
         {
             DateTime    d   =   Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20));
             VerifyTestResult (d.As<time_t> () == 956188800);    // source - http://www.onlineconversion.com/unix_time.htm
@@ -447,6 +453,7 @@ namespace   {
 
     void    Test_6_DateTimeStructTM_ ()
     {
+        TraceContextBumper ctx ("Test_6_DateTimeStructTM_");
         {
             struct  tm  x;
             memset (&x, 0, sizeof (x));
@@ -476,6 +483,7 @@ namespace   {
 
     void    Test_7_Duration_ ()
     {
+        TraceContextBumper ctx ("Test_7_Duration_");
         {
             VerifyTestResult (Duration (0).As<time_t> () == 0);
             VerifyTestResult (Duration (0).As<String> () == L"PT0S");
@@ -581,6 +589,7 @@ namespace   {
 
     void    Test_8_DateTimeWithDuration_ ()
     {
+        TraceContextBumper ctx ("Test_8_DateTimeWithDuration_");
         {
             DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
@@ -616,6 +625,7 @@ namespace   {
 
     void    Test_9_TZOffsetAndDaylightSavingsTime_ ()
     {
+        TraceContextBumper ctx ("Test_9_TZOffsetAndDaylightSavingsTime_");
         /*
          * I cannot think if any good way to test this stuff - since it depends on the current timezone and I cannot
          * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
@@ -649,6 +659,7 @@ namespace   {
 namespace   {
     void    Test_10_std_duration_ ()
     {
+        TraceContextBumper ctx ("Test_10_std_duration_");
         const   Duration    k30Seconds      =   Duration (30.0);
         VerifyTestResult (k30Seconds.As<time_t> () == 30);
         VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
@@ -670,6 +681,7 @@ namespace   {
 namespace   {
     void    Test_11_DurationRange_ ()
     {
+        TraceContextBumper ctx ("Test_11_DurationRange_");
         DurationRange d1;
         DurationRange d2    =   DurationRange::FullRange ();
         VerifyTestResult (d1.empty ());
@@ -683,6 +695,7 @@ namespace   {
 namespace   {
     void    Test_12_DateRange_ ()
     {
+        TraceContextBumper ctx ("Test_12_DateRange_");
         DateRange d1;
         DateRange d2    =   DateRange::FullRange ();
         VerifyTestResult (d1.empty ());
@@ -696,6 +709,7 @@ namespace   {
 namespace   {
     void    Test_13_DateTimeRange_ ()
     {
+        TraceContextBumper ctx ("Test_13_DateTimeRange_");
         DateTimeRange d1;
         DateTimeRange d2    =   DateTimeRange::FullRange ();
         VerifyTestResult (d1.empty ());
@@ -710,6 +724,7 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
+        TraceContextBumper ctx ("DoRegressionTests_");
         Test_0_Test_VarDateFromStrOnFirstTry_();
         Test_1_TestTickCountGrowsMonotonically_ ();
         Test_2_TestTimeOfDay_ ();
