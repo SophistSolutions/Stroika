@@ -408,7 +408,7 @@ namespace {
     {
         static  DateTime sTimeZero_ = [] () {
             DateTime    now = DateTime::Now ();
-            return now.AddSeconds (-static_cast<time_t> (Time::GetTickCount ()));
+            return now.AddSeconds (-static_cast<int64_t> (Time::GetTickCount ()));
         } ();
         return sTimeZero_;
     }
@@ -422,7 +422,7 @@ DurationSecondsType    DateTime::ToTickCount () const
 DateTime    DateTime::FromTickCount (DurationSecondsType tickCount)
 {
     Assert (GetTimeZeroOffset_ ().GetTimezone () == Timezone::eLocalTime);
-    return GetTimeZeroOffset_ ().AddSeconds (static_cast<time_t> (round (tickCount)));
+    return GetTimeZeroOffset_ ().AddSeconds (static_cast<int64_t> (round (tickCount)));
 }
 
 String DateTime::Format (PrintFormat pf) const
@@ -641,7 +641,7 @@ namespace Stroika {
 
 DateTime    DateTime::Add (const Duration& d) const
 {
-    return AddSeconds (d.As<time_t> ());
+    return AddSeconds (d.As<int64_t> ());
 }
 
 DateTime    DateTime::AddDays (int days) const
