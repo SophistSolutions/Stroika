@@ -19,6 +19,10 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *		@todo	Consider making DurationSecondsType = long double (and for now must fix kInfinite to L..
+ *				while we support qCompilerAndStdLib_constexpr_Buggy). Tried and worked, but didnt have time
+ *				to test impact/performance, and possibly pointless without changing internal rep of Duration at the same time.
+ *
  *      @todo   Consider making Time::GetTickCount () inline. Measure code-size impact.
  *
  */
@@ -31,9 +35,12 @@ namespace   Stroika {
 
 
             /**
-             *  Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
+             *  Use double instead of long double because we dont have time to test performance impact, and only some (gcc/unix)
+			 *	systems make a difference anyhow (not on ppc).
+			 *
+			 *	<<<OBSOLETE COMMENT>>>>Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
              */
-            using       DurationSecondsType     =   long double;
+            using       DurationSecondsType     =   double;
 
 
             /**
@@ -63,7 +70,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr   DurationSecondsType kInfinite   =   std::numeric_limits<DurationSecondsType>::max ();
 #else
-            const   DurationSecondsType kInfinite       =   LDBL_MAX;
+            const   DurationSecondsType kInfinite       =   DBL_MAX;
 #endif
 
 
