@@ -163,9 +163,21 @@ bool    Duration::empty () const
 }
 
 template    <>
-time_t  Duration::As () const
+int  Duration::As () const
 {
-    return static_cast<time_t> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<int> (ParseTime_ (fDurationRep_));       // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long int  Duration::As () const
+{
+    return static_cast<long int> (ParseTime_ (fDurationRep_));      // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long long int  Duration::As () const
+{
+    return static_cast<long long int> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 template    <>

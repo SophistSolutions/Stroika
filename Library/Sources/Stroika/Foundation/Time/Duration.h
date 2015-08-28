@@ -168,7 +168,10 @@ namespace   Stroika {
             public:
                 /**
                  * Defined for
-                 *      time_t
+                 *      time_t (alias for another type here)
+                 *      int
+                 *      long int
+                 *      long long int
                  *      wstring
                  *      String
                  *      float
@@ -295,7 +298,11 @@ namespace   Stroika {
                 string  fDurationRep_;
             };
             template    <>
-            time_t  Duration::As () const;
+            int  Duration::As () const;
+            template    <>
+            long int  Duration::As () const;
+            template    <>
+            long long int  Duration::As () const;
             template    <>
             wstring Duration::As () const;
             template    <>
