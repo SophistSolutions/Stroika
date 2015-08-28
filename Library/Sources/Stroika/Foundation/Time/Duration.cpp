@@ -527,7 +527,7 @@ namespace {
         Assert (*pDot == '\0' or * pDot == '.');
         if (*pDot != '\0') {
             char*   pPastDot = pDot + 1;
-            char*   pPastLastZero = pPastDot + strlen (pPastDot);
+            char*   pPastLastZero = pPastDot + ::strlen (pPastDot);
             Assert (*pPastLastZero == '\0');
             for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
                 Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero);  // so ptr ref always valid
@@ -642,7 +642,13 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
             buf[0] = '\0';
-            (void)snprintf (buf, sizeof (buf), "%.1000f", static_cast<double> (timeLeft));
+            // We used to use 1000, but that failed silently on AIX 7.1/pcc. And its a waste anyhow.
+            // I'm pretty sure we never need more than 20 or so digits here. And it wastes time.
+            // (100 works on AIX 7.1/gcc 4.9.2).
+            //
+            // Pick a slightly more aggressive number for now, to avoid the bugs/performance cost,
+            // and eventually totally rewrite how we handle this.
+            Verify (::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";
