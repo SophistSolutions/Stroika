@@ -185,7 +185,7 @@ endif
 
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
+	StroikaLibs					=	$(StroikaFoundationLib) $(StroikaFrameworksLib)
 endif
 
 ifndef StroikaSupportLibs
