@@ -83,6 +83,7 @@ sub	DoHelp_
         print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib for this configuration [default use] */\n");
         print("	    --trace2file { enable|disable|default }    /* Enables/disable trace2file feature */\n");
+        print("	    --static-link-gccruntime { enable|disable }/* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
@@ -94,6 +95,8 @@ sub	DoHelp_
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 
+
+		
 	exit (0);
 }
 
@@ -341,12 +344,20 @@ sub	ParseCommandLine_Remaining_
                 DoHelp_ ();
 			}
 		}
-		elsif ((lc ($var) eq "-enable-static-link-gccruntime") or (lc ($var) eq "--enable-static-link-gccruntime")) {
-			$STATIC_LINK_GCCRUNTIME = 1;
-		}
-		elsif ((lc ($var) eq "-disable-static-link-gccruntime") or (lc ($var) eq "--disable-static-link-gccruntime")) {
-			$STATIC_LINK_GCCRUNTIME = 0;
-		}
+        elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
+            $i++;
+            $var = $ARGV[$i];
+            if ($var eq "enable") {
+				$STATIC_LINK_GCCRUNTIME = 1;
+			}
+            else if ($var eq "disable") {
+				$STATIC_LINK_GCCRUNTIME = 0;
+			}
+			else {
+                print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
+                DoHelp_ ();
+			}
+        }
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
 			$i++;
 			$var = $ARGV[$i];
