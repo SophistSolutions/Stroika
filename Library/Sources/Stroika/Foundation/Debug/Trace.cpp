@@ -395,7 +395,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
         if (sMainThread_ == threadID) {
-            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, curRelativeTime) > 0);
+            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
@@ -416,7 +416,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
             }
         }
         else {
-            ::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), curRelativeTime);
+            ::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
         }
         DoEmit_ (buf);
     }
