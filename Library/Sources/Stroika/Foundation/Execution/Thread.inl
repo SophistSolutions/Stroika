@@ -151,7 +151,7 @@ namespace   Stroika {
             inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept {
                 if (fRep_.get () == nullptr)
                 {
-                    return Thread::NativeHandleType (nullptr);
+                    return Thread::NativeHandleType (0);    // on some systems (e.g. AIX64 7.1) this is not a pointer type and assign nullptr illegal
                 }
                 return fRep_->GetNativeHandle ();
             }
