@@ -185,7 +185,9 @@ endif
 
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaLibs					=	$(StroikaFoundationLib) $(StroikaFrameworksLib)
+	# NOTE - for UNIX linker - we must put libraries that depend on other libraries first
+	# in the list, since the linker doesn't make multiple passes (crazy)
+	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
 endif
 
 ifndef StroikaSupportLibs
