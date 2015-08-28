@@ -350,7 +350,7 @@ sub	ParseCommandLine_Remaining_
             if ($var eq "enable") {
 				$STATIC_LINK_GCCRUNTIME = 1;
 			}
-            else if ($var eq "disable") {
+            elsif ($var eq "disable") {
 				$STATIC_LINK_GCCRUNTIME = 0;
 			}
 			else {
