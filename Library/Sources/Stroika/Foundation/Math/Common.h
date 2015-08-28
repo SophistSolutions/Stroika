@@ -68,14 +68,14 @@ namespace   Stroika {
              *  But, so that it is more effective with templates, it can also be used with any type,
              *  and becomes require equality (==).
              */
-            template    <typename   T>
-            bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
-            template    <typename   T>
-            bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0);
-            template    <typename   T>
-            bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
-            template    <typename   T>
-            bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type* = 0);
+            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
+            template    <typename   T1, typename T2, typename EPSILON_TYPE, typename TC = typename std::common_type<T1, T2>::type>
+            bool    NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, typename std::enable_if<std::is_floating_point<TC>::value>::type* = 0);
+            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_integral<TC>::value >::type* = 0);
+            template    <typename   T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+            bool    NearlyEquals (T1 l, T2 r, typename std::enable_if < !std::is_integral<TC>::value &&  !std::is_floating_point<TC>::value >::type* = 0);
 
 
             /**

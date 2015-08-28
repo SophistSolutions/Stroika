@@ -146,43 +146,43 @@ namespace   Stroika {
              ********************************************************************************
              */
             namespace   Private_ {
-                template    <typename T>
+                template    <typename TC>
                 // @todo see if we can make this constexpr somehow?
-                const   inline  T   mkCompareEpsilon_ (T l, T r)
+                const   inline  TC   mkCompareEpsilon_ (TC l, TC r)
                 {
-                    static_assert (std::is_floating_point<T>::value, "can only be used for float values");
+                    static_assert (std::is_floating_point<TC>::value, "can only be used for float values");
 #if 1
                     if (l < -10 or l > 10) {
-                        static  const   T   kScale_     =   pow (static_cast <T> (10), - (numeric_limits<T>::digits10 - 1)); // @todo constexpr? is pow() constexpr?
+                        static  const   TC   kScale_     =   pow (static_cast <TC> (10), - (numeric_limits<TC>::digits10 - 1)); // @todo constexpr? is pow() constexpr?
                         return fabs (l) * kScale_;
                     }
 #endif
-                    return (10000 * numeric_limits<T>::epsilon ());
+                    return (10000 * numeric_limits<TC>::epsilon ());
                 }
             }
-            template    <typename   T>
-            inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
+            template    <typename   T1, typename T2, typename EPSILON_TYPE, typename TC>
+            inline  bool    NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, typename std::enable_if<std::is_floating_point<TC>::value >::type*)
             {
                 Require (epsilon >= 0);
-                T diff = (l - r);
+                TC diff = (l - r);
                 if (std::isnan (diff)) {
                     // nan-nan, or inf-inf
                     // maybe other cases shouldnt be considered nearly equals?
                     return std::fpclassify (l) == std::fpclassify (r);
                 }
                 if (std::isinf (diff)) {
-                    static  const   T   kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<T>::max (), numeric_limits<T>::max ());
-                    if (not std::isinf (l) and std::fabs (l - numeric_limits<T>::max ()) <= kEpsilon_) {
-                        l = numeric_limits<T>::infinity ();
+                    static  const   TC   kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
+                    if (not std::isinf (l) and std::fabs (l - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                        l = numeric_limits<T1>::infinity ();
                     }
-                    if (not std::isinf (l) and std::fabs (l - numeric_limits<T>::lowest ()) <= kEpsilon_) {
-                        l = -numeric_limits<T>::infinity ();
+                    if (not std::isinf (l) and std::fabs (l - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                        l = -numeric_limits<T1>::infinity ();
                     }
-                    if (not std::isinf (r) and std::fabs (r - numeric_limits<T>::max ()) <= kEpsilon_) {
-                        r = numeric_limits<T>::infinity ();
+                    if (not std::isinf (r) and std::fabs (r - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                        r = numeric_limits<T2>::infinity ();
                     }
-                    if (not std::isinf (r) and std::fabs (r - numeric_limits<T>::lowest ()) <= kEpsilon_) {
-                        r = -numeric_limits<T>::infinity ();
+                    if (not std::isinf (r) and std::fabs (r - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                        r = -numeric_limits<T2>::infinity ();
                     }
                     if (std::isinf (l) and std::isinf (r)) {
                         return (l > 0) == (r > 0);
@@ -190,18 +190,18 @@ namespace   Stroika {
                 }
                 return std::fabs (diff) <= epsilon;
             }
-            template    <typename   T>
-            inline  bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_integral<T>::value >::type*)
+            template    <typename   T1, typename T2, typename TC>
+            inline  bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_integral<TC>::value >::type*)
             {
                 return l == r;
             }
-            template    <typename   T>
-            inline  bool    NearlyEquals (T l, T r, typename std::enable_if<std::is_floating_point<T>::value >::type*)
+            template    <typename   T1, typename T2, typename TC>
+            inline  bool    NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_floating_point<TC>::value >::type*)
             {
-                return NearlyEquals (l, r, Private_::mkCompareEpsilon_ (l, r));
+                return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
             }
-            template    <typename   T>
-            inline  bool    NearlyEquals (T l, T r, typename std::enable_if < !std::is_integral<T>::value&&  !std::is_floating_point<T>::value >::type*)
+            template    <typename   T1, typename T2, typename TC>
+            inline  bool    NearlyEquals (T1 l, T2 r, typename std::enable_if < !std::is_integral<TC>::value&&  !std::is_floating_point<TC>::value >::type*)
             {
                 return l == r;
             }
@@ -209,7 +209,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************** Math::PinToSpecialPoint ********************************
+             ************************* Math::PinToSpecialPoint ******************************
              ********************************************************************************
              */
             template    <typename   T>
