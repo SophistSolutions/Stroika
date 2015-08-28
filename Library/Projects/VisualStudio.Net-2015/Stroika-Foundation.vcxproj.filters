@@ -549,12 +549,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -713,6 +707,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
+      <Filter>Sources\Characters</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1686,6 +1683,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2346,12 +2346,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToDo.md">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -2579,6 +2573,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.inl">
       <Filter>Sources\Streams\iostream</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>
