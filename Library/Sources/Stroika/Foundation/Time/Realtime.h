@@ -48,6 +48,9 @@ namespace   Stroika {
              *  @'SyncronizeLedXTickCount' for each event that specifies a time value (as soon as that event arrives). This
              *  data - together with time values from the client (where Led is running) computer will be used to provide a
              *  better approximation of the true elapsed time.
+             *
+             *  \note Starts At Zero
+             *      To avoid issues with roundoff, we start this at zero when the software first boots.
              */
             DurationSecondsType GetTickCount ();
 
