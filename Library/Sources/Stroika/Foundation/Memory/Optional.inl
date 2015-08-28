@@ -157,7 +157,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************* Optional<T, TRAITS>::MutableHolder_ ************************
+             ********************* Optional<T, TRAITS>::MutableHolder_ **********************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -223,8 +223,8 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename TRAITS2>
-            inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS2>& from)
+            template    <typename T2, typename TRAITS2, typename SFINAE_TC>
+            inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
             {
                 lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {

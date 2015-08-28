@@ -259,8 +259,8 @@ namespace   Stroika {
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
-                template    <typename TRAITS2>
-                Optional (const Optional<T, TRAITS2>& from);
+                template    <typename T2, typename TRAITS2, typename SFINAE_TC = typename std::common_type<T, T2>::type>
+                Optional (const Optional<T2, TRAITS2>& from);
                 Optional (Optional&& from);
                 explicit Optional (const T* from);
 
