@@ -378,7 +378,7 @@ namespace   Stroika {
                  * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
                  * for timezone issues. It doesn't modify this.
                  */
-                nonvirtual  DateTime    AddSeconds (time_t seconds) const;
+                nonvirtual  DateTime    AddSeconds (int64_t seconds) const;
 
             public:
                 /**
