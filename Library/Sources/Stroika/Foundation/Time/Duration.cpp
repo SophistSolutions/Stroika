@@ -265,6 +265,9 @@ namespace   {
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
+    if (empty ()) {
+        return String ();
+    }
     /*
      *  TODO:
      *          o   Fix feeble attempt at rounding. We more or less round correctly for seconds, but not other units.
@@ -358,6 +361,9 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 result += Characters::Format (L"%d ", nNanoSeconds / (1000 * 1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds / (1000 * 1000));
             }
         }
+    }
+    if (result.empty ()) {
+        result = L"0 " + prettyPrintInfo.fLabels.fSeconds;
     }
     if (isNeg) {
         result = String_Constant (L"-") + result;

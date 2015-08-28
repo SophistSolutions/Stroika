@@ -479,6 +479,12 @@ namespace   {
         {
             VerifyTestResult (Duration (0).As<time_t> () == 0);
             VerifyTestResult (Duration (0).As<String> () == L"PT0S");
+            VerifyTestResult (Duration (0).Format () == L"0 seconds");
+        }
+        {
+            VerifyTestResult (Duration (3).As<time_t> () == 3);
+            VerifyTestResult (Duration (3).As<String> () == L"PT3S");
+            VerifyTestResult (Duration (3).Format () == L"3 seconds");
         }
         const   int kSecondsPerDay      =   TimeOfDay::kMaxSecondsPerDay;
         {
