@@ -484,7 +484,6 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
     // unsafe to call trace code - because called as unsafe handler
     //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
-    //Require (GetCurrentThreadID () == rep->GetID ());         must be true but we dont have the rep as argument
 #if 1
 #if 0
     // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
