@@ -54,8 +54,8 @@ namespace   {
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
-        cerr << "FAILED: " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
-        DbgTrace (L"FAILED: %s", Execution::SignalToName (signal).c_str ());
+        cerr << "FAILED: SIGNAL= " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
+        DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
         exit (EXIT_FAILURE);
     }
