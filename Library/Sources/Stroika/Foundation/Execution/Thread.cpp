@@ -327,7 +327,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
                 Verify (pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("Just set SIG_UNBLOCK for signal %d in this thread", GetSignalUsedForThreadAbort ());
+                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadAbort ()).c_str ());
 #endif
             }
 #endif
