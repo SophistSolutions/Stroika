@@ -470,6 +470,8 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
             /*
              * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
              * will return EINTR - which is crucial to our strategy to interupt them!
+             *
+             *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
              */
             Verify (::siginterrupt (GetSignalUsedForThreadAbort (), true) == 0);
         }
@@ -498,24 +500,8 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
     // unsafe to call trace code - because called as unsafe handler
     //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
 #endif
-#if 1
-#if 0
-    // LGP this used to set the TLS flags but they shouldbe bset throurh ptr, and here we dont know which one(s) to set so DONT
-    Assert (s_Interrupting_);       // just to debug - technically we cannot assert this because the interrupted
-    // thread could handle and clear the flag before the singal handler gets to it....
-#endif
-#else
-    s_Interrupting_ = true;
-    s_Aborting_ = true;
-#endif
-
-#if 0
-    /*
-     * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
-     * will return EINTR - which is crucial to our strategy to interupt them!
-     */
-    Verify (::siginterrupt (signal, true) == 0);
-#endif
+    // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
+    // the TLS variable gets set through the rep poitner in NotifyOfInteruptionFromAnyThread_
 }
 #elif           qPlatform_Windows
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)

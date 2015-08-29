@@ -237,11 +237,12 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 
     auto sigSetHandler = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct sigaction sa;
+        sigaction sa;
+        memset (&sa, 0, sizeof (sa));
         sa.sa_handler = FirstPassSignalHandler_;
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
-        Verify (::sigaction (signal, &sa, NULL) == 0);
+        Verify (::sigemptyset (&sa.sa_mask) == 0);
+        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        Verify (::sigaction (signal, &sa, nullptr) == 0);
 #else
         Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
 #endif
@@ -249,11 +250,12 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetDefault = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct sigaction sa;
+        sigaction sa;
+        memset (&sa, 0, sizeof (sa));
         sa.sa_handler = SIG_DFL;
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
-        Verify (::sigaction (signal, &sa, NULL) == 0);
+        Verify (::sigemptyset (&sa.sa_mask) == 0);
+        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        Verify (::sigaction (signal, &sa, nullptr) == 0);
 #else
         Verify (::signal (signal, SIG_DFL) != SIG_ERR);
 #endif
@@ -261,11 +263,12 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetIgnore = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct sigaction sa;
+        sigaction sa;
+        memset (&sa, 0, sizeof (sa));
         sa.sa_handler = SIG_IGN;
-        sigemptyset(&sa.sa_mask);
-        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
-        Verify (::sigaction (signal, &sa, NULL) == 0);
+        Verify (::sigemptyset (&sa.sa_mask) == 0);
+        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        Verify (::sigaction (signal, &sa, nullptr) == 0);
 #else
         Verify (::signal (signal, SIG_IGN) != SIG_ERR);
 #endif
