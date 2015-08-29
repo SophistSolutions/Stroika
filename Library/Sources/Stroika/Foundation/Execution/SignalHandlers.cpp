@@ -237,7 +237,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 
     auto sigSetHandler = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        sigaction sa;
+        struct  sigaction sa;
         memset (&sa, 0, sizeof (sa));
         sa.sa_handler = FirstPassSignalHandler_;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
@@ -250,7 +250,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetDefault = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        sigaction sa;
+        struct  sigaction sa;
         memset (&sa, 0, sizeof (sa));
         sa.sa_handler = SIG_DFL;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
@@ -263,7 +263,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetIgnore = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        sigaction sa;
+        struct  sigaction sa;
         memset (&sa, 0, sizeof (sa));
         sa.sa_handler = SIG_IGN;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
