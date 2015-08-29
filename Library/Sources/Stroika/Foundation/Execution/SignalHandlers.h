@@ -261,7 +261,7 @@ namespace   Stroika {
                  *
                  *  The only exception is SIGABRT will be intentionally ignored from this call because it prevents abort()
                  *  from functioning properly. We COULD disable SIGABRT upon receipt of that signal (SIG_DFL) but that
-                 *  would be different than other signals handled, raise re-entrancy issues etc. Didn't seem owrh while.
+                 *  would be different than other signals handled, raise re-entrancy issues etc. Didn't seem worth while.
                  */
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 

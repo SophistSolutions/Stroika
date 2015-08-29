@@ -14,6 +14,13 @@ using   namespace   Stroika::Foundation::Execution::Platform::POSIX;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 /*
  ********************************************************************************
  ************* Execution::ScopedBlockCurrentThreadSignal ************************
@@ -22,16 +29,20 @@ using   namespace   Stroika::Foundation::Execution::Platform::POSIX;
 ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
     : fRestoreMask_ ()
 {
-    //DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
+#endif
     sigset_t    mySet;
-    sigemptyset (&mySet);
-    (void)::sigaddset (&mySet, signal);
-    sigemptyset (&fRestoreMask_);           // Unclear if this emptyset call is needed?
-    Verify (pthread_sigmask (SIG_BLOCK,  &mySet, &fRestoreMask_) == 0);
+    Verify (::sigemptyset (&mySet) == 0);
+    Verify (::sigaddset (&mySet, signal) == 0);
+    Verify (::sigemptyset (&fRestoreMask_) == 0);           // Unclear if this emptyset call is needed?
+    Verify (::pthread_sigmask (SIG_BLOCK, &mySet, &fRestoreMask_) == 0);
 }
 
 ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
 {
-    //DbgTrace (L"ScopedBlockCurrentThreadSignal restoring signals");
-    Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"ScopedBlockCurrentThreadSignal restoring signals");
+#endif
+    Verify (::pthread_sigmask (SIG_SETMASK, &fRestoreMask_, nullptr) == 0);
 }

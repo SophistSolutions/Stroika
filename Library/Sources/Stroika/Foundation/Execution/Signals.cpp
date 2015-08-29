@@ -38,6 +38,8 @@ Characters::String Execution::SignalToName (SignalID signal)
             return String_Constant (L"SIGSEGV");
         case    SIGABRT:
             return String_Constant (L"SIGABRT");
+        case    SIGFPE:
+            return String_Constant (L"SIGFPE");
 #if     defined (SIGSYS)
         case    SIGSYS:
             return String_Constant (L"SIGSYS");
@@ -92,17 +94,20 @@ Characters::String Execution::SignalToName (SignalID signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-errno_t    Execution::SendSignal (std::thread::native_handle_type h, SignalID signal)
+errno_t    Execution::SendSignal (std::thread::native_handle_type target, SignalID signal)
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::Execution::SendSignal");
 #if     qPlatform_POSIX
-    DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), static_cast<unsigned long> (h));
+    DbgTrace (L"(target = 0x%lx, signal = %s)", static_cast<unsigned long> (target), SignalToName (signal).c_str ());
 #else
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
 #if     qPlatform_POSIX
-    errno_t e = pthread_kill (h, signal);
+    errno_t e = pthread_kill (target, signal);
     Verify (e == 0 or e == ESRCH);
+    if (e != 0) {
+        DbgTrace ("pthread_kill returned error %d", e);     // ESRCH can be OK, for example if abort sent to thread that already terminated
+    }
     return e;
 #else
     AssertNotImplemented ();

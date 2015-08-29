@@ -234,6 +234,43 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
+
+    auto sigSetHandler = [] (SignalID signal) {
+#if     qPlatform_POSIX
+        struct sigaction sa;
+        sa.sa_handler = FirstPassSignalHandler_;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
+        Verify (::sigaction (signal, &sa, NULL) == 0);
+#else
+        Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
+#endif
+        DbgTrace (L"DID ::signal (%s, FirstPassSignalHandler_)", SignalToName (signal).c_str ());
+    };
+    auto sigSetDefault = [] (SignalID signal) {
+#if     qPlatform_POSIX
+        struct sigaction sa;
+        sa.sa_handler = SIG_DFL;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
+        Verify (::sigaction (signal, &sa, NULL) == 0);
+#else
+        Verify (::signal (signal, SIG_DFL) != SIG_ERR);
+#endif
+        DbgTrace (L"DID ::signal (%s, SIG_DFL)", SignalToName (signal).c_str ());
+    };
+    auto sigSetIgnore = [] (SignalID signal) {
+#if     qPlatform_POSIX
+        struct sigaction sa;
+        sa.sa_handler = SIG_IGN;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = SA_RESTART; /* Restart functions if interrupted by handler */
+        Verify (::sigaction (signal, &sa, NULL) == 0);
+#else
+        Verify (::signal (signal, SIG_IGN) != SIG_ERR);
+#endif
+        DbgTrace (L"DID ::signal (%s, SIG_IGN)", SignalToName (signal).c_str ());
+    };
     if (handlers.empty ()) {
         /*
          *  No handlers means use default.
@@ -242,7 +279,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
         }
-        (void)::signal (signal, SIG_DFL);
+        sigSetDefault (signal);
     }
     else if (IsSigIgnore_ (handlers)) {
         Assert (handlers.size () == 1);
@@ -250,7 +287,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
         }
-        (void)::signal (signal, SIG_IGN);
+        sigSetIgnore (signal);
     }
     else {
         Set<SignalHandler>  directHandlers;
@@ -283,7 +320,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
                 tmp->fHandlers_.Add (signal, safeHandlers);
             }
         }
-        (void)::signal (signal, FirstPassSignalHandler_);
+        sigSetHandler (signal);
     }
 }
 
