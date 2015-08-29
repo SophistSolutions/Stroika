@@ -178,6 +178,7 @@ namespace   Stroika {
                                    );
                         default:
                             AssertNotImplemented ();
+                            return tuple<uint8_t, uint8_t, uint8_t, uint8_t> {};
                     }
                 }
                 template    <>
