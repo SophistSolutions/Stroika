@@ -242,7 +242,8 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
         }
-        (void)::signal (signal, SIG_DFL);
+        Verify (::signal (signal, SIG_DFL) != SIG_ERR);
+        DbgTrace (L"DID ::signal (%s, SIG_DFL)", SignalToName (signal).c_str ());
     }
     else if (IsSigIgnore_ (handlers)) {
         Assert (handlers.size () == 1);
@@ -250,7 +251,8 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
         }
-        (void)::signal (signal, SIG_IGN);
+        Verify (::signal (signal, SIG_IGN) != SIG_ERR);
+        DbgTrace (L"DID ::signal (%s, SIG_IGN)", SignalToName (signal).c_str ());
     }
     else {
         Set<SignalHandler>  directHandlers;
@@ -283,7 +285,8 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
                 tmp->fHandlers_.Add (signal, safeHandlers);
             }
         }
-        (void)::signal (signal, FirstPassSignalHandler_);
+        Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
+        DbgTrace (L"DID ::signal (%s, FirstPassSignalHandler_)", SignalToName (signal).c_str ());
     }
 }
 
