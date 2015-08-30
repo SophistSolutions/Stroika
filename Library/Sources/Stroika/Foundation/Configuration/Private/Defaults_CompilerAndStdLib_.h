@@ -572,27 +572,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy
-*/
-#ifndef qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy
-
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
-#else
-#define qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy      0
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 * NOTE sure if this is a bug or my misunderstanding.
 */
@@ -838,7 +817,7 @@ EXAMPLE:
 // Note - Verified FIXED in gcc 4.9, so it was gcc / libstdc++ bug
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
 // Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
-#define qCompilerAndStdLib_regex_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#define qCompilerAndStdLib_regex_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_regex_Buggy       0
 #endif
@@ -887,7 +866,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // Still broken in _MS_VS_2k13_Update3_FULLVER_
@@ -1108,7 +1087,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        0
 #endif
