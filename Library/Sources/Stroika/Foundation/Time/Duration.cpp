@@ -604,13 +604,15 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
             (void)snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
             timeLeft -= nYears * kSecondsPerYear;
-            if (std::isinf (timeLeft)) {
+            if (std::isinf (timeLeft) or timeLeft < 0) {
                 // some date numbers are so large, we cannot compute a number of days, weeks etc
+                // Also, for reasons which elude me (e.g. 32 bit gcc builds) this can go negative.
+                // Not strictly a bug (I don't think). Just roundoff.
                 timeLeft = 0.0;
             }
         }
     }
-    Assert (timeLeft < kSecondsPerYear);
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerYear);
     if (timeLeft >= kSecondsPerMonth) {
         unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
@@ -620,6 +622,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
             timeLeft -= nMonths * kSecondsPerMonth;
         }
     }
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMonth);
     if (timeLeft >= kSecondsPerDay) {
         unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
@@ -629,7 +632,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
             timeLeft -= nDays * kSecondsPerDay;
         }
     }
-    Assert (timeLeft >= 0.0);
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerDay);
     if (timeLeft > 0) {
         result += "T";
         if (timeLeft >= kSecondsPerHour) {
@@ -641,6 +644,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
                 timeLeft -= nHours * kSecondsPerHour;
             }
         }
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerHour);
         if (timeLeft >= kSecondsPerMinute) {
             unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
@@ -650,7 +654,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
         }
-        Assert (timeLeft >= 0.0);
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute);
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
             buf[0] = '\0';
