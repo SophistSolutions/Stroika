@@ -167,11 +167,7 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-#if         qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
-                    return RESULT_TYPE (typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (resultRep));
-#else
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-#endif
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const

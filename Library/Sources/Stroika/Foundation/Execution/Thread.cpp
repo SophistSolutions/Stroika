@@ -299,11 +299,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
          */
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
-#if     qCompilerAndStdLib_thread_local_initializers_Buggy
-        s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
-        s_Interrupting_ = false;
-        s_InterruptionSuppressDepth_ = 0;
-#endif
         /*
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
          *  instance, and hoping all that works correctly (that the memory access all work correctly).

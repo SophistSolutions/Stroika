@@ -50,8 +50,8 @@
 
 #elif   defined (__GNUC__)
 
-#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7))
-#pragma message ("Warning: Stroika does not support versions prior to GCC 4.7")
+#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#pragma message ("Warning: Stroika does not support versions prior to GCC 4.8")
 #endif
 #if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
@@ -297,8 +297,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_alignas_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_alignas_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_alignas_Buggy      0
 #endif
@@ -510,8 +508,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       1
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
@@ -645,27 +641,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_threadYield_Buggy
-*/
-#ifndef qCompilerAndStdLib_threadYield_Buggy
-
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_threadYield_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
-#else
-#define qCompilerAndStdLib_threadYield_Buggy   0
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 */
 #ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
@@ -785,9 +760,7 @@ EXAMPLE:
 */
 #ifndef qCompilerAndStdLib_UsingInheritedConstructor_Buggy
 
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
-#elif   defined (_MSC_VER)
+#if     defined (_MSC_VER)
 #define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      0
@@ -865,9 +838,7 @@ EXAMPLE:
 */
 #ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
-#elif   defined (_MSC_VER)
+#if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // Still broken in _MS_VS_2k13_Update3_FULLVER_
 // Still broken in _MS_VS_2k13_Update4_FULLVER_
@@ -1163,7 +1134,7 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_GCC_48_OptimizerBug
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 7 or __GNUC_MINOR__ == 8))
+#define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 8))
 #else
 #define qCompilerAndStdLib_GCC_48_OptimizerBug     0
 #endif
@@ -1210,8 +1181,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#elif     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_thread_local_keyword_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #else
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       0
 #endif
@@ -1348,46 +1317,12 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy
-
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
-#else
-#define qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy            0
-#endif
-
-#endif
-
-
-
-
-
 #ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
 
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        0
-#endif
-
-#endif
-
-
-
-
-
-// Dangerous with newer compilers - defaulting this to on.
-// Hard to detect if it doesn't work...
-#ifndef qCompilerAndStdLib_thread_local_initializers_Buggy
-
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_thread_local_initializers_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
-#else
-#define qCompilerAndStdLib_thread_local_initializers_Buggy      0
 #endif
 
 #endif
@@ -1475,9 +1410,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 */
 #ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
 
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
-#elif   defined (_MSC_VER)
+#if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
@@ -1507,8 +1440,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__clang_major__ == 3 && (__clang_minor__ <= 4))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7))
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
