@@ -21,8 +21,6 @@ using   namespace   Stroika::Foundation::Execution;
  */
 void    SpinLock::Yield_ ()
 {
-#if     !qCompilerAndStdLib_threadYield_Buggy
     std::this_thread::yield ();
-#endif
     CheckForThreadInterruption<100> ();
 }
