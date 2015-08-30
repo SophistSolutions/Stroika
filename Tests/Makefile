@@ -1,6 +1,14 @@
-.PHONY:	tests all check clobber
+CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
-UNAME := $(shell uname)
+# SOMEDAY SOON GET THIS FROM .PL FILE!!!
+ifeq (Linux,$(ProjectPlatformSubdir))
+CONFIGRUATIONS=		DefaultConfiguration
+else
+CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
+endif
+
+.PHONY:	tests all check clobber
 
 TEST_BUILD_DIR=	$(shell perl ScriptsLib/PrintTestBuildDir.pl)
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
@@ -8,12 +16,12 @@ TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 INDENT_LEVEL=	0
 
 
-ifneq (,$(findstring CYGWIN,$(UNAME)))
-BASEEXEPATTERN=Test$$i.exe
-EXEPATTERN=../Builds/$$ci/Test$$i/Test$$i.exe
-else
+ifeq (Linux,$(ProjectPlatformSubdir))
 BASEEXEPATTERN=Test$$i
 EXEPATTERN=../Builds/$$ci/Test$$i
+else
+BASEEXEPATTERN=Test$$i.exe
+EXEPATTERN=../Builds/$$ci/Test$$i/Test$$i.exe
 endif
 
 
@@ -37,12 +45,6 @@ RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
 endif
 
 
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifneq (,$(findstring CYGWIN,$(UNAME)))
-CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
-else
-CONFIGRUATIONS=		DefaultConfiguration
-endif
 
 help:
 	@echo "Help for making Stroika"

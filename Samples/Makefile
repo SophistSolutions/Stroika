@@ -1,8 +1,19 @@
 -include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
 
+CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+
+# SOMEDAY SOON GET THIS FROM .PL FILE!!!
+ifeq (Linux,$(ProjectPlatformSubdir))
+CONFIGRUATIONS=		DefaultConfiguration
+else
+CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
+endif
+
+
+
 .PHONY:	samples all check clobber skel
 
-UNAME := $(shell uname)
 
 SUBPROJECTS=
 
@@ -12,7 +23,7 @@ SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
 SUBPROJECTS+=	SSDPClient
@@ -22,13 +33,6 @@ SUBPROJECTS+=	SystemPerformanceClient
 SUBPROJECTS+=	WebServer
 
 
-
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifneq (,$(findstring CYGWIN,$(UNAME)))
-CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
-else
-CONFIGRUATIONS=		DefaultConfiguration
-endif
 
 
 SKEL_SRCPROJDIR?=

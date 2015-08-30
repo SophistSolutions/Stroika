@@ -1,3 +1,7 @@
+CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+
+
 .PHONY:	all
 .DEFAULT_GOAL := all
 
@@ -14,9 +18,7 @@ USE_DIRNAME=CURRENT
 FETCHURL=http://zlib.net/$(BASENAME).tar.gz
 #FETCHURL=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
 
-UNAME := $(shell uname)
-
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
 WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)")
 WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
@@ -29,7 +31,7 @@ endif
 BUILDS_ROOT=../../Builds/
 
 
-ifeq (,$(findstring CYGWIN,$(UNAME)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libz.a			\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zlib.h		\
@@ -89,7 +91,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 doPatch:
 	@echo -n "      ...Patching"
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@rm -f PATCHING.OUT
 	@dos2unix -q CURRENT/win32/Makefile.msc > PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> PATCHING.OUT
@@ -100,7 +102,7 @@ endif
 
 doConfigure:
 	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
-ifeq (,$(findstring CYGWIN,$(UNAME)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 	@(cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
 endif
 	@echo "   ...done"
@@ -127,7 +129,7 @@ doBuilds:
 		make doBuildInternal_ > BUILD.OUT 2>&1;\
 	fi
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
-ifeq (,$(findstring CYGWIN,$(shell uname)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else
@@ -149,7 +151,7 @@ endif
 
 	
 doBuildInternal_:
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@rm -rf $(BUILDS_DIR)
 	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MTd -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)' zlib.lib"

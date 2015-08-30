@@ -1,3 +1,6 @@
+CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check
 
@@ -14,11 +17,10 @@ TRGDIR=CURRENT
 
 FETCHURL=$(MIRROR_PREFIX_)/xerces/c/3/sources/$(BASENAME).tar.gz
 
-UNAME := $(shell uname)
 
 BUILDS_ROOT=../../Builds/
 
-ifeq (,$(findstring CYGWIN,$(UNAME)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libxerces-c.a				\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
@@ -95,7 +97,7 @@ doPatching_:
 	@(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
-ifeq (AIX,$(UNAME))
+ifeq (AIX,$(shell uname))
 	@patch --quiet -p0 CURRENT/configure < Patches/AIX-autoconf-fail.PATCH
 endif
 
@@ -105,7 +107,7 @@ doBuilds:
 	@echo "      ...Compiling REDIRECT to BUILD.OUT..."
 	@./buildall_.pl build > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
-ifeq (,$(findstring CYGWIN,$(shell uname)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else

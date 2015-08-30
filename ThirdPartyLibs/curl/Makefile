@@ -1,3 +1,6 @@
+CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+
 .PHONY:	all
 .DEFAULT_GOAL := all
 
@@ -19,9 +22,7 @@ FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
 BUILDS_ROOT=../../Builds/
 
 
-UNAME := $(shell uname)
-
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
 WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)")
 WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
@@ -104,7 +105,7 @@ endif
 
 
 doBuilds:
-ifneq (,$(findstring CYGWIN,$(UNAME)))
+ifneq (Linux,$(ProjectPlatformSubdir))
 	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
@@ -130,7 +131,7 @@ else
                 make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
 endif
-ifeq (,$(findstring CYGWIN,$(shell uname)))
+ifeq (Linux,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
