@@ -194,7 +194,11 @@ namespace   {
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
+#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
+                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+#else
                 size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+#endif
                 *fromAddress = sa;
                 return result;
 #elif   qPlatform_POSIX
@@ -228,7 +232,11 @@ namespace   {
 AGAIN:
                 Execution::CheckForThreadInterruption ();
                 socklen_t   sz = sizeof (peer);
+#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
+                Socket::PlatformNativeHandle    r = ::naccept (fSD_, &peer, &sz);
+#else
                 Socket::PlatformNativeHandle    r = ::accept (fSD_, &peer, &sz);
+#endif
                 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
                 if (r < 0) {
                     // HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
