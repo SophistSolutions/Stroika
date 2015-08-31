@@ -66,7 +66,7 @@ int main (int argc, const char* argv[])
     Set<InstrumentNameType> run;
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end(); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"h")) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
             printUsage = true;
         }
         if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
@@ -107,7 +107,8 @@ int main (int argc, const char* argv[])
         }
     }
     if (printUsage) {
-        cerr << "Usage: SystemPerformanceClient [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "    --help prints this help" << endl;
         cerr << "    -h prints this help" << endl;
         cerr << "    -o prints instrument results (with newlines stripped)" << endl;
         cerr << "    -l prints only the instrument names" << endl;
