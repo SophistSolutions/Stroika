@@ -113,7 +113,13 @@ namespace {
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // for side-effect of  updating aved_MajorPageFaultsSinc etc
+            // for side-effect of  updating aved_MajorPageFaultsSinc etc
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
 

@@ -334,7 +334,13 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();        // for side-effect of setting fContextStats_
+            // for side-effect of setting fContextStats_
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
             fStaticSuppressedAgain.clear ();    // cuz we never returned these
         }
 

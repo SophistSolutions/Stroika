@@ -143,7 +143,13 @@ namespace {
         CapturerWithContext_POSIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            capture_ ();    // Force fill of context - ignore results
+            // Force fill of context - ignore results
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
         }
         /*
          *  /proc/stat
