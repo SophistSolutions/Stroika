@@ -4,7 +4,7 @@ CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGRUATIONS=		DefaultConfiguration
 else
 CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
@@ -112,11 +112,11 @@ skel:
 	@mkdir -p $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Sources
 	@cp -r $(SKEL_SRCPROJDIR)/Sources $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/
 
-	@mkdir -p $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/Linux/
-	@cp Skel/Makefile.skel $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/Linux/Makefile;
+	@mkdir -p $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/Unix/
+	@cp Skel/Makefile.skel $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/Unix/Makefile;
 
 	@mkdir -p $(SKEL_TRGPROJDIR)/IntermediateFiles/DefaultConfiguration;
-	#ln -s ../../Projects/Linux/Makefile $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration/Makefile;
+	#ln -s ../../Projects/Unix/Makefile $(SKEL_TRGPROJName)/IntermediateFiles/DefaultConfiguration/Makefile;
 	
 	@mkdir -p $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/VisualStudio.Net-2013/
 	sed s/TEMPLATE/$(SKEL_TRGPROJName)/g < Skel/Projects/VisualStudio.Net-2013/TEMPLATE.sln > $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/VisualStudio.Net-2013/$(SKEL_TRGPROJName).sln.tmp

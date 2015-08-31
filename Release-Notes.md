@@ -23,6 +23,7 @@ History
 <td>
 	<ul>
 		<li>TODO - done as of AUG 30</li>
+		<li>cleanup aspects of Build structure - Project subdir Linux renamed to 'Unix', and re-purposed --platform generate config arg, and lose Platform value from config file</li>
 		<li>AIX support
 			<ul>
 				<li>Much improved reliability and performance of Execution::GetEXEPathT</li>

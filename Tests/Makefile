@@ -2,7 +2,7 @@ CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGRUATIONS=		DefaultConfiguration
 else
 CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
@@ -16,7 +16,7 @@ TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 INDENT_LEVEL=	0
 
 
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 BASEEXEPATTERN=Test$$i
 EXEPATTERN=../Builds/$$ci/Test$$i
 else
