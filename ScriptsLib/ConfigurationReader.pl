@@ -77,10 +77,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ProjectPlatformSubdir'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<Platform>");
-		if (defined $pps) {
-			$configuration {'Platform'} = $pps;
-		}
+		#my $pps = ReadValue_($line, "<Platform>");
+		#if (defined $pps) {
+		#	$configuration {'Platform'} = $pps;
+		#}
 		my $pps = ReadValue_($line, "<OptimizerFlag>");
 		if (defined $pps) {
 			$configuration {'OptimizerFlag'} = $pps;
