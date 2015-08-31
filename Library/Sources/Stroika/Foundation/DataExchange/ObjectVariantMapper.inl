@@ -283,7 +283,6 @@ namespace   Stroika {
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const vector<T>&)
             {
                 using   ACTUAL_CONTAINER_TYPE   =   vector<T>;
-                using   T                       =   typename ACTUAL_CONTAINER_TYPE::value_type;
                 auto toVariantMapper = [](const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     ToVariantMapperType             valueMapper     { mapper.FromObjectMapper<T> () };
