@@ -575,7 +575,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
  *  There are some (e.g. accept and recvfrom) APIs in the AIX headers
  *  which generate linker warning messages and then crash when I run them. These are inlines
  *  which somehow dont get generated properly.
- *		ld: 0711-768 WARNING: Object ../../../../../../Builds/DefaultConfiguration/Stroika-Foundation.a[Socket.o], section 1, function .recvfrom:
+ *      ld: 0711-768 WARNING: Object ../../../../../../Builds/DefaultConfiguration/Stroika-Foundation.a[Socket.o], section 1, function .recvfrom:
  *        The branch at address 0x2d70 is not followed by a recognized no-op
  *        or TOC-reload instruction. The unrecognized instruction is 0x7C691B78.
  *
