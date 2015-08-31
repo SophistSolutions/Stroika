@@ -34,7 +34,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
 
-	chdir ("Projects/Linux");
+	chdir ("Projects/Unix");
 		system ("perl BuildProjectsFiles.pl");
 	chdir ($savedDir);
 
