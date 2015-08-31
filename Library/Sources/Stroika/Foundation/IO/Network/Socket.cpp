@@ -194,15 +194,15 @@ namespace   {
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
-                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
-#else
                 size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
-#endif
                 *fromAddress = sa;
                 return result;
 #elif   qPlatform_POSIX
+#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
+                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+#else
                 size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+#endif
                 *fromAddress = sa;
                 return result;
 #else
