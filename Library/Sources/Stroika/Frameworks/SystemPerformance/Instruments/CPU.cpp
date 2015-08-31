@@ -152,7 +152,7 @@ namespace {
             String  lastLine;
             {
                 double interval = 2.0;  // seconds
-                ProcessRunner   pr (Characters::Format (L" lparstat %d 1", static_cast<int> (interval)));
+                ProcessRunner   pr (Characters::Format (L"lparstat %d 1", static_cast<int> (interval)));
                 Streams::MemoryStream<Byte>   useStdOut;
                 pr.SetStdOut (useStdOut);
                 pr.Run ();
