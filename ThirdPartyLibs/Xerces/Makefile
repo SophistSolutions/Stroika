@@ -20,7 +20,7 @@ FETCHURL=$(MIRROR_PREFIX_)/xerces/c/3/sources/$(BASENAME).tar.gz
 
 BUILDS_ROOT=../../Builds/
 
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libxerces-c.a				\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
@@ -107,7 +107,7 @@ doBuilds:
 	@echo "      ...Compiling REDIRECT to BUILD.OUT..."
 	@./buildall_.pl build > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else

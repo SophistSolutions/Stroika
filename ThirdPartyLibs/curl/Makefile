@@ -105,7 +105,7 @@ endif
 
 
 doBuilds:
-ifneq (Linux,$(ProjectPlatformSubdir))
+ifneq (Unix,$(ProjectPlatformSubdir))
 	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
@@ -131,7 +131,7 @@ else
                 make --no-print-directory install > MAKE.OUT 2>&1;\
 	fi
 endif
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/

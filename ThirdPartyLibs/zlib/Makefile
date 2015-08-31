@@ -31,7 +31,7 @@ endif
 BUILDS_ROOT=../../Builds/
 
 
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libz.a			\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zlib.h		\
@@ -102,7 +102,7 @@ endif
 
 doConfigure:
 	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@(cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
 endif
 	@echo "   ...done"
@@ -129,7 +129,7 @@ doBuilds:
 		make doBuildInternal_ > BUILD.OUT 2>&1;\
 	fi
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else

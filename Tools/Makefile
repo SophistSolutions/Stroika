@@ -19,7 +19,7 @@ help:
 
 
 all:
-ifeq (Linux,$(ProjectPlatformSubdir))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@make --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
 else
 	@cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl

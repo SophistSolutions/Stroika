@@ -71,7 +71,7 @@ sub	DoHelp_
 {
     print("Usage:\n");
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
-        print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Linux, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
+        print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
@@ -102,7 +102,7 @@ sub	DoHelp_
 sub	SetInitialDefaults_
 {
 	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
-		$PROJECTPLATFORMSUBDIR = 'Linux';
+		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
 	if ("$^O" eq "cygwin") {
 		# try vs 2k15
@@ -159,7 +159,7 @@ sub	SetInitialDefaults_
 
 sub	SetDefaultForCompilerDriver_
 {
-	if ($PROJECTPLATFORMSUBDIR eq 'Linux') {
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$STATIC_LINK_GCCRUNTIME = 1;
 	}
 	if ($CWARNING_FLAGS eq "<<USE_DEFAULTS>>") {
@@ -182,7 +182,7 @@ sub	SetDefaultForCompilerDriver_
 
 sub	SetDefaultForPlatform_
 {
-	if ($PROJECTPLATFORMSUBDIR eq 'Linux') {
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$COMPILER_DRIVER = "g++";
 		if ("$^O" eq "aix") {
 			$COMPILER_DRIVER = "g++ -pthread";
@@ -191,7 +191,6 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++ -V5.0";
-		#$platform = "Platform_Linux";
 	}
 	SetDefaultForCompilerDriver_();
 }

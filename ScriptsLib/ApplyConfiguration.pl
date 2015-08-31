@@ -39,7 +39,7 @@ my $LIBFEATUREFLAG_UseSystem = "use-system";
 my $LIBFEATUREFLAG_No = "no";
 
 
-## FOR NOW ONLY USED ON LINUX BUILDS (may not be true anymore - gradually changing so always used)
+## FOR NOW ONLY USED ON Unix BUILDS (may not be true anymore - gradually changing so always used)
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
@@ -171,7 +171,7 @@ sub mkDirWithLinks
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	system ("ln -s ../../../../../Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
@@ -179,7 +179,7 @@ sub mkDirWithLinks2
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	system ("ln -s ../../../../../../Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks3
 {
@@ -187,7 +187,7 @@ sub mkDirWithLinks3
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln -s ../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	system ("ln -s ../../../../../../../Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 
 
@@ -201,10 +201,10 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation";
 		mkdir "$intermediateFiles$currentConfiguration/Library/Frameworks";
 
-		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$currentConfiguration/Library/Foundation/Makefile");
-		#system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles$currentConfiguration/Library/Configuration.mk");
-		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles$currentConfiguration/Library/SharedBuildRules.mk");
-		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles$currentConfiguration/Library/SharedMakeVariables.mk");
+		system ("ln -s ../../../../Library/Projects/Unix/Makefile-Foundation $intermediateFiles/$currentConfiguration/Library/Foundation/Makefile");
+		#system ("cp Library/Projects/Unix/Configuration-Default.mk $intermediateFiles$currentConfiguration/Library/Configuration.mk");
+		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$currentConfiguration/Library/SharedBuildRules.mk");
+		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$currentConfiguration/Library/SharedMakeVariables.mk");
 
 		mkDirWithLinks("Foundation/Cache", "Makefile-Foundation-Cache");
 		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
@@ -245,7 +245,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 		mkDirWithLinks("Foundation/Traversal", "Makefile-Foundation-Traversal");
 
-		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles$currentConfiguration/Library/Frameworks/Makefile");
+		system ("ln -s ../../../../Library/Projects/Unix/Makefile-Frameworks $intermediateFiles$currentConfiguration/Library/Frameworks/Makefile");
 
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
 		mkDirWithLinks("Frameworks/UPnP", "Makefile-Frameworks-UPnP");
@@ -261,27 +261,27 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/";
 		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer";
 		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		system ("ln -s ../../../../Tools/Projects/Linux/Makefile-Frameworks $intermediateFiles$currentConfiguration/Tools/Frameworks/Makefile");
-		system ("ln -s ../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/Makefile");
-		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
+		system ("ln -s ../../../../Tools/Projects/Unix/Makefile-Frameworks $intermediateFiles$currentConfiguration/Tools/Frameworks/Makefile");
+		system ("ln -s ../../../../../Tools/Projects/Unix/Makefile-Frameworks-WebServer $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/Makefile");
+		system ("ln -s ../../../../../../Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPClient";
-		system ("ln -s ../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
+		system ("ln -s ../../../Samples/SSDPClient/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPServer";
-		system ("ln -s ../../../Samples/SSDPServer/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPServer/Makefile");
+		system ("ln -s ../../../Samples/SSDPServer/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPServer/Makefile");
 
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SystemPerformanceClient";
-		system ("ln -s ../../../Samples/SystemPerformanceClient/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SystemPerformanceClient/Makefile");
+		system ("ln -s ../../../Samples/SystemPerformanceClient/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SystemPerformanceClient/Makefile");
 
 		mkdir "$intermediateFiles$currentConfiguration/Samples_WebServer";
-		system ("ln -s ../../../Samples/WebServer/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_WebServer/Makefile");
+		system ("ln -s ../../../Samples/WebServer/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_WebServer/Makefile");
 
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SimpleService";
-		system ("ln -s ../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
+		system ("ln -s ../../../Samples/SimpleService/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
 
 		foreach $tst (GetAllTests ()) {
 			mkdir "$intermediateFiles$currentConfiguration/Test$tst";
-			system ("ln -s ../../../Tests/Projects/Linux/$tst/Makefile $intermediateFiles$currentConfiguration/Test$tst/Makefile");
+			system ("ln -s ../../../Tests/Projects/Unix/$tst/Makefile $intermediateFiles$currentConfiguration/Test$tst/Makefile");
 		}
 	}
 }
