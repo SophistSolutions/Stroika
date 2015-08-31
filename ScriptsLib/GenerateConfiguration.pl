@@ -11,7 +11,6 @@ use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
 
 my $configurationFiles	=	"ConfigurationFiles/";
-my $platform			=	"";
 
 my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
 
@@ -72,7 +71,7 @@ sub	DoHelp_
 {
     print("Usage:\n");
         print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
-        print("	    --platform {PLATFORM}                      /* Specifies the directory under Builds/Intermediate Files to create (defaults automatically) - not needed */\n");
+        print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Linux, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
@@ -94,8 +93,6 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
-
-
 		
 	exit (0);
 }
@@ -196,11 +193,6 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "g++ -V5.0";
 		#$platform = "Platform_Linux";
 	}
-	#if ($PROJECTPLATFORMSUBDIR eq 'VisualStudio.Net-2012') {
-	#	$COMPILER_DRIVER = "CL";
-	#	$platform = "Windows";
-	#}
-	
 	SetDefaultForCompilerDriver_();
 }
 
