@@ -280,6 +280,35 @@ namespace   Stroika {
                 return MakeCommonSerializer_WithSimpleAddByAppend_<Sequence<T>> ();
             }
             template    <typename T>
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const vector<T>&)
+            {
+                using   ACTUAL_CONTAINER_TYPE   =   vector<T>;
+                using   T                       =   typename ACTUAL_CONTAINER_TYPE::value_type;
+                auto toVariantMapper = [](const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    ToVariantMapperType             valueMapper     { mapper.FromObjectMapper<T> () };
+                    Sequence<VariantValue>          s;
+                    const ACTUAL_CONTAINER_TYPE*    actualMember    { reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT) };
+                    for (auto i : *actualMember)
+                    {
+                        s.Append (mapper.FromObject<T> (valueMapper, i));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [](const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
+                    Sequence<VariantValue>      s        =  d.As<Sequence<VariantValue>> ();
+                    ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
+                    actualInto->clear ();
+                    for (auto i : s)
+                    {
+                        actualInto->push_back (mapper.ToObject<T> (valueMapper, i));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>&)
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Set<T>> ();

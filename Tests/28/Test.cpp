@@ -642,14 +642,10 @@ namespace   {
             Sequence<int>           fSequence1;
             int                     fBasicArray1[5];
             Set<int>                fSet1_;
+            vector<int>             fVector1_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
-                , fInt2 ()
-                , fMapping1 ()
-                , fSequence1 ()
-                //, fBasicArray1 ()
-                , fSet1_ ()
             {
                 memset (&fBasicArray1, 0, sizeof (fBasicArray1));
             }
@@ -664,7 +660,8 @@ namespace   {
                     fInt2 == rhs.fInt2 and
                     fMapping1 == rhs.fMapping1 and
                     fSequence1 == rhs.fSequence1 and
-                    fSet1_ == rhs.fSet1_
+                    fSet1_ == rhs.fSet1_ and
+                    fVector1_ == rhs.fVector1_
                     ;
             }
         };
@@ -674,6 +671,7 @@ namespace   {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<vector<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
 
@@ -687,6 +685,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVector1_, L"fVector1_"),
         };
         mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
 #else
@@ -697,6 +696,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVector1_, L"fVector1_"),
         });
 #endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -710,6 +710,8 @@ namespace   {
         tmp.fMapping1.Add (3, 5);
         tmp.fBasicArray1[3] = 5;
         tmp.fSet1_.Add (193);
+        tmp.fVector1_.push_back (3);
+        tmp.fVector1_.push_back (-91);
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<Byte>   tmpStream;

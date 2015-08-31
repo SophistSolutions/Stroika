@@ -388,6 +388,8 @@ namespace   Stroika {
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>&);
                 template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>&);
+                template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedCollection<T>&);
