@@ -352,12 +352,22 @@ namespace {
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
+#if     defined (_AIX)
+            // for now, PS doing better than procfs - so default to that...
+            if (fOptions_.fAllowUse_PS) {
+                result = capture_using_ps_ ();
+            }
+            else if (fOptions_.fAllowUse_ProcFS) {
+                result = ExtractFromProcFS_ ();
+            }
+#else
             if (fOptions_.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
+#endif
             fLastCapturedAt = Time::GetTickCount ();
             fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
@@ -870,11 +880,39 @@ namespace {
         {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
             ProcessMapType  result;
+            using   Execution::ProcessRunner;
+#if     defined (_AIX)
+
+            // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
+
+
             /*
-             *  THOUGHT ABOUT STIME BUT TOO HARD TO PARSE???
+             *  Thought about STIME but too hard to parse???
              *
              *  EXAMPLE OUTPUT:
-             *          lewis@lewis-UbuntuDevVM3:~/Sandbox/Stroika-DevRoot$ ps -e -o "pid,ppid,s,time,rss,vsz,user,nlwp,cmd" | head
+             *          $ ps -A -o "pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args" | head
+             *               PID     PPID S        TIME  %MEM   VSZ     USER THCNT     ELAPSED TDISKIO COMMAND
+             *                 0        0 A    00:00:00   0.0   384     root     1  0-03:00:00       - swapper
+             *                 1        0 A    00:00:00   0.0   712     root     1  0-03:00:00       - /etc/init
+             *            131076        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - wait
+             *            196614        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - sched
+             *            262152        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - lrud
+             *            327690        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - vmptacrt
+             *            393228        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - psmd
+             *            458766        0 A    00:00:00   0.0   832     root     5  0-03:00:00       - vmmd
+             *            524304        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - pvlist
+             */
+            constexpr   size_t  kVSZ_Idx_               { 5 };
+            constexpr   size_t  kUser_Idx_              { 6 };
+            constexpr   size_t  kThreadCnt_Idx_         { 7 };
+            constexpr   size_t  kColCountIncludingCmd_  { 11 };
+            ProcessRunner   pr (L"ps -A -o \"pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args\"");
+#else
+            /*
+             *  Thought about STIME but too hard to parse???
+             *
+             *  EXAMPLE OUTPUT:
+             *          $ ps -e -o "pid,ppid,s,time,rss,vsz,user,nlwp,cmd" | head
              *            PID  PPID S     TIME   RSS    VSZ USER     NLWP CMD
              *              1     0 S 00:00:01  3696 116896 root        1 /lib/systemd/systemd --system --deserialize 18
              *              2     0 S 00:00:00     0      0 root        1 [kthreadd]
@@ -886,9 +924,12 @@ namespace {
              *             10     2 S 00:00:00     0      0 root        1 [rcuob/0]
              *             11     2 S 00:00:00     0      0 root        1 [migration/0]
              */
-            using   Execution::ProcessRunner;
-            const   int kColCountIncludingCmd_ { 9 };
-            ProcessRunner   pr (L"ps -e -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
+            constexpr   size_t  kVSZ_Idx_               { 5 };
+            constexpr   size_t  kUser_Idx_              { 6 };
+            constexpr   size_t  kThreadCnt_Idx_         { 7 };
+            constexpr   size_t  kColCountIncludingCmd_  { 9 };
+            ProcessRunner   pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
+#endif
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -925,18 +966,26 @@ namespace {
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[5].Trim ()) * 1024;
-                processDetails.fUserName = l[6].Trim ();
-                processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[7].Trim ());
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fUserName = l[kUser_Idx_].Trim ();
+                processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
                 String  cmdLine;
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
+#if     defined (_AIX)
+                    const size_t kCmdNameStartsAt_ = headerLen - 7;
+#else
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
+#endif
                     cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
+#if     defined (_AIX)
+                    processDetails.fKernelProcess = pid != 1 and processDetails.fParentProcessID == 0;      // wag?
+#else
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
+#endif
                     // Fake but usable answer
                     Sequence<String>    t    =  cmdLine.Tokenize ();
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
