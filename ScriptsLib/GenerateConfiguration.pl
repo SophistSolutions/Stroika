@@ -193,10 +193,8 @@ sub	SetDefaultForPlatform_
 		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
-		#$COMPILER_DRIVER = "g++-4.6";
-		#$COMPILER_DRIVER = "g++ -V4.5";
-		#$COMPILER_DRIVER = "g++ -V4.6";
-		$platform = "Platform_Linux";
+		#$COMPILER_DRIVER = "g++ -V5.0";
+		#$platform = "Platform_Linux";
 	}
 	#if ($PROJECTPLATFORMSUBDIR eq 'VisualStudio.Net-2012') {
 	#	$COMPILER_DRIVER = "CL";
@@ -475,7 +473,7 @@ sub	WriteConfigFile_
 	open(OUT,">$masterXMLConfigFile");
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
-	print (OUT "    <Platform>$platform</Platform>\n");
+	#print (OUT "    <Platform>$platform</Platform>\n");
 
 	print (OUT "    <CompilerDriver>$COMPILER_DRIVER</CompilerDriver>\n");
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
