@@ -11,9 +11,12 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Math/Common.h"
+#include    "../../../Foundation/Streams/MemoryStream.h"
+#include    "../../../Foundation/Streams/TextReader.h"
 
 #include    "CPU.h"
 
@@ -124,7 +127,69 @@ namespace {
 
 
 
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+namespace {
+    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        CapturerWithContext_AIX_ (const Options& options)
+            : CapturerWithContext_COMMON_ (options)
+        {
+            /// @todo THIS IS A GROSS QUICK HACK TO GET SOMETHIGN WORKING...
+        }
+        /*
+         *  man lparstat
+         *          I found SOURCE on https://github.com/shenki/powerpc-utils/blob/master/src/lparstat.c but
+         *  that cannot be right since it uses LINUX procfs stuff that doesnt exist here...
+         *
+         *
+         */
+        struct  CPUUsageTimes_ {
+            double  fProcessCPUUsage;
+            double  fTotalCPUUsage;
+        };
+        CPUUsageTimes_  cputime_ ()
+        {
+            using   Execution::ProcessRunner;
+            String  lastLine;
+            {
+                double interval = 2.0;  // seconds
+                ProcessRunner   pr (Characters::Format (L" lparstat %d 1", static_cast<int> (interval)));
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    lastLine = i;
+                }
+            }
+            Sequence<String>    tokens = lastLine.Tokenize ();
+            if (tokens.length () >= 4) {
+                using   Characters::String2Float;
+                double totalProcessCPUUsage =  String2Float<> (tokens[0]) + String2Float<> (tokens[1]);
+                double totalCPUUsage =  100.0 - String2Float<> (tokens[3]);
+                return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage, 0, 100), Math::PinInRange<double> (totalCPUUsage, 0, 100) };
+            }
+            else {
+                DbgTrace ("Failed to read line from lparstat");
+                return CPUUsageTimes_ {};
+            }
+        }
+        Info capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Info capture_ ()
+        {
+            Info    result;
+            auto tmp = cputime_ ();
+            result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
+            result.fTotalCPUUsage = tmp.fTotalCPUUsage;
+            NoteCompletedCapture_ ();
+            return result;
+        }
+    };
+}
+#elif   qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct  POSIXSysTimeCaptureContext_ {
@@ -404,13 +469,18 @@ namespace {
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_POSIX
+
+#if     defined (_AIX)
+            , CapturerWithContext_AIX_
+#elif     qPlatform_POSIX
             , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+        using inherited = CapturerWithContext_AIX_;
+#elif     qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
