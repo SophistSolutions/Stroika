@@ -22,7 +22,40 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a104">v2.0a104x</a><br/>2015-08-??</td>
 <td>
 	<ul>
-		<li>TODO</lI>
+		<li>TODO - done as of AUG 30</li>
+		<li>AIX support
+			<ul>
+				<li>Much improved reliability and performance of Execution::GetEXEPathT</li>
+				<li>Linker/Makefile cleanups</li>
+				<li>qCompilerAndStdLib_Locale_Buggy for buggy AIX</li>
+				<li>endianness fixes to IO/Network/InternetAddress (AIX), and other endianness fixes/improvements, and hash code</li>
+				<li>tweak GenerateConfiguration.pl default C++ warnings (better for AIX)</li>
+				<li>Hopefully workaround AIX crasher in Network::GetInterfaces ()</li>
+				<li>Workaround AIX bug with gcc snprintf() - Time::Duration - e90bf07ee6f6bed174e5aee49d77fdb3a48a1fa3</li>
+				<li>DateTime::AddSeconds() takes int64_t instead of time_t - because AIX only supports 4-byte time_t and that causes overflow with duration of only 100 years; and Added int/long/longlong return overloads from Duration</li>
+				<li>just DBGTRACE _SC_V6_LP64_OFF64 if macro not defined (POSIX) - for now</li>
+				<li>use sigaction instead of signal API - since fixes bug where signals stop working on 2nd created thread for AIX</li>
+				<li>Make Time::Duration code a little more resilient (and more assert checking) for floating point rounding errors</li>
+			</ul>
+		</li>
+		<li>Get rid of (most of?) remaining uname usage in makefiles and perl scripts. Use configuraiton define PlatformSubDirectory instead</li>
+		<li>Lose gcc 4.7 support, and lose obsolete bug defines: qCompilerAndStdLib_thread_local_initializers_Buggy,
+    	qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy,
+    	qCompilerAndStdLib_threadYield_Buggy</li>
+		<li>Cleanup logging/debugging code for signals, and simplify some legacy thread/signal code</li>
+		<li>added test case for building 32-bit Stroika code on 64-bit linux - and got working, and added to set of every-release-tests</li>
+		<li>--static-link-gccruntime option to make default-configuraiton</li>
+		<li>Misc docs and regtest improvements (e.g. IO::Network::Transfer::CreateConnection)</li>
+		<li>qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy seems broken even with gcc49</li>
+		<li>new bug define qCompilerAndStdLib_strtof_NAN_ETC_Buggy; Refactored String2Float and Float2String into FloatConversions; 
+		Cleanup Float2StringOptions; new - little tested - semantics for handling NAN and INF values</li>
+		<li>lose qCompilerAndStdLib_constexpr_static_member_functions_default_args_Buggy because we redid NearlyEquals() using overloading - much simpler. 
+		And now facteored out epsilon calc to private routine, where we can try being smarter; and use Math::NearlyEquals () and added overload for DateTime;
+		Redid Math::NearlyEquals() templates, so works with differnt argument types/li>
+		<li>redefined GetTickCount() to zero at app start to minimize problems with overflow</li>
+		<li>allow Optional<> to assign common assignable types</li>
+		<li>Fixed a number of things so we CAN set DurationSecondsType to long double, but dont leave it that way until we can performance test</li>
+		<li>fixed Duration::PrettyPrint () to return empty string on empty durationm but zero duration returns '0 seconds' and added regtests for this and other format calls</li>
 	</ul>
 </td>
 </tr>
