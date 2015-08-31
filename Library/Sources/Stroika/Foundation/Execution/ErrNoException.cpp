@@ -94,7 +94,7 @@ void    _NoReturn_  errno_ErrorException::DoThrow (errno_t error)
             }
 #endif
     }
-    DbgTrace ("errno_ErrorException (0x%x) - throwing errno_ErrorException", error);
+    DbgTrace (L"errno_ErrorException (0x%x - %s) - throwing errno_ErrorException", error, SDKString2Wide (LookupMessage (error)).c_str ());
     throw errno_ErrorException (error);
 }
 
