@@ -20,6 +20,15 @@
 
 
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::IO;
@@ -37,9 +46,9 @@ class   DirectoryIterator::Rep_ : public Iterator<String>::IRep {
 private:
 #if     qPlatform_Windows
     String          fDirName_;
-    HANDLE          fHandle_ { INVALID_HANDLE_VALUE };
+    HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
     WIN32_FIND_DATA fFindFileData_;
-    int             fSeekOffset_ = 0;
+    int             fSeekOffset_        { 0 };
 #elif   qPlatform_POSIX
     DIR*       fDirIt_ = nullptr;
     dirent*    fCur_   =   nullptr;
@@ -53,9 +62,12 @@ public:
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #endif
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s')", dir.c_str ());
+#endif
         try {
 #if     qPlatform_Windows
-            memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
 #elif   qPlatform_POSIX
             if (fDirIt_ == nullptr)
@@ -73,7 +85,10 @@ public:
     Rep_ (const String& dir, int seekPos)
         : fDirName_ (dir)
     {
-        memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s',seekPos=%d)", dir.c_str (), seekPos);
+#endif
+        (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
         fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
         for (int i = 0; i < seekPos; ++i) {
             if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
@@ -88,6 +103,9 @@ public:
 #elif   qPlatform_POSIX
     Rep_ (DIR* dirObj)
         : fDirIt_ { dirObj } {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR(dirObj=%x)", int(dirObj));
+#endif
         if (fDirIt_ != nullptr)
         {
             fCur_ = ::readdir (fDirIt_);
@@ -146,6 +164,9 @@ public:
     }
     virtual SharedIRepPtr    Clone () const override
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Entering DirectoryIterator::Rep_::Clone");
+#endif
 #if     qPlatform_Windows
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
 #elif   qPlatform_POSIX
@@ -186,9 +207,9 @@ public:
         }
         else {
             ino_t   aBridgeTooFar   =   fCur_->d_ino;
-            rewinddir(dirObj);
+            ::rewinddir (dirObj);
             long useOffset = ::telldir (dirObj);
-            for (;; ) {
+            for (;;) {
                 dirent* tmp = ::readdir (dirObj);
                 if (tmp == nullptr) {
                     // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
