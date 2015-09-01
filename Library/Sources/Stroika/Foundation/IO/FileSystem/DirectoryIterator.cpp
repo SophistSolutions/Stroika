@@ -99,7 +99,7 @@ public:
             }
             else {
                 fSeekOffset_++;
-            }_fCur_
+            }
         }
     }
 #elif   qPlatform_POSIX
