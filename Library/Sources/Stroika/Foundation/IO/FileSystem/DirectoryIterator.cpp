@@ -147,7 +147,13 @@ public:
         if (advance) {
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
-            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
+            errno_t e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
+            if (e == EBADF) {
+                Assert (fCur_ == nullptr );
+            }
+            else {
+                ThrowIfError_errno_t (e);
+            }
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
         }
         if (fCur_ != nullptr) {
