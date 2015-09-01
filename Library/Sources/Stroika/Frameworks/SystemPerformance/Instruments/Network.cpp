@@ -61,6 +61,15 @@ using   Time::DurationSecondsType;
 #endif
 
 
+
+
+#ifndef qSupportProcNet_
+#define qSupportProcNet_       qPlatform_Linux
+#endif
+
+
+
+
 #if     qUseWMICollectionSupport_
 #include    "../Support/WMICollector.h"
 
@@ -193,8 +202,10 @@ namespace {
 
             Collection<InterfaceInfo>   interfaceResults;
             IOStatistics                accumSummary;
+#if     qSupportProcNet_
             Read_proc_net_dev_ (&interfaceResults, &accumSummary);
             Read_proc_net_snmp_ (&accumSummary);
+#endif
 
             DurationSecondsType now = Time::GetTickCount ();
             if (fLastSum and accumSummary.fTotalTCPSegments) {
@@ -211,6 +222,7 @@ namespace {
             NoteCompletedCapture_ ();
             return Info { interfaceResults, accumSummary };
         }
+#if     qSupportProcNet_
         void    Read_proc_net_dev_ (Collection<Instruments::Network::InterfaceInfo>* interfaceResults, IOStatistics* accumSummary)
         {
             using   Instruments::Network::InterfaceInfo;
@@ -345,6 +357,7 @@ namespace {
             }
             totalTCPSegments.CopyToIf (&accumSummary->fTotalTCPSegments);
         }
+#endif
     };
 }
 #endif
