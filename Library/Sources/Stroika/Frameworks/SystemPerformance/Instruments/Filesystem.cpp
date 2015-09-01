@@ -203,7 +203,12 @@ namespace {
         {
             Sequence<VolumeInfo>   results;
 
+            // @todo allow external config and make default vary for AIX
+#if     defined (_AIX)
+            constexpr   bool    kUseProcFSForMounts_ { false };
+#else
             constexpr   bool    kUseProcFSForMounts_ { true };
+#endif
             if (kUseProcFSForMounts_) {
                 results = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
             }
@@ -235,7 +240,7 @@ namespace {
         Sequence<VolumeInfo>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
             Sequence<VolumeInfo>    result;
-            for (MountInfo_ mi : Read_proc_mounts_ ()) {
+            for (MountInfo_ mi : ReadMountInfo_ ()) {
                 VolumeInfo  vi;
                 vi.fMountedOnName = mi.fMountedOn;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
@@ -269,7 +274,72 @@ namespace {
             String  fMountedOn;
             String  fFilesystemFormat;
         };
-        Sequence<MountInfo_>    Read_proc_mounts_ ()
+        Sequence<MountInfo_>    ReadMountInfo_ ()
+        {
+            // first try procfs, but if that fails, fallback on mount command
+            try {
+                return ReadMountInfo_FromProcMounts_ ();
+            }
+            catch (...) {
+                return ReadMountInfo_FromMountCommand_ ();
+            }
+        }
+        Sequence<MountInfo_>    ReadMountInfo_FromMountCommand_ ()
+        {
+            /// @todo THIS IS A GROSS QUICK HACK TO GET SOMETHIGN WORKING on AIX...
+            using   Execution::ProcessRunner;
+            Sequence<MountInfo_>        result;
+
+            double interval = 2.0;  // seconds
+            ProcessRunner   pr (String_Constant { L"mount" });
+            Streams::MemoryStream<Byte>   useStdOut;
+            pr.SetStdOut (useStdOut);
+            pr.Run ();
+            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+            unsigned int    lines2Skip = 2;
+            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                // This code is all AIX specific
+#if     defined(_AIX)
+                /*
+                 *   $ mount
+                 *      node       mounted        mounted over    vfs       date        options
+                 *    -------- ---------------  ---------------  ------ ------------ ---------------
+                 *             /dev/hd4         /                jfs2   Aug 27 19:50 rw,log=/dev/hd8
+                 *             /dev/hd2         /usr             jfs2   Aug 27 19:50 rw,log=/dev/hd8
+                 *             /dev/hd9var      /var             jfs2   Aug 27 19:50 rw,log=/dev/hd8
+                 *             /dev/hd3         /tmp             jfs2   Aug 27 19:50 rw,log=/dev/hd8
+                 *             /dev/hd1         /home            jfs2   Aug 27 19:51 rw,log=/dev/hd8
+                 *             /dev/hd11admin   /admin           jfs2   Aug 27 19:51 rw,log=/dev/hd8
+                 *             /proc            /proc            procfs Aug 27 19:51 rw
+                 *             /dev/hd10opt     /opt             jfs2   Aug 27 19:51 rw,log=/dev/hd8
+                 *             /dev/livedump    /var/adm/ras/livedump jfs2   Aug 27 19:51 rw,log=/dev/hd8
+                 *             /dev/resgrp156lv /resgrp156       jfs2   Aug 27 19:51 rw,log=/dev/resgrp156loglv
+                 *    192.168.253.81 /usr/sys/inst.images/toolbox_20110809 /toolbox         nfs3   Aug 27 19:51 bg,soft,intr,sec=sys,rw
+                 *    192.168.253.81 /usr/sys/inst.images/mozilla_3513 /mozilla         nfs3   Aug 27 19:51 bg,soft,intr,sec=sys,rw
+                 */
+                if (lines2Skip > 0) {
+                    lines2Skip--;
+                    continue;
+                }
+                Sequence<String>    tokens = i.Tokenize ();
+                if (tokens.size () >= 3) {
+                    // we seem to be able to tell node/nfs mounted fs from disk by if mountNode is spaces... Sigh...
+                    bool    isNodeMounted = i[0] != ' ';
+                    if (isNodeMounted) {
+                        result.Append (MountInfo_ { tokens[0] + L":" + tokens[1], tokens[2], tokens[3] } );
+                    }
+                    else {
+                        result.Append (MountInfo_ { tokens[0], tokens[1], tokens[2] } );
+                    }
+                }
+                else {
+                    DbgTrace (L"Dropping unrecognized mount result line on the floor (line=%s)", i.c_str ());
+                }
+#endif
+            }
+            return result;
+        }
+        Sequence<MountInfo_>    ReadMountInfo_FromProcMounts_ ()
         {
             /*
              *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
@@ -279,8 +349,8 @@ namespace {
              */
             Mapping<String, MountInfo_>   result;
             DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
-            const   String_Constant kProcMountsFileName_ { L"/proc/mounts" };
             // Note - /procfs files always unseekable
+            static  const   String_Constant kProcMountsFileName_     { L"/proc/mounts" };;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMountsFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Filesystem::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
@@ -473,6 +543,68 @@ namespace {
             return *o;
         }
     private:
+        Sequence<VolumeInfo> RunDF_POSIX_ ()
+        {
+            Sequence<VolumeInfo>   result;
+            ProcessRunner pr { L"/bin/df -k -P" };
+            Streams::MemoryStream<Byte>   useStdOut;
+            pr.SetStdOut (useStdOut);
+            std::exception_ptr runException;
+            try {
+                pr.Run ();
+            }
+            catch (...) {
+                runException = current_exception ();
+            }
+            String out;
+            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+            bool skippedHeader = false;
+            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                if (not skippedHeader) {
+                    skippedHeader = true;
+                    continue;
+                }
+                Sequence<String>    l    =  i.Tokenize (Set<Characters::Character> { ' ' });
+                if (l.size () <  6) {
+                    DbgTrace ("skipping line cuz len=%d", l.size ());
+                    continue;
+                }
+                VolumeInfo v;
+                v.fMountedOnName = l[5].Trim ();
+                DbgTrace (L"v.fMountedOnName=%s", v.fMountedOnName.c_str ());
+                {
+                    String  d   =   l[0].Trim ();
+                    if (not d.empty () and d != L"none") {
+                        v.fDeviceOrVolumeName = d;
+                        DbgTrace (L"v.fDeviceOrVolumeName=%s", d.c_str ());
+                    }
+                }
+                {
+                    double szInBytes = Characters::String2Float<double> (l[1]) * 1024;
+                    if (not std::isnan (szInBytes) and not std::isinf (szInBytes)) {
+                        v.fSizeInBytes = szInBytes;
+                        DbgTrace ("v.fSizeInBytes = %f", *v.fSizeInBytes);
+                    }
+                }
+                {
+                    double usedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
+                    if (not std::isnan (usedSizeInBytes) and not std::isinf (usedSizeInBytes)) {
+                        v.fUsedSizeInBytes = usedSizeInBytes;
+                        DbgTrace ("v.fUsedSizeInBytes = %f", *v.fUsedSizeInBytes);
+                    }
+                }
+                if (v.fSizeInBytes and v.fUsedSizeInBytes) {
+                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
+                    DbgTrace ("v.fAvailableSizeInBytes = %f", v.fAvailableSizeInBytes.Value ());
+                }
+                result.Append (v);
+            }
+            // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
+            if (runException and result.empty ()) {
+                Execution::DoReThrow (runException);
+            }
+            return result;
+        }
         Sequence<VolumeInfo> RunDF_ (bool includeFSTypes)
         {
             Sequence<VolumeInfo>   result;
@@ -529,12 +661,32 @@ namespace {
         }
         Sequence<VolumeInfo>    RunDF_ ()
         {
+#if     defined (_AIX)
+            Mapping<String, VolumeInfo>  dfMountedOnToVolumeInfoMap;
+            for (VolumeInfo vi : RunDF_POSIX_ ()) {
+                dfMountedOnToVolumeInfoMap.Add (vi.fMountedOnName, vi);
+            }
+            try {
+                for (MountInfo_ mi : ReadMountInfo_ ()) {
+                    if (Optional<VolumeInfo> vTmp = dfMountedOnToVolumeInfoMap.Lookup (mi.fMountedOn)) {
+                        VolumeInfo  v   =   *vTmp;
+                        v.fFileSystemType = mi.fFilesystemFormat;
+                        dfMountedOnToVolumeInfoMap.Add (v.fMountedOnName, v);
+                    }
+                }
+            }
+            catch (...) {
+                DbgTrace ("Ignoring exception in ReadMountInfo_");
+            }
+            return Sequence<VolumeInfo> (dfMountedOnToVolumeInfoMap.Values ());
+#else
             try {
                 return RunDF_ (true);
             }
             catch (...) {
                 return RunDF_ (false);
             }
+#endif
         }
     private:
         Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
