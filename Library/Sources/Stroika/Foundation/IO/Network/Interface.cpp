@@ -16,6 +16,7 @@
 #include    <sys/socket.h>
 #include    <sys/ioctl.h>
 #if     qPlatform_Linux
+#include    <linux/types.h>     // needed on RedHat5
 #include    <linux/ethtool.h>
 #include    <linux/sockios.h>
 #endif
