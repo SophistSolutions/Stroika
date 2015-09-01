@@ -637,6 +637,15 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+#ifndef qfdopendir_Buggy_
+
+#define qfdopendir_Buggy_   defined (_AIX)
+
+#endif
+
+
+
+
 
 
 
