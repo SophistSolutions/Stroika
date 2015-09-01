@@ -129,7 +129,6 @@ namespace {
 #if     defined (_AIX)
         Instruments::Memory::Info  capture_via_vmstat_AIX_ ()
         {
-            DbgTrace ("***ENTERING capture_via_vmstat_AIX_ ");
             Instruments::Memory::Info   result;
             using   Execution::ProcessRunner;
             using   Characters::String2Float;
