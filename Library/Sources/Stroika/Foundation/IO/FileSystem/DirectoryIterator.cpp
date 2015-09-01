@@ -50,8 +50,9 @@ private:
     WIN32_FIND_DATA fFindFileData_;
     int             fSeekOffset_        { 0 };
 #elif   qPlatform_POSIX
-    DIR*       fDirIt_ = nullptr;
-    dirent*    fCur_   =   nullptr;
+    DIR*            fDirIt_             { nullptr };
+    direct          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
+    dirent*         fCur_               { nullptr }
 #endif
 
 public:
@@ -75,7 +76,8 @@ public:
                 Execution::ThrowIfError_errno_t ();
             }
             else {
-                fCur_ = ::readdir (fDirIt_);
+                ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
+                Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
             }
 #endif
         }
@@ -108,7 +110,8 @@ public:
 #endif
         if (fDirIt_ != nullptr)
         {
-            fCur_ = ::readdir (fDirIt_);
+            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
+            Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
         }
     }
 #endif
@@ -144,7 +147,8 @@ public:
         if (advance) {
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
-            fCur_ = ::readdir (fDirIt_);
+            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
+            Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
         }
         if (fCur_ != nullptr) {
             *result = String::FromSDKString (fCur_->d_name);
@@ -200,17 +204,23 @@ public:
          *          -- LGP 2014-07-10
          */
         // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
-        DIR*    dirObj          =   ::fdopendir (::dirfd (fDirIt_));
+        DIR*        dirObj          =   ::fdopendir (::dirfd (fDirIt_));
+        direct      dirEntBuf;      // intentionally uninitialized (done by readdir)
         if (fCur_ == nullptr) {
             // then we're past end end, the cloned fdopen dir one SB too!
-            Assert (::readdir (dirObj) == nullptr);
+            (void)::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_);
+            Assert (_fCur_ == nullptr);
         }
         else {
             ino_t   aBridgeTooFar   =   fCur_->d_ino;
             ::rewinddir (dirObj);
             long useOffset = ::telldir (dirObj);
             for (;;) {
-                dirent* tmp = ::readdir (dirObj);
+                //dirent* tmp = ::readdir (dirObj);
+                dirent* tmp = nullptr;
+                // ThrowIfError_errno_t (::readdir_r (dirObj, &dirEntBuf, &tmp));        // @todo UNSURE if we want to check error here?
+                ::readdir_r (dirObj, &dirEntBuf, &tmp);
+                Assert (tmp == nullptr or tmp == &dirEntBuf);
                 if (tmp == nullptr) {
                     // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
                     useOffset = ::telldir (dirObj);
