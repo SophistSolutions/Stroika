@@ -14,9 +14,12 @@
 #include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Streams/InputStream.h"
+#include    "../../../Foundation/Streams/MemoryStream.h"
+#include    "../../../Foundation/Streams/TextReader.h"
 
 #include    "Memory.h"
 
@@ -123,6 +126,85 @@ namespace {
         }
         CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
 
+#if     defined (_AIX)
+        Instruments::Memory::Info  capture_via_vmstat_AIX_ ()
+        {
+            DbgTrace ("***ENTERING capture_via_vmstat_AIX_ ");
+            Instruments::Memory::Info   result;
+            using   Execution::ProcessRunner;
+            using   Characters::String2Float;
+            try {
+                String  lastLine;
+                {
+                    /*
+                     *  On AIX 7.1
+                     *      $ vmstat
+                     *
+                     *      System configuration: lcpu=4 mem=3840MB ent=0.20
+                     *
+                     *      kthr    memory              page              faults              cpu
+                     *      ----- ----------- ------------------------ ------------ -----------------------
+                     *       r  b   avm   fre  re  pi  po  fr   sr  cy  in   sy  cs us sy id wa    pc    ec
+                     *       1  1 357112 61117   0   0   0 119  215   0  46 13360 999  1  0 97  2  0.00   1.0
+                     */
+                    ProcessRunner   pr (L"/usr/bin/vmstat");
+                    Streams::MemoryStream<Byte>   useStdOut;
+                    pr.SetStdOut (useStdOut);
+                    pr.Run ();
+                    Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                    for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                        lastLine = i;
+                    }
+                }
+                Sequence<String>    tokens = lastLine.Tokenize ();
+                if (tokens.length () >= 4) {
+                    result.fFreePhysicalMemory = String2Float<> (tokens[3]);
+                    // @todo ??? At least one of these is wrong
+                    result.fMajorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
+                    result.fMinorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
+                }
+                else {
+                    DbgTrace ("Failed to read line from vmstat");
+                }
+            }
+            catch (...) {
+                DbgTrace ("error reading /usr/bin/vmstat output ignored");
+            }
+            try {
+                String  lastLine;
+                {
+                    /*
+                     *  On AIX 7.1
+                     *      $ /usr/bin/svmon -G -O unit=MB
+                     *      Unit: MB
+                     *      --------------------------------------------------------------------------------------
+                     *                     size       inuse        free         pin     virtual  available   mmode
+                     *      memory      3840.00     3529.06      310.94     1040.14     1396.24    1623.89     Ded
+                     *      pg space   11008.00        8.88
+                     *
+                     *                     work        pers        clnt       other
+                     *      pin          905.45           0           0      134.68
+                     *      in use      1396.24           0     2132.82
+                     */
+                    ProcessRunner   pr (L"/usr/bin/svmon -G -O unit=MB");
+                    Streams::MemoryStream<Byte>   useStdOut;
+                    pr.SetStdOut (useStdOut);
+                    pr.Run ();
+                    Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                    for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                        Sequence<String>    tokens = lastLine.Tokenize ();
+                        if (tokens.size () >= 4 and tokens[0] == L"pg" and tokens[1] == L"space") {
+                            result.fPagefileTotalSize = String2Float<> (tokens[3]) * 1024 * 1024;
+                        }
+                    }
+                }
+            }
+            catch (...) {
+                DbgTrace ("error reading /usr/bin/svmon output ignored");
+            }
+            return result;
+        }
+#endif
         Instruments::Memory::Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
@@ -131,8 +213,12 @@ namespace {
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
+#if     defined (_AIX)
+            result = capture_via_vmstat_AIX_ ();
+#else
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
+#endif
             NoteCompletedCapture_ ();
             return result;
         }
