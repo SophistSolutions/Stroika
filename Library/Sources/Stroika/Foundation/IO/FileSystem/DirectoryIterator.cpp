@@ -53,7 +53,7 @@ private:
     DIR*            fDirIt_             { nullptr };
     dirent          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
     dirent*         fCur_               { nullptr };
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
     String          fDirName_;
 #endif
 #endif
@@ -64,7 +64,7 @@ public:
         : fDirName_ (dir)
 #elif   qPlatform_POSIX
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
     , fDirName_ (dir)
 #endif
 #endif
@@ -109,12 +109,12 @@ public:
     }
 #elif   qPlatform_POSIX
     Rep_ (DIR* dirObj
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
           , const String& dir
 #endif
          )
         : fDirIt_ { dirObj }
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
     , fDirName_ (dir)
 #endif
     {
@@ -194,7 +194,7 @@ public:
 #elif   qPlatform_POSIX
         if (fDirIt_ == nullptr) {
             return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
                                   , fDirName_
 #endif
                                                       ));
@@ -226,7 +226,7 @@ public:
          *          -- LGP 2014-07-10
          */
         // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
         DIR*        dirObj          =   ::opendir (fDirName_.AsSDKString ().c_str ());
 #else
         DIR*        dirObj          =   ::fdopendir (::dirfd (fDirIt_));
@@ -272,7 +272,7 @@ public:
             ::seekdir (dirObj, useOffset);
         }
         return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj
-#if     qCompilerAndStdLib_fdopendir_Buggy_
+#if     qCompilerAndStdLib_fdopendir_Buggy
                               , fDirName_
 #endif
                                                   ));
