@@ -97,6 +97,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
     result.fBootedAt = DateTime::Now ().AddSeconds (-info.uptime);
 #elif   qPlatform_POSIX
     {
+        // @todo - I dont think /proc/uptime is POSIX ... NOT SURE HOW TO DEFINE THIS - MAYBE ONLY .... on LINUX?
         bool    succeeded { false };
         const   String_Constant kProcUptimeFileName_ { L"/proc/uptime" };
         if (IO::FileSystem::FileSystem::Default ().Access (kProcUptimeFileName_)) {
@@ -165,7 +166,14 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     using CPU = SystemConfiguration::CPU;
     CPU result;
 
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+    // @todo FIX PROPERLY FOR AIX
+    const String kProcessorType_ = L"FAKE - IBM";
+    CPU::CoreDetails    tmp;
+    tmp.fSocketID = static_cast<unsigned int> (0);
+    tmp.fModelName = kProcessorType_;
+    result.fCores.Append (tmp);
+#elif   qPlatform_Linux
     {
         using   Streams::TextReader;
         using   IO::FileSystem::FileInputStream;
