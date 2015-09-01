@@ -571,31 +571,26 @@ namespace {
                 }
                 VolumeInfo v;
                 v.fMountedOnName = l[5].Trim ();
-                DbgTrace (L"v.fMountedOnName=%s", v.fMountedOnName.c_str ());
                 {
                     String  d   =   l[0].Trim ();
                     if (not d.empty () and d != L"none") {
                         v.fDeviceOrVolumeName = d;
-                        DbgTrace (L"v.fDeviceOrVolumeName=%s", d.c_str ());
                     }
                 }
                 {
                     double szInBytes = Characters::String2Float<double> (l[1]) * 1024;
                     if (not std::isnan (szInBytes) and not std::isinf (szInBytes)) {
                         v.fSizeInBytes = szInBytes;
-                        DbgTrace ("v.fSizeInBytes = %f", *v.fSizeInBytes);
                     }
                 }
                 {
                     double usedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
                     if (not std::isnan (usedSizeInBytes) and not std::isinf (usedSizeInBytes)) {
                         v.fUsedSizeInBytes = usedSizeInBytes;
-                        DbgTrace ("v.fUsedSizeInBytes = %f", *v.fUsedSizeInBytes);
                     }
                 }
                 if (v.fSizeInBytes and v.fUsedSizeInBytes) {
                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                    DbgTrace ("v.fAvailableSizeInBytes = %f", v.fAvailableSizeInBytes.Value ());
                 }
                 result.Append (v);
             }
