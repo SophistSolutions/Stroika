@@ -38,7 +38,7 @@ using   namespace   Stroika::Foundation::Traversal;
 #if     qPlatform_Windows
 using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
-
+using   Execution::ThrowIfError_errno_t;
 
 
 
@@ -51,8 +51,8 @@ private:
     int             fSeekOffset_        { 0 };
 #elif   qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
-    direct          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
-    dirent*         fCur_               { nullptr }
+    dirent          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
+    dirent*         fCur_               { nullptr };
 #endif
 
 public:
@@ -76,8 +76,8 @@ public:
                 Execution::ThrowIfError_errno_t ();
             }
             else {
-                ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
-                Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
+                ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
+                Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
             }
 #endif
         }
@@ -99,7 +99,7 @@ public:
             }
             else {
                 fSeekOffset_++;
-            }
+            }_fCur_
         }
     }
 #elif   qPlatform_POSIX
@@ -110,8 +110,8 @@ public:
 #endif
         if (fDirIt_ != nullptr)
         {
-            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
-            Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
+            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
+            Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
         }
     }
 #endif
@@ -147,8 +147,8 @@ public:
         if (advance) {
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
-            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_));
-            Assert (_fCur_ == nullptr or _fCur_ == &fDirEntBuf_);
+            ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
+            Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
         }
         if (fCur_ != nullptr) {
             *result = String::FromSDKString (fCur_->d_name);
@@ -205,11 +205,13 @@ public:
          */
         // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
         DIR*        dirObj          =   ::fdopendir (::dirfd (fDirIt_));
-        direct      dirEntBuf;      // intentionally uninitialized (done by readdir)
+        dirent      dirEntBuf;      // intentionally uninitialized (done by readdir)
         if (fCur_ == nullptr) {
             // then we're past end end, the cloned fdopen dir one SB too!
-            (void)::readdir_r (fDirIt_, &fDirEntBuf_, &_fCur_);
-            Assert (_fCur_ == nullptr);
+            dirent* d = nullptr;
+            dirent  db;// no init on purpose
+            (void)::readdir_r (fDirIt_, &db, &d);
+            Assert (d == nullptr);
         }
         else {
             ino_t   aBridgeTooFar   =   fCur_->d_ino;
