@@ -159,7 +159,7 @@ public:
         if (advance) {
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
-            errno_t e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
+            int e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
             if (e == EBADF) {
                 Assert (fCur_ == nullptr );
             }
