@@ -179,20 +179,20 @@ public:
          *          -- LGP 2014-07-10
          */
         // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
-        DIR*    dirObj          =   fdopendir(::dirfd (fDirIt_));
+        DIR*    dirObj          =   ::fdopendir (::dirfd (fDirIt_));
         if (fCur_ == nullptr) {
             // then we're past end end, the cloned fdopen dir one SB too!
-            Assert (readdir (dirObj) == nullptr);
+            Assert (::readdir (dirObj) == nullptr);
         }
         else {
             ino_t   aBridgeTooFar   =   fCur_->d_ino;
             rewinddir(dirObj);
-            long useOffset = telldir (dirObj);
+            long useOffset = ::telldir (dirObj);
             for (;; ) {
-                dirent* tmp = readdir(dirObj);
+                dirent* tmp = ::readdir (dirObj);
                 if (tmp == nullptr) {
                     // somehow the file went away, so no idea where to start, and the end is as reasonable as anywhere else???
-                    useOffset = telldir (dirObj);
+                    useOffset = ::telldir (dirObj);
                     DbgTrace (L"WARN: possible bug? - ususual, and not handled well, but this can happen if the file disappears while we're cloning");
                     break;
                 }
@@ -203,10 +203,10 @@ public:
                 }
                 else {
                     // update to this reflects the last offset before we find d_ino
-                    useOffset = telldir (dirObj);
+                    useOffset = ::telldir (dirObj);
                 }
             }
-            seekdir (dirObj, useOffset);
+            ::seekdir (dirObj, useOffset);
         }
         return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
 #endif
