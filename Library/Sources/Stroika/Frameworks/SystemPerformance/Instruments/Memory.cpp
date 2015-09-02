@@ -196,6 +196,19 @@ namespace {
                             result.fPagefileTotalSize = String2Float<> (tokens[3]) * 1024 * 1024;
                         }
                     }
+
+                    static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+
+                    // fake commit limit for now
+                    if (result.fPagefileTotalSize) {
+                        result.fCommitLimit = kTotalRAM_ + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
+
+                        // @todo rediculously bad estimate - for AIX
+                        // for 'topas' can use paging space %in use...
+                        result.fCommittedBytes = .5 * *result.fCommitLimit;
+                    }
+
+
                 }
             }
             catch (...) {
