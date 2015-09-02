@@ -107,28 +107,21 @@ namespace {
 
 
 
-#if     qPlatform_POSIX
-namespace {
-    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
-        uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
-        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
-        CapturerWithContext_POSIX_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
-        {
-            // for side-effect of  updating aved_MajorPageFaultsSinc etc
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
-            }
-        }
-        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
+
 
 #if     defined (_AIX)
+namespace {
+    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        CapturerWithContext_AIX_ (Options options)
+            : CapturerWithContext_COMMON_ (options)
+        {
+        }
+        CapturerWithContext_AIX_ (const CapturerWithContext_AIX_&) = default;   // copy by value fine - no need to re-wait...
+
         Instruments::Memory::Info  capture_via_vmstat_AIX_ ()
         {
+            static  const   SystemConfiguration::Memory kMemConfig_     =   Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ();
             Instruments::Memory::Info   result;
             using   Execution::ProcessRunner;
             using   Characters::String2Float;
@@ -157,7 +150,7 @@ namespace {
                 }
                 Sequence<String>    tokens = lastLine.Tokenize ();
                 if (tokens.length () >= 4) {
-                    result.fFreePhysicalMemory = String2Float<> (tokens[3]);
+                    result.fFreePhysicalMemory = String2Float<> (tokens[3]) * kMemConfig_.fPageSize;
                     // @todo ??? At least one of these is wrong
                     result.fMajorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
                     result.fMinorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
@@ -170,7 +163,6 @@ namespace {
                 DbgTrace ("error reading /usr/bin/vmstat output ignored");
             }
             try {
-                String  lastLine;
                 {
                     /*
                      *  On AIX 7.1
@@ -191,17 +183,15 @@ namespace {
                     pr.Run ();
                     Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
                     for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                        Sequence<String>    tokens = lastLine.Tokenize ();
-                        if (tokens.size () >= 4 and tokens[0] == L"pg" and tokens[1] == L"space") {
-                            result.fPagefileTotalSize = String2Float<> (tokens[3]) * 1024 * 1024;
+                        Sequence<String>    tokens = i.Tokenize ();
+                        if (tokens.size () >= 3 and tokens[0] == L"pg" and tokens[1] == L"space") {
+                            result.fPagefileTotalSize = String2Float<> (tokens[2]) * 1024 * 1024;
                         }
                     }
 
-                    static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
-
                     // fake commit limit for now
                     if (result.fPagefileTotalSize) {
-                        result.fCommitLimit = kTotalRAM_ + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
+                        result.fCommitLimit = kMemConfig_.fTotalPhysicalRAM + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
 
                         // @todo rediculously bad estimate - for AIX
                         // for 'topas' can use paging space %in use...
@@ -214,7 +204,6 @@ namespace {
             }
             return result;
         }
-#endif
         Instruments::Memory::Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
@@ -223,12 +212,48 @@ namespace {
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
-#if     defined (_AIX)
             result = capture_via_vmstat_AIX_ ();
-#else
+            NoteCompletedCapture_ ();
+            return result;
+        }
+    };
+}
+#endif
+
+
+
+
+
+
+#if     qPlatform_POSIX
+namespace {
+    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+        uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
+        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
+
+        CapturerWithContext_POSIX_ (Options options)
+            : CapturerWithContext_COMMON_ (options)
+        {
+            // for side-effect of  updating aved_MajorPageFaultsSinc etc
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
+        }
+        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
+
+        Instruments::Memory::Info capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Instruments::Memory::Info capture_ ()
+        {
+            Instruments::Memory::Info   result;
             Read_ProcMemInfo (&result);
             Read_ProcVMStat_ (&result);
-#endif
             NoteCompletedCapture_ ();
             return result;
         }
@@ -316,6 +341,7 @@ namespace {
 
 
 
+
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
@@ -384,13 +410,17 @@ namespace {
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+            , CapturerWithContext_AIX_
+#elif   qPlatform_POSIX
             , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+        using inherited = CapturerWithContext_AIX_;
+#elif   qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
