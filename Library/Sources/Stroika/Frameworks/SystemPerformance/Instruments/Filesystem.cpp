@@ -389,6 +389,7 @@ namespace {
                 String_Constant { L"ext3" },
                 String_Constant { L"ext4" },
                 String_Constant { L"xfs" },
+                String_Constant { L"jfs2" },
             };
             static  Set<String> kSysFSList_ {
                 String_Constant { L"autofs" },
@@ -412,6 +413,11 @@ namespace {
                 String_Constant { L"sysfs" },
                 String_Constant { L"usbfs" },
             };
+            static  Set<String> kNetworkFS_ {
+                String_Constant { L"nfs" },
+                String_Constant { L"nfs3" },
+                String_Constant { L"vboxsf" },
+            };
             for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
                 // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
                 VolumeInfo vi = *i;
@@ -420,11 +426,11 @@ namespace {
                     if (kRealDiskFS.Contains (fstype)) {
                         vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
                     }
+                    else if (kNetworkFS_.Contains (fstype)) {
+                        vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                    }
                     else if (fstype == L"tmpfs") {
                         vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
-                    }
-                    else if (fstype == L"vboxsf") {
-                        vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
                     }
                     else if (fstype == L"iso9660") {
                         vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
