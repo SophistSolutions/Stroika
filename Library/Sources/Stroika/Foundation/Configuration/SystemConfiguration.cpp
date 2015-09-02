@@ -19,6 +19,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/String2Int.h"
+#include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
 #if     qPlatform_POSIX
 #include    "../Execution/ErrNoException.h"
@@ -54,10 +55,217 @@ using   namespace   Stroika::Foundation::Time;
 
 using   Characters::String_Constant;
 using   Characters::SDKChar;
+using   Memory::Byte;
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
+#if     defined (_AIX)
+namespace {
+    /*
+     *      $ /usr/sbin/prtconf
+     *      System Model: IBM,9133-55A
+     *      Machine Serial Number: 101CD0H
+     *      Processor Type: PowerPC_POWER5
+     *      Processor Implementation Mode: POWER 5
+     *      Processor Version: PV_5_3
+     *      Number Of Processors: 2
+     *      Processor Clock Speed: 1648 MHz
+     *      CPU Type: 64-bit
+     *      Kernel Type: 64-bit
+     *      LPAR Info: 4 sovma156
+     *      Memory Size: 3840 MB
+     *      Good Memory Size: 3840 MB
+     *      Platform Firmware level: SF240_418
+     *      Firmware Version: IBM,SF240_418
+     *      Console Login: enable
+     *      Auto Restart: true
+     *      Full Core: false
+     *      NX Crypto Acceleration: Not Capable
+     *
+     *      Network Information
+     *              Host Name: sovma156
+     *              IP Address: 192.168.253.156
+     *              Sub Netmask: 255.255.255.0
+     *              Gateway: 192.168.253.1
+     *              Name Server: 68.87.68.162
+     *              Domain Name: siteox.com
+     *
+     *      Paging Space Information
+     *              Total Paging Space: 11008MB
+     *              Percent Used: 1%
+     *
+     *      Volume Groups Information
+     *      ==============================================================================
+     *      Active VGs
+     *      ==============================================================================
+     *      rootvg:
+     *      PV_NAME           PV STATE          TOTAL PPs   FREE PPs    FREE DISTRIBUTION
+     *      hdisk0            active            319         0           00..00..00..00..00
+     *      hdisk1            active            798         0           00..00..00..00..00
+     *      hdisk2            active            798         54          00..00..00..00..54
+     *      ==============================================================================
+     *
+     *      INSTALLED RESOURCE LIST
+     *
+     *      The following resources are installed on the machine.
+     *      +/- = Added or deleted from Resource List.
+     *      *   = Diagnostic support not available.
+     *
+     *        Model Architecture: chrp
+     *        Model Implementation: Multiple Processor, PCI bus
+     *
+     *      + sys0                                                             System Object
+     *      + sysplanar0                                                       System Planar
+     *      * vio0                                                             Virtual I/O Bus
+     *      * vscsi9           U9133.55A.101CD0H-V4-C569-T1                    Virtual SCSI Client Adapter
+     *      * vscsi8           U9133.55A.101CD0H-V4-C568-T1                    Virtual SCSI Client Adapter
+     *      * vscsi7           U9133.55A.101CD0H-V4-C567-T1                    Virtual SCSI Client Adapter
+     *      * vscsi6           U9133.55A.101CD0H-V4-C566-T1                    Virtual SCSI Client Adapter
+     *      * vscsi5           U9133.55A.101CD0H-V4-C565-T1                    Virtual SCSI Client Adapter
+     *      * vscsi4           U9133.55A.101CD0H-V4-C564-T1                    Virtual SCSI Client Adapter
+     *      * hdisk2           U9133.55A.101CD0H-V4-C564-T1-L8100000000000000  Virtual SCSI Disk Drive
+     *      * vscsi3           U9133.55A.101CD0H-V4-C563-T1                    Virtual SCSI Client Adapter
+     *      * vscsi2           U9133.55A.101CD0H-V4-C562-T1                    Virtual SCSI Client Adapter
+     *      * hdisk1           U9133.55A.101CD0H-V4-C562-T1-L8100000000000000  Virtual SCSI Disk Drive
+     *      * vscsi1           U9133.55A.101CD0H-V4-C561-T1                    Virtual SCSI Client Adapter
+     *      * vscsi0           U9133.55A.101CD0H-V4-C560-T1                    Virtual SCSI Client Adapter
+     *      * hdisk0           U9133.55A.101CD0H-V4-C560-T1-L8100000000000000  Virtual SCSI Disk Drive
+     *      * ent9             U9133.55A.101CD0H-V4-C359-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent8             U9133.55A.101CD0H-V4-C358-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent7             U9133.55A.101CD0H-V4-C357-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent6             U9133.55A.101CD0H-V4-C356-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent5             U9133.55A.101CD0H-V4-C355-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent4             U9133.55A.101CD0H-V4-C354-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent3             U9133.55A.101CD0H-V4-C353-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent2             U9133.55A.101CD0H-V4-C352-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent1             U9133.55A.101CD0H-V4-C351-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * ent0             U9133.55A.101CD0H-V4-C350-T1                    Virtual I/O Ethernet Adapter (l-lan)
+     *      * vsa0             U9133.55A.101CD0H-V4-C0                         LPAR Virtual Serial Adapter
+     *      * vty0             U9133.55A.101CD0H-V4-C0-L0                      Asynchronous Terminal
+     *      + L2cache0                                                         L2 Cache
+     *      + mem0                                                             Memory
+     *      + proc0                                                            Processor
+     *      + proc2                                                            Processor
+     */
+    struct  prtconf_ {
+        String      ProcessorType;
+        String      ProcessorImplementationMode;
+        String      ProcessorVersion;
+        uint        NumberOfProcessors {};
+        String      ProcessorClockSpeed;
+        uint        ProcessNBits { };   // 32 or 64
+        uint64_t    MemorySize { };
+    };
+    prtconf_   get_prtconf_ ()
+    {
+        using   Memory::Byte;
+        auto fetcher_ = [] () {
+            try {
+                using  Execution::ProcessRunner;
+                ProcessRunner   pr (String_Constant {L"/usr/sbin/prtconf"});
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                prtconf_    result;
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    Sequence<String>    tokens = i.Tokenize (Containers::Set<Character> {':'});
+                    if (tokens.size () == 2 and tokens[0] == L"Processor Type") {
+                        result.ProcessorType = tokens[1];
+                    }
+                    else if (tokens.size () == 2 and tokens[0] == L"Number Of Processors") {
+                        result.NumberOfProcessors = Characters::String2Int<uint> (tokens[1]);
+                    }
+                    else if (tokens.size () == 2 and tokens[0] == L"Processor Implementation Mode") {
+                        result.ProcessorImplementationMode = tokens[1];
+                    }
+                    else if (tokens.size () == 2 and tokens[0] == L"Processor Version") {
+                        result.ProcessorVersion = tokens[1];
+                    }
+                    else if (tokens.size () == 2 and tokens[0] == L"Processor Clock Speed") {
+                        result.ProcessorClockSpeed = tokens[1];
+                    }
+                }
+                return result;
+
+            }
+            catch (...) {
+                DbgTrace ("FAILURE calling external /usr/sbin/prtconf");
+                return prtconf_ ();
+            }
+        };
+        static prtconf_    kCached_ = fetcher_ ();
+        return kCached_;
+    }
+    /*
+     *  $ /usr/bin/mpstat -h
+     *
+     *  System configuration: lcpu=4 ent=0.2 mode=Uncapped
+     *
+     *  cpu    pc   ilcs   vlcs
+     *    0  0.00 750666 13711321
+     *    1  0.00  87070 14246608
+     *    2  0.00 291782 3685703
+     *    3  0.00 1734190 2462243
+     *  ALL  0.00 2863708 34105875
+     */
+    struct  mpstat_cpuinfo_ {
+        uint        NumberOfCores {};
+    };
+    mpstat_cpuinfo_    get_mpstat_cpuinfo_ ()
+    {
+        auto fetcher_ = [] () {
+            try {
+                using  Execution::ProcessRunner;
+                ProcessRunner   pr (String_Constant {L"/usr/bin/mpstat -h"});
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                mpstat_cpuinfo_ result;
+                bool    sawCPUHeader = false;
+                bool    sawAllCPU = false;
+                uint    nCPUs = 0;
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (not sawCPUHeader) {
+                        if (tokens.size () >= 2 and tokens[0] == L"cpu") {
+                            sawCPUHeader = true;
+                            continue;
+                        }
+                    }
+                    else if (not sawAllCPU) {
+                        if (tokens.size () >= 2) {
+                            if (tokens[0] == L"ALL") {
+                                sawAllCPU = true;
+                            }
+                            else {
+                                nCPUs++;
+                            }
+                        }
+                    }
+                }
+                result.NumberOfCores = nCPUs;
+                return result;
+
+            }
+            catch (...) {
+                DbgTrace ("FAILURE calling external /usr/bin/mpstat");
+                return mpstat_cpuinfo_ ();
+            }
+        };
+        static mpstat_cpuinfo_ kCached_ = fetcher_ ();
+        return kCached_;
+    }
+}
+#endif
 
 
 
@@ -165,14 +373,57 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
     using CPU = SystemConfiguration::CPU;
     CPU result;
-
 #if     defined (_AIX)
-    // @todo FIX PROPERLY FOR AIX
-    const String kProcessorType_ = L"FAKE - IBM";
-    CPU::CoreDetails    tmp;
-    tmp.fSocketID = static_cast<unsigned int> (0);
-    tmp.fModelName = kProcessorType_;
-    result.fCores.Append (tmp);
+    prtconf_   ptrConf = get_prtconf_ ();
+    String     showProcessorType = ptrConf.ProcessorType;
+    if (not ptrConf.ProcessorImplementationMode.empty ()) {
+        showProcessorType += L" " + ptrConf.ProcessorImplementationMode;
+    }
+    if (not ptrConf.ProcessorVersion.empty ()) {
+        showProcessorType += L" " + ptrConf.ProcessorVersion;
+    }
+    if (not ptrConf.ProcessorClockSpeed.empty ()) {
+        showProcessorType += L" " + ptrConf.ProcessorClockSpeed;
+    }
+
+    mpstat_cpuinfo_    mpConf = get_mpstat_cpuinfo_ ();
+
+    // if anything looks bad, just say one processor and one core
+    if (mpConf.NumberOfCores == 0) {
+        DbgTrace ("BAD  = NumberOfCores=0");
+        mpConf.NumberOfCores = 1;
+    }
+    if (ptrConf.NumberOfProcessors == 0) {
+        DbgTrace ("BAD  = NumberOfProcessors=0");
+        ptrConf.NumberOfProcessors = 1;
+    }
+    if (mpConf.NumberOfCores < ptrConf.NumberOfProcessors) {
+        DbgTrace ("BAD  = mpConf.NumberOfCores (%d) < ptrConf.NumberOfProcessors(%d)", mpConf.NumberOfCores, ptrConf.NumberOfProcessors);
+        ptrConf.NumberOfProcessors = mpConf.NumberOfCores;
+    }
+    if (mpConf.NumberOfCores % ptrConf.NumberOfProcessors != 0) {
+        DbgTrace ("BAD  = mpConf.NumberOfCores (%d) % ptrConf.NumberOfProcessors(%d) != 0", mpConf.NumberOfCores, ptrConf.NumberOfProcessors);
+        ptrConf.NumberOfProcessors = mpConf.NumberOfCores;
+    }
+
+    uint    nCoresPerSocket = mpConf.NumberOfCores / ptrConf.NumberOfProcessors;
+    Assert (nCoresPerSocket >= 1);
+
+    uint curSocketID = 0;
+    uint curCoreForSocketIdx = 0;
+
+    for (uint i = 0; i < mpConf.NumberOfCores; ++i) {
+        Assert (curSocketID < ptrConf.NumberOfProcessors);
+        CPU::CoreDetails    tmp;
+        tmp.fSocketID = curSocketID;
+        tmp.fModelName = showProcessorType;
+        result.fCores.Append (tmp);
+        curCoreForSocketIdx++;
+        if (curCoreForSocketIdx >= nCoresPerSocket) {
+            curCoreForSocketIdx = 0;
+            curSocketID++;
+        }
+    }
 #elif   qPlatform_Linux
     {
         using   Streams::TextReader;
