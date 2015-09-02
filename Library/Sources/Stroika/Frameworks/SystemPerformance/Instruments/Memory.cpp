@@ -207,8 +207,6 @@ namespace {
                         // for 'topas' can use paging space %in use...
                         result.fCommittedBytes = .5 * *result.fCommitLimit;
                     }
-
-
                 }
             }
             catch (...) {
