@@ -882,9 +882,7 @@ namespace {
             ProcessMapType  result;
             using   Execution::ProcessRunner;
 #if     defined (_AIX)
-
             // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
-
 
             /*
              *  Thought about STIME but too hard to parse???
@@ -964,8 +962,40 @@ namespace {
                     int seconds = 0;
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
+
+#if     defined (_AIX)
+                    // GROSS hack cuz time reported always zero above way...
+                    if (*processDetails.fTotalCPUTimeEverUsed == 0) {
+                        try {
+                            ProcessRunner   ppr (Characters::Format (L"ps -p %d", pid));
+                            Streams::MemoryStream<Byte>   useStdOut1;
+                            ppr.SetStdOut (useStdOut1);
+                            ppr.Run ();
+                            Streams::TextReader   stdOut2  =   Streams::TextReader (useStdOut1);
+                            String i = stdOut2.ReadLine ();
+                            i = stdOut2.ReadLine ();
+                            Sequence<String> tt = i.Tokenize ();
+                            if (tt.size () >= 3) {
+                                string  tmp =   tt[2].AsUTF8 ();
+                                int minutes = 0;
+                                int seconds = 0;
+                                sscanf (tmp.c_str (), "%d:%d", &minutes, &seconds);
+                                processDetails.fTotalCPUTimeEverUsed = minutes * 60 + seconds;
+                            }
+                        }
+                        catch (...) {
+                            // ignore for now
+                        }
+                    }
+#endif
+
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
+#if     defined (_AIX)
+                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+                processDetails.fResidentMemorySize /= 1024;
+                processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
+#endif
                 processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
