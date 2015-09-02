@@ -113,9 +113,19 @@ namespace {
 #if     defined (_AIX)
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
+        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
+
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
+            // for side-effect of  updating aved_MajorPageFaultsSinc etc
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
         }
         CapturerWithContext_AIX_ (const CapturerWithContext_AIX_&) = default;   // copy by value fine - no need to re-wait...
 
@@ -151,9 +161,6 @@ namespace {
                 Sequence<String>    tokens = lastLine.Tokenize ();
                 if (tokens.length () >= 4) {
                     result.fFreePhysicalMemory = String2Float<> (tokens[3]) * kMemConfig_.fPageSize;
-                    // @todo ??? At least one of these is wrong
-                    result.fMajorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
-                    result.fMinorPageFaultsSinceBoot = String2Float<> (tokens[5]) + String2Float<> (tokens[6]);
                 }
                 else {
                     DbgTrace ("Failed to read line from vmstat");
@@ -163,40 +170,95 @@ namespace {
                 DbgTrace ("error reading /usr/bin/vmstat output ignored");
             }
             try {
-                {
-                    /*
-                     *  On AIX 7.1
-                     *      $ /usr/bin/svmon -G -O unit=MB
-                     *      Unit: MB
-                     *      --------------------------------------------------------------------------------------
-                     *                     size       inuse        free         pin     virtual  available   mmode
-                     *      memory      3840.00     3529.06      310.94     1040.14     1396.24    1623.89     Ded
-                     *      pg space   11008.00        8.88
-                     *
-                     *                     work        pers        clnt       other
-                     *      pin          905.45           0           0      134.68
-                     *      in use      1396.24           0     2132.82
-                     */
-                    ProcessRunner   pr (L"/usr/bin/svmon -G -O unit=MB");
-                    Streams::MemoryStream<Byte>   useStdOut;
-                    pr.SetStdOut (useStdOut);
-                    pr.Run ();
-                    Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-                    for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                        Sequence<String>    tokens = i.Tokenize ();
-                        if (tokens.size () >= 3 and tokens[0] == L"pg" and tokens[1] == L"space") {
-                            result.fPagefileTotalSize = String2Float<> (tokens[2]) * 1024 * 1024;
-                        }
+                /*
+                 *  On AIX 7.1
+                 *   $ /usr/bin/vmstat -s
+                 *               71154383 total address trans. faults
+                 *                2967623 page ins
+                 *                6145399 page outs
+                 *                      0 paging space page ins
+                 *                      0 paging space page outs
+                 *                      0 total reclaims
+                 *               30884043 zero filled pages faults
+                 *                  54326 executable filled pages faults
+                 *                2726675 pages examined by clock
+                 *                      0 revolutions of the clock hand
+                 *                1281752 pages freed by the clock
+                 *                 227799 backtracks
+                 *                      0 free frame waits
+                 *                      0 extend XPT waits
+                 *                2556529 pending I/O waits
+                 *                9113025 start I/Os
+                 *                2822057 iodones
+                 *               20100049 cpu context switches
+                 *                1990956 device interrupts
+                 *                3285506 software interrupts
+                 *               12064139 decrementer interrupts
+                 *                  11598 mpc-sent interrupts
+                 *                  11596 mpc-received interrupts
+                 *                  97592 phantom interrupts
+                 *                      0 traps
+                 *              290466678 syscalls
+                 */
+                ProcessRunner   pr (L"/usr/bin/vmstat -s");
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (tokens.size () == 3 and tokens[1] == L"page" and tokens[2] == L"ins") {
+                        result.fMajorPageFaultsSinceBoot = Characters::String2Int<uint64_t> (tokens[0]);
                     }
-
-                    // fake commit limit for now
-                    if (result.fPagefileTotalSize) {
-                        result.fCommitLimit = kMemConfig_.fTotalPhysicalRAM + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
-
-                        // @todo rediculously bad estimate - for AIX
-                        // for 'topas' can use paging space %in use...
-                        result.fCommittedBytes = .5 * *result.fCommitLimit;
+                    else if (tokens.size () == 3 and tokens[1] == L"page" and tokens[2] == L"outs") {
+                        // we dont account for these but should!???
                     }
+                }
+                if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                    Time::DurationSecondsType   now = Time::GetTickCount ();
+                    if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
+                        result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                    }
+                    fSaved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
+                    fSaved_MajorPageFaultsSinceBoot_At = now;
+                }
+            }
+            catch (...) {
+                DbgTrace ("error reading /usr/bin/vmstat output ignored");
+            }
+            try {
+                /*
+                 *  On AIX 7.1
+                 *      $ /usr/bin/svmon -G -O unit=MB
+                 *      Unit: MB
+                 *      --------------------------------------------------------------------------------------
+                 *                     size       inuse        free         pin     virtual  available   mmode
+                 *      memory      3840.00     3529.06      310.94     1040.14     1396.24    1623.89     Ded
+                 *      pg space   11008.00        8.88
+                 *
+                 *                     work        pers        clnt       other
+                 *      pin          905.45           0           0      134.68
+                 *      in use      1396.24           0     2132.82
+                 */
+                ProcessRunner   pr (L"/usr/bin/svmon -G -O unit=MB");
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (tokens.size () >= 3 and tokens[0] == L"pg" and tokens[1] == L"space") {
+                        result.fPagefileTotalSize = String2Float<> (tokens[2]) * 1024 * 1024;
+                    }
+                }
+
+                // fake commit limit for now
+                if (result.fPagefileTotalSize) {
+                    result.fCommitLimit = kMemConfig_.fTotalPhysicalRAM + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
+
+                    // @todo rediculously bad estimate - for AIX
+                    // for 'topas' can use paging space %in use...
+                    result.fCommittedBytes = .5 * *result.fCommitLimit;
                 }
             }
             catch (...) {
