@@ -192,9 +192,21 @@ namespace {
                     else if (tokens.size () == 2 and tokens[0] == L"Processor Clock Speed") {
                         result.ProcessorClockSpeed = tokens[1];
                     }
+                    else if (tokens.size () == 2 and tokens[0] == L"Good Memory Size") {
+                        uint64_t    memSize = Characters::String2Int<uint64_t> (tokens[1]);
+                        if (tokens.size () >= 3 and tokens[2] == L"KB") {
+                            memSize *= 1024;
+                        }
+                        else if (tokens.size () >= 3 and tokens[2] == L"MB") {
+                            memSize *= 1024 * 1024;
+                        }
+                        else if (tokens.size () >= 3 and tokens[2] == L"GB") {
+                            memSize *= 1024 * 1024 * 1024;
+                        }
+                        result.MemorySize = memSize;
+                    }
                 }
                 return result;
-
             }
             catch (...) {
                 DbgTrace ("FAILURE calling external /usr/sbin/prtconf");
@@ -497,7 +509,6 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         //result.fCores.Append (CPU::CoreDetails { static_cast<unsigned int> (i), kProcessorType_ });
     }
 #endif
-
     return result;
 }
 
@@ -511,7 +522,11 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 {
     using   Memory = SystemConfiguration::Memory;
     Memory  result;
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+    prtconf_   ptrConf = get_prtconf_ ();
+    result.fPageSize = ::sysconf (_SC_PAGESIZE);
+    result.fTotalPhysicalRAM = ptrConf.MemorySize;      // @todo UNCLEAR why ::sysconf (_SC_PHYS_PAGES) * result.fPageSize different than this? --LGP 2015-09-08
+#elif   qPlatform_POSIX
     result.fPageSize = ::sysconf (_SC_PAGESIZE);
     result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * result.fPageSize;
 #elif   qPlatform_Windows
