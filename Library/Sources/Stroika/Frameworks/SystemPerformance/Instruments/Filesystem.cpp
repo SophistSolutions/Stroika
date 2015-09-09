@@ -301,7 +301,7 @@ namespace {
                 }
             }
             if (fOptions_.fIOStatistics) {
-                //ReadAndApplyProcFS_diskstats_ (&results);
+                ReadAndApplyProcFS_diskstats_ (&results);
             }
             _NoteCompletedCapture ();
             return results;
@@ -326,6 +326,10 @@ namespace {
         void    UpdateVolumneInfo_statvfs (VolumeInfo* v)
         {
             RequireNotNull (v);
+            if (v->fFileSystemType == L"procfs") {
+                // on AIX, this returns a bogus disk size. Not sure how to tell otherwise to ignore
+                return;
+            }
             struct  statvfs64 sbuf;
             (void)::memset (&sbuf, 0, sizeof (sbuf));
             if (::statvfs64 (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
@@ -337,6 +341,193 @@ namespace {
             else {
                 DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
             }
+        }
+    private:
+        void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
+        {
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApplyProcFS_diskstats_");
+            RequireNotNull (volumes);
+            Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
+            Mapping<String, VolumeInfo>     volMap;
+            volumes->Apply ([&volMap] (const VolumeInfo & vi) {volMap.Add (vi.fMountedOnName, vi); });
+
+            for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
+                perfstat_id_t   name;
+                CString::Copy (name.name, diskAndVols.fKey.AsNarrowSDKString ().c_str (), NEltsOf (name.name));
+                perfstat_disk_t ds;
+                memset (&ds, 0, sizeof (ds));
+                int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
+                if (disks == 1) {
+                    VolumeInfo::IOStats readStats;
+                    readStats.fBytesTransfered = ds.rblks; //superhack
+                    for (String mountPt : diskAndVols.fValue) {
+                        if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
+                            VolumeInfo tmp = *vi;
+                            tmp.fReadIOStats = readStats;
+                            volMap.Add (mountPt, tmp);
+                        }
+                    }
+                }
+            }
+            *volumes = Sequence<VolumeInfo> { volMap.Values () };
+#if 0
+            for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
+                VolumeInfo vi = *i;
+                if (vi.fDeviceOrVolumeName.IsPresent ()) {
+                    perfstat_id_t   name;
+                    perfstat_disk_t ds;
+
+                    strcpy (name.name, vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str ());//tmphack make safe
+                    int disks = perfstat_disk (&name, &ds, sizeof(ds), 1);
+                    DbgTrace ("***disks=%d, ds.rblks=%d, name=%s", disks, ds.rblks, name.name);
+
+
+                    VolumeInfo::IOStats readStats;
+                    readStats.fBytesTransfered = ds.rblks;  //superhack
+#if 0
+                    readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                    readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                    readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+
+                    VolumeInfo::IOStats writeStats;
+                    writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                    writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                    writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+
+                    VolumeInfo::IOStats combinedStats;
+                    combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                    combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
+                    combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
+#endif
+
+                    vi.fReadIOStats = readStats;
+#if 0
+                    if (fContextStats_) {
+                        String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
+                        size_t i = devNameLessSlashes.RFind ('/');
+                        if (i != string::npos) {
+                            devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
+                        }
+                        dev_t   useDevT;
+                        {
+                            struct stat sbuf;
+                            memset (&sbuf, 0, sizeof (sbuf));
+                            if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+                                useDevT = sbuf.st_rdev;
+                            }
+                            else {
+                                continue;
+                            }
+                        }
+                        Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
+                        Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
+                        if (oOld.IsPresent () and oNew.IsPresent ()) {
+                            unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
+                            VolumeInfo::IOStats readStats;
+                            readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
+                            readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
+                            readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+
+                            VolumeInfo::IOStats writeStats;
+                            writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
+                            writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
+                            writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+
+                            VolumeInfo::IOStats combinedStats;
+                            combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                            combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
+                            combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
+
+                            vi.fReadIOStats = readStats;
+                            vi.fWriteIOStats = writeStats;
+                            vi.fCombinedIOStats = combinedStats;
+
+                            // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
+                            vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                        }
+                    }
+#endif
+                }
+                volumes->Update (i, vi);
+            }
+#endif
+
+        }
+
+    private:
+        using   Disk2MountPointsMapType_ = Mapping<String, Set<String>>;
+        Disk2MountPointsMapType_    ReadDisk2MountPointsMap_ ()
+        {
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadDisk2MountPointsMap_");
+            /*
+             *  @todo See if there is a way to find this info on AIX without ProcessRunner...
+             */
+            using   Execution::ProcessRunner;
+
+            Set<String> diskNames;
+            {
+                ProcessRunner   pr (String_Constant { L"/usr/sbin/lspv" });
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    /*
+                     *  $ /usr/sbin/lspv
+                     *      hdisk0          000193611d18c9a8                    rootvg          active
+                     *      hdisk1          000193611d231719                    rootvg          active
+                     *      hdisk2          000193611d2317d6                    rootvg          active
+                     */
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (tokens.size () >= 4) {
+                        diskNames.Add (tokens[0]);
+                    }
+                    else {
+                        DbgTrace (L"Dropping unrecognized lspv result line on the floor (line=%s)", i.c_str ());
+                    }
+                }
+            }
+            Disk2MountPointsMapType_        result;
+            for (String diskName : diskNames) {
+                ProcessRunner   pr (Characters::Format (L"/usr/sbin/lspv -l %s" , diskName.c_str ()));
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                uint skipCount = 2;
+                Set<String> mountPoints;
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    if (skipCount > 0) {
+                        skipCount--;
+                        continue;
+                    }
+                    /*
+                     *      $ /usr/sbin/lspv  -l hdisk2
+                     *      hdisk2:
+                     *      LV NAME               LPs     PPs     DISTRIBUTION          MOUNT POINT
+                     *      hd10opt               16      16      00..00..00..16..00    /opt
+                     *      paging02              60      60      00..00..00..04..56    N/A
+                     *      paging01              30      30      00..00..00..30..00    N/A
+                     *      paging00              24      24      00..00..00..24..00    N/A
+                     *      resgrp156lv           564     564     160..160..159..85..00 /resgrp156
+                     *      paging03              50      50      00..00..00..00..50    N/A
+                     */
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (tokens.size () >= 5) {
+                        String  mp = tokens[4];
+                        if (mp != L"N/A") {
+                            mountPoints.Add (mp);
+                        }
+                    }
+                    else {
+                        DbgTrace (L"Dropping unrecognized lspv -l result line on the floor (line=%s)", i.c_str ());
+                    }
+                }
+                if (not mountPoints.empty ()) {
+                    result.Add (diskName, mountPoints);
+                }
+            }
+            return result;
         }
     private:
         struct MountInfo_ {
@@ -352,7 +543,6 @@ namespace {
             using   Execution::ProcessRunner;
             Sequence<MountInfo_>        result;
 
-            double interval = 2.0;  // seconds
             ProcessRunner   pr (String_Constant { L"/usr/sbin/mount" });
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
@@ -515,63 +705,8 @@ namespace {
                 return ReadMountInfo_FromProcMounts_ ();
             }
             catch (...) {
-                return ReadMountInfo_FromMountCommand_ ();
+                return Sequence<MountInfo_> ();
             }
-        }
-        Sequence<MountInfo_>    ReadMountInfo_FromMountCommand_ ()
-        {
-            /// @todo THIS IS A GROSS QUICK HACK TO GET SOMETHIGN WORKING on AIX...
-            using   Execution::ProcessRunner;
-            Sequence<MountInfo_>        result;
-
-            double interval = 2.0;  // seconds
-            ProcessRunner   pr (String_Constant { L"mount" });
-            Streams::MemoryStream<Byte>   useStdOut;
-            pr.SetStdOut (useStdOut);
-            pr.Run ();
-            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-            unsigned int    lines2Skip = 2;
-            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                // This code is all AIX specific
-#if     defined(_AIX)
-                /*
-                 *   $ mount
-                 *      node       mounted        mounted over    vfs       date        options
-                 *    -------- ---------------  ---------------  ------ ------------ ---------------
-                 *             /dev/hd4         /                jfs2   Aug 27 19:50 rw,log=/dev/hd8
-                 *             /dev/hd2         /usr             jfs2   Aug 27 19:50 rw,log=/dev/hd8
-                 *             /dev/hd9var      /var             jfs2   Aug 27 19:50 rw,log=/dev/hd8
-                 *             /dev/hd3         /tmp             jfs2   Aug 27 19:50 rw,log=/dev/hd8
-                 *             /dev/hd1         /home            jfs2   Aug 27 19:51 rw,log=/dev/hd8
-                 *             /dev/hd11admin   /admin           jfs2   Aug 27 19:51 rw,log=/dev/hd8
-                 *             /proc            /proc            procfs Aug 27 19:51 rw
-                 *             /dev/hd10opt     /opt             jfs2   Aug 27 19:51 rw,log=/dev/hd8
-                 *             /dev/livedump    /var/adm/ras/livedump jfs2   Aug 27 19:51 rw,log=/dev/hd8
-                 *             /dev/resgrp156lv /resgrp156       jfs2   Aug 27 19:51 rw,log=/dev/resgrp156loglv
-                 *    192.168.253.81 /usr/sys/inst.images/toolbox_20110809 /toolbox         nfs3   Aug 27 19:51 bg,soft,intr,sec=sys,rw
-                 *    192.168.253.81 /usr/sys/inst.images/mozilla_3513 /mozilla         nfs3   Aug 27 19:51 bg,soft,intr,sec=sys,rw
-                 */
-                if (lines2Skip > 0) {
-                    lines2Skip--;
-                    continue;
-                }
-                Sequence<String>    tokens = i.Tokenize ();
-                if (tokens.size () >= 3) {
-                    // we seem to be able to tell node/nfs mounted fs from disk by if mountNode is spaces... Sigh...
-                    bool    isNodeMounted = i[0] != ' ';
-                    if (isNodeMounted) {
-                        result.Append (MountInfo_ { tokens[0] + L":" + tokens[1], tokens[2], tokens[3] } );
-                    }
-                    else {
-                        result.Append (MountInfo_ { tokens[0], tokens[1], tokens[2] } );
-                    }
-                }
-                else {
-                    DbgTrace (L"Dropping unrecognized mount result line on the floor (line=%s)", i.c_str ());
-                }
-#endif
-            }
-            return result;
         }
         Sequence<MountInfo_>    ReadMountInfo_FromProcMounts_ ()
         {
