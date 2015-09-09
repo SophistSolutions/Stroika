@@ -287,14 +287,16 @@ namespace   Stroika {
              *  thread that handles the signals one at a time, and careful to avoid any memory allocation
              *  in the direct signal handling thread.
              *
-             *  To use this feature, you must construct a SignalHandlerRegistry::SafeSignalsManager. This
-             *  must be constructed BEFORE adding any safe signal handler, and must be destroyed before
-             *  exiting main (so it can shutdown its own threads).
+             *  To use this feature, you must construct a SignalHandlerRegistry::SafeSignalsManager.
+             *
+             *  \note   This must be constructed BEFORE adding any safe signal handler, and
+             *          must be destroyed before exiting main (so it can shutdown its own threads).
+             *
+             *          And only one SafeSignalsManager instance can exist at a time.
              *
              *  The easiest (and recommened) way to do this is to add the line:
              *      SignalHandlerRegistry::SafeSignalsManager   safeSignalsMgr;
              *  to the beginning of main (int argc, const char* argv[])...
-             *
              */
             class   SignalHandlerRegistry::SafeSignalsManager {
             public:
