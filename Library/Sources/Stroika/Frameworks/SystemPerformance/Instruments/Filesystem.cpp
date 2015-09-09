@@ -174,14 +174,14 @@ namespace {
 namespace {
     void    ApplyDiskTypes_ (Sequence<VolumeInfo>* volumes)
     {
-        static  Set<String> kRealDiskFS {
+        static  const   Set<String> kRealDiskFS {
             String_Constant { L"ext2" },
             String_Constant { L"ext3" },
             String_Constant { L"ext4" },
             String_Constant { L"xfs" },
             String_Constant { L"jfs2" },
         };
-        static  Set<String> kSysFSList_ {
+        static  const   Set<String> kSysFSList_ {
             String_Constant { L"autofs" },
             String_Constant { L"binfmt_misc" },
             String_Constant { L"cgroup" },
@@ -203,7 +203,7 @@ namespace {
             String_Constant { L"sysfs" },
             String_Constant { L"usbfs" },
         };
-        static  Set<String> kNetworkFS_ {
+        static  const   Set<String> kNetworkFS_ {
             String_Constant { L"nfs" },
             String_Constant { L"nfs3" },
             String_Constant { L"vboxsf" },
@@ -213,23 +213,31 @@ namespace {
             VolumeInfo vi = *i;
             if (vi.fFileSystemType) {
                 String  fstype = *vi.fFileSystemType;
+                bool    changed { false };
                 if (kRealDiskFS.Contains (fstype)) {
                     vi.fMountedDeviceType = MountedDeviceType::eLocalDisk;
+                    changed = true;
                 }
                 else if (kNetworkFS_.Contains (fstype)) {
                     vi.fMountedDeviceType = MountedDeviceType::eNetworkDrive;
+                    changed = true;
                 }
                 else if (fstype == L"tmpfs") {
                     vi.fMountedDeviceType = MountedDeviceType::eTemporaryFiles;
+                    changed = true;
                 }
                 else if (fstype == L"iso9660") {
                     vi.fMountedDeviceType = MountedDeviceType::eReadOnlyEjectable;
+                    changed = true;
                 }
                 else if (kSysFSList_.Contains (fstype)) {
                     vi.fMountedDeviceType = MountedDeviceType::eSystemInformation;
+                    changed = true;
+                }
+                if (changed) {
+                    volumes->Update (i, vi);
                 }
             }
-            volumes->Update (i, vi);
         }
     }
 }
@@ -276,15 +284,7 @@ namespace {
         Sequence<VolumeInfo> capture_ ()
         {
             Sequence<VolumeInfo>   results;
-
-            // @todo allow external config and make default vary for AIX
-            constexpr   bool    kUseProcFSForMounts_ { false };
-            if (kUseProcFSForMounts_) {
-                results = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
-            }
-            else {
-                results = RunDF_ ();
-            }
+            results = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
             ApplyDiskTypes_ (&results);
             if (not fOptions_.fIncludeTemporaryDevices) {
                 for (Iterator<VolumeInfo> i = results.begin (); i != results.end (); ++i) {
@@ -301,7 +301,7 @@ namespace {
                 }
             }
             if (fOptions_.fIOStatistics) {
-                ReadAndApplyProcFS_diskstats_ (&results);
+                //ReadAndApplyProcFS_diskstats_ (&results);
             }
             _NoteCompletedCapture ();
             return results;
@@ -326,9 +326,9 @@ namespace {
         void    UpdateVolumneInfo_statvfs (VolumeInfo* v)
         {
             RequireNotNull (v);
-            struct  statvfs sbuf;
-            memset (&sbuf, 0, sizeof (sbuf));
-            if (::statvfs (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+            struct  statvfs64 sbuf;
+            (void)::memset (&sbuf, 0, sizeof (sbuf));
+            if (::statvfs64 (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes = diskSize;
                 v->fAvailableSizeInBytes = sbuf.f_bsize * sbuf.f_bavail;
@@ -346,22 +346,14 @@ namespace {
         };
         Sequence<MountInfo_>    ReadMountInfo_ ()
         {
-            // first try procfs, but if that fails, fallback on mount command
-            try {
-                return ReadMountInfo_FromProcMounts_ ();
-            }
-            catch (...) {
-                return ReadMountInfo_FromMountCommand_ ();
-            }
-        }
-        Sequence<MountInfo_>    ReadMountInfo_FromMountCommand_ ()
-        {
-            /// @todo THIS IS A GROSS QUICK HACK TO GET SOMETHIGN WORKING on AIX...
+            /*
+             *  @todo See if there is a way to find this info on AIX without ProcessRunner...
+             */
             using   Execution::ProcessRunner;
             Sequence<MountInfo_>        result;
 
             double interval = 2.0;  // seconds
-            ProcessRunner   pr (String_Constant { L"mount" });
+            ProcessRunner   pr (String_Constant { L"/usr/sbin/mount" });
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -369,7 +361,7 @@ namespace {
             unsigned int    lines2Skip = 2;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 /*
-                 *   $ mount
+                 *   $ /usr/sbin/mount
                  *      node       mounted        mounted over    vfs       date        options
                  *    -------- ---------------  ---------------  ------ ------------ ---------------
                  *             /dev/hd4         /                jfs2   Aug 27 19:50 rw,log=/dev/hd8
@@ -406,349 +398,11 @@ namespace {
             }
             return result;
         }
-        Sequence<MountInfo_>    ReadMountInfo_FromProcMounts_ ()
-        {
-            /*
-             *  I haven't found this clearly documented yet, but it appears that a filesystem can be over-mounted.
-             *  See https://www.kernel.org/doc/Documentation/filesystems/ramfs-rootfs-initramfs.txt
-             *
-             *  So the last one with a given mount point in the file wins.
-             */
-            Mapping<String, MountInfo_>   result;
-            DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
-            // Note - /procfs files always unseekable
-            static  const   String_Constant kProcMountsFileName_     { L"/proc/mounts" };;
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMountsFileName_, FileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Filesystem::Read_proc_mounts_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                //
-                // https://www.centos.org/docs/5/html/5.2/Deployment_Guide/s2-proc-mounts.html
-                //
-                //  1 - device name
-                //  2 - mounted on
-                //  3 - fstype
-                //
-                if (line.size () >= 3) {
-                    String  devName = line[0];
-                    // procfs/mounts often contains symbolic links to device files
-                    // e.g. /dev/disk/by-uuid/e1d70192-1bb0-461d-b89f-b054e45bfa00
-                    if (devName.StartsWith (L"/")) {
-                        IgnoreExceptionsExceptThreadAbortForCall (devName = IO::FileSystem::FileSystem::Default ().CanonicalizeName (devName));
-                    }
-                    String  mountedOn = line[1];
-                    String  fstype = line[2];
-                    result.Add (
-                        mountedOn,
-                    MountInfo_ {
-                        devName, mountedOn, fstype
-                    }
-                    );
-                }
-            }
-            return Sequence<MountInfo_> (result.Values ());
-        }
-    private:
-        void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
-        {
-            try {
-                Mapping<dev_t, PerfStats_>  diskStats = ReadProcFS_diskstats_ ();
-                DurationSecondsType         timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
-                for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
-                    VolumeInfo vi = *i;
-                    if (vi.fDeviceOrVolumeName.IsPresent ()) {
-                        if (fContextStats_) {
-                            String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
-                            size_t i = devNameLessSlashes.RFind ('/');
-                            if (i != string::npos) {
-                                devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
-                            }
-                            dev_t   useDevT;
-                            {
-                                struct stat sbuf;
-                                memset (&sbuf, 0, sizeof (sbuf));
-                                if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
-                                    useDevT = sbuf.st_rdev;
-                                }
-                                else {
-                                    continue;
-                                }
-                            }
-                            Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
-                            Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
-                            if (oOld.IsPresent () and oNew.IsPresent ()) {
-                                unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                                VolumeInfo::IOStats readStats;
-                                readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                                readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
-
-                                VolumeInfo::IOStats writeStats;
-                                writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                                writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
-
-                                VolumeInfo::IOStats combinedStats;
-                                combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
-                                combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                                combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
-
-                                vi.fReadIOStats = readStats;
-                                vi.fWriteIOStats = writeStats;
-                                vi.fCombinedIOStats = combinedStats;
-
-                                // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                                vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
-                            }
-                        }
-                    }
-                    volumes->Update (i, vi);
-                }
-                fContextStats_ = diskStats;
-            }
-            catch (...) {
-                DbgTrace ("Exception gathering procfs disk io stats");
-            }
-        }
-    private:
-        Optional<String>    GetSysBlockDirPathForDevice_ (const String& deviceName)
-        {
-            Require (not deviceName.empty ());
-            Require (not deviceName.Contains (L"/"));
-            // Sometimes the /sys/block directory appears to have data for the each major/minor pair, and sometimes it appears
-            // to only have it for the top level (minor=0) one without the digit after in the name.
-            //
-            // I dont understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
-            //tmphack
-            String  tmp { L"/sys/block/" + deviceName + L"/" };
-            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
-                return tmp;
-            }
-            //tmphack - try using one char less
-            tmp = L"/sys/block/" + deviceName.CircularSubString (0, -1) + L"/";
-            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
-                return tmp;
-            }
-            return Optional<String> ();
-        }
-    private:
-        uint32_t    GetSectorSize_ (const String& deviceName)
-        {
-            auto    o   =   fDeviceName2SectorSizeMap_.Lookup (deviceName);
-            if (o.IsMissing ()) {
-                Optional<String>    blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
-                if (blockDeviceInfoPath) {
-                    String  fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
-                    try {
-                        o = String2Int<uint32_t> (TextReader (FileInputStream::mk (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
-                        fDeviceName2SectorSizeMap_.Add (deviceName, *o);
-                    }
-                    catch (...) {
-                        DbgTrace (L"Unknown error reading %s", fn.c_str ());
-                        // ignore
-                    }
-                }
-            }
-            if (o.IsMissing ()) {
-                o = 512;    // seems the typical answer on UNIX
-            }
-            return *o;
-        }
-    private:
-        Sequence<VolumeInfo> RunDF_POSIX_ ()
-        {
-            Sequence<VolumeInfo>   result;
-            ProcessRunner pr { L"/bin/df -k -P" };
-            Streams::MemoryStream<Byte>   useStdOut;
-            pr.SetStdOut (useStdOut);
-            std::exception_ptr runException;
-            try {
-                pr.Run ();
-            }
-            catch (...) {
-                runException = current_exception ();
-            }
-            String out;
-            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-            bool skippedHeader = false;
-            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                if (not skippedHeader) {
-                    skippedHeader = true;
-                    continue;
-                }
-                Sequence<String>    l    =  i.Tokenize (Set<Characters::Character> { ' ' });
-                if (l.size () <  6) {
-                    DbgTrace ("skipping line cuz len=%d", l.size ());
-                    continue;
-                }
-                VolumeInfo v;
-                v.fMountedOnName = l[5].Trim ();
-                {
-                    String  d   =   l[0].Trim ();
-                    if (not d.empty () and d != L"none") {
-                        v.fDeviceOrVolumeName = d;
-                    }
-                }
-                {
-                    double szInBytes = Characters::String2Float<double> (l[1]) * 1024;
-                    if (not std::isnan (szInBytes) and not std::isinf (szInBytes)) {
-                        v.fSizeInBytes = szInBytes;
-                    }
-                }
-                {
-                    double usedSizeInBytes = Characters::String2Float<double> (l[2]) * 1024;
-                    if (not std::isnan (usedSizeInBytes) and not std::isinf (usedSizeInBytes)) {
-                        v.fUsedSizeInBytes = usedSizeInBytes;
-                    }
-                }
-                if (v.fSizeInBytes and v.fUsedSizeInBytes) {
-                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                }
-                result.Append (v);
-            }
-            // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
-            if (runException and result.empty ()) {
-                Execution::DoReThrow (runException);
-            }
-            return result;
-        }
-        Sequence<VolumeInfo> RunDF_ (bool includeFSTypes)
-        {
-            Sequence<VolumeInfo>   result;
-            //
-            // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
-            // run def with ProcessRunner
-            //
-            //  NEW NOTE - I THINK ITS IN THERE.... RE-EXAMINE proc/filesystems proc/partitions, and http://en.wikipedia.org/wiki/Procfs
-            //      -- LGP 2014-08-01
-            ProcessRunner pr { includeFSTypes ? L"/bin/df -k -T" : L"/bin/df -k" };
-            Streams::MemoryStream<Byte>   useStdOut;
-            pr.SetStdOut (useStdOut);
-            std::exception_ptr runException;
-            try {
-                pr.Run ();
-            }
-            catch (...) {
-                runException = current_exception ();
-            }
-            String out;
-            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-            bool skippedHeader = false;
-            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                if (not skippedHeader) {
-                    skippedHeader = true;
-                    continue;
-                }
-                Sequence<String>    l    =  i.Tokenize (Set<Characters::Character> { ' ' });
-                if (l.size () < (includeFSTypes ? 7 : 6)) {
-                    DbgTrace ("skipping line cuz len=%d", l.size ());
-                    continue;
-                }
-                VolumeInfo v;
-                if (includeFSTypes) {
-                    v.fFileSystemType = l[1].Trim ();
-                }
-                v.fMountedOnName = l[includeFSTypes ? 6 : 5].Trim ();
-                {
-                    String  d   =   l[0].Trim ();
-                    if (not d.empty () and d != L"none") {
-                        v.fDeviceOrVolumeName = d;
-                    }
-                }
-                v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
-                v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
-                v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Append (v);
-            }
-            // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
-            if (runException and result.empty ()) {
-                Execution::DoReThrow (runException);
-            }
-            return result;
-        }
-        Sequence<VolumeInfo>    RunDF_ ()
-        {
-            Mapping<String, VolumeInfo>  dfMountedOnToVolumeInfoMap;
-            for (VolumeInfo vi : RunDF_POSIX_ ()) {
-                dfMountedOnToVolumeInfoMap.Add (vi.fMountedOnName, vi);
-            }
-            try {
-                for (MountInfo_ mi : ReadMountInfo_ ()) {
-                    if (Optional<VolumeInfo> vTmp = dfMountedOnToVolumeInfoMap.Lookup (mi.fMountedOn)) {
-                        VolumeInfo  v   =   *vTmp;
-                        v.fFileSystemType = mi.fFilesystemFormat;
-                        dfMountedOnToVolumeInfoMap.Add (v.fMountedOnName, v);
-                    }
-                }
-            }
-            catch (...) {
-                DbgTrace ("Ignoring exception in ReadMountInfo_");
-            }
-            return Sequence<VolumeInfo> (dfMountedOnToVolumeInfoMap.Values ());
-        }
-    private:
-        Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
-        {
-            using   Characters::String2Float;
-            Mapping<dev_t, PerfStats_>                      result;
-            DataExchange::CharacterDelimitedLines::Reader   reader {{' ', '\t' }};
-            const   String_Constant kProcMemInfoFileName_ { L"/proc/diskstats" };
-            // Note - /procfs files always unseekable
-            for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"***in Instruments::Filesystem::ReadProcFS_diskstats_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
-#endif
-                //
-                // https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
-                //
-                //  1 - major number
-                //  2 - minor mumber
-                //  3 - device name
-                //  4 - reads completed successfully
-                //  6 - sectors read
-                //  7 - time spent reading (ms)
-                //  8 - writes completed
-                //  10 - sectors written
-                //  11 - time spent writing (ms)
-                //
-                if (line.size () >= 13) {
-                    String  majorDevNumber = line[1 - 1];
-                    String  minorDevNumber = line[2 - 1];
-                    String  devName = line[3 - 1];
-                    String  readsCompleted = line[4 - 1];
-                    String  sectorsRead = line[6 - 1];
-                    String  timeSpentReadingMS = line[7 - 1];
-                    String  writesCompleted = line[8 - 1];
-                    String  sectorsWritten = line[10 - 1];
-                    String  timeSpentWritingMS = line[11 - 1];
-                    constexpr bool kAlsoReadQLen_ { true };
-                    Optional<double>    weightedTimeInQSeconds;
-                    if (kAlsoReadQLen_) {
-                        Optional<String>    sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
-                        if (sysBlockInfoPath) {
-                            for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::mk (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
-                                if (ll.size () >= 11) {
-                                    weightedTimeInQSeconds = String2Float (ll[11 - 1]) / 1000.0;    // we record in seconds, but the value in file in milliseconds
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    result.Add (
-                        makedev (String2Int<unsigned int> (majorDevNumber), String2Int<unsigned int> (minorDevNumber)),
-                    PerfStats_ {
-                        String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000,  String2Float (readsCompleted),
-                        String2Float (sectorsWritten),  String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
-                        weightedTimeInQSeconds.Value ()
-                    }
-                    );
-                }
-            }
-            return result;
-        }
     };
 }
 #endif
+
+
 
 
 #if     qPlatform_POSIX
