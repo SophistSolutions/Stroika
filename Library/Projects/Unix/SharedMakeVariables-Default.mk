@@ -177,6 +177,11 @@ endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFrameworksSupportLibs	=	
+
+	ifeq (AIX,$(shell uname))
+		StroikaFrameworksSupportLibs	+=  -lperfstat
+	endif
+
 endif
 
 
