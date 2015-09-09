@@ -79,6 +79,12 @@ namespace   Stroika {
                  *
                  * Note - the arguments are not in exactly the same order as strncpy() - with the length of the buffer for the first string before
                  * the second string.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      char    urlBuf[1024];
+                 *      CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
+                 *      \endcode
                  */
                 template    <typename T>
                 void    Copy (T* dest, size_t nEltsInDest, const T* src);
