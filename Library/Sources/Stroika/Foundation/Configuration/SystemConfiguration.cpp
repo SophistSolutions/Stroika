@@ -160,7 +160,6 @@ namespace {
         String      ProcessorVersion;
         uint        NumberOfProcessors {};
         String      ProcessorClockSpeed;
-        uint        ProcessNBits { };   // 32 or 64
         uint64_t    MemorySize { };
     };
     prtconf_   get_prtconf_ ()
@@ -193,17 +192,20 @@ namespace {
                         result.ProcessorClockSpeed = tokens[1];
                     }
                     else if (tokens.size () == 2 and tokens[0] == L"Good Memory Size") {
-                        uint64_t    memSize = Characters::String2Int<uint64_t> (tokens[1]);
-                        if (tokens.size () >= 3 and tokens[2] == L"KB") {
-                            memSize *= 1024;
+                        Sequence<String>    memSizeTokenized    = tokens[1].Tokenize ();
+                        if (not memSizeTokenized.empty ()) {
+                            uint64_t            memSize = Characters::String2Int<uint64_t> (memSizeTokenized[0]);
+                            if (memSizeTokenized.size () >= 2 and memSizeTokenized[1] == L"KB") {
+                                memSize *= 1024;
+                            }
+                            else if (memSizeTokenized.size () >= 2 and memSizeTokenized[1] == L"MB") {
+                                memSize *= 1024 * 1024;
+                            }
+                            else if (memSizeTokenized.size () >= 2 and memSizeTokenized[1] == L"GB") {
+                                memSize *= 1024 * 1024 * 1024;
+                            }
+                            result.MemorySize = memSize;
                         }
-                        else if (tokens.size () >= 3 and tokens[2] == L"MB") {
-                            memSize *= 1024 * 1024;
-                        }
-                        else if (tokens.size () >= 3 and tokens[2] == L"GB") {
-                            memSize *= 1024 * 1024 * 1024;
-                        }
-                        result.MemorySize = memSize;
                     }
                 }
                 return result;
@@ -822,6 +824,9 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 tmp.fRFC1945CompatProductTokenWithVersion += L"/" + tmp.fMajorMinorVersionString;
             }
         }
+
+
+#if     defined (_POSIX_V6_LP64_OFF64)
         //
         // @todo FIX/FIND BETTER WAY!
         //
@@ -829,7 +834,6 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         // Quite uncertain - this is not a good reference
         //      --LGP 2014-10-18
         //
-#if     defined (_POSIX_V6_LP64_OFF64)
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
 #elif   defined ( _V6_LP64_OFF64)
         //AIX
@@ -887,7 +891,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             //and GetProcAddress to get a pointer to the function if available.
             typedef BOOL (WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
             LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
-            if(NULL != fnIsWow64Process) {
+            if (NULL != fnIsWow64Process) {
                 BOOL    isWOW64 = false;
                 (void)fnIsWow64Process (GetCurrentProcess(), &isWOW64);
                 if (isWOW64) {
