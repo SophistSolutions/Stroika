@@ -375,10 +375,6 @@ namespace {
                                 tmp.fReadIOStats = readStats;
                                 tmp.fWriteIOStats = writeStats;
                                 tmp.fCombinedIOStats = combinedStats;
-
-                                // @todo this is redundant - lose redundant!
-                                tmp.fIOQLength = combinedStats.fAverageQLength;
-
                                 volMap.Add (mountPt, tmp);
                             }
                         }
@@ -732,10 +728,9 @@ namespace {
 
                                 vi.fReadIOStats = readStats;
                                 vi.fWriteIOStats = writeStats;
-                                vi.fCombinedIOStats = combinedStats;
-
                                 // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                                vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                                combinedStats.fAverageQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                                vi.fCombinedIOStats = combinedStats;
                             }
                         }
                     }
@@ -1293,7 +1288,6 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo, fIOQLength), String_Constant (L"IO-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit  },
 
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
