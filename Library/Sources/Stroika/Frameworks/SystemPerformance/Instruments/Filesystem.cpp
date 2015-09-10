@@ -253,21 +253,18 @@ namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
     private:
         struct PerfStats_ {
-            double  fSectorsRead;
-            double  fTimeSpentReading;
-            double  fReadsCompleted;
-            double  fSectorsWritten;
-            double  fTimeSpentWriting;
-            double  fWritesCompleted;
-            double  fWeightedTimeInQSeconds;       // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
+            u_longlong_t  fDiskBlockSize;
+            u_longlong_t  fBlocksRead;
+            u_longlong_t  fBlocksWritten;
+            u_longlong_t  wq_sampled;       /* accumulated sampled dk_wq_depth */
+            u_longlong_t  wq_time;
         };
-        Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
-        Optional<Mapping<dev_t, PerfStats_>>    fContextStats_;
+        Optional<Mapping<String, PerfStats_>>   fContextDiskName2PerfStats_;
     public:
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            // for side-effect of setting fContextStats_
+            // for side-effect of setting fContextDiskName2PerfStats_
             try {
                 capture_ ();
             }
@@ -350,41 +347,47 @@ namespace {
             Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
             Mapping<String, VolumeInfo>     volMap;
             volumes->Apply ([&volMap] (const VolumeInfo & vi) {volMap.Add (vi.fMountedOnName, vi); });
-
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
                 CString::Copy (name.name, diskAndVols.fKey.AsNarrowSDKString ().c_str (), NEltsOf (name.name));
                 perfstat_disk_t ds;
-                memset (&ds, 0, sizeof (ds));
+                (void)::memset (&ds, 0, sizeof (ds));
                 int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
                 if (disks == 1) {
-                    VolumeInfo::IOStats readStats;
-                    readStats.fBytesTransfered = ds.rblks; //superhack
-                    for (String mountPt : diskAndVols.fValue) {
-                        if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
-                            VolumeInfo tmp = *vi;
-                            tmp.fReadIOStats = readStats;
-                            volMap.Add (mountPt, tmp);
+                    PerfStats_  ps { ds.bsize, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
+
+                    Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
+                    if (prevPerfStats) {
+                        VolumeInfo::IOStats readStats;
+                        readStats.fBytesTransfered = (ps.fBlocksRead - prevPerfStats->fBlocksRead) *  ps.fDiskBlockSize;
+                        VolumeInfo::IOStats writeStats;
+                        writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize;
+                        VolumeInfo::IOStats combinedStats;
+                        combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                        for (String mountPt : diskAndVols.fValue) {
+                            if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
+                                VolumeInfo tmp = *vi;
+                                tmp.fReadIOStats = readStats;
+                                tmp.fWriteIOStats = writeStats;
+                                tmp.fCombinedIOStats = combinedStats;
+                                volMap.Add (mountPt, tmp);
+                            }
                         }
                     }
+
+                    fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
             *volumes = Sequence<VolumeInfo> { volMap.Values () };
+
+
 #if 0
-            for (Iterator<VolumeInfo> i = volumes->begin (); i != volumes->end (); ++i) {
-                VolumeInfo vi = *i;
-                if (vi.fDeviceOrVolumeName.IsPresent ()) {
-                    perfstat_id_t   name;
-                    perfstat_disk_t ds;
-
-                    strcpy (name.name, vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str ());//tmphack make safe
-                    int disks = perfstat_disk (&name, &ds, sizeof(ds), 1);
-                    DbgTrace ("***disks=%d, ds.rblks=%d, name=%s", disks, ds.rblks, name.name);
-
-
+            if (fContextStats_) {
+                Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
+                Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
+                if (oOld.IsPresent () and oNew.IsPresent ()) {
+                    unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                     VolumeInfo::IOStats readStats;
-                    readStats.fBytesTransfered = ds.rblks;  //superhack
-#if 0
                     readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                     readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
                     readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
@@ -398,57 +401,14 @@ namespace {
                     combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
                     combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
                     combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
-#endif
 
                     vi.fReadIOStats = readStats;
-#if 0
-                    if (fContextStats_) {
-                        String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
-                        size_t i = devNameLessSlashes.RFind ('/');
-                        if (i != string::npos) {
-                            devNameLessSlashes = devNameLessSlashes.SubString (i + 1);
-                        }
-                        dev_t   useDevT;
-                        {
-                            struct stat sbuf;
-                            memset (&sbuf, 0, sizeof (sbuf));
-                            if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
-                                useDevT = sbuf.st_rdev;
-                            }
-                            else {
-                                continue;
-                            }
-                        }
-                        Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
-                        Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
-                        if (oOld.IsPresent () and oNew.IsPresent ()) {
-                            unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                            VolumeInfo::IOStats readStats;
-                            readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                            readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                            readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+                    vi.fWriteIOStats = writeStats;
+                    vi.fCombinedIOStats = combinedStats;
 
-                            VolumeInfo::IOStats writeStats;
-                            writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                            writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                            writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
-
-                            VolumeInfo::IOStats combinedStats;
-                            combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
-                            combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                            combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
-
-                            vi.fReadIOStats = readStats;
-                            vi.fWriteIOStats = writeStats;
-                            vi.fCombinedIOStats = combinedStats;
-
-                            // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                            vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
-                        }
-                    }
-#endif
+                    // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
+                    vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
                 }
-                volumes->Update (i, vi);
             }
 #endif
 
