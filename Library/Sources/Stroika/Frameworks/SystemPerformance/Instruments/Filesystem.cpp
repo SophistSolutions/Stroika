@@ -20,6 +20,7 @@
 #include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Containers/Sequence.h"
@@ -254,12 +255,13 @@ namespace {
     private:
         struct PerfStats_ {
             u_longlong_t  fDiskBlockSize;
+            u_longlong_t  fTotalTransfers;
             u_longlong_t  fBlocksRead;
             u_longlong_t  fBlocksWritten;
             u_longlong_t  wq_sampled;       /* accumulated sampled dk_wq_depth */
             u_longlong_t  wq_time;
         };
-        Optional<Mapping<String, PerfStats_>>   fContextDiskName2PerfStats_;
+        Mapping<String, PerfStats_>     fContextDiskName2PerfStats_;
     public:
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
@@ -349,13 +351,12 @@ namespace {
             volumes->Apply ([&volMap] (const VolumeInfo & vi) {volMap.Add (vi.fMountedOnName, vi); });
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
-                CString::Copy (name.name, diskAndVols.fKey.AsNarrowSDKString ().c_str (), NEltsOf (name.name));
+                Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
                 perfstat_disk_t ds;
                 (void)::memset (&ds, 0, sizeof (ds));
                 int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
                 if (disks == 1) {
-                    PerfStats_  ps { ds.bsize, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
-
+                    PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
                     Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
                         VolumeInfo::IOStats readStats;
@@ -364,54 +365,28 @@ namespace {
                         writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize;
                         VolumeInfo::IOStats combinedStats;
                         combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
+                        combinedStats.fTotalTransfers = ps.fTotalTransfers - prevPerfStats->fTotalTransfers;
+                        if (ps.wq_time > prevPerfStats->wq_time) {
+                            combinedStats.fAverageQLength = (ps.wq_sampled - prevPerfStats->wq_sampled) / (ps.wq_time - prevPerfStats->wq_time);
+                        }
                         for (String mountPt : diskAndVols.fValue) {
                             if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
                                 VolumeInfo tmp = *vi;
                                 tmp.fReadIOStats = readStats;
                                 tmp.fWriteIOStats = writeStats;
                                 tmp.fCombinedIOStats = combinedStats;
+
+                                // @todo this is redundant - lose redundant!
+                                tmp.fIOQLength = combinedStats.fAverageQLength;
+
                                 volMap.Add (mountPt, tmp);
                             }
                         }
                     }
-
                     fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
             *volumes = Sequence<VolumeInfo> { volMap.Values () };
-
-
-#if 0
-            if (fContextStats_) {
-                Optional<PerfStats_>    oOld = fContextStats_->Lookup (useDevT);
-                Optional<PerfStats_>    oNew = diskStats.Lookup (useDevT);
-                if (oOld.IsPresent () and oNew.IsPresent ()) {
-                    unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
-                    VolumeInfo::IOStats readStats;
-                    readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
-                    readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                    readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
-
-                    VolumeInfo::IOStats writeStats;
-                    writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
-                    writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                    writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
-
-                    VolumeInfo::IOStats combinedStats;
-                    combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
-                    combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                    combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
-
-                    vi.fReadIOStats = readStats;
-                    vi.fWriteIOStats = writeStats;
-                    vi.fCombinedIOStats = combinedStats;
-
-                    // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                    vi.fIOQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
-                }
-            }
-#endif
-
         }
 
     private:
