@@ -3,7 +3,9 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
+#if     defined (_AIX)
+#include    <libperfstat.h>
+#elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
 
@@ -11,6 +13,7 @@
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
+#include    "../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
@@ -127,51 +130,65 @@ namespace {
 
 
 
+
+
 #if     defined (_AIX)
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
         CapturerWithContext_AIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-            /// @todo THIS IS A GROSS QUICK HACK TO GET SOMETHIGN WORKING...
+            // Force fill of context - ignore results
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
         }
-        /*
-         *  man lparstat
-         *          I found SOURCE on https://github.com/shenki/powerpc-utils/blob/master/src/lparstat.c but
-         *  that cannot be right since it uses LINUX procfs stuff that doesnt exist here...
-         *
-         *
-         */
         struct  CPUUsageTimes_ {
             double  fProcessCPUUsage;
             double  fTotalCPUUsage;
         };
         CPUUsageTimes_  cputime_ ()
         {
-            using   Execution::ProcessRunner;
-            String  lastLine;
-            {
-                double interval = 2.0;  // seconds
-                ProcessRunner   pr (Characters::Format (L"/usr/bin/lparstat %d 1", static_cast<int> (interval)));
-                Streams::MemoryStream<Byte>   useStdOut;
-                pr.SetStdOut (useStdOut);
-                pr.Run ();
-                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                    lastLine = i;
-                }
+            return cputime_perfstat_ ();
+        }
+        Optional<perfstat_cpu_total_t>  fPrev;
+        CPUUsageTimes_  cputime_perfstat_ ()
+        {
+            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::cputime_perfstat_");
+            perfstat_cpu_total_t    tmp;
+            Execution::ThrowErrNoIfNegative (::perfstat_cpu_total (nullptr, &tmp, sizeof(tmp), 1));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("tmp.user=%lld, tmp.sys=%lld, tmp.wait=%lld", tmp.user, tmp.sys, tmp.wait);
+#endif
+
+            CPUUsageTimes_  result {};
+            if (fPrev) {
+                u_longlong_t    total {};
+                total += tmp.user - fPrev->user;
+                total += tmp.sys - fPrev->sys;
+                total += tmp.idle - fPrev->idle;
+                total += tmp.wait - fPrev->wait;
+
+                u_longlong_t    pcpuNumerator {};
+                pcpuNumerator += tmp.user - fPrev->user;
+                pcpuNumerator += tmp.sys - fPrev->sys;
+
+                u_longlong_t    idleNumerator {};
+                idleNumerator += tmp.idle - fPrev->idle;
+
+                result = CPUUsageTimes_ {
+                    Math::PinInRange<double> (static_cast<double> (pcpuNumerator) / static_cast<double> (total), 0, 1),
+                    Math::PinInRange<double> (1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total), 0, 1)
+                };
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("fPrev->user=%lld, fPrev->sys=%lld, fPrev->wait=%lld", fPrev->user, fPrev->sys, fPrev->wait);
+#endif
             }
-            Sequence<String>    tokens = lastLine.Tokenize ();
-            if (tokens.length () >= 4) {
-                using   Characters::String2Float;
-                double totalProcessCPUUsage =  String2Float<> (tokens[0]) + String2Float<> (tokens[1]);
-                double totalCPUUsage =  100.0 - String2Float<> (tokens[3]);
-                return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage, 0, 100), Math::PinInRange<double> (totalCPUUsage, 0, 100) };
-            }
-            else {
-                DbgTrace ("Failed to read line from lparstat");
-                return CPUUsageTimes_ {};
-            }
+            fPrev = tmp;
+            return result;
         }
         Info capture ()
         {
@@ -344,7 +361,7 @@ namespace {
             double totalProcessCPUUsage =  processNonIdleTime * 100.0 / totalTime;
             double totalCPUUsage =  nonIdleTime * 100.0 / totalTime;
 
-            return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage, 0, 100), Math::PinInRange<double> (totalCPUUsage, 0, 100) };
+            return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage / 100, 0, 1), Math::PinInRange<double> (totalCPUUsage / 100, 0, 1) };
         }
         Info capture ()
         {
@@ -436,8 +453,8 @@ namespace {
 
             double sys = kernelTimeOverInterval + userTimeOverInterval;
             Assert (sys > 0);
-            double cpu =  (sys - idleTimeOverInterval) * 100 / sys;
-            return Math::PinInRange<double> (cpu, 0, 100);
+            double cpu =  (sys - idleTimeOverInterval) / sys;
+            return Math::PinInRange<double> (cpu, 0, 1);
         }
         Info capture_ ()
         {
