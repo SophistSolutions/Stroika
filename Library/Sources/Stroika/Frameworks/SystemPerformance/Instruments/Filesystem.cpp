@@ -387,7 +387,7 @@ namespace {
                             //        ps.wq_time, prevPerfStats->wq_time, ps.wq_time - prevPerfStats->wq_time,
                             //        ps.wq_sampled, prevPerfStats->wq_sampled, ps.wq_sampled - prevPerfStats->wq_sampled
                             //       );
-                            combinedStats.fAverageQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
+                            combinedStats.fAverageQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
                             if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
