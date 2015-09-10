@@ -359,15 +359,21 @@ namespace {
                     PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
                     Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
+                        Assert (diskAndVols.fValue.size () >= 1);   // else wouldn't be in this list
+                        /*
+                         *  Since we know total disk stats, and not how divided over the mounted filesystems on that disk,
+                         *  divide activity evently.
+                         */
+                        double  scaleResultsBy  =   1.0 / diskAndVols.fValue.size ();
                         VolumeInfo::IOStats readStats;
-                        readStats.fBytesTransfered = (ps.fBlocksRead - prevPerfStats->fBlocksRead) *  ps.fDiskBlockSize;
+                        readStats.fBytesTransfered = (ps.fBlocksRead - prevPerfStats->fBlocksRead) *  ps.fDiskBlockSize * scaleResultsBy;
                         VolumeInfo::IOStats writeStats;
-                        writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize;
+                        writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize * scaleResultsBy;
                         VolumeInfo::IOStats combinedStats;
                         combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
-                        combinedStats.fTotalTransfers = ps.fTotalTransfers - prevPerfStats->fTotalTransfers;
+                        combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers) * scaleResultsBy;
                         if (ps.wq_time > prevPerfStats->wq_time) {
-                            combinedStats.fAverageQLength = (ps.wq_sampled - prevPerfStats->wq_sampled) / (ps.wq_time - prevPerfStats->wq_time);
+                            combinedStats.fAverageQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
                             if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
