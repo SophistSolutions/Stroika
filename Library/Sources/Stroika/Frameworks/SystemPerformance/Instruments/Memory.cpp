@@ -3,6 +3,10 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#if     qPlatform_AIX
+#include    <libperfstat.h>
+#endif
+
 #include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Characters/String2Int.h"
@@ -14,6 +18,7 @@
 #include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
@@ -113,6 +118,8 @@ namespace {
 #if     qPlatform_AIX
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        uint64_t                    fSaved_MinorPageFaultsSinceBoot {};
+        Time::DurationSecondsType   fSaved_MinorPageFaultsSinceBoot_At {};
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
         Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
 
@@ -129,154 +136,66 @@ namespace {
         }
         CapturerWithContext_AIX_ (const CapturerWithContext_AIX_&) = default;   // copy by value fine - no need to re-wait...
 
-        Instruments::Memory::Info  capture_via_vmstat_AIX_ ()
+        Instruments::Memory::Info capture_ ()
         {
-            static  const   SystemConfiguration::Memory kMemConfig_     =   Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ();
             Instruments::Memory::Info   result;
-            using   Execution::ProcessRunner;
-            using   Characters::String2Float;
-            try {
-                String  lastLine;
-                {
-                    /*
-                     *  On AIX 7.1
-                     *      $ vmstat
-                     *
-                     *      System configuration: lcpu=4 mem=3840MB ent=0.20
-                     *
-                     *      kthr    memory              page              faults              cpu
-                     *      ----- ----------- ------------------------ ------------ -----------------------
-                     *       r  b   avm   fre  re  pi  po  fr   sr  cy  in   sy  cs us sy id wa    pc    ec
-                     *       1  1 357112 61117   0   0   0 119  215   0  46 13360 999  1  0 97  2  0.00   1.0
-                     */
-                    ProcessRunner   pr (L"/usr/bin/vmstat");
-                    Streams::MemoryStream<Byte>   useStdOut;
-                    pr.SetStdOut (useStdOut);
-                    pr.Run ();
-                    Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-                    for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                        lastLine = i;
-                    }
-                }
-                Sequence<String>    tokens = lastLine.Tokenize ();
-                if (tokens.length () >= 4) {
-                    result.fFreePhysicalMemory = String2Float<> (tokens[3]) * kMemConfig_.fPageSize;
-                }
-                else {
-                    DbgTrace ("Failed to read line from vmstat");
-                }
-            }
-            catch (...) {
-                DbgTrace ("error reading /usr/bin/vmstat output ignored");
-            }
-            try {
-                /*
-                 *  On AIX 7.1
-                 *   $ /usr/bin/vmstat -s
-                 *               71154383 total address trans. faults
-                 *                2967623 page ins
-                 *                6145399 page outs
-                 *                      0 paging space page ins
-                 *                      0 paging space page outs
-                 *                      0 total reclaims
-                 *               30884043 zero filled pages faults
-                 *                  54326 executable filled pages faults
-                 *                2726675 pages examined by clock
-                 *                      0 revolutions of the clock hand
-                 *                1281752 pages freed by the clock
-                 *                 227799 backtracks
-                 *                      0 free frame waits
-                 *                      0 extend XPT waits
-                 *                2556529 pending I/O waits
-                 *                9113025 start I/Os
-                 *                2822057 iodones
-                 *               20100049 cpu context switches
-                 *                1990956 device interrupts
-                 *                3285506 software interrupts
-                 *               12064139 decrementer interrupts
-                 *                  11598 mpc-sent interrupts
-                 *                  11596 mpc-received interrupts
-                 *                  97592 phantom interrupts
-                 *                      0 traps
-                 *              290466678 syscalls
-                 */
-                ProcessRunner   pr (L"/usr/bin/vmstat -s");
-                Streams::MemoryStream<Byte>   useStdOut;
-                pr.SetStdOut (useStdOut);
-                pr.Run ();
-                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                    Sequence<String>    tokens = i.Tokenize ();
-                    if (tokens.size () == 3 and tokens[1] == L"page" and tokens[2] == L"ins") {
-                        result.fMajorPageFaultsSinceBoot = Characters::String2Int<uint64_t> (tokens[0]);
-                    }
-                    else if (tokens.size () == 3 and tokens[1] == L"page" and tokens[2] == L"outs") {
-                        // we dont account for these but should!???
-                    }
-                }
-                if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                    Time::DurationSecondsType   now = Time::GetTickCount ();
-                    if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
-                        result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
-                    }
-                    fSaved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
-                    fSaved_MajorPageFaultsSinceBoot_At = now;
-                }
-            }
-            catch (...) {
-                DbgTrace ("error reading /usr/bin/vmstat output ignored");
-            }
-            try {
-                /*
-                 *  On AIX 7.1
-                 *      $ /usr/bin/svmon -G -O unit=MB
-                 *      Unit: MB
-                 *      --------------------------------------------------------------------------------------
-                 *                     size       inuse        free         pin     virtual  available   mmode
-                 *      memory      3840.00     3529.06      310.94     1040.14     1396.24    1623.89     Ded
-                 *      pg space   11008.00        8.88
-                 *
-                 *                     work        pers        clnt       other
-                 *      pin          905.45           0           0      134.68
-                 *      in use      1396.24           0     2132.82
-                 */
-                ProcessRunner   pr (L"/usr/bin/svmon -G -O unit=MB");
-                Streams::MemoryStream<Byte>   useStdOut;
-                pr.SetStdOut (useStdOut);
-                pr.Run ();
-                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
-                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
-                    Sequence<String>    tokens = i.Tokenize ();
-                    if (tokens.size () >= 3 and tokens[0] == L"pg" and tokens[1] == L"space") {
-                        result.fPagefileTotalSize = String2Float<> (tokens[2]) * 1024 * 1024;
-                    }
-                }
+            result = capture_perfstat_ ();
+            NoteCompletedCapture_ ();
+            return result;
+        }
+        Instruments::Memory::Info capture_perfstat_ ()
+        {
+            Instruments::Memory::Info   result;
 
-                // fake commit limit for now
-                if (result.fPagefileTotalSize) {
-                    result.fCommitLimit = kMemConfig_.fTotalPhysicalRAM + *result.fPagefileTotalSize;  //tmphack -WAG for AIX
+            perfstat_memory_total_t memResults;
+            Execution::ThrowErrNoIfNegative (::perfstat_memory_total (nullptr, &memResults,  sizeof (memResults), 1));
 
-                    // @todo rediculously bad estimate - for AIX
-                    // for 'topas' can use paging space %in use...
-                    result.fCommittedBytes = .5 * *result.fCommitLimit;
+            // From /usr/include/libperfstat.h:
+            //      u_longlong_t real_free;     /* free real memory (in 4KB pages) */
+            result.fFreePhysicalMemory = memResults.real_free * 4 * 1024;
+
+            // From /usr/include/libperfstat.h:
+            //      u_longlong_t virt_total;    /* total virtual memory (in 4KB pages)
+            result.fCommitLimit = memResults.virt_total * 4 * 1024;             //
+
+            // WAG  /* reserved paging space (in 4KB pages) */
+            // u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
+
+            // From /usr/include/libperfstat.h: u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
+            result.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
+
+            // From /usr/include/libperfstat.h:
+            //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
+            //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
+            //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
+            result.fCommittedBytes = (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
+
+            result.fMinorPageFaultsSinceBoot = memResults.pgexct;
+            result.fMajorPageFaultsSinceBoot = memResults.pgins + memResults.pgouts;
+
+            if (result.fMinorPageFaultsSinceBoot.IsPresent ()) {
+                Time::DurationSecondsType   now = Time::GetTickCount ();
+                if (fSaved_MinorPageFaultsSinceBoot_At != 0) {
+                    result.fMinorPageFaultsPerSecond = (*result.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_MinorPageFaultsSinceBoot_At);
                 }
+                fSaved_MinorPageFaultsSinceBoot = *result.fMinorPageFaultsSinceBoot;
+                fSaved_MinorPageFaultsSinceBoot_At = now;
             }
-            catch (...) {
-                DbgTrace ("error reading /usr/bin/svmon output ignored");
+            if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
+                Time::DurationSecondsType   now = Time::GetTickCount ();
+                if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
+                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                }
+                fSaved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
+                fSaved_MajorPageFaultsSinceBoot_At = now;
             }
+
             return result;
         }
         Instruments::Memory::Info capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
-        }
-        Instruments::Memory::Info capture_ ()
-        {
-            Instruments::Memory::Info   result;
-            result = capture_via_vmstat_AIX_ ();
-            NoteCompletedCapture_ ();
-            return result;
         }
     };
 }
@@ -319,7 +238,6 @@ namespace {
             NoteCompletedCapture_ ();
             return result;
         }
-
         void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
         {
             auto    ReadMemInfoLine_  = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
@@ -469,6 +387,7 @@ namespace {
 
 
 
+
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
@@ -526,6 +445,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
             //{ Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVirtualMemory), String_Constant (L"Total-Virtual-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommittedBytes), String_Constant (L"Committed-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPagefileTotalSize), String_Constant (L"Pagefile-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
 //            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVMInUse), String_Constant (L"Total-Virtual-Memory-In-Use"), StructureFieldInfo::NullFieldHandling::eOmit },
 //            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalPagefileBackedVirtualMemory), String_Constant (L"Total-Pagefile-Backed-Virtual-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLargestAvailableVirtualChunk), String_Constant (L"Largest-Available-Virtual-Chunk"), StructureFieldInfo::NullFieldHandling::eOmit },
