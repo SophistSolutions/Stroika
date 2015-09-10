@@ -83,7 +83,7 @@ namespace   Stroika {
                  *  \par Example Usage
                  *      \code
                  *      char    urlBuf[1024];
-                 *      CString::Copy (urlBuf, url.c_str (), NEltsOf (urlBuf));
+                 *      CString::Copy (urlBuf, NEltsOf (urlBuf), url.c_str ());
                  *      \endcode
                  */
                 template    <typename T>
