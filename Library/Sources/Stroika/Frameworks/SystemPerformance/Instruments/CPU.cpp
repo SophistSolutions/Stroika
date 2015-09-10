@@ -180,10 +180,9 @@ namespace {
                 idleNumerator += tmp.idle - fPrev->idle;
 
                 result = CPUUsageTimes_ {
-                    Math::PinInRange<double> (static_cast<double> (pcpuNumerator) / static_cast<double> (total), 0, 1),
-                    Math::PinInRange<double> (1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total), 0, 1)
+                    static_cast<double> (pcpuNumerator) / static_cast<double> (total),
+                    1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total)
                 };
-                result.fProcessCPUUsage = Math::PinInRange<double> (0, result.fTotalCPUUsage);  // force in case we read bad low level stats
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("fPrev->user=%lld, fPrev->sys=%lld, fPrev->wait=%lld", fPrev->user, fPrev->sys, fPrev->wait);
 #endif
@@ -207,7 +206,12 @@ namespace {
         }
     };
 }
-#elif   qPlatform_POSIX
+#endif
+
+
+
+
+#if   qPlatform_POSIX
 namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         struct  POSIXSysTimeCaptureContext_ {
@@ -359,10 +363,9 @@ namespace {
                 return CPUUsageTimes_ {};
             }
             Assert (totalTime > 0);
-            double totalProcessCPUUsage =  processNonIdleTime * 100.0 / totalTime;
-            double totalCPUUsage =  nonIdleTime * 100.0 / totalTime;
-
-            return CPUUsageTimes_ { Math::PinInRange<double> (totalProcessCPUUsage / 100, 0, 1), Math::PinInRange<double> (totalCPUUsage / 100, 0, 1) };
+            double totalProcessCPUUsage =  processNonIdleTime / totalTime;
+            double totalCPUUsage =  nonIdleTime / totalTime;
+            return CPUUsageTimes_ { totalProcessCPUUsage, totalCPUUsage };
         }
         Info capture ()
         {
@@ -455,7 +458,7 @@ namespace {
             double sys = kernelTimeOverInterval + userTimeOverInterval;
             Assert (sys > 0);
             double cpu =  (sys - idleTimeOverInterval) / sys;
-            return Math::PinInRange<double> (cpu, 0, 1);
+            return cpu;
         }
         Info capture_ ()
         {
@@ -513,7 +516,11 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::CPU capture");
 #endif
-            return inherited::capture ();
+            Info    result  =   inherited::capture ();
+            // Since values externally acquired, force/assure they are all legit, in range
+            result.fTotalCPUUsage = Math::PinInRange<double> (result.fTotalCPUUsage, 0, 1);
+            result.fTotalProcessCPUUsage = Math::PinInRange<double> (result.fTotalProcessCPUUsage, 0, result.fTotalCPUUsage);   // all process usage is CPU usage (often same but <=)
+            return result;
         }
     };
 }
