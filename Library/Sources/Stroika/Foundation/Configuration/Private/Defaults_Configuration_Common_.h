@@ -141,6 +141,19 @@
 
 
 
+// AIX support
+#if     !defined (qPlatform_AIX)
+// not sure
+#if     defined (_AIX)
+#define qPlatform_AIX 1
+#else
+#define qPlatform_AIX 0
+#endif
+#endif
+
+
+
+
 // LINUX support
 #if     !defined (qPlatform_Linux)
 // not sure

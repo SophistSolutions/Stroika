@@ -191,7 +191,7 @@
  */
 #ifndef qCompilerAndStdLib_Locale_Buggy
 
-#if   defined (_AIX)
+#if   qPlatform_AIX
 #define qCompilerAndStdLib_Locale_Buggy             1
 #else
 #define qCompilerAndStdLib_Locale_Buggy             0
@@ -584,7 +584,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
 
-#if     (defined (__GNUC__) && !defined (__clang__)) && defined (_AIX)
+#if     (defined (__GNUC__) && !defined (__clang__)) && qPlatform_AIX
 #define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      1
 #else
 #define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      0
@@ -639,7 +639,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #ifndef qCompilerAndStdLib_fdopendir_Buggy
 
-#define qCompilerAndStdLib_fdopendir_Buggy   defined (_AIX)
+#define qCompilerAndStdLib_fdopendir_Buggy   qPlatform_AIX
 
 #endif
 

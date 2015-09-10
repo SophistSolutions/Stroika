@@ -110,7 +110,7 @@ namespace {
 
 
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
@@ -472,7 +472,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-#if     defined (_AIX)
+#if     qPlatform_AIX
             , CapturerWithContext_AIX_
 #elif   qPlatform_POSIX
             , CapturerWithContext_POSIX_
@@ -480,7 +480,7 @@ namespace {
             , CapturerWithContext_Windows_
 #endif
     {
-#if     defined (_AIX)
+#if     qPlatform_AIX
         using inherited = CapturerWithContext_AIX_;
 #elif   qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;

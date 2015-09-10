@@ -137,7 +137,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     Assert (r == 0);
 
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
-#if     defined (_AIX)
+#if     qPlatform_AIX
         // I don't understand the logic behind this, but without this, we get errors
         // in getFlags(). We could check there - and handle that with an extra return value, but this
         // is simpler.

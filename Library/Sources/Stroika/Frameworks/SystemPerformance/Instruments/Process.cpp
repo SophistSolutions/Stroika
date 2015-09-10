@@ -352,7 +352,7 @@ namespace {
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
-#if     defined (_AIX)
+#if     qPlatform_AIX
             // for now, PS doing better than procfs - so default to that...
             if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
@@ -881,7 +881,7 @@ namespace {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
             ProcessMapType  result;
             using   Execution::ProcessRunner;
-#if     defined (_AIX)
+#if     qPlatform_AIX
             // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
 
             /*
@@ -963,7 +963,7 @@ namespace {
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
                     // GROSS hack cuz time reported always zero above way...
                     if (*processDetails.fTotalCPUTimeEverUsed == 0) {
                         try {
@@ -991,7 +991,7 @@ namespace {
 
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-#if     defined (_AIX)
+#if     qPlatform_AIX
                 static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
                 processDetails.fResidentMemorySize /= 1024;
                 processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
@@ -1003,7 +1003,7 @@ namespace {
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
-#if     defined (_AIX)
+#if     qPlatform_AIX
                     const size_t kCmdNameStartsAt_ = headerLen - 7;
 #else
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
@@ -1011,7 +1011,7 @@ namespace {
                     cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
-#if     defined (_AIX)
+#if     qPlatform_AIX
                     processDetails.fKernelProcess = pid != 1 and processDetails.fParentProcessID == 0;      // wag?
 #else
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';

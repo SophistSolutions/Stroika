@@ -66,7 +66,7 @@ using   Memory::Byte;
 
 
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
 namespace {
     /*
      *      $ /usr/sbin/prtconf
@@ -387,7 +387,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
     using CPU = SystemConfiguration::CPU;
     CPU result;
-#if     defined (_AIX)
+#if     qPlatform_AIX
     prtconf_   ptrConf = get_prtconf_ ();
     String     showProcessorType = ptrConf.ProcessorType;
     if (not ptrConf.ProcessorImplementationMode.empty ()) {
@@ -524,7 +524,7 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 {
     using   Memory = SystemConfiguration::Memory;
     Memory  result;
-#if     defined (_AIX)
+#if     qPlatform_AIX
     prtconf_   ptrConf = get_prtconf_ ();
     result.fPageSize = ::sysconf (_SC_PAGESIZE);
     result.fTotalPhysicalRAM = ptrConf.MemorySize;      // @todo UNCLEAR why ::sysconf (_SC_PHYS_PAGES) * result.fPageSize different than this? --LGP 2015-09-08

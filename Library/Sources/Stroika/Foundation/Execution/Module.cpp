@@ -9,14 +9,14 @@
 #if     qPlatform_POSIX && qSupport_Proc_Filesystem
 #include    <unistd.h>
 #endif
-#if     defined (_AIX)
+#if     qPlatform_AIX
 #include    <dirent.h>
 #include    <unistd.h>
 #endif
 
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
-#if     defined (_AIX)
+#if     qPlatform_AIX
 #include    "../Execution/Process.h"
 #endif
 #include    "../Memory/SmallStackBuffer.h"
@@ -78,7 +78,7 @@ String Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
-#if     defined (_AIX)
+#if     qPlatform_AIX
 namespace {
     SDKString   myProcessRunnerFirstLine_ (const SDKString& cmdLine)
     {
@@ -253,7 +253,7 @@ SDKString Execution::GetEXEPathT ()
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return SDKString (buf.begin (), buf.begin () + n);
-#elif   defined (_AIX)
+#elif   qPlatform_AIX
     return AIX_GET_EXE_PATH_ ();
 #else
     AssertNotImplemented ();

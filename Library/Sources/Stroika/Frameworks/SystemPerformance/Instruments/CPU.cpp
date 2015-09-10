@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
 #include    <libperfstat.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
@@ -132,7 +132,7 @@ namespace {
 
 
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
         CapturerWithContext_AIX_ (const Options& options)
@@ -491,7 +491,7 @@ namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
 
-#if     defined (_AIX)
+#if     qPlatform_AIX
             , CapturerWithContext_AIX_
 #elif     qPlatform_POSIX
             , CapturerWithContext_POSIX_
@@ -499,7 +499,7 @@ namespace {
             , CapturerWithContext_Windows_
 #endif
     {
-#if     defined (_AIX)
+#if     qPlatform_AIX
         using inherited = CapturerWithContext_AIX_;
 #elif     qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
