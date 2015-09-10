@@ -183,6 +183,7 @@ namespace {
                     Math::PinInRange<double> (static_cast<double> (pcpuNumerator) / static_cast<double> (total), 0, 1),
                     Math::PinInRange<double> (1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total), 0, 1)
                 };
+                result.fProcessCPUUsage = Math::PinInRange<double> (0, result.fTotalCPUUsage);  // force in case we read bad low level stats
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("fPrev->user=%lld, fPrev->sys=%lld, fPrev->wait=%lld", fPrev->user, fPrev->sys, fPrev->wait);
 #endif
