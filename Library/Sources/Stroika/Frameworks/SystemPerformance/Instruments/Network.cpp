@@ -3,7 +3,9 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
+#if     defined (_AIX)
+#include    <libperfstat.h>
+#elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <Iphlpapi.h>
 #endif
@@ -154,6 +156,127 @@ namespace {
     };
 }
 
+
+
+
+
+
+
+#if     defined (_AIX)
+namespace {
+    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        struct  PerfStats_ {
+            uint64_t  fTotalBytesReceived;
+            uint64_t  fTotalBytesSent;
+            uint64_t  fTotalPacketsReceived;
+            uint64_t  fTotalPacketsSent;
+        };
+        Mapping<String, PerfStats_>       fLast;
+        CapturerWithContext_AIX_ (Options options)
+            : CapturerWithContext_COMMON_ (options)
+        {
+            // hack for side-effect of  updating fLastSum etc
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
+        }
+        CapturerWithContext_AIX_ (const CapturerWithContext_AIX_&) = default;   // copy by value fine - no need to re-wait...
+        Instruments::Network::Info    capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        Instruments::Network::Info    capture_ ()
+        {
+            using   Instruments::Network::InterfaceInfo;
+            using   Instruments::Network::Info;
+
+            Mapping<String, PerfFetchResults_>   thisRunStats    =   perfstat_fetch_ ();
+
+            Collection<InterfaceInfo>   interfaceResults;
+            IOStatistics                accumSummary;
+
+            Time::DurationSecondsType   elapsed = Time::GetTickCount () - GetLastCaptureAt ();
+
+            for (KeyValuePair<String, PerfFetchResults_> i : thisRunStats) {
+                try {
+                    Memory::Optional<IO::Network::Interface>    oIFace = IO::Network::GetInterfaceById (i.fKey);
+                    if (oIFace) {
+                        InterfaceInfo   iiInfo;
+                        iiInfo.fInterface = *oIFace;
+
+                        IOStatistics    stats;
+                        stats.fTotalBytesReceived = i.fValue.fTotalBytesReceived;
+                        stats.fTotalBytesSent = i.fValue.fTotalBytesSent;
+                        stats.fTotalPacketsReceived = i.fValue.fTotalPacketsReceived;
+                        stats.fTotalPacketsSent = i.fValue.fTotalPacketsSent;
+
+                        if (Optional<PerfStats_> prev = fLast.Lookup (i.fKey)) {
+                            stats.fBytesPerSecondReceived = static_cast<double> (i.fValue.fTotalBytesReceived - prev->fTotalBytesReceived) / elapsed;
+                            stats.fBytesPerSecondSent = static_cast<double> (i.fValue.fTotalBytesSent - prev->fTotalBytesSent) / elapsed;
+                            stats.fPacketsPerSecondReceived = static_cast<double> (i.fValue.fTotalPacketsReceived - prev->fTotalPacketsReceived) / elapsed;
+                            stats.fPacketsPerSecondSent = static_cast<double> (i.fValue.fTotalPacketsSent - prev->fTotalPacketsSent) / elapsed;
+                        }
+
+                        iiInfo.fIOStatistics = stats;
+                        interfaceResults.Add (iiInfo);
+                        accumSummary += stats;
+                    }
+                    else {
+                        DbgTrace (L"Ignore missing network interface %s", i.fKey.c_str ());
+                    }
+                }
+                catch (...) {
+                    DbgTrace (L"Ignore exception looking up network interface %s", i.fKey.c_str ());
+                }
+            }
+
+            fLast.clear ();
+            thisRunStats.Apply ([this] (const KeyValuePair<String, PerfFetchResults_>& i) { fLast.Add (i.fKey, i.fValue); });
+
+            NoteCompletedCapture_ ();
+            return Info { interfaceResults, accumSummary };
+        }
+        struct PerfFetchResults_ :  PerfStats_ {
+            uint64_t    fBAUDRate;
+            uint64_t    fTotalErrors;
+            PerfFetchResults_ (uint64_t tbr, uint64_t tbs, uint64_t tpr, uint64_t tps, uint64_t baud, uint64_t totalErrors)
+                : PerfStats_ { tbr, tbs, tpr, tps }
+            , fBAUDRate { baud }
+            , fTotalErrors { totalErrors } {
+            }
+        };
+        Mapping<String, PerfFetchResults_>   perfstat_fetch_ ()
+        {
+            Mapping<String, PerfFetchResults_>   result;
+            int interfaceCount =  perfstat_netinterface (NULL, NULL,  sizeof(perfstat_netinterface_t), 0);
+            if (interfaceCount > 0) {
+                Memory::SmallStackBuffer<perfstat_netinterface_t>   statBuf (interfaceCount);
+                perfstat_id_t firstinterface = { 0 };
+                int ret = perfstat_netinterface (&firstinterface, statBuf.begin (), sizeof(perfstat_netinterface_t), interfaceCount);
+                Assert (ret <= interfaceCount);
+                for (int i = 0; i < ret; ++i) {
+                    result.Add (
+                        String::FromNarrowSDKString (statBuf[i].name),
+                    PerfFetchResults_ {
+                        statBuf[i].ibytes,
+                        statBuf[i].obytes,
+                        statBuf[i].ipackets,
+                        statBuf[i].opackets,
+                        statBuf[i].bitrate,
+                        statBuf[i].ierrors + statBuf[i].oerrors,
+                    }
+                    );
+                }
+            }
+            return result;
+        }
+    };
+}
+#endif
 
 
 
@@ -497,13 +620,17 @@ namespace {
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+            , CapturerWithContext_AIX_
+#elif   qPlatform_POSIX
             , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_POSIX
+#if     defined (_AIX)
+        using inherited = CapturerWithContext_AIX_;
+#elif   qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
