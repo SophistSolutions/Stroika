@@ -143,7 +143,11 @@ namespace   Stroika {
 
 
             /**
-            */
+             *  \par Example Usage
+             *      \code
+             *      Debug::TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
+             *      \endcode
+             */
             class   TraceContextBumper {
             public:
                 /**
