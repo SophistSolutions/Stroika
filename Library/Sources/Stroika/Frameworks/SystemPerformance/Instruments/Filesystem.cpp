@@ -24,6 +24,7 @@
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Containers/Sequence.h"
+#include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
@@ -356,7 +357,9 @@ namespace {
                 (void)::memset (&ds, 0, sizeof (ds));
                 int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
                 if (disks == 1) {
+                    // @todo see below Docs and examples quite unclear. Maybe use wq_sampled
                     PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
+                    //PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.q_sampled, ds.wq_time };
                     Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
                         Assert (diskAndVols.fValue.size () >= 1);   // else wouldn't be in this list
@@ -372,7 +375,18 @@ namespace {
                         VolumeInfo::IOStats combinedStats;
                         combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
                         combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers) * scaleResultsBy;
+
                         if (ps.wq_time > prevPerfStats->wq_time) {
+                            // Docs and examples quite unclear. Maybe use wq_sampled, or q_sampled. And unclear what to divide by.
+                            //double elapsed = Time::GetTickCount () - GetLastCaptureAt ();
+                            //static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
+                            //double a = (100.0 * (double)elapsed * (double)kNumberLogicalCores_);
+                            //combinedStats.fAverageQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a) * scaleResultsBy;
+                            //DbgTrace ("maybeaveq = %f", (double) (ps.wq_sampled - prevPerfStats->wq_sampled) / a);
+                            //DbgTrace ("***ps.wq_time (%lld) - prevPerfStats->wq_time(%lld) = %lld  AND ps.wq_sampled (%lld) - prevPerfStats->wq_sampled(%lld) = %lld",
+                            //        ps.wq_time, prevPerfStats->wq_time, ps.wq_time - prevPerfStats->wq_time,
+                            //        ps.wq_sampled, prevPerfStats->wq_sampled, ps.wq_sampled - prevPerfStats->wq_sampled
+                            //       );
                             combinedStats.fAverageQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
