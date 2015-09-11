@@ -261,3 +261,36 @@ SDKString Execution::GetEXEPathT ()
 #endif
 }
 
+
+
+
+String Execution::GetEXEPath (pid_t processID)
+{
+#if     qPlatform_AIX
+    return AIX_GET_EXE_PATH_ (processID);
+#elif   qPlatform_POSIX && qSupport_Proc_Filesystem
+    // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
+    // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
+    // double buf size and try again
+    Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
+    ssize_t n;
+    char    linkNameBuf[1024];
+    (void)::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
+    while ( (n = readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
+        buf.GrowToSize (buf.GetSize () * 2);
+    }
+    if (n < 0) {
+        errno_ErrorException::DoThrow (errno);
+    }
+    Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
+    return SDKString (buf.begin (), buf.begin () + n);
+#elif   qPlatform_Windows
+    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682621(v=vs.85).aspx but a bit of work
+    // not needed yet
+    AssertNotImplemented ();
+    return SDKString ();
+#else
+    AssertNotImplemented ();
+    return SDKString ();
+#endif
+}
