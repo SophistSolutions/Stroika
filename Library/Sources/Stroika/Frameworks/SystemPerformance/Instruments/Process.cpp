@@ -540,7 +540,6 @@ namespace {
                     ProcessType pi = i.fValue;
                     if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
                         String cmdLine = *o;
-
                         {
                             pi.fKernelProcess = pid != 1 and pi.fParentProcessID == 0;      // wag?
                             // Fake but usable answer
@@ -552,7 +551,6 @@ namespace {
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
                             pi.fCommandLine = cmdLine;
                         }
-                        pi.fCommandLine = cmdLine;
                     }
                     updateResults.Add (pid, pi);
                 }
