@@ -85,7 +85,9 @@ namespace   Stroika {
                          *
                          *  This  does NOT include 'shared' memory (e.g. for mapped .so files)
                          *
-                         *  This value is commonly used/available in UNIX
+                         *  This value is commonly used/available in UNIX.
+                         *
+                         *  \note   AIX lipperf:  proc_real_mem_data + proc_real_mem_text
                          */
                         Optional<MemorySizeType>    fResidentMemorySize;
 
