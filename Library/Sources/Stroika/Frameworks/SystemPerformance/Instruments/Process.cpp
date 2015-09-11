@@ -438,22 +438,30 @@ namespace {
 
             // quick draft
 
-            int proc_count = perfstat_process(NULL, NULL, sizeof(perfstat_process_t), 0);
-            Execution::ThrowErrNoIfNegative (proc_count);
+            size_t  procCount;
+            {
+                int proc_count = ::perfstat_process (nullptr, nullptr, sizeof (perfstat_process_t), 0);
+                Execution::ThrowErrNoIfNegative (proc_count);
+                procCount = static_cast<size_t> (proc_count);
+            }
 
-            Memory::SmallStackBuffer<perfstat_process_t> procBuf (static_cast<size_t> (proc_count));
+            Memory::SmallStackBuffer<perfstat_process_t> procBuf (procCount);
 
             perfstat_id_t id;
             strcpy(id.name, "");
-            int rc = ::perfstat_process (&id, procBuf.begin () , sizeof(perfstat_process_t), proc_count);
-            Execution::ThrowErrNoIfNegative (rc);
+            {
+                int rc = ::perfstat_process (&id, procBuf.begin () , sizeof(perfstat_process_t), procCount);
+                Execution::ThrowErrNoIfNegative (rc);
+                Assert (rc <= procCount);   // cannot return more than we allocated space for
+                procCount = rc;
+            }
 
             Time::DurationSecondsType now  = Time::GetTickCount ();
 
             Mapping<pid_t, PerfStats_>  newContextStats;
 
             Set<pid_t>  pids2LookupCmdLine;
-            for (size_t i = 0; i < rc; ++i) {
+            for (size_t i = 0; i < procCount; ++i) {
                 ProcessType processDetails;
 
                 pid_t   pid = procBuf[i].pid;
