@@ -204,26 +204,6 @@ namespace {
 #endif
 
 
-namespace {
-    String GetCWD_ ()
-    {
-#if     qPlatform_Windows
-        TCHAR pwd[MAX_PATH];
-        GetCurrentDirectory(MAX_PATH, pwd);
-        return String::FromSDKString (pwd);
-#elif   qPlatform_POSIX
-        char pwd[PATH_MAX ];
-        if (getcwd (pwd, NEltsOf (pwd)) == nullptr) {
-            errno_ErrorException::DoThrow (errno);
-        }
-        return String::FromSDKString (pwd);
-#else
-        AssertNotReached ();
-        return String ();  // NYI
-#endif
-    }
-}
-
 
 
 /*
@@ -235,7 +215,6 @@ ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<By
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
-    , fWorkingDirectory_ (GetCWD_ ())
     , fStdIn_ (in)
     , fStdOut_ (out)
     , fStdErr_ (error)
@@ -246,19 +225,18 @@ ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequen
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
-    , fWorkingDirectory_ (GetCWD_ ())
     , fStdIn_ (in)
     , fStdOut_ (out)
     , fStdErr_ (error)
 {
 }
 
-String ProcessRunner::GetWorkingDirectory ()
+Memory::Optional<String> ProcessRunner::GetWorkingDirectory ()
 {
     return fWorkingDirectory_;
 }
 
-void    ProcessRunner::SetWorkingDirectory (const String& d)
+void    ProcessRunner::SetWorkingDirectory (const Memory::Optional<String>& d)
 {
     fWorkingDirectory_ = d;
 }
@@ -301,8 +279,16 @@ void    ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
     TraceContextBumper  ctx ("ProcessRunner::CreateRunnable");
-    String      cmdLine     =   fCommandLine_.Value ();
-    SDKString   currentDir  =   GetWorkingDirectory ().AsSDKString ();
+    String          cmdLine     =   fCommandLine_.Value ();
+    SDKString       currentDirBuf_;
+    const SDKChar*  currentDir;
+    if (auto i = GetWorkingDirectory ()) {
+        currentDirBuf_ = i->AsSDKString ();
+        currentDir = currentDirBuf_.c_str ();
+    }
+    else {
+        currentDir = nullptr;
+    }
 
     Streams::InputStream<Byte>    in  =   GetStdIn ();
     Streams::OutputStream<Byte>   out =   GetStdOut ();
@@ -312,7 +298,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
         DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (SDKSTR ("currentDir: %s"), Characters::CString::LimitLength (currentDir, 50, false).c_str ());
+        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
 #endif
 
         // Horrible implementation - just designed to be quickie get started...
@@ -382,7 +368,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
                 _tcscpy_s (cmdLineBuf, cmdLine.AsSDKString ().c_str ());
                 Execution::Platform::Windows::ThrowIfFalseGetLastError (
-                    ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir.c_str (), &startInfo, &processInfo)
+                    ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo)
                 );
             }
 
@@ -621,6 +607,9 @@ DoneWithProcess:
                  *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
                  *  this would be bad...
                  */
+                if (currentDir != nullptr) {
+                    (void)::chdir (currentDir);
+                }
                 {
                     /*
                      *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...

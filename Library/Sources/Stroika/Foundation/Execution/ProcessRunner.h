@@ -157,10 +157,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 * defaults to CWD at the time the ProcessRunner was created
+                 * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
                  */
-                nonvirtual  String      GetWorkingDirectory ();
-                nonvirtual  void        SetWorkingDirectory (const String& d);
+                nonvirtual  Memory::Optional<String>    GetWorkingDirectory ();
+                nonvirtual  void                        SetWorkingDirectory (const Memory::Optional<String>& d);
 
             public:
                 /**
@@ -213,7 +213,7 @@ namespace   Stroika {
                 Memory::Optional<String>        fCommandLine_;
                 Memory::Optional<String>        fExecutable_;
                 Containers::Sequence<String>    fArgs_;         // ignored if fExecutable empty
-                String                          fWorkingDirectory_;
+                Memory::Optional<String>        fWorkingDirectory_;
                 Streams::InputStream<Byte>      fStdIn_;
                 Streams::OutputStream<Byte>     fStdOut_;
                 Streams::OutputStream<Byte>     fStdErr_;
