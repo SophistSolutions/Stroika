@@ -463,19 +463,44 @@ namespace {
                 processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
 
                 /*
+                 *  Docs from /usr/include/libperfstat.h:
+                 *          ...
+                 *          proc_size;              --  Virtual Size of the Process in KB(Exclusive Usage, Leaving all Shared Library Text
+                 *                                      & Shared File Pages, Shared Memory, Memory Mapped)
+                 *
+                 *          proc_real_mem_data;     --  Real Memory used for Data in KB
+                 *          proc_real_mem_text;     --  Real Memory used for Text in KB
+                 *          proc_virt_mem_data;     --  Virtual Memory used to Data in KB
+                 *          proc_virt_mem_text;     --  Virtual Memory used for Text in KB
+                 *          shared_lib_data_size    --  VData Size from Shared Library in KB
+                 *          heap_size;              --  Heap Size in KB
+                 *          real_inuse;             --  The Real memory in use(in KB) by the process including all kind of
+                 *                                      segments (excluding system segments). This includes Text, Data,
+                 *                                      Shared Library Text, Shared Library Data, File Pages,
+                 *                                      Shared Memory & Memory Mapped
+                 *          virt_inuse;             --  The Virtual memory in use(in KB) by the process including all kind of
+                 *                                      segments (excluding system segments). This includes Text, Data,
+                 *                                      Shared Library Text, Shared Library Data, File Pages, Shared Memory & Memory Mapped
+                 *          ...
+                 *          filepages;              --   File Pages used(in KB) including shared pages
+                 *          real_inuse_map;         --  Real memory used(in KB) for Shared Memory and Memory Mapped regions
+                 *          virt_inuse_map;             --  Virtual Memory used(in KB) for Shared Memory and Memory Mapped regions
+                 *          ...
+                 */
+
+                /*
                  *  Just REAL mem in use for TEXT and DATA space.
                  *  I'm hoping/assuming that includes the REAM member for RAM allocated (malloc).
-                 *
-                 *  Explicitly avoided:
-                 *      real_inuse;         --  The Real memory in use(in KB) by the process including all kind of
-                 *                              segments (excluding system segments). This includes Text, Data,
-                 *                              Shared Library Text, Shared Library Data, File Pages,
-                 *                              Shared Memory & Memory Mapped
-                 *      real_inuse_map;     --  Real memory used(in KB) for Shared Memory and Memory Mapped regions ...
                  */
                 processDetails.fResidentMemorySize = (procBuf[i].proc_real_mem_data + procBuf[i].proc_real_mem_text) * 1024;
 
-                processDetails.fVirtualMemorySize = (procBuf[i].virt_inuse) * 1024;
+                /*
+                 *  Cannot figure out what makes sense here, so go with best guess for now...
+                 *  'ps' shows a number for VSZ less than real mem used! And topas offers nothing similar.
+                 *      --LGP 2015-09-11
+                 */
+                processDetails.fVirtualMemorySize = (procBuf[i].proc_size) * 1024;
+
                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (procBuf[i].proc_uid);
                 processDetails.fThreadCount =  procBuf[i].num_threads;
 
