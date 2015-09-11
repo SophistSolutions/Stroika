@@ -140,6 +140,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This ensures nul-character termination. However, it returns an internal pointer only valid
+                 *  until the next non-const call to this object.
                  */
                 nonvirtual  const wchar_t* c_str () const;
 
