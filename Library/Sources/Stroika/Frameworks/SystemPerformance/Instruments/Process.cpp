@@ -1187,7 +1187,7 @@ namespace {
 
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/3828/io'
-        struct proc_io_data_ {
+        struct	proc_io_data_ {
             uint64_t read_bytes;
             uint64_t write_bytes;
         };
@@ -1226,7 +1226,7 @@ namespace {
 
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/PID/status'
-        struct proc_status_data_ {
+        struct	proc_status_data_ {
             uid_t ruid;
         };
         proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
