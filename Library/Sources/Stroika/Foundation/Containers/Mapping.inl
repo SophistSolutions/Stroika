@@ -339,6 +339,16 @@ namespace   Stroika {
                 return li.Done ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::erase (KeyType key)
+            {
+                Remove (key);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::erase (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
+            {
+                Remove (i);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
             {
                 RemoveAll ();

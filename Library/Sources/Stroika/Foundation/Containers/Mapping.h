@@ -406,6 +406,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief STL-ish alias for Remove ().
+                 */
+                nonvirtual  void    erase (KeyType key);
+                nonvirtual  void    erase (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
+
+            public:
+                /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();
