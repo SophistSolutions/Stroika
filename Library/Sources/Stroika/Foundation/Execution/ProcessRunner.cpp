@@ -936,6 +936,9 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
         _exit (-1);
+#if     qPlatform_AIX
+        return 0;       // silence bogus compiler warnings
+#endif
     }
     else {
         return pid;
