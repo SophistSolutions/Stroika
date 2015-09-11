@@ -3,7 +3,11 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Linux
+#if     qPlatform_AIX
+#include    <libperfstat.h>
+#include    <procinfo.h>
+#include    <sys/procfs.h>
+#elif   qPlatform_Linux
 #include    <sys/sysinfo.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
@@ -19,6 +23,7 @@
 #include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
+#include    "../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/Execution/Thread.h"
@@ -320,9 +325,13 @@ namespace {
 
 
 
-#if     qPlatform_POSIX
+
+
+
+
+#if     qPlatform_AIX
 namespace {
-    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             DurationSecondsType     fCapturedAt;
             Optional<double>        fTotalCPUTimeEverUsed;
@@ -331,7 +340,7 @@ namespace {
         };
         Mapping<pid_t, PerfStats_>  fContextStats_;
 
-        CapturerWithContext_POSIX_ (const Options& options)
+        CapturerWithContext_AIX_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
             // for side-effect of setting fContextStats_
@@ -352,22 +361,354 @@ namespace {
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
-#if     qPlatform_AIX
             // for now, PS doing better than procfs - so default to that...
-            if (fOptions_.fAllowUse_PS) {
+
+            //@todo in API rename this perfstat
+            // prefer procfs
+            if (fOptions_.fAllowUse_ProcFS) {
+                result = capture_using_perfstat_process_t_ ();
+            }
+            else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-            else if (fOptions_.fAllowUse_ProcFS) {
-                result = ExtractFromProcFS_ ();
+
+            fLastCapturedAt = Time::GetTickCount ();
+            fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
+            return result;
+        }
+
+
+        //tmphack - use same GetModuleEXE path code I have in Module code.
+        // But add memoizing.
+        Mapping<pid_t, String>   capture_pid2EXE_ ()
+        {
+            Mapping<pid_t, String>   result;
+            return result;
+        }
+
+        Mapping<pid_t, String>   capture_pid2CmdLineMapFromPS_ (const Iterable<pid_t>& pids)
+        {
+            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromPS_");
+            using   Execution::ProcessRunner;
+            Mapping<pid_t, String>   result;
+            if (not pids.empty ()) {
+                /*
+                 *  EXAMPLE OUTPUT:
+                 *      $ /usr/bin/ps -p 14417932,11534484 -o "pid,args"
+                 *           PID COMMAND
+                 *          11534484 bash
+                 *          14417932 Analitiqa-II-Agent --Run-As-Service
+                 */
+                StringBuilder   pidListStr;
+                for (pid_t i : pids) {
+                    if (not pidListStr.empty ()) {
+                        pidListStr += L",";
+                    }
+                    pidListStr += Characters::Format (L"%d", i);
+                }
+                ProcessRunner   pr (Characters::Format (L"/usr/bin/ps -p %s -o \"pid,args\"", pidListStr.c_str ()));
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                bool    skippedHeader   = false;
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    i = i.Trim ();
+                    if (not skippedHeader) {
+                        skippedHeader = true;
+                        continue;
+                    }
+                    size_t  iSpace = i.Find (' ');
+                    if (iSpace == String::npos) {
+                        DbgTrace (L"bad line in PS output: %s", i.c_str ());
+                        continue;
+                    }
+                    pid_t   pid = Characters::String2Int<int> (i.SubString (0, iSpace));
+                    String  cmdLine = i.SubString (iSpace + 1).RTrim ();
+                    Assert (pids.Contains (pid));
+                    result.Add (pid, cmdLine);
+                }
             }
-#else
+            return result;
+        }
+
+        ProcessMapType  capture_using_perfstat_process_t_  ()
+        {
+            ProcessMapType  results;
+
+            // quick draft
+
+            int proc_count = perfstat_process(NULL, NULL, sizeof(perfstat_process_t), 0);
+            Execution::ThrowErrNoIfNegative (proc_count);
+
+            Memory::SmallStackBuffer<perfstat_process_t> procBuf (static_cast<size_t> (proc_count));
+
+            perfstat_id_t id;
+            strcpy(id.name, "");
+            int rc = ::perfstat_process (&id, procBuf.begin () , sizeof(perfstat_process_t), proc_count);
+            Execution::ThrowErrNoIfNegative (rc);
+
+            Time::DurationSecondsType now  = Time::GetTickCount ();
+
+            Mapping<pid_t, PerfStats_>  newContextStats;
+
+            Set<pid_t>  pids2LookupCmdLine;
+            for (size_t i = 0; i < rc; ++i) {
+                ProcessType processDetails;
+
+                pid_t   pid = procBuf[i].pid;
+
+                pids2LookupCmdLine.Add (pid);
+                processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
+                processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
+
+                processDetails.fResidentMemorySize = (procBuf[i].real_inuse) * 1024;
+                processDetails.fVirtualMemorySize = (procBuf[i].virt_inuse) * 1024;
+                processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (procBuf[i].proc_uid);
+                processDetails.fThreadCount =  procBuf[i].num_threads;
+
+                if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                    if (p->fCombinedIOReadBytes) {
+                        processDetails.fCombinedIOReadRate =   (procBuf[i].inBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
+                    }
+                    if (p->fCombinedIOWriteBytes) {
+                        processDetails.fCombinedIOWriteRate =   (procBuf[i].outBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
+                    }
+                    if (p->fTotalCPUTimeEverUsed) {
+                        processDetails.fPercentCPUTime =   (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
+                    }
+                }
+                else {
+                    // if new process we also can capture this data here!
+                    processDetails.fCombinedIOReadRate =  procBuf[i].inBytes;
+                    processDetails.fCombinedIOWriteRate =  procBuf[i].outBytes;
+                    //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
+                }
+
+                if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
+                    newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
+                }
+                results.Add (pid, processDetails);
+            }
+
+            fContextStats_ = newContextStats;
+
+            Mapping<pid_t, String>   pid2CmdLineMap = capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
+
+            {
+                ProcessMapType  updateResults;
+                for (KeyValuePair<pid_t, ProcessType> i : results) {
+                    pid_t pid = i.fKey;
+
+                    ProcessType pi = i.fValue;
+                    if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
+                        String cmdLine = *o;
+
+                        {
+                            pi.fKernelProcess = pid != 1 and pi.fParentProcessID == 0;      // wag?
+                            // Fake but usable answer
+                            Sequence<String>    t    =  cmdLine.Tokenize ();
+                            if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                                pi.fEXEPath = t[0];
+                            }
+                        }
+                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
+                            pi.fCommandLine = cmdLine;
+                        }
+                        pi.fCommandLine = cmdLine;
+                    }
+                    updateResults.Add (pid, pi);
+                }
+                results = updateResults;
+            }
+
+            return results;
+        }
+        // consider using this as a backup if /procfs/ not present...
+        ProcessMapType  capture_using_ps_ ()
+        {
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
+            ProcessMapType  result;
+            using   Execution::ProcessRunner;
+            // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
+
+            /*
+             *  Thought about STIME but too hard to parse???
+             *
+             *  EXAMPLE OUTPUT:
+             *          $ ps -A -o "pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args" | head
+             *               PID     PPID S        TIME  %MEM   VSZ     USER THCNT     ELAPSED TDISKIO COMMAND
+             *                 0        0 A    00:00:00   0.0   384     root     1  0-03:00:00       - swapper
+             *                 1        0 A    00:00:00   0.0   712     root     1  0-03:00:00       - /etc/init
+             *            131076        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - wait
+             *            196614        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - sched
+             *            262152        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - lrud
+             *            327690        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - vmptacrt
+             *            393228        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - psmd
+             *            458766        0 A    00:00:00   0.0   832     root     5  0-03:00:00       - vmmd
+             *            524304        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - pvlist
+             */
+            constexpr   size_t  kVSZ_Idx_               { 5 };
+            constexpr   size_t  kUser_Idx_              { 6 };
+            constexpr   size_t  kThreadCnt_Idx_         { 7 };
+            constexpr   size_t  kColCountIncludingCmd_  { 11 };
+            ProcessRunner   pr (L"ps -A -o \"pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args\"");
+            Streams::MemoryStream<Byte>   useStdOut;
+            pr.SetStdOut (useStdOut);
+            pr.Run ();
+            String out;
+            Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+            bool    skippedHeader   = false;
+            size_t  headerLen       =   0;
+            for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                if (not skippedHeader) {
+                    skippedHeader = true;
+                    headerLen = i.RTrim ().length ();
+                    continue;
+                }
+                Sequence<String>    l    =  i.Tokenize ();
+                if (l.size () < kColCountIncludingCmd_) {
+                    DbgTrace ("skipping line cuz len=%d", l.size ());
+                    continue;
+                }
+                ProcessType processDetails;
+                pid_t   pid = Characters::String2Int<int> (l[0].Trim ());
+                processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
+                {
+                    String s = l[2].Trim ();
+                    if (s.length () == 1) {
+                        processDetails.fRunStatus = cvtStatusCharToStatus_ (static_cast<char> (s[0].As<wchar_t> ()));
+                    }
+                }
+                {
+                    string  tmp =   l[3].AsUTF8 ();
+                    int hours = 0;
+                    int minutes = 0;
+                    int seconds = 0;
+                    sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
+                    processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
+
+                    // GROSS hack cuz time reported always zero above way...
+                    if (*processDetails.fTotalCPUTimeEverUsed == 0) {
+                        try {
+                            ProcessRunner   ppr (Characters::Format (L"ps -p %d", pid));
+                            Streams::MemoryStream<Byte>   useStdOut1;
+                            ppr.SetStdOut (useStdOut1);
+                            ppr.Run ();
+                            Streams::TextReader   stdOut2  =   Streams::TextReader (useStdOut1);
+                            String i = stdOut2.ReadLine ();
+                            i = stdOut2.ReadLine ();
+                            Sequence<String> tt = i.Tokenize ();
+                            if (tt.size () >= 3) {
+                                string  tmp =   tt[2].AsUTF8 ();
+                                int minutes = 0;
+                                int seconds = 0;
+                                sscanf (tmp.c_str (), "%d:%d", &minutes, &seconds);
+                                processDetails.fTotalCPUTimeEverUsed = minutes * 60 + seconds;
+                            }
+                        }
+                        catch (...) {
+                            // ignore for now
+                        }
+                    }
+                }
+                processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
+                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+                processDetails.fResidentMemorySize /= 1024;
+                processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
+                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fUserName = l[kUser_Idx_].Trim ();
+                processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
+                String  cmdLine;
+                {
+                    // wrong - must grab EVERYHTING from i past a certain point
+                    // Since our first line has headings, its length is our target, minus the 3 chars for CMD
+                    const size_t kCmdNameStartsAt_ = headerLen - 7;
+                    cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
+                }
+                {
+                    processDetails.fKernelProcess = pid != 1 and processDetails.fParentProcessID == 0;      // wag?
+                    // Fake but usable answer
+                    Sequence<String>    t    =  cmdLine.Tokenize ();
+                    if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                        processDetails.fEXEPath = t[0];
+                    }
+                }
+                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
+                    processDetails.fCommandLine = cmdLine;
+                }
+                result.Add (pid, processDetails);
+            }
+            return result;
+        }
+        // One character from the string "RSDZTW" where R is running,
+        // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
+        // Z is zombie, T is traced or stopped (on a signal), and W is paging.
+        Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
+        {
+            switch (state) {
+                case 'R':
+                    return ProcessType::RunStatus::eRunning;
+                case 'S':
+                    return ProcessType::RunStatus::eSleeping;
+                case 'D':
+                    return ProcessType::RunStatus::eWaitingOnDisk;
+                case 'Z':
+                    return ProcessType::RunStatus::eZombie;
+                case 'T':
+                    return ProcessType::RunStatus::eSuspended;
+                case 'W':
+                    return ProcessType::RunStatus::eWaitingOnPaging;
+            }
+            return Optional<ProcessType::RunStatus> ();
+        }
+    };
+};
+#endif
+
+
+
+
+
+
+#if     qPlatform_Linux
+namespace {
+    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
+        struct PerfStats_ {
+            DurationSecondsType     fCapturedAt;
+            Optional<double>        fTotalCPUTimeEverUsed;
+            Optional<double>        fCombinedIOReadBytes;
+            Optional<double>        fCombinedIOWriteBytes;
+        };
+        Mapping<pid_t, PerfStats_>  fContextStats_;
+
+        CapturerWithContext_Linux_ (const Options& options)
+            : CapturerWithContext_COMMON_ (options)
+        {
+            // for side-effect of setting fContextStats_
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
+            fStaticSuppressedAgain.clear ();    // cuz we never returned these
+        }
+
+        ProcessMapType  capture ()
+        {
+            Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+        ProcessMapType  capture_ ()
+        {
+            ProcessMapType  result {};
             if (fOptions_.fAllowUse_ProcFS) {
                 result = ExtractFromProcFS_ ();
             }
             else if (fOptions_.fAllowUse_PS) {
                 result = capture_using_ps_ ();
             }
-#endif
             fLastCapturedAt = Time::GetTickCount ();
             fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
@@ -485,15 +826,11 @@ namespace {
                         static  const   size_t  kPageSizeInBytes_ = ::sysconf (_SC_PAGESIZE);
 
                         if (grabStaticData) {
-#if     qPlatform_Linux
                             static  const time_t    kUNIXEpochTimeOfBoot_ = [] () {
                                 struct sysinfo info;
                                 ::sysinfo (&info);
                                 return ::time (NULL) - info.uptime;
                             } ();
-#else
-                            static  const time_t    kUNIXEpochTimeOfBoot_   =   Configuration::GetSystemConfiguration_BootInformation ().fBootedAt.As<time_t> ();
-#endif
                             //starttime %llu (was %lu before Linux 2.6)
                             //(22) The time the process started after system boot. In kernels before Linux 2.6,
                             // this value was expressed in jiffies. Since Linux 2.6,
@@ -881,31 +1218,6 @@ namespace {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
             ProcessMapType  result;
             using   Execution::ProcessRunner;
-#if     qPlatform_AIX
-            // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
-
-            /*
-             *  Thought about STIME but too hard to parse???
-             *
-             *  EXAMPLE OUTPUT:
-             *          $ ps -A -o "pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args" | head
-             *               PID     PPID S        TIME  %MEM   VSZ     USER THCNT     ELAPSED TDISKIO COMMAND
-             *                 0        0 A    00:00:00   0.0   384     root     1  0-03:00:00       - swapper
-             *                 1        0 A    00:00:00   0.0   712     root     1  0-03:00:00       - /etc/init
-             *            131076        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - wait
-             *            196614        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - sched
-             *            262152        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - lrud
-             *            327690        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - vmptacrt
-             *            393228        0 A    00:00:00   0.0   640     root     3  0-03:00:00       - psmd
-             *            458766        0 A    00:00:00   0.0   832     root     5  0-03:00:00       - vmmd
-             *            524304        0 A    00:00:00   0.0   448     root     1  0-03:00:00       - pvlist
-             */
-            constexpr   size_t  kVSZ_Idx_               { 5 };
-            constexpr   size_t  kUser_Idx_              { 6 };
-            constexpr   size_t  kThreadCnt_Idx_         { 7 };
-            constexpr   size_t  kColCountIncludingCmd_  { 11 };
-            ProcessRunner   pr (L"ps -A -o \"pid,ppid,st,time,pmem,vsz,user,thcount,etime,tdiskio,args\"");
-#else
             /*
              *  Thought about STIME but too hard to parse???
              *
@@ -927,7 +1239,6 @@ namespace {
             constexpr   size_t  kThreadCnt_Idx_         { 7 };
             constexpr   size_t  kColCountIncludingCmd_  { 9 };
             ProcessRunner   pr (L"ps -A -o \"pid,ppid,s,time,rss,vsz,user,nlwp,cmd\"");
-#endif
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
             pr.Run ();
@@ -962,40 +1273,8 @@ namespace {
                     int seconds = 0;
                     sscanf (tmp.c_str (), "%d:%d:%d", &hours, &minutes, &seconds);
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
-
-#if     qPlatform_AIX
-                    // GROSS hack cuz time reported always zero above way...
-                    if (*processDetails.fTotalCPUTimeEverUsed == 0) {
-                        try {
-                            ProcessRunner   ppr (Characters::Format (L"ps -p %d", pid));
-                            Streams::MemoryStream<Byte>   useStdOut1;
-                            ppr.SetStdOut (useStdOut1);
-                            ppr.Run ();
-                            Streams::TextReader   stdOut2  =   Streams::TextReader (useStdOut1);
-                            String i = stdOut2.ReadLine ();
-                            i = stdOut2.ReadLine ();
-                            Sequence<String> tt = i.Tokenize ();
-                            if (tt.size () >= 3) {
-                                string  tmp =   tt[2].AsUTF8 ();
-                                int minutes = 0;
-                                int seconds = 0;
-                                sscanf (tmp.c_str (), "%d:%d", &minutes, &seconds);
-                                processDetails.fTotalCPUTimeEverUsed = minutes * 60 + seconds;
-                            }
-                        }
-                        catch (...) {
-                            // ignore for now
-                        }
-                    }
-#endif
-
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-#if     qPlatform_AIX
-                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
-                processDetails.fResidentMemorySize /= 1024;
-                processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
-#endif
                 processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
@@ -1003,19 +1282,11 @@ namespace {
                 {
                     // wrong - must grab EVERYHTING from i past a certain point
                     // Since our first line has headings, its length is our target, minus the 3 chars for CMD
-#if     qPlatform_AIX
-                    const size_t kCmdNameStartsAt_ = headerLen - 7;
-#else
                     const size_t kCmdNameStartsAt_ = headerLen - 3;
-#endif
                     cmdLine = i.size () <= kCmdNameStartsAt_ ? String () : i.SubString (kCmdNameStartsAt_).RTrim ();
                 }
                 {
-#if     qPlatform_AIX
-                    processDetails.fKernelProcess = pid != 1 and processDetails.fParentProcessID == 0;      // wag?
-#else
                     processDetails.fKernelProcess = not cmdLine.empty () and cmdLine[0] == '[';
-#endif
                     // Fake but usable answer
                     Sequence<String>    t    =  cmdLine.Tokenize ();
                     if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
@@ -1032,6 +1303,9 @@ namespace {
     };
 };
 #endif
+
+
+
 
 
 
@@ -1335,14 +1609,18 @@ SkipCmdLine_:
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_POSIX
-            , CapturerWithContext_POSIX_
+#if     qPlatform_AIX
+            , CapturerWithContext_AIX_
+#elif   qPlatform_Linux
+            , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_POSIX
-        using inherited = CapturerWithContext_POSIX_;
+#if     qPlatform_AIX
+        using inherited = CapturerWithContext_AIX_;
+#elif   qPlatform_Linux
+        using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
@@ -1363,6 +1641,8 @@ namespace {
 
 
 const   MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType { String_Constant { L"Process-Details" } };
+
+
 
 
 
