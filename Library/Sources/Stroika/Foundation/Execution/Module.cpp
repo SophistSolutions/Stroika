@@ -14,8 +14,10 @@
 #include    <unistd.h>
 #endif
 
+#include    "../Cache/CallerStalenessCache.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
+#include    "../Execution/Synchronized.h"
 #if     qPlatform_AIX
 #include    "../Execution/Process.h"
 #endif
@@ -27,7 +29,6 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
-
 
 
 
@@ -148,12 +149,24 @@ namespace {
         }
         return SDKString ();    // signal not found
     }
+    SDKString   FindPath2Inode_Caching_ (const SDKString& dir, dev_t restrictToDev, ino_t inodeNumber)
+    {
+        const   Time::DurationSecondsType   kTimeValidFor_      =   60.0;   // no good way to parameterize
+        using   KEY = tuple<SDKString, dev_t, ino_t>;
+        static  Synchronized<Cache::CallerStalenessCache<KEY, SDKString>>   sCache_;
+        Time::DurationSecondsType       noOlderThan = Time::GetTickCount () - kTimeValidFor_;
+        return sCache_->Lookup (KEY (dir, restrictToDev, inodeNumber), noOlderThan, [noOlderThan, dir, restrictToDev, inodeNumber] () -> SDKString {
+            // must find better time/way todo this
+            sCache_->ClearOlderThan (noOlderThan);
+            return FindPath2Inode_ (dir, restrictToDev, inodeNumber);
+        });
+    }
     SDKString   FindPath2Inode_ (const SDKString& dir, ino_t inodeNumber)
     {
         struct  stat    s;
         if (::stat (dir.c_str (), &s) == 0) {
             if (s.st_mode & S_IFDIR) {
-                return FindPath2Inode_ (dir, s.st_dev, inodeNumber);
+                return FindPath2Inode_Caching_ (dir, s.st_dev, inodeNumber);
             }
         }
         return SDKString ();
@@ -267,7 +280,7 @@ SDKString Execution::GetEXEPathT ()
 String Execution::GetEXEPath (pid_t processID)
 {
 #if     qPlatform_AIX
-    return AIX_GET_EXE_PATH_ (processID);
+    return String::FromSDKString (AIX_GET_EXE_PATH_ (processID));
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
@@ -283,14 +296,14 @@ String Execution::GetEXEPath (pid_t processID)
         errno_ErrorException::DoThrow (errno);
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
-    return SDKString (buf.begin (), buf.begin () + n);
+    return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
 #elif   qPlatform_Windows
     // https://msdn.microsoft.com/en-us/library/windows/desktop/ms682621(v=vs.85).aspx but a bit of work
     // not needed yet
     AssertNotImplemented ();
-    return SDKString ();
+    return String ();
 #else
     AssertNotImplemented ();
-    return SDKString ();
+    return String ();
 #endif
 }
