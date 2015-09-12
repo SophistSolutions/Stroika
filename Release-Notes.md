@@ -19,10 +19,9 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a104">v2.0a104x</a><br/>2015-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a104">v2.0a104</a><br/>2015-09-12</td>
 <td>
 	<ul>
-		<li>TODO - done as of AUG 30</li>
 		<li>cleanup aspects of Build structure - Project subdir Linux renamed to 'Unix', and re-purposed --platform generate config arg, and lose Platform value from config file</li>
 		<li>AIX support
 			<ul>
@@ -37,11 +36,24 @@ History
 				<li>just DBGTRACE _SC_V6_LP64_OFF64 if macro not defined (POSIX) - for now</li>
 				<li>use sigaction instead of signal API - since fixes bug where signals stop working on 2nd created thread for AIX</li>
 				<li>Make Time::Duration code a little more resilient (and more assert checking) for floating point rounding errors</li>
+				<li>Tons of work on SystemPerformance framework for AIX. Works decently now, but still a bit more todo. TONS of changes required</li>
+				<li>Some changes to Configuraiton::GetSystemConfiguration for AIX</li>
+				<li>qCompilerAndStdLib_fdopendir_Buggy</li>
+				<li>if defined AIX, then add -lperfstat to StroikaFrameworksSupportLibs in Projects/Unix/SharedMakeVariables-Default.mk</li>
+				<li>replace use of defined (_AIX) with qPlatform_AIX</li>
 			</ul>
 		</li>
+		<li>GetEXEPath (pid_t)</li>
+		<li>fixed bug with ProcessRunner - if we get error calling GetWD() - we throw. On POSIX we nver even used it (fixed now). But also changed API so WD is optional, and if not specified, not used (default OS behavior)</li>
+		<li>Cleanup IO/FileSystem/DirectoryIterator (some for AIX) - re-entrant readdir_r, etc</li>
+		<li>Added support for vector<T> to ObjectVariantMapper, along with regresstion test to verify</li>
+		<li>rename subdir of Projects from Linux to Unix (as we now support 2 non-linux unix  variants)</li>
+		<li>cleanup of Generate/Apply config scripts - start (testing) getting rid of Platform variable</li>
 		<li>Get rid of (most of?) remaining uname usage in makefiles and perl scripts. Use configuraiton define PlatformSubDirectory instead</li>
-		<li>Lose gcc 4.7 support, and lose obsolete bug defines: qCompilerAndStdLib_thread_local_initializers_Buggy,
+		<li>Lose gcc 4.7 support, and lose obsolete bug defines: 
+		qCompilerAndStdLib_thread_local_initializers_Buggy,
     	qCompilerAndStdLib_FunnyUsingTemplateInFunctionBug_Buggy,
+		qCompilerAndStdLib_UnreasonableCaptureThisRequirement_Buggy,
     	qCompilerAndStdLib_threadYield_Buggy</li>
 		<li>Cleanup logging/debugging code for signals, and simplify some legacy thread/signal code</li>
 		<li>added test case for building 32-bit Stroika code on 64-bit linux - and got working, and added to set of every-release-tests</li>
@@ -56,7 +68,9 @@ History
 		<li>redefined GetTickCount() to zero at app start to minimize problems with overflow</li>
 		<li>allow Optional<> to assign common assignable types</li>
 		<li>Fixed a number of things so we CAN set DurationSecondsType to long double, but dont leave it that way until we can performance test</li>
-		<li>fixed Duration::PrettyPrint () to return empty string on empty durationm but zero duration returns '0 seconds' and added regtests for this and other format calls</li>
+		<li>fixed Duration::PrettyPrint () to return empty string on empty duration but zero duration returns '0 seconds' and added regtests for this and other format calls</li>
+		<li>Generate new performance regression test results</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind; </li>
 	</ul>
 </td>
 </tr>
