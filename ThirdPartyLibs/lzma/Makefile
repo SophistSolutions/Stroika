@@ -152,8 +152,7 @@ check:
 	@echo "   Stroika/ThirdPartyLibs/lzma - [Succeeded]";
 
 clean:
-	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
+	@-$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
 
-clobber:	clean
-	@rm -rf $(TRGDIR)
-	@rm -f BUILD.OUT PATCHING.OUT *.a lzma
+clobber:
+	@rm -rf $(TRGDIR) BUILD.OUT
