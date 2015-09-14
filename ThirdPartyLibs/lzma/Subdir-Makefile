@@ -117,7 +117,24 @@ CRYPTO_OBJS = \
 
 
 
+
+
 C_OBJS = \
+  7zStream.$(OBJSUFFIX) \
+  7zAlloc.$(OBJSUFFIX) \
+  7zArcIn.$(OBJSUFFIX) \
+  7zBuf.$(OBJSUFFIX) \
+  7zBuf2.$(OBJSUFFIX) \
+  7zCrc.$(OBJSUFFIX) \
+  7zCrcOpt.$(OBJSUFFIX) \
+  7zDec.$(OBJSUFFIX) \
+  CpuArch.$(OBJSUFFIX) \
+  Delta.$(OBJSUFFIX) \
+  LzmaDec.$(OBJSUFFIX) \
+  Lzma2Dec.$(OBJSUFFIX) \
+  Ppmd7.$(OBJSUFFIX) \
+  Ppmd7Dec.$(OBJSUFFIX) \
+  7zFile.$(OBJSUFFIX) \
   7zStream.$(OBJSUFFIX) \
   7zArcIn.$(OBJSUFFIX) \
   Alloc.$(OBJSUFFIX) \
@@ -206,6 +223,9 @@ vpath %c $(SubDirs2Compile)
 
 CPlusPlus=g++
 CFLAGS=-D_7ZIP_ST
+
+# may need to add define
+#-D_7ZIP_PPMD_SUPPPORT
 
 
 %.o : %.cpp
