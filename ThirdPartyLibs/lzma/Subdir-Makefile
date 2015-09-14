@@ -119,9 +119,9 @@ CRYPTO_OBJS = \
 
 C_OBJS = \
   7zStream.$(OBJSUFFIX) \
+  7zArcIn.$(OBJSUFFIX) \
   Alloc.$(OBJSUFFIX) \
   Bcj2.$(OBJSUFFIX) \
-  Bcj2Enc.$(OBJSUFFIX) \
   Bra.$(OBJSUFFIX) \
   Bra86.$(OBJSUFFIX) \
   BraIA64.$(OBJSUFFIX) \
@@ -141,7 +141,12 @@ C_OBJS = \
 ###  LzFindMt.$(OBJSUFFIX) \
 ###  MtCoder.$(OBJSUFFIX) \
 ###  Threads.$(OBJSUFFIX) \
-  
+
+
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+C_OBJS+=\
+  Bcj2Enc.$(OBJSUFFIX)
+endif
   
   
 LibObjs=	\
