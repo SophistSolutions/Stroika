@@ -139,9 +139,84 @@ else
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/
 endif
 
-	
+
+LibObjs=	C_FileIO.o \
+		Bench.o \
+		BenchCon.o \
+		ConsoleClose.o \
+		LzmaDecoder.o \
+		LzmaEncoder.o \
+		LzmaRegister.o \
+		CreateCoder.o \
+		CWrappers.o \
+		FileStreams.o \
+		FilterCoder.o \
+		MethodProps.o \
+		StreamUtils.o \
+		CommandLineParser.o \
+		CRC.o \
+		CrcReg.o \
+		IntToString.o \
+		MyString.o \
+		MyVector.o \
+		MyWindows.o \
+		StringConvert.o \
+		StringToInt.o \
+		PropVariant.o \
+		7zCrc.o \
+		7zCrcOpt.o \
+		Alloc.o \
+		Bra86.o \
+		CpuArch.o \
+		LzFind.o \
+		LzmaDec.o \
+		LzmaEnc.o \
+		Lzma86Dec.o \
+		Lzma86Enc.o
+
+Objs=	$(LibObjs) \
+		LzmaAlone.o \
+
+
+SubDirs2Compile=	\
+	CURRENT/CPP/7zip/Bundles/LzmaCon \
+	CURRENT/CPP/Common \
+	CURRENT/CPP/7zip/UI/Common \
+	CURRENT/CPP/7zip/UI/Console \
+	CURRENT/CPP/7zip/Compress \
+	CURRENT/CPP/7zip/Common \
+	CURRENT/CPP/Windows \
+	CURRENT/C
+
+
+vpath %cpp $(SubDirs2Compile)
+vpath %c $(SubDirs2Compile)
+
+
+CPlusPlus=g++
+CFLAGS=-D_7ZIP_ST
+
+
+%.o : %.cpp
+	@echo "      Compiling $(subst ../,, $<)..."
+	$(CPlusPlus) $(CFLAGS) -c $< -o $@
+
+%.o : %.c
+	@echo "      Compiling $(subst ../,, $<)..."
+	gcc $(CFLAGS) -c $< -o $@
+
+
+lzma.a:	$(LibObjs)
+	ar cru lzma.a $(LibObjs)
+
+doBuildIntenal2_:	LzmaAlone.o 	lzma.a
+	g++ -o lzma   LzmaAlone.o lzma.a
+
+
+
 doBuildInternal_:
 	make --directory CURRENT/CPP/7zip/Bundles/LzmaCon -f makefile.gcc
+
 
 
 ORIGS:	$(ZIPEDFILE)
