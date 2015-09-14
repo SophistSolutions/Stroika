@@ -1,0 +1,83 @@
+
+LibObjs=	C_FileIO.o \
+		Bench.o \
+		BenchCon.o \
+		ConsoleClose.o \
+		LzmaDecoder.o \
+		LzmaEncoder.o \
+		LzmaRegister.o \
+		CreateCoder.o \
+		CWrappers.o \
+		FileStreams.o \
+		FilterCoder.o \
+		MethodProps.o \
+		StreamUtils.o \
+		CommandLineParser.o \
+		CRC.o \
+		CrcReg.o \
+		IntToString.o \
+		MyString.o \
+		MyVector.o \
+		MyWindows.o \
+		StringConvert.o \
+		StringToInt.o \
+		PropVariant.o \
+		7zCrc.o \
+		7zCrcOpt.o \
+		Alloc.o \
+		Bra86.o \
+		CpuArch.o \
+		LzFind.o \
+		LzmaDec.o \
+		LzmaEnc.o \
+		Lzma86Dec.o \
+		Lzma86Enc.o
+
+Objs=	$(LibObjs) \
+		LzmaAlone.o \
+
+
+SubDirs2Compile=	\
+	CPP/7zip/Bundles/LzmaCon \
+	CPP/Common \
+	CPP/7zip/UI/Common \
+	CPP/7zip/UI/Console \
+	CPP/7zip/Compress \
+	CPP/7zip/Common \
+	CPP/Windows \
+	C
+
+
+vpath %cpp $(SubDirs2Compile)
+vpath %c $(SubDirs2Compile)
+
+
+CPlusPlus=g++
+CFLAGS=-D_7ZIP_ST
+
+
+%.o : %.cpp
+	@echo "      Compiling $(subst ../,, $<)..."
+	$(CPlusPlus) $(CFLAGS) -c $< -o $@
+
+%.o : %.c
+	@echo "      Compiling $(subst ../,, $<)..."
+	gcc $(CFLAGS) -c $< -o $@
+
+
+lzma.a:	$(LibObjs)
+	ar cru lzma.a $(LibObjs)
+
+lzma:	LzmaAlone.o 	lzma.a
+	g++ -o lzma   LzmaAlone.o lzma.a
+
+
+
+doBuildInternal_:
+	make --directory CURRENT/CPP/7zip/Bundles/LzmaCon -f makefile.gcc
+
+clean:
+	@rm -f *.o
+
+clobber:	clean
+	@rm -f *.a lzma
