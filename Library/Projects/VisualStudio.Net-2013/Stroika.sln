@@ -192,6 +192,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{00E3BB94
 		..\..\..\Tools\Makefile = ..\..\..\Tools\Makefile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lzma", "lzma", "{9CF49625-04E6-499C-8201-E056260E4D38}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\lzma\Makefile = ..\..\..\ThirdPartyLibs\lzma\Makefile
+		..\..\..\ThirdPartyLibs\lzma\Subdir-Makefile = ..\..\..\ThirdPartyLibs\lzma\Subdir-Makefile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -505,5 +511,6 @@ Global
 		{8857755D-8E18-476D-BEB5-5C3B5ED79FB2} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 		{A60110B0-721D-48EE-81A9-9FFB510B4A07} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 		{00E3BB94-3C9C-403B-BFEA-1E8E733D8FF0} = {BDB956CB-14E0-4DE1-A36E-C852F928E761}
+		{9CF49625-04E6-499C-8201-E056260E4D38} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 	EndGlobalSection
 EndGlobal
