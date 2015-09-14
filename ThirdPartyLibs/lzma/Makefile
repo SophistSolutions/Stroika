@@ -15,8 +15,6 @@ DoCreateSymLink=0
 VERSION=1506
 BASENAME=lzma$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
-SLINKDIRNAME=$(BASENAME)
-USE_DIRNAME=CURRENT
 
 FETCHURL=http://www.7-zip.org/a/$(BASENAME).7z
 
@@ -76,9 +74,9 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
+$(PRODUCED_OUTPUT_ARTIFACTS):	$(TRGDIR)/Builds
 	
-CURRENT/Builds:
+$(TRGDIR)/Builds:
 	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
@@ -92,23 +90,13 @@ $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate
 
 
-doConfigure:
-	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@#(cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
-endif
-	@echo "   ...done"
-
-
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
-		echo "      ...CURRENT dir already exists";\
+		echo "      ...$(TRGDIR) dir already exists";\
 	else\
 		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		7z x -oCURRENT $(ZIPEDFILE) > /dev/null;\
-		cp Subdir-Makefile CURRENT/Makefile;\
-		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
-		$(MAKE) --no-print-directory doConfigure;\
+		7z x -o$(TRGDIR) $(ZIPEDFILE) > /dev/null;\
+		cp Subdir-Makefile $(TRGDIR)/Makefile;\
 	fi
 
 
@@ -117,7 +105,7 @@ doBuilds:
 		echo "      ...BUILD.OUT already exists";\
 	else\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		make doBuildIntenal2_ > BUILD.OUT 2>&1;\
+		make doBuildInternal_ > BUILD.OUT 2>&1;\
 	fi
 ifeq (0,1)
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
@@ -144,13 +132,8 @@ endif
 
 
 
-doBuildIntenal2_:
-	make --directory CURRENT
-
-
-
 doBuildInternal_:
-	make --directory CURRENT/CPP/7zip/Bundles/LzmaCon -f makefile.gcc
+	make --directory $(TRGDIR)
 
 
 
@@ -169,8 +152,7 @@ check:
 	@echo "   Stroika/ThirdPartyLibs/lzma - [Succeeded]";
 
 clean:
-	@#$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
-	@rm -f *.o
+	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
 
 clobber:	clean
 	@rm -rf $(TRGDIR)
