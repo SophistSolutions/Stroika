@@ -214,7 +214,8 @@ SubDirs2Compile=	\
 	CPP/7zip/Compress \
 	CPP/7zip/Common \
 	CPP/Windows \
-	C
+	C \
+	C/Util/7z
 
 
 vpath %cpp $(SubDirs2Compile)
@@ -237,8 +238,14 @@ CFLAGS=-D_7ZIP_ST
 	gcc $(CFLAGS) -c $< -o $@
 
 
+all:		lzma.a 7zDec lzma
+
 lzma.a:	$(LibObjs)
 	ar cru lzma.a $(LibObjs)
+
+7zDec:	7zMain.o lzma.a
+	g++ -o 7zDec   7zMain.o lzma.a
+	
 
 lzma:	LzmaAlone.o 	lzma.a
 	g++ -o lzma   LzmaAlone.o lzma.a
