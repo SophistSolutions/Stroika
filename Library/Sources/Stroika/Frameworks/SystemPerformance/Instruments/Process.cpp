@@ -173,7 +173,9 @@ namespace   {
         bool    SetPrivilege_ (HANDLE hToken, LPCTSTR Privilege, bool bEnablePrivilege)
         {
             LUID    luid;
-            if (!LookupPrivilegeValue (NULL, Privilege, &luid )) return false;
+            if (::LookupPrivilegeValue (NULL, Privilege, &luid) == 0) {
+                return false;
+            }
 
             //
             // first pass.  get current privilege setting
@@ -183,17 +185,14 @@ namespace   {
             tp.Privileges[0].Luid       = luid;
             tp.Privileges[0].Attributes = 0;
 
-            TOKEN_PRIVILEGES tpPrevious;
-            DWORD cbPrevious = sizeof(TOKEN_PRIVILEGES);
-            AdjustTokenPrivileges(
-                hToken,
-                FALSE,
-                &tp,
-                sizeof(TOKEN_PRIVILEGES),
-                &tpPrevious,
-                &cbPrevious
-            );
-            if (GetLastError() != ERROR_SUCCESS) return false;
+            TOKEN_PRIVILEGES    tpPrevious;
+            DWORD				cbPrevious    =   sizeof (tpPrevious);
+            ::AdjustTokenPrivileges (hToken, FALSE, &tp, sizeof(tp), &tpPrevious, &cbPrevious);
+            if (GetLastError() != ERROR_SUCCESS) {
+                // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
+                // counts as failure...
+                return false;
+            }
 
             //
             // second pass.  set privilege based on previous setting
@@ -207,16 +206,12 @@ namespace   {
             else {
                 tpPrevious.Privileges[0].Attributes ^= (SE_PRIVILEGE_ENABLED & tpPrevious.Privileges[0].Attributes);
             }
-
-            AdjustTokenPrivileges(
-                hToken,
-                FALSE,
-                &tpPrevious,
-                cbPrevious,
-                NULL,
-                NULL
-            );
-            if (GetLastError() != ERROR_SUCCESS) return false;
+            ::AdjustTokenPrivileges (hToken, FALSE, &tpPrevious, cbPrevious, NULL, NULL);
+            if (GetLastError() != ERROR_SUCCESS) {
+                // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
+                // counts as failure...
+                return false;
+            }
 
             return true;
         }
