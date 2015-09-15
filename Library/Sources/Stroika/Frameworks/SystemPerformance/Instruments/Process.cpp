@@ -431,7 +431,35 @@ namespace {
             }
             return result;
         }
-
+        Mapping<pid_t, String>   capture_pid2CmdLineMapFromProcFS_ (const Iterable<pid_t>& pids)
+        {
+            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromProcFS_");
+            using   Execution::ProcessRunner;
+            Mapping<pid_t, String>   result;
+            for (pid_t pid : pids) {
+                char    filename[1024];
+                snprintf(filename, NEltsOf (filename), "/proc/%d/psinfo", pid);
+                int fd = ::open (filename, O_RDONLY);
+                if (fd < 0) {
+                    DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
+                    continue;
+                }
+                Execution::Finally cleanup {[fd] ()
+                {
+                    Verify (::close (fd) == 0);
+                }
+                                           };
+                psinfo  ps;
+                int count = ::read (fd, &ps, sizeof (ps));
+                if (count != sizeof (ps)) {
+                    DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
+                    continue;
+                }
+                ps.pr_psargs[NEltsOf(ps.pr_psargs) - 1] = '\0'; // make sure even if data from kernel bad, no crash
+                result.Add (pid, String::FromNarrowSDKString (ps.pr_psargs));
+            }
+            return result;
+        }
         ProcessMapType  capture_using_perfstat_process_t_  ()
         {
             ProcessMapType  results;
@@ -538,7 +566,11 @@ namespace {
 
             fContextStats_ = newContextStats;
 
-            Mapping<pid_t, String>   pid2CmdLineMap = capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
+            // ProcFS (I THINK) is faster, but using ps for reasons I don't yet understand - appears to give a better answer for the
+            // command line. We COULD do ProcFS and then look for max-len command-lines and look them up with ps???
+            //          --LGP 2015-09-14
+            constexpr   bool    kPreferUsingProcFSOrPSForCommandLines_  { true };
+            Mapping<pid_t, String>   pid2CmdLineMap = kPreferUsingProcFSOrPSForCommandLines_ ? capture_pid2CmdLineMapFromProcFS_ (pids2LookupCmdLine) : capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
 
             {
                 ProcessMapType  updateResults;
@@ -1187,7 +1219,7 @@ namespace {
 
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/3828/io'
-        struct	proc_io_data_ {
+        struct  proc_io_data_ {
             uint64_t read_bytes;
             uint64_t write_bytes;
         };
@@ -1226,7 +1258,7 @@ namespace {
 
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/PID/status'
-        struct	proc_status_data_ {
+        struct  proc_status_data_ {
             uid_t ruid;
         };
         proc_status_data_   Readproc_proc_status_data_ (const String& fullPath)
