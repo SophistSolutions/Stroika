@@ -331,6 +331,18 @@ namespace {
 
 #if     qPlatform_AIX
 namespace {
+    /*
+     *  Missing items we don't currently capture:
+     *      >   fCurrentWorkingDirectory        * easy in procfs
+     *      >   fEnvironmentVariables           * I think psinfo has ptr and we can read data from /proc/PID/as
+     *      >   fRoot                           * easy in procfs
+     *      >   fPageFaultCount
+     *      >   fWorkingSetSize
+     *
+     *  Fragile or broken:
+     *      >   fEXE...
+     *      >   fCommandLine
+     */
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             DurationSecondsType     fCapturedAt;
@@ -567,7 +579,11 @@ namespace {
                 processDetails.fVirtualMemorySize = (procBuf[i].proc_size) * 1024;
 
                 /*
-                 *  not sure we should count proc_real_mem_text
+                 *  not sure we should count proc_real_mem_text.
+                 *
+                 *  Also- maybe we should read /proc/5243076/mmap (see https://www-01.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.files/proc.htm)
+                 *  and grab pr_mflags sections with MA_READ and  MA_WRITE but not MA_SHARED. amd subtrace out overlapping regions (a bit of work but not
+                 *  too bad). Stroika DisjointRange may help with this?
                  */
                 processDetails.fPrivateBytes = (procBuf[i].proc_real_mem_data + procBuf[i].pgsp_inuse) * 1024;
 
@@ -812,6 +828,13 @@ namespace {
 
 #if     qPlatform_Linux
 namespace {
+    /*
+     *  Missing items we don't currently capture:
+     *      >   fWorkingSetSize
+     *
+     *  Fragile or broken:
+     *      >   fPrivateBytes   doesnt work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
+     */
     struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
             DurationSecondsType     fCapturedAt;
