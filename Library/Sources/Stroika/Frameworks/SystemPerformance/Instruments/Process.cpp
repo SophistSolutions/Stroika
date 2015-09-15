@@ -377,15 +377,6 @@ namespace {
             return result;
         }
 
-
-        //tmphack - use same GetModuleEXE path code I have in Module code.
-        // But add memoizing.
-        Mapping<pid_t, String>   capture_pid2EXE_ ()
-        {
-            Mapping<pid_t, String>   result;
-            return result;
-        }
-
         Mapping<pid_t, String>   capture_pid2CmdLineMapFromPS_ (const Iterable<pid_t>& pids)
         {
             Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromPS_");
@@ -431,32 +422,70 @@ namespace {
             }
             return result;
         }
-        Mapping<pid_t, String>   capture_pid2CmdLineMapFromProcFS_ (const Iterable<pid_t>& pids)
+        struct  ProcFSInfo_ {
+            String                              fCmdLine;
+            pid_t                               fParentProcessID;
+            bool                                fIsKernelThread;
+            Optional<ProcessType::RunStatus>    fRunStatus;
+            Time::DateTime                      fProcessStartedAt;
+        };
+        Mapping<pid_t, ProcFSInfo_>   capture_Pid2ProcFSInfoMap_ (const Iterable<pid_t>& pids)
         {
-            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromProcFS_");
-            using   Execution::ProcessRunner;
-            Mapping<pid_t, String>   result;
+            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_Pid2ProcFSInfoMap_");
+            Mapping<pid_t, ProcFSInfo_>   result;
             for (pid_t pid : pids) {
-                char    filename[1024];
-                snprintf(filename, NEltsOf (filename), "/proc/%d/psinfo", pid);
-                int fd = ::open (filename, O_RDONLY);
-                if (fd < 0) {
-                    DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
-                    continue;
-                }
-                Execution::Finally cleanup {[fd] ()
+                psinfo  psInfo;
                 {
-                    Verify (::close (fd) == 0);
+                    char    filename[1024];
+                    snprintf(filename, NEltsOf (filename), "/proc/%d/psinfo", pid);
+                    int fd = ::open (filename, O_RDONLY);
+                    if (fd < 0) {
+                        DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
+                        continue;
+                    }
+                    Execution::Finally cleanup {[fd] ()
+                    {
+                        Verify (::close (fd) == 0);
+                    }
+                                               };
+                    int count = ::read (fd, &psInfo, sizeof (psInfo));
+                    if (count != sizeof (psInfo)) {
+                        DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
+                        continue;
+                    }
                 }
-                                           };
-                psinfo  ps;
-                int count = ::read (fd, &ps, sizeof (ps));
-                if (count != sizeof (ps)) {
-                    DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
-                    continue;
+                bool    isKernelThread = false;
+                // empirically, kernel threads always have PPID 0 or 1
+                if (psInfo.pr_ppid == 0 or psInfo.pr_ppid == 1) {
+                    pstatus  psStatus;
+                    char    filename[1024];
+                    snprintf(filename, NEltsOf (filename), "/proc/%d/status", pid);
+                    int fd = ::open (filename, O_RDONLY);
+                    // Dont skip if we cannot open this file, because we may need to be root to open it, and the flag we get is not that interesting...
+                    if (fd < 0) {
+                        isKernelThread = (psInfo.pr_ppid == 0); // default/good guess if we cannot open file
+                    }
+                    else {
+                        Execution::Finally cleanup {[fd] ()
+                        {
+                            Verify (::close (fd) == 0);
+                        }
+                                                   };
+                        int count = ::read (fd, &psStatus, sizeof (psStatus));
+                        if (count != sizeof (psStatus)) {
+                            DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
+                        }
+                        else {
+                            isKernelThread = static_cast<bool> (psStatus.pr_flags & PR_ISSYS);
+                        }
+                    }
                 }
-                ps.pr_psargs[NEltsOf(ps.pr_psargs) - 1] = '\0'; // make sure even if data from kernel bad, no crash
-                result.Add (pid, String::FromNarrowSDKString (ps.pr_psargs));
+
+                psInfo.pr_psargs[NEltsOf(psInfo.pr_psargs) - 1] = '\0'; // make sure even if data from kernel bad, no crash
+                // See http://www-01.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.files/doc/aixfiles/proc.htm%23files-proc
+                String  cmdLineArgs = String::FromNarrowSDKString (psInfo.pr_psargs);
+
+                result.Add (pid, ProcFSInfo_ {cmdLineArgs, static_cast<pid_t> (psInfo.pr_ppid), isKernelThread, cvtStatusCharToStatus_ (psInfo.pr_lwp.pr_sname), DateTime (static_cast<time_t> (psInfo.pr_start.tv_sec)) });
             }
             return result;
         }
@@ -488,12 +517,14 @@ namespace {
 
             Mapping<pid_t, PerfStats_>  newContextStats;
 
+            Set<pid_t>  pids2LookupStaticInfo;  // for now grab all but soon be smarter
             Set<pid_t>  pids2LookupCmdLine;
             for (size_t i = 0; i < procCount; ++i) {
                 ProcessType processDetails;
 
                 pid_t   pid = procBuf[i].pid;
 
+                pids2LookupStaticInfo.Add (pid);
                 pids2LookupCmdLine.Add (pid);
                 processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
                 processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
@@ -566,11 +597,16 @@ namespace {
 
             fContextStats_ = newContextStats;
 
+            Mapping<pid_t, ProcFSInfo_>   procFSInfo    =   capture_Pid2ProcFSInfoMap_ (pids2LookupStaticInfo);
+
             // ProcFS (I THINK) is faster, but using ps for reasons I don't yet understand - appears to give a better answer for the
             // command line. We COULD do ProcFS and then look for max-len command-lines and look them up with ps???
             //          --LGP 2015-09-14
             constexpr   bool    kPreferUsingProcFSOrPSForCommandLines_  { true };
-            Mapping<pid_t, String>   pid2CmdLineMap = kPreferUsingProcFSOrPSForCommandLines_ ? capture_pid2CmdLineMapFromProcFS_ (pids2LookupCmdLine) : capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
+            Mapping<pid_t, String>   pid2CmdLineMap;        // could make this list just ones with 'short' command-line, but could better restrict based on need for EXE anme...
+            if (not kPreferUsingProcFSOrPSForCommandLines_) {
+                pid2CmdLineMap = capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
+            }
 
             {
                 ProcessMapType  updateResults;
@@ -578,18 +614,46 @@ namespace {
                     pid_t pid = i.fKey;
 
                     ProcessType pi = i.fValue;
-                    if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
-                        String cmdLine = *o;
+
+                    if (auto o = procFSInfo.Lookup (i.fKey)) {
+                        pi.fKernelProcess = o->fIsKernelThread;
+                        pi.fParentProcessID = o->fParentProcessID;
+                        pi.fRunStatus = o->fRunStatus;
+                        pi.fProcessStartedAt = o->fProcessStartedAt;
+
+                        // Could do this for EXEPATH and fCommandLine
+                        //&&&&&
                         {
-                            pi.fKernelProcess = pid != 1 and pi.fParentProcessID == 0;      // wag?
-                            // Fake but usable answer
-                            Sequence<String>    t    =  cmdLine.Tokenize ();
-                            if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
-                                pi.fEXEPath = t[0];
+                            String cmdLine = o->fCmdLine;
+                            // if empty, assume we dont know real cmdline, cuz cannot be empty
+                            if (not cmdLine.empty ()) {
+                                {
+                                    // Fake but usable answer
+                                    Sequence<String>    t    =  cmdLine.Tokenize ();
+                                    if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                                        pi.fEXEPath = t[0];
+                                    }
+                                }
+                                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
+                                    pi.fCommandLine = cmdLine;
+                                }
                             }
                         }
-                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
-                            pi.fCommandLine = cmdLine;
+                    }
+
+                    if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
+                        String cmdLine = *o;
+                        if (not cmdLine.empty ()) {
+                            {
+                                // Fake but usable answer
+                                Sequence<String>    t    =  cmdLine.Tokenize ();
+                                if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                                    pi.fEXEPath = t[0];
+                                }
+                            }
+                            if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
+                                pi.fCommandLine = cmdLine;
+                            }
                         }
                     }
                     updateResults.Add (pid, pi);
@@ -716,23 +780,20 @@ namespace {
             }
             return result;
         }
-        // One character from the string "RSDZTW" where R is running,
-        // S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep,
-        // Z is zombie, T is traced or stopped (on a signal), and W is paging.
         Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
         {
             switch (state) {
-                case 'R':
+                case PR_SNAME_TSRUN:
                     return ProcessType::RunStatus::eRunning;
-                case 'S':
+                case PR_SNAME_TSSLEEP:
                     return ProcessType::RunStatus::eSleeping;
                 case 'D':
                     return ProcessType::RunStatus::eWaitingOnDisk;
-                case 'Z':
+                case PR_SNAME_TSZOMB:
                     return ProcessType::RunStatus::eZombie;
-                case 'T':
+                case PR_SNAME_TSSTOP:
                     return ProcessType::RunStatus::eSuspended;
-                case 'W':
+                case PR_SNAME_TSSWAP:
                     return ProcessType::RunStatus::eWaitingOnPaging;
             }
             return Optional<ProcessType::RunStatus> ();
