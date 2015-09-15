@@ -103,7 +103,12 @@ namespace   Stroika {
                          *
                          *  This value is commonly used/available in Windows
                          *
-                         *  @todo This MAYBE windows only(?)
+                         *  For Linux:
+                         *      This is all the private area from  /proc/<PID>/smaps with the label Private_Clean: or Private_Dirty
+                         *
+                         *  For AIX:
+                         *      This is RAM used for data + pagefile size used.
+                         *          (discuss with Sterl - maybe -- as of 2015-09-15)
                          */
                         Optional<MemorySizeType>    fPrivateBytes;
 

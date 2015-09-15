@@ -485,6 +485,7 @@ namespace {
                 // See http://www-01.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.files/doc/aixfiles/proc.htm%23files-proc
                 String  cmdLineArgs = String::FromNarrowSDKString (psInfo.pr_psargs);
 
+                // @todo when we fix DateTime to be hgiher precision, we could use that higher precision for startedAt!
                 result.Add (pid, ProcFSInfo_ {cmdLineArgs, static_cast<pid_t> (psInfo.pr_ppid), isKernelThread, cvtStatusCharToStatus_ (psInfo.pr_lwp.pr_sname), DateTime (static_cast<time_t> (psInfo.pr_start.tv_sec)) });
             }
             return result;
@@ -492,8 +493,6 @@ namespace {
         ProcessMapType  capture_using_perfstat_process_t_  ()
         {
             ProcessMapType  results;
-
-            // quick draft
 
             size_t  procCount;
             {
@@ -549,6 +548,7 @@ namespace {
                  *                                      segments (excluding system segments). This includes Text, Data,
                  *                                      Shared Library Text, Shared Library Data, File Pages, Shared Memory & Memory Mapped
                  *          ...
+                 *          pgsp_inuse;             --  Paging Space used(in KB) inclusive of all segments
                  *          filepages;              --   File Pages used(in KB) including shared pages
                  *          real_inuse_map;         --  Real memory used(in KB) for Shared Memory and Memory Mapped regions
                  *          virt_inuse_map;             --  Virtual Memory used(in KB) for Shared Memory and Memory Mapped regions
@@ -562,11 +562,14 @@ namespace {
                 processDetails.fResidentMemorySize = (procBuf[i].proc_real_mem_data + procBuf[i].proc_real_mem_text) * 1024;
 
                 /*
-                 *  Cannot figure out what makes sense here, so go with best guess for now...
-                 *  'ps' shows a number for VSZ less than real mem used! And topas offers nothing similar.
-                 *      --LGP 2015-09-11
+                 *  Unclear if this should be procBuf[i].proc_virt_mem_data + procBuf[i].proc_virt_mem_text or proc_size
                  */
                 processDetails.fVirtualMemorySize = (procBuf[i].proc_size) * 1024;
+
+                /*
+                 *  not sure we should count proc_real_mem_text
+                 */
+                processDetails.fPrivateBytes = (procBuf[i].proc_real_mem_data + procBuf[i].pgsp_inuse) * 1024;
 
                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (procBuf[i].proc_uid);
                 processDetails.fThreadCount =  procBuf[i].num_threads;
@@ -989,6 +992,14 @@ namespace {
                         processDetails.fVirtualMemorySize = stats.vsize;
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
+                        /*
+                         *  @todo Probably best to compute fPrivateBytes from:
+                         *       grep  Private /proc/1912/smaps
+                         */
+                        //processDetails.fPrivateBytes = fResidentMemorySize;
+                        processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath + L"smaps");
+
+
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", processDetails.fProcessStartedAt.Value ().Format ().c_str (), stats.start_time);
                         DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime , stats.stime);
@@ -1311,6 +1322,41 @@ namespace {
                     }
                     else if (strncmp (buf, kWriteLbl_, strlen (kWriteLbl_)) == 0) {
                         result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + strlen (kWriteLbl_));
+                    }
+                }
+            }
+            return result;
+        }
+
+        Optional<MemorySizeType>   ReadPrivateBytes_ (const String& fullPath)
+        {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_");
+            DbgTrace (L"fullPath=%s", fullPath.c_str ());
+#endif
+
+            if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Skipping read cuz no access");
+#endif
+                return Optional<MemorySizeType> ();
+            }
+            MemorySizeType    result {};
+            ifstream r;
+            Streams::iostream::OpenInputFileStream (&r, fullPath);
+            while (r) {
+                char buf[1024];
+                buf [0] = '\0';
+                if (r.getline (buf, sizeof(buf))) {
+                    // I think always in KB
+                    const char kPrivate1Lbl_ [] = "Private_Clean:";
+                    const char kPrivate2Lbl_ [] = "Private_Dirty:";
+                    // @todo - SHOULD pay attention to the labelm after the number. It may not always be kB? BUt not sure what it can be
+                    if (strncmp (buf, kPrivate1Lbl_, strlen (kPrivate1Lbl_)) == 0) {
+                        result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate1Lbl_)) * 1024;
+                    }
+                    else if (strncmp (buf, kPrivate2Lbl_, strlen (kPrivate2Lbl_)) == 0) {
+                        result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate2Lbl_)) * 1024;
                     }
                 }
             }
