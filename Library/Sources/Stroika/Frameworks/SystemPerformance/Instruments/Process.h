@@ -129,6 +129,11 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fPrivateBytes;
 
                         /**
+                         *  Total number of page major (causing a block/disk read)
+                         */
+                        Optional<unsigned int>      fMajorPageFaultCount;
+
+                        /**
                          *  Total number of page faults (read or write) ever for this process.
                          */
                         Optional<unsigned int>      fPageFaultCount;
