@@ -76,7 +76,24 @@ namespace   Stroika {
                         static  const Configuration::EnumNames<RunStatus>   Stroika_Enum_Names(RunStatus);
 
                         Optional<RunStatus>         fRunStatus;
-                        Optional<MemorySizeType>    fVirtualMemorySize;
+
+                        /**
+                         *  This is the total VM allocated solely for the purpose of this process.
+                         *  This includes code, stack space for threads etc.
+                         *
+                         *  This does NOT include shared mapped memory, nor memory which is owned by loaded
+                         *  dlls/shared object files.
+                         *
+                         *  On UNIX, this corresponds to VSZ in ps, and top.
+                         */
+                        Optional<MemorySizeType>    fPrivateVirtualMemorySize;
+
+                        /**
+                         *  This is the total VM size for the process, including all mapped shared data. This value will
+                         *  often grossly over-state the amount of 'virtual memory' in use for a process, because
+                         *  it can include things like memory mapped files, etc.
+                         */
+                        Optional<MemorySizeType>    fTotalVirtualMemorySize;
 
                         /**
                          *  Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the

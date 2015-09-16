@@ -258,7 +258,8 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRoot), String_Constant (L"Root"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessStartedAt), String_Constant (L"Process-Started-At"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fRunStatus), String_Constant (L"Run-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fVirtualMemorySize), String_Constant (L"Virtual-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateVirtualMemorySize), String_Constant (L"Private-Virtual-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalVirtualMemorySize), String_Constant (L"Total-Virtual-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fResidentMemorySize), String_Constant (L"Resident-Memory-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateBytes), String_Constant (L"Private-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -571,7 +572,9 @@ namespace {
                 /*
                  *  Unclear if this should be procBuf[i].proc_virt_mem_data + procBuf[i].proc_virt_mem_text or proc_size
                  */
-                processDetails.fVirtualMemorySize = (procBuf[i].proc_size) * 1024;
+                processDetails.fPrivateVirtualMemorySize = (procBuf[i].proc_size) * 1024;
+
+                processDetails.fTotalVirtualMemorySize = (procBuf[i].virt_inuse) * 1024;
 
                 /*
                  *  not sure we should count proc_real_mem_text.
@@ -772,7 +775,7 @@ namespace {
                 static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
                 processDetails.fResidentMemorySize /= 1024;
                 processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
-                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fPrivateVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
                 String  cmdLine;
@@ -1010,7 +1013,13 @@ namespace {
                         if (grabStaticData) {
                             processDetails.fParentProcessID = stats.ppid;
                         }
-                        processDetails.fVirtualMemorySize = stats.vsize;
+
+                        // WAG
+                        processDetails.fPrivateVirtualMemorySize = stats.vm_data + stats.vm_stack + stats.vm_exe;
+
+                        // docs not clear
+                        processDetails.fTotalVirtualMemorySize = stats.vsize;
+
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
                         /*
@@ -1478,7 +1487,7 @@ namespace {
                     processDetails.fTotalCPUTimeEverUsed = hours * 60 * 60 + minutes * 60 + seconds;
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-                processDetails.fVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
+                processDetails.fPrivateVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());
                 String  cmdLine;
