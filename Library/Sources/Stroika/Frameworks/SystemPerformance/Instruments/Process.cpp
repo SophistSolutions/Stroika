@@ -580,7 +580,9 @@ namespace {
                  *  and grab pr_mflags sections with MA_READ and  MA_WRITE but not MA_SHARED. amd subtrace out overlapping regions (a bit of work but not
                  *  too bad). Stroika DisjointRange may help with this?
                  */
-                processDetails.fPrivateBytes = (procBuf[i].proc_real_mem_data + procBuf[i].pgsp_inuse) * 1024;
+                if (procBuf[i].proc_size >= procBuf[i].proc_virt_mem_text) {    // SB always true
+                    processDetails.fPrivateBytes = (procBuf[i].proc_size - procBuf[i].proc_virt_mem_text) * 1024;
+                }
 
                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (procBuf[i].proc_uid);
                 processDetails.fThreadCount =  procBuf[i].num_threads;
@@ -600,6 +602,7 @@ namespace {
                     // if new process we also can capture this data here!
                     processDetails.fCombinedIOReadRate =  procBuf[i].inBytes;
                     processDetails.fCombinedIOWriteRate =  procBuf[i].outBytes;
+                    // @todo but minor
                     //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
                 }
 

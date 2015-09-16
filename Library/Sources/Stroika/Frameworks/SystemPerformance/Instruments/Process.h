@@ -107,8 +107,7 @@ namespace   Stroika {
                          *      This is all the private area from  /proc/<PID>/smaps with the label Private_Clean: or Private_Dirty
                          *
                          *  For AIX:
-                         *      This is RAM used for data + pagefile size used.
-                         *          (discuss with Sterl - maybe -- as of 2015-09-15)
+                         *      This is lipperf psinfo proc_size minus proc_virt_mem_text (so all VM that is process specific, less text space VM).
                          */
                         Optional<MemorySizeType>    fPrivateBytes;
 
