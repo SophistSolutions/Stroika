@@ -144,7 +144,7 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fWorkingSetSize;
 
                         /**
-                         *      Percent (of a single???) CPU time used (summed over user / system) and average over this
+                         *      Percent of a single CPU time used (summed over user / system) and average over this
                          *      collection interval.
                          */
                         Optional<DurationSecondsType>       fPercentCPUTime;
@@ -152,6 +152,9 @@ namespace   Stroika {
                         /**
                           *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
                           *     the total (user + system) usage of the process since it started.
+                          *
+                          *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
+                          *     this number would be 6 (2 * 3).
                           */
                         Optional<DurationSecondsType>       fTotalCPUTimeEverUsed;
 
