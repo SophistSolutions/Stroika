@@ -186,9 +186,9 @@ namespace   {
             tp.Privileges[0].Attributes = 0;
 
             TOKEN_PRIVILEGES    tpPrevious;
-            DWORD				cbPrevious    =   sizeof (tpPrevious);
+            DWORD               cbPrevious    =   sizeof (tpPrevious);
             ::AdjustTokenPrivileges (hToken, FALSE, &tp, sizeof(tp), &tpPrevious, &cbPrevious);
-            if (GetLastError() != ERROR_SUCCESS) {
+            if (::GetLastError () != ERROR_SUCCESS) {
                 // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
                 return false;
@@ -207,7 +207,7 @@ namespace   {
                 tpPrevious.Privileges[0].Attributes ^= (SE_PRIVILEGE_ENABLED & tpPrevious.Privileges[0].Attributes);
             }
             ::AdjustTokenPrivileges (hToken, FALSE, &tpPrevious, cbPrevious, NULL, NULL);
-            if (GetLastError() != ERROR_SUCCESS) {
+            if (::GetLastError () != ERROR_SUCCESS) {
                 // wierd but docs for AdjustTokenPrivileges unclear if you can check for failure with return value - or rahter if not updating all privs
                 // counts as failure...
                 return false;
