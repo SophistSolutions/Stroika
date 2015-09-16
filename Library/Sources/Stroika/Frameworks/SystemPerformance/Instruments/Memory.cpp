@@ -434,7 +434,7 @@ namespace {
 ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
 {
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
-    ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
+    static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
