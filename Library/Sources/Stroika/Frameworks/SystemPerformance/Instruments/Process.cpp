@@ -1014,11 +1014,9 @@ namespace {
                             processDetails.fParentProcessID = stats.ppid;
                         }
 
-                        // WAG
-                        processDetails.fPrivateVirtualMemorySize = stats.vm_data + stats.vm_stack + stats.vm_exe;
+                        processDetails.fPrivateVirtualMemorySize = stats.vsize;
 
-                        // docs not clear
-                        processDetails.fTotalVirtualMemorySize = stats.vsize;
+                        //processDetails.fTotalVirtualMemorySize = stats.vsize;
 
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
@@ -1174,63 +1172,154 @@ namespace {
         }
 
         struct  StatFileInfo_ {
-            //@todo REDO BASED on http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
-
-            // trim down and find better source - but for now use 'procps-3.2.8\proc\'
-            int                 ppid;
-            char                state;      // stat,status     single-char code for process state (S=sleeping)
-            unsigned long long  utime;      // stat            user-mode CPU time accumulated by process
-            unsigned long long  stime;      // stat            kernel-mode CPU time accumulated by process
-            unsigned long long  cutime;     // stat            cumulative utime of process and reaped children
-            unsigned long long  cstime;     // stat            cumulative stime of process and reaped children
-            unsigned long long  start_time; // stat            start time of process -- seconds since 1-1-70
-
-            long
-            priority,   // stat            kernel scheduling priority
-            nice,       // stat            standard unix nice level of process
-            rss,        // stat            resident set size from /proc/#/stat (pages)
-            alarm,      // stat            ?
-            // the next 7 members come from /proc/#/statm
-            size,       // statm           total # of pages of memory
-            resident,   // statm           number of resident set (non-swapped) pages (4k)
-            share,      // statm           number of pages of shared (mmap'd) memory
-            trs,        // statm           text resident set size
-            lrs,        // statm           shared-lib resident set size
-            drs,        // statm           data resident set size
-            dt;     // statm           dirty pages
-
-            unsigned long
-            vm_size,        // status          same as vsize in kb
-            vm_lock,        // status          locked pages in kb
-            vm_rss,         // status          same as rss in kb
-            vm_data,        // status          data size
-            vm_stack,       // status          stack size
-            vm_exe,         // status          executable size
-            vm_lib,         // status          library size (all pages, not just used ones)
-            rtprio,     // stat            real-time priority
-            sched,      // stat            scheduling class
-            vsize,      // stat            number of pages of virtual memory ...
-            rss_rlim,   // stat            resident set size limit?
-            flags,      // stat            kernel flags for the process
-            min_flt,    // stat            number of minor page faults since process start
-            maj_flt,    // stat            number of major page faults since process start
-            cmin_flt,   // stat            cumulative min_flt of process and child processes
-            cmaj_flt;   // stat            cumulative maj_flt of process and child processes
-
-            int
-            pgrp,       // stat            process group id
-            session,    // stat            session id
-            nlwp,       // stat,status     number of threads, or 0 if no clue
-            tgid,       // (special)       task group ID, the POSIX PID (see also: tid)
-            tty,        // stat            full device number of controlling terminal
-            euid, egid,     // stat(),status   effective
-            ruid, rgid,     // status          real
-            suid, sgid,     // status          saved
-            fuid, fgid,     // status          fs (used for file access only)
-            tpgid,      // stat            terminal process group id
-            exit_signal,    // stat            might not be SIGCHLD
-            processor;
-
+            /*
+             *  From  http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
+             *
+             *  (1)     pid %d
+             *          The process ID.
+             *
+             *  (2)     comm %s
+             *          The filename of the executable, in parentheses. This is visible whether or not the executable is swapped out.
+             *
+             *  (3)     state %c
+             *          One character from the string "RSDZTW" where R is running, S is sleeping in an interruptible wait, D is waiting in uninterruptible disk sleep, Z is zombie, T is traced or stopped (on a signal), and W is paging.
+             *
+             *  (4)     ppid %d
+             *          The PID of the parent.
+             *
+             *  (5)     pgrp %d
+             *          The process group ID of the process.
+             *
+             *  (6)     session %d
+             *          The session ID of the process.
+             *
+             *  (7)     tty_nr %d
+             *          The controlling terminal of the process. (The minor device number is contained in the combination of bits 31 to 20 and 7 to 0; the major device number is in bits 15 to 8.)
+             *
+             *  (8)     tpgid %d
+             *          The ID of the foreground process group of the controlling terminal of the process.
+             *
+             *  (9)     flags %u (%lu before Linux 2.6.22)
+             *          The kernel flags word of the process. For bit meanings, see the PF_* defines in the Linux kernel source file include/linux/sched.h. Details depend on the kernel version.
+             *
+             *  (10)    minflt %lu
+             *          The number of minor faults the process has made which have not required loading a memory page from disk.
+             *
+             *  (11)    cminflt %lu
+             *          The number of minor faults that the process's waited-for children have made.
+             *
+             *  (12)    majflt %lu
+             *          The number of major faults the process has made which have required loading a memory page from disk.
+             *
+             *  (13)    cmajflt %lu
+             *          The number of major faults that the process's waited-for children have made.
+             *
+             *  (14)    utime %lu
+             *          Amount of time that this process has been scheduled in user mode, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)). This includes guest time, guest_time (time spent running a virtual CPU, see below), so that applications that are not aware of the guest time field do not lose that time from their calculations.
+             *
+             *  (15)    stime %lu
+             *          Amount of time that this process has been scheduled in kernel mode, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+             *
+             *  (16)    cutime %ld
+             *          Amount of time that this process's waited-for children have been scheduled in user mode, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)). (See also times(2).) This includes guest time, cguest_time (time spent running a virtual CPU, see below).
+             *
+             *  (17)    cstime %ld
+             *          Amount of time that this process's waited-for children have been scheduled in kernel mode, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+             *
+             *  (18)    priority %ld
+             *          (Explanation for Linux 2.6) For processes running a real-time scheduling policy (policy below; see sched_setscheduler(2)), this is the negated scheduling priority, minus one; that is, a number in the range -2 to -100, corresponding to real-time priorities 1 to 99. For processes running under a non-real-time scheduling policy, this is the raw nice value (setpriority(2)) as represented in the kernel. The kernel stores nice values as numbers in the range 0 (high) to 39 (low), corresponding to the user-visible nice range of -20 to 19.
+             *          Before Linux 2.6, this was a scaled value based on the scheduler weighting given to this process.
+             *
+             *  (19)    nice %ld
+             *          The nice value (see setpriority(2)), a value in the range 19 (low priority) to -20 (high priority).
+             *
+             *  (20)    num_threads %ld
+             *          Number of threads in this process (since Linux 2.6). Before kernel 2.6, this field was hard coded to 0 as a placeholder for an earlier removed field.
+             *
+             *  (21)    itrealvalue %ld
+             *          The time in jiffies before the next SIGALRM is sent to the process due to an interval timer. Since kernel 2.6.17, this field is no longer maintained, and is hard coded as 0.
+             *
+             *  (22)    starttime %llu (was %lu before Linux 2.6)
+             *          The time the process started after system boot. In kernels before Linux 2.6, this value was expressed in jiffies. Since Linux 2.6, the value is expressed in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+             *
+             *  (23)    vsize %lu
+             *          Virtual memory size in bytes.
+             *
+             *          from ps docs:
+             *              size in physical pages of the core image of the process.  This includes text, data, and stack space.  Device mappings are currently excluded;
+             *          Empirically thats waht this appears to be.
+             *
+             *  (24)    rss %ld
+             *          Resident Set Size: number of pages the process has in real memory. This is just the pages which count toward text, data, or stack space. This does not include pages which have not been demand-loaded in, or which are swapped out.
+             *
+             *  (25)    rsslim %lu
+             *          Current soft limit in bytes on the rss of the process; see the description of RLIMIT_RSS in getrlimit(2).
+             *
+             *  (26)    startcode %lu
+             *          The address above which program text can run.
+             *
+             *  (27)    endcode %lu
+             *          The address below which program text can run.
+             *
+             *  (28)    startstack %lu
+             *          The address of the start (i.e., bottom) of the stack.
+             *
+             *  (29)    kstkesp %lu
+             *          The current value of ESP (stack pointer), as found in the kernel stack page for the process.
+             *
+             *  (30)    kstkeip %lu
+             *          The current EIP (instruction pointer).
+             *
+             *  (31)    signal %lu
+             *          The bitmap of pending signals, displayed as a decimal number. Obsolete, because it does not provide information on real-time signals; use /proc/[pid]/status instead.
+             *
+             *  (32)    blocked %lu
+             *          The bitmap of blocked signals, displayed as a decimal number. Obsolete, because it does not provide information on real-time signals; use /proc/[pid]/status instead.
+             *
+             *  (33)    sigignore %lu
+             *          The bitmap of ignored signals, displayed as a decimal number. Obsolete, because it does not provide information on real-time signals; use /proc/[pid]/status instead.
+             *
+             *  (34)    sigcatch %lu
+             *          The bitmap of caught signals, displayed as a decimal number. Obsolete, because it does not provide information on real-time signals; use /proc/[pid]/status instead.
+             *
+             *  (35)    wchan %lu
+             *          This is the "channel" in which the process is waiting. It is the address of a system call, and can be looked up in a namelist if you need a textual name. (If you have an up-to-date /etc/psdatabase, then try ps -l to see the WCHAN field in action.)
+             *
+             *  (36)    nswap %lu
+             *          Number of pages swapped (not maintained).
+             *
+             *  (37)    cnswap %lu
+             *          Cumulative nswap for child processes (not maintained).
+             *
+             *  (38)    exit_signal %d (since Linux 2.1.22)
+             *          Signal to be sent to parent when we die.
+             *
+             *  (39)    processor %d (since Linux 2.2.8)
+             *          CPU number last executed on.
+             *
+             *  (40)    rt_priority %u (since Linux 2.5.19; was %lu before Linux 2.6.22)
+             *          Real-time scheduling priority, a number in the range 1 to 99 for processes scheduled under a real-time policy, or 0, for non-real-time processes (see sched_setscheduler(2)).
+             *
+             *  (41)    policy %u (since Linux 2.5.19; was %lu before Linux 2.6.22)
+             *          Scheduling policy (see sched_setscheduler(2)). Decode using the SCHED_* constants in linux/sched.h.
+             *
+             *  (42)    delayacct_blkio_ticks %llu (since Linux 2.6.18)
+             *          Aggregated block I/O delays, measured in clock ticks (centiseconds).
+             *
+             *  (43)    guest_time %lu (since Linux 2.6.24)
+             *          Guest time of the process (time spent running a virtual CPU for a guest operating system), measured in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+             *
+             *  (44)    cguest_time %ld (since Linux 2.6.24)
+             *          Guest time of the process's children, measured in clock ticks (divide by sysconf(_SC_CLK_TCK)).
+             */
+            char                state;          //  (3)
+            int                 ppid;           //  (4)
+            unsigned long long  utime;          //  (14)
+            unsigned long long  stime;          //  (15)
+            int                 nlwp;           //  (20)
+            unsigned long long  start_time;     //  (22)
+            unsigned long long  vsize;          //  (23)
+            unsigned long long  rss;            //  (24)
         };
         StatFileInfo_   ReadStatFile_ (const String& fullPath)
         {
@@ -1248,14 +1337,14 @@ namespace {
 
             const char* S = reinterpret_cast<const char*> (data);
 
-            ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH!
 
             {
-                S = strchr(S, '(') + 1;
+                ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH!
+                S = ::strchr (S, '(') + 1;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S = %x", S);
 #endif
-                const char* tmp = strrchr(S, ')');
+                const char* tmp = ::strrchr (S, ')');
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S(tmp) = %x", tmp);
 #endif
@@ -1266,47 +1355,75 @@ namespace {
             // (warning doesnt appear to check if we have mismatch between types and format args provided.
             //      --LGP 2015-01-07
             DISABLE_COMPILER_MSC_WARNING_START(4996)
-            int num = sscanf(S,
-                             "%c "
-                             "%d %d %d %d %d "
-                             "%lu %lu %lu %lu %lu "
-                             "%llu %llu %llu %llu "  /* utime stime cutime cstime */
-                             "%ld %ld "
-                             "%d "
-                             "%ld "
-                             "%llu "  /* start_time */
-                             "%lu "
-                             "%ld "
-#if 0
-                             /*
-                             "%lu %"KLF"u %"KLF"u %"KLF"u %"KLF"u %"KLF"u "
-                             "%*s %*s %*s %*s " // discard, no RT signals & Linux 2.1 used hex
-                             "%"KLF"u %*lu %*lu "
-                             "%d %d "
-                             "%lu %lu"
-                             */
-#endif
-                             ,
-                             &result.state,
-                             &result.ppid, &result.pgrp, &result.session, &result.tty, &result.tpgid,
-                             &result.flags, &result.min_flt, &result.cmin_flt, &result.maj_flt, &result.cmaj_flt,
-                             &result.utime, &result.stime, &result.cutime, &result.cstime,
-                             &result.priority, &result.nice,
-                             &result.nlwp,
-                             &result.alarm,
-                             &result.start_time,
-                             &result.vsize,
-                             &result.rss
-#if 0
-                             & result.rss_rlim, &result.start_code, &result.end_code, &result.start_stack, &result.kstk_esp, &result.kstk_eip,
-                             /*     P->signal, P->blocked, P->sigignore, P->sigcatch,   */ /* can't use */
-                             &result.wchan, /* &P->nswap, &P->cnswap, */  /* nswap and cnswap dead for 2.4.xx and up */
-                             /* -- Linux 2.0.35 ends here -- */
-                             &result.exit_signal, &result.processor,  /* 2.2.1 ends with "exit_signal" */
-                             /* -- Linux 2.2.8 to 2.5.17 end here -- */
-                             &result.rtprio, &result.sched  /* both added to 2.5.18 */
-#endif
-                            );
+            int                 ignoredInt = 0;
+            long                ignoredLong = 0;
+            unsigned long       ignoredUnsignedLong = 0;
+            unsigned long long  ignoredUnsignedLongLong = 0;
+            unsigned long int   ignored_unsigned_long {};
+            int num = ::sscanf (
+                          S,
+
+                          // (3 - char state)...
+                          "%c "
+
+                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                          "%d %d %d %d %d "
+
+                          // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                          "%lu %lu %lu %lu %lu "
+
+                          // (14 - unint but use ulonglong for safety - utime stime)...
+                          "%llu %llu "
+
+                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                          "%llu %llu "
+
+                          // (18 long priority, nice)...
+                          "%ld %ld "
+
+                          // (20  docs say long but thats nuts %ld   num_threads)...
+                          "%d "
+
+                          // (21  %ld - itrealvalue)...
+                          "%d "
+
+                          // (22 llu -   starttime %llu)...
+                          "%llu "
+
+                          // (23 unsigned long by docs but use ull   vsize, rss)...
+                          "%llu %llu "
+                          ,
+
+                          // (3 - char state)...
+                          &result.state,
+
+                          // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
+                          &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
+
+                          // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                          &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong,
+
+                          // (14 - unint but use ulonglong for safety - utime stime)...
+                          &result.utime, &result.stime,
+
+                          // (16 - unint but use ulonglong for safety- cutime cstime - docs say signed int but thats crazy--LGP2015-09-16)...
+                          &ignoredUnsignedLongLong, &ignoredUnsignedLongLong,
+
+                          // (18 long priority, nice)
+                          &ignoredLong, &ignoredLong,
+
+                          // (20  docs say long but thats nuts %ld   num_threads)
+                          &result.nlwp,
+
+                          // (21  %ld - itrealvalue)
+                          &ignoredInt,
+
+                          // (22 llu -   starttime %llu)...
+                          &result.start_time,
+
+                          // (23 unsigned long by docs but use ull   vsize, rss)...
+                          &result.vsize,  &result.rss
+                      );
             DISABLE_COMPILER_MSC_WARNING_END(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
