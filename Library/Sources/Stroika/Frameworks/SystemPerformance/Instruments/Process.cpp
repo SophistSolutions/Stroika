@@ -1016,17 +1016,19 @@ namespace {
 
                         processDetails.fPrivateVirtualMemorySize = stats.vsize;
 
+                        // Dont know how to easily compute, but I'm sure not hard (add in shared memory of various sorts at worst) - or look at memory map, but
+                        // very low priority (like smaps file below)
                         //processDetails.fTotalVirtualMemorySize = stats.vsize;
 
                         processDetails.fResidentMemorySize = stats.rss * kPageSizeInBytes_;
 
+                        processDetails.fPageFaultCount  = stats.minflt + stats.majflt;
+
                         /*
-                         *  @todo Probably best to compute fPrivateBytes from:
+                         * Probably best to compute fPrivateBytes from:
                          *       grep  Private /proc/1912/smaps
                          */
-                        //processDetails.fPrivateBytes = fResidentMemorySize;
                         processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath + L"smaps");
-
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", processDetails.fProcessStartedAt.Value ().Format ().c_str (), stats.start_time);
@@ -1320,6 +1322,8 @@ namespace {
             unsigned long long  start_time;     //  (22)
             unsigned long long  vsize;          //  (23)
             unsigned long long  rss;            //  (24)
+            unsigned  long  minflt;
+            unsigned  long  majflt;
         };
         StatFileInfo_   ReadStatFile_ (const String& fullPath)
         {
@@ -1336,10 +1340,8 @@ namespace {
 #endif
 
             const char* S = reinterpret_cast<const char*> (data);
-
-
             {
-                ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH!
+                ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH! what if S not nul-terminated!
                 S = ::strchr (S, '(') + 1;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S = %x", S);
@@ -1369,7 +1371,7 @@ namespace {
                           // (4 - 'int' - ppid,pgrp,session,tty_nr,tpgid)...
                           "%d %d %d %d %d "
 
-                          // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
+                          // (9 unsigned long  - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
                           "%lu %lu %lu %lu %lu "
 
                           // (14 - unint but use ulonglong for safety - utime stime)...
@@ -1401,7 +1403,7 @@ namespace {
                           &result.ppid, &ignoredInt, &ignoredInt, &ignoredInt, &ignoredInt,
 
                           // (9 unsigned long - flags,minflt,cminflt,majflt,cmajflt - NB: flags now unsigned int not unsigned long but unsigned long fits new and old)...
-                          &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong, &ignoredUnsignedLong,
+                          &ignoredUnsignedLong, &result.minflt, &ignoredUnsignedLong, &result.majflt, &ignoredUnsignedLong,
 
                           // (14 - unint but use ulonglong for safety - utime stime)...
                           &result.utime, &result.stime,
@@ -1439,8 +1441,8 @@ namespace {
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/3828/io'
         struct  proc_io_data_ {
-            uint64_t read_bytes;
-            uint64_t write_bytes;
+            uint64_t    read_bytes;
+            uint64_t    write_bytes;
         };
         Optional<proc_io_data_>   Readproc_io_data_ (const String& fullPath)
         {
@@ -1531,10 +1533,10 @@ namespace {
                     const char kUidLbl [] = "Uid:";
                     if (strncmp (buf, kUidLbl, strlen(kUidLbl)) == 0) {
                         char* S = buf + strlen(kUidLbl);
-                        int ruid = strtol (S, &S, 10);
-                        int euid = strtol (S, &S, 10);
-                        int suid = strtol (S, &S, 10);
-                        int fuid = strtol (S, &S, 10);
+                        int ruid = ::strtol (S, &S, 10);
+                        int euid = ::strtol (S, &S, 10);
+                        int suid = ::strtol (S, &S, 10);
+                        int fuid = ::strtol (S, &S, 10);
                         result.ruid = ruid;
                     }
                 }
@@ -1770,7 +1772,7 @@ namespace {
                             if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof(memInfo))) {
                                 processInfo.fWorkingSetSize = memInfo.WorkingSetSize;
                                 processInfo.fPrivateBytes = memInfo.PrivateUsage;
-                                processInfo.fPageFaultCount = memInfo.PageFaultCount;
+                                processInfo.fPageFaultCount = memInfo.PageFaultCount;   // docs not 100% clear but I think this is total # pagefaults
                             }
                         }
                     }

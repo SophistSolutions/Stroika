@@ -129,7 +129,7 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fPrivateBytes;
 
                         /**
-                         *  @todo better document, and only implemented for windows - but need todo for unix?
+                         *  Total number of page faults (read or write) ever for this process.
                          */
                         Optional<unsigned int>      fPageFaultCount;
 
