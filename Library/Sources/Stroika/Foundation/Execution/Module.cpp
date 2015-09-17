@@ -17,6 +17,7 @@
 #endif
 
 #include    "../Cache/CallerStalenessCache.h"
+#include    "../Cache/LRUCache.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/Synchronized.h"
@@ -32,6 +33,12 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -275,18 +282,43 @@ namespace {
                 }
             }
         }
+        static  Synchronized<Cache::LRUCache<SDKString, SDKString, Cache::LRUCacheSupport::DefaultTraits<SDKString, 7>>>   sHintCache_ (256);
         if (hint != nullptr) {
+#if 1
+            using   Memory::Optional;
+            if (Optional<SDKString> o   =   sHintCache_->Lookup (*hint)) {
+                struct  stat    hintStats;
+                if (::stat (o->c_str (), &hintStats) == 0) {
+                    if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace ("CacheHit for hint %s (maps to %s)", hint->c_str (), o->c_str ());
+#endif
+                        return *o;
+                    }
+                }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("CacheMiss for hint %s", hint->c_str ());
+#endif
+            }
+#else
             struct  stat    hintStats;
             if (::stat (hint->c_str (), &hintStats) == 0) {
                 if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
                     return *hint;
                 }
             }
+#endif
         }
         SDKString   fsName  =   FindFSForMajorMinorDev_WithCaching_ (majorDev, minorDev);
         string      exeName;
         if (not fsName.empty ()) {
             exeName = FindPath2Inode_ (fsName + "/", inode);
+        }
+        if (hint != nullptr and not exeName.empty ()) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("Priming cache for hint %s (maps to %s)", hint->c_str (), exeName.c_str ());
+#endif
+            sHintCache_->Add (*hint, exeName);
         }
         return exeName;
     }
