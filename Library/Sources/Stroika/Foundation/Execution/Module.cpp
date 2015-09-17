@@ -173,6 +173,7 @@ namespace {
     }
     SDKString   FindFSForMajorMinorDev_LowLevel_ (int majorDev, int minorDev)
     {
+        // @todo - this isn't truely safe... Esp df|grep part...
         string  fsBlockName;
         if (majorDev != -1 and minorDev != -1) {
             // ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev
@@ -223,9 +224,9 @@ namespace {
         ino_t   inode {};
         {
             struct  stat    s;
-            char buf[1024];
-            snprintf (buf, NEltsOf (buf), "/proc/%d/object/a.out", pid);
-            if (::stat (buf, &s) == 0) {
+            char aoutFileBuf[1024];
+            snprintf (aoutFileBuf, NEltsOf (aoutFileBuf), "/proc/%d/object/a.out", pid);
+            if (::stat (aoutFileBuf, &s) == 0) {
                 inode = s.st_ino;
             }
         }
@@ -238,7 +239,7 @@ namespace {
             // @todo - can we simplify this and look at st_dev of the file???
             // ls -li /proc/%d/object/ | egrep \"%lld$\""
             char procObjectDir[1024];
-            snprintf (procObjectDir, NEltsOf (procObjectDir), "/proc/%d/object/", pid);
+            (void)::snprintf (procObjectDir, NEltsOf (procObjectDir), "/proc/%d/object/", pid);
             DIR*       dirIt    { ::opendir (procObjectDir) };
             if (dirIt != nullptr) {
                 struct CLEANUP_ {
@@ -259,7 +260,7 @@ namespace {
                 for (dirent* cur = ::readdir (dirIt); cur != nullptr; cur = ::readdir (dirIt)) {
                     size_t  l   =   ::strlen (cur->d_name);
                     if (l > endsWithBufferLen) {
-                        if (strcmp (cur->d_name + l - endsWithBufferLen, endsWithBuffer) == 0) {
+                        if (::strcmp (cur->d_name + l - endsWithBufferLen, endsWithBuffer) == 0) {
                             string  tmp { cur->d_name };
                             int     beforeMajorIdx   =  tmp.find ('.');
                             int     beforeMinorIdx   =  tmp.find ('.', beforeMajorIdx + 1);
