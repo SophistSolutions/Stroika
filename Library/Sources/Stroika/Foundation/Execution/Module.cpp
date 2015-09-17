@@ -11,6 +11,8 @@
 #endif
 #if     qPlatform_AIX
 #include    <dirent.h>
+#include    <sys/sysmacros.h>
+#include    <sys/types.h>
 #include    <unistd.h>
 #endif
 
@@ -209,7 +211,7 @@ namespace {
             return FindFSForMajorMinorDev_LowLevel_ (majorDev, minorDev);
         });
     }
-    SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
+    SDKString   AIX_GET_EXE_PATH_ (pid_t pid, const SDKString* hint)
     {
         /*
          *  What a PITA!
@@ -273,6 +275,14 @@ namespace {
                 }
             }
         }
+        if (hint != nullptr) {
+            struct  stat    hintStats;
+            if (::stat (hint->c_str (), &hintStats) == 0) {
+                if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
+                    return *hint;
+                }
+            }
+        }
         SDKString   fsName  =   FindFSForMajorMinorDev_WithCaching_ (majorDev, minorDev);
         string      exeName;
         if (not fsName.empty ()) {
@@ -282,7 +292,7 @@ namespace {
     }
     SDKString   AIX_GET_EXE_PATH_ ()
     {
-        static  SDKString   kCached_    =   AIX_GET_EXE_PATH_ (Execution::GetCurrentProcessID ());  // since cannot change, and now very slow to compute
+        static  SDKString   kCached_    =   AIX_GET_EXE_PATH_ (Execution::GetCurrentProcessID (), nullptr);  // since cannot change, and now very slow to compute
         return  kCached_;
     }
 }
@@ -331,7 +341,7 @@ SDKString Execution::GetEXEPathT ()
 String Execution::GetEXEPath (pid_t processID)
 {
 #if     qPlatform_AIX
-    return String::FromSDKString (AIX_GET_EXE_PATH_ (processID));
+    return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, nullptr));
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
@@ -358,3 +368,10 @@ String Execution::GetEXEPath (pid_t processID)
     return String ();
 #endif
 }
+
+#if     qPlatform_AIX
+SDKString   Execution::GetEXEPathWithHint (pid_t processID, const SDKString& hint)
+{
+    return AIX_GET_EXE_PATH_ (processID, &hint);
+}
+#endif

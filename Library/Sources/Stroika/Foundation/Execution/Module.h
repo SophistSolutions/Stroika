@@ -74,6 +74,9 @@ namespace   Stroika {
              *  Return the full path to the given process
              */
             String GetEXEPath (pid_t processID);
+#if     qPlatform_AIX
+            SDKString   GetEXEPathWithHint (pid_t processID, const SDKString& hint);
+#endif
 
 
         }

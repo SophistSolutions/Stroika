@@ -614,6 +614,10 @@ namespace {
                 if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
                     newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
                 }
+
+                // insanely slow, but opimizable
+                processDetails.fEXEPath = String::FromSDKString (Execution::GetEXEPathWithHint (pid, procBuf[i].proc_name));
+
                 results.Add (pid, processDetails);
             }
 
@@ -649,13 +653,16 @@ namespace {
                             String cmdLine = o->fCmdLine;
                             // if empty, assume we dont know real cmdline, cuz cannot be empty
                             if (not cmdLine.empty ()) {
+#if 0
                                 {
                                     // Fake but usable answer
                                     Sequence<String>    t    =  cmdLine.Tokenize ();
-                                    if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                                    if (not t.empty () and not t[0].empty () and t[0][0] == '/')
+                                    {
                                         pi.fEXEPath = t[0];
                                     }
                                 }
+#endif
                                 if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
                                     pi.fCommandLine = cmdLine;
                                 }
@@ -666,21 +673,21 @@ namespace {
                     if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
                         String cmdLine = *o;
                         if (not cmdLine.empty ()) {
+#if 0
                             {
                                 // Fake but usable answer
                                 Sequence<String>    t    =  cmdLine.Tokenize ();
-                                if (not t.empty () and not t[0].empty () and t[0][0] == '/') {
+                                if (not t.empty () and not t[0].empty () and t[0][0] == '/')
+                                {
                                     pi.fEXEPath = t[0];
                                 }
                             }
+#endif
                             if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
                                 pi.fCommandLine = cmdLine;
                             }
                         }
                     }
-
-                    // insanely slow, but opimizable
-                    pi.fEXEPath = Execution::GetEXEPath (pid);
 
                     updateResults.Add (pid, pi);
                 }
