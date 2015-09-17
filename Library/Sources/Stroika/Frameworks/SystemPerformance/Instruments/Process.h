@@ -49,6 +49,12 @@ namespace   Stroika {
                     struct  ProcessType {
                         Optional<bool>                      fKernelProcess;     // if true (unix only) - this process is really a thread builtin to the kernel
                         Optional<pid_t>                     fParentProcessID;
+
+                        /*
+                         *  On some systems, in some cases, we cannot find the EXE name, but still have some sort of process
+                         *  name we can retrieve.
+                         */
+                        Optional<String>                    fProcessName;
                         Optional<String>                    fUserName;          // on windows, this is in the form of username@domain if a domain is present
                         Optional<String>                    fCommandLine;
                         Optional<String>                    fCurrentWorkingDirectory;
@@ -257,6 +263,13 @@ namespace   Stroika {
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
                         CachePolicy                     fCachePolicy                    { CachePolicy::eIncludeAllRequestedValues };
+
+                        enum    ProcessNameReadPolicy {
+                            eNever,
+                            eOnlyIfEXENotRead,
+                            eAlways
+                        };
+                        ProcessNameReadPolicy           fProcessNameReadPolicy          { eOnlyIfEXENotRead };
 #if     qPlatform_POSIX
                         bool                            fAllowUse_ProcFS                { true };
                         bool                            fAllowUse_PS                    { true };

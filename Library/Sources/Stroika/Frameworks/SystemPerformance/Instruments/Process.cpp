@@ -251,6 +251,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fKernelProcess), String_Constant (L"Kernel-Process"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fParentProcessID), String_Constant (L"Parent-Process-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fProcessName), String_Constant (L"Process-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fUserName), String_Constant (L"User-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCommandLine), String_Constant (L"Command-Line"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fCurrentWorkingDirectory), String_Constant (L"Current-Working-Directory"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -538,7 +539,7 @@ namespace {
 
                 pids2LookupStaticInfo.Add (pid);
                 pids2LookupCmdLine.Add (pid);
-                processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
+                //processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
                 static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
                 processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) * kNumberLogicalCores_ / 1000.0;
 
@@ -621,6 +622,10 @@ namespace {
 
                 // insanely slow, but opimizable
                 processDetails.fEXEPath = String::FromSDKString (Execution::GetEXEPathWithHint (pid, procBuf[i].proc_name));
+
+                if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                    processDetails.fProcessName = String::FromNarrowSDKString (procBuf[i].proc_name);
+                }
 
                 results.Add (pid, processDetails);
             }
@@ -971,6 +976,11 @@ namespace {
                         if (processDetails.fEXEPath and processDetails.fEXEPath->EndsWith (L" (deleted)")) {
                             processDetails.fEXEPath = processDetails.fEXEPath->CircularSubString (0, -10);
                         }
+
+                        if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                            processDetails.fProcessName = OptionallyReadIfFileExists_ (processDirPath + L"comm", [] (const Streams::InputStream<Byte>& in) { return TextReader (in).ReadAll ().Trim (); });
+                        }
+
                         /*
                          *      \note   In POSIX/fAllowUse_ProcFS mode Fix EXEPath/commandline for 'kernel' processes.
                          *              http://unix.stackexchange.com/questions/191594/how-can-i-determine-if-a-process-is-a-system-process
@@ -1778,11 +1788,15 @@ namespace {
                         }
                                                    };
                         if (grabStaticData) {
+                            Optional<String>    processName;
                             Optional<String>    processEXEPath;
                             Optional<pid_t>     parentProcessID;
                             Optional<String>    cmdLine;
                             Optional<String>    userName;
-                            LookupProcessPath_ (pid, hProcess,  &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
+                            LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
+                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                                processName.CopyToIf (&processInfo.fProcessName);
+                            }
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
                             parentProcessID.CopyToIf (&processInfo.fParentProcessID);
                             cmdLine.CopyToIf (&processInfo.fCommandLine);
@@ -1847,7 +1861,7 @@ namespace {
             }
             return result;
         }
-        void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
+        void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processName, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
         {
             RequireNotNull (hProcess);
             RequireNotNull (processEXEPath);
@@ -1861,6 +1875,13 @@ namespace {
                 moduleFullPath[0] = '\0';
                 if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
                     *processEXEPath =  String::FromSDKString (moduleFullPath);
+                }
+                if (processName != nullptr) {
+                    TCHAR moduleBaseName[MAX_PATH];
+                    moduleBaseName[0] = '\0';
+                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, NEltsOf(moduleBaseName)) != 0) {
+                        *processName =  String::FromSDKString (moduleBaseName);
+                    }
                 }
             }
             if (cmdLine != nullptr) {
