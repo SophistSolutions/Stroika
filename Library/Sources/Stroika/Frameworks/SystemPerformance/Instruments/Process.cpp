@@ -502,6 +502,9 @@ namespace {
         }
         ProcessMapType  capture_using_perfstat_process_t_  ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_using_perfstat_process_t_");
+#endif
             ProcessMapType  results;
 
             size_t  procCount;
@@ -620,6 +623,9 @@ namespace {
 
                 results.Add (pid, processDetails);
             }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("Finished processing procCount=%d entries, and pids2LookupStaticInfo.size = %d", procCount, pids2LookupStaticInfo.size ());
+#endif
 
             fContextStats_ = newContextStats;
 
