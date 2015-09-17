@@ -539,7 +539,8 @@ namespace {
                 pids2LookupStaticInfo.Add (pid);
                 pids2LookupCmdLine.Add (pid);
                 processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
-                processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
+                static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
+                processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) * kNumberLogicalCores_ / 1000.0;
 
                 /*
                  *  Docs from /usr/include/libperfstat.h:
