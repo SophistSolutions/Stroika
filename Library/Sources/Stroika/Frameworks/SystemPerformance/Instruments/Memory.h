@@ -53,6 +53,13 @@ namespace   Stroika {
                         /**
                          *  The amount of physical RAM which is actively being used.
                          *
+                         *  For AIX:
+                         *      perfstat_memory_total_t::real_process
+                         *      Number of pages used by process segments.
+                         *
+                         *      This is a WEAK definition for AIX, but I haven't yet found better. I cannot even find free's list of 'cached and buffers' to subtract from
+                         *      total RAM. Also no working-set-size
+                         *
                          *  From Linux:
                          *      /proc/meminfo::Active
                          *      Memory that has been used more recently and usually not
