@@ -265,19 +265,7 @@ namespace {
                 ReadMemInfoLine_ (&updateResult->fLargestAvailableVirtualChunk, String_Constant (L"VmallocChunk"), line);
                 ReadMemInfoLine_ (&updateResult->fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
                 ReadMemInfoLine_ (&SwapCached, String_Constant (L"SwapCached"), line);
-                //ReadMemInfoLine_ (&updateResult->fTotalVirtualMemory, String_Constant (L"VmallocTotal"), line);
-                //ReadMemInfoLine_ (&updateResult->fUsedVirtualMemory, String_Constant (L"VmallocUsed"), line);
             }
-#if 0
-            {
-                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
-                if (SwapCached and updateResult->fFreePhysicalMemory) {
-                    //   /proc/meminfo:: (SwapCached + (MemTotal-MemFree))
-                    updateResult->fTotalVMInUse = *SwapCached + kTotalRAM_ - *updateResult->fFreePhysicalMemory;
-                }
-                updateResult->fTotalPagefileBackedVirtualMemory = updateResult->fPagefileTotalSize.Value () + kTotalRAM_;
-            }
-#endif
         }
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
         {

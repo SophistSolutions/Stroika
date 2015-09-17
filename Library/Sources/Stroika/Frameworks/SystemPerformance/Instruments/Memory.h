@@ -116,6 +116,25 @@ namespace   Stroika {
                          *              is shared between processes. The Committed_AS is a
                          *              guesstimate of how much RAM/swap you would need
                          *              worst-case.
+                         *
+                         *  From https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
+                         *          Committed_AS:
+                         *              The amount of memory presently allocated on the system.
+                         *              The committed memory is a sum of all of the memory which
+                         *              has been allocated by processes, even if it has not been
+                         *              "used" by them as of yet. A process which malloc()'s 1G
+                         *              of memory, but only touches 300M of it will show up as
+                         *              using 1G. This 1G is memory which has been "committed" to
+                         *              by the VM and can be used at any time by the allocating
+                         *              application. With strict overcommit enabled on the system
+                         *              (mode 2 in 'vm.overcommit_memory'),allocations which would
+                         *              exceed the CommitLimit (detailed above) will not be permitted.
+                         *              This is useful if one needs to guarantee that processes will
+                         *              not fail due to lack of memory once that memory has been
+                         *              successfully allocated.
+                         *
+                         *  So in BOTH cases it represents 'total reserved VM' but in the Linux case, its a weaker
+                         *  form of reservation.
                          */
                         Optional<uint64_t>  fCommittedBytes {};
 
