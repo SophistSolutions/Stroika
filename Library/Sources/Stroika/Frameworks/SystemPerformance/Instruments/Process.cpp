@@ -24,6 +24,7 @@
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Execution/ErrNoException.h"
+#include    "../../../Foundation/Execution/Module.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/Execution/Thread.h"
@@ -677,6 +678,10 @@ namespace {
                             }
                         }
                     }
+
+                    // insanely slow, but opimizable
+                    pi.fEXEPath = Execution::GetEXEPath (pid);
+
                     updateResults.Add (pid, pi);
                 }
                 results = updateResults;
@@ -732,7 +737,7 @@ namespace {
                     continue;
                 }
                 ProcessType processDetails;
-                pid_t   pid = Characters::String2Int<int> (l[0].Trim ());
+                pid_t       pid = Characters::String2Int<int> (l[0].Trim ());
                 processDetails.fParentProcessID = Characters::String2Int<int> (l[1].Trim ());
                 {
                     String s = l[2].Trim ();
