@@ -66,6 +66,7 @@ using   namespace   Stroika::Frameworks::SystemPerformance::Instruments::Process
 
 using   Characters::String_Constant;
 using   IO::FileSystem::FileInputStream;
+using   Streams::TextReader;
 using   Time::DurationSecondsType;
 
 
@@ -1777,7 +1778,7 @@ namespace {
 #endif
 
             for (pid_t pid : GetAllProcessIDs_ ()) {
-                ProcessType     pi.fKernelProcess;
+                ProcessType     processInfo;
                 bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
