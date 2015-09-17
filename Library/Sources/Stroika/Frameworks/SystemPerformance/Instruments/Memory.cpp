@@ -164,6 +164,21 @@ namespace {
             // From /usr/include/libperfstat.h: u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
             result.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
+#if 0
+            u_longlong_t real_system;   /* number of pages used by system segments.                                   *
+                                 * This is the sum of all the used pages in segment marked for system usage.  *
+                                 * Since segment classifications are not always guaranteed to be accurate,    *
+                                 * This number is only an approximation.                                      */
+            u_longlong_t real_user;     /* number of pages used by non-system segments.                               *
+                                 * This is the sum of all pages used in segments not marked for system usage. *
+                                 * Since segment classifications are not always guaranteed to be accurate,    *
+                                 * This number is only an approximation.                                      */
+            u_longlong_t real_process;  /* number of pages used by process segments.                                  */
+#endif
+            //wag
+            result.fActivePhysicalMemory = memResults.real_process * 1024;
+
+
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
             //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
@@ -259,6 +274,7 @@ namespace {
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 ReadMemInfoLine_ (&updateResult->fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                ReadMemInfoLine_ (&updateResult->fActivePhysicalMemory, String_Constant (L"Active"), line);
                 ReadMemInfoLine_ (&updateResult->fCommitLimit, String_Constant (L"CommitLimit"), line);
                 ReadMemInfoLine_ (&updateResult->fCommittedBytes, String_Constant (L"Committed_AS"), line);
 #if 0
@@ -354,6 +370,13 @@ namespace {
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
             updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
+
+            /*
+             *  dwMemoryLoad
+             *  A number between 0 and 100 that specifies the approximate percentage of physical
+             *  memory that is in use (0 indicates no memory use and 100 indicates full memory use)
+             */
+            updateResult->fActivePhysicalMemory = statex.ullTotalPhys * statex.dwMemoryLoad / 100;
         }
 #if     qUseWMICollectionSupport_
         void    Read_WMI_ (Instruments::Memory::Info* updateResult)
@@ -430,7 +453,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
-            //{ Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalVirtualMemory), String_Constant (L"Total-Virtual-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fActivePhysicalMemory), String_Constant (L"Active-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommittedBytes), String_Constant (L"Committed-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPagefileTotalSize), String_Constant (L"Pagefile-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },

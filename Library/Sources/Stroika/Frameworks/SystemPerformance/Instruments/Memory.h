@@ -35,6 +35,7 @@ namespace   Stroika {
 
                     /**
                      *      @see https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-meminfo.html
+                     *      @see https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
                      */
                     struct  Info {
                         /**
@@ -48,6 +49,21 @@ namespace   Stroika {
                          *
                          */
                         Optional<uint64_t>  fFreePhysicalMemory {};
+
+                        /**
+                         *  The amount of physical RAM which is actively being used.
+                         *
+                         *  From Linux:
+                         *      /proc/meminfo::Active
+                         *      Memory that has been used more recently and usually not
+                         *      reclaimed unless absolutely necessary.
+                         *
+                         *      (possibly should add kernel meminfo::Buffers to this?)
+                         *
+                         *  From Windows:
+                         *      MEMORYSTATUSEX::dwMemoryLoad * MEMORYSTATUSEX::ullTotalPhys / 100
+                         */
+                        Optional<uint64_t>  fActivePhysicalMemory {};
 
                         /**
                          *     DEFINITION UNCLEAR (cross-platform):
@@ -133,7 +149,10 @@ namespace   Stroika {
                          *              not fail due to lack of memory once that memory has been
                          *              successfully allocated.
                          *
-                         *  So in BOTH cases it represents 'total reserved VM' but in the Linux case, its a weaker
+                         *  For AIX:
+                         *      RAM IN USE + PageFile INUSE
+                         *
+                         *  So in ALL cases it represents 'total reserved VM' but in the Linux case, its a weaker
                          *  form of reservation.
                          */
                         Optional<uint64_t>  fCommittedBytes {};
