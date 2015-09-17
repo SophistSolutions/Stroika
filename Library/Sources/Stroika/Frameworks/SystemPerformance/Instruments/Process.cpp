@@ -1777,7 +1777,7 @@ namespace {
 #endif
 
             for (pid_t pid : GetAllProcessIDs_ ()) {
-                ProcessType     processInfo;
+                ProcessType     pi.fKernelProcess;
                 bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
@@ -1794,7 +1794,7 @@ namespace {
                             Optional<String>    cmdLine;
                             Optional<String>    userName;
                             LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
-                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processEXEPath.IsMissing ())) {
                                 processName.CopyToIf (&processInfo.fProcessName);
                             }
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
