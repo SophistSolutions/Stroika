@@ -138,12 +138,14 @@ namespace   Stroika {
                          */
                         Optional<uint64_t>  fCommittedBytes {};
 
+#if 0
                         /**
                          *      The largest contiguous block of available virtual memory (in bytes).
                          *
                          *      /proc/meminfo::VMallocChunk
                          */
                         Optional<uint64_t>  fLargestAvailableVirtualChunk {};
+#endif
 
                         /**
                          *      Total size of all loaded swapfiles (or on windows pagefiles).
