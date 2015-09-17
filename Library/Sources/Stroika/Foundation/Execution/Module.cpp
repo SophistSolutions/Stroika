@@ -171,40 +171,11 @@ namespace {
         }
         return SDKString ();
     }
-    SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
+    SDKString   FindFSForMajorMinorDev_LowLevel_ (int majorDev, int minorDev)
     {
-        /*
-         *  What a PITA!
-         *      http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
-         *
-         *  This is INSANELY slow and kludgey. If we need to support this, we will need to find a better way.
-         *  We can code all this direclty in C++, without popen, but with a bit of work.
-         *      --
-         *
-         *  NOTE - PART of this I think I can do better/faster with stat!!!
-         */
-        ino_t   inode {};
-        {
-            char buf[1024];
-            snprintf (buf, NEltsOf (buf), "ls -i /proc/%d/object/a.out | cut -f 1 -d \" \"", pid);
-            SDKString   inodeStr = myProcessRunnerFirstLine_ (buf);
-            inode   =   strtoll (inodeStr.c_str (), nullptr, 10);
-        }
-        int majorDev { -1};
-        int minorDev { -1};
-        {
-            char buf[1024];
-            snprintf (buf, NEltsOf (buf), "ls -li /proc/%d/object/ | egrep \"%lld$\"", pid, static_cast<long long> (inode));
-            SDKString deviceStr = myProcessRunnerFirstLine_ (buf);
-            int     beforeMajorIdx   =  deviceStr.find ('.');
-            int     beforeMinorIdx   =  deviceStr.find ('.', beforeMajorIdx + 1);
-            if (beforeMajorIdx != string::npos and beforeMinorIdx != string::npos) {
-                majorDev   =   strtoll (deviceStr.c_str () + beforeMajorIdx + 1, nullptr, 10);
-                minorDev   =   strtoll (deviceStr.c_str () + beforeMinorIdx + 1, nullptr, 10);
-            }
-        }
         string  fsBlockName;
         if (majorDev != -1 and minorDev != -1) {
+            // ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev
             char buf[1024];
             snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
             SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
@@ -223,7 +194,86 @@ namespace {
                 fsName = devfsline.substr (beforeFSName + 1);
             }
         }
-        string  exeName;
+        return fsName;
+    }
+    SDKString   FindFSForMajorMinorDev_WithCaching_ (int majorDev, int minorDev)
+    {
+        const   Time::DurationSecondsType   kTimeValidFor_      =   60 * 60.0;   // no good way to parameterize
+        using   KEY = pair<int, int>;
+        static  Synchronized<Cache::CallerStalenessCache<KEY, SDKString>>   sCache_;
+        Time::DurationSecondsType       noOlderThan = Time::GetTickCount () - kTimeValidFor_;
+        return sCache_->Lookup (KEY (majorDev, minorDev), noOlderThan, [noOlderThan, majorDev, minorDev] () -> SDKString {
+            // must find better time/way todo this
+            sCache_->ClearOlderThan (noOlderThan);
+            return FindFSForMajorMinorDev_LowLevel_ (majorDev, minorDev);
+        });
+    }
+    SDKString   AIX_GET_EXE_PATH_ (pid_t pid)
+    {
+        /*
+         *  What a PITA!
+         *      http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
+         *
+         *  This is INSANELY slow and kludgey. If we need to support this, we will need to find a better way.
+         *  We can code all this direclty in C++, without popen, but with a bit of work.
+         *      --
+         *
+         *  NOTE - PART of this I think I can do better/faster with stat!!!
+         */
+        ino_t   inode {};
+        {
+            struct  stat    s;
+            char buf[1024];
+            snprintf (buf, NEltsOf (buf), "/proc/%d/object/a.out", pid);
+            if (::stat (buf, &s) == 0) {
+                inode = s.st_ino;
+            }
+        }
+        if (inode == 0) {
+            return SDKString ();
+        }
+        int majorDev { -1 };
+        int minorDev { -1 };
+        {
+            // @todo - can we simplify this and look at st_dev of the file???
+            // ls -li /proc/%d/object/ | egrep \"%lld$\""
+            char procObjectDir[1024];
+            snprintf (procObjectDir, NEltsOf (procObjectDir), "/proc/%d/object/", pid);
+            DIR*       dirIt    { ::opendir (procObjectDir) };
+            if (dirIt != nullptr) {
+                struct CLEANUP_ {
+                    DIR*       fDirIt_;
+                    CLEANUP_ (DIR* d) : fDirIt_ (d) {}
+                    ~CLEANUP_ ()
+                    {
+                        if (fDirIt_ != nullptr) {
+                            ::closedir (fDirIt_);
+                        }
+                    }
+                };
+                CLEANUP_ c { dirIt };
+                char    endsWithBuffer[1024];
+                endsWithBuffer[0] = '\0';
+                (void)::snprintf (endsWithBuffer, NEltsOf (endsWithBuffer), ".%lld", static_cast<long long> (inode));
+                size_t  endsWithBufferLen = ::strlen (endsWithBuffer);
+                for (dirent* cur = ::readdir (dirIt); cur != nullptr; cur = ::readdir (dirIt)) {
+                    size_t  l   =   ::strlen (cur->d_name);
+                    if (l > endsWithBufferLen) {
+                        if (strcmp (cur->d_name + l - endsWithBufferLen, endsWithBuffer) == 0) {
+                            string  tmp { cur->d_name };
+                            int     beforeMajorIdx   =  tmp.find ('.');
+                            int     beforeMinorIdx   =  tmp.find ('.', beforeMajorIdx + 1);
+                            if (beforeMajorIdx != string::npos and beforeMinorIdx != string::npos) {
+                                majorDev   =   ::strtoll (tmp.c_str () + beforeMajorIdx + 1, nullptr, 10);
+                                minorDev   =   ::strtoll (tmp.c_str () + beforeMinorIdx + 1, nullptr, 10);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        SDKString   fsName  =   FindFSForMajorMinorDev_WithCaching_ (majorDev, minorDev);
+        string      exeName;
         if (not fsName.empty ()) {
             exeName = FindPath2Inode_ (fsName + "/", inode);
         }
@@ -289,7 +339,7 @@ String Execution::GetEXEPath (pid_t processID)
     ssize_t n;
     char    linkNameBuf[1024];
     (void)::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
-    while ( (n = readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
+    while ( (n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
