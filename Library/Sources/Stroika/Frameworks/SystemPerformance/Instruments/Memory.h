@@ -152,30 +152,6 @@ namespace   Stroika {
                          */
                         Optional<uint64_t>  fPagefileTotalSize {};
 
-#if 0
-                        /**
-                         *  Windows:
-                         *      Same as @see fCommittedBytes
-                         *
-                         *  UNIX:
-                         *      /proc/meminfo:: (SwapCached + (MemTotal-MemFree))
-                         **         ((RETHINK - WAG FOR NOW))
-                         */
-                        Optional<uint64_t>  fTotalVMInUse {};
-
-                        /**
-                         *      From http://en.wikipedia.org/wiki/Commit_charge
-                         *          Total is the amount of pagefile-backed virtual address space in use, i.e., the
-                         *          current commit charge. This is composed of main memory (RAM) and disk (pagefiles).
-                         *          The corresponding performance counter is called "Committed Bytes".
-                         *
-                         *  On Windows this is "CommitLimit"
-                         *
-                         *  On Linux this is TotalRAM + TotalSwapSize
-                         */
-                        Optional<uint64_t>  fTotalPagefileBackedVirtualMemory {};
-#endif
-
                         /**
                          *  @see http://en.wikipedia.org/wiki/Page_fault
                          *  @see http://www.linuxinsight.com/proc_vmstat.html
