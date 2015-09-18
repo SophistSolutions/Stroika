@@ -150,6 +150,12 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fWorkingSetSize;
 
                         /**
+                         *  @todo support in Windows AND UNIX - WIndows must use WMI - I think - and
+                         *  @todo DOCUMENT
+                         */
+                        Optional<MemorySizeType>    fPrivateWorkingSetSize;
+
+                        /**
                          *      Percent of a single CPU time used (summed over user / system) and average over this
                          *      collection interval.
                          */

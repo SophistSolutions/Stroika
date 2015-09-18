@@ -268,6 +268,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPageFaultCount), String_Constant (L"Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fMajorPageFaultCount), String_Constant (L"Major-Page-Fault-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fWorkingSetSize), String_Constant (L"Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPrivateWorkingSetSize), String_Constant (L"Private-Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fTotalCPUTimeEverUsed), String_Constant (L"Total-CPUTime-Ever-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fPercentCPUTime), String_Constant (L"Percent-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
