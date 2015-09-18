@@ -394,7 +394,7 @@ namespace {
         {
             Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromPS_");
             using   Execution::ProcessRunner;
-            Mapping<pid_t, String>   result;
+            Mapping<pid_t, String>   results;
             if (not pids.empty ()) {
                 /*
                  *  EXAMPLE OUTPUT:
@@ -430,10 +430,10 @@ namespace {
                     pid_t   pid = Characters::String2Int<int> (i.SubString (0, iSpace));
                     String  cmdLine = i.SubString (iSpace + 1).RTrim ();
                     Assert (pids.Contains (pid));
-                    result.Add (pid, cmdLine);
+                    results.Add (pid, cmdLine);
                 }
             }
-            return result;
+            return results;
         }
         struct  ProcFSInfo_ {
             string                              fCmdLineSdkCharset;
@@ -445,7 +445,7 @@ namespace {
         Mapping<pid_t, ProcFSInfo_>   capture_Pid2ProcFSInfoMap_ (const Iterable<pid_t>& pids)
         {
             Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_Pid2ProcFSInfoMap_");
-            Mapping<pid_t, ProcFSInfo_>   result;
+            Mapping<pid_t, ProcFSInfo_>   results;
             for (pid_t pid : pids) {
                 // /usr/include/sys/procfs.h
                 // http://www.systemscanaix.com/blog/proc-filesystem/
@@ -502,9 +502,9 @@ namespace {
                 string  cmdLineArgs = psInfo.pr_psargs;
 
                 // @todo when we fix DateTime to be hgiher precision, we could use that higher precision for startedAt!
-                result.Add (pid, ProcFSInfo_ {cmdLineArgs, static_cast<pid_t> (psInfo.pr_ppid), isKernelThread, cvtStatusCharToStatus_ (psInfo.pr_lwp.pr_sname), DateTime (static_cast<time_t> (psInfo.pr_start.tv_sec)) });
+                results.Add (pid, ProcFSInfo_ {cmdLineArgs, static_cast<pid_t> (psInfo.pr_ppid), isKernelThread, cvtStatusCharToStatus_ (psInfo.pr_lwp.pr_sname), DateTime (static_cast<time_t> (psInfo.pr_start.tv_sec)) });
             }
-            return result;
+            return results;
         }
         ProcessMapType  capture_using_perfstat_process_t_  ()
         {
@@ -538,7 +538,10 @@ namespace {
             Set<pid_t>  pids2LookupStaticInfo;  // for now grab all but soon be smarter
             for (size_t i = 0; i < procCount; ++i) {
                 pid_t           pid = procBuf[i].pid;
-                pids2LookupStaticInfo.Add (pid);
+                bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                if (grabStaticData) {
+                    pids2LookupStaticInfo.Add (pid);
+                }
             }
 
             Mapping<pid_t, ProcFSInfo_>   procFSInfo    =   capture_Pid2ProcFSInfoMap_ (pids2LookupStaticInfo);
@@ -548,8 +551,8 @@ namespace {
                 ProcessType     processDetails;
                 pid_t           pid = procBuf[i].pid;
 
-                /// Static Info -  cache
-                {
+                bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
+                if (grabStaticData) {
                     Optional<ProcFSInfo_>   opProcFSInfo    =   procFSInfo.Lookup (pid);
                     SDKString               commandLineSDKCharSet;
                     if (opProcFSInfo) {
@@ -686,13 +689,16 @@ namespace {
                 results.Add (p.fKey, p2Update);
             }
 
+            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+                fStaticSuppressedAgain = Set<pid_t> (result.Keys ());
+            }
             return results;
         }
         // consider using this as a backup if /procfs/ not present...
         ProcessMapType  capture_using_ps_ ()
         {
             Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::capture_using_ps_");
-            ProcessMapType  result;
+            ProcessMapType  results;
             using   Execution::ProcessRunner;
             // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
 
@@ -801,9 +807,9 @@ namespace {
                 if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
                     processDetails.fCommandLine = cmdLine;
                 }
-                result.Add (pid, processDetails);
+                results.Add (pid, processDetails);
             }
-            return result;
+            return results;
         }
         Optional<ProcessType::RunStatus>    cvtStatusCharToStatus_ (char state)
         {
