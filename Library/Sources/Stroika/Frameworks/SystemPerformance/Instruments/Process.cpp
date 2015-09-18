@@ -979,7 +979,7 @@ namespace {
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_ (processDirPath + L"comm", [] (const Streams::InputStream<Byte>& in) -> String { return TextReader (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [] (const Streams::InputStream<Byte>& in) { return TextReader (in).ReadAll ().Trim (); });
                         }
 
                         /*
