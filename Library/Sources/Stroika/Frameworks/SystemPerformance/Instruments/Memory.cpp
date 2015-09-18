@@ -87,6 +87,22 @@ namespace {
 
 
 
+/*
+ ********************************************************************************
+ ****************** SystemPerformance::Instrument::Memory::Info *****************
+ ********************************************************************************
+ */
+Optional<uint64_t>  Info::MemoryAvailable () const
+{
+    return fFreePhysicalMemory + fActivePhysicalMemory;
+}
+
+
+
+
+
+
+
 
 
 namespace {
@@ -333,7 +349,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
-        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_ } };
+        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_, kFreeMem_ } };
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -379,7 +395,7 @@ namespace {
             memset (&statex, 0, sizeof (statex));
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
-            updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
+            //updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
             *totalRAM = statex.ullTotalPhys;
 
             /*
@@ -396,6 +412,7 @@ namespace {
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fCommittedBytes);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fCommitLimit);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fMajorPageFaultsPerSecond);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_).CopyToIf (&updateResult->fFreePhysicalMemory);
             if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fActivePhysicalMemory) {
                     // Active + Inactive + Free == TotalRAM

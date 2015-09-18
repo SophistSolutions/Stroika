@@ -237,6 +237,11 @@ namespace   Stroika {
                          *  This is not computed in the first call to the intstrument, but based on successive calls
                          */
                         Optional<double>    fMinorPageFaultsPerSecond {};
+
+
+                        /**
+                         */
+                        nonvirtual  Optional<uint64_t>  MemoryAvailable () const;
                     };
 
 
