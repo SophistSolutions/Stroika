@@ -436,7 +436,7 @@ namespace {
             return results;
         }
         struct  ProcFSInfo_ {
-            string                              fCmdLineSdkCharset;
+            SDKString                           fCmdLineSdkStr;
             pid_t                               fParentProcessID;
             bool                                fIsKernelThread;
             Optional<ProcessType::RunStatus>    fRunStatus;
@@ -554,13 +554,13 @@ namespace {
                 bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 if (grabStaticData) {
                     Optional<ProcFSInfo_>   opProcFSInfo    =   procFSInfo.Lookup (pid);
-                    SDKString               commandLineSDKCharSet;
+                    SDKString               commandLineSDKStr;  // keep encoded this way so we can check length safely/losslessly to detect truncation
                     if (opProcFSInfo) {
                         processDetails.fKernelProcess = opProcFSInfo->fIsKernelThread;
                         processDetails.fParentProcessID = opProcFSInfo->fParentProcessID;
                         processDetails.fRunStatus = opProcFSInfo->fRunStatus;
                         processDetails.fProcessStartedAt = opProcFSInfo->fProcessStartedAt;
-                        commandLineSDKCharSet = opProcFSInfo->fCmdLineSdkCharset;
+                        commandLineSDKStr = opProcFSInfo->fCmdLineSdkStr;
                     }
 
                     // insanely slow, but opimizable
@@ -574,14 +574,15 @@ namespace {
                         }
                     }
 
-                    if (not commandLineSDKCharSet.empty ()) {
+                    if (not commandLineSDKStr.empty ()) {
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
                             if (commandLineSDKCharSet.length () == PRARGSZ - 1) {
-                                // means the string COULD have been truncated. No way to know
+                                // means the string COULD have been truncated (psinfo keeps short copy). No way to know.
+                                // So refetch from 'ps' (or later by direct /proc/PID/as digging)
                                 pidsCmdLineExtraXFer.Add (pid);
                             }
                             else {
-                                processDetails.fCommandLine = String::FromSDKString (commandLineSDKCharSet);
+                                processDetails.fCommandLine = String::FromSDKString (commandLineSDKStr);
                             }
                         }
                     }
@@ -591,9 +592,13 @@ namespace {
                     }
                 }
 
-
-                static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
-                processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) * kNumberLogicalCores_ / 1000.0;
+                /*
+                 *  Docs not super clear if ucpu_time/scpu_time refer to a time on a single core or averaged over
+                 *  all cores, but most UNIX impls do of a single core and empirically with CPUBurner that seems to be
+                 *  what we do here.
+                 *      --LGP 2015-09-18
+                 */
+                processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
 
                 /*
                  *  Docs from /usr/include/libperfstat.h:
@@ -668,9 +673,8 @@ namespace {
                     //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
                 }
 
-                if (processDetails.fTotalCPUTimeEverUsed or processDetails.fCombinedIOReadBytes or processDetails.fCombinedIOWriteBytes) {
-                    newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
-                }
+                // So next time we can compute 'diffs'
+                newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
 
                 results.Add (pid, processDetails);
             }
@@ -680,7 +684,7 @@ namespace {
 
             fContextStats_ = newContextStats;
 
-            // This does a better job capturing command lines when they are long. We COULD do this by opening
+            // 'ps' does a better job capturing command lines when they are long. We COULD do this by opening
             // /proc/PID/as and using procinfo ptrs into that address space. Maybe better, but this is simpler and
             // effective for now
             for (KeyValuePair<pid_t, String> p : capture_pid2CmdLineMapFromPS_ (pidsCmdLineExtraXFer)) {
