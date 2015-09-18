@@ -647,6 +647,62 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ************************************ operator+ *********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>    operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            {
+                Optional<T, TRAITS>  result  { lhs };
+                result += rhs;
+                return result;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************************ operator- *********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>    operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            {
+                Optional<T, TRAITS>  result  { lhs };
+                result -= rhs;
+                return result;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************************ operator* *********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>    operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            {
+                Optional<T, TRAITS>  result  { lhs };
+                result *= rhs;
+                return result;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************************ operator/ *********************************
+             ********************************************************************************
+             */
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>    operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs)
+            {
+                Optional<T, TRAITS>  result  { lhs };
+                result /= rhs;
+                return result;
+            }
+
+
         }
     }
 }

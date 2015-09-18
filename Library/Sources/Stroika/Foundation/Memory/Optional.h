@@ -567,6 +567,29 @@ namespace   Stroika {
             template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
             bool    operator> (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
+            /**
+             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             */
+            template    <typename T, typename TRAITS>
+            Optional<T, TRAITS>    operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+
+            /**
+             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             */
+            template    <typename T, typename TRAITS>
+            Optional<T, TRAITS>    operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+
+            /**
+             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             */
+            template    <typename T, typename TRAITS>
+            Optional<T, TRAITS>    operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+
+            /**
+             *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+             */
+            template    <typename T, typename TRAITS>
+            Optional<T, TRAITS>    operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
 
             /**
              *  \brief Optional_Indirect_Storage<T> is a type alias for Optional<> but using Optional_Traits_Blockallocated_Indirect_Storage for use in forward declared (no size known) types
