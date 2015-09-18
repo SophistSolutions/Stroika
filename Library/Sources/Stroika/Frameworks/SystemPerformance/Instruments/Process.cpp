@@ -690,7 +690,7 @@ namespace {
             }
 
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                fStaticSuppressedAgain = Set<pid_t> (result.Keys ());
+                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
             }
             return results;
         }
