@@ -161,7 +161,7 @@ namespace {
             perfstat_cpu_total_t    tmp;
             Execution::ThrowErrNoIfNegative (::perfstat_cpu_total (nullptr, &tmp, sizeof(tmp), 1));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("tmp.user=%lld, tmp.sys=%lld, tmp.wait=%lld", tmp.user, tmp.sys, tmp.wait);
+            DbgTrace ("tmp.user=%lld, tmp.sys=%lld, tmp.idle=%lld, tmp.wait=%lld", tmp.user, tmp.sys, tmp.idle, tmp.wait);
 #endif
 
             CPUUsageTimes_  result {};
@@ -184,7 +184,12 @@ namespace {
                     1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total)
                 };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fPrev->user=%lld, fPrev->sys=%lld, fPrev->wait=%lld", fPrev->user, fPrev->sys, fPrev->wait);
+                DbgTrace ("fPrev.user=%lld, fPrev.sys=%lld, fPrev.idle=%lld, fPrev.wait=%lld", fPrev->user, fPrev->sys, fPrev->idle, fPrev->wait);
+                DbgTrace ("total = %lld", total);
+                DbgTrace ("100.0 * (double) DELTA(user) /  total = %f", (100.0 * (double) (tmp.user - fPrev->user) / total));
+                DbgTrace ("100.0 * (double) DELTA(sys) /  total = %f", (100.0 * (double) (tmp.sys - fPrev->sys) / total));
+                DbgTrace ("100.0 * (double) DELTA(idle) /  total = %f", (100.0 * (double) (tmp.idle - fPrev->idle) / total));
+                DbgTrace ("100.0 * (double) DELTA(wait) /  total = %f", (100.0 * (double) (tmp.wait - fPrev->wait) / total));
 #endif
             }
             fPrev = tmp;
