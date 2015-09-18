@@ -77,6 +77,7 @@ namespace {
     const   String_Constant     kCommittedBytes_    { L"Committed Bytes" };
     const   String_Constant     kCommitLimit_       { L"Commit Limit" };
     const   String_Constant     kPagesPerSec_       { L"Pages/sec" };           // hard page faults/sec
+    const   String_Constant     kFreeMem_           { L"Free & Zero Page List Bytes" };
 }
 #endif
 
@@ -176,8 +177,9 @@ namespace {
             u_longlong_t real_process;  /* number of pages used by process segments.                                  */
 #endif
             //wag
-            result.fActivePhysicalMemory = memResults.real_process * 1024;
-
+            // real_process????
+            result.fActivePhysicalMemory = memResults.real_pinned * 1024;
+            result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 1024;;
 
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
@@ -275,6 +277,7 @@ namespace {
 #endif
                 ReadMemInfoLine_ (&updateResult->fFreePhysicalMemory, String_Constant (L"MemFree"), line);
                 ReadMemInfoLine_ (&updateResult->fActivePhysicalMemory, String_Constant (L"Active"), line);
+                ReadMemInfoLine_ (&updateResult->fInactivePhysicalMemory, String_Constant (L"Inactive"), line);
                 ReadMemInfoLine_ (&updateResult->fCommitLimit, String_Constant (L"CommitLimit"), line);
                 ReadMemInfoLine_ (&updateResult->fCommittedBytes, String_Constant (L"Committed_AS"), line);
 #if 0
@@ -336,6 +339,11 @@ namespace {
             : CapturerWithContext_COMMON_ (options)
         {
             capture_ ();    // to pre-seed context
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            for (String i : fMemoryWMICollector_.GetAvailableCounters ()) {
+                DbgTrace (L"Memory:Countername: %s", i.c_str ());
+            }
+#endif
         }
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : CapturerWithContext_COMMON_ (from)
@@ -351,9 +359,10 @@ namespace {
         Instruments::Memory::Info capture_ ()
         {
             Instruments::Memory::Info   result;
-            Read_GlobalMemoryStatusEx_(&result);
+            uint64_t                    totalRAM {};
+            Read_GlobalMemoryStatusEx_(&result, &totalRAM);
 #if     qUseWMICollectionSupport_
-            Read_WMI_ (&result);
+            Read_WMI_ (&result, totalRAM);
 #endif
             NoteCompletedCapture_ ();
             return result;
@@ -363,13 +372,15 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult)
+        void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult, uint64_t* totalRAM)
         {
+            RequireNotNull (totalRAM);
             MEMORYSTATUSEX statex;
             memset (&statex, 0, sizeof (statex));
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
             updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
+            *totalRAM = statex.ullTotalPhys;
 
             /*
              *  dwMemoryLoad
@@ -379,16 +390,18 @@ namespace {
             updateResult->fActivePhysicalMemory = statex.ullTotalPhys * statex.dwMemoryLoad / 100;
         }
 #if     qUseWMICollectionSupport_
-        void    Read_WMI_ (Instruments::Memory::Info* updateResult)
+        void    Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
             fMemoryWMICollector_.Collect ();
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fCommittedBytes);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fCommitLimit);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fMajorPageFaultsPerSecond);
-#if 0
-            updateResult->fTotalVMInUse = updateResult->fCommittedBytes;
-            updateResult->fTotalPagefileBackedVirtualMemory = updateResult->fCommitLimit;
-#endif
+            if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
+                if (updateResult->fActivePhysicalMemory) {
+                    // Active + Inactive + Free == TotalRAM
+                    updateResult->fInactivePhysicalMemory = totalRAM - *updateResult->fActivePhysicalMemory - static_cast<uint64_t> (*freeMem);
+                }
+            }
         }
 #endif
     };
@@ -454,6 +467,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fActivePhysicalMemory), String_Constant (L"Active-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInactivePhysicalMemory), String_Constant (L"Inactive-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommittedBytes), String_Constant (L"Committed-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPagefileTotalSize), String_Constant (L"Pagefile-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },

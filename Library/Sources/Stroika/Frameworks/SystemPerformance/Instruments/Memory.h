@@ -73,6 +73,27 @@ namespace   Stroika {
                         Optional<uint64_t>  fActivePhysicalMemory {};
 
                         /**
+                         *  The amount of physical RAM which is in use, but not actively. Windows calls this 'Standby'
+                         *
+                         *  For AIX:
+                         *      @todo - WRONG
+                         *      perfstat_memory_total_t::real_process
+                         *      Number of pages used by process segments.
+                         *
+                         *      This is a WEAK definition for AIX, but I haven't yet found better. I cannot even find free's list of 'cached and buffers' to subtract from
+                         *      total RAM. Also no working-set-size
+                         *
+                         *  From Linux:
+                         *      /proc/meminfo::Inactive
+                         *      Inactive: Memory which has been less recently used.  It is more
+                         *      eligible to be reclaimed for other purposes.
+                         *
+                         *  From Windows:
+                         *      @todo Total RAM - ActiveMemory(MEMORYSTATUSEX::dwMemoryLoad * MEMORYSTATUSEX::ullTotalPhys / 100) - Free-Memory(how)
+                         */
+                        Optional<uint64_t>  fInactivePhysicalMemory {};
+
+                        /**
                          *     DEFINITION UNCLEAR (cross-platform):
                          *          But roughtly - this is the number of bytes of pagefile allocated + number of bytes of physical memory.
                          *
