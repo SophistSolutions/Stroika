@@ -218,7 +218,7 @@ namespace {
             return FindFSForMajorMinorDev_LowLevel_ (majorDev, minorDev);
         });
     }
-    SDKString   AIX_GET_EXE_PATH_ (pid_t pid, const SDKString* hint)
+    SDKString   AIX_GET_EXE_PATH_ (pid_t pid, const String* hint)
     {
         /*
          *  What a PITA!
@@ -282,32 +282,23 @@ namespace {
                 }
             }
         }
-        static  Synchronized<Cache::LRUCache<SDKString, SDKString, Cache::LRUCacheSupport::DefaultTraits<SDKString, 7>>>   sHintCache_ (256);
+        static  Synchronized<Cache::LRUCache<String, SDKString, Cache::LRUCacheSupport::DefaultTraits<String, 7>>>   sHintCache_ (256);
         if (hint != nullptr) {
-#if 1
             using   Memory::Optional;
             if (Optional<SDKString> o   =   sHintCache_->Lookup (*hint)) {
                 struct  stat    hintStats;
                 if (::stat (o->c_str (), &hintStats) == 0) {
                     if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("CacheHit for hint %s (maps to %s)", hint->c_str (), o->c_str ());
+                        DbgTrace (L"CacheHit for hint %s (maps to %s)", hint->c_str (), String::FromSDKString (*o).c_str ());
 #endif
                         return *o;
                     }
                 }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("CacheMiss for hint %s", hint->c_str ());
+                DbgTrace (L"CacheMiss for hint %s", hint->c_str ());
 #endif
             }
-#else
-            struct  stat    hintStats;
-            if (::stat (hint->c_str (), &hintStats) == 0) {
-                if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
-                    return *hint;
-                }
-            }
-#endif
         }
         SDKString   fsName  =   FindFSForMajorMinorDev_WithCaching_ (majorDev, minorDev);
         string      exeName;
@@ -402,8 +393,8 @@ String Execution::GetEXEPath (pid_t processID)
 }
 
 #if     qPlatform_AIX
-SDKString   Execution::GetEXEPathWithHint (pid_t processID, const SDKString& hint)
+String   Execution::GetEXEPathWithHint (pid_t processID, const String& associationHint)
 {
-    return AIX_GET_EXE_PATH_ (processID, &hint);
+    return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, &associationHint));
 }
 #endif

@@ -563,12 +563,14 @@ namespace {
                         commandLineSDKStr = opProcFSInfo->fCmdLineSdkStr;
                     }
 
+                    String  procName    { String::FromSDKString (procBuf[i].proc_name) };
+
                     // insanely slow, but opimizable
                     if (processDetails.fKernelProcess.Value ()) {
                         Assert (processDetails.fEXEPath.IsMissing ());
                     }
                     else {
-                        String tmp = String::FromSDKString (Execution::GetEXEPathWithHint (pid, procBuf[i].proc_name));
+                        String tmp = Execution::GetEXEPathWithHint (pid, procName);
                         if (not tmp.empty ()) {
                             processDetails.fEXEPath = tmp;
                         }
@@ -588,7 +590,7 @@ namespace {
                     }
 
                     if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
-                        processDetails.fProcessName = String::FromNarrowSDKString (procBuf[i].proc_name);
+                        processDetails.fProcessName = procName;
                     }
                 }
 
