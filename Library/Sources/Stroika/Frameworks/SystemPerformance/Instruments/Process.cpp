@@ -681,7 +681,9 @@ namespace {
             // /proc/PID/as and using procinfo ptrs into that address space. Maybe better, but this is simpler and
             // effective for now
             for (KeyValuePair<pid_t, String> p : capture_pid2CmdLineMapFromPS_ (pidsCmdLineExtraXFer)) {
-                // @todo - UPDATE
+                ProcessType p2Update    =   *results.Lookup (p.fKey);   // must be found or we would not have added it to pidsCmdLineExtraXFer
+                p2Update.fCommandLine = p.fValue;
+                results.Add (p.fKey, p2Update);
             }
 
             return results;
