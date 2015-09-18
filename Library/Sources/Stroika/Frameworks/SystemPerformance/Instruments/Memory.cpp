@@ -194,8 +194,8 @@ namespace {
 #endif
             //wag
             // real_process????
-            result.fActivePhysicalMemory = memResults.real_pinned * 1024;
-            result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 1024;;
+            result.fActivePhysicalMemory = memResults.real_pinned * 4 * 1024;
+            result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;;
 
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
