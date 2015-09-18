@@ -578,7 +578,7 @@ namespace {
 
                     if (not commandLineSDKStr.empty ()) {
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
-                            if (commandLineSDKCharSet.length () == PRARGSZ - 1) {
+                            if (commandLineSDKStr.length () == PRARGSZ - 1) {
                                 // means the string COULD have been truncated (psinfo keeps short copy). No way to know.
                                 // So refetch from 'ps' (or later by direct /proc/PID/as digging)
                                 pidsCmdLineExtraXFer.Add (pid);
