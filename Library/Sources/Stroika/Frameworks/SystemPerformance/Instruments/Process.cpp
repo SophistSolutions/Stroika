@@ -435,7 +435,7 @@ namespace {
             return result;
         }
         struct  ProcFSInfo_ {
-            String                              fCmdLine;
+            string                              fCmdLineSdkCharset;
             pid_t                               fParentProcessID;
             bool                                fIsKernelThread;
             Optional<ProcessType::RunStatus>    fRunStatus;
@@ -446,10 +446,12 @@ namespace {
             Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_Pid2ProcFSInfoMap_");
             Mapping<pid_t, ProcFSInfo_>   result;
             for (pid_t pid : pids) {
+                // /usr/include/sys/procfs.h
+                // http://www.systemscanaix.com/blog/proc-filesystem/
                 psinfo  psInfo;
                 {
                     char    filename[1024];
-                    snprintf(filename, NEltsOf (filename), "/proc/%d/psinfo", pid);
+                    (void)::snprintf (filename, NEltsOf (filename), "/proc/%d/psinfo", pid);
                     int fd = ::open (filename, O_RDONLY);
                     if (fd < 0) {
                         DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
@@ -471,7 +473,8 @@ namespace {
                 if (psInfo.pr_ppid == 0 or psInfo.pr_ppid == 1) {
                     pstatus  psStatus;
                     char    filename[1024];
-                    snprintf(filename, NEltsOf (filename), "/proc/%d/status", pid);
+                    filename[0] = '\0';
+                    (void)::snprintf (filename, NEltsOf (filename), "/proc/%d/status", pid);
                     int fd = ::open (filename, O_RDONLY);
                     // Dont skip if we cannot open this file, because we may need to be root to open it, and the flag we get is not that interesting...
                     if (fd < 0) {
@@ -495,7 +498,7 @@ namespace {
 
                 psInfo.pr_psargs[NEltsOf(psInfo.pr_psargs) - 1] = '\0'; // make sure even if data from kernel bad, no crash
                 // See http://www-01.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.files/doc/aixfiles/proc.htm%23files-proc
-                String  cmdLineArgs = String::FromNarrowSDKString (psInfo.pr_psargs);
+                string  cmdLineArgs = psInfo.pr_psargs;
 
                 // @todo when we fix DateTime to be hgiher precision, we could use that higher precision for startedAt!
                 result.Add (pid, ProcFSInfo_ {cmdLineArgs, static_cast<pid_t> (psInfo.pr_ppid), isKernelThread, cvtStatusCharToStatus_ (psInfo.pr_lwp.pr_sname), DateTime (static_cast<time_t> (psInfo.pr_start.tv_sec)) });
@@ -519,9 +522,9 @@ namespace {
             Memory::SmallStackBuffer<perfstat_process_t> procBuf (procCount);
 
             perfstat_id_t id;
-            strcpy(id.name, "");
+            id.name[0] = '\0';
             {
-                int rc = ::perfstat_process (&id, procBuf.begin () , sizeof(perfstat_process_t), procCount);
+                int rc = ::perfstat_process (&id, procBuf.begin () , sizeof (perfstat_process_t), procCount);
                 Execution::ThrowErrNoIfNegative (rc);
                 Assert (rc <= procCount);   // cannot return more than we allocated space for
                 procCount = rc;
@@ -532,15 +535,59 @@ namespace {
             Mapping<pid_t, PerfStats_>  newContextStats;
 
             Set<pid_t>  pids2LookupStaticInfo;  // for now grab all but soon be smarter
-            Set<pid_t>  pids2LookupCmdLine;
             for (size_t i = 0; i < procCount; ++i) {
-                ProcessType processDetails;
-
-                pid_t   pid = procBuf[i].pid;
-
+                pid_t           pid = procBuf[i].pid;
                 pids2LookupStaticInfo.Add (pid);
-                pids2LookupCmdLine.Add (pid);
-                //processDetails.fEXEPath = String::FromNarrowSDKString (procBuf[i].proc_name);    // ok default
+            }
+
+            Mapping<pid_t, ProcFSInfo_>   procFSInfo    =   capture_Pid2ProcFSInfoMap_ (pids2LookupStaticInfo);
+
+            Set<pid_t>  pidsCmdLineExtraXFer;
+            for (size_t i = 0; i < procCount; ++i) {
+                ProcessType     processDetails;
+                pid_t           pid = procBuf[i].pid;
+
+                /// Static Info -  cache
+                {
+                    Optional<ProcFSInfo_>   opProcFSInfo    =   procFSInfo.Lookup (pid);
+                    SDKString               commandLineSDKCharSet;
+                    if (opProcFSInfo) {
+                        processDetails.fKernelProcess = opProcFSInfo->fIsKernelThread;
+                        processDetails.fParentProcessID = opProcFSInfo->fParentProcessID;
+                        processDetails.fRunStatus = opProcFSInfo->fRunStatus;
+                        processDetails.fProcessStartedAt = opProcFSInfo->fProcessStartedAt;
+                        commandLineSDKCharSet = opProcFSInfo->fCmdLineSdkCharset;
+                    }
+
+                    // insanely slow, but opimizable
+                    if (processDetails.fKernelProcess.Value ()) {
+                        Assert (processDetails.fEXEPath.IsMissing ());
+                    }
+                    else {
+                        String tmp = String::FromSDKString (Execution::GetEXEPathWithHint (pid, procBuf[i].proc_name));
+                        if (not tmp.empty ()) {
+                            processDetails.fEXEPath = tmp;
+                        }
+                    }
+
+                    if (not commandLineSDKCharSet.empty ()) {
+                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
+                            if (commandLineSDKCharSet.length () == PRARGSZ - 1) {
+                                // means the string COULD have been truncated. No way to know
+                                pidsCmdLineExtraXFer.Add (pid);
+                            }
+                            else {
+                                processDetails.fCommandLine = String::FromSDKString (commandLineSDKCharSet);
+                            }
+                        }
+                    }
+
+                    if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                        processDetails.fProcessName = String::FromNarrowSDKString (procBuf[i].proc_name);
+                    }
+                }
+
+
                 static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
                 processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) * kNumberLogicalCores_ / 1000.0;
 
@@ -621,13 +668,6 @@ namespace {
                     newContextStats.Add (pid, PerfStats_ { now, processDetails.fTotalCPUTimeEverUsed, processDetails.fCombinedIOReadBytes, processDetails.fCombinedIOWriteBytes });
                 }
 
-                // insanely slow, but opimizable
-                processDetails.fEXEPath = String::FromSDKString (Execution::GetEXEPathWithHint (pid, procBuf[i].proc_name));
-
-                if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
-                    processDetails.fProcessName = String::FromNarrowSDKString (procBuf[i].proc_name);
-                }
-
                 results.Add (pid, processDetails);
             }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -636,75 +676,11 @@ namespace {
 
             fContextStats_ = newContextStats;
 
-            Mapping<pid_t, ProcFSInfo_>   procFSInfo    =   capture_Pid2ProcFSInfoMap_ (pids2LookupStaticInfo);
-
-            // ProcFS (I THINK) is faster, but using ps for reasons I don't yet understand - appears to give a better answer for the
-            // command line. We COULD do ProcFS and then look for max-len command-lines and look them up with ps???
-            //          --LGP 2015-09-14
-            constexpr   bool    kPreferUsingProcFSOrPSForCommandLines_  { true };
-            Mapping<pid_t, String>   pid2CmdLineMap;        // could make this list just ones with 'short' command-line, but could better restrict based on need for EXE anme...
-            if (not kPreferUsingProcFSOrPSForCommandLines_) {
-                pid2CmdLineMap = capture_pid2CmdLineMapFromPS_ (pids2LookupCmdLine);
-            }
-
-            {
-                ProcessMapType  updateResults;
-                for (KeyValuePair<pid_t, ProcessType> i : results) {
-                    pid_t pid = i.fKey;
-
-                    ProcessType pi = i.fValue;
-
-                    if (auto o = procFSInfo.Lookup (i.fKey)) {
-                        pi.fKernelProcess = o->fIsKernelThread;
-                        pi.fParentProcessID = o->fParentProcessID;
-                        pi.fRunStatus = o->fRunStatus;
-                        pi.fProcessStartedAt = o->fProcessStartedAt;
-
-                        // Could do this for EXEPATH and fCommandLine
-                        //&&&&&
-                        {
-                            String cmdLine = o->fCmdLine;
-                            // if empty, assume we dont know real cmdline, cuz cannot be empty
-                            if (not cmdLine.empty ()) {
-#if 0
-                                {
-                                    // Fake but usable answer
-                                    Sequence<String>    t    =  cmdLine.Tokenize ();
-                                    if (not t.empty () and not t[0].empty () and t[0][0] == '/')
-                                    {
-                                        pi.fEXEPath = t[0];
-                                    }
-                                }
-#endif
-                                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
-                                    pi.fCommandLine = cmdLine;
-                                }
-                            }
-                        }
-                    }
-
-                    if (auto o = pid2CmdLineMap.Lookup (i.fKey)) {
-                        String cmdLine = *o;
-                        if (not cmdLine.empty ()) {
-#if 0
-                            {
-                                // Fake but usable answer
-                                Sequence<String>    t    =  cmdLine.Tokenize ();
-                                if (not t.empty () and not t[0].empty () and t[0][0] == '/')
-                                {
-                                    pi.fEXEPath = t[0];
-                                }
-                            }
-#endif
-                            if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, pi.fEXEPath.Value ())) {
-                                pi.fCommandLine = cmdLine;
-                            }
-                        }
-                    }
-
-                    updateResults.Add (pid, pi);
-                }
-                results = updateResults;
+            // This does a better job capturing command lines when they are long. We COULD do this by opening
+            // /proc/PID/as and using procinfo ptrs into that address space. Maybe better, but this is simpler and
+            // effective for now
+            for (KeyValuePair<pid_t, String> p : capture_pid2CmdLineMapFromPS_ (pidsCmdLineExtraXFer)) {
+                // @todo - UPDATE
             }
 
             return results;

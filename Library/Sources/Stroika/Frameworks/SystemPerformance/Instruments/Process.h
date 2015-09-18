@@ -256,7 +256,11 @@ namespace   Stroika {
                          */
                         Time::DurationSecondsType       fMinimumAveragingInterval       { 1.0 };
 
+                        /*
+                         * Assign nullptr to disable commandline capture.
+                         */
                         FilterFunctionType              fCaptureCommandLine             { [] (pid_t pid, const String & processPath) -> bool { return true; } };
+
                         bool                            fCaptureEnvironmentVariables    { true };
                         bool                            fCaptureCurrentWorkingDirectory { true };
                         bool                            fCaptureRoot                    { true };
