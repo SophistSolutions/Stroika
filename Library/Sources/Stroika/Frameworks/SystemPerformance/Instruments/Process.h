@@ -55,7 +55,11 @@ namespace   Stroika {
                          *  name we can retrieve.
                          */
                         Optional<String>                    fProcessName;
-                        Optional<String>                    fUserName;          // on windows, this is in the form of username@domain if a domain is present
+
+                        /*
+                         *   on windows, this is in the form of username@domain if a domain is present
+                         */
+                        Optional<String>                    fUserName;
                         Optional<String>                    fCommandLine;
                         Optional<String>                    fCurrentWorkingDirectory;
                         Optional<Mapping<String, String>>   fEnvironmentVariables;
@@ -87,8 +91,11 @@ namespace   Stroika {
                          *  This is the total VM allocated solely for the purpose of this process.
                          *  This includes code, stack space for threads etc.
                          *
-                         *  This does NOT include shared mapped memory, nor memory which is owned by loaded
-                         *  dlls/shared object files.
+                         *  @todo   DECIDE IF
+                         *              This does NOT include shared mapped memory, nor memory which is owned by loaded
+                         *              dlls/shared object files.
+                         *          SEEN CONTRADICTORY INFO.
+                         *          RATIONALIZE AND PROIVIDE BOTH (optionally)
                          *
                          *  On UNIX, this corresponds to VSZ in ps, and top.
                          */
@@ -106,7 +113,10 @@ namespace   Stroika {
                          *  pages which count toward text, data, or stack space. This does not include pages which have not
                          *  been demand-loaded in, or which are swapped out.
                          *
-                         *  This  does NOT include 'shared' memory (e.g. for mapped .so files)
+                         *  @todo   DECIDE IF
+                         *          This  does NOT include 'shared' memory (e.g. for mapped .so files)
+                         *          SEEN CONTRADICTORY INFO.
+                         *          RATIONALIZE AND PROIVIDE BOTH (optionally)
                          *
                          *  This value is commonly used/available in UNIX.
                          *

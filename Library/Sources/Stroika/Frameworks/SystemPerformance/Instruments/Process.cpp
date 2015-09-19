@@ -1272,7 +1272,7 @@ namespace {
              *
              *          from ps docs:
              *              size in physical pages of the core image of the process.  This includes text, data, and stack space.  Device mappings are currently excluded;
-             *          Empirically thats waht this appears to be.
+             *          Empirically thats what this appears to be.
              *
              *  (24)    rss %ld
              *          Resident Set Size: number of pages the process has in real memory. This is just the pages which count toward text, data, or stack space. This does not include pages which have not been demand-loaded in, or which are swapped out.
@@ -1796,7 +1796,7 @@ namespace {
                         }
                         {
                             PROCESS_MEMORY_COUNTERS_EX  memInfo;
-                            if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof(memInfo))) {
+                            if (::GetProcessMemoryInfo (hProcess, reinterpret_cast<PROCESS_MEMORY_COUNTERS*> (&memInfo), sizeof (memInfo))) {
                                 processInfo.fWorkingSetSize = memInfo.WorkingSetSize;
                                 processInfo.fPrivateBytes = memInfo.PrivateUsage;
                                 processInfo.fPageFaultCount = memInfo.PageFaultCount;   // docs not 100% clear but I think this is total # pagefaults
