@@ -222,16 +222,16 @@ SubDirs2Compile=	\
 vpath %cpp $(SubDirs2Compile)
 vpath %c $(SubDirs2Compile)
 
-CPlusPlus?=g++
-CC?=gcc
+CPlusPlus=g++
+CC=gcc
 CFLAGS+=-D_7ZIP_ST
 
-AR?=ar
-ARCRATEFLAGS?=cru
-ARTARGETPREFIX?=
+AR=ar
+ARCRATEFLAGS=cru
+ARTARGETPREFIX=
 
-LD?=$(CPlusPlus)
-LDFLAGS?=
+LD=$(CPlusPlus)
+LDFLAGS=
 
 # may need to add define
 #-D_7ZIP_PPMD_SUPPPORT
