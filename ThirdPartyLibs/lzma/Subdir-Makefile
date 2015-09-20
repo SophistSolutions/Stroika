@@ -1,6 +1,7 @@
 
 
 OBJSUFFIX=o
+LIBSUFFIX=a
 
 COMMON_OBJS = \
   CommandLineParser.$(OBJSUFFIX) \
@@ -168,42 +169,42 @@ endif
   
 LibObjs=	\
 		$(C_OBJS)\
-		C_FileIO.o \
-		Bench.o \
-		BenchCon.o \
-		ConsoleClose.o \
-		LzmaDecoder.o \
-		LzmaEncoder.o \
-		LzmaRegister.o \
-		CreateCoder.o \
-		CWrappers.o \
-		FileStreams.o \
-		FilterCoder.o \
-		MethodProps.o \
-		StreamUtils.o \
-		CommandLineParser.o \
-		CRC.o \
-		CrcReg.o \
-		IntToString.o \
-		MyString.o \
-		MyVector.o \
-		MyWindows.o \
-		StringConvert.o \
-		StringToInt.o \
-		PropVariant.o \
-		7zCrc.o \
-		7zCrcOpt.o \
-		Alloc.o \
-		Bra86.o \
-		CpuArch.o \
-		LzFind.o \
-		LzmaDec.o \
-		LzmaEnc.o \
-		Lzma86Dec.o \
-		Lzma86Enc.o
+		C_FileIO.$(OBJSUFFIX) \
+		Bench.$(OBJSUFFIX) \
+		BenchCon.$(OBJSUFFIX) \
+		ConsoleClose.$(OBJSUFFIX) \
+		LzmaDecoder.$(OBJSUFFIX) \
+		LzmaEncoder.$(OBJSUFFIX) \
+		LzmaRegister.$(OBJSUFFIX) \
+		CreateCoder.$(OBJSUFFIX) \
+		CWrappers.$(OBJSUFFIX) \
+		FileStreams.$(OBJSUFFIX) \
+		FilterCoder.$(OBJSUFFIX) \
+		MethodProps.$(OBJSUFFIX) \
+		StreamUtils.$(OBJSUFFIX) \
+		CommandLineParser.$(OBJSUFFIX) \
+		CRC.$(OBJSUFFIX) \
+		CrcReg.$(OBJSUFFIX) \
+		IntToString.$(OBJSUFFIX) \
+		MyString.$(OBJSUFFIX) \
+		MyVector.$(OBJSUFFIX) \
+		MyWindows.$(OBJSUFFIX) \
+		StringConvert.$(OBJSUFFIX) \
+		StringToInt.$(OBJSUFFIX) \
+		PropVariant.$(OBJSUFFIX) \
+		7zCrc.$(OBJSUFFIX) \
+		7zCrcOpt.$(OBJSUFFIX) \
+		Alloc.$(OBJSUFFIX) \
+		Bra86.$(OBJSUFFIX) \
+		CpuArch.$(OBJSUFFIX) \
+		LzFind.$(OBJSUFFIX) \
+		LzmaDec.$(OBJSUFFIX) \
+		LzmaEnc.$(OBJSUFFIX) \
+		Lzma86Dec.$(OBJSUFFIX) \
+		Lzma86Enc.$(OBJSUFFIX)
 
 Objs=	$(LibObjs) \
-		LzmaAlone.o \
+		LzmaAlone.$(OBJSUFFIX) \
 
 
 SubDirs2Compile=	\
@@ -221,42 +222,47 @@ SubDirs2Compile=	\
 vpath %cpp $(SubDirs2Compile)
 vpath %c $(SubDirs2Compile)
 
+CPlusPlus?=g++
+CC?=gcc
+CFLAGS+=-D_7ZIP_ST
 
-CPlusPlus=g++
-CFLAGS=-D_7ZIP_ST
+AR?=ar
+ARCRATEFLAGS?=cru
+ARTARGETPREFIX?=
+
+LD?=$(CPlusPlus)
+LDFLAGS?=
 
 # may need to add define
 #-D_7ZIP_PPMD_SUPPPORT
 
 
-%.o : %.cpp
+%.$(OBJSUFFIX) : %.cpp
 	@echo "      Compiling $(subst ../,, $<)..."
-	$(CPlusPlus) $(CFLAGS) -c $< -o $@
+	"$(CPlusPlus)" $(CFLAGS) -c $<
 
-%.o : %.c
+%.$(OBJSUFFIX) : %.c
 	@echo "      Compiling $(subst ../,, $<)..."
-	gcc $(CFLAGS) -c $< -o $@
+	"$(CC)" $(CFLAGS) -c $<
 
 
-all:		lzma.a 7zDec lzma
+all:		lzma.$(LIBSUFFIX) 7zDec lzma
 
-lzma.a:	$(LibObjs)
-	ar cru lzma.a $(LibObjs)
+lzma.$(LIBSUFFIX):	$(LibObjs)
+	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
 
-7zDec:	7zMain.o lzma.a
-	g++ -o 7zDec   7zMain.o lzma.a
+7zDec:	7zMain.o lzma.$(LIBSUFFIX)
+	echo "building 7zDec..."
+	"$(LD)" $(LDFLAGS) -o 7zDec 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
 	
 
-lzma:	LzmaAlone.o 	lzma.a
-	g++ -o lzma   LzmaAlone.o lzma.a
+lzma:	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
+	echo "building lzma..."
+	"$(LD)" $(LDFLAGS) -o lzma LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
 
-
-
-doBuildInternal_:
-	make --directory CURRENT/CPP/7zip/Bundles/LzmaCon -f makefile.gcc
 
 clean:
-	@rm -f *.o
+	@rm -f *.$(OBJSUFFIX)
 
 clobber:	clean
-	@rm -f *.a lzma
+	@rm -f *.$(LIBSUFFIX) lzma

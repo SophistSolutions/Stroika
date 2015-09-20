@@ -19,12 +19,16 @@ ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
 FETCHURL=http://www.7-zip.org/a/$(BASENAME).7z
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
+#WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
+WIN_CC32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)
 WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)")
 WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
 WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_64)")
-WIN_LIB32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_32)")
+WIN_LIB32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_32)
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
+WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
+#INCLUDE=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)")
+INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)
 endif
 
 
@@ -133,8 +137,11 @@ endif
 
 
 doBuildInternal_:
+ifeq (Unix,$(ProjectPlatformSubdir))
 	make --directory $(TRGDIR)
-
+else
+	make --directory $(TRGDIR) CC="$(WIN_CC32)" CPlusPlus="$(WIN_CC32)" CFLAGS="-nologo -W3 -O2 -Oy- -Z7" INCLUDE="$(INCLUDE)" AR="$(WIN_LIB32)" ARCRATEFLAGS=-nologo ARTARGETPREFIX=-out: LD="link" LDFLAGS="-nologo -debug -incremental:no -opt:ref" LIBSUFFIX=lib OBJSUFFIX=obj 
+endif
 
 
 ORIGS:	$(ZIPEDFILE)
