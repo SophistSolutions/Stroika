@@ -25,10 +25,9 @@ WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommon
 WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
 WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_64)")
 WIN_LIB32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_32)
-WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
-WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
+WIN_LIB64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)
 WIN_LINK32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_32)
-WIN_LINK64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_64)")
+WIN_LINK64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_64)
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)
 LIB=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB)
 endif
@@ -140,9 +139,24 @@ endif
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	make --directory $(TRGDIR)
+	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir)
 else
-	make --directory $(TRGDIR) CC="$(WIN_CC32)" CPlusPlus="$(WIN_CC32)" CFLAGS="-nologo -W3 -O2 -Oy- -Z7" INCLUDE="$(INCLUDE)" LIB="$(LIB)" AR="$(WIN_LIB32)" ARCRATEFLAGS=-nologo ARTARGETPREFIX=-out: LINKTARGETPREFIX=-out: LD="$(WIN_LINK32)" LDFLAGS="-nologo -debug -incremental:no -opt:ref" LIBSUFFIX=lib OBJSUFFIX=obj EXESUFFIX=.exe
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(WIN_CC32)" \
+		CPlusPlus="$(WIN_CC32)" \
+		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
+		INCLUDE="$(INCLUDE)" \
+		LIB="$(LIB)" \
+		LD="$(WIN_LINK32)" \
+		AR="$(WIN_LIB32)" \
+		ARCRATEFLAGS="-nologo" \
+		ARTARGETPREFIX=-out: \
+		LINKTARGETPREFIX=-out: \
+		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj
 endif
 
 

@@ -2,7 +2,6 @@
 
 OBJSUFFIX=o
 LIBSUFFIX=a
-EXESUFFIX=
 
 COMMON_OBJS = \
   CommandLineParser.$(OBJSUFFIX) \
@@ -157,16 +156,15 @@ C_OBJS = \
   XzDec.$(OBJSUFFIX) \
   XzEnc.$(OBJSUFFIX) \
   XzIn.$(OBJSUFFIX)
-###  LzFindMt.$(OBJSUFFIX) \
-###  MtCoder.$(OBJSUFFIX) \
-###  Threads.$(OBJSUFFIX) \
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 C_OBJS+=\
-  Bcj2Enc.$(OBJSUFFIX)
+  Bcj2Enc.$(OBJSUFFIX)\
+  MtCoder.$(OBJSUFFIX)\
+  Threads.$(OBJSUFFIX)\
+  LzFindMt.$(OBJSUFFIX)
 endif
-#  CPP/Windows/System.cpp
   
   
 LibObjs=	\
@@ -204,13 +202,14 @@ LibObjs=	\
 		LzmaEnc.$(OBJSUFFIX) \
 		Lzma86Dec.$(OBJSUFFIX) \
 		Lzma86Enc.$(OBJSUFFIX)
-		
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-LibObjs+=\
-		File.$(OBJSUFFIX)\
-		System.$(OBJSUFFIX)
+LibObjs+=		\
+  FileIO.$(OBJSUFFIX)\
+  System.$(OBJSUFFIX)
 endif
+
+
 
 Objs=	$(LibObjs) \
 		LzmaAlone.$(OBJSUFFIX) \
@@ -238,22 +237,21 @@ CFLAGS+=-D_7ZIP_ST
 AR=ar
 ARCRATEFLAGS=cru
 ARTARGETPREFIX=
-LINKTARGETPREFIX= -o 
 
 LD=$(CPlusPlus)
 LDFLAGS=
+LINKTARGETPREFIX= -o 
 
 # may need to add define
 #-D_7ZIP_PPMD_SUPPPORT
 
 
-
 %.$(OBJSUFFIX) : %.cpp
-	@echo "      Compiling $(subst ../,, $<)..."
+	@#echo "      Compiling $(subst ../,, $<)..."
 	"$(CPlusPlus)" $(CFLAGS) -c $<
 
 %.$(OBJSUFFIX) : %.c
-	@echo "      Compiling $(subst ../,, $<)..."
+	@#echo "      Compiling $(subst ../,, $<)..."
 	"$(CC)" $(CFLAGS) -c $<
 
 
@@ -262,13 +260,11 @@ all:		lzma.$(LIBSUFFIX) 7zDec$(EXESUFFIX) lzma$(EXESUFFIX)
 lzma.$(LIBSUFFIX):	$(LibObjs)
 	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
 
-
 7zDec$(EXESUFFIX):	7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
 	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
-
+	
 lzma$(EXESUFFIX):	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
 	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
-
 
 clean:
 	@rm -f *.$(OBJSUFFIX)
