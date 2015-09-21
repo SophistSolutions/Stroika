@@ -87,23 +87,6 @@ namespace {
 
 
 
-/*
- ********************************************************************************
- ****************** SystemPerformance::Instrument::Memory::Info *****************
- ********************************************************************************
- */
-Optional<uint64_t>  Info::MemoryAvailable () const
-{
-    return fFreePhysicalMemory + fActivePhysicalMemory;
-}
-
-
-
-
-
-
-
-
 
 namespace {
     struct  CapturerWithContext_COMMON_ {
@@ -196,6 +179,9 @@ namespace {
             // real_process????
             result.fActivePhysicalMemory = memResults.real_pinned * 4 * 1024;
             result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;;
+
+            // WAG TMPHACK
+            result.fMemoryAvailable = result.fFreePhysicalMemory + result.fInactivePhysicalMemory;
 
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
@@ -292,6 +278,7 @@ namespace {
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                 ReadMemInfoLine_ (&updateResult->fFreePhysicalMemory, String_Constant (L"MemFree"), line);
+                ReadMemInfoLine_ (&updateResult->fMemoryAvailable, String_Constant (L"MemAvailable"), line);
                 ReadMemInfoLine_ (&updateResult->fActivePhysicalMemory, String_Constant (L"Active"), line);
                 ReadMemInfoLine_ (&updateResult->fInactivePhysicalMemory, String_Constant (L"Inactive"), line);
                 ReadMemInfoLine_ (&updateResult->fCommitLimit, String_Constant (L"CommitLimit"), line);
@@ -419,6 +406,8 @@ namespace {
                     updateResult->fInactivePhysicalMemory = totalRAM - *updateResult->fActivePhysicalMemory - static_cast<uint64_t> (*freeMem);
                 }
             }
+            // WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
+            updateResult->fMemoryAvailable = updateResult->fFreePhysicalMemory + updateResult->fInactivePhysicalMemory;
         }
 #endif
     };
@@ -483,6 +472,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMemoryAvailable), String_Constant (L"Memory-Available"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fActivePhysicalMemory), String_Constant (L"Active-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInactivePhysicalMemory), String_Constant (L"Inactive-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
