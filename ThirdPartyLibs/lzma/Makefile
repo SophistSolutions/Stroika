@@ -111,27 +111,6 @@ doBuilds:
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		make doBuildInternal_ > BUILD.OUT 2>&1;\
 	fi
-ifeq (0,1)
-	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
-ifeq (Unix,$(ProjectPlatformSubdir))
-else
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/
-endif
-endif
-
 
 
 doBuildInternal_:
@@ -139,6 +118,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir)
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 else
 	make --directory $(TRGDIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
@@ -159,12 +139,16 @@ else
 		OBJSUFFIX=obj
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/
 	make --directory $(TRGDIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC64)" \
@@ -184,10 +168,13 @@ else
 		OBJSUFFIX=obj
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma/
+	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/
 endif
 
 
