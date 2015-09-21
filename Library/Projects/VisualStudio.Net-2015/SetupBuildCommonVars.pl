@@ -124,18 +124,20 @@ $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 #$ENV{'LIB'} 	=	"";
 #$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
 #$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-#$ENV{'LIB'} 	.=	"$UniversalCRTSdkDir\\lib\\$UCRTVersion\\ucrt\\x86;";
+#$ENV{'LIB'}} 	.=	"$UniversalCRTSdkDir\\lib\\$UCRTVersion\\ucrt\\x86;";
 #$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
 #print "LIB=", $ENV{'LIB'}, "\n";
 
 $ENV{'LIBDIR32'} 	=	"";
 $ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\LIB;";
 $ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
+$ENV{'LIBDIR32'}	.=	"$UniversalCRTSdkDir\\lib\\10.0.10150.0\\ucrt\\x86;";
 $ENV{'LIBDIR32'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
 
 $ENV{'LIBDIR64'} 	=	"";
 $ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\LIB\\amd64;";
 $ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB\\amd64;";
+$ENV{'LIBDIR64'} 	.=	"$UniversalCRTSdkDir\\lib\\10.0.10150.0\\ucrt\\x64;";
 $ENV{'LIBDIR64'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x64;";
 
 
@@ -162,7 +164,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LINK_32'} 	=	"$x";
-$ENV{'LINK_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/link";
+$ENV{'LINK_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/link";
 
 
 my $x = trim (`cmd /c 'which lib'`);
@@ -171,7 +173,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LIB_32'} 	=	"$x";
-$ENV{'LIB_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/lib";
+$ENV{'LIB_64'} 	=	substr ("$x", 0, -4) . "/x86_amd64/lib";
 
 sub GetString2InsertIntoBatchFileToInit32BitCompiles
 {
