@@ -37,32 +37,32 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/lzma$.a			\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zconf.h
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/lzma.a				\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma/7z.h		\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma/7zTypes.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/lzma.lib					\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/lzma.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/lzma.lib		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zconf.h	\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/lzma.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zconf.h		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/lzma.lib					\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/lzma.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/lzma.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zconf.h
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/lzma.lib						\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/7z.h					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/7zTypes.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/lzma.lib						\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma/7z.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma/7zTypes.h			\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/lzma.lib			\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma/7z.h	\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma/7zTypes.h\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/lzma.lib				\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma/7z.h		\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma/7zTypes.h	\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/lzma.lib						\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/7z.h					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/7zTypes.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/lzma.lib						\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma/7z.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma/7zTypes.h			\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/lzma.lib				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma/7z.h		\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma/7zTypes.h
 endif
 
 
@@ -196,8 +196,7 @@ ORIGS:	$(ZIPEDFILE)
 
 check:
 	@echo -n "      ...Checking..."
-	@#tmphack disable check
-	@for i in $(_HACK2DISABLE_PRODUCED_OUTPUT_ARTIFACTS) ; do \
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "   FAILED: missing $$i";\
 			exit 1;\
