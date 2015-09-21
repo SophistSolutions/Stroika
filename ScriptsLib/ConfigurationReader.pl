@@ -105,6 +105,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ZLib'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_LZMA>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_LZMA'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_WinHTTP>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_WinHTTP'} = $pps;

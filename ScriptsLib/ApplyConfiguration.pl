@@ -45,6 +45,7 @@ my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
@@ -114,6 +115,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_ATLMFC = GetConfigurationParameter("qFeatureFlag_ATLMFC");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
+	$FEATUREFLAG_LZMA = GetConfigurationParameter("qFeatureFlag_LZMA");
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
 	$CPPSTD_VERSION_FLAG = GetConfigurationParameter("CPPSTD_VERSION_FLAG");
@@ -389,6 +391,15 @@ sub WriteStroikaConfigCHeader
 	}
 	print (OUT "\n");
 
+    print (OUT "//--LZMA {build-only|use|use-system|no}\n");
+	if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseSystem)) {
+		print (OUT "#define	qHasFeature_LZMA	1\n");
+	}
+	else {
+		print (OUT "#define	qHasFeature_LZMA	0\n");
+	}
+	print (OUT "\n");
+
 
 
 	print (OUT "\n");
@@ -508,6 +519,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_ATLMFC='$FEATUREFLAG_ATLMFC'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 	print (OUT "qFeatureFlag_LibZLib='$FEATUREFLAG_ZLib'\n");
+	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
 
 
 	print (OUT "#Third Party Product Libs to Build:\n");
@@ -535,6 +547,12 @@ sub WriteStroikaConfigMakeHeader
 	}	
 	else {
 		print (OUT "qBuildThirdPartyProducts_ZLib=0\n");
+	}	
+	if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_BuildOnly)) {
+		print (OUT "qBuildThirdPartyProducts_LZMA=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_LZMA=0\n");
 	}	
 
 
