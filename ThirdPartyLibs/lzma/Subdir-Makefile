@@ -2,6 +2,7 @@
 
 OBJSUFFIX=o
 LIBSUFFIX=a
+EXESUFFIX=
 
 COMMON_OBJS = \
   CommandLineParser.$(OBJSUFFIX) \
@@ -165,6 +166,7 @@ ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 C_OBJS+=\
   Bcj2Enc.$(OBJSUFFIX)
 endif
+#  CPP/Windows/System.cpp
   
   
 LibObjs=	\
@@ -202,6 +204,13 @@ LibObjs=	\
 		LzmaEnc.$(OBJSUFFIX) \
 		Lzma86Dec.$(OBJSUFFIX) \
 		Lzma86Enc.$(OBJSUFFIX)
+		
+
+ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+LibObjs+=\
+		File.$(OBJSUFFIX)\
+		System.$(OBJSUFFIX)
+endif
 
 Objs=	$(LibObjs) \
 		LzmaAlone.$(OBJSUFFIX) \
@@ -229,12 +238,14 @@ CFLAGS+=-D_7ZIP_ST
 AR=ar
 ARCRATEFLAGS=cru
 ARTARGETPREFIX=
+LINKTARGETPREFIX= -o 
 
 LD=$(CPlusPlus)
 LDFLAGS=
 
 # may need to add define
 #-D_7ZIP_PPMD_SUPPPORT
+
 
 
 %.$(OBJSUFFIX) : %.cpp
@@ -246,19 +257,17 @@ LDFLAGS=
 	"$(CC)" $(CFLAGS) -c $<
 
 
-all:		lzma.$(LIBSUFFIX) 7zDec lzma
+all:		lzma.$(LIBSUFFIX) 7zDec$(EXESUFFIX) lzma$(EXESUFFIX)
 
 lzma.$(LIBSUFFIX):	$(LibObjs)
 	"$(AR)" $(ARCRATEFLAGS) $(ARTARGETPREFIX)lzma.$(LIBSUFFIX) $(LibObjs)
 
-7zDec:	7zMain.o lzma.$(LIBSUFFIX)
-	echo "building 7zDec..."
-	"$(LD)" $(LDFLAGS) -o 7zDec 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
-	
 
-lzma:	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
-	echo "building lzma..."
-	"$(LD)" $(LDFLAGS) -o lzma LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
+7zDec$(EXESUFFIX):	7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
+	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)7zDec$(EXESUFFIX) 7zMain.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
+
+lzma$(EXESUFFIX):	LzmaAlone.$(OBJSUFFIX) 	lzma.$(LIBSUFFIX)
+	"$(LD)" $(LDFLAGS) $(LINKTARGETPREFIX)lzma$(EXESUFFIX) LzmaAlone.$(OBJSUFFIX) lzma.$(LIBSUFFIX)
 
 
 clean:

@@ -27,8 +27,10 @@ WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommon
 WIN_LIB32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_32)
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
-#INCLUDE=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)")
+WIN_LINK32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_32)
+WIN_LINK64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_64)")
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)
+LIB=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB)
 endif
 
 
@@ -140,7 +142,7 @@ doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	make --directory $(TRGDIR)
 else
-	make --directory $(TRGDIR) CC="$(WIN_CC32)" CPlusPlus="$(WIN_CC32)" CFLAGS="-nologo -W3 -O2 -Oy- -Z7" INCLUDE="$(INCLUDE)" AR="$(WIN_LIB32)" ARCRATEFLAGS=-nologo ARTARGETPREFIX=-out: LD="link" LDFLAGS="-nologo -debug -incremental:no -opt:ref" LIBSUFFIX=lib OBJSUFFIX=obj 
+	make --directory $(TRGDIR) CC="$(WIN_CC32)" CPlusPlus="$(WIN_CC32)" CFLAGS="-nologo -W3 -O2 -Oy- -Z7" INCLUDE="$(INCLUDE)" LIB="$(LIB)" AR="$(WIN_LIB32)" ARCRATEFLAGS=-nologo ARTARGETPREFIX=-out: LINKTARGETPREFIX=-out: LD="$(WIN_LINK32)" LDFLAGS="-nologo -debug -incremental:no -opt:ref" LIBSUFFIX=lib OBJSUFFIX=obj EXESUFFIX=.exe
 endif
 
 
