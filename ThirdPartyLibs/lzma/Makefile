@@ -19,11 +19,10 @@ ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
 FETCHURL=http://www.7-zip.org/a/$(BASENAME).7z
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-#WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
 WIN_CC32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)
-WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)")
-WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
-WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_64)")
+WIN_CC64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)
+#WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
+#WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_64)")
 WIN_LIB32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_32)
 WIN_LIB64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)
 WIN_LINK32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_32)
@@ -115,8 +114,6 @@ doBuilds:
 ifeq (0,1)
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
 else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/lzma.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
@@ -140,6 +137,8 @@ endif
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir)
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma/
 else
 	make --directory $(TRGDIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
@@ -158,6 +157,37 @@ else
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/lzma/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/lzma/
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(WIN_CC64)" \
+		CPlusPlus="$(WIN_CC64)" \
+		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
+		INCLUDE="$(INCLUDE)" \
+		LIB="$(LIB)" \
+		LIBS="oleaut32.lib ole32.lib user32.lib" \
+		LD="$(WIN_LINK64)" \
+		AR="$(WIN_LIB64)" \
+		ARCRATEFLAGS="-nologo" \
+		ARTARGETPREFIX=-out: \
+		LINKTARGETPREFIX=-out: \
+		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/lzma/
 endif
 
 
