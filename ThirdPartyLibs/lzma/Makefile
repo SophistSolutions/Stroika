@@ -148,6 +148,7 @@ else
 		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(LIB)" \
+		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LINK32)" \
 		AR="$(WIN_LIB32)" \
 		ARCRATEFLAGS="-nologo" \
