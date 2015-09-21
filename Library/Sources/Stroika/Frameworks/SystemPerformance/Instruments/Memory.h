@@ -242,9 +242,9 @@ namespace   Stroika {
                         /**
                          *  Calculated from Free and Inactive memory, or from the OS provided claim about memory available.
                          *  On Linux (see https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
-                         *  'MemAvailable'
+                         *  'MemAvailable', or (@todo future) summing used working set sizes of processes)
                          */
-                        nonvirtual  Optional<uint64_t>  MemoryAvailable () const;
+                        Optional<double>    fMemoryAvailable {};
                     };
 
 
