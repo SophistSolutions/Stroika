@@ -28,7 +28,9 @@ WIN_LIB64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64
 WIN_LINK32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_32)
 WIN_LINK64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LINK_64)
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl INCLUDE)
-LIB=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB)
+LIBDIR32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIBDIR32)
+LIBDIR64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIBDIR64)
+PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl PATH)
 endif
 
 
@@ -126,7 +128,7 @@ else
 		CPlusPlus="$(WIN_CC32)" \
 		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIB)" \
+		LIB="$(LIBDIR32)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LINK32)" \
 		AR="$(WIN_LIB32)" \
@@ -136,7 +138,8 @@ else
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
-		OBJSUFFIX=obj
+		OBJSUFFIX=obj \
+		all
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
@@ -151,11 +154,18 @@ else
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/
 	make --directory $(TRGDIR) \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		clobber
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC64)" \
 		CPlusPlus="$(WIN_CC64)" \
 		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIB)" \
+		LIB="$(LIBDIR64)" \
+		PATH="$(PATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LINK64)" \
 		AR="$(WIN_LIB64)" \
@@ -165,7 +175,8 @@ else
 		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
-		OBJSUFFIX=obj
+		OBJSUFFIX=obj \
+		all
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/
