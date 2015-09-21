@@ -238,6 +238,16 @@ namespace   Stroika {
                          */
                         Optional<double>    fMinorPageFaultsPerSecond {};
 
+                        /**
+                         *  Linux  /proc/vmstat : pgpgout
+                         *      CANNOT find docs on this but it appears to be the total number of pages paged out since boot
+                         */
+                        Optional<uint64_t>    fPageOutsSinceBoot {};
+
+                        /**
+                         *  @see fPageOutsSinceBoot.
+                         */
+                        Optional<double>    fPageOutsPerSecond {};
 
                         /**
                          *  Calculated from Free and Inactive memory, or from the OS provided claim about memory available.

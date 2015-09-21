@@ -229,7 +229,8 @@ namespace {
 namespace {
     struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
-        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
+        uint64_t                    fSaved_PageOutsSinceBoot {};
+        Time::DurationSecondsType   fSaved_VMPageStats_At {};
 
         CapturerWithContext_POSIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
@@ -302,6 +303,7 @@ namespace {
             {
                 static  const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
                 Optional<uint64_t>  pgfault;
+                Optional<uint64_t>  pgpgout;
                 // Note - /procfs files always unseekable
                 DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
                 for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
@@ -309,19 +311,27 @@ namespace {
                     DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                     ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
+                    ReadVMStatLine_ (&pgpgout, String_Constant (L"pgpgout"), line);
                     ReadVMStatLine_ (&updateResult->fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
-                if (pgfault.IsPresent () and updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
+                Time::DurationSecondsType   now = Time::GetTickCount ();
+                if (pgpgout) {
+                    updateResult->fPageOutsSinceBoot = pgpgout;
+                    if (fSaved_VMPageStats_At != 0) {
+                        updateResult->fPageOutsPerSecond = (*updateResult->fPageOutsSinceBoot - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    }
+                    fSaved_PageOutsSinceBoot = *pgpgout;
+                }
+                if (pgfault and updateResult->fMajorPageFaultsSinceBoot) {
                     updateResult->fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fMajorPageFaultsSinceBoot;
                 }
-                if (updateResult->fMajorPageFaultsSinceBoot.IsPresent ()) {
-                    Time::DurationSecondsType   now = Time::GetTickCount ();
-                    if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
-                        updateResult->fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                if (updateResult->fMajorPageFaultsSinceBoot) {
+                    if (fSaved_VMPageStats_At != 0) {
+                        updateResult->fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                     }
                     fSaved_MajorPageFaultsSinceBoot = *updateResult->fMajorPageFaultsSinceBoot;
-                    fSaved_MajorPageFaultsSinceBoot_At = now;
                 }
+                fSaved_VMPageStats_At = now;
             }
         }
     };
@@ -485,6 +495,8 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Page-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsPerSecond), String_Constant (L"Major-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPageOutsSinceBoot), String_Constant (L"Page-Outs-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPageOutsPerSecond), String_Constant (L"Page-Outs-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
