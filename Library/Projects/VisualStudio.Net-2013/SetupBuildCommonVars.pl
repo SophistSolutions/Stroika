@@ -113,10 +113,22 @@ $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 #print "INCLUDES=", $ENV{'INCLUDE'}, "\n";
 
 
-$ENV{'LIB'} 	=	"";
-$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
-$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+
+####OBSOLETE - 2015-09-21
+#$ENV{'LIB'} 	=	"";
+#$ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
+#$ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
+#$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+
+$ENV{'LIBDIR32'} 	=	"";
+$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\LIB;";
+$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
+$ENV{'LIBDIR32'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+
+$ENV{'LIBDIR64'} 	=	"";
+$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\LIB\\amd64;";
+$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB\\amd64;";
+$ENV{'LIBDIR64'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x64;";
 
 
 #Mostly for debugging - make sure paths setup properly
@@ -142,7 +154,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LINK_32'} 	=	"$x";
-$ENV{'LINK_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/link";
+$ENV{'LINK_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/link";
 
 
 my $x = trim (`cmd /c 'which lib'`);
@@ -151,7 +163,7 @@ if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudi
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 $ENV{'LIB_32'} 	=	"$x";
-$ENV{'LIB_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/lib";
+$ENV{'LIB_64'} 	=	substr ("$x", 0, -4) . "/x86_amd64/lib";
 
 
 sub GetString2InsertIntoBatchFileToInit32BitCompiles

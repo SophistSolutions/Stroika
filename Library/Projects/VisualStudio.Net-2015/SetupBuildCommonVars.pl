@@ -128,6 +128,16 @@ $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 #$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
 #print "LIB=", $ENV{'LIB'}, "\n";
 
+$ENV{'LIBDIR32'} 	=	"";
+$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\LIB;";
+$ENV{'LIBDIR32'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
+$ENV{'LIBDIR32'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
+
+$ENV{'LIBDIR64'} 	=	"";
+$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\LIB\\amd64;";
+$ENV{'LIBDIR64'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB\\amd64;";
+$ENV{'LIBDIR64'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x64;";
+
 
 #Mostly for debugging - make sure paths setup properly
 my $x = trim (`cmd /c 'which ml'`);
