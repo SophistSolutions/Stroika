@@ -239,6 +239,8 @@ namespace   Stroika {
                         Optional<double>    fMinorPageFaultsPerSecond {};
 
                         /**
+                         *  Total number of (dirty) pages written to the page store.
+                         *
                          *  Linux  /proc/vmstat : pgpgout
                          *      CANNOT find docs on this but it appears to be the total number of pages paged out since boot
                          */
@@ -250,11 +252,15 @@ namespace   Stroika {
                         Optional<double>    fPageOutsPerSecond {};
 
                         /**
-                         *  Calculated from Free and Inactive memory, or from the OS provided claim about memory available.
+                         *  This can be thought of as roughly Free and Inactive memory.
+                         *
+                         *  Where possible, it is retrieved from the OS, as an indication of the amount of memory that can be
+                         *  allocated by new workloads without causing significant paging.
+                         *
                          *  On Linux (see https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
                          *  'MemAvailable', or (@todo future) summing used working set sizes of processes)
                          */
-                        Optional<double>    fMemoryAvailable {};
+                        Optional<uint64_t>    fMemoryAvailable {};
                     };
 
 

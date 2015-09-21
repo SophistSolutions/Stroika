@@ -311,7 +311,9 @@ namespace {
                     DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
                     ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
-                    ReadVMStatLine_ (&pgpgout, String_Constant (L"pgpgout"), line);
+                    // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
+                    // which makes no sense
+                    ReadVMStatLine_ (&pgpgout, String_Constant (L"pgpgout"), line);     // tried pgpgout but I dont know what it is but doesnt appear to be pages out - noneof this well documented
                     ReadVMStatLine_ (&updateResult->fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
                 Time::DurationSecondsType   now = Time::GetTickCount ();
