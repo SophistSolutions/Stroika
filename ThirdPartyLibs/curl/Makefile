@@ -119,8 +119,7 @@ else
 		echo "      ...Building libcurl $(TRGDIR)...";\
 		echo "         ...into $(BUILDS_DIR)...";\
 		echo "         ...checking tools...";\
-		type automake > /dev/null || echo "......Missing automake";\
-		type libtool > /dev/null || echo "......Missing libtool";\
+		$(MAKE) --no-print-directory check_prerequisites_;\
 		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONFIG.OUT 2>&1;\
@@ -138,6 +137,12 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 else
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
+
+
+check_prerequisites_:
+	@type automake > /dev/null || echo "......Missing automake";\
+	@type libtool > /dev/null || echo "......Missing libtool";\
+
 
 check:
 	@##THMPHACK

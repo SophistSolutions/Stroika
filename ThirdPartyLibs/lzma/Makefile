@@ -84,6 +84,8 @@ $(PRODUCED_OUTPUT_ARTIFACTS):	$(TRGDIR)/Builds
 	
 $(TRGDIR)/Builds:
 	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
+	@echo "         ...checking tools..."
+	@$(MAKE) --no-print-directory check_prerequisites_
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 
@@ -96,12 +98,18 @@ $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate
 
 
+
+check_prerequisites_:
+	@type 7za > /dev/null || echo "......Missing 7za";\
+
+
+
 doCreate:	$(ZIPEDFILE)
 	@if [ -e  $(TRGDIR) ]; then\
 		echo "      ...$(TRGDIR) dir already exists";\
 	else\
 		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		7z x -o$(TRGDIR) $(ZIPEDFILE) > /dev/null;\
+		7za x -o$(TRGDIR) $(ZIPEDFILE) > /dev/null;\
 		cp Subdir-Makefile $(TRGDIR)/Makefile;\
 	fi
 
