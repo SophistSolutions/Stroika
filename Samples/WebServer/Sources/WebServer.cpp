@@ -8,6 +8,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
+#include    "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
@@ -21,8 +22,16 @@ using   namespace Stroika::Foundation::IO::Network;
 using   namespace Stroika::Frameworks::WebServer;
 
 using   Characters::String;
+using   Memory::BLOB;
 
 
+
+/*
+ *  To test this example:
+ *      o   Run the service (under the debugger if you wish)
+ *      o   curl  http://localhost:8080/ OR
+ *      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
+ */
 
 int main (int argc, const char* argv[])
 {
@@ -36,10 +45,35 @@ int main (int argc, const char* argv[])
                 Connection conn (s);
                 conn.ReadHeaders ();    // bad API. Must rethink...
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-web-server-demo");
-                String url = conn.GetRequest ().fURL.GetFullURL ();
-                DbgTrace (L"Serving page %s", url.c_str ());
-                conn.GetResponse ().writeln (L"<html><body><p>Hi Mom</p></body></html>");
-                conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                String path = conn.GetRequest ().fURL.GetHostRelativePath ();
+                DbgTrace (L"Serving page %s", path.c_str ());
+                try {
+                    if (path == L"") {
+                        conn.GetResponse ().writeln (L"<html><body><p>Hi Mom</p></body></html>");
+                        conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                    }
+                    else if (path == L"SetAppState") {
+                        if (conn.GetRequest ().fMethod != L"POST") {
+                            Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
+                        }
+                        BLOB    setAppState2    =   conn.GetRequest ().GetBody ();
+                        conn.GetResponse ().writeln (L"<html><body><p>Hi SetAppState</p></body></html>");
+                        conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                    }
+                    else {
+                        Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+                    }
+                }
+                catch (const IO::Network::HTTP::Exception& e) {
+                    conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
+                    conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                    conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                }
+                catch (...) {
+                    conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
+                    conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                    conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                }
                 conn.GetResponse ().End ();
             });
             runConnectionOnAnotherThread.SetThreadName (L"Connection Thread");  // Could use a fancier name (connection#, from remote address?)
