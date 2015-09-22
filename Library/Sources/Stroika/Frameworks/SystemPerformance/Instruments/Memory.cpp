@@ -146,10 +146,25 @@ namespace {
         }
         Instruments::Memory::Info capture_perfstat_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("capture_perfstat_");
+#endif
             Instruments::Memory::Info   result;
 
             perfstat_memory_total_t memResults;
             Execution::ThrowErrNoIfNegative (::perfstat_memory_total (nullptr, &memResults,  sizeof (memResults), 1));
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("virt_active=%lld", memResults.virt_active);
+            DbgTrace ("real_total=%lld", memResults.real_total);
+            DbgTrace ("real_free=%lld", memResults.real_free);
+            DbgTrace ("real_inuse=%lld", memResults.real_inuse);
+            DbgTrace ("real_pinned=%lld", memResults.real_pinned);
+            DbgTrace ("real_user=%lld", memResults.real_user);
+            DbgTrace ("real_system=%lld", memResults.real_system);
+            DbgTrace ("real_process=%lld", memResults.real_process);
+            DbgTrace ("real_avail=%lld", memResults.real_avail);
+#endif
 
             // From /usr/include/libperfstat.h:
             //      u_longlong_t real_free;     /* free real memory (in 4KB pages) */
@@ -165,7 +180,17 @@ namespace {
             // From /usr/include/libperfstat.h: u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
             result.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
+            // Empirically, and logically from the (vague) definitions (perfstat_memory_total_t), real_total  = real_inuse + real_free
 #if 0
+            //[-- -MAIN-- -][0000.006]  virt_active = 375702
+            //[-- -MAIN-- -][0000.006]  real_total = 983040
+            //[-- -MAIN-- -][0000.006]  real_free = 71112
+            //[-- -MAIN-- -][0000.006]  real_inuse = 911928
+            //[-- -MAIN-- -][0000.006]  real_pinned = 277360
+            //[-- -MAIN-- -][0000.006]  real_user = 641911
+            //[-- -MAIN-- -][0000.006]  real_system = 234850
+            //[-- -MAIN-- -][0000.006]  real_process = 155708
+            //[-- -MAIN-- -][0000.006]  real_avail = 560475
             u_longlong_t real_system;   /* number of pages used by system segments.                                   *
                                  * This is the sum of all the used pages in segment marked for system usage.  *
                                  * Since segment classifications are not always guaranteed to be accurate,    *
@@ -186,12 +211,26 @@ namespace {
             u_longlong_t numperm;       /* number of frames used for files (in 4KB pages) */
             u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
             u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
-
 #endif
-            //wag
-            // real_process????
-            result.fActivePhysicalMemory = memResults.real_pinned * 4 * 1024;
-            result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;;
+
+            /*
+             *  Pinned pages cannot be paged out.
+             *      https://www-01.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/support_pinned_mem.htm
+             *          "Pinning a memory region prohibits the pager from stealing pages from the pages backing the pinned memory region"
+             *
+             *  What we want to call active is really LARGER than this, but this is at least an estimate of actively in use memory.
+             */
+            {
+                uint64_t    definitelyActiveMem =   memResults.real_pinned * 4 * 1024;  // definitely active
+
+                uint64_t    maybeActiveOrNot    =   (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;
+
+                double  guessRatioActive = 0.5; // @todo adjust based on paging, steals or some other hint (unlessI can find a better way)
+
+                uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
+                result.fActivePhysicalMemory = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
+                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - result.fActivePhysicalMemory;
+            }
 
             /*
              *      real_avail - number of pages (in 4KB pages) of memory available without paging out working segments
@@ -228,7 +267,7 @@ namespace {
                 fSaved_PageOutsSinceBoot = memResults.pgouts;
             }
             if (result.fMajorPageFaultsSinceBoot) {
-                ime::GetTickCount ();
+                Time::GetTickCount ();
                 if (fSaved_VMPageStats_At != 0) {
                     result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
