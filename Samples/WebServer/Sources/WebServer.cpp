@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
+#include    "Stroika/Foundation/Streams/TextReader.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
 
@@ -57,7 +58,8 @@ int main (int argc, const char* argv[])
                             Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
                         }
                         BLOB    setAppState2    =   conn.GetRequest ().GetBody ();
-                        conn.GetResponse ().writeln (L"<html><body><p>Hi SetAppState</p></body></html>");
+                        String  interpretAsString = Streams::TextReader (setAppState2.As<Streams::InputStream<Memory::Byte>> ()).ReadAll ();
+                        conn.GetResponse ().writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
                         conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
                     }
                     else {
