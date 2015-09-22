@@ -140,8 +140,8 @@ endif
 
 
 check_prerequisites_:
-	@type automake > /dev/null || echo "......Missing automake";\
-	@type libtool > /dev/null || echo "......Missing libtool";\
+	@type automake > /dev/null || echo "......Missing automake"
+	@type libtool > /dev/null || echo "......Missing libtool"
 
 
 check:
