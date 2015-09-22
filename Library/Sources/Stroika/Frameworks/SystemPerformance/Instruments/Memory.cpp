@@ -228,7 +228,7 @@ namespace {
 
                 uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
                 result.fActivePhysicalMemory = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
-                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - result.fActivePhysicalMemory;
+                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - *result.fActivePhysicalMemory;
             }
 
             /*
