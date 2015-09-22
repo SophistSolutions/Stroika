@@ -100,7 +100,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 
 check_prerequisites_:
-	@type 7za > /dev/null || echo "......Missing 7za";\
+	@type 7za > /dev/null || echo "......Missing 7za"
 
 
 
