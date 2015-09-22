@@ -118,10 +118,11 @@ namespace {
 #if     qPlatform_AIX
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
+        Time::DurationSecondsType   fSaved_VMPageStats_At {};
         uint64_t                    fSaved_MinorPageFaultsSinceBoot {};
-        Time::DurationSecondsType   fSaved_MinorPageFaultsSinceBoot_At {};
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
-        Time::DurationSecondsType   fSaved_MajorPageFaultsSinceBoot_At {};
+        uint64_t                    fSaved_PageOutsSinceBoot {};
+
 
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
@@ -189,25 +190,35 @@ namespace {
             //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
             result.fCommittedBytes = (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
 
+
+            // @todo review/copy docs here for pgexct
             result.fMinorPageFaultsSinceBoot = memResults.pgexct;
-            result.fMajorPageFaultsSinceBoot = memResults.pgins + memResults.pgouts;
+            //result.fMajorPageFaultsSinceBoot = memResults.pgins + memResults.pgouts;
+            result.fMajorPageFaultsSinceBoot = memResults.pgins;
 
             if (result.fMinorPageFaultsSinceBoot.IsPresent ()) {
                 Time::DurationSecondsType   now = Time::GetTickCount ();
-                if (fSaved_MinorPageFaultsSinceBoot_At != 0) {
-                    result.fMinorPageFaultsPerSecond = (*result.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_MinorPageFaultsSinceBoot_At);
+                if (fSaved_VMPageStats_At != 0) {
+                    result.fMinorPageFaultsPerSecond = (*result.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_MinorPageFaultsSinceBoot = *result.fMinorPageFaultsSinceBoot;
-                fSaved_MinorPageFaultsSinceBoot_At = now;
+                fSaved_VMPageStats_At = now;
+            }
+            {
+                result.fPageOutsSinceBoot = memResults.pgouts;
+                if (fSaved_VMPageStats_At != 0) {
+                    updateResult->fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
+                }
+                fSaved_PageOutsSinceBoot = memResults.pgouts;
             }
             if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
                 Time::DurationSecondsType   now = Time::GetTickCount ();
-                if (fSaved_MajorPageFaultsSinceBoot_At != 0) {
-                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_MajorPageFaultsSinceBoot_At);
+                if (fSaved_VMPageStats_At != 0) {
+                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
-                fSaved_MajorPageFaultsSinceBoot_At = now;
             }
+            fSaved_VMPageStats_At = now;
 
             return result;
         }
