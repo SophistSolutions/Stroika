@@ -236,14 +236,14 @@ namespace {
 
 
 
-#if     qPlatform_POSIX
+#if     qPlatform_Linux
 namespace {
-    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
         uint64_t                    fSaved_PageOutsSinceBoot {};
         Time::DurationSecondsType   fSaved_VMPageStats_At {};
 
-        CapturerWithContext_POSIX_ (Options options)
+        CapturerWithContext_Linux_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
             // for side-effect of  updating aved_MajorPageFaultsSinc etc
@@ -254,7 +254,7 @@ namespace {
                 DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
             }
         }
-        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
+        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;   // copy by value fine - no need to re-wait...
 
         Instruments::Memory::Info capture ()
         {
@@ -446,16 +446,16 @@ namespace {
             : Debug::AssertExternallySynchronizedLock
 #if     qPlatform_AIX
             , CapturerWithContext_AIX_
-#elif   qPlatform_POSIX
-            , CapturerWithContext_POSIX_
+#elif   qPlatform_Linux
+            , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_AIX
         using inherited = CapturerWithContext_AIX_;
-#elif   qPlatform_POSIX
-        using inherited = CapturerWithContext_POSIX_;
+#elif   qPlatform_Linux
+        using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
