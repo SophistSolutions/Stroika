@@ -258,7 +258,9 @@ namespace   Stroika {
                          *  allocated by new workloads without causing significant paging.
                          *
                          *  On Linux (see https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt
-                         *  'MemAvailable', or (@todo future) summing used working set sizes of processes)
+                         *  'MemAvailable', or (@todo future) summing used working set sizes of processes).
+                         *
+                         *  On AIX, this is 'real_avail': ... memory available without paging out working segments
                          */
                         Optional<uint64_t>    fMemoryAvailable {};
                     };

@@ -175,14 +175,28 @@ namespace {
                                  * Since segment classifications are not always guaranteed to be accurate,    *
                                  * This number is only an approximation.                                      */
             u_longlong_t real_process;  /* number of pages used by process segments.                                  */
+
+            u_longlong_t pgins;         /* number of pages paged in */
+            u_longlong_t pgouts;        /* number of pages paged out */
+            u_longlong_t pgspins;       /* number of page ins from paging space */
+            u_longlong_t pgspouts;      /* number of page outs from paging space */
+            u_longlong_t scans;         /* number of page scans by clock */
+            u_longlong_t cycles;        /* number of page replacement cycles */
+            u_longlong_t pgsteals;      /* number of page steals */
+            u_longlong_t numperm;       /* number of frames used for files (in 4KB pages) */
+            u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
+            u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
+
 #endif
             //wag
             // real_process????
             result.fActivePhysicalMemory = memResults.real_pinned * 4 * 1024;
             result.fInactivePhysicalMemory = (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;;
 
-            // WAG TMPHACK
-            result.fMemoryAvailable = result.fFreePhysicalMemory + result.fInactivePhysicalMemory;
+            /*
+             *      real_avail - number of pages (in 4KB pages) of memory available without paging out working segments
+             */
+            result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
 
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
@@ -190,29 +204,31 @@ namespace {
             //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
             result.fCommittedBytes = (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
 
+            /*
+             *  u_longlong_t pgins;         number of pages paged in
+             *  u_longlong_t pgouts;        number of pages paged out
+             *  u_longlong_t pgspins;       number of page ins from paging space
+             *  u_longlong_t pgspouts;      number of page outs from paging space
+             */
+            result.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
+            result.fMajorPageFaultsSinceBoot = memResults.pgspins;
+            result.fPageOutsSinceBoot = memResults.pgouts;
 
-            // @todo review/copy docs here for pgexct
-            result.fMinorPageFaultsSinceBoot = memResults.pgexct;
-            //result.fMajorPageFaultsSinceBoot = memResults.pgins + memResults.pgouts;
-            result.fMajorPageFaultsSinceBoot = memResults.pgins;
-
-            if (result.fMinorPageFaultsSinceBoot.IsPresent ()) {
-                Time::DurationSecondsType   now = Time::GetTickCount ();
+            Time::DurationSecondsType   now = Time::GetTickCount ();
+            if (result.fMinorPageFaultsSinceBoot) {
                 if (fSaved_VMPageStats_At != 0) {
                     result.fMinorPageFaultsPerSecond = (*result.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_MinorPageFaultsSinceBoot = *result.fMinorPageFaultsSinceBoot;
-                fSaved_VMPageStats_At = now;
             }
             {
-                result.fPageOutsSinceBoot = memResults.pgouts;
                 if (fSaved_VMPageStats_At != 0) {
-                    updateResult->fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    result.fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_PageOutsSinceBoot = memResults.pgouts;
             }
-            if (result.fMajorPageFaultsSinceBoot.IsPresent ()) {
-                Time::DurationSecondsType   now = Time::GetTickCount ();
+            if (result.fMajorPageFaultsSinceBoot) {
+                ime::GetTickCount ();
                 if (fSaved_VMPageStats_At != 0) {
                     result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
