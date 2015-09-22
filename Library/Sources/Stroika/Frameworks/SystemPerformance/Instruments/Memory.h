@@ -185,15 +185,6 @@ namespace   Stroika {
                          */
                         Optional<uint64_t>  fCommittedBytes {};
 
-#if 0
-                        /**
-                         *      The largest contiguous block of available virtual memory (in bytes).
-                         *
-                         *      /proc/meminfo::VMallocChunk
-                         */
-                        Optional<uint64_t>  fLargestAvailableVirtualChunk {};
-#endif
-
                         /**
                          *      Total size of all loaded swapfiles (or on windows pagefiles).
                          *
@@ -225,6 +216,14 @@ namespace   Stroika {
                         Optional<uint64_t>    fMinorPageFaultsSinceBoot {};
 
                         /**
+                         *  Total number of (dirty) pages written to the page store.
+                         *
+                         *  Linux  /proc/vmstat : pgpgout
+                         *      CANNOT find docs on this but it appears to be the total number of pages paged out since boot
+                         */
+                        Optional<uint64_t>    fPageOutsSinceBoot {};
+
+                        /**
                          *  @see fMajorPageFaultsSinceBoot.
                          *
                          *  This is not computed in the first call to the intstrument, but based on successive calls
@@ -237,14 +236,6 @@ namespace   Stroika {
                          *  This is not computed in the first call to the intstrument, but based on successive calls
                          */
                         Optional<double>    fMinorPageFaultsPerSecond {};
-
-                        /**
-                         *  Total number of (dirty) pages written to the page store.
-                         *
-                         *  Linux  /proc/vmstat : pgpgout
-                         *      CANNOT find docs on this but it appears to be the total number of pages paged out since boot
-                         */
-                        Optional<uint64_t>    fPageOutsSinceBoot {};
 
                         /**
                          *  @see fPageOutsSinceBoot.
