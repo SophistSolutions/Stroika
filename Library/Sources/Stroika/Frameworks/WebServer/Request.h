@@ -34,6 +34,9 @@ namespace   Stroika {
             using   DataExchange::InternetMediaType;
 
             // Maybe associated TextStream, and maybe readline method goes here
+            // Quicky impl. Need to improve this significantly. Probably/possibly hide the fInptuStream and other public
+            //
+            // For now assume externally sycnhonized
             struct  Request {
             public:
                 Request () = delete;
@@ -44,6 +47,11 @@ namespace   Stroika {
                 nonvirtual  const Request& operator= (const Request&) = delete;
 
             public:
+                // Quicky impl. Need to improve this significantly.
+                // Can call multiple times - but first time it blcoks fetching data
+                nonvirtual  Memory::BLOB    GetBody ();
+
+            public:
                 Streams::InputStream<Memory::Byte>      fInputStream;
 
             public:
@@ -51,6 +59,9 @@ namespace   Stroika {
                 String                                  fMethod;
                 IO::Network::URL                        fURL;
                 map<String, String>                     fHeaders;
+
+            private:
+                Memory::Optional<Memory::BLOB>          fBody_;
             };
 
         }
