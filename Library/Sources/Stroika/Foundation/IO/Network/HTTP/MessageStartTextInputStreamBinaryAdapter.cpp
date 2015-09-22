@@ -72,6 +72,18 @@ protected:
                 roomLeftInBuf = fReadDataBuf_.GetSize () - fBufferFilledUpValidBytes_;
             }
             Assert (roomLeftInBuf > 0);
+
+
+            //tmphack
+            {
+                // this code is crap and needs to be thrown out/rewritten - but this kludge may get us limping along
+                size_t  nBytesNeeded = intoEnd - intoStart;
+                if (roomLeftInBuf > nBytesNeeded) {
+                    roomLeftInBuf = nBytesNeeded;
+                }
+            }
+
+
             Byte* startReadAt = fReadDataBuf_.begin () + fBufferFilledUpValidBytes_;
             size_t  n = fSource_.Read (startReadAt, startReadAt + roomLeftInBuf);
             Assert (n <= roomLeftInBuf);
