@@ -29,7 +29,7 @@
  *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
- *       @todo  Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
+ *      @todo   Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
  *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
  *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
  *              Optioanl<> use without synchronized, if all readers, but as soon as a writer gets into the party – assert out!
@@ -470,13 +470,13 @@ namespace   Stroika {
                 nonvirtual  T   operator* () const;
 
 #if 0
-				// cannot figure out how todo this yet...
+                // cannot figure out how todo this yet...
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-				template	<typename ENABLE_IF = typename enable_if <Configuration::has_ToString <value_type>::value && sizeof (Characters::String) != 0>::type>
+                template    < typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value && sizeof (Characters::String) != 0 >::type >
                 nonvirtual  Characters::String    ToString () const;
 #endif
 
