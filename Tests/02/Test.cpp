@@ -24,6 +24,7 @@
 #include    "Stroika/Foundation/Containers/STL/Utilities.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 
@@ -1392,6 +1393,12 @@ namespace {
         VerifyTestResult (ToString (L"abc") == L"abc");
         VerifyTestResult (ToString (String (L"abc")) == L"abc");
         VerifyTestResult (ToString (initializer_list<int> { 3, 4, 5 }) == L"{ 3, 4, 5 }");
+        {
+            const   Byte    kSample_[] = { 0x34, 0x55, 0x1f };
+            Memory::BLOB b { begin (kSample_), end (kSample_) };
+            VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
+            //@todo must fix overloads & template magic so this works! //VerifyTestResult (ToString (b) == L"[2 bytes: 34551f]");
+        }
     }
 }
 
