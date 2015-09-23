@@ -19,10 +19,29 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a105">v2.0a105x</a><br/>2015-09-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a105">v2.0a105</a><br/>2015-09-22</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Started support for LZMA SDK (7z archive format). Got so SDK in third-party-products builds (but not yet fully intergrated into stroika).</li>
+		<li>SystemPerformance Framework:
+			<ul>
+				<li>Tons of fixes for AIX - esp to process and memory instruments</li>
+				<li>Several cross-platform changes to memory names, and kinds of memory stats we capture/report
+					(fPrivateVirtualMemorySize, fTotalVirtualMemorySize, Free, Active, Inactive,Available RAM, better pagefaults and page outs, private working set, command line, EXE)</li>
+				<li>caching staticinfo support for SystemPerformance/Instruments/Process - for AIX</li>
+			</ul>
+		</li>
+		<li>More Foundation/Execution/Module String GetEXEPath (pid_t processID) performance
+    improvements (FOR AIX)</li>
+		<li>added operator +/-/*/// for two Optional&lt&gt; objects</li>
+		<li>WebServer framework
+			<ul>
+				<li>Modest progress on WebServer framework: enhanced exmaple so that showed looking for differnt urls, exception handling, and POST (and input args handling)</li>
+				<li>Added Cruddy but usable Request::GetBody () in Stroika/Frameworks/WebServer</li>
+				<li>Kludged around bug in reading WebServer headers - so now allows reading web request body (but must rewrite that code)</li>
+			</ul>
+		</li>
+		<liTested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
