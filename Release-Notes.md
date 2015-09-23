@@ -16,6 +16,21 @@ History
 
 
 
+
+
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a105">v2.0a106x</a><br/>2015-09-??</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
   
 
 <tr>
@@ -41,7 +56,7 @@ History
 				<li>Kludged around bug in reading WebServer headers - so now allows reading web request body (but must rewrite that code)</li>
 			</ul>
 		</li>
-		<liTested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
