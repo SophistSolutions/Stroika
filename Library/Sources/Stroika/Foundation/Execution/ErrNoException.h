@@ -68,6 +68,7 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             INT_TYPE    ThrowErrNoIfNegative (INT_TYPE returnCode);
 
+            void        ThrowErrNoIfNull (void* returnCode);
 
 #ifndef qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
 #define qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction 0

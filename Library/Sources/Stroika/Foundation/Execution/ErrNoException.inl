@@ -36,6 +36,12 @@ namespace   Stroika {
                 }
                 return returnCode;
             }
+            inline  void        ThrowErrNoIfNull (void* returnCode)
+            {
+                if (returnCode == nullptr) {
+                    errno_ErrorException::DoThrow (errno);
+                }
+            }
 
 
 #if     qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction

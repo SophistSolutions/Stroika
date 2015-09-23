@@ -41,6 +41,12 @@ namespace   Stroika {
                             Exception::DoThrow (::GetLastError ());
                         }
                     }
+                    inline  void    ThrowIfZeroGetLastError (int test)
+                    {
+                        if (test == 0) {
+                            Exception::DoThrow (::GetLastError ());
+                        }
+                    }
                     inline  void    ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
                     {
                         if (win32ErrCode != ERROR_SUCCESS) {
