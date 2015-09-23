@@ -402,12 +402,12 @@ void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
 {
 #if     qPlatform_POSIX
-    SDKChar buf[MAX_PATH];
+    SDKChar buf[PATH_MAX];
     Execution::ThrowErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
     return String::FromSDKString (buf);
 #elif   qPlatform_Windows
     SDKChar buf[MAX_PATH];
-    ThrowIfZeroGetLastError (::GetCurrentDirectory (MAX_PATH, buf));
+    ThrowIfZeroGetLastError (::GetCurrentDirectory (NEltsOf (buf), buf));
     return String::FromSDKString (buf);
 #else
 #endif
