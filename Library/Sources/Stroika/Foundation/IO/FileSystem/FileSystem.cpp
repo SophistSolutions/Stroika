@@ -410,6 +410,7 @@ String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
     ThrowIfZeroGetLastError (::GetCurrentDirectory (NEltsOf (buf), buf));
     return String::FromSDKString (buf);
 #else
+    AssertNotReached ();
 #endif
 }
 
@@ -420,5 +421,6 @@ void    IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
 #elif   qPlatform_Windows
     ::SetCurrentDirectory(newDir.AsSDKString ().c_str ());
 #else
+    AssertNotReached ();
 #endif
 }
