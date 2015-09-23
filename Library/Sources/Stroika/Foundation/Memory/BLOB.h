@@ -60,6 +60,7 @@
 
 
 namespace   Stroika { namespace   Foundation { namespace   Streams { template    <typename   ELEMENT_TYPE> class   InputStream; } } }
+namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
 
 
 
@@ -229,6 +230,13 @@ namespace   Stroika {
                  *  Trivial alias for @see GetSize()
                  */
                 nonvirtual  size_t      length () const;
+
+            public:
+                /**
+                 *  @see Characters::ToString()
+                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
+                 */
+                nonvirtual  Characters::String    ToString () const;
 
             public:
                 /**

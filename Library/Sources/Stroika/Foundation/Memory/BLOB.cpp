@@ -5,6 +5,8 @@
 
 #include    <mutex>
 
+#include    "../Characters/Format.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Streams/InputStream.h"
 
@@ -13,6 +15,7 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
@@ -262,3 +265,16 @@ Streams::InputStream<Byte> Memory::BLOB::As () const
 {
     return BLOBBINSTREAM_ (*this);
 }
+
+String    Memory::BLOB::ToString () const
+{
+    StringBuilder   sb;
+    sb += Characters::Format (L"[%d bytes: ", size ());
+    for (Byte b : *this) {
+        sb += Characters::Format (L"%0x", b);
+    }
+    sb += L"]";
+
+    return sb.str ();
+}
+

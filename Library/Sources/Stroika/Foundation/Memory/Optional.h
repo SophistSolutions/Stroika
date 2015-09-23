@@ -60,6 +60,10 @@
 
 
 
+namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
@@ -464,6 +468,17 @@ namespace   Stroika {
                  *          and so we can apply assertions etc to assure valid lifetime management.
                  */
                 nonvirtual  T   operator* () const;
+
+#if 0
+				// cannot figure out how todo this yet...
+            public:
+                /**
+                 *  @see Characters::ToString()
+                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
+                 */
+				template	<typename ENABLE_IF = typename enable_if <Configuration::has_ToString <value_type>::value && sizeof (Characters::String) != 0>::type>
+                nonvirtual  Characters::String    ToString () const;
+#endif
 
             public:
                 /**

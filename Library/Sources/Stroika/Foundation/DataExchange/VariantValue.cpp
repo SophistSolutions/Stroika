@@ -266,6 +266,11 @@ bool    VariantValue::empty () const
     }
 }
 
+String    VariantValue::ToString () const
+{
+    return As<String> ();
+}
+
 template    <>
 bool    VariantValue::As () const
 {

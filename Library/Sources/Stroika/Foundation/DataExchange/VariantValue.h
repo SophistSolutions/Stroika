@@ -203,6 +203,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Characters::ToString()
+                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
+                 */
+                nonvirtual  String    ToString () const;
+
+            public:
+                /**
                  *  Only these (enum Type) types supported.
                  *  There is no generic As<T> implementation.
                  *

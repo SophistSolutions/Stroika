@@ -30,6 +30,10 @@ namespace   Stroika {
              *  \note *Implementation Note*
              *      This implementation defaults to calling T().ToString ().
              *
+             *  \note *AKA*
+             *      o   DUMP
+             *      o   PrettyPrint
+             *
              *  Patterned after:
              *      Java:
              *          From the Object.toString() docs:
