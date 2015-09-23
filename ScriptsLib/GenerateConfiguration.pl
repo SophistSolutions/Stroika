@@ -150,6 +150,11 @@ sub	SetInitialDefaults_
 	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
+	if ("$^O" eq "aix") {
+		# no good reason - just haven't gotten working yet, so default to no
+		$FEATUREFLAG_Xerces = $LIBFEATUREFLAG_No;
+		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
+	}
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
