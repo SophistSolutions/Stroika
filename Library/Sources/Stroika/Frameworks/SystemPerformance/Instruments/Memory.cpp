@@ -153,43 +153,101 @@ namespace {
             perfstat_memory_total_t memResults;
             Execution::ThrowErrNoIfNegative (::perfstat_memory_total (nullptr, &memResults,  sizeof (memResults), 1));
 
+            // From /usr/include/libperfstat.h:
+            //      u_longlong_t real_free;     /* free real memory (in 4KB pages) */
+            //      u_longlong_t real_avail     - number of pages (in 4KB pages) of memory available without paging out working segments
+            //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
+            //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
+            //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
+            //      u_longlong_t virt_active;   Active virtual pages. Virtual pages are considered active if they have been accessed
+            //      u_longlong_t virt_total;    /* total virtual memory (in 4KB pages)
+            //
+            //      u_longlong_t pgins;         number of pages paged in
+            //      u_longlong_t pgouts;        number of pages paged out
+            //      u_longlong_t pgspins;       number of page ins from paging space
+            //      u_longlong_t pgspouts;      number of page outs from paging space
+            //
+            //      Empirically, and logically from the (vague) definitions (perfstat_memory_total_t), real_total  = real_inuse + real_free
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("virt_active=%lld", memResults.virt_active);
+            // [---MAIN---][0000.007]       real_total=983040
+            // [---MAIN---][0000.007]       real_free=280802
+            // [---MAIN---][0000.007]       real_inuse=702238
+            // [---MAIN---][0000.007]       real_pinned=237141      *not used*????
+            // [---MAIN---][0000.007]       real_avail=606596
+            // [---MAIN---][0000.007]       real_user=472485        *not used*
+            // [---MAIN---][0000.007]       real_system=195546      *not used*
+            // [---MAIN---][0000.007]       real_process=148875     *not used*
+            // [---MAIN---][0000.007]       virt_active=332889
+            // [---MAIN---][0000.007]       virt_total=1998848
             DbgTrace ("real_total=%lld", memResults.real_total);
             DbgTrace ("real_free=%lld", memResults.real_free);
             DbgTrace ("real_inuse=%lld", memResults.real_inuse);
             DbgTrace ("real_pinned=%lld", memResults.real_pinned);
+            DbgTrace ("real_avail=%lld", memResults.real_avail);
             DbgTrace ("real_user=%lld", memResults.real_user);
             DbgTrace ("real_system=%lld", memResults.real_system);
             DbgTrace ("real_process=%lld", memResults.real_process);
-            DbgTrace ("real_avail=%lld", memResults.real_avail);
+            DbgTrace ("virt_active=%lld", memResults.virt_active);
+            DbgTrace ("virt_total=%lld", memResults.virt_total);
 #endif
 
-            // From /usr/include/libperfstat.h:
-            //      u_longlong_t real_free;     /* free real memory (in 4KB pages) */
             result.fFreePhysicalMemory = memResults.real_free * 4 * 1024;
 
-            // From /usr/include/libperfstat.h:
-            //      u_longlong_t virt_total;    /* total virtual memory (in 4KB pages)
-            result.fCommitLimit = memResults.virt_total * 4 * 1024;             //
+            /// REST OF THESE MEM STATS HIGHLY QUESTIONABLE
 
-            // WAG  /* reserved paging space (in 4KB pages) */
-            // u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
+            /*
+             *  Pinned pages cannot be paged out.
+             *      https://www-01.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/support_pinned_mem.htm
+             *          "Pinning a memory region prohibits the pager from stealing pages from the pages backing the pinned memory region"
+             *
+             *  What we want to call active is really LARGER than this, but this is at least an estimate of actively in use memory.
+             *
+             *  SINCE we know:
+             *      real_total  = real_inuse + real_free;
+             *      since we define RAMTOTAL = INACTIVE + ACTIVE + FREE (roughtly)
+             *  that implies that
+             *      what we call "ACTIVE + INACTIVE = real_inuse";
+             *
+             *  It APPEARS 'real_avail = real_free + what I call INACTIVE'
+             *  SO:
+             *      INACIVE = is real_avail - real_free
+             *      ACTIVE= (real_inuse - (real_avail-real_free));
+             */
+#if 1
+            {
+                result.fInactivePhysicalMemory = (memResults.real_avail - memResults.real_free) * 4 * 1024;
+                result.fActivePhysicalMemory = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
+            }
+#else
+            {
+                uint64_t    definitelyActiveMem =   memResults.real_pinned * 4 * 1024;  // definitely active
+                uint64_t    maybeActiveOrNot    =   (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;
 
-            // From /usr/include/libperfstat.h: u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
+                double  guessRatioActive = 0.5; // @todo adjust based on paging, steals or some other hint (unlessI can find a better way)
+
+                uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
+                result.fActivePhysicalMemory = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
+                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - *result.fActivePhysicalMemory;
+            }
+#endif
+
+            /*
+             */
+            result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
+
+            /*
+             *  This number (virt_active) by nmon to summarize virtual memory status. But very little else...
+             *
+             *  Tried (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
+             *  but that didn't produce a good/representative answer.
+             */
+            result.fCommittedBytes = (memResults.virt_active) * 4 * 1024;
+
+            result.fCommitLimit = memResults.virt_total * 4 * 1024;
+
             result.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
-            // Empirically, and logically from the (vague) definitions (perfstat_memory_total_t), real_total  = real_inuse + real_free
 #if 0
-            //[-- -MAIN-- -][0000.006]  virt_active = 375702
-            //[-- -MAIN-- -][0000.006]  real_total = 983040
-            //[-- -MAIN-- -][0000.006]  real_free = 71112
-            //[-- -MAIN-- -][0000.006]  real_inuse = 911928
-            //[-- -MAIN-- -][0000.006]  real_pinned = 277360
-            //[-- -MAIN-- -][0000.006]  real_user = 641911
-            //[-- -MAIN-- -][0000.006]  real_system = 234850
-            //[-- -MAIN-- -][0000.006]  real_process = 155708
-            //[-- -MAIN-- -][0000.006]  real_avail = 560475
             u_longlong_t real_system;   /* number of pages used by system segments.                                   *
                                  * This is the sum of all the used pages in segment marked for system usage.  *
                                  * Since segment classifications are not always guaranteed to be accurate,    *
@@ -212,54 +270,7 @@ namespace {
             u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
 #endif
 
-            /*
-             *  Pinned pages cannot be paged out.
-             *      https://www-01.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/support_pinned_mem.htm
-             *          "Pinning a memory region prohibits the pager from stealing pages from the pages backing the pinned memory region"
-             *
-             *  What we want to call active is really LARGER than this, but this is at least an estimate of actively in use memory.
-             */
-            {
-                uint64_t    definitelyActiveMem =   memResults.real_pinned * 4 * 1024;  // definitely active
 
-                uint64_t    maybeActiveOrNot    =   (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;
-
-                double  guessRatioActive = 0.5; // @todo adjust based on paging, steals or some other hint (unlessI can find a better way)
-
-                uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
-                result.fActivePhysicalMemory = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
-                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - *result.fActivePhysicalMemory;
-            }
-
-            /*
-             *      real_avail - number of pages (in 4KB pages) of memory available without paging out working segments
-             */
-            result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
-
-#if 1
-            /*
-             *  From /usr/include/libperfstat.h:
-             *       u_longlong_t virt_active;       -  Active virtual pages. Virtual pages are considered active if they have been accessed
-             *
-             *  This number (virt_active) by nmon to summarize virtual memory status. But very little else...
-             *
-             *  Tried (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024; but that didn't produce a good/representative answer.
-             */
-            result.fCommittedBytes = (memResults.virt_active) * 4 * 1024;
-#else
-            // From /usr/include/libperfstat.h:
-            //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
-            //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
-            //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
-            result.fCommittedBytes = (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
-#endif
-
-            /*
-             *  u_longlong_t pgins;         number of pages paged in
-             *  u_longlong_t pgouts;        number of pages paged out
-             *  u_longlong_t pgspins;       number of page ins from paging space
-             *  u_longlong_t pgspouts;      number of page outs from paging space
-             */
             result.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
             result.fMajorPageFaultsSinceBoot = memResults.pgspins;
             result.fPageOutsSinceBoot = memResults.pgouts;
