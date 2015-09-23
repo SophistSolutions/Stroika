@@ -60,8 +60,12 @@
 
 
 
-namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
-
+#if 1
+// cannot figure out how todo this (ToString) yet...
+//namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
+namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(T); } } }
+namespace   Stroika { namespace   Foundation { namespace   Configuration { template <typename T> struct has_ToString; } } }
+#endif
 
 
 namespace   Stroika {
@@ -476,7 +480,7 @@ namespace   Stroika {
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-                template    < typename STRING_TYPE = Characters::String, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value && sizeof (STRING_TYPE) != 0 >::type >
+                template    < typename STRING_TYPE = Characters::String, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value>::type >
                 nonvirtual  STRING_TYPE    ToString () const;
 #endif
 

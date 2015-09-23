@@ -271,7 +271,7 @@ String    Memory::BLOB::ToString () const
     StringBuilder   sb;
     sb += Characters::Format (L"[%d bytes: ", size ());
     for (Byte b : *this) {
-        sb += Characters::Format (L"%0x", b);
+        sb += Characters::Format (L"%x", b);
     }
     sb += L"]";
 
