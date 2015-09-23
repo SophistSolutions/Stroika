@@ -193,14 +193,14 @@ namespace {
 
             result.fFreePhysicalMemory = memResults.real_free * 4 * 1024;
 
-            /// REST OF THESE MEM STATS HIGHLY QUESTIONABLE
-
             /*
              *  Pinned pages cannot be paged out.
              *      https://www-01.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.performance/support_pinned_mem.htm
              *          "Pinning a memory region prohibits the pager from stealing pages from the pages backing the pinned memory region"
              *
              *  What we want to call active is really LARGER than this, but this is at least an estimate of actively in use memory.
+             *  (FOR NOW IGNORE ABOVE BUT LATER WE MAY WANT TO FACTOR 'pinned' in - maybe assuring activePhysRam at least as much
+             *  as pinned?)
              *
              *  SINCE we know:
              *      real_total  = real_inuse + real_free;
@@ -232,6 +232,8 @@ namespace {
 #endif
 
             /*
+             *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
+             *  we could use if needed.
              */
             result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
 
