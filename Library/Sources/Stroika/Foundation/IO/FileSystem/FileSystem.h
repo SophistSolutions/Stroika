@@ -160,6 +160,18 @@ namespace   Stroika {
                      *  @see RemoveFile
                      */
                     nonvirtual  void        RemoveFileIf (const String& fileName);
+
+                public:
+                    /**
+                     *  Wrapper on platform GetCurrentDirectory () or getcwd()
+                     */
+                    nonvirtual  String  GetCurrentDirectory () const;
+
+                public:
+                    /**
+                     *  Wrapper on platform SetCurrentDirectory () or chdir ()
+                     */
+                    nonvirtual  void    SetCurrentDirectory (const String& newDir);
                 };
 
 

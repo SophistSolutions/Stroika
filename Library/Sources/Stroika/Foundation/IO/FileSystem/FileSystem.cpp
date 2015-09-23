@@ -39,6 +39,7 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 
 #if     qPlatform_Windows
 using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
+using   Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
 
@@ -384,7 +385,7 @@ void        IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
 #endif
 }
 
-void       IO::FileSystem::FileSystem:: RemoveFileIf (const String& fileName)
+void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 {
 #if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
     int r = ::_wunlink (fileName.c_str ());
@@ -396,4 +397,28 @@ void       IO::FileSystem::FileSystem:: RemoveFileIf (const String& fileName)
             errno_ErrorException::DoThrow (errno);
         }
     }
+}
+
+String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
+{
+#if     qPlatform_POSIX
+    SDKChar buf[MAX_PATH];
+    Execution::ThrowErrNoIfNull (::getcwd (buf, NEltsOf (buf)));
+    return String::FromSDKString (buf);
+#elif   qPlatform_Windows
+    SDKChar buf[MAX_PATH];
+    ThrowIfZeroGetLastError (::GetCurrentDirectory (MAX_PATH, buf));
+    return String::FromSDKString (buf);
+#else
+#endif
+}
+
+void    IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
+{
+#if     qPlatform_POSIX
+    Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
+#elif   qPlatform_Windows
+    ::SetCurrentDirectory(newDir.AsSDKString ().c_str ());
+#else
+#endif
 }
