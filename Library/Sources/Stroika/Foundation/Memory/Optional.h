@@ -60,7 +60,7 @@
 
 
 
-#if 1
+#if 0
 // cannot figure out how todo this (ToString) yet...
 //namespace   Stroika { namespace   Foundation { namespace   Characters { class String; } } }
 namespace   Stroika { namespace   Foundation { namespace   Characters { class String; template<typename T> String ToString(T); } } }
@@ -473,7 +473,7 @@ namespace   Stroika {
                  */
                 nonvirtual  T   operator* () const;
 
-#if 1
+#if 0
                 // cannot figure out how todo this yet...
             public:
                 /**
