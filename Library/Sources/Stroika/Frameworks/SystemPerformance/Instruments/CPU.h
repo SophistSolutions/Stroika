@@ -34,6 +34,7 @@ namespace   Stroika {
 
 
                     using   DataExchange::ObjectVariantMapper;
+                    using   Foundation::Memory::Optional;
                     using   Foundation::Memory::Optional_Indirect_Storage;
 
 
@@ -60,6 +61,15 @@ namespace   Stroika {
                          *  even on a 4 core machine, this can never execeed 1).
                          */
                         double  fTotalCPUUsage {};
+
+                        /**
+                         *  This is the average number of threads waiting in the runq. If the system is not busy, it
+                         *  should be zero. When more than 4 or 5 (depends alot on system) - performance maybe degraded.
+                         *
+                         *  This is essentially the same as the UNIX 'load average' concept, except that the time frame
+                         *  is not 1/5/15 minutes, but the time frame over which you've sampled.
+                         */
+                        Optional<double>    fRunQLength {};
                     };
 
 

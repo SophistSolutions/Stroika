@@ -89,12 +89,14 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
         });
         mapper.AddCommonType<Optional_Indirect_Storage<Info::LoadAverage>> ();
 #endif
+        mapper.AddCommonType<Optional<double>> ();
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLoadAverage), String_Constant (L"Load-Average"), StructureFieldInfo::NullFieldHandling::eOmit },
 #endif
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalProcessCPUUsage), String_Constant (L"Total-Process-CPU-Usage") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fTotalCPUUsage), String_Constant (L"Total-CPU-Usage") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fRunQLength), String_Constant (L"Run-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -102,6 +104,8 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
     } ();
     return sMapper_;
 }
+
+
 
 
 
@@ -130,6 +134,29 @@ namespace {
 
 
 
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+namespace {
+    double  EstimateRunQFromLoadAveArray_ (double backNSeconds, double loadAveArray[3])
+    {
+        if (backNSeconds <= 1) {
+            return loadAveArray[0];
+        }
+        else if (backNSeconds <= 5) {
+            double  distFrom1 = (backNSeconds - 1);
+            double  distFrom5 = (5.0 - backNSeconds);
+            return loadAveArray[0] * (1.0 - distFrom1 / 4) + loadAveArray[1] * (1.0 - distFrom5 / 4);
+        }
+        else if (backNSeconds <= 15) {
+            double  distFrom5 = (backNSeconds - 5);
+            double  distFrom15 = (15.0 - backNSeconds);
+            return loadAveArray[1] * (1.0 - distFrom5 / 10) + loadAveArray[2] * (1.0 - distFrom15 / 10);
+        }
+        else {
+            return loadAveArray[2];
+        }
+    }
+}
+#endif
 
 
 #if     qPlatform_AIX
@@ -163,7 +190,6 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("tmp.user=%lld, tmp.sys=%lld, tmp.idle=%lld, tmp.wait=%lld", tmp.user, tmp.sys, tmp.idle, tmp.wait);
 #endif
-
             CPUUsageTimes_  result {};
             if (fPrev) {
                 u_longlong_t    total {};
@@ -204,6 +230,19 @@ namespace {
         {
             Info    result;
             auto tmp = cputime_ ();
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+            {
+                double loadAve[3];
+                int lr = ::getloadavg (loadAve, NEltsOf (loadAve));
+                if (lr == 3) {
+                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
+                }
+                else {
+                    DbgTrace ("getloadave failed - with result = %d", lr);
+                }
+            }
+#endif
             result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
             result.fTotalCPUUsage = tmp.fTotalCPUUsage;
             NoteCompletedCapture_ ();
@@ -216,9 +255,11 @@ namespace {
 
 
 
-#if   qPlatform_POSIX
+
+
+#if   qPlatform_Linux
 namespace {
-    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         struct  POSIXSysTimeCaptureContext_ {
             double  user;
             double  nice;
@@ -232,7 +273,7 @@ namespace {
             double  guest_nice;
         };
         POSIXSysTimeCaptureContext_     fContext_ {};
-        CapturerWithContext_POSIX_ (const Options& options)
+        CapturerWithContext_Linux_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
             // Force fill of context - ignore results
@@ -383,9 +424,10 @@ namespace {
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {
                 double loadAve[3];
-                int lr = ::getloadavg (loadAve, 3);
+                int lr = ::getloadavg (loadAve, NEltsOf (loadAve));
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
@@ -495,19 +537,18 @@ namespace {
 namespace {
     struct  CapturerWithContext_
             : Debug::AssertExternallySynchronizedLock
-
 #if     qPlatform_AIX
             , CapturerWithContext_AIX_
-#elif     qPlatform_POSIX
-            , CapturerWithContext_POSIX_
+#elif     qPlatform_Linux
+            , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_AIX
         using inherited = CapturerWithContext_AIX_;
-#elif     qPlatform_POSIX
-        using inherited = CapturerWithContext_POSIX_;
+#elif     qPlatform_Linux
+        using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
@@ -584,7 +625,7 @@ namespace {
 
 /*
  ********************************************************************************
- ************************* Instruments::CPU::GetInstrument **********************
+ ************************ Instruments::CPU::GetInstrument ***********************
  ********************************************************************************
  */
 Instrument  SystemPerformance::Instruments::CPU::GetInstrument (Options options)
