@@ -139,17 +139,20 @@ namespace {
     template    <typename ELT>
     double  EstimateRunQFromLoadAveArray_ (Time::DurationSecondsType backNSeconds, ELT loadAveArray[3])
     {
-        if (backNSeconds <= 1) {
+        // NB: Currently this is TOO simple. We should probably fit a curve to 3 points and use that to extrapolate. Maybe just fit 4 line segments?
+        Require (backNSeconds >= 0);
+        double  backNMinutes    =   backNSeconds / 60.0;
+        if (backNMinutes <= 1) {
             return static_cast<double> (loadAveArray[0]);
         }
-        else if (backNSeconds <= 5) {
-            double  distFrom1 = (backNSeconds - 1);
-            double  distFrom5 = (5.0 - backNSeconds);
+        else if (backNMinutes <= 5) {
+            double  distFrom1 = (backNMinutes - 1);
+            double  distFrom5 = (5.0 - backNMinutes);
             return static_cast<double> (loadAveArray[0]) * (1.0 - distFrom1 / 4) + static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 4);
         }
-        else if (backNSeconds <= 15) {
-            double  distFrom5 = (backNSeconds - 5);
-            double  distFrom15 = (15.0 - backNSeconds);
+        else if (backNMinutes <= 15) {
+            double  distFrom5 = (backNMinutes - 5);
+            double  distFrom15 = (15.0 - backNMinutes);
             return static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 10) + static_cast<double> (loadAveArray[2]) * (1.0 - distFrom15 / 10);
         }
         else {
@@ -175,8 +178,12 @@ namespace {
             }
         }
         struct  CPUUsageTimes_ {
-            double  fProcessCPUUsage;
-            double  fTotalCPUUsage;
+            double              fProcessCPUUsage;
+            double              fTotalCPUUsage;
+            double              fRunQLength;
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+            Info::LoadAverage   fLoadAverage;
+#endif
         };
         CPUUsageTimes_  cputime_ ()
         {
@@ -206,23 +213,29 @@ namespace {
                 u_longlong_t    idleNumerator {};
                 idleNumerator += tmp.idle - fPrev->idle;
 
-
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("lbolt=%lld", tmp.lbolt);
                 DbgTrace ("runocc=%lld", tmp.runocc);
                 DbgTrace ("loadavg[0]=%f, loadavg[1]=%f, loadavg[2]=%f", static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS));
-                loadavg {
+#endif
+                double  runQLength; // intentionally uninitialized
+                Info::LoadAverage   loadAverage;
+                {
                     double loadAve[3] = { static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS) };
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+                    loadAverage  = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
 #endif
-                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
+                    runQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
                 }
 
                 result = CPUUsageTimes_ {
                     static_cast<double> (pcpuNumerator) / static_cast<double> (total),
-                    1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total)
+                    1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total),
+                    runQLength
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+                    , loadAverage
+#endif
                 };
-
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("fPrev.user=%lld, fPrev.sys=%lld, fPrev.idle=%lld, fPrev.wait=%lld", fPrev->user, fPrev->sys, fPrev->idle, fPrev->wait);
@@ -247,6 +260,10 @@ namespace {
             auto tmp = cputime_ ();
             result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
             result.fTotalCPUUsage = tmp.fTotalCPUUsage;
+            result.fRunQLength = tmp.fRunQLength;
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+            result.fLoadAverage = tmp.fLoadAverage;
+#endif
             NoteCompletedCapture_ ();
             return result;
         }
