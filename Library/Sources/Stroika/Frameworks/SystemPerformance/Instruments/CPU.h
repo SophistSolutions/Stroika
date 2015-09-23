@@ -29,7 +29,7 @@ namespace   Stroika {
 
                     // @todo now we say iff Linux, but also available on BSD, Solaris, and could fetch with procfs
 #ifndef qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  qPlatform_Linux
+#define qSupport_SystemPerformance_Instruments_CPU_LoadAverage  (qPlatform_Linux || qPlatform_AIX)
 #endif
 
 
@@ -63,8 +63,11 @@ namespace   Stroika {
                         double  fTotalCPUUsage {};
 
                         /**
-                         *  This is the average number of threads waiting in the runq. If the system is not busy, it
+                         *  This is the average number of threads waiting in the run-q (status runnable). If the system is not busy, it
                          *  should be zero. When more than 4 or 5 (depends alot on system) - performance maybe degraded.
+                         *
+                         *  \note   On some systems, load average includes threads in disk wait. We try to avoid that, but depend
+                         *          on low level data, and may not be able to avoid it.
                          *
                          *  This is essentially the same as the UNIX 'load average' concept, except that the time frame
                          *  is not 1/5/15 minutes, but the time frame over which you've sampled.

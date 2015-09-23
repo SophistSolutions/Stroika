@@ -136,23 +136,24 @@ namespace {
 
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 namespace {
-    double  EstimateRunQFromLoadAveArray_ (double backNSeconds, double loadAveArray[3])
+    template    <typename ELT>
+    double  EstimateRunQFromLoadAveArray_ (Time::DurationSecondsType backNSeconds, ELT loadAveArray[3])
     {
         if (backNSeconds <= 1) {
-            return loadAveArray[0];
+            return static_cast<double> (loadAveArray[0]);
         }
         else if (backNSeconds <= 5) {
             double  distFrom1 = (backNSeconds - 1);
             double  distFrom5 = (5.0 - backNSeconds);
-            return loadAveArray[0] * (1.0 - distFrom1 / 4) + loadAveArray[1] * (1.0 - distFrom5 / 4);
+            return static_cast<double> (loadAveArray[0]) * (1.0 - distFrom1 / 4) + static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 4);
         }
         else if (backNSeconds <= 15) {
             double  distFrom5 = (backNSeconds - 5);
             double  distFrom15 = (15.0 - backNSeconds);
-            return loadAveArray[1] * (1.0 - distFrom5 / 10) + loadAveArray[2] * (1.0 - distFrom15 / 10);
+            return static_cast<double> (loadAveArray[1]) * (1.0 - distFrom5 / 10) + static_cast<double> (loadAveArray[2]) * (1.0 - distFrom15 / 10);
         }
         else {
-            return loadAveArray[2];
+            return static_cast<double> (loadAveArray[2]);
         }
     }
 }
@@ -205,10 +206,24 @@ namespace {
                 u_longlong_t    idleNumerator {};
                 idleNumerator += tmp.idle - fPrev->idle;
 
+
+                DbgTrace ("lbolt=%lld", tmp.lbolt);
+                DbgTrace ("runocc=%lld", tmp.runocc);
+                DbgTrace ("loadavg[0]=%f, loadavg[1]=%f, loadavg[2]=%f", static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS));
+                loadavg {
+                    double loadAve[3] = { static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS) };
+#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
+                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
+#endif
+                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
+                }
+
                 result = CPUUsageTimes_ {
                     static_cast<double> (pcpuNumerator) / static_cast<double> (total),
                     1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total)
                 };
+
+
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("fPrev.user=%lld, fPrev.sys=%lld, fPrev.idle=%lld, fPrev.wait=%lld", fPrev->user, fPrev->sys, fPrev->idle, fPrev->wait);
                 DbgTrace ("total = %lld", total);
@@ -230,19 +245,6 @@ namespace {
         {
             Info    result;
             auto tmp = cputime_ ();
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            {
-                double loadAve[3];
-                int lr = ::getloadavg (loadAve, NEltsOf (loadAve));
-                if (lr == 3) {
-                    result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-                    result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
-                }
-                else {
-                    DbgTrace ("getloadave failed - with result = %d", lr);
-                }
-            }
-#endif
             result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
             result.fTotalCPUUsage = tmp.fTotalCPUUsage;
             NoteCompletedCapture_ ();
