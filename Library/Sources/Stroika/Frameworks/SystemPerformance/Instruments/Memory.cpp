@@ -236,11 +236,23 @@ namespace {
              */
             result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
 
+#if 1
+            /*
+             *  From /usr/include/libperfstat.h:
+             *       u_longlong_t virt_active;       -  Active virtual pages. Virtual pages are considered active if they have been accessed
+             *
+             *  This number (virt_active) by nmon to summarize virtual memory status. But very little else...
+             *
+             *  Tried (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024; but that didn't produce a good/representative answer.
+             */
+            result.fCommittedBytes = (memResults.virt_active) * 4 * 1024;
+#else
             // From /usr/include/libperfstat.h:
             //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
             //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
             //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
             result.fCommittedBytes = (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
+#endif
 
             /*
              *  u_longlong_t pgins;         number of pages paged in
