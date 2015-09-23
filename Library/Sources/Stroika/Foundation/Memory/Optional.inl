@@ -438,14 +438,12 @@ namespace   Stroika {
                 AssertNotNull (fStorage_.fValue_);
                 return *fStorage_.peek ();
             }
-#if 0
             template    <typename T, typename TRAITS>
-            template    <typename ENABLE_IF>
-            Characters::String    Optional<T, TRAITS>::ToString () const
+            template    <typename STRING_TYPE, typename ENABLE_IF>
+            STRING_TYPE    Optional<T, TRAITS>::ToString () const
             {
                 return IsPresent () ? Characters::ToString (*this) : L"[missing]";
             }
-#endif
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&    Optional<T, TRAITS>::operator+= (const Optional& rhs)
             {

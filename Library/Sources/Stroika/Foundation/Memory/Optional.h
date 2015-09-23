@@ -469,15 +469,15 @@ namespace   Stroika {
                  */
                 nonvirtual  T   operator* () const;
 
-#if 0
+#if 1
                 // cannot figure out how todo this yet...
             public:
                 /**
                  *  @see Characters::ToString()
                  *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
                  */
-                template    < typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value && sizeof (Characters::String) != 0 >::type >
-                nonvirtual  Characters::String    ToString () const;
+                template    < typename STRING_TYPE = Characters::String, typename ENABLE_IF = typename enable_if < Configuration::has_ToString <value_type>::value && sizeof (STRING_TYPE) != 0 >::type >
+                nonvirtual  STRING_TYPE    ToString () const;
 #endif
 
             public:
