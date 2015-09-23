@@ -644,7 +644,7 @@ namespace {
         WaitableEvent we2 (WaitableEvent::eAutoReset);
         Thread t1 {[&we1] ()
         {
-            Execution::Sleep (1.0);
+            Execution::Sleep (2.0); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
         }
                   };
