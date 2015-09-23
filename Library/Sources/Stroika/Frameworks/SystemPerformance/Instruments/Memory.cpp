@@ -339,6 +339,7 @@ namespace {
             //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             // Note - /procfs files always unseekable
+            Optional<uint64_t>  slabReclaimable;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
@@ -350,6 +351,10 @@ namespace {
                 ReadMemInfoLine_ (&updateResult->fCommitLimit, String_Constant (L"CommitLimit"), line);
                 ReadMemInfoLine_ (&updateResult->fCommittedBytes, String_Constant (L"Committed_AS"), line);
                 ReadMemInfoLine_ (&updateResult->fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
+                ReadMemInfoLine_ (&slabReclaimable, String_Constant (L"SReclaimable"), line);
+            }
+            if (updateResult->fMemoryAvailable.IsMissing () and updateResult->fFreePhysicalMemory and updateResult->fInactivePhysicalMemory) {
+                updateResult->fMemoryAvailable = *updateResult->fFreePhysicalMemory + *updateResult->fInactivePhysicalMemory + slabReclaimable.Value ();
             }
         }
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
