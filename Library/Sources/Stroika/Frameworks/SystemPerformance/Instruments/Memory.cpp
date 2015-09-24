@@ -363,19 +363,28 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                ReadMemInfoLine_ (&memTotal, String_Constant (L"MemTotal"), line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, String_Constant (L"MemFree"), line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, String_Constant (L"MemAvailable"), line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fActive, String_Constant (L"Active"), line);
-                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fInactive, String_Constant (L"Inactive"), line);
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommitLimit, String_Constant (L"CommitLimit"), line);
+                static  const   String_Constant kMemTotalLabel_     { L"MemTotal" };
+                static  const   String_Constant kMemFreelLabel_     { L"MemFree" };
+                static  const   String_Constant kMemAvailableLabel_ { L"MemAvailable" };
+                static  const   String_Constant kActiveLabel_       { L"Active" };
+                static  const   String_Constant kInactiveLabel_     { L"Inactive" };
+                static  const   String_Constant kCommitLimitLabel_  { L"CommitLimit" };
+                static  const   String_Constant kCommitted_ASLabel_ { L"Committed_AS" };
+                static  const   String_Constant kSwapTotalLabel_    { L"SwapTotal" };
+                static  const   String_Constant kSReclaimableLabel_ { L"SReclaimable" };
+                ReadMemInfoLine_ (&memTotal, kMemTotalLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fActive, kActiveLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fInactive, kInactiveLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommitLimit, kCommitLimitLabel_, line);
                 /*
                  *  From docs on https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt about
                  *  Commited_AS - its unclear if this is the best measure of commited bytes.
                  */
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, String_Constant (L"Committed_AS"), line);
-                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
-                ReadMemInfoLine_ (&slabReclaimable, String_Constant (L"SReclaimable"), line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, kCommitted_ASLabel_, line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, kSwapTotalLabel_, line);
+                ReadMemInfoLine_ (&slabReclaimable, kSReclaimableLabel_, line);
             }
             if (memTotal and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive and updateResult->fPhysicalMemory.fActive) {
                 updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree - *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
@@ -389,29 +398,41 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Read_ProcVMStat_");
 #endif
-            auto    ReadVMStatLine_ = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
-                if (line.size () >= 2 and line[0] == n) {
+            auto    ReadVMStatLine_ = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) -> unsigned int {
+                if (line.size () >= 2 and line[0] == n)
+                {
                     *result = Characters::String2Int<uint64_t> (line[1]);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"Set %s = %ld", n.c_str (), static_cast<long> (**result));
 #endif
+                    return 1;
                 }
+                return 0;
             };
             {
                 static  const   String_Constant kProcVMStatFileName_ { L"/proc/vmstat" };
                 Optional<uint64_t>  pgfault;
                 Optional<uint64_t>  pgpgout;
-                // Note - /procfs files always unseekable
-                DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
-                for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
+                {
+                    unsigned    int nFound {};
+                    // Note - /procfs files always unseekable
+                    DataExchange::CharacterDelimitedLines::Reader reader {{ ' ', '\t' }};
+                    for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
+                        DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                    ReadVMStatLine_ (&pgfault, String_Constant (L"pgfault"), line);
-                    // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
-                    // which makes no sense
-                    ReadVMStatLine_ (&pgpgout, String_Constant (L"pgpgout"), line);     // tried pgpgout but I dont know what it is but doesnt appear to be pages out - noneof this well documented
-                    ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+                        static  const   String_Constant kpgfaultLabel_  { L"pgfault" };
+                        static  const   String_Constant kpgpgoutLabel_  { L"pgpgout" };
+                        static  const   String_Constant kpgmajfaultLabel_   { L"pgmajfault" };
+                        nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
+                        // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
+                        // which makes no sense
+                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line);     // tried pgpgout but I dont know what it is but doesnt appear to be pages out - noneof this well documented
+                        nFound += ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, kpgmajfaultLabel_, line);
+                        if (nFound >= 3) {
+                            break;  // avoid reading rest if all found
+                        }
+                    }
                 }
                 Time::DurationSecondsType   now = Time::GetTickCount ();
                 updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
