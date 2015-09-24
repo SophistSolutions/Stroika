@@ -369,6 +369,10 @@ namespace {
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fActive, String_Constant (L"Active"), line);
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fInactive, String_Constant (L"Inactive"), line);
                 ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommitLimit, String_Constant (L"CommitLimit"), line);
+                /*
+                 *  From docs on https://github.com/torvalds/linux/blob/master/Documentation/filesystems/proc.txt about
+                 *  Commited_AS - its unclear if this is the best measure of commited bytes.
+                 */
                 ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, String_Constant (L"Committed_AS"), line);
                 ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
                 ReadMemInfoLine_ (&slabReclaimable, String_Constant (L"SReclaimable"), line);
