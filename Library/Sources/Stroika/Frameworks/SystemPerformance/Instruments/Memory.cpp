@@ -353,12 +353,18 @@ namespace {
 #endif
                 }
             };
+            /*
+             *  @todo   minor performance note: we current do about 10 (tha many strings * 45 (about that many lines in file) compares.
+             *          We couuld read data and form a map so lookups faster. Or at least keep a list of items alreayd found and not
+             *          look for them more, and stop when none left to look for (wont work if some like sreclaimable not found).
+             */
             static  const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
             //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             // Note - /procfs files always unseekable
             Optional<uint64_t>  memTotal;
             Optional<uint64_t>  slabReclaimable;
+            Optional<uint64_t>  slab;               // older kernels dont have slabReclaimable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
@@ -372,6 +378,7 @@ namespace {
                 static  const   String_Constant kCommitted_ASLabel_ { L"Committed_AS" };
                 static  const   String_Constant kSwapTotalLabel_    { L"SwapTotal" };
                 static  const   String_Constant kSReclaimableLabel_ { L"SReclaimable" };
+                static  const   String_Constant kSlabLabel_         { L"Slab" };
                 ReadMemInfoLine_ (&memTotal, kMemTotalLabel_, line);
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, kMemFreelLabel_, line);
                 ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, kMemAvailableLabel_, line);
@@ -385,11 +392,16 @@ namespace {
                 ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, kCommitted_ASLabel_, line);
                 ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, kSwapTotalLabel_, line);
                 ReadMemInfoLine_ (&slabReclaimable, kSReclaimableLabel_, line);
+                ReadMemInfoLine_ (&slab, kSlabLabel_, line);
             }
             if (memTotal and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive and updateResult->fPhysicalMemory.fActive) {
                 updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree - *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
             }
             if (updateResult->fPhysicalMemory.fAvailable.IsMissing () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
+                if (slabReclaimable.IsMissing ()) {
+                    // wag
+                    slabReclaimable = slab / 2;
+                }
                 updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
             }
         }
