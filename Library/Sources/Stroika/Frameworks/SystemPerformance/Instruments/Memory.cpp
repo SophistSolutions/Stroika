@@ -191,7 +191,7 @@ namespace {
             // [---MAIN---][0000.007]       real_total=983040
             // [---MAIN---][0000.007]       real_free=280802
             // [---MAIN---][0000.007]       real_inuse=702238
-            // [---MAIN---][0000.007]       real_pinned=237141      *not used*????
+            // [---MAIN---][0000.007]       real_pinned=237141      *not used* see kIncludeUnPinnedActiveRAMAsAvailable_
             // [---MAIN---][0000.007]       real_avail=606596
             // [---MAIN---][0000.007]       real_user=472485        *not used*
             // [---MAIN---][0000.007]       real_system=195546      *not used*
@@ -223,23 +223,40 @@ namespace {
              *
              *  SINCE we know:
              *      real_total  = real_inuse + real_free;
-             *      since we define RAMTOTAL = INACTIVE + ACTIVE + FREE (roughtly)
-             *  that implies that
-             *      what we call "ACTIVE + INACTIVE = real_inuse";
+             *      since we define RAMTOTAL = INACTIVE + ACTIVE + FREE  + OS_RESERVED
+             *  setting real_inuse + real_free = INACTIVE + ACTIVE + FREE + OS_RESERVED =>
+             *      ACTIVE + INACTIVE + OS_RESERVED = real_inuse;
              *
-             *  It APPEARS 'real_avail = real_free + what I call INACTIVE'
+             *  It APPEARS (empirically looking at results) that
+             *      real_avail = real_free +  INACTIVE
+             *
              *  SO:
              *      INACIVE = is real_avail - real_free
-             *      ACTIVE= (real_inuse - (real_avail-real_free));
+             *      ACTIVE= (real_inuse - (real_avail-real_free) - OS_RESERVED);
              */
-            result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
+            result.fPhysicalMemory.fOSReserved = static_cast<uint64_t> (0); // since we cannot find - it would be subtracted from active or inactive if we had something here
             result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
+            result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024 - *result.fPhysicalMemory.fOSReserved;
 
             /*
              *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
              *  we could use if needed.
              */
             result.fPhysicalMemory.fAvailable = memResults.real_avail * 4 * 1024;
+
+            /*
+             *  This makes Sterling's graphs look better, but I think including unpinned active RAM is
+             *  not likely correct. Maybe if we included non-dirty RAM? but dirty doesnt appear to
+             *  lock. So disable this for now.
+             */
+            const   bool    kIncludeUnPinnedActiveRAMAsAvailable_       { false };
+            if (kIncludeUnPinnedActiveRAMAsAvailable_) {
+                // What we are calling available doesn't count un-pinned
+                uint64_t    pinnedRAM   =   memResults.real_pinned * 4 * 1024;
+                if (result.fPhysicalMemory.fActive > pinnedRAM) {
+                    result.fPhysicalMemory.fAvailable += (*result.fPhysicalMemory.fActive - pinnedRAM);
+                }
+            }
 
             /*
              *  This number (virt_active) by nmon to summarize virtual memory status. But very little else...
@@ -253,11 +270,24 @@ namespace {
 
             result.fVirtualMemory.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
-            result.fPaging.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
             result.fPaging.fMajorPageFaultsSinceBoot = memResults.pgspins;
+            result.fPaging.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
             result.fPaging.fPageOutsSinceBoot = memResults.pgouts;
 
             Time::DurationSecondsType   now = Time::GetTickCount ();
+#if 1
+            auto    doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, Optional<uint64_t> faultsSinceBoot, Optional<double>* faultsPerSecond) {
+                if (faultsSinceBoot) {
+                    if (savedVMPageStatsAt != 0) {
+                        *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
+                    }
+                    *savedBaseline = *faultsSinceBoot;
+                }
+            };
+            doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, result.fPaging.fMinorPageFaultsSinceBoot, &result.fPaging.fMinorPageFaultsPerSecond);
+            doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, result.fPaging.fMajorPageFaultsSinceBoot, &result.fPaging.fMajorPageFaultsPerSecond);
+            doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, memResults.pgouts, &result.fPaging.fPageOutsPerSecond);
+#else
             if (result.fPaging.fMinorPageFaultsSinceBoot) {
                 if (fSaved_VMPageStats_At != 0) {
                     result.fPaging.fMinorPageFaultsPerSecond = (*result.fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
@@ -282,6 +312,7 @@ namespace {
                 }
                 fSaved_MinorPageFaultsSinceBoot = *result.fPaging.fMinorPageFaultsSinceBoot;
             }
+#endif
             fSaved_VMPageStats_At = now;
 
             return result;
