@@ -191,7 +191,7 @@ namespace {
             DbgTrace ("virt_total=%lld", memResults.virt_total);
 #endif
 
-            result.fFreePhysicalMemory = memResults.real_free * 4 * 1024;
+            result.fPhysicalMemory.fFree = memResults.real_free * 4 * 1024;
 
             /*
              *  Pinned pages cannot be paged out.
@@ -215,8 +215,8 @@ namespace {
              */
 #if 1
             {
-                result.fInactivePhysicalMemory = (memResults.real_avail - memResults.real_free) * 4 * 1024;
-                result.fActivePhysicalMemory = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
+                result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
+                result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
             }
 #else
             {
@@ -226,8 +226,8 @@ namespace {
                 double  guessRatioActive = 0.5; // @todo adjust based on paging, steals or some other hint (unlessI can find a better way)
 
                 uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
-                result.fActivePhysicalMemory = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
-                result.fInactivePhysicalMemory = (memResults.real_inuse * 4 * 1024) - *result.fActivePhysicalMemory;
+                result.fPhysicalMemory.fActive = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
+                result.fPhysicalMemory.fInactive = (memResults.real_inuse * 4 * 1024) - *result.fPhysicalMemory.fActive;
             }
 #endif
 
@@ -235,7 +235,7 @@ namespace {
              *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
              *  we could use if needed.
              */
-            result.fMemoryAvailable = memResults.real_avail * 4 * 1024;
+            result.fPhysicalMemory.fAvailable = memResults.real_avail * 4 * 1024;
 
             /*
              *  This number (virt_active) by nmon to summarize virtual memory status. But very little else...
@@ -243,11 +243,11 @@ namespace {
              *  Tried (memResults.real_inuse + (memResults.pgsp_total - memResults.pgsp_free)) * 4 * 1024;
              *  but that didn't produce a good/representative answer.
              */
-            result.fCommittedBytes = (memResults.virt_active) * 4 * 1024;
+            result.fVirtualMemory.fCommittedBytes = (memResults.virt_active) * 4 * 1024;
 
-            result.fCommitLimit = memResults.virt_total * 4 * 1024;
+            result.fVirtualMemory.fCommitLimit = memResults.virt_total * 4 * 1024;
 
-            result.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
+            result.fVirtualMemory.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
 #if 0
             u_longlong_t real_system;   /* number of pages used by system segments.                                   *
@@ -273,29 +273,29 @@ namespace {
 #endif
 
 
-            result.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
-            result.fMajorPageFaultsSinceBoot = memResults.pgspins;
-            result.fPageOutsSinceBoot = memResults.pgouts;
+            result.fPaging.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
+            result.fPaging.fMajorPageFaultsSinceBoot = memResults.pgspins;
+            result.fPaging.fPageOutsSinceBoot = memResults.pgouts;
 
             Time::DurationSecondsType   now = Time::GetTickCount ();
-            if (result.fMinorPageFaultsSinceBoot) {
+            if (result.fPaging.fMinorPageFaultsSinceBoot) {
                 if (fSaved_VMPageStats_At != 0) {
-                    result.fMinorPageFaultsPerSecond = (*result.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    result.fPaging.fMinorPageFaultsPerSecond = (*result.fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
-                fSaved_MinorPageFaultsSinceBoot = *result.fMinorPageFaultsSinceBoot;
+                fSaved_MinorPageFaultsSinceBoot = *result.fPaging.fMinorPageFaultsSinceBoot;
             }
             {
                 if (fSaved_VMPageStats_At != 0) {
-                    result.fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    result.fPaging.fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_PageOutsSinceBoot = memResults.pgouts;
             }
-            if (result.fMajorPageFaultsSinceBoot) {
+            if (result.fPaging.fMajorPageFaultsSinceBoot) {
                 Time::GetTickCount ();
                 if (fSaved_VMPageStats_At != 0) {
-                    result.fMajorPageFaultsPerSecond = (*result.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    result.fPaging.fMajorPageFaultsPerSecond = (*result.fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
-                fSaved_MajorPageFaultsSinceBoot = *result.fMajorPageFaultsSinceBoot;
+                fSaved_MajorPageFaultsSinceBoot = *result.fPaging.fMajorPageFaultsSinceBoot;
             }
             fSaved_VMPageStats_At = now;
 
@@ -369,17 +369,17 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                ReadMemInfoLine_ (&updateResult->fFreePhysicalMemory, String_Constant (L"MemFree"), line);
-                ReadMemInfoLine_ (&updateResult->fMemoryAvailable, String_Constant (L"MemAvailable"), line);
-                ReadMemInfoLine_ (&updateResult->fActivePhysicalMemory, String_Constant (L"Active"), line);
-                ReadMemInfoLine_ (&updateResult->fInactivePhysicalMemory, String_Constant (L"Inactive"), line);
-                ReadMemInfoLine_ (&updateResult->fCommitLimit, String_Constant (L"CommitLimit"), line);
-                ReadMemInfoLine_ (&updateResult->fCommittedBytes, String_Constant (L"Committed_AS"), line);
-                ReadMemInfoLine_ (&updateResult->fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fFree, String_Constant (L"MemFree"), line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fAvailable, String_Constant (L"MemAvailable"), line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fActive, String_Constant (L"Active"), line);
+                ReadMemInfoLine_ (&updateResult->fPhysicalMemory.fInactive, String_Constant (L"Inactive"), line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommitLimit, String_Constant (L"CommitLimit"), line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fCommittedBytes, String_Constant (L"Committed_AS"), line);
+                ReadMemInfoLine_ (&updateResult->fVirtualMemory.fPagefileTotalSize, String_Constant (L"SwapTotal"), line);
                 ReadMemInfoLine_ (&slabReclaimable, String_Constant (L"SReclaimable"), line);
             }
-            if (updateResult->fMemoryAvailable.IsMissing () and updateResult->fFreePhysicalMemory and updateResult->fInactivePhysicalMemory) {
-                updateResult->fMemoryAvailable = *updateResult->fFreePhysicalMemory + *updateResult->fInactivePhysicalMemory + slabReclaimable.Value ();
+            if (updateResult->fPhysicalMemory.fAvailable.IsMissing () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
+                updateResult->fPhysicalMemory.fAvailable = *updateResult->fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
             }
         }
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
@@ -406,24 +406,24 @@ namespace {
                     // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                     // which makes no sense
                     ReadVMStatLine_ (&pgpgout, String_Constant (L"pgpgout"), line);     // tried pgpgout but I dont know what it is but doesnt appear to be pages out - noneof this well documented
-                    ReadVMStatLine_ (&updateResult->fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
+                    ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
                 Time::DurationSecondsType   now = Time::GetTickCount ();
                 if (pgpgout) {
-                    updateResult->fPageOutsSinceBoot = pgpgout;
+                    updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
                     if (fSaved_VMPageStats_At != 0) {
-                        updateResult->fPageOutsPerSecond = (*updateResult->fPageOutsSinceBoot - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
+                        updateResult->fPaging.fPageOutsPerSecond = (*updateResult->fPaging.fPageOutsSinceBoot - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
                     }
                     fSaved_PageOutsSinceBoot = *pgpgout;
                 }
-                if (pgfault and updateResult->fMajorPageFaultsSinceBoot) {
-                    updateResult->fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fMajorPageFaultsSinceBoot;
+                if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
+                    updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                if (updateResult->fMajorPageFaultsSinceBoot) {
+                if (updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     if (fSaved_VMPageStats_At != 0) {
-                        updateResult->fMajorPageFaultsPerSecond = (*updateResult->fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
+                        updateResult->fPaging.fMajorPageFaultsPerSecond = (*updateResult->fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                     }
-                    fSaved_MajorPageFaultsSinceBoot = *updateResult->fMajorPageFaultsSinceBoot;
+                    fSaved_MajorPageFaultsSinceBoot = *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
                 fSaved_VMPageStats_At = now;
             }
@@ -486,7 +486,7 @@ namespace {
             memset (&statex, 0, sizeof (statex));
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
-            //updateResult->fFreePhysicalMemory = statex.ullAvailPhys;
+            //updateResult->fPhysicalMemory.fFree = statex.ullAvailPhys;
             *totalRAM = statex.ullTotalPhys;
 
             /*
@@ -494,24 +494,24 @@ namespace {
              *  A number between 0 and 100 that specifies the approximate percentage of physical
              *  memory that is in use (0 indicates no memory use and 100 indicates full memory use)
              */
-            updateResult->fActivePhysicalMemory = statex.ullTotalPhys * statex.dwMemoryLoad / 100;
+            updateResult->fPhysicalMemory.fActive = statex.ullTotalPhys * statex.dwMemoryLoad / 100;
         }
 #if     qUseWMICollectionSupport_
         void    Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
             fMemoryWMICollector_.Collect ();
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fCommittedBytes);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fCommitLimit);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fMajorPageFaultsPerSecond);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_).CopyToIf (&updateResult->fFreePhysicalMemory);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fVirtualMemory.fCommitLimit);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_).CopyToIf (&updateResult->fPhysicalMemory.fFree);
             if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
-                if (updateResult->fActivePhysicalMemory) {
+                if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM
-                    updateResult->fInactivePhysicalMemory = totalRAM - *updateResult->fActivePhysicalMemory - static_cast<uint64_t> (*freeMem);
+                    updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
             // WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
-            updateResult->fMemoryAvailable = updateResult->fFreePhysicalMemory + updateResult->fInactivePhysicalMemory;
+            updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
 #endif
     };
@@ -574,20 +574,30 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<double>> ();
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PhysicalRAMDetailsType, fAvailable), String_Constant (L"Available"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PhysicalRAMDetailsType, fActive), String_Constant (L"Active"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PhysicalRAMDetailsType, fInactive), String_Constant (L"Inactive"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PhysicalRAMDetailsType, fFree), String_Constant (L"Free"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PhysicalRAMDetailsType, fOSReserved), String_Constant (L"OS-Reserved"), StructureFieldInfo::NullFieldHandling::eOmit },
+        });
+        mapper.AddClass<Info::VirtualMemoryDetailsType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::VirtualMemoryDetailsType, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::VirtualMemoryDetailsType, fCommittedBytes), String_Constant (L"Committed-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::VirtualMemoryDetailsType, fPagefileTotalSize), String_Constant (L"Pagefile-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+        });
+        mapper.AddClass<Info::PagingDetailsType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fMajorPageFaultsSinceBoot), String_Constant (L"Major-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fPageOutsSinceBoot), String_Constant (L"Page-Outs-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fMajorPageFaultsPerSecond), String_Constant (L"Major-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info::PagingDetailsType, fPageOutsPerSecond), String_Constant (L"Page-Outs-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+        });
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fFreePhysicalMemory), String_Constant (L"Free-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMemoryAvailable), String_Constant (L"Memory-Available"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fActivePhysicalMemory), String_Constant (L"Active-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fInactivePhysicalMemory), String_Constant (L"Inactive-Physical-Memory"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommitLimit), String_Constant (L"Commit-Limit"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fCommittedBytes), String_Constant (L"Committed-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPagefileTotalSize), String_Constant (L"Pagefile-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsSinceBoot), String_Constant (L"Major-Page-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsSinceBoot), String_Constant (L"Minor-Page-Faults-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPageOutsSinceBoot), String_Constant (L"Page-Outs-Since-Boot"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMajorPageFaultsPerSecond), String_Constant (L"Major-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMinorPageFaultsPerSecond), String_Constant (L"Minor-Page-Faults-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPageOutsPerSecond), String_Constant (L"Page-Outs-Per-Second"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPhysicalMemory), String_Constant (L"Physical-Memory") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fVirtualMemory), String_Constant (L"Virtual-Memory") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fPaging), String_Constant (L"Paging") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
