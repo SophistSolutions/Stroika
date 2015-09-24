@@ -116,6 +116,13 @@ namespace   Stroika {
                              *
                              */
                             Optional<uint64_t>    fOSReserved {};
+
+#if 0
+                            Optional<uint64_t>  TotalRAM () const
+                            {
+                                return fFree + fInactive + fActive + fOSReserved;
+                            }
+#endif
                         };
                         PhysicalRAMDetailsType  fPhysicalMemory;
 
