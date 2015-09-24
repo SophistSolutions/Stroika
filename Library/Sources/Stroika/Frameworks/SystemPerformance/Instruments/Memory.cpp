@@ -400,7 +400,7 @@ namespace {
             if (updateResult->fPhysicalMemory.fAvailable.IsMissing () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
                 if (slabReclaimable.IsMissing ()) {
                     // wag
-                    slabReclaimable = slab / 2;
+                    slabReclaimable = slab.Value () / 2;
                 }
                 updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
             }
