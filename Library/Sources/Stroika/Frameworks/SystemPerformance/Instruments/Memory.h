@@ -113,7 +113,8 @@ namespace   Stroika {
                             Optional<uint64_t>    fAvailable {};
 
                             /**
-                             *
+                             *  This is for kernel/OS memory, not otherwise accounted. On Linux, this appears to be largely made up of
+                             *  'Slab', 'KernelStack' and perhaps 'PageTables'.
                              */
                             Optional<uint64_t>    fOSReserved {};
 

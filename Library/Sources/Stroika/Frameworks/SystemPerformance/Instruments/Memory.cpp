@@ -275,7 +275,6 @@ namespace {
             result.fPaging.fPageOutsSinceBoot = memResults.pgouts;
 
             Time::DurationSecondsType   now = Time::GetTickCount ();
-#if 1
             auto    doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, Optional<uint64_t> faultsSinceBoot, Optional<double>* faultsPerSecond) {
                 if (faultsSinceBoot) {
                     if (savedVMPageStatsAt != 0) {
@@ -287,32 +286,6 @@ namespace {
             doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, result.fPaging.fMinorPageFaultsSinceBoot, &result.fPaging.fMinorPageFaultsPerSecond);
             doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, result.fPaging.fMajorPageFaultsSinceBoot, &result.fPaging.fMajorPageFaultsPerSecond);
             doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, memResults.pgouts, &result.fPaging.fPageOutsPerSecond);
-#else
-            if (result.fPaging.fMinorPageFaultsSinceBoot) {
-                if (fSaved_VMPageStats_At != 0) {
-                    result.fPaging.fMinorPageFaultsPerSecond = (*result.fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
-                }
-                fSaved_MinorPageFaultsSinceBoot = *result.fPaging.fMinorPageFaultsSinceBoot;
-            }
-            {
-                if (fSaved_VMPageStats_At != 0) {
-                    result.fPaging.fPageOutsPerSecond = (memResults.pgouts - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
-                }
-                fSaved_PageOutsSinceBoot = memResults.pgouts;
-            }
-            if (result.fPaging.fMajorPageFaultsSinceBoot) {
-                if (fSaved_VMPageStats_At != 0) {
-                    result.fPaging.fMajorPageFaultsPerSecond = (*result.fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
-                }
-                fSaved_MajorPageFaultsSinceBoot = *result.fPaging.fMajorPageFaultsSinceBoot;
-            }
-            if (result.fPaging.fMinorPageFaultsSinceBoot) {
-                if (fSaved_VMPageStats_At != 0) {
-                    result.fPaging.fMinorPageFaultsPerSecond = (*result.fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
-                }
-                fSaved_MinorPageFaultsSinceBoot = *result.fPaging.fMinorPageFaultsSinceBoot;
-            }
-#endif
             fSaved_VMPageStats_At = now;
 
             return result;
@@ -367,6 +340,9 @@ namespace {
         }
         void    Read_ProcMemInfo (Instruments::Memory::Info* updateResult)
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Read_ProcMemInfo");
+#endif
             auto    ReadMemInfoLine_  = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
                     String  unit = line[2];
@@ -406,6 +382,9 @@ namespace {
         }
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Read_ProcVMStat_");
+#endif
             auto    ReadVMStatLine_ = [] (Optional<uint64_t>* result, const String & n, const Sequence<String>& line) {
                 if (line.size () >= 2 and line[0] == n) {
                     *result = Characters::String2Int<uint64_t> (line[1]);
@@ -431,7 +410,6 @@ namespace {
                     ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
                 Time::DurationSecondsType   now = Time::GetTickCount ();
-#if 1
                 updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
@@ -444,33 +422,9 @@ namespace {
                         *savedBaseline = *faultsSinceBoot;
                     }
                 };
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, result.fPaging.fMinorPageFaultsSinceBoot, &result.fPaging.fMinorPageFaultsPerSecond);
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, result.fPaging.fMajorPageFaultsSinceBoot, &result.fPaging.fMajorPageFaultsPerSecond);
-                doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &result.fPaging.fPageOutsPerSecond);
-#else
-                if (pgpgout) {
-                    updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
-                    if (fSaved_VMPageStats_At != 0) {
-                        updateResult->fPaging.fPageOutsPerSecond = (*updateResult->fPaging.fPageOutsSinceBoot - fSaved_PageOutsSinceBoot) / (now - fSaved_VMPageStats_At);
-                    }
-                    fSaved_PageOutsSinceBoot = *pgpgout;
-                }
-                if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
-                    updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
-                }
-                if (updateResult->fPaging.fMajorPageFaultsSinceBoot) {
-                    if (fSaved_VMPageStats_At != 0) {
-                        updateResult->fPaging.fMajorPageFaultsPerSecond = (*updateResult->fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
-                    }
-                    fSaved_MajorPageFaultsSinceBoot = *updateResult->fPaging.fMajorPageFaultsSinceBoot;
-                }
-                if (updateResult->fPaging.fMinorPageFaultsSinceBoot) {
-                    if (fSaved_VMPageStats_At != 0) {
-                        updateResult->fPaging.fMinorPageFaultsPerSecond = (*updateResult->fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
-                    }
-                    fSaved_MinorPageFaultsSinceBoot = *updateResult->fPaging.fMinorPageFaultsSinceBoot;
-                }
-#endif
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, updateResult->fPaging.fMinorPageFaultsSinceBoot, &updateResult->fPaging.fMinorPageFaultsPerSecond);
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, updateResult->fPaging.fMajorPageFaultsSinceBoot, &updateResult->fPaging.fMajorPageFaultsPerSecond);
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &updateResult->fPaging.fPageOutsPerSecond);
                 fSaved_VMPageStats_At = now;
             }
         }
