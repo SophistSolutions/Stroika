@@ -384,7 +384,7 @@ namespace {
                 updateResult->fPhysicalMemory.fOSReserved = *memTotal - *updateResult->fPhysicalMemory.fFree - *updateResult->fPhysicalMemory.fInactive - *updateResult->fPhysicalMemory.fActive;
             }
             if (updateResult->fPhysicalMemory.fAvailable.IsMissing () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
-                updateResult->fPhysicalMemory.fAvailable = *updateResult->fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
+                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
             }
         }
         void    Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)
