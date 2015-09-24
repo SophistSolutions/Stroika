@@ -304,6 +304,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         uint64_t                    fSaved_MajorPageFaultsSinceBoot {};
+        uint64_t                    fSaved_MinorPageFaultsSinceBoot {};
         uint64_t                    fSaved_PageOutsSinceBoot {};
         Time::DurationSecondsType   fSaved_VMPageStats_At {};
 
