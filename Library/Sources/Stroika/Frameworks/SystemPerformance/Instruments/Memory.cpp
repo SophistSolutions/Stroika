@@ -431,6 +431,23 @@ namespace {
                     ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, String_Constant (L"pgmajfault"), line);
                 }
                 Time::DurationSecondsType   now = Time::GetTickCount ();
+#if 1
+                updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
+                if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
+                    updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
+                }
+                auto    doAve_ = [] (Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, Optional<uint64_t> faultsSinceBoot, Optional<double>* faultsPerSecond) {
+                    if (faultsSinceBoot) {
+                        if (savedVMPageStatsAt != 0) {
+                            *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
+                        }
+                        *savedBaseline = *faultsSinceBoot;
+                    }
+                };
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MinorPageFaultsSinceBoot, result.fPaging.fMinorPageFaultsSinceBoot, &result.fPaging.fMinorPageFaultsPerSecond);
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_MajorPageFaultsSinceBoot, result.fPaging.fMajorPageFaultsSinceBoot, &result.fPaging.fMajorPageFaultsPerSecond);
+                doAve_ (fSaved_VMPageStats_At, now, &fSaved_PageOutsSinceBoot, updateResult->fPaging.fPageOutsSinceBoot, &result.fPaging.fPageOutsPerSecond);
+#else
                 if (pgpgout) {
                     updateResult->fPaging.fPageOutsSinceBoot = pgpgout;
                     if (fSaved_VMPageStats_At != 0) {
@@ -453,6 +470,7 @@ namespace {
                     }
                     fSaved_MinorPageFaultsSinceBoot = *updateResult->fPaging.fMinorPageFaultsSinceBoot;
                 }
+#endif
                 fSaved_VMPageStats_At = now;
             }
         }
