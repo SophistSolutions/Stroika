@@ -250,6 +250,8 @@ namespace {
 
 
 
+
+
 #if     qPlatform_AIX
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
@@ -283,6 +285,9 @@ namespace {
         }
         Sequence<VolumeInfo> capture_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_AIX_::capture_");
+#endif
             Sequence<VolumeInfo>   results;
             results = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
             ApplyDiskTypes_ (&results);
@@ -546,9 +551,9 @@ namespace {
 
 
 
-#if     qPlatform_POSIX
+#if     qPlatform_Linux
 namespace {
-    struct  CapturerWithContext_POSIX_ : CapturerWithContext_COMMON_ {
+    struct  CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
     private:
         struct PerfStats_ {
             double  fSectorsRead;
@@ -562,7 +567,7 @@ namespace {
         Mapping<String, uint32_t>               fDeviceName2SectorSizeMap_;
         Optional<Mapping<dev_t, PerfStats_>>    fContextStats_;
     public:
-        CapturerWithContext_POSIX_ (Options options)
+        CapturerWithContext_Linux_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
             // for side-effect of setting fContextStats_
@@ -573,7 +578,7 @@ namespace {
                 DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
             }
         }
-        CapturerWithContext_POSIX_ (const CapturerWithContext_POSIX_&) = default;   // copy by value fine - no need to re-wait...
+        CapturerWithContext_Linux_ (const CapturerWithContext_Linux_&) = default;   // copy by value fine - no need to re-wait...
         Sequence<VolumeInfo> capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
@@ -581,6 +586,9 @@ namespace {
         }
         Sequence<VolumeInfo> capture_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_Linux_::capture_");
+#endif
             Sequence<VolumeInfo>   results;
 
             constexpr   bool    kUseProcFSForMounts_ { true };
@@ -1047,6 +1055,9 @@ namespace {
         }
         Sequence<VolumeInfo> capture_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_Windows_::capture_");
+#endif
             Sequence<VolumeInfo>   results;
             results = capture_Windows_GetVolumeInfo_ ();
             _NoteCompletedCapture ();
@@ -1242,16 +1253,16 @@ namespace {
             : Debug::AssertExternallySynchronizedLock
 #if     qPlatform_AIX
             , CapturerWithContext_AIX_
-#elif   qPlatform_POSIX
-            , CapturerWithContext_POSIX_
+#elif   qPlatform_Linux
+            , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
             , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_AIX
         using inherited = CapturerWithContext_AIX_;
-#elif   qPlatform_POSIX
-        using inherited = CapturerWithContext_POSIX_;
+#elif   qPlatform_Linux
+        using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;
 #endif
