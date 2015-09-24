@@ -433,8 +433,8 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());
 #endif
-                        static  const   String_Constant kpgfaultLabel_  { L"pgfault" };
-                        static  const   String_Constant kpgpgoutLabel_  { L"pgpgout" };
+                        static  const   String_Constant kpgfaultLabel_      { L"pgfault" };
+                        static  const   String_Constant kpgpgoutLabel_      { L"pgpgout" };
                         static  const   String_Constant kpgmajfaultLabel_   { L"pgmajfault" };
                         nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
