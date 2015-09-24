@@ -72,12 +72,17 @@ using   SystemPerformance::Support::WMICollector;
 
 #if     qUseWMICollectionSupport_
 namespace {
-    const   String_Constant     kInstanceName_      { L"_Total" };
+    const   String_Constant     kInstanceName_          { L"_Total" };
 
-    const   String_Constant     kCommittedBytes_    { L"Committed Bytes" };
-    const   String_Constant     kCommitLimit_       { L"Commit Limit" };
-    const   String_Constant     kPagesPerSec_       { L"Pages/sec" };           // hard page faults/sec
-    const   String_Constant     kFreeMem_           { L"Free & Zero Page List Bytes" };
+    const   String_Constant     kCommittedBytes_        { L"Committed Bytes" };
+    const   String_Constant     kCommitLimit_           { L"Commit Limit" };
+    const   String_Constant     kPagesPerSec_           { L"Pages/sec" };           // hard page faults/sec
+    const   String_Constant     kFreeMem_               { L"Free & Zero Page List Bytes" };
+
+    // Something of an empirical WAG (kHardwareReserved*) but not super important to get right -- LGP 2015-09-24
+    const   String_Constant     kHardwareReserved1_     { L"System Driver Resident Bytes" };
+    const   String_Constant     kHardwareReserved2_     { L"System Driver Total Bytes" };
+
 }
 #endif
 
@@ -477,7 +482,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
-        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_, kFreeMem_ } };
+        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_ } };
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -508,6 +513,12 @@ namespace {
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result, totalRAM);
 #endif
+            // I've found no docs to clearly state one way or another, but empirically from looking at the graph in
+            // Resource Monitor, the amount reported as 'hardware' - which I'm thinking is roughly 'osreserved' is
+            // subtracted from 'standby'.
+            if (result.fPhysicalMemory.fOSReserved) {
+                result.fPhysicalMemory.fInactive -= result.fPhysicalMemory.fOSReserved;
+            }
             NoteCompletedCapture_ ();
             return result;
         }
@@ -549,6 +560,11 @@ namespace {
             }
             // WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
+            Optional<double>    osRes;
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_).CopyToIf (&osRes);
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (osRes);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_).CopyToIf (&osRes);
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (osRes);
         }
 #endif
     };
