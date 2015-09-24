@@ -1183,7 +1183,7 @@ namespace {
                                         if (kUsePctIdleIimeForAveQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
                                                 double  aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
-                                                if (readStats.fAverageQLength and writeStats.fAverageQLength) {
+                                                if (readStats.fAverageQLength and writeStats.fAverageQLength and * combinedStats.fAverageQLength > 0) {
                                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
                                                     // asusme ratio rate, and scale
                                                     double  correction = aveCombinedQLen / *combinedStats.fAverageQLength;
