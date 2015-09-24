@@ -462,6 +462,34 @@ namespace   {
             }
         }
 
+        namespace Test_09_ReadWriteNANShouldNotFail_ {
+
+            void    CheckRoundtrip_encode_decode_unchanged (const VariantValue& v)
+            {
+                string  encodedRep;
+                {
+                    Streams::MemoryStream<Byte>    out;
+                    DataExchange::JSON::Writer ().Write (v, out);
+                    encodedRep = out.As<string> ();
+                }
+                {
+                    stringstream    tmp;
+                    tmp << encodedRep;
+                    VariantValue    vOut = DataExchange::JSON::Reader ().Read (tmp);
+                    VerifyTestResult (vOut == v);
+                }
+            }
+
+            void    DoIt ()
+            {
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (Math::nan<double> ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (-numeric_limits<double>::infinity()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<double>::infinity()));
+            }
+        }
+
+
+
 
         void    DoAll_ ()
         {
@@ -474,6 +502,7 @@ namespace   {
             Test_05_ParseRegressionTest_3_::DoIt ();
             Test_07_ParserTestReadWriteBasictypes_::DoIt ();
             Test_08_ReadEmptyStreamShouldNotFail_::DoIt ();
+            Test_09_ReadWriteNANShouldNotFail_::DoIt ();
         }
     }
 }

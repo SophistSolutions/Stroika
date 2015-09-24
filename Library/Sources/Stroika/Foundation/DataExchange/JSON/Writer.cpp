@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/FloatConversion.h"
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Characters/String_Constant.h"
 #include    "../../Streams/TextWriter.h"
@@ -71,19 +72,24 @@ namespace   {
         ::swprintf (buf, NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
+    void    PrettyPrint_ (const String& v, const OutputStream<Character>& out);
     void    PrettyPrint_ (long double v, const OutputStream<Character>& out)
     {
-        Require (not isnan (v));
-        wchar_t buf[1024];
-        ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
-        Assert (::wcslen (buf) >= 1);
-        // trim trailing 0
-        for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
-            if (i != 0 and buf[i - 1] != '.') {
-                buf[i] = '\0';
-            }
+        if (isnan (v) or isinf (v)) {
+            PrettyPrint_ (Characters::Float2String (v), out);
         }
-        out.Write (buf);
+        else {
+            wchar_t buf[1024];
+            ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
+            Assert (::wcslen (buf) >= 1);
+            // trim trailing 0
+            for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
+                if (i != 0 and buf[i - 1] != '.') {
+                    buf[i] = '\0';
+                }
+            }
+            out.Write (buf);
+        }
     }
     template    <typename CHARITERATOR>
     void    PrettyPrint_ (CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
