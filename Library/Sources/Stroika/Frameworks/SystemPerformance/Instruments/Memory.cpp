@@ -153,21 +153,40 @@ namespace {
             perfstat_memory_total_t memResults;
             Execution::ThrowErrNoIfNegative (::perfstat_memory_total (nullptr, &memResults,  sizeof (memResults), 1));
 
-            // From /usr/include/libperfstat.h:
-            //      u_longlong_t real_free;     /* free real memory (in 4KB pages) */
-            //      u_longlong_t real_avail     - number of pages (in 4KB pages) of memory available without paging out working segments
-            //      u_longlong_t real_inuse;    /* real memory which is in use (in 4KB pages) */
-            //      u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
-            //      u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
-            //      u_longlong_t virt_active;   Active virtual pages. Virtual pages are considered active if they have been accessed
-            //      u_longlong_t virt_total;    /* total virtual memory (in 4KB pages)
-            //
-            //      u_longlong_t pgins;         number of pages paged in
-            //      u_longlong_t pgouts;        number of pages paged out
-            //      u_longlong_t pgspins;       number of page ins from paging space
-            //      u_longlong_t pgspouts;      number of page outs from paging space
-            //
-            //      Empirically, and logically from the (vague) definitions (perfstat_memory_total_t), real_total  = real_inuse + real_free
+            /*
+             * From /usr/include/libperfstat.h:
+             *      u_longlong_t real_free;     /* free real memory (in 4KB pages)
+             *      u_longlong_t real_avail     - number of pages (in 4KB pages) of memory available without paging out working segments
+             *      u_longlong_t real_inuse;    * real memory which is in use (in 4KB pages)
+             *      u_longlong_t pgsp_total;    * total paging space (in 4KB pages)
+             *      u_longlong_t pgsp_free;     * free paging space (in 4KB pages)
+             *      u_longlong_t virt_active;   Active virtual pages. Virtual pages are considered active if they have been accessed
+             *      u_longlong_t virt_total;    * total virtual memory (in 4KB pages)
+             *
+             *      u_longlong_t pgins;         number of pages paged in
+             *      u_longlong_t pgouts;        number of pages paged out
+             *      u_longlong_t pgspins;       number of page ins from paging space
+             *      u_longlong_t pgspouts;      number of page outs from paging space
+             *
+             *  Empirically, and logically from the (vague) definitions (perfstat_memory_total_t), real_total  = real_inuse + real_free
+             *
+             *  Some assorted unused stats from
+             *          /usr/include/libperfstat.h:
+             *
+             *      u_longlong_t real_system;    number of pages used by system segments.
+             *                                  * This is the sum of all the used pages in segment marked for system usage.
+             *                                  * Since segment classifications are not always guaranteed to be accurate,
+             *                                  * This number is only an approximation.
+             *      u_longlong_t real_user;         * number of pages used by non-system segments.
+             *                                  * This is the sum of all pages used in segments not marked for system usage.
+             *                                  * Since segment classifications are not always guaranteed to be accurate,
+             *                                  * This number is only an approximation.
+             *      u_longlong_t real_process;  * number of pages used by process segments.
+             *      u_longlong_t scans;         * number of page scans by clock
+             *      u_longlong_t cycles;        * number of page replacement cycles
+             *      u_longlong_t pgsteals;      * number of page steals
+             *      u_longlong_t numperm;       * number of frames used for files (in 4KB pages)
+             */
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             // [---MAIN---][0000.007]       real_total=983040
             // [---MAIN---][0000.007]       real_free=280802
@@ -213,23 +232,8 @@ namespace {
              *      INACIVE = is real_avail - real_free
              *      ACTIVE= (real_inuse - (real_avail-real_free));
              */
-#if 1
-            {
-                result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
-                result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
-            }
-#else
-            {
-                uint64_t    definitelyActiveMem =   memResults.real_pinned * 4 * 1024;  // definitely active
-                uint64_t    maybeActiveOrNot    =   (memResults.real_inuse - memResults.real_pinned) * 4 * 1024;
-
-                double  guessRatioActive = 0.5; // @todo adjust based on paging, steals or some other hint (unlessI can find a better way)
-
-                uint64_t    definitelyinactiveMem = memResults.real_pinned * 4 * 1024;  // definitely active
-                result.fPhysicalMemory.fActive = definitelyActiveMem + static_cast<uint64_t> (maybeActiveOrNot * guessRatioActive);
-                result.fPhysicalMemory.fInactive = (memResults.real_inuse * 4 * 1024) - *result.fPhysicalMemory.fActive;
-            }
-#endif
+            result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024;
+            result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
 
             /*
              *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
@@ -249,30 +253,6 @@ namespace {
 
             result.fVirtualMemory.fPagefileTotalSize  = memResults.pgsp_total * 4 * 1024;
 
-#if 0
-            u_longlong_t real_system;   /* number of pages used by system segments.                                   *
-                                 * This is the sum of all the used pages in segment marked for system usage.  *
-                                 * Since segment classifications are not always guaranteed to be accurate,    *
-                                 * This number is only an approximation.                                      */
-            u_longlong_t real_user;     /* number of pages used by non-system segments.                               *
-                                 * This is the sum of all pages used in segments not marked for system usage. *
-                                 * Since segment classifications are not always guaranteed to be accurate,    *
-                                 * This number is only an approximation.                                      */
-            u_longlong_t real_process;  /* number of pages used by process segments.                                  */
-
-            u_longlong_t pgins;         /* number of pages paged in */
-            u_longlong_t pgouts;        /* number of pages paged out */
-            u_longlong_t pgspins;       /* number of page ins from paging space */
-            u_longlong_t pgspouts;      /* number of page outs from paging space */
-            u_longlong_t scans;         /* number of page scans by clock */
-            u_longlong_t cycles;        /* number of page replacement cycles */
-            u_longlong_t pgsteals;      /* number of page steals */
-            u_longlong_t numperm;       /* number of frames used for files (in 4KB pages) */
-            u_longlong_t pgsp_total;    /* total paging space (in 4KB pages) */
-            u_longlong_t pgsp_free;     /* free paging space (in 4KB pages) */
-#endif
-
-
             result.fPaging.fMinorPageFaultsSinceBoot = memResults.pgins - memResults.pgspins;
             result.fPaging.fMajorPageFaultsSinceBoot = memResults.pgspins;
             result.fPaging.fPageOutsSinceBoot = memResults.pgouts;
@@ -291,11 +271,16 @@ namespace {
                 fSaved_PageOutsSinceBoot = memResults.pgouts;
             }
             if (result.fPaging.fMajorPageFaultsSinceBoot) {
-                Time::GetTickCount ();
                 if (fSaved_VMPageStats_At != 0) {
                     result.fPaging.fMajorPageFaultsPerSecond = (*result.fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                 }
                 fSaved_MajorPageFaultsSinceBoot = *result.fPaging.fMajorPageFaultsSinceBoot;
+            }
+            if (result.fPaging.fMinorPageFaultsSinceBoot) {
+                if (fSaved_VMPageStats_At != 0) {
+                    result.fPaging.fMinorPageFaultsPerSecond = (*result.fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
+                }
+                fSaved_MinorPageFaultsSinceBoot = *result.fPaging.fMinorPageFaultsSinceBoot;
             }
             fSaved_VMPageStats_At = now;
 
@@ -429,6 +414,12 @@ namespace {
                         updateResult->fPaging.fMajorPageFaultsPerSecond = (*updateResult->fPaging.fMajorPageFaultsSinceBoot - fSaved_MajorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
                     }
                     fSaved_MajorPageFaultsSinceBoot = *updateResult->fPaging.fMajorPageFaultsSinceBoot;
+                }
+                if (updateResult->fPaging.fMinorPageFaultsSinceBoot) {
+                    if (fSaved_VMPageStats_At != 0) {
+                        updateResult->fPaging.fMinorPageFaultsPerSecond = (*updateResult->fPaging.fMinorPageFaultsSinceBoot - fSaved_MinorPageFaultsSinceBoot) / (now - fSaved_VMPageStats_At);
+                    }
+                    fSaved_MinorPageFaultsSinceBoot = *updateResult->fPaging.fMinorPageFaultsSinceBoot;
                 }
                 fSaved_VMPageStats_At = now;
             }
