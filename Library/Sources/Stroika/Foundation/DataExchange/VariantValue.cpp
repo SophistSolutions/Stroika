@@ -700,22 +700,32 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
         if (exactTypeMatchOnly) {
             return false;
         }
-
-        if (
+        else if (
             (lt == VariantValue::Type::eInteger or lt == VariantValue::Type::eUnsignedInteger) and
             (rt == VariantValue::Type::eInteger or rt == VariantValue::Type::eUnsignedInteger)
         ) {
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
         }
+        else if (
+            (lt == VariantValue::Type::eFloat and rt == VariantValue::Type::eString) or
+            (rt == VariantValue::Type::eFloat and lt == VariantValue::Type::eString)
+        ) {
+            lt = VariantValue::Type::eFloat;
+            rt = VariantValue::Type::eFloat;
+            // fall through
+        }
         // special case - comparing a string with a bool or bool with a string
-        if (
+        else if (
             (lt == VariantValue::Type::eBoolean and rt == VariantValue::Type::eString) or
             (lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean)
         ) {
             // compare as STRING  - in case someone compares true with 'FRED' (we want that to come out as a FALSE compare result)
             return  As<String> () == rhs.As<String> ();
         }
-        return false;
+        else {
+            return false;
+        }
+        // can fall through for some fallthrough cases above...
     }
     switch (lt) {
         case    VariantValue::Type::eNull:

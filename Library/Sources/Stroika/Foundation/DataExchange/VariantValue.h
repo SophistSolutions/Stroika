@@ -269,6 +269,8 @@ namespace   Stroika {
                  *  When comparing two items, at least one of which is a floating point number,
                  *  @Math::NearlyEquals() is used (because often these values come from serializaiton/deserializaiton which
                  *  loses a tiny bit of precision).
+                 *
+                 *  Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
                  */
                 nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
