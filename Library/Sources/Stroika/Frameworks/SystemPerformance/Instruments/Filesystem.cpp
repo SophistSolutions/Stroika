@@ -1185,11 +1185,13 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
+                                                readStats.fInUsePercent = *o;
                                                 readStats.fQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
+                                                readStats.fInUsePercent = *o;
                                                 readStats.fQLength = *o;
                                             }
                                         }
@@ -1203,11 +1205,13 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
+                                                writeStats.fInUsePercent = *o;
                                                 writeStats.fQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
+                                                writeStats.fInUsePercent = *o;
                                                 writeStats.fQLength = *o;
                                             }
                                         }
@@ -1216,6 +1220,10 @@ namespace {
                                         combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
                                         combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
                                         combinedStats.fQLength.AccumulateIf (writeStats.fQLength);
+                                        combinedStats.fInUsePercent.AccumulateIf (writeStats.fInUsePercent);
+                                        if (readStats.fInUsePercent and writeStats.fInUsePercent) {
+                                            combinedStats.fInUsePercent /= 2;
+                                        }
 
                                         if (kUsePctIdleIimeForAveQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {

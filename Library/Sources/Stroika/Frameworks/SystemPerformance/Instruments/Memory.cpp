@@ -243,6 +243,8 @@ namespace {
             result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
             result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024 - *result.fPhysicalMemory.fOSReserved;
 
+            Assert (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+
             /*
              *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
              *  we could use if needed.
@@ -603,7 +605,9 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Memory::Info capture");
 #endif
-            return inherited::capture ();
+            Instruments::Memory::Info   result = inherited::capture ();
+            Ensure (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            return result;
         }
     };
 }
