@@ -551,6 +551,51 @@ namespace {
                 ProcessType     processDetails;
                 pid_t           pid = procBuf[i].pid;
 
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                /*
+                 *  Docs from /usr/include/libperfstat.h:
+                 *          ...
+                 *          proc_size;              --  Virtual Size of the Process in KB (Exclusive Usage, Leaving all Shared Library Text
+                 *                                      & Shared File Pages, Shared Memory, Memory Mapped)
+                 *
+                 *          proc_real_mem_data;     --  Real Memory used for Data in KB
+                 *          proc_real_mem_text;     --  Real Memory used for Text in KB
+                 *          proc_virt_mem_data;     --  Virtual Memory used to Data in KB
+                 *          proc_virt_mem_text;     --  Virtual Memory used for Text in KB
+                 *          shared_lib_data_size    --  VData Size from Shared Library in KB
+                 *          heap_size;              --  Heap Size in KB
+                 *          real_inuse;             --  The Real memory in use(in KB) by the process including all kind of
+                 *                                      segments (excluding system segments). This includes Text, Data,
+                 *                                      Shared Library Text, Shared Library Data, File Pages,
+                 *                                      Shared Memory & Memory Mapped
+                 *          virt_inuse;             --  The Virtual memory in use(in KB) by the process including all kind of
+                 *                                      segments (excluding system segments). This includes Text, Data,
+                 *                                      Shared Library Text, Shared Library Data, File Pages, Shared Memory & Memory Mapped
+                 *          ...
+                 *          pgsp_inuse;             --  Paging Space used(in KB) inclusive of all segments
+                 *          filepages;              --   File Pages used(in KB) including shared pages
+                 *          real_inuse_map;         --  Real memory used(in KB) for Shared Memory and Memory Mapped regions
+                 *          virt_inuse_map;         --  Virtual Memory used(in KB) for Shared Memory and Memory Mapped regions
+                 *          ...
+                 *
+                 *  LGP notes (from 2015-09-25) experimentation:
+                 *      (program that allocates 1k ram and does memset (p, 3, sz));
+                 *          [---MAIN---][0164.158]      raw perfstat_process data[100] { pid: 13041824; name: a.out; proc_size: 136; proc_virt_mem_text: 8896; virt_inuse=59464; heap_size=277824; pgsp_inuse=0}
+                 *      EXE size = 49177. and stripped EXE size = 5738
+                 *
+                 *      o   proc_size corresponds to the SZ field reported in ps -l
+                 *          This is documented to be in 4k pages, but empirically, based on writing special case example code, it appears to be
+                 *          as documented here, in 1k pages.
+                 *
+                 *      o   proc_virt_mem_text seems a queer large number.
+                 *
+                 *      o   heap_size seems a queer large number.
+                 *
+                 *      o   pgsp_inuse seems in some ways reasonable, except useless, and not corresponding to what topas shows for pgSp.
+                 */
+                DbgTrace ("raw perfstat_process data[%d] { pid: %d; name: %s; proc_size: %lld; proc_virt_mem_text: %lld; proc_virt_mem_data: %lld; virt_inuse=%lld; heap_size=%lld; pgsp_inuse=%lld}", i, pid, procBuf[i].proc_name, procBuf[i].proc_size, procBuf[i].proc_virt_mem_text, procBuf[i].proc_virt_mem_data, procBuf[i].virt_inuse, procBuf[i].heap_size, procBuf[i].pgsp_inuse);
+#endif
+
                 bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 if (grabStaticData) {
                     Optional<ProcFSInfo_>   opProcFSInfo    =   procFSInfo.Lookup (pid);
@@ -602,33 +647,6 @@ namespace {
                 processDetails.fTotalCPUTimeEverUsed = static_cast<double> (procBuf[i].ucpu_time + procBuf[i].scpu_time) / 1000.0;
 
                 /*
-                 *  Docs from /usr/include/libperfstat.h:
-                 *          ...
-                 *          proc_size;              --  Virtual Size of the Process in KB(Exclusive Usage, Leaving all Shared Library Text
-                 *                                      & Shared File Pages, Shared Memory, Memory Mapped)
-                 *
-                 *          proc_real_mem_data;     --  Real Memory used for Data in KB
-                 *          proc_real_mem_text;     --  Real Memory used for Text in KB
-                 *          proc_virt_mem_data;     --  Virtual Memory used to Data in KB
-                 *          proc_virt_mem_text;     --  Virtual Memory used for Text in KB
-                 *          shared_lib_data_size    --  VData Size from Shared Library in KB
-                 *          heap_size;              --  Heap Size in KB
-                 *          real_inuse;             --  The Real memory in use(in KB) by the process including all kind of
-                 *                                      segments (excluding system segments). This includes Text, Data,
-                 *                                      Shared Library Text, Shared Library Data, File Pages,
-                 *                                      Shared Memory & Memory Mapped
-                 *          virt_inuse;             --  The Virtual memory in use(in KB) by the process including all kind of
-                 *                                      segments (excluding system segments). This includes Text, Data,
-                 *                                      Shared Library Text, Shared Library Data, File Pages, Shared Memory & Memory Mapped
-                 *          ...
-                 *          pgsp_inuse;             --  Paging Space used(in KB) inclusive of all segments
-                 *          filepages;              --   File Pages used(in KB) including shared pages
-                 *          real_inuse_map;         --  Real memory used(in KB) for Shared Memory and Memory Mapped regions
-                 *          virt_inuse_map;             --  Virtual Memory used(in KB) for Shared Memory and Memory Mapped regions
-                 *          ...
-                 */
-
-                /*
                  *  Just REAL mem in use for TEXT and DATA space.
                  *  I'm hoping/assuming that includes the REAM member for RAM allocated (malloc).
                  */
@@ -643,7 +661,6 @@ namespace {
                  */
                 processDetails.fPrivateVirtualMemorySize = (procBuf[i].proc_size) * 1024;
 
-
                 /*
                  *  From the docs, virt_inuse should be all the VM, but somehow it turns out to frequently be less than proc_size, which
                  *  makes no sense!
@@ -653,14 +670,20 @@ namespace {
 
                 /*
                  *  not sure we should count proc_real_mem_text.
+                 *      Tried:
+                 *          processDetails.fPrivateBytes = (procBuf[i].proc_size - procBuf[i].proc_virt_mem_text) * 1024;
+                 *      but that was a disaster as (see above - proc_virt_mem_text is rediculous, and nothing like the EXE text size - which
+                 *      I'm really unsure if its included in proc_size (appears yes) - but no way to subtract it without knowing what it is.
                  *
                  *  Also- maybe we should read /proc/5243076/mmap (see https://www-01.ibm.com/support/knowledgecenter/ssw_aix_61/com.ibm.aix.files/proc.htm)
                  *  and grab pr_mflags sections with MA_READ and  MA_WRITE but not MA_SHARED. amd subtrace out overlapping regions (a bit of work but not
                  *  too bad). Stroika DisjointRange may help with this?
+                 *
+                 *
+                 *  Empirically, proc_size (what shows in PS) appears our best bet.
+                 *      --LGP 2015-09-25
                  */
-                if (procBuf[i].proc_size >= procBuf[i].proc_virt_mem_text) {    // SB always true
-                    processDetails.fPrivateBytes = (procBuf[i].proc_size - procBuf[i].proc_virt_mem_text) * 1024;
-                }
+                processDetails.fPrivateBytes = processDetails.fPrivateVirtualMemorySize;
 
                 processDetails.fUserName = Execution::Platform::POSIX::uid_t2UserName (procBuf[i].proc_uid);
                 processDetails.fThreadCount =  procBuf[i].num_threads;

@@ -89,15 +89,13 @@ namespace   Stroika {
 
                         /**
                          *  This is the total VM allocated solely for the purpose of this process.
-                         *  This includes code, stack space for threads etc.
-                         *
-                         *  @todo   DECIDE IF
-                         *              This does NOT include shared mapped memory, nor memory which is owned by loaded
-                         *              dlls/shared object files.
-                         *          SEEN CONTRADICTORY INFO.
-                         *          RATIONALIZE AND PROIVIDE BOTH (optionally)
+                         *  This includes data space, SHOULD (but may not include)stack space for threads etc, and
+                         *  heap.
                          *
                          *  On UNIX, this corresponds to VSZ in ps, and top.
+                         *  For now, this is not supported in Windows.
+                         *
+                         *  @see fPrivateBytes
                          */
                         Optional<MemorySizeType>    fPrivateVirtualMemorySize;
 
@@ -141,6 +139,8 @@ namespace   Stroika {
                          *
                          *  For AIX:
                          *      This is lipperf psinfo proc_size minus proc_virt_mem_text (so all VM that is process specific, less text space VM).
+                         *
+                         *  @see fPrivateVirtualMemorySize
                          */
                         Optional<MemorySizeType>    fPrivateBytes;
 
