@@ -75,8 +75,8 @@ using   Streams::TextReader;
 Optional<double>    VolumeInfo::EstimatedPercentInUse () const
 {
     // %InUse = QL / (1 + QL).
-    if (fCombinedIOStats and fCombinedIOStats->fAverageQLength) {
-        double QL = *fCombinedIOStats->fAverageQLength;
+    if (fCombinedIOStats and fCombinedIOStats->fQLength) {
+        double QL = *fCombinedIOStats->fQLength;
         Require (0 <= QL);
         double  pct     { 100.0 * (QL / (1 + QL)) };
         Require (0 <= pct and pct <= 100.0);
@@ -261,8 +261,8 @@ namespace {
             u_longlong_t  fTotalTransfers;
             u_longlong_t  fBlocksRead;
             u_longlong_t  fBlocksWritten;
-            u_longlong_t  wq_sampled;       /* accumulated sampled dk_wq_depth */
-            u_longlong_t  wq_time;
+            u_longlong_t  wq_sampled;               // appears to be (subject to verification) weighted q ave len (so can divide by time elapsed to get qlen ave)
+            u_longlong_t  time;                     // appears ave of percent time in use (accumulated) so divide by elapsed time and diff to get %time)
         };
         Mapping<String, PerfStats_>     fContextDiskName2PerfStats_;
     public:
@@ -350,7 +350,9 @@ namespace {
     private:
         void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfo>* volumes)
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApplyProcFS_diskstats_");
+#endif
             RequireNotNull (volumes);
             Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
             Mapping<String, VolumeInfo>     volMap;
@@ -359,12 +361,30 @@ namespace {
                 perfstat_id_t   name;
                 Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
                 perfstat_disk_t ds;
+                /*
+                 *  From /usr/include/libperfstat.h
+                 *      perfstat_disk_t:
+                 *          char name[IDENTIFIER_LENGTH];   --  name of the disk
+                 *          u_longlong_t bsize;             --  disk block size (in bytes)
+                 *          u_longlong_t xfers;             --  number of transfers to/from disk
+                 *          u_longlong_t rblks;             --  number of blocks read from disk
+                 *          u_longlong_t wblks;             --  number of blocks written to disk
+                 *          u_longlong_t qdepth;            --  instantaneous "service" queue depth (number of requests sent to disk and not completed yet)
+                 *          u_longlong_t time;              --  amount of time disk is active
+                 *          u_longlong_t wq_time;           --  accumulated wait queueing time
+                 *          u_longlong_t wq_sampled;        --  accumulated sampled dk_wq_depth
+                 */
                 (void)::memset (&ds, 0, sizeof (ds));
                 int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("perfstat_disk returned %d: name=%s; bsize=%lld; xfers=%lld; rblks=%lld; wblks=%lld; qdepth: %lld; time: %lld; wq_sampled: %lld; wq_time: %lld", disks, ds.name, ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.qdepth, ds.time, ds.wq_sampled, ds.wq_time);
+#endif
                 if (disks == 1) {
                     // @todo see below Docs and examples quite unclear. Maybe use wq_sampled
-                    PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.wq_time };
-                    //PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.q_sampled, ds.wq_time };
+                    PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.time };
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("ps = {fDiskBlockSize: %lld; fTotalTransfers: %lld; fBlocksRead: %lld; fBlocksWritten: %lld; wq_sampled: %lld;}", ps.fDiskBlockSize, ps.fTotalTransfers, ps.fBlocksRead, ps.fBlocksWritten, ps.wq_sampled);
+#endif
                     Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
                         Assert (diskAndVols.fValue.size () >= 1);   // else wouldn't be in this list
@@ -381,18 +401,24 @@ namespace {
                         combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
                         combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers) * scaleResultsBy;
 
-                        if (ps.wq_time > prevPerfStats->wq_time) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace ("in compare for disk %s: wq_time=%lld; prevPerfStats->wq_time=%lld; ps.wq_sampled =%lld; prevPerfStats->wq_sampled: %lld }", ds.name, ps.wq_time, prevPerfStats->wq_time, ps.wq_sampled, prevPerfStats->wq_sampled);
+#endif
+                        {
                             // Docs and examples quite unclear. Maybe use wq_sampled, or q_sampled. And unclear what to divide by.
-                            //double elapsed = Time::GetTickCount () - GetLastCaptureAt ();
-                            //static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
-                            //double a = (100.0 * (double)elapsed * (double)kNumberLogicalCores_);
-                            //combinedStats.fAverageQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a) * scaleResultsBy;
+                            double elapsed = Time::GetTickCount () - GetLastCaptureAt ();
+                            static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
+                            double a = (100.0 * (double)elapsed * (double)kNumberLogicalCores_);
+                            combinedStats.fQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a) * scaleResultsBy;
+                            combinedStats.fInUsePercent = ((ps.time - prevPerfStats->time) / elapsed) * scaleResultsBy;
                             //DbgTrace ("maybeaveq = %f", (double) (ps.wq_sampled - prevPerfStats->wq_sampled) / a);
+                            //DbgTrace ("a=%f", a);
+                            //DbgTrace ("a=%f", a);
                             //DbgTrace ("***ps.wq_time (%lld) - prevPerfStats->wq_time(%lld) = %lld  AND ps.wq_sampled (%lld) - prevPerfStats->wq_sampled(%lld) = %lld",
-                            //        ps.wq_time, prevPerfStats->wq_time, ps.wq_time - prevPerfStats->wq_time,
-                            //        ps.wq_sampled, prevPerfStats->wq_sampled, ps.wq_sampled - prevPerfStats->wq_sampled
-                            //       );
-                            combinedStats.fAverageQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
+                            //          ps.wq_time, prevPerfStats->wq_time, ps.wq_time - prevPerfStats->wq_time,
+                            //          ps.wq_sampled, prevPerfStats->wq_sampled, ps.wq_sampled - prevPerfStats->wq_sampled
+                            //         );
+                            //combinedStats.fQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
                             if (Optional<VolumeInfo> vi = volMap.Lookup (mountPt)) {
@@ -742,22 +768,22 @@ namespace {
                                 VolumeInfo::IOStats readStats;
                                 readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
                                 readStats.fTotalTransfers = oNew->fReadsCompleted - oOld->fReadsCompleted;
-                                readStats.fAverageQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
+                                readStats.fQLength = (oNew->fTimeSpentReading - oOld->fTimeSpentReading) / timeSinceLastMeasure;
 
                                 VolumeInfo::IOStats writeStats;
                                 writeStats.fBytesTransfered = (oNew->fSectorsWritten - oOld->fSectorsWritten) * sectorSizeTmpHack;
                                 writeStats.fTotalTransfers = oNew->fWritesCompleted - oOld->fWritesCompleted;
-                                writeStats.fAverageQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
+                                writeStats.fQLength = (oNew->fTimeSpentWriting - oOld->fTimeSpentWriting) / timeSinceLastMeasure;
 
                                 VolumeInfo::IOStats combinedStats;
                                 combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
                                 combinedStats.fTotalTransfers = *readStats.fTotalTransfers + *writeStats.fTotalTransfers;
-                                combinedStats.fAverageQLength = *readStats.fAverageQLength + *writeStats.fAverageQLength;
+                                combinedStats.fQLength = *readStats.fQLength + *writeStats.fQLength;
 
                                 vi.fReadIOStats = readStats;
                                 vi.fWriteIOStats = writeStats;
                                 // @todo DESCRIBE divide by time between 2 and * 1000 - NYI
-                                combinedStats.fAverageQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
+                                combinedStats.fQLength = ((oNew->fWeightedTimeInQSeconds - oOld->fWeightedTimeInQSeconds) / timeSinceLastMeasure);
                                 vi.fCombinedIOStats = combinedStats;
                             }
                         }
@@ -1159,12 +1185,12 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskReadTime_)) {
-                                                readStats.fAverageQLength = safePctInUse2QL_ (*o);
+                                                readStats.fQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskReadQLen_)) {
-                                                readStats.fAverageQLength = *o;
+                                                readStats.fQLength = *o;
                                             }
                                         }
 
@@ -1177,41 +1203,41 @@ namespace {
                                         }
                                         if (kUseDiskPercentReadTime_ElseAveQLen_ToComputeQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctDiskWriteTime_)) {
-                                                writeStats.fAverageQLength = safePctInUse2QL_ (*o);
+                                                writeStats.fQLength = safePctInUse2QL_ (*o);
                                             }
                                         }
                                         else {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kAveDiskWriteQLen_)) {
-                                                writeStats.fAverageQLength = *o;
+                                                writeStats.fQLength = *o;
                                             }
                                         }
 
                                         VolumeInfo::IOStats combinedStats = readStats;
                                         combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
                                         combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
-                                        combinedStats.fAverageQLength.AccumulateIf (writeStats.fAverageQLength);
+                                        combinedStats.fQLength.AccumulateIf (writeStats.fQLength);
 
                                         if (kUsePctIdleIimeForAveQLen_) {
                                             if (auto o = fLogicalDiskWMICollector_.PeekCurrentValue (wmiInstanceName, kPctIdleTime_)) {
                                                 double  aveCombinedQLen = safePctInUse2QL_ (100.0 - *o);
-                                                if (readStats.fAverageQLength and writeStats.fAverageQLength and * combinedStats.fAverageQLength > 0) {
+                                                if (readStats.fQLength and writeStats.fQLength and * combinedStats.fQLength > 0) {
                                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
                                                     // asusme ratio rate, and scale
-                                                    double  correction = aveCombinedQLen / *combinedStats.fAverageQLength;
-                                                    readStats.fAverageQLength *= correction;
-                                                    writeStats.fAverageQLength *= correction;
+                                                    double  correction = aveCombinedQLen / *combinedStats.fQLength;
+                                                    readStats.fQLength *= correction;
+                                                    writeStats.fQLength *= correction;
                                                 }
-                                                combinedStats.fAverageQLength = aveCombinedQLen;
+                                                combinedStats.fQLength = aveCombinedQLen;
                                             }
                                         }
 
-                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fAverageQLength) {
+                                        if (readStats.fBytesTransfered or readStats.fTotalTransfers or readStats.fQLength) {
                                             v.fReadIOStats = readStats;
                                         }
-                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fAverageQLength) {
+                                        if (writeStats.fBytesTransfered or writeStats.fTotalTransfers or writeStats.fQLength) {
                                             v.fWriteIOStats = writeStats;
                                         }
-                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fAverageQLength) {
+                                        if (combinedStats.fBytesTransfered or combinedStats.fTotalTransfers or combinedStats.fQLength) {
                                             v.fCombinedIOStats = combinedStats;
                                         }
                                     }
@@ -1303,7 +1329,8 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<VolumeInfo::IOStats> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fBytesTransfered), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fAverageQLength), String_Constant (L"Average-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fQLength), String_Constant (L"Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fInUsePercent), String_Constant (L"In-Use-%"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfo::IOStats, fTotalTransfers), String_Constant (L"Total-Transfers"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         mapper.AddCommonType<Optional<VolumeInfo::IOStats>> ();

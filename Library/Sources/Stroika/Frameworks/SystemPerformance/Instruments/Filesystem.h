@@ -125,7 +125,8 @@ namespace   Stroika {
                         struct  IOStats {
                             Optional<double>    fBytesTransfered;
                             Optional<double>    fTotalTransfers;
-                            Optional<double>    fAverageQLength;
+                            Optional<double>    fQLength;
+                            Optional<double>    fInUsePercent;
                         };
                         Optional<IOStats>   fReadIOStats;
                         Optional<IOStats>   fWriteIOStats;
