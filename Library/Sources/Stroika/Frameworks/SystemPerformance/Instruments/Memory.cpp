@@ -241,6 +241,17 @@ namespace {
              *      INACIVE = is real_avail - real_free
              *      ACTIVE= (real_inuse - (real_avail-real_free) - OS_RESERVED);
              */
+            if (memResults.real_avail < memResults.real_free) {
+                // This is crazy, and makes no sense, but happens sometimes on AIX 7.1. Generously, lets assume its a race, and that
+                // free memory is updated separately from when available memory is updated. Otherwise, it really makes no
+                // sense.
+                //
+                // Since i have no idea which one is wrong, I'm going to split the difference, and adjust both to be the same
+                DbgTrace ("Very strange: memResults.real_avail (%lld) < memResults.real_free (%lld)", memResults.real_avail, memResults.real_free);
+                u_longlong_t    tmp = (memResults.real_avail + memResults.real_free) / 2;
+                memResults.real_avail = tmp;
+                memResults.real_free = tmp;
+            }
             result.fPhysicalMemory.fOSReserved = static_cast<uint64_t> (0); // since we cannot find - it would be subtracted from active or inactive if we had something here
             result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
             result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024 - *result.fPhysicalMemory.fOSReserved;
