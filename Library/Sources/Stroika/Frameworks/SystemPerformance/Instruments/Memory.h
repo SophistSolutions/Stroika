@@ -226,7 +226,10 @@ namespace   Stroika {
                             /**
                              *      Total size of all loaded swapfiles (or on windows pagefiles).
                              *
-                             *      /proc/meminfo::SwapTotal
+                             *      On Linux:
+                             *          /proc/meminfo::SwapTotal
+                             *      On Windows:
+                             *          MEMORYSTATUSEX::ullTotalPageFile
                              */
                             Optional<uint64_t>  fPagefileTotalSize {};
                         };

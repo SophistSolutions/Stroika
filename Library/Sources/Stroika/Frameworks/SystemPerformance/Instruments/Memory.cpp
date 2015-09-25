@@ -76,7 +76,9 @@ namespace {
 
     const   String_Constant     kCommittedBytes_        { L"Committed Bytes" };
     const   String_Constant     kCommitLimit_           { L"Commit Limit" };
-    const   String_Constant     kPagesPerSec_           { L"Pages/sec" };           // hard page faults/sec
+    const   String_Constant     kHardPageFaultsPerSec_  { L"Pages/sec" };
+    const   String_Constant     kPagesOutPerSec_        { L"Pages Output/sec" };
+
     const   String_Constant     kFreeMem_               { L"Free & Zero Page List Bytes" };
 
     // Something of an empirical WAG (kHardwareReserved*) but not super important to get right -- LGP 2015-09-24
@@ -484,7 +486,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
-        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kPagesPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_ } };
+        WMICollector            fMemoryWMICollector_ { String_Constant { L"Memory" }, {kInstanceName_},  {kCommittedBytes_, kCommitLimit_, kHardPageFaultsPerSec_, kPagesOutPerSec_, kFreeMem_, kHardwareReserved1_, kHardwareReserved2_ } };
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -511,7 +513,7 @@ namespace {
         {
             Instruments::Memory::Info   result;
             uint64_t                    totalRAM {};
-            Read_GlobalMemoryStatusEx_(&result, &totalRAM);
+            Read_GlobalMemoryStatusEx_ (&result, &totalRAM);
 #if     qUseWMICollectionSupport_
             Read_WMI_ (&result, totalRAM);
 #endif
@@ -536,8 +538,9 @@ namespace {
             memset (&statex, 0, sizeof (statex));
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
-            //updateResult->fPhysicalMemory.fFree = statex.ullAvailPhys;
+            updateResult->fPhysicalMemory.fFree = statex.ullAvailPhys;      // overridden later, but a good first estimate if we dont use WMI
             *totalRAM = statex.ullTotalPhys;
+            updateResult->fVirtualMemory.fPagefileTotalSize = statex.ullTotalPageFile;
 
             /*
              *  dwMemoryLoad
@@ -552,7 +555,8 @@ namespace {
             fMemoryWMICollector_.Collect ();
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fVirtualMemory.fCommitLimit);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesPerSec_).CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_).CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond);
+            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_).CopyToIf (&updateResult->fPaging.fPageOutsPerSecond);
             fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_).CopyToIf (&updateResult->fPhysicalMemory.fFree);
             if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
@@ -560,13 +564,11 @@ namespace {
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
-            // WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
+            updateResult->fPhysicalMemory.fOSReserved.clear ();
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
-            Optional<double>    osRes;
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_).CopyToIf (&osRes);
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (osRes);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_).CopyToIf (&osRes);
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (osRes);
         }
 #endif
     };
