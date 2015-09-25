@@ -565,12 +565,11 @@ namespace {
 
                     String  procName    { String::FromSDKString (procBuf[i].proc_name) };
 
-                    // insanely slow, but opimizable
                     if (processDetails.fKernelProcess.Value ()) {
                         Assert (processDetails.fEXEPath.IsMissing ());
                     }
                     else {
-                        String tmp = Execution::GetEXEPathWithHint (pid, procName);
+                        String tmp = Execution::GetEXEPathWithHint (pid, procName);     // Still insanely slow, but we try hard to call not often, and the hint part helps quite a bit
                         if (not tmp.empty ()) {
                             processDetails.fEXEPath = tmp;
                         }
@@ -636,10 +635,20 @@ namespace {
                 processDetails.fResidentMemorySize = (procBuf[i].proc_real_mem_data + procBuf[i].proc_real_mem_text) * 1024;
 
                 /*
-                 *  Unclear if this should be procBuf[i].proc_virt_mem_data + procBuf[i].proc_virt_mem_text or proc_size
+                 *  Considered use of proc_real_mem_data + heap_size because these bytes are private to a copy of a process.
+                 *  Also should add in stack, but not sure how.
+                 *
+                 *  But empirically proc_size is what is returend in SZ field of ps, so thats probably our best
+                 *  estimate of private VM size.
                  */
                 processDetails.fPrivateVirtualMemorySize = (procBuf[i].proc_size) * 1024;
 
+
+                /*
+                 *  From the docs, virt_inuse should be all the VM, but somehow it turns out to frequently be less than proc_size, which
+                 *  makes no sense!
+                 *      --LGP 2015-09-25
+                 */
                 processDetails.fTotalVirtualMemorySize = (procBuf[i].virt_inuse) * 1024;
 
                 /*
