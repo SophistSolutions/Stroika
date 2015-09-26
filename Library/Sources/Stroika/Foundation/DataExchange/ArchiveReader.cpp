@@ -78,7 +78,7 @@ private:
     }
     static    void Free_ (void* p, void* address)
     {
-        delete[] address;
+        delete[] reinterpret_cast<Byte*> (address);
     }
 
 
@@ -119,7 +119,7 @@ private:
                     break;
                 default:
                     AssertNotReached ();
-                    return ERROR_INVALID_PARAMETER;
+                    return SZ_ERROR_UNSUPPORTED;
             }
             return SZ_OK;
         }
@@ -139,7 +139,6 @@ public:
 
         LookToRead_CreateVTable(&lookStream, false);
         lookStream.realStream = &inSeekStream;
-
 
         SRes  ret {};
         if ((ret = SzArEx_Open (&fDB_, &lookStream.s, &allocImp, &allocTempImp)) != SZ_OK) {
@@ -161,7 +160,7 @@ public:
                     break;
                 }
                 std::vector<char16_t> file_name(file_name_length);
-                size_t z = SzArEx_GetFileNameUtf16(&fDB_, i, &file_name[0]);
+                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&file_name[0]));
                 result.Add (String (&file_name[0]));
             }
         }
