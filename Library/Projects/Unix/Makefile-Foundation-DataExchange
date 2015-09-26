@@ -9,6 +9,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Atom.o\
+	$(ObjDir)ArchiveReader.o\
 	$(ObjDir)BadFormatException.o\
 	$(ObjDir)CheckedConverter.o\
 	$(ObjDir)InternetMediaType.o\

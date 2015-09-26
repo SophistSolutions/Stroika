@@ -711,6 +711,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1692,6 +1695,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2585,6 +2591,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -444,6 +444,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.cpp" />
@@ -1075,6 +1076,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.h" />
@@ -1425,6 +1427,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl" />
