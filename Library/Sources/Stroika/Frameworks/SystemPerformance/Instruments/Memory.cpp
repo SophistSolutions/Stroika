@@ -576,8 +576,8 @@ namespace {
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved.clear ();
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_));
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_));
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_)));
+            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_)));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
