@@ -80,11 +80,9 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):	$(TRGDIR)/Builds
-	
-$(TRGDIR)/Builds:
+$(PRODUCED_OUTPUT_ARTIFACTS):
 	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
-	@echo "         ...checking tools..."
+	@echo "      ...checking tools..."
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
@@ -114,13 +112,11 @@ doCreate:	$(ZIPEDFILE)
 	fi
 
 
+
 doBuilds:
-	@if [ -e  BUILD.OUT ]; then\
-		echo "      ...BUILD.OUT already exists";\
-	else\
-		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		make doBuildInternal_ > BUILD.OUT 2>&1;\
-	fi
+	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ..."
+	@make doBuildInternal_ > BUILD.OUT 2>&1
+
 
 
 doBuildInternal_:
@@ -214,4 +210,4 @@ clean:
 	@-$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
 
 clobber:
-	@rm -rf $(TRGDIR) BUILD.OUT
+	@rm -rf $(TRGDIR) BUILD.OUT $(PRODUCED_OUTPUT_ARTIFACTS)
