@@ -12,7 +12,7 @@
 #if     qHasFeature_LZMA
 extern "C" {
 #include    <lzma/7z.h>
-#include    <lzma/7zCRC.h>
+#include    <lzma/7zCrc.h>
 }
 #endif
 
