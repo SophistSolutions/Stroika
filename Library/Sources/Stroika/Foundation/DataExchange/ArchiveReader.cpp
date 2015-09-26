@@ -160,13 +160,9 @@ public:
                 if (file_name_length < 1) {
                     break;
                 }
-                std::vector<UInt16> file_name(file_name_length);
+                std::vector<char16_t> file_name(file_name_length);
                 size_t z = SzArEx_GetFileNameUtf16(&fDB_, i, &file_name[0]);
-
-                // tmphack
-#if     qPlatform_Windows
                 result.Add (String (&file_name[0]));
-#endif
             }
         }
         return result;

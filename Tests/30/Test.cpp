@@ -168,10 +168,7 @@ namespace {
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if     qHasFeature_LZMA
                 ArchiveReader_7z  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
-                Set<String> tmp = reader.GetContainedFiles ();
-                for (String i : tmp) {
-                    DbgTrace (L"i=%s", i.c_str ());
-                }
+                VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 #endif
             }
         }
