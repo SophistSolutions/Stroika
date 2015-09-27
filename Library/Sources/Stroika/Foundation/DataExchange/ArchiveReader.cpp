@@ -84,19 +84,19 @@ private:
 
 
 private:
-    CSzArEx fDB_ {};
-    mutable CLookToRead lookStream {};
-    mutable ISzAlloc allocImp {  };
-    mutable ISzAlloc allocTempImp {};
+    mutable ISzAlloc    fAllocImp_      { };
+    mutable ISzAlloc    fAllocTempImp_  { };
+    CSzArEx             fDB_            { };
+    mutable CLookToRead fLookStream_    { };
     struct MyISeekInStream : ISeekInStream {
+        Streams::InputStream<Memory::Byte> fInStream_;
         MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
             : fInStream_ (in)
         {
             Read = Stream_Read_;
             Seek = Stream_Seek_;
         }
-        Streams::InputStream<Memory::Byte> fInStream_;
-        static SRes Stream_Read_(void* pp, void* buf, size_t* size)
+        static  SRes    Stream_Read_ (void* pp, void* buf, size_t* size)
         {
             MyISeekInStream* pThis = (MyISeekInStream*)pp;
             size_t sz = pThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + *size);
@@ -104,8 +104,7 @@ private:
             *size = sz;
             return SZ_OK;   // not sure on EOF/underflow?SZ_ERROR_READ
         }
-
-        static SRes Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
+        static  SRes    Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
         {
             MyISeekInStream* pThis = (MyISeekInStream*)pp;
             switch (origin) {
@@ -126,89 +125,87 @@ private:
         }
     };
     MyISeekInStream inSeekStream;
-    Streams::InputStream<Memory::Byte>  fInStream_;
 
 public:
     Rep_ (const Streams::InputStream<Memory::Byte>& in)
-        : fInStream_ (in)
-        , inSeekStream (in)
+        : inSeekStream (in)
     {
-        allocImp = ISzAlloc { Alloc_, Free_ };
-        allocTempImp  = ISzAlloc {Alloc_, Free_};
+        fAllocImp_ = ISzAlloc { Alloc_, Free_ };
+        fAllocTempImp_  = ISzAlloc { Alloc_, Free_ };
 
-        SzArEx_Init (&fDB_);
+        ::SzArEx_Init (&fDB_);
 
-        LookToRead_CreateVTable(&lookStream, false);
-        lookStream.realStream = &inSeekStream;
+        ::LookToRead_CreateVTable (&fLookStream_, false);
+        fLookStream_.realStream = &inSeekStream;
 
         SRes  ret {};
-        if ((ret = SzArEx_Open (&fDB_, &lookStream.s, &allocImp, &allocTempImp)) != SZ_OK) {
+        if ((ret = ::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
             // throw
         }
 
     }
     ~Rep_ ()
     {
-        SzArEx_Free (&fDB_, &allocImp);
+        ::SzArEx_Free (&fDB_, &fAllocImp_);
     }
     virtual Set<String>     GetContainedFiles () const override
     {
         Set<String> result;
         for (unsigned int i = 0; i < fDB_.NumFiles; i++) {
             if (not SzArEx_IsDir (&fDB_, i)) {
-                size_t file_name_length = SzArEx_GetFileNameUtf16 (&fDB_, i, NULL);
-                if (file_name_length < 1) {
+                size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
+                if (nameLen < 1) {
                     break;
                 }
-                std::vector<char16_t> file_name(file_name_length);
-                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&file_name[0]));
-                result.Add (String (&file_name[0]));
+                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
+                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                result.Add (String (&fileName[0]));
             }
         }
         return result;
     }
     virtual Memory::BLOB    GetData (const String& fileName) const
     {
-        size_t  idx =   GetIdx_ (fileName);
+        UInt32  idx =   GetIdx_ (fileName);
         if (idx == -1) {
             throw "bad";    //filenotfound
         }
 
-        Byte* outBuffer = 0; // it must be 0 before first call for each new archive
+        Byte* outBuffer = 0;            // it must be 0 before first call for each new archive
         UInt32 blockIndex = 0xFFFFFFFF; // can have any value if outBuffer = 0
-        size_t outBufferSize = 0;  // can have any value if outBuffer = 0
+        size_t outBufferSize = 0;       // can have any value if outBuffer = 0
 
-        size_t offset;
-        size_t outSizeProcessed;
-        int ret;
+        size_t offset {};
+        size_t outSizeProcessed {};
+
         Execution::Finally cleanup { [&outBuffer, this] {
-                IAlloc_Free(&allocImp, outBuffer);
+                IAlloc_Free (&fAllocImp_, outBuffer);
             }
         };
 
-        if ((ret = SzArEx_Extract (&fDB_, &lookStream.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &allocImp, &allocTempImp)) != SZ_OK) {
+        SRes ret;
+        if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
             throw "bad";
         }
         return Memory::BLOB (outBuffer + offset, outBuffer + offset + outSizeProcessed);
     }
-
-    size_t  GetIdx_ (const String& fn) const
+    UInt32  GetIdx_ (const String& fn) const
     {
         // could create map to lookup once and maintain
-        for (size_t i = 0; i < fDB_.NumFiles; i++) {
+        for (UInt32 i = 0; i < fDB_.NumFiles; i++) {
             if (not SzArEx_IsDir (&fDB_, i)) {
-                size_t file_name_length = SzArEx_GetFileNameUtf16 (&fDB_, i, NULL);
-                if (file_name_length < 1) {
+                size_t nameLen = SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
+                if (nameLen < 1) {
                     break;
                 }
-                std::vector<char16_t> file_name(file_name_length);
-                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&file_name[0]));
-                if (String (&file_name[0]) == fn) {
+                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
+                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                if (String (&fileName[0]) == fn) {
                     return i;
                 }
             }
         }
-        return static_cast<size_t> (-1);
+        return static_cast<UInt32> (-1);
     }
 };
 
