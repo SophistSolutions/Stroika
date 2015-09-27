@@ -2,6 +2,7 @@ CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
+.NOTPARALLEL:
 .PHONY:	all
 .DEFAULT_GOAL := all
 
