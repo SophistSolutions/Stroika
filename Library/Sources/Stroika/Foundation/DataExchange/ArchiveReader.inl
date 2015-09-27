@@ -38,6 +38,10 @@ namespace   Stroika {
             {
                 return _GetRep ().GetContainedFiles ();
             }
+            inline  Memory::BLOB    ArchiveReader::GetData (const String& fileName) const
+            {
+                return _GetRep ().GetData (fileName);
+            }
 
 
         }

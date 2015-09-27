@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Execution/Finally.h"
 #include    "../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "ArchiveReader.h"
@@ -84,9 +85,9 @@ private:
 
 private:
     CSzArEx fDB_ {};
-    CLookToRead lookStream {};
-    ISzAlloc allocImp {  };
-    ISzAlloc allocTempImp {};
+    mutable CLookToRead lookStream {};
+    mutable ISzAlloc allocImp {  };
+    mutable ISzAlloc allocTempImp {};
     struct MyISeekInStream : ISeekInStream {
         MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
             : fInStream_ (in)
@@ -165,6 +166,49 @@ public:
             }
         }
         return result;
+    }
+    virtual Memory::BLOB    GetData (const String& fileName) const
+    {
+        size_t  idx =   GetIdx_ (fileName);
+        if (idx == -1) {
+            throw "bad";    //filenotfound
+        }
+
+        Byte* outBuffer = 0; // it must be 0 before first call for each new archive
+        UInt32 blockIndex = 0xFFFFFFFF; // can have any value if outBuffer = 0
+        size_t outBufferSize = 0;  // can have any value if outBuffer = 0
+
+        size_t offset;
+        size_t outSizeProcessed;
+        int ret;
+        Execution::Finally cleanup { [outBuffer, this] {
+                IAlloc_Free(&allocImp, outBuffer);
+            }
+        };
+
+        if ((ret = SzArEx_Extract (&fDB_, &lookStream.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &allocImp, &allocTempImp)) != SZ_OK) {
+            throw "bad";
+        }
+        return Memory::BLOB (outBuffer + offset, outBuffer + offset + outSizeProcessed);
+    }
+
+    size_t  GetIdx_ (const String& fn) const
+    {
+        // could create map to lookup once and maintain
+        for (size_t i = 0; i < fDB_.NumFiles; i++) {
+            if (not SzArEx_IsDir (&fDB_, i)) {
+                size_t file_name_length = SzArEx_GetFileNameUtf16 (&fDB_, i, NULL);
+                if (file_name_length < 1) {
+                    break;
+                }
+                std::vector<char16_t> file_name(file_name_length);
+                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&file_name[0]));
+                if (String (&file_name[0]) == fn) {
+                    return i;
+                }
+            }
+        }
+        return static_cast<size_t> (-1);
     }
 };
 

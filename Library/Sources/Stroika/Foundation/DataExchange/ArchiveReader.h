@@ -48,6 +48,10 @@ namespace   Stroika {
             public:
                 nonvirtual  Set<String>     GetContainedFiles () const;
 
+            public:
+                // maybe define iterator/indexes and maybe have return stream
+                Memory::BLOB    GetData (const String& fileName) const;
+
             protected:
                 nonvirtual  _IRep&          _GetRep ();
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -60,6 +64,7 @@ namespace   Stroika {
             class   ArchiveReader::_IRep {
             public:
                 virtual Set<String>     GetContainedFiles () const      =   0;
+                virtual Memory::BLOB    GetData (const String& fileName) const = 0;
             };
 
 
