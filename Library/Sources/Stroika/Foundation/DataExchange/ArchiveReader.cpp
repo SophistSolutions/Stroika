@@ -181,7 +181,7 @@ public:
         size_t offset;
         size_t outSizeProcessed;
         int ret;
-        Execution::Finally cleanup { [outBuffer, this] {
+        Execution::Finally cleanup { [&outBuffer, this] {
                 IAlloc_Free(&allocImp, outBuffer);
             }
         };
