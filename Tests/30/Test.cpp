@@ -10,6 +10,7 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
+#include    "Stroika/Foundation/Streams/TextReader.h"
 
 
 #if     qHasFeature_LZMA
@@ -169,6 +170,25 @@ namespace {
 #if     qHasFeature_LZMA
                 ArchiveReader_7z  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
                 VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+
+                {
+                    using   Streams::InputStream;
+                    using   Streams::TextReader;
+                    using   Memory::Byte;
+                    VerifyTestResult (reader.GetData (L"sample_zip/TODO.txt").size () == 243);
+                    VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
+                    VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
+                    VerifyTestResult (reader.GetData (L"sample_zip/Tests-Description.txt").size () == 1934);
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/TODO.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"Once any of the ThreadSafetyBuiltinObject tests work - with the locking stuff - add more concrete tyeps"));
+                    VerifyTestResult (TextReader (reader.GetData (L"sample_zip/Tests-Description.txt").As<InputStream<Byte>> ()).ReadAll ().Contains (L"[30]	Foundation::DataExchange::Other"));
+                    try {
+                        auto i = reader.GetData (L"file-not-found");
+                        VerifyTestResult (false);
+                    }
+                    catch (...) {
+                        // good
+                    }
+                }
 #endif
             }
         }
