@@ -45,6 +45,8 @@ ifeq ($(qFeatureFlag_Xerces), 'use')
 	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
 else ifeq ($(qFeatureFlag_LibCurl), 'use')
 	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+else ifeq ($(qFeatureFlag_LZMA), 'use')
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
 else ifeq ($(qFeatureFlag_OpenSSL), 'use')
 	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
 endif
@@ -152,6 +154,10 @@ ifndef StroikaFoundationSupportLibs
 	endif
 	ifeq ($(qFeatureFlag_Xerces), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lxerces
+	endif
+
+	ifeq ($(qFeatureFlag_LZMA), 'use')
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/lzma.a
 	endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
