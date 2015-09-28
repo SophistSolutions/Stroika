@@ -223,12 +223,22 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename T2, typename TRAITS2, typename SFINAE_TC>
+            template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
             {
                 lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
+                }
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename T2, typename TRAITS2, typename SFINAE_NARROW_CONVERTIBLE>
+            inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_NARROW_CONVERTIBLE*)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
+                if (from.fStorage_.peek () != nullptr) {
+                    // static_cast<T> to silence warnings, because Optional (const Optional<T2, TRAITS2> is explicit
+                    fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from.fStorage_.peek ()));
                 }
             }
             template    <typename T, typename TRAITS>
