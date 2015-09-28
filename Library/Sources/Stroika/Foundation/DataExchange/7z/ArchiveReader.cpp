@@ -117,6 +117,7 @@ public:
         SRes  ret {};
         if ((ret = ::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
             // throw
+            throw "bad";
         }
     }
     ~Rep_ ()
