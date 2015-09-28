@@ -269,9 +269,9 @@ namespace   Stroika {
                 Optional (const Optional& from);
 
 
-                template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<std::is_convertible<T, T2>::value && std::is_same<T, std::common_type<T, T2>>::value>::type>
+                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && std::is_same<T, std::common_type<T, T2>>::value >::type >
                 Optional (const Optional<T2, TRAITS2>& from);
-                template    <typename T2, typename TRAITS2, typename SFINAE_NARROW_CONVERTIBLE = typename std::enable_if<std::is_convertible<T, T2>::value && !std::is_same<T, std::common_type<T, T2>>::value>::type>
+                template    < typename T2, typename TRAITS2, typename SFINAE_NARROW_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, std::common_type<T, T2>>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_NARROW_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
                 explicit Optional (const T* from);
