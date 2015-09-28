@@ -24,21 +24,21 @@ namespace   Stroika {
             namespace   Platform {
                 namespace   AIX {
 
-                    
-					using   Characters::SDKString;
-					using   Characters::String;
+
+                    using   Characters::SDKString;
+                    using   Characters::String;
 
 
-				   /**
-					*  Return the full path to the given process(TODO EXPLAIN)
-					*/
-					SDKString   GetEXEPathWithHintT (pid_t processID);
-					SDKString   GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint);
-					String		GetEXEPathWithHint (pid_t processID);
-					String		GetEXEPathWithHint (pid_t processID, const String& associationHint);
+                    /**
+                    *  Return the full path to the given process(TODO EXPLAIN)
+                    */
+                    SDKString   GetEXEPathWithHintT (pid_t processID);
+                    SDKString   GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint);
+                    String      GetEXEPathWithHint (pid_t processID);
+                    String      GetEXEPathWithHint (pid_t processID, const String& associationHint);
 
-				
-				}
+
+                }
             }
         }
     }

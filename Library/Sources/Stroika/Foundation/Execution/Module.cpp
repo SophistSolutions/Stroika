@@ -111,7 +111,7 @@ SDKString Execution::GetEXEPathT ()
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return SDKString (buf.begin (), buf.begin () + n);
 #elif   qPlatform_AIX
-	static  SDKString   kCached_    =   Platform::AIX::GetEXEPathWithHintT (Execution::GetCurrentProcessID ());  // since cannot change, and now very slow to compute
+    static  SDKString   kCached_    =   Platform::AIX::GetEXEPathWithHintT (Execution::GetCurrentProcessID ());  // since cannot change, and now very slow to compute
     return kCached_;
 #else
     AssertNotImplemented ();
@@ -125,7 +125,7 @@ SDKString Execution::GetEXEPathT ()
 String Execution::GetEXEPath (pid_t processID)
 {
 #if     qPlatform_AIX
-	return Platform::AIX::GetEXEPathWithHint (processID);
+    return Platform::AIX::GetEXEPathWithHint (processID);
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -

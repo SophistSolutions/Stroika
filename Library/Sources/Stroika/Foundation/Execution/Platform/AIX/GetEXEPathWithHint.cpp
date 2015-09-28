@@ -276,7 +276,7 @@ SDKString   Execution::Platform::GetEXEPathWithHintT (pid_t processID)
 }
 SDKString   Execution::Platform::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
 {
-	String tmp { String::FromSDKString (associationHint) };
+    String tmp { String::FromSDKString (associationHint) };
     return AIX_GET_EXE_PATH_ (processID, &tmp);
 }
 
