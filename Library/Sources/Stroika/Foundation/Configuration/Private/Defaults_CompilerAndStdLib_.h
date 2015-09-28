@@ -355,6 +355,23 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_largeconstexprarray_Buggy
+@DESCRIPTION:   causes internal compiler error
+*/
+#ifndef qCompilerAndStdLib_largeconstexprarray_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
+#define qCompilerAndStdLib_largeconstexprarray_Buggy      (_MSC_FULL_VER == _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_largeconstexprarray_Buggy      0
+#endif
+
+#endif
+
+
+
+/*
 >c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): error C3256: 'kUpperBound': variable use does not produce a constant expression
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(117): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)'
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(582): note: see reference to function template instantiation 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(void)' being compiled
