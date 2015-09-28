@@ -226,6 +226,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/Cryptography/SSL", "Makefile-Foundation-Cryptography-SSL");
 		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
 		mkDirWithLinks("Foundation/DataExchange", "Makefile-Foundation-DataExchange");
+		mkDirWithLinks2("Foundation/DataExchange/7z", "Makefile-Foundation-DataExchange-7z");
 		mkDirWithLinks2("Foundation/DataExchange/CharacterDelimitedLines", "Makefile-Foundation-DataExchange-CharacterDelimitedLines");
 		mkDirWithLinks2("Foundation/DataExchange/INI", "Makefile-Foundation-DataExchange-INI");
 		mkDirWithLinks2("Foundation/DataExchange/JSON", "Makefile-Foundation-DataExchange-JSON");
