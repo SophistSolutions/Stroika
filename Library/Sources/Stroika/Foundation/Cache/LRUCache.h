@@ -21,8 +21,6 @@
  *
  * TODO:
  *
- *      @todo   Consider if we should be using Optional_Traits_Blockallocated_Indirect_Storage.
- *
  *      @todo   Possible get rid of intermediate LRUCache_ object.
  *
  *      @todo   Find some reasonable/simple way to get
@@ -185,8 +183,6 @@ namespace   Stroika {
             public:
                 /**
                  *  The value associated with KEY may not be present, so an Optional is returned.
-                 *
-                 *  \note  experimental as of 2015-02-01 - use of Optional_Traits_Blockallocated_Indirect_Storage - maybe use regular optional traits?
                  *
                  *  @see LookupValue ()
                  */
