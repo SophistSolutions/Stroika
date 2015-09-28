@@ -127,17 +127,17 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         char buf[1024];
 
         struct ifreq ifreq;
-        memset(&ifreq, 0, sizeof (ifreq));
-        strcpy (ifreq.ifr_name, name);
+        (void)::memset (&ifreq, 0, sizeof (ifreq));
+        Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
 
-        int r = ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
+        int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         Assert (r == 0);
         return ifreq.ifr_flags;
     };
 
     struct ifreq ifreqs[64];
     struct ifconf ifconf;
-    memset (&ifconf, 0, sizeof(ifconf));
+    (void)::memset (&ifreq, 0, sizeof (ifreq));
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof(ifreqs);
 
@@ -161,8 +161,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         //
         // And - its somewhat prescribed in https://www.ibm.com/developerworks/community/forums/html/topic?id=77777777-0000-0000-0000-000014698597
         //
-        if (ifreqs[i].ifr_addr.sa_family != AF_INET and ifreqs[i].ifr_addr.sa_family != AF_INET6) {
-            // Skip interfaces not bound to and IPv4 or IPv6 address
+        if (ifreqs[i].ifr_addr.sa_family != AF_INET and ifreqs[i].ifr_addr.sa_family != AF_INET6 and ifreqs[i].ifr_addr.sa_family != AF_LINK) {
+            // Skip interfaces not bound to and IPv4 or IPv6 address, or AF_LINK (not sure what later is used for)
+            // this list of exceptions arrived at experimentally on the one AIX machine I tested (so not good)
             continue;
         }
 #endif
@@ -180,12 +181,29 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
 
-#if     qPlatform_Linux
+#if     qPlatform_AIX
         {
             auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
                 struct ifreq ifreq;
-                memset(&ifreq, 0, sizeof (ifreq));
-                strcpy (ifreq.ifr_name, name);
+                (void)::memset (&ifreq, 0, sizeof (ifreq));
+                Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
+                int r = ioctl (sd, SIOCGIFBAUDRATE, &ifreq);
+                if (r != 0)
+                {
+                    DbgTrace ("No speed for interface %s, errno=%d", name, errno);
+                    return Optional<uint64_t> ();
+                }
+                return ifreq.ifr_baudrate;
+            };
+            newInterface.fTransmitSpeedBaud = getSpeed (sd, ifreqs[i].ifr_name);
+            newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
+        }
+#elif   qPlatform_Linux
+        {
+            auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
+                struct ifreq ifreq;
+                (void)::memset (&ifreq, 0, sizeof (ifreq));
+                Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
                 struct ethtool_cmd edata;
                 memset (&edata, 0, sizeof (edata));
                 ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
