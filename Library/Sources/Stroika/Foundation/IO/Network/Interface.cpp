@@ -54,6 +54,17 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
+
+
 #if     defined (_MSC_VER)
 // support use of Iphlpapi - but better to reference here than in lib entry of project file cuz
 // easiser to see/modularize (and only pulled in if this module is referenced)
@@ -107,6 +118,9 @@ static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i 
  */
 Traversal::Iterable<Interface>  Network::GetInterfaces ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Network::GetInterfaces");
+#endif
     Collection<Interface>   result;
 #if     qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) {
@@ -137,6 +151,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     Assert (r == 0);
 
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", ifreqs[i].ifr_name, ifreqs[i].ifr_addr.sa_family);
+#endif
 #if     qPlatform_AIX
         // I don't understand the logic behind this, but without this, we get errors
         // in getFlags(). We could check there - and handle that with an extra return value, but this
@@ -144,7 +161,8 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         //
         // And - its somewhat prescribed in https://www.ibm.com/developerworks/community/forums/html/topic?id=77777777-0000-0000-0000-000014698597
         //
-        if (ifreqs[i].ifr_addr.sa_family != AF_INET) {
+        if (ifreqs[i].ifr_addr.sa_family != AF_INET and ifreqs[i].ifr_addr.sa_family != AF_INET6) {
+            // Skip interfaces not bound to and IPv4 or IPv6 address
             continue;
         }
 #endif
@@ -309,11 +327,20 @@ Again:
  */
 Optional<Interface>  Network::GetInterfaceById (const String& internalInterfaceID)
 {
-    // @todo - a much more efficent implemenation
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("Network::GetInterfaceById");
+#endif
+    // @todo - a much more efficent implemenation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (Interface i : Network::GetInterfaces ()) {
         if (i.fInternalInterfaceID == internalInterfaceID) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"found interface %s", internalInterfaceID.c_str ());
+#endif
             return i;
         }
     }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
+#endif
     return Optional<Interface> ();
 }
