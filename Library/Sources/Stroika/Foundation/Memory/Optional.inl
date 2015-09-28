@@ -228,7 +228,17 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
-                    fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
+                    /*
+                     *  Used to have:
+                     *      fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
+                     *
+                     *  Explicit static_cast<T> needed to avoid the warning:
+                     *      'Stroika::Foundation::Memory::Optional<double,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<T>>::Optional<uint64_t,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<unsig
+                     *      because the conversion from uint64_t to double is possibly lossy (though cases that cannot be lossy like from short I believe also generate the warning)
+                     *
+                     *      This warning is mostly unhelpful, as this overload only applies (non-explicit) - when the 'common_type of the LHS/RHS is LHS'.
+                     */
+                    fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from.fStorage_.peek ()));
                 }
             }
             template    <typename T, typename TRAITS>
