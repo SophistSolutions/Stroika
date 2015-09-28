@@ -35,6 +35,11 @@
  */
 
 
+
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; }}}
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
@@ -60,6 +65,7 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  VariantValue    Read (const Memory::BLOB& in);
                 nonvirtual  VariantValue    Read (const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  VariantValue    Read (const Streams::InputStream<Characters::Character>& in);
                 nonvirtual  VariantValue    Read (istream& in);

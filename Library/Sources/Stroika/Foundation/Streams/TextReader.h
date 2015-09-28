@@ -41,6 +41,10 @@
 
 
 
+namespace Stroika { namespace Foundation { namespace Memory { class BLOB; }}}
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -70,6 +74,7 @@ namespace   Stroika {
                  * IF handed 'bytes' - the TextReader interprets the bytes (@todo add support for code page spec, and autodetect etc)
                  * If handled an InputStream<Character> - it just passes through characters.
                  */
+                TextReader (const Memory::BLOB& src);
                 TextReader (const InputStream<Memory::Byte>& src);
                 TextReader (const InputStream<Character>& src);
 

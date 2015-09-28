@@ -116,7 +116,7 @@ protected:
                 break;
             case    Whence::eFromEnd: {
                     Streams::SeekOffsetType         curOffset   =   fOffset_;
-                    Streams::SignedSeekOffsetType   newOffset   =   (fTmpHackTextRemaining_.size ()) + offset;
+                    Streams::SignedSeekOffsetType   newOffset   =   fTmpHackTextRemaining_.size () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
@@ -149,5 +149,10 @@ private:
  */
 TextReader::TextReader (const InputStream<Byte>& src)
     : InputStream<Character> (make_shared<Rep_> (src))
+{
+}
+
+TextReader::TextReader (const Memory::BLOB& src)
+    : TextReader (src.As<InputStream<Byte>> ())
 {
 }

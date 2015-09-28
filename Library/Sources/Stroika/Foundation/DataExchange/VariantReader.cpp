@@ -23,6 +23,11 @@ using   Streams::iostream::InputStreamFromStdIStream;
  *********************** DataExchange::VariantReader ****************************
  ********************************************************************************
  */
+VariantValue    VariantReader::Read (const Memory::BLOB& in)
+{
+    return Read (in.As<InputStreamFromStdIStream<Memory::Byte>> ());
+}
+
 VariantValue    VariantReader::Read (istream& in)
 {
     return Read (InputStreamFromStdIStream<Memory::Byte> (in));
