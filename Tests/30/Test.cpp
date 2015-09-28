@@ -14,7 +14,7 @@
 
 
 #if     qHasFeature_LZMA
-#include    "Stroika/Foundation/DataExchange/7z/ArchiveReader.h"
+#include    "Stroika/Foundation/DataExchange/7z/Reader.h"
 #endif
 
 #include    "../TestHarness/SimpleClass.h"
