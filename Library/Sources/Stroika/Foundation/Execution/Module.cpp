@@ -14,6 +14,7 @@
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/Synchronized.h"
 #if     qPlatform_AIX
+#include    "../Execution/Process.h"
 #include    "Platform/AIX/GetEXEPathWithHint.h"
 #endif
 #include    "../Memory/SmallStackBuffer.h"
