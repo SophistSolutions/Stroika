@@ -31,6 +31,7 @@ namespace   Stroika {
             using    Containers::Set;
             using   Characters::String;
 
+
             /**
              */
             class   ArchiveReader {
@@ -67,16 +68,6 @@ namespace   Stroika {
                 virtual Memory::BLOB    GetData (const String& fileName) const = 0;
             };
 
-
-#if     qHasFeature_LZMA
-            // tmphack for now
-            class ArchiveReader_7z : public ArchiveReader {
-            public:
-                ArchiveReader_7z (const Streams::InputStream<Memory::Byte>& in);
-            private:
-                class   Rep_;
-            };
-#endif
 
         }
     }

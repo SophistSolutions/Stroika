@@ -163,6 +163,9 @@
     <Filter Include="Sources\Cryptography\OpenSSL">
       <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\7z">
+      <UniqueIdentifier>{6384fd3a-03b8-4232-8d32-f1357f207243}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -713,6 +716,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp">
       <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.cpp">
+      <Filter>Sources\DataExchange\7z</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1697,6 +1703,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h">
       <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.h">
+      <Filter>Sources\DataExchange\7z</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

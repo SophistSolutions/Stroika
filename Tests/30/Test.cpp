@@ -14,7 +14,7 @@
 
 
 #if     qHasFeature_LZMA
-#include    "Stroika/Foundation/DataExchange/ArchiveReader.h"
+#include    "Stroika/Foundation/DataExchange/7z/ArchiveReader.h"
 #endif
 
 #include    "../TestHarness/SimpleClass.h"
@@ -168,7 +168,7 @@ namespace {
                 };
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if     qHasFeature_LZMA
-                ArchiveReader_7z  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
+                _7z::ArchiveReader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
                 VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
                 {
