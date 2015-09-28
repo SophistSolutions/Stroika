@@ -34,6 +34,9 @@
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include    "../../../Foundation/Execution/Platform/Windows/Users.h"
 #endif
+#if     qPlatform_AIX
+#include    "../../../Foundation/Execution/Platform/AIX/GetEXEPathWithHint.h"
+#endif
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/IO/FileSystem/DirectoryIterable.h"
 #include    "../../../Foundation/IO/FileSystem/FileSystem.h"
@@ -614,7 +617,7 @@ namespace {
                         Assert (processDetails.fEXEPath.IsMissing ());
                     }
                     else {
-                        String tmp = Execution::GetEXEPathWithHint (pid, procName);     // Still insanely slow, but we try hard to call not often, and the hint part helps quite a bit
+                        String tmp = Execution::Platform::AIX::GetEXEPathWithHint (pid, procName);     // Still insanely slow, but we try hard to call not often, and the hint part helps quite a bit
                         if (not tmp.empty ()) {
                             processDetails.fEXEPath = tmp;
                         }
