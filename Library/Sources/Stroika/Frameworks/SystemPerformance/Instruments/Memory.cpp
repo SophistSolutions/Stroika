@@ -256,6 +256,42 @@ namespace {
             result.fPhysicalMemory.fInactive = (memResults.real_avail - memResults.real_free) * 4 * 1024;
             result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024 - *result.fPhysicalMemory.fOSReserved;
 
+            // Check for bad that that just cannot happen (I think would be kernel/libperf bug)
+            static  const   uint64_t    kTotalRAM_  =   GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+            Assert (result.fPhysicalMemory.fActive.Value () <= kTotalRAM_);
+            Assert (result.fPhysicalMemory.fInactive.Value () <= kTotalRAM_);
+            Assert (result.fPhysicalMemory.fFree.Value () <= kTotalRAM_);
+            if (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () != kTotalRAM_) {
+                // Due to apparent races gathering these stats, they may be out of sync. So split the difference (no other obvious way
+                // to reconcile them)
+                int64_t overage = result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value ();
+                overage -= kTotalRAM_;
+                DbgTrace ("Adjusting reported RAM values for overrage %lld", static_cast<long long int> (overage));
+                if (result.fPhysicalMemory.fFree.Value () > overage / 3) {
+                    result.fPhysicalMemory.fFree -= overage / 3;
+                    overage -= overage / 3;
+                }
+                else {
+                    overage -= result.fPhysicalMemory.fFree.Value ();
+                    result.fPhysicalMemory.fFree = 0;
+                }
+                if (result.fPhysicalMemory.fActive.Value () > overage / 2) {
+                    result.fPhysicalMemory.fActive -= overage / 2;
+                    overage -= overage / 2;
+                }
+                else {
+                    overage -= result.fPhysicalMemory.fActive.Value ();
+                    result.fPhysicalMemory.fActive = 0;
+                }
+                if (result.fPhysicalMemory.fInactive.Value () > overage) {
+                    result.fPhysicalMemory.fActive -= overage;
+                    overage -= overage;
+                }
+                else {
+                    overage -= result.fPhysicalMemory.fInactive.Value ();
+                    result.fPhysicalMemory.fInactive = 0;
+                }
+            }
             Assert (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
 
             /*
