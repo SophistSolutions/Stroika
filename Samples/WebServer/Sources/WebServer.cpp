@@ -58,7 +58,7 @@ int main (int argc, const char* argv[])
                             Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
                         }
                         BLOB    setAppState2    =   conn.GetRequest ().GetBody ();
-                        String  interpretAsString = Streams::TextReader (setAppState2.As<Streams::InputStream<Memory::Byte>> ()).ReadAll ();
+                        String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
                         conn.GetResponse ().writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
                         conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
                     }
