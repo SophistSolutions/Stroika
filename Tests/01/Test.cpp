@@ -45,7 +45,7 @@ namespace   {
             }
             void    T2_ ()
             {
-                using   CACHE = LRUCache<string, string, LRUCacheSupport::DefaultTraits<string, 10>>;
+                using   CACHE = LRUCache<string, string, LRUCacheSupport::DefaultTraits<string, string, 10>>;
                 CACHE tmp (3);
                 tmp.Add("a", "1");
                 tmp.Add("b", "2");
