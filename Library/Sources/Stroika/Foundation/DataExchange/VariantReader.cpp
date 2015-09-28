@@ -25,7 +25,7 @@ using   Streams::iostream::InputStreamFromStdIStream;
  */
 VariantValue    VariantReader::Read (const Memory::BLOB& in)
 {
-    return Read (in.As<InputStreamFromStdIStream<Memory::Byte>> ());
+    return Read (in.As<Streams::InputStream<Memory::Byte>> ());
 }
 
 VariantValue    VariantReader::Read (istream& in)
