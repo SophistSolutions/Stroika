@@ -91,7 +91,7 @@ namespace   Stroika {
 
                 /**
                  */
-                template    <typename KEY, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY>>
+                template    <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY>>
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
 
@@ -114,6 +114,13 @@ namespace   Stroika {
                     /**
                      */
                     using   StatsType   =   LRUCacheSupport::StatsType_DEFAULT;
+
+                    /**
+                     *      \note   Replace OptionalValueType value with Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>
+                     *              in your traits subclass if you have compiler errors becacuse you define or LRUCache before the type you
+                     *              are caching.
+                     */
+                    using   OptionalValueType = Memory::Optional<VALUE>;
                 };
 
 
@@ -132,7 +139,7 @@ namespace   Stroika {
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
              *      \encode
              */
-            template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY>>
+            template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
             class   LRUCache : private Debug::AssertExternallySynchronizedLock {
             public:
                 using   TraitsType  =   TRAITS;
@@ -142,6 +149,9 @@ namespace   Stroika {
 
             public:
                 using   KeyEqualsCompareFunctionType =  typename TRAITS::KeyEqualsCompareFunctionType;
+
+            public:
+                using   OptionalValueType =  typename TRAITS::OptionalValueType;
 
             public:
                 LRUCache (size_t size = 1);
@@ -180,7 +190,7 @@ namespace   Stroika {
                  *
                  *  @see LookupValue ()
                  */
-                nonvirtual  Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>> Lookup (const KEY& key) const;
+                nonvirtual  OptionalValueType Lookup (const KEY& key) const;
 
             public:
                 /**
