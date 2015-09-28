@@ -273,7 +273,7 @@ namespace {
                 }
                 else {
                     overage -= result.fPhysicalMemory.fFree.Value ();
-                    result.fPhysicalMemory.fFree = 0;
+                    result.fPhysicalMemory.fFree = static_cast<uint64_t> (0);
                 }
                 if (result.fPhysicalMemory.fActive.Value () > overage / 2) {
                     result.fPhysicalMemory.fActive -= overage / 2;
@@ -281,7 +281,7 @@ namespace {
                 }
                 else {
                     overage -= result.fPhysicalMemory.fActive.Value ();
-                    result.fPhysicalMemory.fActive = 0;
+                    result.fPhysicalMemory.fActive = static_cast<uint64_t> (0);
                 }
                 if (result.fPhysicalMemory.fInactive.Value () > overage) {
                     result.fPhysicalMemory.fActive -= overage;
@@ -289,7 +289,7 @@ namespace {
                 }
                 else {
                     overage -= result.fPhysicalMemory.fInactive.Value ();
-                    result.fPhysicalMemory.fInactive = 0;
+                    result.fPhysicalMemory.fInactive = static_cast<uint64_t> (0);
                 }
             }
             Assert (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
