@@ -135,19 +135,19 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         return ifreq.ifr_flags;
     };
 
-    struct ifreq ifreqs[64];
-    struct ifconf ifconf;
-    (void)::memset (&ifreq, 0, sizeof (ifreq));
+    struct ifreq    ifreqs[128];
+    struct ifconf   ifconf;
+    (void)::memset (&ifreqs, 0, sizeof (ifreqs));
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof(ifreqs);
 
-    int sd = socket (PF_INET, SOCK_STREAM, 0);
+    int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
     Execution::Finally cleanup ([sd] () {
-        close (sd);
+        ::close (sd);
     });
 
-    int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+    int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
     for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
