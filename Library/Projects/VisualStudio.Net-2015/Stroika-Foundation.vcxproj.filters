@@ -163,6 +163,9 @@
     <Filter Include="Sources\Cryptography\OpenSSL">
       <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\7z">
+      <UniqueIdentifier>{ec2c992c-013e-4939-8212-d4c2e7e10483}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -456,12 +459,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
@@ -710,6 +707,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.cpp">
+      <Filter>Sources\DataExchange\7z</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1245,12 +1254,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
@@ -1685,6 +1688,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.h">
+      <Filter>Sources\DataExchange\7z</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2163,12 +2178,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl">
       <Filter>Sources\DataExchange\XML</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl">
       <Filter>Sources\DataExchange\XML</Filter>
     </None>
@@ -2576,6 +2585,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl">
+      <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.inl">
+      <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
 </Project>
