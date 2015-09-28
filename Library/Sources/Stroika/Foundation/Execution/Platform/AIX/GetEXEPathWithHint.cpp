@@ -29,6 +29,9 @@ using   Characters::String;
 using   Characters::String_Constant;
 
 
+
+
+
 namespace {
     SDKString   myProcessRunnerFirstLine_ (const SDKString& cmdLine)
     {
@@ -264,15 +267,18 @@ namespace {
  ************************ Platform::AIX::GetEXEPathWithHintT ********************
  ********************************************************************************
  */
-SDKString   Execution::Platform::GetEXEPathWithHintT (pid_t processID)
+SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID)
 {
     return AIX_GET_EXE_PATH_ (processID, nullptr);
 }
-SDKString   Execution::Platform::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
+SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
 {
     String tmp { String::FromSDKString (associationHint) };
     return AIX_GET_EXE_PATH_ (processID, &tmp);
 }
+
+
+
 
 
 /*
@@ -280,11 +286,11 @@ SDKString   Execution::Platform::GetEXEPathWithHintT (pid_t processID, const SDK
  ************************ Platform::AIX::GetEXEPathWithHint *********************
  ********************************************************************************
  */
-String   Execution::Platform::AIXGetEXEPathWithHint (pid_t processID)
+String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID)
 {
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, nullptr));
 }
-String   Execution::Platform::AIXGetEXEPathWithHint (pid_t processID, const String& associationHint)
+String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID, const String& associationHint)
 {
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, &associationHint));
 }
