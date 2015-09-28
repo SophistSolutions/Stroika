@@ -33,7 +33,7 @@ using   Memory::Byte;
  *********** DataExchange::CharacterDelimitedLines::Writer **********************
  ********************************************************************************
  */
-class   DataExchange::CharacterDelimitedLines::Writer::Rep_ : public DataExchange::Writer::_IRep {
+class   DataExchange::CharacterDelimitedLines::Writer::Rep_ : public DataExchange::VariantWriter::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:

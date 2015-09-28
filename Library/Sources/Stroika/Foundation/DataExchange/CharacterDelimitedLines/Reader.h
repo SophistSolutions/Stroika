@@ -11,7 +11,7 @@
 #include    "../../Containers/Set.h"
 #include    "../../Streams/InputStream.h"
 
-#include    "../Reader.h"
+#include    "../VariantReader.h"
 #include    "../VariantValue.h"
 
 
@@ -43,9 +43,9 @@ namespace   Stroika {
                  *
                  *  This COULD be easily used to read CSV files, for example.
                  */
-                class   Reader : public DataExchange::Reader {
+                class   Reader : public VariantReader {
                 private:
-                    using   inherited   =   DataExchange::Reader;
+                    using   inherited   =   DataExchange::VariantReader;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

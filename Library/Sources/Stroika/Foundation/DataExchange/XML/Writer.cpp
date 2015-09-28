@@ -141,10 +141,10 @@ namespace   {
 
 /*
  ********************************************************************************
- ******************** DataExchange::XML::Writer ***************************
+ ************************** DataExchange::XML::Writer ***************************
  ********************************************************************************
  */
-class   DataExchange::XML::Writer::Rep_ : public DataExchange::Writer::_IRep {
+class   DataExchange::XML::Writer::Rep_ : public DataExchange::VariantWriter::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:

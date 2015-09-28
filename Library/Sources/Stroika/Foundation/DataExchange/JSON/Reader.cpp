@@ -420,7 +420,7 @@ namespace   {
  ************************* DataExchange::JSON::Reader ***************************
  ********************************************************************************
  */
-class   DataExchange::JSON::Reader::Rep_ : public DataExchange::Reader::_IRep {
+class   DataExchange::JSON::Reader::Rep_ : public DataExchange::VariantReader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:

@@ -10,7 +10,7 @@
 #include    "../../Streams/OutputStream.h"
 
 #include    "../VariantValue.h"
-#include    "../Writer.h"
+#include    "../VariantWriter.h"
 
 
 /**
@@ -68,9 +68,9 @@ namespace   Stroika {
                  *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamAdapterFromOStream (stringBuf));
                  *      \endcode
                  */
-                class Writer : public DataExchange::Writer {
+                class Writer : public DataExchange::VariantWriter {
                 private:
-                    using   inherited   =   DataExchange::Writer;
+                    using   inherited   =   DataExchange::VariantWriter;
 
                 private:
                     class   Rep_;

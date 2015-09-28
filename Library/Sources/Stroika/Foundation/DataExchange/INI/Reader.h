@@ -9,7 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Containers/Collection.h"
 
-#include    "../Reader.h"
+#include    "../VariantReader.h"
 #include    "../VariantValue.h"
 
 #include    "Profile.h"
@@ -46,9 +46,9 @@ namespace   Stroika {
                 /**
                  *  See example usage in Regregssion test(@todo fixup)
                  */
-                class Reader : public DataExchange::Reader {
+                class Reader : public DataExchange::VariantReader {
                 private:
-                    using   inherited   =   DataExchange::Reader;
+                    using   inherited   =   DataExchange::VariantReader;
 
                 private:
                     class   Rep_;

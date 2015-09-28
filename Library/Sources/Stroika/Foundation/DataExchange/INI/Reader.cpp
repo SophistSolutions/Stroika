@@ -28,7 +28,7 @@ using   Memory::Byte;
  ************************** DataExchange::INI::Reader ***************************
  ********************************************************************************
  */
-class   DataExchange::INI::Reader::Rep_ : public DataExchange::Reader::_IRep {
+class   DataExchange::INI::Reader::Rep_ : public DataExchange::VariantReader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:

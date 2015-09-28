@@ -9,7 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Streams/InputStream.h"
 
-#include    "../Reader.h"
+#include    "../VariantReader.h"
 #include    "../VariantValue.h"
 
 
@@ -35,9 +35,9 @@ namespace   Stroika {
                 /**
                  *  @todo add example usage (and docs)
                  */
-                class Reader : public DataExchange::Reader {
+                class Reader : public DataExchange::VariantReader {
                 private:
-                    using   inherited   =   DataExchange::Reader;
+                    using   inherited   =   DataExchange::VariantReader;
 
                 private:
                     class   Rep_;

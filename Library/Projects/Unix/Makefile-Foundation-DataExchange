@@ -15,9 +15,9 @@ Objs	=	\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)OptionsFile.o\
-	$(ObjDir)Reader.o\
+	$(ObjDir)VariantReader.o\
 	$(ObjDir)VariantValue.o\
-	$(ObjDir)Writer.o\
+	$(ObjDir)VariantWriter.o\
 
 SubDirs	=	\
 	7z \

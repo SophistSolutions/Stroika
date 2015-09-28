@@ -6,7 +6,7 @@
 #include    "../Characters/Format.h"
 #include    "../Streams/iostream/OutputStreamFromStdOStream.h"
 
-#include    "Writer.h"
+#include    "VariantWriter.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -19,15 +19,15 @@ using   Streams::iostream::OutputStreamFromStdOStream;
 
 /*
  ********************************************************************************
- ****************************** DataExchange::Writer ****************************
+ *********************** DataExchange::VariantWriter ****************************
  ********************************************************************************
  */
-void    Writer::Write (const VariantValue& v, ostream& out)
+void    VariantWriter::Write (const VariantValue& v, ostream& out)
 {
     Write (v, OutputStreamFromStdOStream<Memory::Byte> (out));
 }
 
-void    Writer::Write (const VariantValue& v, wostream& out)
+void    VariantWriter::Write (const VariantValue& v, wostream& out)
 {
     AssertNotImplemented ();    // just because we never implemented
     Write (v, OutputStreamFromStdOStream<Characters::Character> (out));

@@ -208,7 +208,7 @@ namespace   {
  ************************** DataExchange::JSON::Writer **************************
  ********************************************************************************
  */
-class   DataExchange::JSON::Writer::Rep_ : public DataExchange::Writer::_IRep {
+class   DataExchange::JSON::Writer::Rep_ : public DataExchange::VariantWriter::_IRep {
 public:
     virtual _SharedPtrIRep  Clone () const override
     {

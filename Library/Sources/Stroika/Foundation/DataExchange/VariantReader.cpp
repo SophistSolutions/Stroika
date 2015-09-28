@@ -6,7 +6,7 @@
 #include    "../Characters/Format.h"
 #include    "../Streams/iostream/InputStreamFromStdIStream.h"
 
-#include    "Reader.h"
+#include    "VariantReader.h"
 
 
 
@@ -20,15 +20,15 @@ using   Streams::iostream::InputStreamFromStdIStream;
 
 /*
  ********************************************************************************
- ****************************** DataExchange::Reader ****************************
+ *********************** DataExchange::VariantReader ****************************
  ********************************************************************************
  */
-VariantValue    Reader::Read (istream& in)
+VariantValue    VariantReader::Read (istream& in)
 {
     return Read (InputStreamFromStdIStream<Memory::Byte> (in));
 }
 
-VariantValue    Reader::Read (wistream& in)
+VariantValue    VariantReader::Read (wistream& in)
 {
     return Read (InputStreamFromStdIStream<Characters::Character> (in));
 }

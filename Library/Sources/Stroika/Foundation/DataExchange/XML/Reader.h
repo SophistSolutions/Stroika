@@ -9,7 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Streams/InputStream.h"
 
-#include    "../Reader.h"
+#include    "../VariantReader.h"
 #include    "../VariantValue.h"
 
 #include    "SerializationConfiguration.h"
@@ -41,9 +41,9 @@ namespace   Stroika {
                   like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
                   do or dont include xml processing instruction
                  */
-                class Reader : public DataExchange::Reader {
+                class Reader : public DataExchange::VariantReader {
                 private:
-                    using   inherited   =   DataExchange::Reader;
+                    using   inherited   =   DataExchange::VariantReader;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

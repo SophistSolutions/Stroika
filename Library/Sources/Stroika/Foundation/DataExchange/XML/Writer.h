@@ -10,8 +10,8 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Streams/OutputStream.h"
 
-#include    "../Writer.h"
 #include    "../VariantValue.h"
+#include    "../VariantWriter.h"
 #include    "Common.h"
 #include    "SerializationConfiguration.h"
 
@@ -57,9 +57,9 @@ namespace   Stroika {
                  *
                  *  Other types are illegal an XML and will trigger a 'Require' failure.
                  */
-                class   Writer : public DataExchange::Writer {
+                class   Writer : public DataExchange::VariantWriter {
                 private:
-                    using   inherited   =   DataExchange::Writer;
+                    using   inherited   =   DataExchange::VariantWriter;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

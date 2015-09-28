@@ -122,8 +122,8 @@ const   OptionsFile::ModuleNameToFileVersionMapperType  OptionsFile::kDefaultMod
 
 
 // Consider using XML by default when more mature
-const   Reader  OptionsFile::kDefaultReader =   JSON::Reader ();
-const   Writer  OptionsFile::kDefaultWriter =   JSON::Writer ();
+const   VariantReader  OptionsFile::kDefaultReader =   JSON::Reader ();
+const   VariantWriter  OptionsFile::kDefaultWriter =   JSON::Writer ();
 
 
 
@@ -137,8 +137,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    Reader reader,
-    Writer writer
+    VariantReader reader,
+    VariantWriter writer
 )
     : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
@@ -152,8 +152,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    Reader reader,
-    Writer writer
+    VariantReader reader,
+    VariantWriter writer
 )
     : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
@@ -167,8 +167,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    Reader reader,
-    Writer writer,
+    VariantReader reader,
+    VariantWriter writer,
     const String& fileSuffix
 )
     : fModuleName_ (modName)

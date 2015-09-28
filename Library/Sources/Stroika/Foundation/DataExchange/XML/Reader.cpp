@@ -23,7 +23,7 @@ using   Characters::String_Constant;
 
 
 
-class   DataExchange::XML::Reader::Rep_ : public DataExchange::Reader::_IRep {
+class   DataExchange::XML::Reader::Rep_ : public DataExchange::VariantReader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
