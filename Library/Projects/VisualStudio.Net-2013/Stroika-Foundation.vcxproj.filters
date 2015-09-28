@@ -166,6 +166,9 @@
     <Filter Include="Sources\DataExchange\7z">
       <UniqueIdentifier>{6384fd3a-03b8-4232-8d32-f1357f207243}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Execution\Platform\AIX">
+      <UniqueIdentifier>{d853d327-9a14-4838-ba4d-c501ce1042d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -719,6 +722,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp">
       <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\AIX\GetEXEPathWithHint.cpp">
+      <Filter>Sources\Execution\Platform\AIX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1712,6 +1718,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h">
       <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\AIX\GetEXEPathWithHint.h">
+      <Filter>Sources\Execution\Platform\AIX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

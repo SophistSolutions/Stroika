@@ -1,0 +1,16 @@
+include ../../../../Configuration.mk
+include	../../../../SharedBuildRules.mk
+include	../../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Execution/Platform/AIX/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)GetEXEPathWithHint.o\
+
+all:	$(Objs)
+
+
+

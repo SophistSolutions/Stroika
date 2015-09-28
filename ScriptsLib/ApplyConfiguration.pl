@@ -234,6 +234,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
 		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation/Execution/Platform";
+		mkDirWithLinks3("Foundation/Execution/Platform/AIX", "Makefile-Foundation-Execution-Platform-AIX");
 		mkDirWithLinks3("Foundation/Execution/Platform/POSIX", "Makefile-Foundation-Execution-Platform-POSIX");
 		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
 		mkDirWithLinks2("Foundation/IO/FileSystem", "Makefile-Foundation-IO-FileSystem");
