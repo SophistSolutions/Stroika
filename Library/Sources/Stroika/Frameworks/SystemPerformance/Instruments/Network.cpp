@@ -22,9 +22,12 @@
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+#include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include    "../../../Foundation/Streams/InputStream.h"
+#include    "../../../Foundation/Streams/MemoryStream.h"
+#include    "../../../Foundation/Streams/TextReader.h"
 
 #include    "Network.h"
 
@@ -138,9 +141,10 @@ IOStatistics&   IOStatistics::operator+= (const IOStatistics& rhs)
 namespace {
     struct  CapturerWithContext_COMMON_ {
         Options                     fOptions_;
-        DurationSecondsType         fMinimumAveragingInterval_;
-        DurationSecondsType         fPostponeCaptureUntil_ { 0 };
-        DurationSecondsType         fLastCapturedAt {};
+        DurationSecondsType         fMinimumAveragingInterval_  {};
+        DurationSecondsType         fPostponeCaptureUntil_      { 0 };
+        DurationSecondsType         fLastCapturedAt             {};
+        CapturerWithContext_COMMON_ () = delete;
         CapturerWithContext_COMMON_ (const Options& options)
             : fOptions_ (options)
             , fMinimumAveragingInterval_ (options.fMinimumAveragingInterval)
@@ -172,6 +176,11 @@ namespace {
             uint64_t  fTotalPacketsSent;
         };
         Mapping<String, PerfStats_>       fLast;
+        struct OverallTCPStats_ {
+            uint64_t    fTotalSegments;
+            uint64_t    fTotalTCPRetransmits;
+        };
+        Optional<OverallTCPStats_>      fLastOverallTCPStats_;
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
@@ -197,10 +206,10 @@ namespace {
             Mapping<String, PerfFetchResults_>   thisRunStats    =   perfstat_fetch_ ();
 
             Collection<InterfaceInfo>   interfaceResults;
-            IOStatistics                accumSummary;
 
             Time::DurationSecondsType   elapsed = Time::GetTickCount () - GetLastCaptureAt ();
 
+            IOStatistics                accumSummary;
             for (KeyValuePair<String, PerfFetchResults_> i : thisRunStats) {
                 try {
                     Memory::Optional<IO::Network::Interface>    oIFace = IO::Network::GetInterfaceById (i.fKey);
@@ -221,6 +230,11 @@ namespace {
                             stats.fPacketsPerSecondSent = static_cast<double> (i.fValue.fTotalPacketsSent - prev->fTotalPacketsSent) / elapsed;
                         }
 
+                        // fTransmitSpeedBaud and fReceiveLinkSpeedBaud already gathered from interface, but the values appear unlikely, so try
+                        // these -LGP 2015-09-28
+                        iiInfo.fInterface.fTransmitSpeedBaud = i.fValue.fBAUDRate;
+                        iiInfo.fInterface.fReceiveLinkSpeedBaud = i.fValue.fBAUDRate;
+                        stats.fTotalErrors = i.fValue.fTotalErrors;
                         iiInfo.fIOStatistics = stats;
                         interfaceResults.Add (iiInfo);
                         accumSummary += stats;
@@ -237,6 +251,15 @@ namespace {
             fLast.clear ();
             thisRunStats.Apply ([this] (const KeyValuePair<String, PerfFetchResults_>& i) { fLast.Add (i.fKey, i.fValue); });
 
+            OverallTCPStats_    tcpStats    =   GetOverallTCPStats_ ();
+            accumSummary.fTotalTCPSegments = tcpStats.fTotalSegments;
+            accumSummary.fTotalTCPRetransmittedSegments = tcpStats.fTotalTCPRetransmits;
+            if (fLastOverallTCPStats_) {
+                accumSummary.fTCPSegmentsPerSecond = (tcpStats.fTotalSegments - fLastOverallTCPStats_->fTotalSegments) / elapsed;
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (tcpStats.fTotalTCPRetransmits - fLastOverallTCPStats_->fTotalTCPRetransmits) / elapsed;
+            }
+            fLastOverallTCPStats_  = tcpStats;
+
             NoteCompletedCapture_ ();
             return Info { interfaceResults, accumSummary };
         }
@@ -252,7 +275,7 @@ namespace {
         Mapping<String, PerfFetchResults_>   perfstat_fetch_ ()
         {
             Mapping<String, PerfFetchResults_>   result;
-            int interfaceCount =  perfstat_netinterface (NULL, NULL,  sizeof(perfstat_netinterface_t), 0);
+            int interfaceCount =  perfstat_netinterface (NULL, NULL,  sizeof (perfstat_netinterface_t), 0);
             if (interfaceCount > 0) {
                 Memory::SmallStackBuffer<perfstat_netinterface_t>   statBuf (interfaceCount);
                 perfstat_id_t firstinterface = { 0 };
@@ -271,6 +294,46 @@ namespace {
                     }
                     );
                 }
+            }
+            return result;
+        }
+        OverallTCPStats_    GetOverallTCPStats_ ()
+        {
+            OverallTCPStats_ result {};
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Network::....GetOverallTCPStats_");
+#endif
+            using   Execution::ProcessRunner;
+            {
+                ProcessRunner   pr (String_Constant { L"/usr/bin/netstat -s" });
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                bool    sawTCP = false;
+                Optional<uint64_t>  dataPackets;
+                Optional<uint64_t>  retramsitPackets;
+                for (String line : Streams::TextReader (useStdOut).ReadLines ()) {
+                    line = line.Trim ();
+                    if (not sawTCP) {
+                        sawTCP = (line == L"tcp:");
+                        continue;
+                    }
+                    unsigned long long  val     {};
+                    wchar_t*            endptr  {};
+                    val = ::wcstoull (line.c_str (), &endptr, 10);
+                    AssertNotNull (endptr);
+                    String  restOfLine = endptr;
+                    if (restOfLine.Contains (L"data packets")) {
+                        if (restOfLine.Contains (L"retransmitted")) {
+                            retramsitPackets = val;
+                        }
+                        else {
+                            dataPackets = val;
+                        }
+                    }
+                }
+                result.fTotalSegments = dataPackets.Value ();
+                result.fTotalTCPRetransmits = retramsitPackets.Value ();
             }
             return result;
         }
@@ -530,7 +593,6 @@ namespace {
             using   IO::Network::Interface;
             using   Instruments::Network::InterfaceInfo;
             using   Instruments::Network::Info;
-
 
             Info                        result;
             Collection<InterfaceInfo>   interfaceResults;
