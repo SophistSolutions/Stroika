@@ -53,7 +53,10 @@
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.8")
 #endif
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
+#if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
+#pragma message ("Info: Stroika untested with this version of GCC")
+#endif
+#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 1))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -483,7 +486,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
@@ -624,7 +627,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
@@ -718,11 +721,16 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
+
+
+../../..//Library/Sources/Stroika/Foundation/Containers/Bijection.h:493:49: error: 'bool Stroika::Foundation::Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::Lookup(Stroika::Foundation::Configuration::ArgByValueType<T>, Stroika::Foundation::Memory::Optional<RANGE_TYPE>*) const [with DOMAIN_TYPE = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred; RANGE_TYPE = Stroika::Foundation::Characters::String; TRAITS = Stroika::Foundation::Containers::Bijection_DefaultTraits<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred, Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred>, Stroika::Foundation::Common::ComparerWithEqualsOptionally<Stroika::Foundation::Characters::String> >; Stroika::Foundation::Configuration::ArgByValueType<T> =
+
+
 */
 #ifndef qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     0
 #endif
@@ -777,7 +785,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
@@ -1437,7 +1445,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      0
 #endif
