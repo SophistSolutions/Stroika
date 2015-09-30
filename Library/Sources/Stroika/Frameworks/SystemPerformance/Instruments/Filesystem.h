@@ -127,6 +127,12 @@ namespace   Stroika {
                      */
                     using   DynamicDiskIDType   =   String;
 
+
+                    /**
+                     *
+                     */
+                    using   MountedFilesystemNameType   =   String;
+
                     /**
                      *
                      */
@@ -167,7 +173,7 @@ namespace   Stroika {
                      *  currently model that, but we could make mount point be a set).
                      */
                     struct  MountedFilesystemInfoType {
-                        String                      fMountedOnName;
+                        MountedFilesystemNameType           fMountedOnName;     // soon to go away
 
                         /*
                          *  A volume is typically mounted on a single physical drive, but in some circumstances, on some operating
@@ -209,7 +215,7 @@ namespace   Stroika {
 
                         /**
                          */
-                        Containers::Collection<MountedFilesystemInfoType>       fMountedFilesystems;
+                        Containers::Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>       fMountedFilesystems;
 
                         /**
                          *  Use the most specific information we have available, but if needed, go to the disk level and
