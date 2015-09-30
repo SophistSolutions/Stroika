@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../../Foundation/Containers/Mapping.h"
 #include    "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Time/Realtime.h"
@@ -42,7 +43,7 @@ namespace   Stroika {
 
                     /**
                     */
-                    enum    MountedDeviceType {
+                    enum    BlockDeviceKind {
                         /**
                          *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
                          *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
@@ -87,62 +88,138 @@ namespace   Stroika {
                      *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
                      *          persistence (so be sure to version).
                      */
-                    constexpr   Configuration::EnumNames<MountedDeviceType>    Stroika_Enum_Names(MountedDeviceType)
+                    constexpr   Configuration::EnumNames<BlockDeviceKind>    Stroika_Enum_Names(BlockDeviceKind)
                     {
-                        Configuration::EnumNames<MountedDeviceType>::BasicArrayInitializer {
+                        Configuration::EnumNames<BlockDeviceKind>::BasicArrayInitializer {
                             {
-                                { MountedDeviceType::eRemovableDisk, L"Removable-Disk" },
-                                { MountedDeviceType::eLocalDisk, L"Local-Disk" },
-                                { MountedDeviceType::eNetworkDrive, L"Network-Drive" },
-                                { MountedDeviceType::eTemporaryFiles, L"Temporary-Files" },
-                                { MountedDeviceType::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                                { MountedDeviceType::eSystemInformation, L"System-Information" },
+                                { BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
+                                { BlockDeviceKind::eLocalDisk, L"Local-Disk" },
+                                { BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
+                                { BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
+                                { BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
+                                { BlockDeviceKind::eSystemInformation, L"System-Information" },
                             }
                         }
                     };
 
 
                     /**
+                     *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
+                     *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.
                      *
+                     *  Frequently you will have per read/write bytes transfered, but only Q-Length for the entire device (combined).
                      */
-                    struct  VolumeInfo {
-                        Optional<MountedDeviceType> fMountedDeviceType;
-                        Optional<String>            fFileSystemType;
-                        Optional<String>            fDeviceOrVolumeName;
-                        Optional<String>            fVolumeID;
-                        String                      fMountedOnName;
-                        Optional<double>            fSizeInBytes;
-                        Optional<double>            fAvailableSizeInBytes;
-                        Optional<double>            fUsedSizeInBytes;
+                    struct  IOStatsType {
+                        Optional<double>    fBytesTransfered;
+                        Optional<double>    fTotalTransfers;
+                        Optional<double>    fQLength;
+                        Optional<double>    fInUsePercent;
 
                         /**
-                         *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
-                         *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.
-                         *
-                         *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
-                         *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
-                         */
-                        struct  IOStats {
-                            Optional<double>    fBytesTransfered;
-                            Optional<double>    fTotalTransfers;
-                            Optional<double>    fQLength;
-                            Optional<double>    fInUsePercent;
-                        };
-                        Optional<IOStats>   fReadIOStats;
-                        Optional<IOStats>   fWriteIOStats;
-                        Optional<IOStats>   fCombinedIOStats;
-
-                        /**
+                         *  If InUse Percent is not known, it can be approximated from he Q-Length
                          */
                         nonvirtual  Optional<double>    EstimatedPercentInUse () const;
                     };
 
 
-                    using   Info    =   Containers::Sequence<VolumeInfo>;
+                    /**
+                     *
+                     */
+                    using   DynamicDiskIDType   =   String;
+
+                    /**
+                     *
+                     */
+                    struct  DiskInfoType {
+                        /*
+                         *  The fDynamicDiskID is a UNIQUE (at a time) ID for the physical disk volume. It corresponds
+                         *  to something like the 'sda' for /dev/sda block device in UNIX.
+                         */
+                        DynamicDiskIDType           fDynamicDiskID;
+
+                        /*
+                         *  This is a UNIQUE ID scribbled onto the disk itself, like
+                         *  \\\\?\\Volume{e99304fe-4c5d-11e4-824c-806e6f6e6963}\\ This could be used to track when a disk is moved
+                         *  from one SATA or SCSI address to another.
+                         */
+                        Optional<String>            fPersistenceVolumeID;
+
+                        /*
+                         *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
+                         */
+                        Optional<BlockDeviceKind>   fDeviceKind;
+
+                        /*
+                         *  This is the size of the physical block device. All the filesystems must fit in it.
+                         */
+                        Optional<uint64_t>          fSizeInBytes;
+
+                        /**
+                         *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
+                         *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
+                         *
+                         *  Frequently you will have per read/write bytes transfered, but only Q-Length for the entire device (combined).
+                         */
+                        Optional<IOStatsType>   fReadIOStats;
+                        Optional<IOStatsType>   fWriteIOStats;
+                        Optional<IOStatsType>   fCombinedIOStats;
+                    };
 
 
                     /**
-                     *  For VolumeInfo, Collection<VolumeInfo>, and Sequence<VolumeInfo> types.
+                     *  A volume is analagous to a Windows Volume (@see ) or a unix Filesystem (@see).
+                     *
+                     *  In UNIX, a filesystem has only a single point point, where as in windows, it CAN have multiple (we dont
+                     *  currently model that, but we could make mount point be a set).
+                     */
+                    struct  VolumeInfoType {
+                        String                      fMountedOnName;
+
+                        /*
+                         *  A volume is typically mounted on a single physical drive, but in some circumstances, on some operating
+                         *  systems, it can span multiple drives (e.g. RAID5).
+                         */
+                        Optional<Set<DynamicDiskIDType>>    fOnPhysicalDrive;
+
+                        /*
+                         *  @todo - sb in physical drive only? But for windows, we often (if not running as admin) cannot see physical drive info?
+                         */
+                        Optional<BlockDeviceKind>   fMountedDeviceType;
+
+                        Optional<String>            fFileSystemType;
+                        Optional<String>            fDeviceOrVolumeName;
+                        Optional<String>            fVolumeID;
+                        Optional<double>            fSizeInBytes;
+                        Optional<double>            fAvailableSizeInBytes;
+                        Optional<double>            fUsedSizeInBytes;
+
+                        /**
+                         *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
+                         *  to report totals, and not read/write breakdown. It is the same as Read + Write stats (if all available)
+                         */
+                        Optional<IOStatsType>   fReadIOStats;
+                        Optional<IOStatsType>   fWriteIOStats;
+                        Optional<IOStatsType>   fCombinedIOStats;
+                    };
+
+
+                    /**
+                     *  Basic type returned by a capture() from the instrument.
+                     */
+                    struct  Info {
+                        Containers::Collection<DiskInfoType>        fDisks;
+                        Containers::Collection<VolumeInfoType>      fLogicalVolumes;
+
+                        /**
+                         *  Use the most specific information we have available, but if needed, go to the disk level and
+                         *  return the appropriate estimated usage.
+                         */
+                        Optional<IOStatsType>   GetCombinedIOStats (const VolumeInfoType& volumeInfo) const;
+                    };
+
+
+                    /**
+                     *  For VolumeInfoType, Collection<VolumeInfoType>, and Sequence<VolumeInfoType> etc types.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 
@@ -165,7 +242,7 @@ namespace   Stroika {
                         bool    fIOStatistics { true };
 
                         /**
-                         *  Include 'ram disks' - that are intended to store temporary files a short period (MountedDeviceType::eTemporaryFiles)
+                         *  Include 'ram disks' - that are intended to store temporary files a short period (BlockDeviceKind::eTemporaryFiles)
                          */
                         bool    fIncludeTemporaryDevices { true };
 
@@ -177,7 +254,7 @@ namespace   Stroika {
 
 
                     /**
-                     *  Instrument returning Sequence<VolumeInfo> measurements (cross-platform).
+                     *  Instrument returning Info object (cross-platform).
                      */
                     Instrument          GetInstrument (Options options = Options ());
 
