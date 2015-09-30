@@ -328,7 +328,7 @@ namespace {
             if (not fOptions_.fIncludeTemporaryDevices) {
                 for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
-                        results.Remove (i);
+                        results.fLogicalVolumes.Remove (i);
                     }
                 }
             }
@@ -346,9 +346,9 @@ namespace {
             return results;
         }
     private:
-        Sequence<VolumeInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
+        Collection<VolumeInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
-            Sequence<VolumeInfoType>    result;
+            Collection<VolumeInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
                 VolumeInfoType  vi;
                 vi.fMountedOnName = mi.fMountedOn;
@@ -357,7 +357,7 @@ namespace {
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
                 UpdateVolumneInfo_statvfs (&vi);
-                result.Append (vi);
+                result.Add (vi);
             }
             return result;
         }
@@ -382,7 +382,7 @@ namespace {
             }
         }
     private:
-        void    ReadAndApplyProcFS_diskstats_ (Sequence<VolumeInfoType>* volumes)
+        void    ReadAndApplyProcFS_diskstats_ (Collection<VolumeInfoType>* volumes)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApplyProcFS_diskstats_");
@@ -467,7 +467,7 @@ namespace {
                     fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
-            *volumes = Sequence<VolumeInfoType> { volMap.Values () };
+            *volumes = Collection<VolumeInfoType> { volMap.Values () };
         }
 
     private:
