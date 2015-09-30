@@ -471,6 +471,58 @@ namespace {
         }
 
     private:
+        void    ReadAndApply_iostat_dashF_stats_ (Collection<VolumeInfoType>* volumes)
+        {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApply_iostat_dashF_stats_");
+#endif
+            RequireNotNull (volumes);
+            using   Execution::ProcessRunner;
+
+            // NYI
+            {
+                ProcessRunner   pr (String_Constant { L"/usr/bin/iostat -F" });
+                Streams::MemoryStream<Byte>   useStdOut;
+                pr.SetStdOut (useStdOut);
+                pr.Run ();
+                Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
+                    /*
+                     *  $ /usr/bin/iostat -F
+                     *      System configuration: lcpu=4 ent=0.20 fs=12
+                     *
+                     *      FS Name:                 % tm_act     Kbps      tps    Kb_read   Kb_wrtn
+                     *      /                        -        0.0       0.1   591133       7314
+                     *      /usr                     -       44.6      11.7 957992214          0
+                     *      /var                     -        0.0       0.1    28987      33071
+                     *      /tmp                     -        7.7       3.5 25617000   139441123
+                     *      /home                    -        0.0       0.0    26741      25218
+                     *      /admin                   -        0.0       0.0        0          0
+                     *      /proc                    -        0.0       0.0    37956        155
+                     *      /opt                     -        2.4       0.5 50484345      92038
+                     *      /var/adm/ras/livedum     -        0.0       0.0        0          0
+                     *      /resgrp156               -       33.1       8.1 650541100   61233948
+                     *      /toolbox                 -        0.0       0.0        0          0
+                     *      /mozilla                 -        0.0       0.0        0          0
+                     */
+                    Sequence<String>    tokens = i.Tokenize ();
+                    if (tokens.size () >= 4) {
+                        // diskNames.Add (tokens[0]);
+
+
+                        // mapping - and update
+
+                        //...
+                    }
+                    else {
+                        DbgTrace (L"Dropping unrecognized lspv result line on the floor (line=%s)", i.c_str ());
+                    }
+                }
+            }
+
+        }
+
+    private:
         using   Disk2MountPointsMapType_ = Mapping<String, Set<String>>;
         Disk2MountPointsMapType_    ReadDisk2MountPointsMap_ ()
         {
