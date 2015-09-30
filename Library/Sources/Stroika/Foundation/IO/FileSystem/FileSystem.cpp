@@ -236,6 +236,10 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
     return result;
 #elif   qPlatform_Windows
 
+    // @todo MaYBE USE GetFinalPathNameByHandle
+    //          https://msdn.microsoft.com/en-us/library/windows/desktop/aa364962(v=vs.85).aspx
+    //  EXCEPT REQUIRES OPEN?
+
     // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
     /*
      *  Note:   PathCanonicalize has lots of problems, PathCanonicalizeCh, and
