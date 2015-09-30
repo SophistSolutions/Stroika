@@ -132,12 +132,6 @@ namespace   Stroika {
                      */
                     struct  DiskInfoType {
                         /*
-                         *  The fDynamicDiskID is a UNIQUE (at a time) ID for the physical disk volume. It corresponds
-                         *  to something like the 'sda' for /dev/sda block device in UNIX.
-                         */
-                        DynamicDiskIDType           fDynamicDiskID;
-
-                        /*
                          *  This is a UNIQUE ID scribbled onto the disk itself, like
                          *  \\\\?\\Volume{e99304fe-4c5d-11e4-824c-806e6f6e6963}\\ This could be used to track when a disk is moved
                          *  from one SATA or SCSI address to another.
@@ -172,7 +166,7 @@ namespace   Stroika {
                      *  In UNIX, a filesystem has only a single point point, where as in windows, it CAN have multiple (we dont
                      *  currently model that, but we could make mount point be a set).
                      */
-                    struct  VolumeInfoType {
+                    struct  MountedFilesystemInfoType {
                         String                      fMountedOnName;
 
                         /*
@@ -207,19 +201,26 @@ namespace   Stroika {
                      *  Basic type returned by a capture() from the instrument.
                      */
                     struct  Info {
-                        Containers::Collection<DiskInfoType>        fDisks;
-                        Containers::Collection<VolumeInfoType>      fLogicalVolumes;
+                        /**
+                         *  The key for the fDisks list is a UNIQUE (at a time) ID for the physical disk volume. It corresponds
+                         *  to something like the 'sda' for /dev/sda block device in UNIX.
+                         */
+                        Containers::Mapping<DynamicDiskIDType, DiskInfoType>    fDisks;
+
+                        /**
+                         */
+                        Containers::Collection<MountedFilesystemInfoType>       fMountedFilesystems;
 
                         /**
                          *  Use the most specific information we have available, but if needed, go to the disk level and
                          *  return the appropriate estimated usage.
                          */
-                        Optional<IOStatsType>   GetCombinedIOStats (const VolumeInfoType& volumeInfo) const;
+                        Optional<IOStatsType>   GetCombinedIOStats (const MountedFilesystemInfoType& volumeInfo) const;
                     };
 
 
                     /**
-                     *  For VolumeInfoType, Collection<VolumeInfoType>, and Sequence<VolumeInfoType> etc types.
+                     *  For MountedFilesystemInfoType, etc types.
                      */
                     ObjectVariantMapper GetObjectVariantMapper ();
 

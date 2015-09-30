@@ -118,7 +118,7 @@ Optional<double>    IOStatsType::EstimatedPercentInUse () const
  ******************* Instruments::Filesystem::Info: *****************************
  ********************************************************************************
  */
-Optional<IOStatsType>   Info::GetCombinedIOStats (const VolumeInfoType& volumeInfo) const
+Optional<IOStatsType>   Info::GetCombinedIOStats (const MountedFilesystemInfoType& volumeInfo) const
 {
     Optional<IOStatsType>   results =   volumeInfo.fCombinedIOStats;
     // check disk stats too
@@ -208,7 +208,7 @@ namespace {
 
 #if     qPlatform_POSIX
 namespace {
-    void    ApplyDiskTypes_ (Collection<VolumeInfoType>* volumes)
+    void    ApplyDiskTypes_ (Collection<MountedFilesystemInfoType>* volumes)
     {
         static  const   Set<String> kRealDiskFS {
             String_Constant { L"ext2" },
@@ -244,9 +244,9 @@ namespace {
             String_Constant { L"nfs3" },
             String_Constant { L"vboxsf" },
         };
-        for (Iterator<VolumeInfoType> i = volumes->begin (); i != volumes->end (); ++i) {
+        for (Iterator<MountedFilesystemInfoType> i = volumes->begin (); i != volumes->end (); ++i) {
             // @todo - NOTE - this is NOT a reliable way to tell, but hopefully good enough for starters
-            VolumeInfoType vi = *i;
+            MountedFilesystemInfoType vi = *i;
             if (vi.fFileSystemType) {
                 String  fstype = *vi.fFileSystemType;
                 bool    changed { false };
@@ -323,34 +323,34 @@ namespace {
             Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_AIX_::capture_");
 #endif
             Info   results;
-            results.fLogicalVolumes = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
-            ApplyDiskTypes_ (&results.fLogicalVolumes);
+            results.fMountedFilesystems = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
+            ApplyDiskTypes_ (&results.fMountedFilesystems);
             if (not fOptions_.fIncludeTemporaryDevices) {
-                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
+                for (Iterator<MountedFilesystemInfoType> i = results.fMountedFilesystems.begin (); i != results.fMountedFilesystems.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
-                        results.fLogicalVolumes.Remove (i);
+                        results.fMountedFilesystems.Remove (i);
                     }
                 }
             }
             if (not fOptions_.fIncludeSystemDevices) {
-                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
+                for (Iterator<MountedFilesystemInfoType> i = results.fMountedFilesystems.begin (); i != results.fMountedFilesystems.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
-                        results.fLogicalVolumes.Remove (i);
+                        results.fMountedFilesystems.Remove (i);
                     }
                 }
             }
             if (fOptions_.fIOStatistics) {
-                ReadAndApplyProcFS_diskstats_ (&results.fLogicalVolumes);
+                ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
             return results;
         }
     private:
-        Collection<VolumeInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
+        Collection<MountedFilesystemInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
-            Collection<VolumeInfoType>    result;
+            Collection<MountedFilesystemInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
-                VolumeInfoType  vi;
+                MountedFilesystemInfoType  vi;
                 vi.fMountedOnName = mi.fMountedOn;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
                     vi.fDeviceOrVolumeName = mi.fDeviceName;
@@ -362,7 +362,7 @@ namespace {
             return result;
         }
     private:
-        void    UpdateVolumneInfo_statvfs (VolumeInfoType* v)
+        void    UpdateVolumneInfo_statvfs (MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             if (v->fFileSystemType == L"procfs") {
@@ -382,15 +382,15 @@ namespace {
             }
         }
     private:
-        void    ReadAndApplyProcFS_diskstats_ (Collection<VolumeInfoType>* volumes)
+        void    ReadAndApplyProcFS_diskstats_ (Collection<MountedFilesystemInfoType>* volumes)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApplyProcFS_diskstats_");
 #endif
             RequireNotNull (volumes);
             Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
-            Mapping<String, VolumeInfoType>     volMap;
-            volumes->Apply ([&volMap] (const VolumeInfoType & vi) {volMap.Add (vi.fMountedOnName, vi); });
+            Mapping<String, MountedFilesystemInfoType>     volMap;
+            volumes->Apply ([&volMap] (const MountedFilesystemInfoType & vi) {volMap.Add (vi.fMountedOnName, vi); });
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
                 Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
@@ -455,8 +455,8 @@ namespace {
                             //combinedStats.fQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
-                            if (Optional<VolumeInfoType> vi = volMap.Lookup (mountPt)) {
-                                VolumeInfoType tmp = *vi;
+                            if (Optional<MountedFilesystemInfoType> vi = volMap.Lookup (mountPt)) {
+                                MountedFilesystemInfoType tmp = *vi;
                                 tmp.fReadIOStats = readStats;
                                 tmp.fWriteIOStats = writeStats;
                                 tmp.fCombinedIOStats = combinedStats;
@@ -467,11 +467,11 @@ namespace {
                     fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
-            *volumes = Collection<VolumeInfoType> { volMap.Values () };
+            *volumes = Collection<MountedFilesystemInfoType> { volMap.Values () };
         }
 
     private:
-        void    ReadAndApply_iostat_dashF_stats_ (Collection<VolumeInfoType>* volumes)
+        void    ReadAndApply_iostat_dashF_stats_ (Collection<MountedFilesystemInfoType>* volumes)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApply_iostat_dashF_stats_");
@@ -705,38 +705,38 @@ namespace {
 
             constexpr   bool    kUseProcFSForMounts_ { true };
             if (kUseProcFSForMounts_) {
-                results.fLogicalVolumes = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
+                results.fMountedFilesystems = ReadVolumesAndUsageFromProcMountsAndstatvfs_ ();
             }
             else {
-                results.fLogicalVolumes = RunDF_ ();
+                results.fMountedFilesystems = RunDF_ ();
             }
-            ApplyDiskTypes_ (&results.fLogicalVolumes);
+            ApplyDiskTypes_ (&results.fMountedFilesystems);
             if (not fOptions_.fIncludeTemporaryDevices) {
-                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
+                for (Iterator<MountedFilesystemInfoType> i = results.fMountedFilesystems.begin (); i != results.fMountedFilesystems.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
-                        results.fLogicalVolumes.Remove (i);
+                        results.fMountedFilesystems.Remove (i);
                     }
                 }
             }
             if (not fOptions_.fIncludeSystemDevices) {
-                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
+                for (Iterator<MountedFilesystemInfoType> i = results.fMountedFilesystems.begin (); i != results.fMountedFilesystems.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
-                        results.fLogicalVolumes.Remove (i);
+                        results.fMountedFilesystems.Remove (i);
                     }
                 }
             }
             if (fOptions_.fIOStatistics) {
-                ReadAndApplyProcFS_diskstats_ (&results.fLogicalVolumes);
+                ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
             return results;
         }
     private:
-        Collection<VolumeInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
+        Collection<MountedFilesystemInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
-            Collection<VolumeInfoType>    result;
+            Collection<MountedFilesystemInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
-                VolumeInfoType  vi;
+                MountedFilesystemInfoType  vi;
                 vi.fMountedOnName = mi.fMountedOn;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
                     vi.fDeviceOrVolumeName = mi.fDeviceName;
@@ -748,7 +748,7 @@ namespace {
             return result;
         }
     private:
-        void    UpdateVolumneInfo_statvfs (VolumeInfoType* v)
+        void    UpdateVolumneInfo_statvfs (MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             struct  statvfs sbuf;
@@ -822,13 +822,13 @@ namespace {
             return Sequence<MountInfo_> (result.Values ());
         }
     private:
-        void    ReadAndApplyProcFS_diskstats_ (Collection<VolumeInfoType>* volumes)
+        void    ReadAndApplyProcFS_diskstats_ (Collection<MountedFilesystemInfoType>* volumes)
         {
             try {
                 Mapping<dev_t, PerfStats_>  diskStats = ReadProcFS_diskstats_ ();
                 DurationSecondsType         timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
-                for (Iterator<VolumeInfoType> i = volumes->begin (); i != volumes->end (); ++i) {
-                    VolumeInfoType vi = *i;
+                for (Iterator<MountedFilesystemInfoType> i = volumes->begin (); i != volumes->end (); ++i) {
+                    MountedFilesystemInfoType vi = *i;
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
                         if (fContextStats_) {
                             String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
@@ -927,9 +927,9 @@ namespace {
             return *o;
         }
     private:
-        Sequence<VolumeInfoType> RunDF_POSIX_ ()
+        Sequence<MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
-            Sequence<VolumeInfoType>   result;
+            Sequence<MountedFilesystemInfoType>   result;
             ProcessRunner pr { L"/bin/df -k -P" };
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
@@ -953,7 +953,7 @@ namespace {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
-                VolumeInfoType v;
+                MountedFilesystemInfoType v;
                 v.fMountedOnName = l[5].Trim ();
                 {
                     String  d   =   l[0].Trim ();
@@ -984,9 +984,9 @@ namespace {
             }
             return result;
         }
-        Collection<VolumeInfoType> RunDF_ (bool includeFSTypes)
+        Collection<MountedFilesystemInfoType> RunDF_ (bool includeFSTypes)
         {
-            Collection<VolumeInfoType>   result;
+            Collection<MountedFilesystemInfoType>   result;
             //
             // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
             // run def with ProcessRunner
@@ -1016,7 +1016,7 @@ namespace {
                     DbgTrace ("skipping line cuz len=%d", l.size ());
                     continue;
                 }
-                VolumeInfoType v;
+                MountedFilesystemInfoType v;
                 if (includeFSTypes) {
                     v.fFileSystemType = l[1].Trim ();
                 }
@@ -1038,7 +1038,7 @@ namespace {
             }
             return result;
         }
-        Collection<VolumeInfoType>    RunDF_ ()
+        Collection<MountedFilesystemInfoType>    RunDF_ ()
         {
             try {
                 return RunDF_ (true);
@@ -1426,9 +1426,9 @@ namespace {
             Info    result;
 
             for (PhysicalDriveInfo_ pd : physDrives) {
-                DiskInfoType    di { pd.fDeviceName };
+                DiskInfoType    di { };
                 di.fSizeInBytes = pd.fDeviceSizeInBytes;
-                result.fDisks.Add (di);
+                result.fDisks.Add (pd.fDeviceName, di);
             }
 
             TCHAR   volumeNameBuf[1024];
@@ -1437,7 +1437,7 @@ namespace {
                 DWORD dwSysFlags;
                 TCHAR FileSysNameBuf[1024];
                 if (::GetVolumeInformation ( volumeNameBuf, NULL, NEltsOf(volumeNameBuf), NULL, &lpMaximumComponentLength, &dwSysFlags, FileSysNameBuf, NEltsOf(FileSysNameBuf))) {
-                    VolumeInfoType v;
+                    MountedFilesystemInfoType v;
                     v.fFileSystemType = String::FromSDKString (FileSysNameBuf);
                     v.fVolumeID = String::FromSDKString (volumeNameBuf);
 
@@ -1483,7 +1483,7 @@ namespace {
                         DWORD x = GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
                         if (volPathsBuf[0] == 0) {
                             v.fMountedOnName.clear ();
-                            result.fLogicalVolumes.Add (v);
+                            result.fMountedFilesystems.Add (v);
                         }
                         else {
                             auto safePctInUse2QL_ = [] (double pctInUse) {
@@ -1585,7 +1585,7 @@ namespace {
                                     }
 #endif
                                 }
-                                result.fLogicalVolumes.Add (v);
+                                result.fMountedFilesystems.Add (v);
                             }
                         }
                     }
@@ -1678,7 +1678,6 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         });
         mapper.AddCommonType<Optional<IOStatsType>> ();
         mapper.AddClass<DiskInfoType> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (DiskInfoType, fDynamicDiskID), String_Constant (L"Disk-ID") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (DiskInfoType, fPersistenceVolumeID), String_Constant (L"Persistence-Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (DiskInfoType, fDeviceKind), String_Constant (L"Device-Kind"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (DiskInfoType, fSizeInBytes), String_Constant (L"Size"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -1688,28 +1687,26 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         });
         mapper.AddCommonType<Set<String>> ();
         mapper.AddCommonType<Optional<Set<String>>> ();
-        mapper.AddClass<VolumeInfoType> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fMountedDeviceType), String_Constant (L"Mounted-Device-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fOnPhysicalDrive), String_Constant (L"On-Physical-Drives"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fMountedOnName), String_Constant (L"Mounted-On") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fSizeInBytes), String_Constant (L"Volume-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fAvailableSizeInBytes), String_Constant (L"Volume-Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fUsedSizeInBytes), String_Constant (L"Volume-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (VolumeInfoType, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
+        mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fMountedDeviceType), String_Constant (L"Mounted-Device-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fOnPhysicalDrive), String_Constant (L"On-Physical-Drives"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fMountedOnName), String_Constant (L"Mounted-On") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fSizeInBytes), String_Constant (L"Volume-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fAvailableSizeInBytes), String_Constant (L"Volume-Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fUsedSizeInBytes), String_Constant (L"Volume-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
         });
-        //mapper.Add (mapper.MakeCommonSerializer_ContainerWithStringishKey<Mapping<DynamicDiskIDType, DiskInfoType>> ());
-        //mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
-        mapper.AddCommonType<Collection<DiskInfoType>> ();
-        mapper.AddCommonType<Collection<VolumeInfoType>> ();
-        //mapper.AddCommonType<Sequence<VolumeInfoType>> ();
+        mapper.Add (mapper.MakeCommonSerializer_ContainerWithStringishKey<Mapping<DynamicDiskIDType, DiskInfoType>> ());
+        mapper.AddCommonType<Mapping<DynamicDiskIDType, DiskInfoType>> ();
+        mapper.AddCommonType<Collection<MountedFilesystemInfoType>> ();
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fDisks), String_Constant (L"Disks") },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fLogicalVolumes), String_Constant (L"Logical-Volumes") },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (Info, fMountedFilesystems), String_Constant (L"Mounted-Filesystems") },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
