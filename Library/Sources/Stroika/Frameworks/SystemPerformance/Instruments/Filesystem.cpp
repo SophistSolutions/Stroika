@@ -208,7 +208,7 @@ namespace {
 
 #if     qPlatform_POSIX
 namespace {
-    void    ApplyDiskTypes_ (Sequence<VolumeInfoType>* volumes)
+    void    ApplyDiskTypes_ (Collection<VolumeInfoType>* volumes)
     {
         static  const   Set<String> kRealDiskFS {
             String_Constant { L"ext2" },
@@ -658,16 +658,16 @@ namespace {
             else {
                 results.fLogicalVolumes = RunDF_ ();
             }
-            ApplyDiskTypes_ (&results);
+            ApplyDiskTypes_ (&results.fLogicalVolumes);
             if (not fOptions_.fIncludeTemporaryDevices) {
-                for (Iterator<VolumeInfoType> i = results.begin (); i != results.end (); ++i) {
+                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
                         results.fLogicalVolumes.Remove (i);
                     }
                 }
             }
             if (not fOptions_.fIncludeSystemDevices) {
-                for (Iterator<VolumeInfoType> i = results.begin (); i != results.end (); ++i) {
+                for (Iterator<VolumeInfoType> i = results.fLogicalVolumes.begin (); i != results.fLogicalVolumes.end (); ++i) {
                     if (i->fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
                         results.fLogicalVolumes.Remove (i);
                     }
@@ -932,9 +932,9 @@ namespace {
             }
             return result;
         }
-        Sequence<VolumeInfoType> RunDF_ (bool includeFSTypes)
+        Collection<VolumeInfoType> RunDF_ (bool includeFSTypes)
         {
-            Sequence<VolumeInfoType>   result;
+            Collection<VolumeInfoType>   result;
             //
             // I looked through the /proc filesystem stuff and didnt see anything obvious to retrive this info...
             // run def with ProcessRunner
@@ -978,7 +978,7 @@ namespace {
                 v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Append (v);
+                result.Add (v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
@@ -986,7 +986,7 @@ namespace {
             }
             return result;
         }
-        Sequence<VolumeInfoType>    RunDF_ ()
+        Collection<VolumeInfoType>    RunDF_ ()
         {
             try {
                 return RunDF_ (true);
