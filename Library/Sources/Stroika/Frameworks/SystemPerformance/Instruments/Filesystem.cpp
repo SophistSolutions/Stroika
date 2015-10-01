@@ -1487,7 +1487,7 @@ namespace {
                                     memset (&totalNumberOfBytes, 0, sizeof (totalNumberOfBytes));
                                     memset (&totalNumberOfFreeBytes, 0, sizeof (totalNumberOfFreeBytes));
                                     DWORD xxx = GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                                    v.fSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
+                                    v.fSizeInBytes = totalNumberOfBytes.QuadPart;
                                     v.fUsedSizeInBytes = *v.fSizeInBytes  - freeBytesAvailable.QuadPart;
                                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if     qUseWMICollectionSupport_
