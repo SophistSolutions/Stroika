@@ -348,18 +348,17 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
                 MountedFilesystemInfoType  vi;
-                vi.fMountedOnName = mi.fMountedOn;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
                     vi.fDeviceOrVolumeName = mi.fDeviceName;
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
-                UpdateVolumneInfo_statvfs (&vi);
+                UpdateVolumneInfo_statvfs (mi.fMountedOn, &vi);
                 result.Add (mi.fMountedOn, vi);
             }
             return result;
         }
     private:
-        void    UpdateVolumneInfo_statvfs (MountedFilesystemInfoType* v)
+        void    UpdateVolumneInfo_statvfs (const String& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             if (v->fFileSystemType == L"procfs") {
@@ -368,14 +367,14 @@ namespace {
             }
             struct  statvfs64 sbuf;
             (void)::memset (&sbuf, 0, sizeof (sbuf));
-            if (::statvfs64 (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+            if (::statvfs64 (mountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes = diskSize;
                 v->fAvailableSizeInBytes = sbuf.f_bsize * sbuf.f_bavail;
                 v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree;
             }
             else {
-                DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
+                DbgTrace (L"statvfs (%s) return error: errno=%d", mountedOnName.c_str (), errno);
             }
         }
     private:
@@ -727,30 +726,29 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
                 MountedFilesystemInfoType  vi;
-                vi.fMountedOnName = mi.fMountedOn;
                 if (not mi.fDeviceName.empty () and mi.fDeviceName != L"none") {    // special name none often used when there is no name
                     vi.fDeviceOrVolumeName = mi.fDeviceName;
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
-                UpdateVolumneInfo_statvfs (&vi);
+                UpdateVolumneInfo_statvfs (mi.fMountedOn, &vi);
                 result.Add (mi.fMountedOn, vi);
             }
             return result;
         }
     private:
-        void    UpdateVolumneInfo_statvfs (MountedFilesystemInfoType* v)
+        void    UpdateVolumneInfo_statvfs (const String& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
             struct  statvfs sbuf;
             memset (&sbuf, 0, sizeof (sbuf));
-            if (::statvfs (v->fMountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
+            if (::statvfs (mountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes = diskSize;
                 v->fAvailableSizeInBytes = sbuf.f_bsize * sbuf.f_bavail;
                 v->fUsedSizeInBytes = diskSize - sbuf.f_bsize * sbuf.f_bfree;
             }
             else {
-                DbgTrace (L"statvfs (%s) return error: errno=%d", v->fMountedOnName.c_str (), errno);
+                DbgTrace (L"statvfs (%s) return error: errno=%d", mountedOnName.c_str (), errno);
             }
         }
     private:
@@ -917,9 +915,9 @@ namespace {
             return *o;
         }
     private:
-        Sequence<MountedFilesystemInfoType> RunDF_POSIX_ ()
+        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
-            Sequence<MountedFilesystemInfoType>   result;
+            Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>   result;
             ProcessRunner pr { L"/bin/df -k -P" };
             Streams::MemoryStream<Byte>   useStdOut;
             pr.SetStdOut (useStdOut);
@@ -944,7 +942,6 @@ namespace {
                     continue;
                 }
                 MountedFilesystemInfoType v;
-                v.fMountedOnName = l[5].Trim ();
                 {
                     String  d   =   l[0].Trim ();
                     if (not d.empty () and d != L"none") {
@@ -966,7 +963,7 @@ namespace {
                 if (v.fSizeInBytes and v.fUsedSizeInBytes) {
                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 }
-                result.Append (v);
+                result.Add (l[5].Trim (), v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
@@ -1010,7 +1007,6 @@ namespace {
                 if (includeFSTypes) {
                     v.fFileSystemType = l[1].Trim ();
                 }
-                v.fMountedOnName = l[includeFSTypes ? 6 : 5].Trim ();
                 {
                     String  d   =   l[0].Trim ();
                     if (not d.empty () and d != L"none") {
@@ -1020,7 +1016,7 @@ namespace {
                 v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Add (v.fMountedOnName, v);
+                result.Add ( l[includeFSTypes ? 6 : 5].Trim (), v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
@@ -1472,7 +1468,6 @@ namespace {
                         DWORD retLen = 0;
                         DWORD x = GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
                         if (volPathsBuf[0] == 0) {
-                            v.fMountedOnName.clear ();
                             result.fMountedFilesystems.Add (String (), v);  //???@todo  maybe skip?
                         }
                         else {
@@ -1483,7 +1478,7 @@ namespace {
                                 return pctInUse / (1 - pctInUse);
                             };
                             for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
-                                v.fMountedOnName = String::FromSDKString (NameIdx);
+                                String  mountedOnName = String::FromSDKString (NameIdx);
                                 {
                                     ULARGE_INTEGER freeBytesAvailable;
                                     ULARGE_INTEGER totalNumberOfBytes;
@@ -1491,13 +1486,13 @@ namespace {
                                     memset (&freeBytesAvailable, 0, sizeof (freeBytesAvailable));
                                     memset (&totalNumberOfBytes, 0, sizeof (totalNumberOfBytes));
                                     memset (&totalNumberOfFreeBytes, 0, sizeof (totalNumberOfFreeBytes));
-                                    DWORD xxx = GetDiskFreeSpaceEx (v.fMountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                                    DWORD xxx = GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                                     v.fSizeInBytes = static_cast<double> (totalNumberOfBytes.QuadPart);
                                     v.fUsedSizeInBytes = *v.fSizeInBytes  - freeBytesAvailable.QuadPart;
                                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if     qUseWMICollectionSupport_
                                     if (fOptions_.fIOStatistics) {
-                                        String wmiInstanceName = v.fMountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
+                                        String wmiInstanceName = mountedOnName.RTrim ([] (Characters::Character c) { return c == '\\'; });
                                         fLogicalDiskWMICollector_.AddInstancesIf (wmiInstanceName);
 
                                         IOStatsType readStats;
@@ -1575,7 +1570,7 @@ namespace {
                                     }
 #endif
                                 }
-                                result.fMountedFilesystems.Add (v.fMountedOnName, v);
+                                result.fMountedFilesystems.Add (mountedOnName, v);
                             }
                         }
                     }
@@ -1683,7 +1678,6 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fOnPhysicalDrive), String_Constant (L"On-Physical-Drives"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fMountedOnName), String_Constant (L"Mounted-On") },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fSizeInBytes), String_Constant (L"Volume-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fAvailableSizeInBytes), String_Constant (L"Volume-Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fUsedSizeInBytes), String_Constant (L"Volume-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },

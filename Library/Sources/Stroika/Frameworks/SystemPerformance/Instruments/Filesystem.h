@@ -173,8 +173,6 @@ namespace   Stroika {
                      *  currently model that, but we could make mount point be a set).
                      */
                     struct  MountedFilesystemInfoType {
-                        MountedFilesystemNameType           fMountedOnName;     // soon to go away
-
                         /*
                          *  A volume is typically mounted on a single physical drive, but in some circumstances, on some operating
                          *  systems, it can span multiple drives (e.g. RAID5).
