@@ -291,7 +291,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
     private:
-        struct PerfStats_ {
+        struct DiskPerfStats_ {
             u_longlong_t  fDiskBlockSize;
             u_longlong_t  fTotalTransfers;
             u_longlong_t  fBlocksRead;
@@ -299,12 +299,21 @@ namespace {
             u_longlong_t  wq_sampled;               // appears to be (subject to verification) weighted q ave len (so can divide by time elapsed to get qlen ave)
             u_longlong_t  time;                     // appears ave of percent time in use (accumulated) so divide by elapsed time and diff to get %time)
         };
-        Mapping<String, PerfStats_>     fContextDiskName2PerfStats_;
+        Mapping<DynamicDiskIDType, DiskPerfStats_>         fContextDiskName2DiskPerfStats_;
+    private:
+        struct FileSystemPerfStats_ {
+            uint64_t  fReadKB;
+            uint64_t  fWriteKB;
+        };
+        Mapping<MountedFilesystemNameType, FileSystemPerfStats_>   fContextDiskName2FileSystemPerfStats_;
+    private:
+        using   Disk2MountPointsMapType_ = Mapping<DynamicDiskIDType, Set<MountedFilesystemNameType>>;
+
     public:
         CapturerWithContext_AIX_ (Options options)
             : CapturerWithContext_COMMON_ (options)
         {
-            // for side-effect of setting fContextDiskName2PerfStats_
+            // for side-effect of setting fContextDiskName2DiskPerfStats_
             try {
                 capture_ ();
             }
@@ -336,8 +345,28 @@ namespace {
                     }
                 }
             }
+
+            // populate logical to physical disk map (and phys disk list)
+            Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
+            for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
+                // must reverse teh mapping, so each
+                for (String fsi : diskAndVols.fValue) {
+                    if (Optional<MountedFilesystemInfoType> m2Update = results.fMountedFilesystems.Lookup (fsi)) {
+                        MountedFilesystemInfoType   m = *m2Update;
+                        Set<DynamicDiskIDType>  disks = m.fOnPhysicalDrive.Value ();
+                        disks.Add (diskAndVols.fKey);
+                        m.fOnPhysicalDrive = disks;
+                        results.fMountedFilesystems.Add (fsi, m);
+                    }
+                    else {
+                        DbgTrace (L"Shouldn't happen: missing filesystem '%s' from our returned list", fsi.c_str ());
+                    }
+                }
+            }
+
             if (fOptions_.fIOStatistics) {
-                ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
+                ReadAndApplyProcFS_diskstats_ (disk2MountPointMap, &results.fDisks);
+                ReadAndApply_iostat_dashF_stats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
             return results;
@@ -378,13 +407,12 @@ namespace {
             }
         }
     private:
-        void    ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
+        void    ReadAndApplyProcFS_diskstats_ (const Disk2MountPointsMapType_& disk2MountPointMap, Mapping<DynamicDiskIDType, DiskInfoType>* disks)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadAndApplyProcFS_diskstats_");
 #endif
-            RequireNotNull (volumes);
-            Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
+            RequireNotNull (disks);
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
                 Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
@@ -403,42 +431,36 @@ namespace {
                  *          u_longlong_t wq_sampled;        --  accumulated sampled dk_wq_depth
                  */
                 (void)::memset (&ds, 0, sizeof (ds));
-                int disks = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
+                int nDisksResult = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("perfstat_disk returned %d: name=%s; bsize=%lld; xfers=%lld; rblks=%lld; wblks=%lld; qdepth: %lld; time: %lld; wq_sampled: %lld; wq_time: %lld", disks, ds.name, ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.qdepth, ds.time, ds.wq_sampled, ds.wq_time);
 #endif
-                if (disks == 1) {
+                if (nDisksResult == 1) {
                     // @todo see below Docs and examples quite unclear. Maybe use wq_sampled
-                    PerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.time };
+                    DiskPerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.time };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("ps = {fDiskBlockSize: %lld; fTotalTransfers: %lld; fBlocksRead: %lld; fBlocksWritten: %lld; wq_sampled: %lld;}", ps.fDiskBlockSize, ps.fTotalTransfers, ps.fBlocksRead, ps.fBlocksWritten, ps.wq_sampled);
 #endif
-                    Optional<PerfStats_>    prevPerfStats   =   fContextDiskName2PerfStats_.Lookup (diskAndVols.fKey);
+                    Optional<DiskPerfStats_>    prevPerfStats   =   fContextDiskName2DiskPerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
-                        Assert (diskAndVols.fValue.size () >= 1);   // else wouldn't be in this list
-                        /*
-                         *  Since we know total disk stats, and not how divided over the mounted filesystems on that disk,
-                         *  divide activity evently.
-                         */
-                        double  scaleResultsBy  =   1.0 / diskAndVols.fValue.size ();
                         IOStatsType readStats;
-                        readStats.fBytesTransfered = (ps.fBlocksRead - prevPerfStats->fBlocksRead) *  ps.fDiskBlockSize * scaleResultsBy;
+                        readStats.fBytesTransfered = (ps.fBlocksRead - prevPerfStats->fBlocksRead) *  ps.fDiskBlockSize;
                         IOStatsType writeStats;
-                        writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize * scaleResultsBy;
+                        writeStats.fBytesTransfered = (ps.fBlocksWritten - prevPerfStats->fBlocksWritten) *  ps.fDiskBlockSize;
                         IOStatsType combinedStats;
                         combinedStats.fBytesTransfered = *readStats.fBytesTransfered + *writeStats.fBytesTransfered;
-                        combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers) * scaleResultsBy;
+                        combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers);
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("in compare for disk %s: wq_time=%lld; prevPerfStats->wq_time=%lld; ps.wq_sampled =%lld; prevPerfStats->wq_sampled: %lld }", ds.name, ps.wq_time, prevPerfStats->wq_time, ps.wq_sampled, prevPerfStats->wq_sampled);
+                        DbgTrace ("in compare for disk %s: time=%lld; prevPerfStats->time=%lld; ps.wq_sampled =%lld; prevPerfStats->wq_sampled: %lld }", ds.name, ps.time, prevPerfStats->time, ps.wq_sampled, prevPerfStats->wq_sampled);
 #endif
                         {
                             // Docs and examples quite unclear. Maybe use wq_sampled, or q_sampled. And unclear what to divide by.
                             double elapsed = Time::GetTickCount () - GetLastCaptureAt ();
                             static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
                             double a = (100.0 * (double)elapsed * (double)kNumberLogicalCores_);
-                            combinedStats.fQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a) * scaleResultsBy;
-                            combinedStats.fInUsePercent = ((ps.time - prevPerfStats->time) / elapsed) * scaleResultsBy;
+                            combinedStats.fQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a);
+                            combinedStats.fInUsePercent = ((ps.time - prevPerfStats->time) / elapsed);
                             //DbgTrace ("maybeaveq = %f", (double) (ps.wq_sampled - prevPerfStats->wq_sampled) / a);
                             //DbgTrace ("a=%f", a);
                             //DbgTrace ("a=%f", a);
@@ -446,19 +468,13 @@ namespace {
                             //          ps.wq_time, prevPerfStats->wq_time, ps.wq_time - prevPerfStats->wq_time,
                             //          ps.wq_sampled, prevPerfStats->wq_sampled, ps.wq_sampled - prevPerfStats->wq_sampled
                             //         );
-                            //combinedStats.fQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
+                            //combinedStats.fQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time));
                         }
-                        for (String mountPt : diskAndVols.fValue) {
-                            if (Optional<MountedFilesystemInfoType> vi = volumes->Lookup (mountPt)) {
-                                MountedFilesystemInfoType tmp = *vi;
-                                tmp.fReadIOStats = readStats;
-                                tmp.fWriteIOStats = writeStats;
-                                tmp.fCombinedIOStats = combinedStats;
-                                volumes->Add (mountPt, tmp);
-                            }
-                        }
+                        DiskInfoType di = disks->LookupValue (diskAndVols.fKey);
+                        di.fCombinedIOStats = combinedStats;
+                        disks->Add (diskAndVols.fKey, di);
                     }
-                    fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
+                    fContextDiskName2DiskPerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
         }
@@ -479,6 +495,7 @@ namespace {
                 pr.SetStdOut (useStdOut);
                 pr.Run ();
                 Streams::TextReader   stdOut  =   Streams::TextReader (useStdOut);
+                bool    parsingHeader { true };
                 for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                     /*
                      *  $ /usr/bin/iostat -F
@@ -499,24 +516,48 @@ namespace {
                      *      /mozilla                 -        0.0       0.0        0          0
                      */
                     Sequence<String>    tokens = i.Tokenize ();
-                    if (tokens.size () >= 4) {
-                        // diskNames.Add (tokens[0]);
+                    if (parsingHeader) {
+                        if (tokens.size () > 3 and tokens[0] == L"FS" and tokens[1] == L"Name:") {
+                            parsingHeader = false;
+                        }
+                    }
+                    else if (tokens.size () >= 6) {
+                        String  fs = tokens[0].Trim ();
+                        uint64_t    readKB = Characters::String2Int<uint64_t> (tokens[4]);
+                        uint64_t    writeKB = Characters::String2Int<uint64_t> (tokens[5]);
 
+                        Optional<FileSystemPerfStats_>    prevPerfStats   =   fContextDiskName2FileSystemPerfStats_.Lookup (fs);
+                        if (prevPerfStats) {
+                            if (Optional<MountedFilesystemInfoType> mfsi = volumes->Lookup (fs)) {
+                                MountedFilesystemInfoType   m = *mfsi;
 
-                        // mapping - and update
+                                // wrong - must diff
+                                IOStatsType readStats = m.fReadIOStats.Value ();
+                                readStats.fBytesTransfered = (readKB - prevPerfStats->fReadKB) * 1024;
+                                m.fReadIOStats = readStats;
+                                IOStatsType writeStats = m.fWriteIOStats.Value ();
+                                writeStats.fBytesTransfered = (writeKB - prevPerfStats->fWriteKB) * 1024;
+                                m.fWriteIOStats = writeStats;
+                                IOStatsType totalStats = m.fCombinedIOStats.Value ();
+                                totalStats.fBytesTransfered = readStats.fBytesTransfered + writeStats.fBytesTransfered;
+                                m.fCombinedIOStats = totalStats;
 
-                        //...
+                                volumes->Add (fs, m);
+                            }
+                            else {
+                                DbgTrace (L"Dropping unrecognized iostat result line on the floor (fs=%s)", fs.c_str ());
+                            }
+                        }
+                        fContextDiskName2FileSystemPerfStats_.Add (fs, FileSystemPerfStats_ {readKB, writeKB});
                     }
                     else {
-                        DbgTrace (L"Dropping unrecognized lspv result line on the floor (line=%s)", i.c_str ());
+                        DbgTrace (L"Dropping unrecognized iostat result line on the floor (line=%s)", i.c_str ());
                     }
                 }
             }
-
         }
 
     private:
-        using   Disk2MountPointsMapType_ = Mapping<String, Set<String>>;
         Disk2MountPointsMapType_    ReadDisk2MountPointsMap_ ()
         {
             Debug::TraceContextBumper ctx ("Instruments::Filesystem ReadDisk2MountPointsMap_");
@@ -716,6 +757,7 @@ namespace {
             }
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
+                ReadAndApply_iostat_dashF_stats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
             return results;
