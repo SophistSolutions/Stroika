@@ -331,7 +331,7 @@ namespace {
                     if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
-                    else if (not not fOptions_.fIncludeSystemDevices and i->fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
+                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
                 }
@@ -354,7 +354,7 @@ namespace {
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
                 UpdateVolumneInfo_statvfs (&vi);
-                result.Add (vi);
+                result.Add (mi.fMountedOn, vi);
             }
             return result;
         }
@@ -386,8 +386,6 @@ namespace {
 #endif
             RequireNotNull (volumes);
             Disk2MountPointsMapType_        disk2MountPointMap = ReadDisk2MountPointsMap_ ();
-            Mapping<String, MountedFilesystemInfoType>     volMap;
-            volumes->Apply ([&volMap] (const MountedFilesystemInfoType & vi) {volMap.Add (vi.fMountedOnName, vi); });
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
                 Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
@@ -452,19 +450,18 @@ namespace {
                             //combinedStats.fQLength = (static_cast<double> (ps.wq_sampled - prevPerfStats->wq_sampled) / static_cast<double> (ps.wq_time - prevPerfStats->wq_time)) * scaleResultsBy;
                         }
                         for (String mountPt : diskAndVols.fValue) {
-                            if (Optional<MountedFilesystemInfoType> vi = volMap.Lookup (mountPt)) {
+                            if (Optional<MountedFilesystemInfoType> vi = volumes->Lookup (mountPt)) {
                                 MountedFilesystemInfoType tmp = *vi;
                                 tmp.fReadIOStats = readStats;
                                 tmp.fWriteIOStats = writeStats;
                                 tmp.fCombinedIOStats = combinedStats;
-                                volMap.Add (mountPt, tmp);
+                                volumes->Add (mountPt, tmp);
                             }
                         }
                     }
                     fContextDiskName2PerfStats_.Add (diskAndVols.fKey, ps);
                 }
             }
-            *volumes = Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> { volMap.Values () };
         }
 
     private:
@@ -693,7 +690,7 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
-        Info	capture_ ()
+        Info    capture_ ()
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_Linux_::capture_");
@@ -713,7 +710,7 @@ namespace {
                     if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
-                    else if (not not fOptions_.fIncludeSystemDevices and i->fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
+                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
                 }
@@ -736,7 +733,7 @@ namespace {
                 }
                 vi.fFileSystemType = mi.fFilesystemFormat;
                 UpdateVolumneInfo_statvfs (&vi);
-                result.Add (vi);
+                result.Add (mi.fMountedOn, vi);
             }
             return result;
         }
@@ -820,8 +817,8 @@ namespace {
             try {
                 Mapping<dev_t, PerfStats_>  diskStats = ReadProcFS_diskstats_ ();
                 DurationSecondsType         timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
-                for (Iterator<MountedFilesystemInfoType> i = volumes->begin (); i != volumes->end (); ++i) {
-                    MountedFilesystemInfoType vi = *i;
+                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
+                    MountedFilesystemInfoType vi = i.fValue;
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
                         if (fContextStats_) {
                             String  devNameLessSlashes = *vi.fDeviceOrVolumeName;
@@ -867,7 +864,7 @@ namespace {
                             }
                         }
                     }
-                    volumes->Update (i, vi);
+                    volumes->Add (i.fKey, vi);
                 }
                 fContextStats_ = diskStats;
             }
@@ -1023,7 +1020,7 @@ namespace {
                 v.fSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 2 : 1]) * 1024;
                 v.fUsedSizeInBytes = Characters::String2Float<double> (l[includeFSTypes ? 3 : 2]) * 1024;
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
-                result.Add (v);
+                result.Add (v.fMountedOnName, v);
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
