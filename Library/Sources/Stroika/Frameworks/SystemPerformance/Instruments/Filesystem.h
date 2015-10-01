@@ -18,7 +18,7 @@
 /*
  *  \file
  *
- *  \version    <a href="code_status.html#Late-Alpha">Late-Alpha</a>
+ *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
  *      @todo   add optional Options filter 'Set<String> fRestrictToVolumnesContainingPaths', or a regexp to match or
@@ -121,13 +121,13 @@ namespace   Stroika {
 
 
                     /**
-                     *
+                     *  Disk names are strings, but this type alias is used for documentation.
                      */
                     using   DynamicDiskIDType   =   String;
 
 
                     /**
-                     *
+                     *  Filesytem mount points are strings, but this type alias is used for documentation.
                      */
                     using   MountedFilesystemNameType   =   String;
 
@@ -182,11 +182,31 @@ namespace   Stroika {
                          */
                         Optional<BlockDeviceKind>   fDeviceKind;
 
+                        /**
+                         *  This is an open enumeration. It could be "NFS", or "ext2", etc...
+                         */
                         Optional<String>            fFileSystemType;
+
+                        /**
+                         *  @todo document
+                         */
                         Optional<String>            fDeviceOrVolumeName;
+
+                        /**
+                         *  @todo document
+                         */
                         Optional<String>            fVolumeID;
+
+                        /*
+                         */
                         Optional<uint64_t>          fSizeInBytes;
+
+                        /*
+                         */
                         Optional<uint64_t>          fAvailableSizeInBytes;
+
+                        /*
+                         */
                         Optional<uint64_t>          fUsedSizeInBytes;
 
                         /**

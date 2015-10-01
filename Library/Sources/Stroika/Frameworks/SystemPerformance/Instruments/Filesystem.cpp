@@ -757,7 +757,6 @@ namespace {
             }
             if (fOptions_.fIOStatistics) {
                 ReadAndApplyProcFS_diskstats_ (&results.fMountedFilesystems);
-                ReadAndApply_iostat_dashF_stats_ (&results.fMountedFilesystems);
             }
             _NoteCompletedCapture ();
             return results;
