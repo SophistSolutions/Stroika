@@ -248,14 +248,6 @@ namespace   Stroika {
                         /**
                          */
                         Containers::Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>       fMountedFilesystems;
-
-                        /**
-                         *  Use the most specific information we have available, but if needed, go to the disk level and
-                         *  return the appropriate estimated usage. Sometimes (like for AIX) this can be complicated, and
-                         *  just a rough estimate (because there a fs can span several disks, and we only get limited
-                         *  info about which disks / filesystems in use).
-                         */
-                        nonvirtual  Optional<IOStatsType>   GetCombinedIOStats (const MountedFilesystemNameType& fs) const;
                     };
 
 
@@ -291,6 +283,11 @@ namespace   Stroika {
                          *  On unix, there are many 'fake' disks, like 'procfs'. For many purposes, this are uninteresting to list/query.
                          */
                         bool    fIncludeSystemDevices { true };
+
+                        /**
+                         *
+                         */
+                        bool    fEstimateFilesystemStatsFromDiskStatsIfHelpful { qPlatform_AIX ? true : false };
                     };
 
 
