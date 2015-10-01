@@ -298,7 +298,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
         DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
+        DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
 #endif
 
         // Horrible implementation - just designed to be quickie get started...
