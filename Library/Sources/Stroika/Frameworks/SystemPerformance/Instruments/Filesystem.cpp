@@ -115,13 +115,46 @@ Optional<double>    IOStatsType::EstimatedPercentInUse () const
 
 /*
  ********************************************************************************
- ******************* Instruments::Filesystem::Info: *****************************
+ ******************** Instruments::Filesystem::Info *****************************
  ********************************************************************************
  */
-Optional<IOStatsType>   Info::GetCombinedIOStats (const MountedFilesystemInfoType& volumeInfo) const
+Optional<IOStatsType>   Info::GetCombinedIOStats (const MountedFilesystemNameType& fs) const
 {
-    Optional<IOStatsType>   results =   volumeInfo.fCombinedIOStats;
-    // check disk stats too
+    /*
+     *  Generally, we get good statistics at the filesystem level. If so - use them.
+     *
+     *  But for some systems (e.g. AIX) - we are missing disk q and in use percentage numbers for
+     *  the filesystem. But - we do get them at the disk level (where the queue are). The challenge
+     *  is that the relationship between filesystems and disks is many to many (a disk contains
+     *  many filesystems, and a filesystem can span many disk).
+     */
+    Optional<IOStatsType>   results;
+    if (Optional<MountedFilesystemInfoType> mfs = fMountedFilesystems.Lookup (fs)) {
+        results = mfs->fCombinedIOStats;
+
+        if (not results or (not results->fQLength and not results->fInUsePercent)) {
+            // we can try to get this info from the disk info, but tricky...
+
+            if (mfs->fOnPhysicalDrive) {
+                // Then we can combine info from each physical drive
+
+                // for now  - KISS, but later must weight more effectively - based on only counting FS with activity by their level of activity...
+                IOStatsType combined = results.Value ();
+                for (DynamicDiskIDType diskID : *mfs->fOnPhysicalDrive) {
+                    IOStatsType diskCombinedStats   =   fDisks.LookupValue (diskID).fCombinedIOStats.Value ();
+                    combined.fQLength += diskCombinedStats.fQLength;
+                    combined.fInUsePercent += diskCombinedStats.fInUsePercent;
+                }
+                if (combined.fQLength) {
+                    combined.fQLength /= mfs->fOnPhysicalDrive->size ();
+                }
+                if (combined.fInUsePercent) {
+                    combined.fInUsePercent /= mfs->fOnPhysicalDrive->size ();
+                }
+                results = combined;
+            }
+        }
+    }
     return results;
 }
 

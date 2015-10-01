@@ -183,7 +183,17 @@ namespace   Stroika {
                         Optional<BlockDeviceKind>   fDeviceKind;
 
                         /**
-                         *  This is an open enumeration. It could be "NFS", or "ext2", etc...
+                         *  This is an open enumeration indicating the format of the given filesystem:
+                         *
+                         *  Common values include:
+                         *         o    "ext2"
+                         *         o    "ext4"
+                         *         o    "jfs2"
+                         *         o    "nfs"
+                         *         o    "nfs3"
+                         *         o    "vboxsf"
+                         *         o    "NTFS"
+                         *         o    "procfs"
                          */
                         Optional<String>            fFileSystemType;
 
@@ -197,15 +207,17 @@ namespace   Stroika {
                          */
                         Optional<String>            fVolumeID;
 
-                        /*
+                        /**
                          */
                         Optional<uint64_t>          fSizeInBytes;
 
-                        /*
+                        /**
+                         *  Available + used need not add up to sizeInBytes, as on some OSes, in some circumstances
+                         *  (like UNIX not running as root) keep some percentage 'reserved'.
                          */
                         Optional<uint64_t>          fAvailableSizeInBytes;
 
-                        /*
+                        /**
                          */
                         Optional<uint64_t>          fUsedSizeInBytes;
 
@@ -221,6 +233,10 @@ namespace   Stroika {
 
                     /**
                      *  Basic type returned by a capture() from the instrument.
+                     *
+                     *  \note   The relationship between filesystems and disks is many to many (a disk contains
+                     *          many filesystems, and a filesystem can span many disk). Though OFTEN you will
+                     *          find something more like one or two filesystems per disk: spanning is more rare.
                      */
                     struct  Info {
                         /**
@@ -235,9 +251,11 @@ namespace   Stroika {
 
                         /**
                          *  Use the most specific information we have available, but if needed, go to the disk level and
-                         *  return the appropriate estimated usage.
+                         *  return the appropriate estimated usage. Sometimes (like for AIX) this can be complicated, and
+                         *  just a rough estimate (because there a fs can span several disks, and we only get limited
+                         *  info about which disks / filesystems in use).
                          */
-                        Optional<IOStatsType>   GetCombinedIOStats (const MountedFilesystemInfoType& volumeInfo) const;
+                        nonvirtual  Optional<IOStatsType>   GetCombinedIOStats (const MountedFilesystemNameType& fs) const;
                     };
 
 
