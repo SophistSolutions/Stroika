@@ -1629,46 +1629,92 @@ namespace {
 
 
 namespace {
-    // @todo - wrong - incopmplete - must create tmp struct with summary data and apply that to create new data, and inculude
-    // ratioes based on is fs used based on iostats.
-    Optional<IOStatsType>   GetCombinedIOStats_ (const Info& info, const MountedFilesystemNameType& fs)
+    Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>   ApplyDiskStatsToMissingFileSystemStats_ (const Mapping<DynamicDiskIDType, DiskInfoType>& disks, const Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>& fileSystems)
     {
-        /*
-         *  Generally, we get good statistics at the filesystem level. If so - use them.
-         *
-         *  But for some systems (e.g. AIX) - we are missing disk q and in use percentage numbers for
-         *  the filesystem. But - we do get them at the disk level (where the queue are). The challenge
-         *  is that the relationship between filesystems and disks is many to many (a disk contains
-         *  many filesystems, and a filesystem can span many disk).
-         */
-        Optional<IOStatsType>   results;
-        if (Optional<MountedFilesystemInfoType> mfs = info.fMountedFilesystems.Lookup (fs)) {
-            results = mfs->fCombinedIOStats;
-
-            if (not results or (not results->fQLength and not results->fInUsePercent)) {
-                // we can try to get this info from the disk info, but tricky...
-
-                if (mfs->fOnPhysicalDrive) {
-                    // Then we can combine info from each physical drive
-
-                    // for now  - KISS, but later must weight more effectively - based on only counting FS with activity by their level of activity...
-                    IOStatsType combined = results.Value ();
-                    for (DynamicDiskIDType diskID : *mfs->fOnPhysicalDrive) {
-                        IOStatsType diskCombinedStats   =   info.fDisks.LookupValue (diskID).fCombinedIOStats.Value ();
-                        combined.fQLength += diskCombinedStats.fQLength;
-                        combined.fInUsePercent += diskCombinedStats.fInUsePercent;
-                    }
-                    if (combined.fQLength) {
-                        combined.fQLength /= mfs->fOnPhysicalDrive->size ();
-                    }
-                    if (combined.fInUsePercent) {
-                        combined.fInUsePercent /= mfs->fOnPhysicalDrive->size ();
-                    }
-                    results = combined;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx ("Instruments::Filesystem ... ApplyDiskStatsToMissingFileSystemStats_");
+#endif
+        // Each FS will have some stats about disk usage, and we want to use those to relatively weight the stats from the disk usage when
+        // applied back to other FS stats.
+        //
+        // So first compute the total stat per disk
+        using   WeightingStat2UseType = double;
+        Mapping<DynamicDiskIDType, WeightingStat2UseType>   totalWeights;
+        for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i :  fileSystems) {
+            Set<DynamicDiskIDType>  disksForFS  =   i.fValue.fOnPhysicalDrive.Value ();
+            if (disksForFS.size () > 0) {
+                WeightingStat2UseType   weightForFS =   i.fValue.fCombinedIOStats.Value ().fBytesTransfered.Value ();
+                weightForFS /= disksForFS.size ();
+                for (DynamicDiskIDType di : disksForFS) {
+                    totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
                 }
             }
         }
-        return results;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        {
+            Debug::TraceContextBumper ctx1 ("Weighted disk stats");
+            for (auto i : totalWeights) {
+                DbgTrace (L"Disk '%s' weight %f", i.fKey.c_str (), i.fValue);
+            }
+        }
+#endif
+
+        // At this point, for all disks with stats we can attribute back to a filesystem - we have the relative total of bytes xfered per disk
+
+        /*
+         *  Now walk the filesystem objects, and their stats, and replace the fInUsePCT and fQLength stats with weighted values from
+         *  the disks, based on their relative number of byte IO.
+         *
+         *  This will not work well, but will work better than anything else I can think of, and have the NICE effect of at least not counting
+         *  filesystems that are not doing any IO.
+         */
+        Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>   newFilessytems;
+        if (totalWeights.size () >= 1) {
+            for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i :  fileSystems) {
+                MountedFilesystemInfoType   mfi         =   i.fValue;
+                Set<DynamicDiskIDType>      disksForFS  =   mfi.fOnPhysicalDrive.Value ();
+                if (disksForFS.size () > 0) {
+                    WeightingStat2UseType   weightForFS =   i.fValue.fCombinedIOStats.Value ().fBytesTransfered.Value ();
+                    weightForFS /= disksForFS.size ();
+                    IOStatsType     cumStats = mfi.fCombinedIOStats.Value ();
+                    bool    computeInuse        =   cumStats.fInUsePercent.IsMissing ();
+                    bool    computeQLen         =   cumStats.fQLength.IsMissing ();
+                    bool    computeTotalXFers   =   cumStats.fTotalTransfers.IsMissing ();
+
+                    for (DynamicDiskIDType di : disksForFS) {
+                        IOStatsType     diskIOStats = disks.LookupValue (di).fCombinedIOStats.Value ();
+                        if (weightForFS > 0) {
+                            double  scaleFactor =   weightForFS / totalWeights.LookupValue (di);
+                            //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
+                            scaleFactor = Math::PinInRange (scaleFactor, 0.0, 1.0);
+                            if (computeInuse and diskIOStats.fInUsePercent) {
+                                cumStats.fInUsePercent += *diskIOStats.fInUsePercent * scaleFactor;
+                            }
+                            if (computeQLen and diskIOStats.fInUsePercent) {
+                                cumStats.fQLength += *diskIOStats.fQLength * scaleFactor;
+                            }
+                            if (computeTotalXFers and diskIOStats.fTotalTransfers) {
+                                cumStats.fTotalTransfers += *diskIOStats.fTotalTransfers * scaleFactor;
+                            }
+                        }
+                    }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    if (computeInuse) {
+                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), cumStats.fInUsePercent.Value ());
+                    }
+                    if (computeQLen) {
+                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), cumStats.fQLength.Value ());
+                    }
+#endif
+                    mfi.fCombinedIOStats = cumStats;
+                }
+                newFilessytems.Add (i.fKey, mfi);
+            }
+            return newFilessytems;
+        }
+        else {
+            return fileSystems;
+        }
     }
 }
 
@@ -1701,12 +1747,7 @@ namespace {
             Debug::TraceContextBumper ctx ("Instruments::Filesystem capture");
             Info    result = inherited::capture ();
             if (fOptions_.fEstimateFilesystemStatsFromDiskStatsIfHelpful) {
-                // quick hack
-                for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : result.fMountedFilesystems) {
-                    MountedFilesystemInfoType   tmp = i.fValue;
-                    tmp.fCombinedIOStats = GetCombinedIOStats_ (result, i.fKey);
-                    result.fMountedFilesystems.Add (i.fKey, tmp);
-                }
+                result.fMountedFilesystems = ApplyDiskStatsToMissingFileSystemStats_ (result.fDisks, result.fMountedFilesystems);
             }
             return result;
         }
