@@ -182,14 +182,14 @@ namespace   Stroika {
                         /*
                          *  @todo - sb in physical drive only? But for windows, we often (if not running as admin) cannot see physical drive info?
                          */
-                        Optional<BlockDeviceKind>   fMountedDeviceType;
+                        Optional<BlockDeviceKind>   fDeviceKind;
 
                         Optional<String>            fFileSystemType;
                         Optional<String>            fDeviceOrVolumeName;
                         Optional<String>            fVolumeID;
-                        Optional<uint64_t>			fSizeInBytes;
-                        Optional<uint64_t>			fAvailableSizeInBytes;
-                        Optional<uint64_t>			fUsedSizeInBytes;
+                        Optional<uint64_t>          fSizeInBytes;
+                        Optional<uint64_t>          fAvailableSizeInBytes;
+                        Optional<uint64_t>          fUsedSizeInBytes;
 
                         /**
                          *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able

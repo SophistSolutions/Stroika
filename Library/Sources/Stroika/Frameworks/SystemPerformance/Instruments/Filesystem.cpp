@@ -252,23 +252,23 @@ namespace {
                 String  fstype = *vi.fFileSystemType;
                 bool    changed { false };
                 if (kRealDiskFS.Contains (fstype)) {
-                    vi.fMountedDeviceType = BlockDeviceKind::eLocalDisk;
+                    vi.fDeviceKind = BlockDeviceKind::eLocalDisk;
                     changed = true;
                 }
                 else if (kNetworkFS_.Contains (fstype)) {
-                    vi.fMountedDeviceType = BlockDeviceKind::eNetworkDrive;
+                    vi.fDeviceKind = BlockDeviceKind::eNetworkDrive;
                     changed = true;
                 }
                 else if (fstype == L"tmpfs") {
-                    vi.fMountedDeviceType = BlockDeviceKind::eTemporaryFiles;
+                    vi.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
                     changed = true;
                 }
                 else if (fstype == L"iso9660") {
-                    vi.fMountedDeviceType = BlockDeviceKind::eReadOnlyEjectable;
+                    vi.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
                     changed = true;
                 }
                 else if (kSysFSList_.Contains (fstype)) {
-                    vi.fMountedDeviceType = BlockDeviceKind::eSystemInformation;
+                    vi.fDeviceKind = BlockDeviceKind::eSystemInformation;
                     changed = true;
                 }
                 if (changed) {
@@ -328,10 +328,10 @@ namespace {
             ApplyDiskTypes_ (&results.fMountedFilesystems);
             if (not fOptions_.fIncludeTemporaryDevices or not fOptions_.fIncludeSystemDevices) {
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : results.fMountedFilesystems) {
-                    if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
+                    if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fDeviceKind == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
-                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
+                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fDeviceKind == BlockDeviceKind::eSystemInformation) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
                 }
@@ -706,10 +706,10 @@ namespace {
             ApplyDiskTypes_ (&results.fMountedFilesystems);
             if (not fOptions_.fIncludeTemporaryDevices or not fOptions_.fIncludeSystemDevices) {
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : results.fMountedFilesystems) {
-                    if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eTemporaryFiles) {
+                    if (not fOptions_.fIncludeTemporaryDevices and i.fValue.fDeviceKind == BlockDeviceKind::eTemporaryFiles) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
-                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fMountedDeviceType == BlockDeviceKind::eSystemInformation) {
+                    else if (not not fOptions_.fIncludeSystemDevices and i.fValue.fDeviceKind == BlockDeviceKind::eSystemInformation) {
                         results.fMountedFilesystems.Remove (i.fKey);
                     }
                 }
@@ -1436,19 +1436,19 @@ namespace {
                      */
                     switch (::GetDriveType (volumeNameBuf)) {
                         case    DRIVE_REMOVABLE:
-                            v.fMountedDeviceType = BlockDeviceKind::eRemovableDisk;
+                            v.fDeviceKind = BlockDeviceKind::eRemovableDisk;
                             break;
                         case    DRIVE_FIXED:
-                            v.fMountedDeviceType = BlockDeviceKind::eLocalDisk;
+                            v.fDeviceKind = BlockDeviceKind::eLocalDisk;
                             break;
                         case    DRIVE_REMOTE:
-                            v.fMountedDeviceType = BlockDeviceKind::eNetworkDrive;
+                            v.fDeviceKind = BlockDeviceKind::eNetworkDrive;
                             break;
                         case    DRIVE_RAMDISK:
-                            v.fMountedDeviceType = BlockDeviceKind::eTemporaryFiles;
+                            v.fDeviceKind = BlockDeviceKind::eTemporaryFiles;
                             break;
                         case    DRIVE_CDROM:
-                            v.fMountedDeviceType = BlockDeviceKind::eReadOnlyEjectable;
+                            v.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
                             break;
                         default:;   /*ignored - if it doesnt map or error - nevermind */
                     }
@@ -1673,14 +1673,14 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         mapper.AddCommonType<Set<String>> ();
         mapper.AddCommonType<Optional<Set<String>>> ();
         mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructureFieldInfo> {
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fMountedDeviceType), String_Constant (L"Mounted-Device-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fDeviceKind), String_Constant (L"Device-Kind"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fFileSystemType), String_Constant (L"Filesystem-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fDeviceOrVolumeName), String_Constant (L"Device-Name"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fOnPhysicalDrive), String_Constant (L"On-Physical-Drives"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fVolumeID), String_Constant (L"Volume-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fSizeInBytes), String_Constant (L"Volume-Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fAvailableSizeInBytes), String_Constant (L"Volume-Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fUsedSizeInBytes), String_Constant (L"Volume-Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fSizeInBytes), String_Constant (L"Total-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fAvailableSizeInBytes), String_Constant (L"Available-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fUsedSizeInBytes), String_Constant (L"Used-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fReadIOStats), String_Constant (L"Read-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fWriteIOStats), String_Constant (L"Write-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
             { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MountedFilesystemInfoType, fCombinedIOStats), String_Constant (L"Combined-IO-Stats"), StructureFieldInfo::NullFieldHandling::eOmit  },
