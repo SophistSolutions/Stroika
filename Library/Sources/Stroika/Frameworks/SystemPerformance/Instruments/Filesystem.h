@@ -187,9 +187,9 @@ namespace   Stroika {
                         Optional<String>            fFileSystemType;
                         Optional<String>            fDeviceOrVolumeName;
                         Optional<String>            fVolumeID;
-                        Optional<double>            fSizeInBytes;
-                        Optional<double>            fAvailableSizeInBytes;
-                        Optional<double>            fUsedSizeInBytes;
+                        Optional<uint64_t>			fSizeInBytes;
+                        Optional<uint64_t>			fAvailableSizeInBytes;
+                        Optional<uint64_t>			fUsedSizeInBytes;
 
                         /**
                          *  The reason fCombinedIOStats is returned redundantly, is because some system may only be able
