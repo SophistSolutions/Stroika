@@ -1364,11 +1364,12 @@ namespace {
         static  Set<DynamicDiskIDType> GetDisksForVolume_ (String volumeName)
         {
             wchar_t volPathsBuf[10 * 1024] = {0};
-            DWORD retLen = 0;
-            DWORD x = ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, NEltsOf(volPathsBuf), &retLen);
+            DWORD   retLen  =   0;
+            DWORD   x       =   ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, NEltsOf (volPathsBuf), &retLen);
             if (x == 0 or retLen <= 1) {
                 return Set<String> ();
             }
+            Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));;
             volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).CircularSubString (0, -1);
 
             HANDLE hHandle = ::CreateFileW (volumeName.c_str () , GENERIC_READ/*|GENERIC_WRITE*/ , FILE_SHARE_WRITE | FILE_SHARE_READ , NULL , OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -1378,7 +1379,7 @@ namespace {
             VOLUME_DISK_EXTENTS volumeDiskExtents;
             DWORD               dwBytesReturned = 0;
             BOOL                bResult = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof(volumeDiskExtents), &dwBytesReturned, NULL);
-            CloseHandle(hHandle);
+            ::CloseHandle (hHandle);
             if (not bResult) {
                 return Set<String> ();
             }
