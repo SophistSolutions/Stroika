@@ -1372,16 +1372,19 @@ namespace {
             Assert (1 <= Characters::CString::Length (volPathsBuf) and Characters::CString::Length (volPathsBuf) < NEltsOf (volPathsBuf));;
             volumeName = L"\\\\.\\" + String::FromSDKString (volPathsBuf).CircularSubString (0, -1);
 
-            HANDLE hHandle = ::CreateFileW (volumeName.c_str () , GENERIC_READ/*|GENERIC_WRITE*/ , FILE_SHARE_WRITE | FILE_SHARE_READ , NULL , OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hHandle == INVALID_HANDLE_VALUE) {
-                return Set<String> ();
-            }
+            // @todo - rewrite this - must somehow otherwise callocate this to be large enuf (dynamic alloc) - if we want more disk exents, but not sure when that happens...
             VOLUME_DISK_EXTENTS volumeDiskExtents;
-            DWORD               dwBytesReturned = 0;
-            BOOL                bResult = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof(volumeDiskExtents), &dwBytesReturned, NULL);
-            ::CloseHandle (hHandle);
-            if (not bResult) {
-                return Set<String> ();
+            {
+                HANDLE hHandle = ::CreateFileW (volumeName.c_str () , GENERIC_READ/*|GENERIC_WRITE*/ , FILE_SHARE_WRITE | FILE_SHARE_READ , NULL , OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+                if (hHandle == INVALID_HANDLE_VALUE) {
+                    return Set<String> ();
+                }
+                DWORD               dwBytesReturned = 0;
+                BOOL                bResult = ::DeviceIoControl (hHandle, IOCTL_VOLUME_GET_VOLUME_DISK_EXTENTS, NULL, 0, &volumeDiskExtents, sizeof(volumeDiskExtents), &dwBytesReturned, NULL);
+                ::CloseHandle (hHandle);
+                if (not bResult) {
+                    return Set<String> ();
+                }
             }
             Set<DynamicDiskIDType> result;
             for (DWORD n = 0; n < volumeDiskExtents.NumberOfDiskExtents;  ++n) {
