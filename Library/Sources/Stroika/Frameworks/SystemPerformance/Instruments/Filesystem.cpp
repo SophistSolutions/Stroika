@@ -1500,9 +1500,13 @@ namespace {
                         ///
                         TCHAR volPathsBuf[10 * 1024];
                         DWORD retLen = 0;
-                        DWORD x = GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
-                        if (volPathsBuf[0] == 0) {
-                            result.fMountedFilesystems.Add (String (), v);  //???@todo  maybe skip?
+                        DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
+                        if (x == 0) {
+                            DbgTrace (SDKSTR ("Ignoring error getting paths (volume='%s')"), volumeNameBuf);
+                        }
+                        else if (volPathsBuf[0] == 0) {
+                            // Ignore - unmounted!
+                            DbgTrace (SDKSTR ("Ignoring unmounted filesystem (volume='%s')"), volumeNameBuf);
                         }
                         else {
                             auto safePctInUse2QL_ = [] (double pctInUse) {

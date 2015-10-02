@@ -24,6 +24,8 @@
  *      @todo   add optional Options filter 'Set<String> fRestrictToVolumnesContainingPaths', or a regexp to match or
  *              a functional<>.
  *
+ *      @todo   Support option to return information about unmounted filesystems (as on our AWS machine).
+ *              Stuff like systempartition? Probs not important though.
  */
 
 
