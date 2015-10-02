@@ -567,6 +567,14 @@ namespace {
         {
 #if     qUseWMICollectionSupport_
             fAvailableInstances_ = fNetworkWMICollector_.GetAvailableInstaces ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            {
+                Debug::TraceContextBumper ctx ("ALL WMI Network Avialable instances");
+                for (String i : fAvailableInstances_) {
+                    DbgTrace (L"wmiInstanceName='%s'", i.c_str ());
+                }
+            }
+#endif
             capture_ ();    // for the side-effect of filling in fNetworkWMICollector_ with interfaces and doing initial capture so WMI can compute averages
 #endif
         }
@@ -635,12 +643,20 @@ namespace {
 #if     qUseWMICollectionSupport_
         void    Read_WMI_ (const IO::Network::Interface& iFace, Instruments::Network::InterfaceInfo* updateResult)
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Network::....Read_WMI_");
+#endif
             /*
              *  @todo - this mapping of descriptions to WMI instance names is an INCREDIBLE KLUDGE. Not sure how to do this properly.
              *          a research question.
              *          --LGP 2015-04-16
              */
-            String wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]");
+            String wmiInstanceName = iFace.fDescription.Value ().ReplaceAll (L"(", L"[").ReplaceAll (L")", L"]").ReplaceAll (L"#", L"_");
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"iFace.fDescription='%s'", iFace.fDescription.Value ().c_str ());
+            DbgTrace (L"wmiInstanceName='%s'", wmiInstanceName.c_str ());
+#endif
 
             /*
              *  @todo   this fAvailableInstances_.Contains code all over the place is a horible kludge prevent WMI crashes. Not sure
