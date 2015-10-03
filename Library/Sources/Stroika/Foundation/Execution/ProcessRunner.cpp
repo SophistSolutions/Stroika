@@ -27,6 +27,7 @@
 #include    "../IO/FileSystem/FileSystem.h"
 #include    "../IO/FileSystem/FileUtils.h"
 #include    "../IO/FileSystem/PathName.h"
+#include    "../Memory/SmallStackBuffer.h"
 #include    "../Streams/MemoryStream.h"
 #include    "../Streams/TextReader.h"
 #include    "../Streams/TextWriter.h"
@@ -113,6 +114,7 @@ namespace {
 #endif
 
 
+
 #if     qPlatform_POSIX
 namespace {
     inline  void    CLOSE_(int fd)
@@ -137,6 +139,7 @@ namespace {
     } ();
 }
 #endif
+
 
 
 
@@ -174,6 +177,8 @@ namespace {
 #endif
 }
 #endif
+
+
 
 
 #if     qPlatform_Windows
@@ -338,6 +343,36 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
          *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
          *  fork, we are VERY limited as to what we can safely do.
          */
+#if     1
+        const   char*   thisEXEPath_cstr    =   nullptr;
+        char**    thisEXECArgv        =   nullptr;
+        Memory::SmallStackBuffer<char>      execDataArgsBuffer (0);
+        Memory::SmallStackBuffer<char*>     execArgsPtrBuffer (0);
+        {
+            Sequence<String>    commandLine     { Execution::ParseCommandLine (cmdLine) };
+            Sequence<size_t>    argsIdx;
+            size_t              bufferIndex {};
+            execArgsPtrBuffer.GrowToSize (commandLine.size () + 1);
+            for (auto i : commandLine) {
+                string  tmp { i.AsNarrowSDKString () };
+                for (char c : tmp) {
+                    execDataArgsBuffer.push_back (c);
+                }
+                execDataArgsBuffer.push_back ('\0');
+                argsIdx.push_back (bufferIndex);
+                bufferIndex = execDataArgsBuffer.GetSize ();
+            }
+            execDataArgsBuffer.push_back ('\0');
+            for (size_t i = 0; i < commandLine.size (); ++i) {
+                execArgsPtrBuffer[i] = execDataArgsBuffer.begin () + argsIdx[i];
+            }
+            execArgsPtrBuffer[commandLine.size ()] = nullptr;
+
+            // no longer change buffers, and just make pointers point to right place
+            thisEXEPath_cstr = execDataArgsBuffer;
+            thisEXECArgv = execArgsPtrBuffer;
+        }
+#else
         Sequence<string>    tmpTStrArgs;    // Must keep out here because useArgsV keeps internal pointers to it
         vector<char*>       useArgsV;
         string              thisEXEPath;
@@ -356,6 +391,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         }
         const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
         char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
+#endif
 
         int childPID = ::fork ();
         Execution::ThrowErrNoIfNegative (childPID);
