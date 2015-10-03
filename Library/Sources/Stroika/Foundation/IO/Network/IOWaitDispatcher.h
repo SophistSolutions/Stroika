@@ -16,7 +16,7 @@
 
 
 /*
- *  \version    <a href="code_status.html#Early-Alpha">Early-Alpha</a>
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
  *      @todo FIND a better way than stopping/restarting thread to restart the socket listener...
