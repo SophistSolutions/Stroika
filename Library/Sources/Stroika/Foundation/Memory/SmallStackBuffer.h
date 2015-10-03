@@ -79,6 +79,10 @@ namespace   Stroika {
                 using   const_iterator  =   const T* ;
 
             public:
+                using   reference        =   T& ;
+                using   const_reference  =   const T& ;
+
+            public:
                 /**
                  */
                 nonvirtual  iterator        begin ();
@@ -89,6 +93,12 @@ namespace   Stroika {
                  */
                 nonvirtual  iterator        end ();
                 nonvirtual  const_iterator  end () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  reference           at (size_t i);
+                nonvirtual  const_reference     at (size_t i) const;
 
             public:
                 /**
