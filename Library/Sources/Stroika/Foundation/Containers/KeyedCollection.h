@@ -56,6 +56,10 @@ namespace   Stroika {
                  *  underlying KeyedCollection's TRAITS objects.
                  */
                 using   KeyedCollectionTraitsType               =    KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER>;
+
+                /**
+                 */
+                using   KeyExtractorFunction    =   function<KEY_TYPE(T)>;
             };
 
 
@@ -104,13 +108,18 @@ namespace   Stroika {
             public:
                 /**
                  */
-                KeyedCollection ();
+                using   KeyExtractorFunction    =   typename TraitsType::KeyExtractorFunction;
+
+            public:
+                /**
+                 */
+                KeyedCollection (KeyExtractorFunction keyExtractor);
                 KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
-                KeyedCollection (const std::initializer_list<T>& src);
+                KeyedCollection (KeyExtractorFunction keyExtractor, const std::initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<T>*>::value >::type >
-                explicit KeyedCollection (const CONTAINER_OF_T& src);
+                explicit KeyedCollection (KeyExtractorFunction keyExtractor, const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                explicit KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                explicit KeyedCollection (KeyExtractorFunction keyExtractor, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit KeyedCollection (const _SharedPtrIRep& src);
