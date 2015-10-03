@@ -717,7 +717,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
       <Filter>Sources\DataExchange\7z</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1698,11 +1698,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\ArchiveReader.h">
-      <Filter>Sources\DataExchange\7z</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.h">
+      <Filter>Sources\DataExchange\7z</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
