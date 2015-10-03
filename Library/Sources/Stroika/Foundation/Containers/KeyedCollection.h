@@ -63,9 +63,9 @@ namespace   Stroika {
              *      KeyedCollection adds most access patterns used in Mapping to a Collection, but stores only a single
              *      object. It takes a parameter (??? TBD but including constructor based) to extract the KEY from
              *      the collection item value type.
-			 *
-			 *	\note	Not based on, but useful to refer to .Net KeyedColleciton<KEY,T> 
-			 *			@see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
+             *
+             *  \note   Not based on, but useful to refer to .Net KeyedColleciton<KEY,T>
+             *          @see https://msdn.microsoft.com/en-us/library/ms132438%28v=vs.110%29.aspx?f=255&MSPPError=-2147217396
              */
             template    <typename KEY_TYPE, typename T, typename TRAITS = KeyedCollection_DefaultTraits<KEY_TYPE, T>>
             class   KeyedCollection : public Collection<T> {
