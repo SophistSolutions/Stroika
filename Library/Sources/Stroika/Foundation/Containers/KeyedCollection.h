@@ -29,6 +29,9 @@
  *
  *              UNCLEAR if this is what we want or always parameter. Not clear how to provide both
  *              sensibly.
+ *
+ *              Probably the answer is some SFINAE "ISDEFINED(TRAITS::EXTRACTOR)" then have one set of constructors
+ *              and otherwise another set.
  */
 
 
