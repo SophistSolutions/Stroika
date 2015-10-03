@@ -69,6 +69,12 @@ namespace   Stroika {
              *  without equality defined for T. This is both an abstract interface, but the Collection<T>
              *  class it actually concrete because it automatically binds to a default implementation.
              *
+             *  \note   This means that the order in which items appear during iteration is <em>arbitrary</em> and
+             *          may vary from collection to collection type.
+             *
+             *          Some sub-types of Collection<T> - like SortedCollection<> - do make specific promises
+             *          about ordering.
+             *
              *  A Collection<T> is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
              *  collections are considered equal if they contain the same items, even if iteration

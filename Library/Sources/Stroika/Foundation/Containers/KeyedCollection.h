@@ -24,7 +24,11 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
+ *      @todo   Add DEFUALT_EXTRACTOR to traits (optional arg to traits type, or new traits type)
+ *              and mmove arg for extractor to END so it can be defualted or overloaded.
  *
+ *              UNCLEAR if this is what we want or always parameter. Not clear how to provide both
+ *              sensibly.
  */
 
 
