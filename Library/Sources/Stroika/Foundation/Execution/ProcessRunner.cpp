@@ -343,9 +343,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
          *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
          *  fork, we are VERY limited as to what we can safely do.
          */
-#if     1
         const   char*   thisEXEPath_cstr    =   nullptr;
-        char**    thisEXECArgv        =   nullptr;
+        char**    thisEXECArgv              =   nullptr;
         Memory::SmallStackBuffer<char>      execDataArgsBuffer (0);
         Memory::SmallStackBuffer<char*>     execArgsPtrBuffer (0);
         {
@@ -372,26 +371,6 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             thisEXEPath_cstr = execDataArgsBuffer;
             thisEXECArgv = execArgsPtrBuffer;
         }
-#else
-        Sequence<string>    tmpTStrArgs;    // Must keep out here because useArgsV keeps internal pointers to it
-        vector<char*>       useArgsV;
-        string              thisEXEPath;
-        {
-            for (auto i : Execution::ParseCommandLine (cmdLine)) {
-                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
-            }
-            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-                // their overwriting these strings!
-                // -- LGP 2013-06-08
-                useArgsV.push_back (const_cast<char*> (i->c_str ()));
-            }
-            useArgsV.push_back (nullptr);
-            thisEXEPath = tmpTStrArgs[0];
-        }
-        const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
-        char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
-#endif
 
         int childPID = ::fork ();
         Execution::ThrowErrNoIfNegative (childPID);
