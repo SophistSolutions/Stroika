@@ -285,7 +285,7 @@ namespace {
             u_longlong_t  fTotalTransfers;
             u_longlong_t  fBlocksRead;
             u_longlong_t  fBlocksWritten;
-            u_longlong_t  wq_sampled;               // appears to be (subject to verification) weighted q ave len (so can divide by time elapsed to get qlen ave)
+            u_longlong_t  q_sampled;                // appears to be (subject to verification) weighted q ave len (so can divide by time elapsed to get qlen ave)
             u_longlong_t  time;                     // appears ave of percent time in use (accumulated) so divide by elapsed time and diff to get %time)
         };
         Mapping<DynamicDiskIDType, DiskPerfStats_>         fContextDiskName2DiskPerfStats_;
@@ -418,17 +418,18 @@ namespace {
                  *          u_longlong_t time;              --  amount of time disk is active
                  *          u_longlong_t wq_time;           --  accumulated wait queueing time
                  *          u_longlong_t wq_sampled;        --  accumulated sampled dk_wq_depth
+                 *          u_longlong_t q_sampled;         -- accumulated sampled dk_q_depth
                  */
                 (void)::memset (&ds, 0, sizeof (ds));
                 int nDisksResult = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("perfstat_disk returned %d: name=%s; bsize=%lld; xfers=%lld; rblks=%lld; wblks=%lld; qdepth: %lld; time: %lld; wq_sampled: %lld; wq_time: %lld", disks, ds.name, ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.qdepth, ds.time, ds.wq_sampled, ds.wq_time);
+                DbgTrace ("perfstat_disk returned %d: name=%s; bsize=%lld; xfers=%lld; rblks=%lld; wblks=%lld; qdepth: %lld; time: %lld; q_sampled: %lld; wq_sampled: %lld; wq_time: %lld", disks, ds.name, ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.qdepth, ds.time, ds.q_sampled, ds.wq_sampled, ds.wq_time);
 #endif
                 if (nDisksResult == 1) {
                     // @todo see below Docs and examples quite unclear. Maybe use wq_sampled
-                    DiskPerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.wq_sampled, ds.time };
+                    DiskPerfStats_              ps              { ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.q_sampled, ds.time };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("ps = {fDiskBlockSize: %lld; fTotalTransfers: %lld; fBlocksRead: %lld; fBlocksWritten: %lld; wq_sampled: %lld;}", ps.fDiskBlockSize, ps.fTotalTransfers, ps.fBlocksRead, ps.fBlocksWritten, ps.wq_sampled);
+                    DbgTrace ("ps = {fDiskBlockSize: %lld; fTotalTransfers: %lld; fBlocksRead: %lld; fBlocksWritten: %lld; wq_sampled: %lld;}", ps.fDiskBlockSize, ps.fTotalTransfers, ps.fBlocksRead, ps.fBlocksWritten, ps.q_sampled);
 #endif
                     Optional<DiskPerfStats_>    prevPerfStats   =   fContextDiskName2DiskPerfStats_.Lookup (diskAndVols.fKey);
                     if (prevPerfStats) {
@@ -441,14 +442,14 @@ namespace {
                         combinedStats.fTotalTransfers = (ps.fTotalTransfers - prevPerfStats->fTotalTransfers);
 
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace ("in compare for disk %s: time=%lld; prevPerfStats->time=%lld; ps.wq_sampled =%lld; prevPerfStats->wq_sampled: %lld }", ds.name, ps.time, prevPerfStats->time, ps.wq_sampled, prevPerfStats->wq_sampled);
+                        DbgTrace ("in compare for disk %s: time=%lld; prevPerfStats->time=%lld; (delta-time %lld); ps.q_sampled =%lld; prevPerfStats->q_sampled: %lld; (delta-q_sampled %lld) }", ds.name, ps.time, prevPerfStats->time, (ps.time - prevPerfStats->time), ps.q_sampled, prevPerfStats->q_sampled, (ps.q_sampled - prevPerfStats->q_sampled));
 #endif
                         {
                             // Docs and examples quite unclear. Maybe use wq_sampled, or q_sampled. And unclear what to divide by.
                             double elapsed = Time::GetTickCount () - GetLastCaptureAt ();
                             static  uint32_t    kNumberLogicalCores_ = GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ();
                             double a = (100.0 * (double)elapsed * (double)kNumberLogicalCores_);
-                            combinedStats.fQLength = ((ps.wq_sampled - prevPerfStats->wq_sampled) / a);
+                            combinedStats.fQLength = ((ps.q_sampled - prevPerfStats->q_sampled) / a);
                             combinedStats.fInUsePercent = ((ps.time - prevPerfStats->time) / elapsed);
                             //DbgTrace ("maybeaveq = %f", (double) (ps.wq_sampled - prevPerfStats->wq_sampled) / a);
                             //DbgTrace ("a=%f", a);
