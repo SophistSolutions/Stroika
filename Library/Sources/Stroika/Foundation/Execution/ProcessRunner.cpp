@@ -306,8 +306,192 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         if (not in.empty ()) {
             stdinBLOB =   in.ReadAll ();
         }
+#if     qPlatform_POSIX
+        // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
 
-#if     qPlatform_Windows
+        /*
+         *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
+         *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
+         */
+
+        /*
+         *  NOTE:
+         *      From http://linux.die.net/man/2/pipe
+         *          "The array pipefd is used to return two file descriptors referring to the ends
+         *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
+         *          the write end of the pipe"
+         */
+        int  jStdin[2];
+        int  jStdout[2];
+        int  jStderr[2];
+        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
+        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
+        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
+        // assert cuz code below needs to be more careful if these can overlap 0..2
+        Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
+        Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
+        Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
+        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
+
+        /*
+         *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
+         *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
+         *  fork, we are VERY limited as to what we can safely do.
+         */
+        Sequence<string>    tmpTStrArgs;    // Must keep out here because useArgsV keeps internal pointers to it
+        vector<char*>       useArgsV;
+        string              thisEXEPath;
+        {
+            for (auto i : Execution::ParseCommandLine (cmdLine)) {
+                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
+            }
+            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+                // their overwriting these strings!
+                // -- LGP 2013-06-08
+                useArgsV.push_back (const_cast<char*> (i->c_str ()));
+            }
+            useArgsV.push_back (nullptr);
+            thisEXEPath = tmpTStrArgs[0];
+        }
+        const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
+        char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
+
+        int childPID = ::fork ();
+        Execution::ThrowErrNoIfNegative (childPID);
+        if (childPID == 0) {
+            try {
+                /*
+                 *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                 *  this would be bad...
+                 */
+                if (currentDir != nullptr) {
+                    (void)::chdir (currentDir);
+                }
+                {
+                    /*
+                     *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                     */
+                    int useSTDIN    =   jStdin[0];
+                    int useSTDOUT   =   jStdout[1];
+                    int useSTDERR   =   jStderr[1];
+                    ::close (0);
+                    ::close (1);
+                    ::close (2);
+                    ::dup2 (useSTDIN, 0);
+                    ::dup2 (useSTDOUT, 1);
+                    ::dup2 (useSTDERR, 2);
+                    ::close (jStdin[0]);
+                    ::close (jStdin[1]);
+                    ::close (jStdout[0]);
+                    ::close (jStdout[1]);
+                    ::close (jStderr[0]);
+                    ::close (jStderr[1]);
+                }
+                constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+                if (kCloseAllExtraneousFDsInChild_) {
+                    // close all but stdin, stdout, and stderr in child fork
+                    for (int i = 3; i < kMaxFD_; ++i) {
+                        ::close (i);
+                    }
+                }
+                int r   =   execvp (thisEXEPath_cstr, thisEXECArgv);
+                _exit (EXIT_FAILURE);
+            }
+            catch (...) {
+                _exit (EXIT_FAILURE);
+            }
+        }
+        else {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("In Parent Fork: child process PID=%d", childPID);
+#endif
+            /*
+             * WE ARE PARENT
+             */
+            int useSTDIN    =   jStdin[1];
+            int useSTDOUT   =   jStdout[0];
+            int useSTDERR   =   jStderr[0];
+            {
+                CLOSE_ (jStdin[0]);
+                CLOSE_ (jStdout[1]);
+                CLOSE_ (jStderr[1]);
+            }
+
+            Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
+                if (useSTDIN >= 0)
+                {
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
+                }
+                if (useSTDOUT >= 0)
+                {
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
+                }
+                if (useSTDERR >= 0)
+                {
+                    IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
+                }
+            });
+
+// really need to do peicemail like above to avoid deadlock
+            {
+                const Byte* p   =   stdinBLOB.begin ();
+                const Byte* e   =   p + stdinBLOB.GetSize ();
+                // @todo need error checking
+                if (p != e) {
+                    write (useSTDIN, p, e - p);
+                }
+                // in case child process reads from its STDIN to EOF
+                CLOSE_ (useSTDIN);
+                useSTDIN = -1;
+            }
+            // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
+            /*
+             *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
+             */
+            if (not out.empty ()) {
+                Byte    buf[1024];
+                int   nBytesRead  =   0;
+
+                // @todo not quite right - unless we have blocking
+                // (NOTE - pretty sure this is blocking - but must handle EINTR)
+                while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
+#endif
+                    out.Write (buf, buf + nBytesRead);
+                }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("from stdout nBytesRead = %d, errno=%d", nBytesRead, errno);
+#endif
+            }
+            if (not err.empty ()) {
+                Byte    buf[1024];
+                int   nBytesRead  =   0;
+
+                // @todo not quite right - unless we have blcokgin
+                while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
+#endif
+                    err.Write (buf, buf + nBytesRead);
+                }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
+#endif
+            }
+            // not sure we need?
+            int status = 0;
+            int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
+            int result = waitpid (childPID, &status, flags);                /* Wait for child */
+            // throw / warn if result other than child exited normally
+            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
+                // @todo fix this message
+                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
+                DoThrow (StringException (L"sub-process failed"));
+            }
+        }
+#elif   qPlatform_Windows
 //      DbgTrace (_T ("timeout: %f"), timeout);
 //  #if     qDefaultTracingOn
 //      ContextCounter  ctxCounter;
@@ -548,191 +732,6 @@ DoneWithProcess:
         }
 
         // now write the temps to the stream
-#elif   qPlatform_POSIX
-        // @todo must fix to be smart about non-blocking deadlocks etc (like windows above)
-
-        /*
-         *  @todo   BELOW CODE NOT SAFE - IF YOU GET A THROW AFTER first PIPE call but before second, we leak 2 fds!!!
-         *          NOT TOO BAD , but bad!!! Below 'finally' attempt is INADEQUATE
-         */
-
-        /*
-         *  NOTE:
-         *      From http://linux.die.net/man/2/pipe
-         *          "The array pipefd is used to return two file descriptors referring to the ends
-         *          of the pipe. pipefd[0] refers to the read end of the pipe. pipefd[1] refers to
-         *          the write end of the pipe"
-         */
-        int  jStdin[2];
-        int  jStdout[2];
-        int  jStderr[2];
-        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
-        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
-        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
-        // assert cuz code below needs to be more careful if these can overlap 0..2
-        Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
-        Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
-        Assert (jStderr[0] >= 3 and jStderr[1] >= 3);
-        DbgTrace ("jStdout[0-CHILD] = %d and jStdout[1-PARENT] = %d", jStdout[0], jStdout[1]);
-
-        /*
-         *  Note: Important to do all this code before the fork, because once we fork, we, lose other threads
-         *  but share copy of RAM, so they COULD have mutexes locked! And we could deadlock waiting on them, so after
-         *  fork, we are VERY limited as to what we can safely do.
-         */
-        Sequence<string>    tmpTStrArgs;    // Must keep out here because useArgsV keeps internal pointers to it
-        vector<char*>       useArgsV;
-        string              thisEXEPath;
-        {
-            for (auto i : Execution::ParseCommandLine (cmdLine)) {
-                tmpTStrArgs.push_back (i.AsNarrowSDKString ());
-            }
-            for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-                // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-                // their overwriting these strings!
-                // -- LGP 2013-06-08
-                useArgsV.push_back (const_cast<char*> (i->c_str ()));
-            }
-            useArgsV.push_back (nullptr);
-            thisEXEPath = tmpTStrArgs[0];
-        }
-        const   char*   thisEXEPath_cstr    =   thisEXEPath.c_str ();
-        char* const*     thisEXECArgv        =   std::addressof (*std::begin (useArgsV));
-
-        int childPID = ::fork ();
-        Execution::ThrowErrNoIfNegative (childPID);
-        if (childPID == 0) {
-            try {
-                /*
-                 *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
-                 *  this would be bad...
-                 */
-                if (currentDir != nullptr) {
-                    (void)::chdir (currentDir);
-                }
-                {
-                    /*
-                     *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-                     */
-                    int useSTDIN    =   jStdin[0];
-                    int useSTDOUT   =   jStdout[1];
-                    int useSTDERR   =   jStderr[1];
-                    ::close (0);
-                    ::close (1);
-                    ::close (2);
-                    ::dup2 (useSTDIN, 0);
-                    ::dup2 (useSTDOUT, 1);
-                    ::dup2 (useSTDERR, 2);
-                    ::close (jStdin[0]);
-                    ::close (jStdin[1]);
-                    ::close (jStdout[0]);
-                    ::close (jStdout[1]);
-                    ::close (jStderr[0]);
-                    ::close (jStderr[1]);
-                }
-                constexpr bool kCloseAllExtraneousFDsInChild_ = true;
-                if (kCloseAllExtraneousFDsInChild_) {
-                    // close all but stdin, stdout, and stderr in child fork
-                    for (int i = 3; i < kMaxFD_; ++i) {
-                        ::close (i);
-                    }
-                }
-                int r   =   execvp (thisEXEPath_cstr, thisEXECArgv);
-                _exit (EXIT_FAILURE);
-            }
-            catch (...) {
-                _exit (EXIT_FAILURE);
-            }
-        }
-        else {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("In Parent Fork: child process PID=%d", childPID);
-#endif
-            /*
-             * WE ARE PARENT
-             */
-            int useSTDIN    =   jStdin[1];
-            int useSTDOUT   =   jStdout[0];
-            int useSTDERR   =   jStderr[0];
-            {
-                CLOSE_ (jStdin[0]);
-                CLOSE_ (jStdout[1]);
-                CLOSE_ (jStderr[1]);
-            }
-
-            Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
-                if (useSTDIN >= 0)
-                {
-                    IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
-                }
-                if (useSTDOUT >= 0)
-                {
-                    IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
-                }
-                if (useSTDERR >= 0)
-                {
-                    IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
-                }
-            });
-
-// really need to do peicemail like above to avoid deadlock
-            {
-                const Byte* p   =   stdinBLOB.begin ();
-                const Byte* e   =   p + stdinBLOB.GetSize ();
-                // @todo need error checking
-                if (p != e) {
-                    write (useSTDIN, p, e - p);
-                }
-                // in case child process reads from its STDIN to EOF
-                CLOSE_ (useSTDIN);
-                useSTDIN = -1;
-            }
-            // @todo READ STDERR - and do ALL in one bug loop so no deadlocks
-            /*
-             *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
-             */
-            if (not out.empty ()) {
-                Byte    buf[1024];
-                int   nBytesRead  =   0;
-
-                // @todo not quite right - unless we have blocking
-                // (NOTE - pretty sure this is blocking - but must handle EINTR)
-                while ((nBytesRead = ::read (useSTDOUT, buf, sizeof (buf))) > 0) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("from stdout nBytesRead = %d", nBytesRead);
-#endif
-                    out.Write (buf, buf + nBytesRead);
-                }
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from stdout nBytesRead = %d, errno=%d", nBytesRead, errno);
-#endif
-            }
-            if (not err.empty ()) {
-                Byte    buf[1024];
-                int   nBytesRead  =   0;
-
-                // @todo not quite right - unless we have blcokgin
-                while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace ("from stderr nBytesRead = %d", nBytesRead);
-#endif
-                    err.Write (buf, buf + nBytesRead);
-                }
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("from stderr nBytesRead = %d, errno=%d", nBytesRead, errno);
-#endif
-            }
-            // not sure we need?
-            int status = 0;
-            int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
-            int result = waitpid (childPID, &status, flags);                /* Wait for child */
-            // throw / warn if result other than child exited normally
-            if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
-                // @todo fix this message
-                DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
-                DoThrow (StringException (L"sub-process failed"));
-            }
-        }
 #endif
     };
 }
