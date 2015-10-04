@@ -574,7 +574,7 @@ namespace {
                 pGNSI (&si);
             }
             else {
-                GetSystemInfo (&si);
+                ::GetSystemInfo (&si);
             }
 
             if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT and osvi.dwMajorVersion > 4) {
@@ -595,10 +595,10 @@ namespace {
 
                     DWORD   dwType = PRODUCT_UNDEFINED;
                     {
-                        PGPI pGPI = (PGPI)GetProcAddress (GetModuleHandle (TEXT ("kernel32.dll")), "GetProductInfo");
-                        if (pGPI != nullptr) {
-                            pGPI (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
-                        }
+						// OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
+                        PGPI pGPI = (PGPI)GetProcAddress (::GetModuleHandle (TEXT ("kernel32.dll")), "GetProductInfo");
+						AssertNotNull (pGPI);
+                        (pGPI) (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
                     }
                     switch (dwType) {
                         case PRODUCT_ULTIMATE:

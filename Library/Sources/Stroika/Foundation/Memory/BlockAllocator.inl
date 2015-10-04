@@ -132,6 +132,7 @@ namespace   Stroika {
 #else
                     void**  newLinks    =   (void**)new char [kChunks * sz];
 #endif
+					AssertNotNull (newLinks);
                     void**  curLink     =   newLinks;
                     for (size_t i = 1; i < kChunks; i++) {
                         *curLink = &(((char*)newLinks)[i * sz]);

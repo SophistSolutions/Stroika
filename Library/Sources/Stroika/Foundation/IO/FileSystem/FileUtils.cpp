@@ -157,7 +157,7 @@ void    IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
             ea[0].Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
             ea[0].Trustee.ptstrName = (LPTSTR) pSIDEveryone;
 
-            if (ERROR_SUCCESS != ::SetEntriesInAcl (NEltsOf (ea), ea, nullptr, &pACL)) {
+            if (ERROR_SUCCESS != ::SetEntriesInAcl (static_cast<DWORD> (NEltsOf (ea)), ea, nullptr, &pACL)) {
                 ::FreeSid (pSIDEveryone);
                 return; // silently ignore errors - probably just old OS etc....
             }
@@ -332,12 +332,12 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     BOOL    result  =   ::GetVolumeInformation (
                             AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsSDKString ().c_str (),
                             volNameBuf,
-                            NEltsOf (volNameBuf),
+                            static_cast<DWORD> (NEltsOf (volNameBuf)),
                             nullptr,
                             &ignored,
                             &ignored,
                             igBuf,
-                            NEltsOf (igBuf)
+                            static_cast<DWORD> (NEltsOf (igBuf))
                         );
     if (result) {
         return String::FromSDKString (volNameBuf);
@@ -581,7 +581,7 @@ void    IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
         HANDLE  events[2];
         events[0] = _THS_->fDoneEvent;
         events[1] = _THS_->fWatchEvent;
-        ::WaitForMultipleObjects (NEltsOf (events), events, false, INFINITE);
+        ::WaitForMultipleObjects (static_cast<DWORD> (NEltsOf (events)), events, false, INFINITE);
         Verify (::FindNextChangeNotification (_THS_->fWatchEvent));
         if (not _THS_->fQuitting) {
             _THS_->ValueChanged ();

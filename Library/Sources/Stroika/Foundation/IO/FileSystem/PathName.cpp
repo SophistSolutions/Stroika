@@ -176,7 +176,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
 
     {
         SDKChar   fNameBuf[4 * MAX_PATH ];
-        DWORD   r   =   GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD   r   =   ::GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, static_cast<DWORD> (NEltsOf (fNameBuf) - 1));
         if (r != 0) {
             useFName = String::FromSDKString (fNameBuf);
         }

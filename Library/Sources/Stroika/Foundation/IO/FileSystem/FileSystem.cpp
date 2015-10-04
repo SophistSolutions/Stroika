@@ -411,7 +411,7 @@ String  IO::FileSystem::FileSystem::GetCurrentDirectory () const
     return String::FromSDKString (buf);
 #elif   qPlatform_Windows
     SDKChar buf[MAX_PATH];
-    ThrowIfZeroGetLastError (::GetCurrentDirectory (NEltsOf (buf), buf));
+    ThrowIfZeroGetLastError (::GetCurrentDirectory (static_cast<DWORD> (NEltsOf (buf)), buf));
     return String::FromSDKString (buf);
 #else
     AssertNotReached ();

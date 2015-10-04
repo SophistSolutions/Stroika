@@ -123,7 +123,7 @@ AppTempFileManager::AppTempFileManager ()
 
     wchar_t   exePath[MAX_PATH];
     memset (exePath, 0, sizeof exePath);
-    Verify (::GetModuleFileNameW (nullptr, exePath, NEltsOf (exePath)));
+    Verify (::GetModuleFileNameW (nullptr, exePath, static_cast<DWORD> (NEltsOf (exePath))));
 
     wstring exeFileName =   exePath;
     {

@@ -216,7 +216,7 @@ String FileSystem::WellKnownLocations::GetTemporary ()
     String tempPath;
 #if     qPlatform_Windows
     wchar_t   buf[1024];
-    if (::GetTempPathW (NEltsOf (buf), buf) == 0) {
+    if (::GetTempPathW (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
         tempPath = String_Constant (L"c:\\Temp\\");
     }
     else {
