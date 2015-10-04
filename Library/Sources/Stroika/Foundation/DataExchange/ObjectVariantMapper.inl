@@ -178,10 +178,10 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
             {
                 const T*  n = nullptr;    // arg unused, just for overloading
-				DISABLE_COMPILER_MSC_WARNING_START (6011)
+                DISABLE_COMPILER_MSC_WARNING_START (6011)
                 return MakeCommonSerializer_ (*n);
-				DISABLE_COMPILER_MSC_WARNING_END (6011)
-			}
+                DISABLE_COMPILER_MSC_WARNING_END (6011)
+            }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
             {

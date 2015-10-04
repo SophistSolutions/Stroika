@@ -595,9 +595,9 @@ namespace {
 
                     DWORD   dwType = PRODUCT_UNDEFINED;
                     {
-						// OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
+                        // OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
                         PGPI pGPI = (PGPI)GetProcAddress (::GetModuleHandle (TEXT ("kernel32.dll")), "GetProductInfo");
-						AssertNotNull (pGPI);
+                        AssertNotNull (pGPI);
                         (pGPI) (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
                     }
                     switch (dwType) {
