@@ -593,10 +593,13 @@ namespace {
                         result += (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8.1 " : L"Windows Server 2012 R2 ";
                     }
 
-                    PGPI pGPI = (PGPI) GetProcAddress (GetModuleHandle(TEXT("kernel32.dll")), "GetProductInfo");
-                    DWORD dwType = 0;
-                    pGPI (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
-
+					DWORD	dwType = PRODUCT_UNDEFINED;
+					{
+						PGPI pGPI = (PGPI)GetProcAddress (GetModuleHandle (TEXT ("kernel32.dll")), "GetProductInfo");
+						if (pGPI != nullptr) {
+							pGPI (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+						}
+					}
                     switch (dwType) {
                         case PRODUCT_ULTIMATE:
                             result += L"Ultimate Edition";

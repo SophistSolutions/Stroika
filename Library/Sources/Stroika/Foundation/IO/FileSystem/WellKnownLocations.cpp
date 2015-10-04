@@ -243,7 +243,7 @@ SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
     SDKString tempPath;
 #if     qPlatform_Windows
     SDKChar   buf[1024];
-    if (::GetTempPath (NEltsOf (buf), buf) == 0) {
+    if (::GetTempPath (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
         tempPath = SDKSTR ("c:\\Temp\\");
     }
     else {

@@ -94,7 +94,7 @@ SDKString Execution::GetEXEPathT ()
 #if     qPlatform_Windows
     Characters::SDKChar   buf[MAX_PATH];
     //memset (buf, 0, sizeof (buf));
-    Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
+    Verify (::GetModuleFileName (nullptr, buf, static_cast<DWORD> (NEltsOf (buf))));
     buf[NEltsOf (buf) - 1] = '\0';  // cheaper and just as safe as memset() - more even. Buffer always nul-terminated, and if GetModuleFileName succeeds will be nul-terminated
     return buf;
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem

@@ -438,6 +438,7 @@ namespace   Stroika {
                     }
                     Invariant ();
                     if (current != nullptr and not Done ()) {
+						AssertNotNull (_fCurrent);	// because not done
                         *current = _fCurrent->fItem;
                     }
                     return not Done ();

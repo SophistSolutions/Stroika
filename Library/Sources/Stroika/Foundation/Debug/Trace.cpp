@@ -416,7 +416,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
             }
         }
         else {
-            ::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
+            (void)::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
         }
         DoEmit_ (buf);
     }

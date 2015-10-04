@@ -690,7 +690,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                     // Also - its not exactly a busy-wait. Its just a wait between reading stuff to avoid buffers filling. If the
                     // process actually finishes, it will change state and the wait should return immediately.
                     double  remainingTimeout        =   (timesWaited <= 5) ? 0.1 : 0.5;
-                    DWORD   waitResult  =   ::WaitForMultipleObjects (NEltsOf (events), events, false, static_cast<int> (remainingTimeout * 1000));
+                    DWORD   waitResult  =   ::WaitForMultipleObjects (static_cast<DWORD> (NEltsOf (events)), events, false, static_cast<int> (remainingTimeout * 1000));
                     timesWaited++;
 
                     ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);

@@ -300,7 +300,7 @@ struct  LinkMonitor::Rep_ {
         Rep_*   rep =   reinterpret_cast<Rep_*> (callerContext);
         if (Address != NULL) {
             char    ipAddrBuf[1024];
-            snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+            (void)::snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
                       Address->Address.Ipv4.sin_addr.s_host,
                       Address->Address.Ipv4.sin_addr.s_lh,
                       Address->Address.Ipv4.sin_addr.s_impno);

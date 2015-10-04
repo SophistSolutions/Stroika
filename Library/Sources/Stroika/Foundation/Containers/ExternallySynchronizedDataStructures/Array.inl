@@ -216,7 +216,7 @@ namespace   Stroika {
 #endif
                                 }
                                 catch (...) {
-                                    delete (char*)newV;
+                                    delete[] (char*)newV;
                                     throw;
                                 }
                                 {
