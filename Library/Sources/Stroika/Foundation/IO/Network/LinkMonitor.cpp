@@ -301,9 +301,9 @@ struct  LinkMonitor::Rep_ {
         if (Address != NULL) {
             char    ipAddrBuf[1024];
             (void)::snprintf (ipAddrBuf, NEltsOf(ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                      Address->Address.Ipv4.sin_addr.s_host,
-                      Address->Address.Ipv4.sin_addr.s_lh,
-                      Address->Address.Ipv4.sin_addr.s_impno);
+                              Address->Address.Ipv4.sin_addr.s_host,
+                              Address->Address.Ipv4.sin_addr.s_lh,
+                              Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange  lc  =   (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String (), String::FromAscii (ipAddrBuf));
         }
