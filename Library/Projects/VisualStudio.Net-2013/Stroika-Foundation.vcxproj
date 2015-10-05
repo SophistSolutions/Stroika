@@ -1088,6 +1088,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
@@ -1448,6 +1449,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />

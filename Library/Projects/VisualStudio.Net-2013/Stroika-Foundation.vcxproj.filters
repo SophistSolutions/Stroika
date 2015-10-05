@@ -1725,6 +1725,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2623,6 +2626,9 @@
       <Filter>Sources\DataExchange</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
