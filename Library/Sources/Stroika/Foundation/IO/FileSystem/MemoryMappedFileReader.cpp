@@ -73,7 +73,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
         if (fileSize != 0) {
             fFileMapping_ = ::CreateFileMapping (fFileHandle_, nullptr, PAGE_READONLY, 0, fileSize, 0);
             ThrowIfFalseGetLastError (fFileMapping_ != nullptr);
-			AssertNotNull (fFileMapping_);
+            AssertNotNull (fFileMapping_);
             fFileDataStart_ = reinterpret_cast<const Byte*> (::MapViewOfFile (fFileMapping_, FILE_MAP_READ, 0, 0, 0));
             ThrowIfFalseGetLastError (fFileDataStart_ != nullptr);
             fFileDataEnd_ = fFileDataStart_ + fileSize;

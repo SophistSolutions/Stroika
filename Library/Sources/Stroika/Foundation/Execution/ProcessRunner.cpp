@@ -818,7 +818,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 {
 #if     qPlatform_Windows
     PROCESS_INFORMATION processInfo;
-	(void)::memset (&processInfo, 0, sizeof (processInfo));
+    (void)::memset (&processInfo, 0, sizeof (processInfo));
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
 
@@ -841,8 +841,8 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
-		(void)::CloseHandle (processInfo.hProcess);
-	}
+        (void)::CloseHandle (processInfo.hProcess);
+    }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     // consider using 'system' here...
@@ -914,8 +914,8 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
-		(void)::CloseHandle (processInfo.hProcess);
-	}
+        (void)::CloseHandle (processInfo.hProcess);
+    }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();

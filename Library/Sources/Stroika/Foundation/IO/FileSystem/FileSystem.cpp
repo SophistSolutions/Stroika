@@ -161,16 +161,16 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
                 if (SUCCEEDED (psl->Resolve(0, SLR_NO_UI))) {
                     TCHAR   path[MAX_PATH + 1];
                     (void)::memset (path, 0, sizeof (path));
-					DISABLE_COMPILER_MSC_WARNING_START (4267)
-					if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
+                    DISABLE_COMPILER_MSC_WARNING_START (4267)
+                    if (SUCCEEDED (psl->GetPath (path, NEltsOf (path), nullptr, 0))) {
                         ppf->Release ();
                         ppf = nullptr;
                         psl->Release ();
                         psl = nullptr;
                         return String::FromSDKString (path);
                     }
-					DISABLE_COMPILER_MSC_WARNING_END (4267)
-				}
+                    DISABLE_COMPILER_MSC_WARNING_END (4267)
+                }
             }
         }
     }

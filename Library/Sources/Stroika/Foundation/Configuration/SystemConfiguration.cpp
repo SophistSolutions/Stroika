@@ -568,17 +568,17 @@ namespace {
             SYSTEM_INFO si;
             ::ZeroMemory (&si, sizeof(si));
 
-			HMODULE	kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
-			AssertNotNull (kernel32);
+            HMODULE kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
+            AssertNotNull (kernel32);
 
             // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
             PGNSI pGNSI = (PGNSI) GetProcAddress (kernel32, "GetNativeSystemInfo");
             if (pGNSI == nullptr) {
-				::GetSystemInfo (&si);
+                ::GetSystemInfo (&si);
             }
             else {
-				(*pGNSI) (&si);
-			}
+                (*pGNSI) (&si);
+            }
 
             if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT and osvi.dwMajorVersion > 4) {
                 result = L"Microsoft ";

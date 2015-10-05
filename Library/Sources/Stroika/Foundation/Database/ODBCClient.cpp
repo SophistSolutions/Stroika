@@ -107,15 +107,15 @@ public:
                     SQLINTEGER  errorCode;
                     SQLSMALLINT messageLength;
                     SQLTCHAR    errorMessage[1024];
-					DISABLE_COMPILER_MSC_WARNING_START (4267)
-					long errValue = ::SQLGetDiagRec (
+                    DISABLE_COMPILER_MSC_WARNING_START (4267)
+                    long errValue = ::SQLGetDiagRec (
                                         SQL_HANDLE_DBC, fConnectionHandle, 1,
                                         reinterpret_cast<SQLTCHAR*>(sqlState), &errorCode,
                                         reinterpret_cast<SQLTCHAR*>(errorMessage),
                                         NEltsOf (errorMessage), &messageLength
                                     );
-					DISABLE_COMPILER_MSC_WARNING_END(4267)
-					if (errValue == SQL_SUCCESS) {
+                    DISABLE_COMPILER_MSC_WARNING_END(4267)
+                    if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
                         // used unsigned char for SQLCHAR!
                         errorString += SDKString2Wide (reinterpret_cast<TCHAR*> (errorMessage));

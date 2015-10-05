@@ -66,11 +66,11 @@ namespace {
         FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
         {
             (void)::memset (this, 0, sizeof (*this));
-			DISABLE_COMPILER_MSC_WARNING_START (4267)
-			this->key_len = keyLength;
+            DISABLE_COMPILER_MSC_WARNING_START (4267)
+            this->key_len = keyLength;
             this->iv_len = ivLength;
-			DISABLE_COMPILER_MSC_WARNING_END (4267)
-		}
+            DISABLE_COMPILER_MSC_WARNING_END (4267)
+        }
         operator const EVP_CIPHER* () const
         {
             return this;

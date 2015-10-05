@@ -186,12 +186,12 @@ SDKString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)
  */
 void    Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
 {
-	DISABLE_COMPILER_MSC_WARNING_START (4302)
-	DISABLE_COMPILER_MSC_WARNING_START (4311)
-	int errCode =   reinterpret_cast<int> (r);
-	DISABLE_COMPILER_MSC_WARNING_END (4311)
-	DISABLE_COMPILER_MSC_WARNING_END (4302)
-	if (errCode <= 32) {
+    DISABLE_COMPILER_MSC_WARNING_START (4302)
+    DISABLE_COMPILER_MSC_WARNING_START (4311)
+    int errCode =   reinterpret_cast<int> (r);
+    DISABLE_COMPILER_MSC_WARNING_END (4311)
+    DISABLE_COMPILER_MSC_WARNING_END (4302)
+    if (errCode <= 32) {
         DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
         switch (errCode) {
             case    0:

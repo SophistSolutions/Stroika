@@ -138,10 +138,10 @@ String FileSystem::GetFileSuffix (const String& fileName)
     {
         SDKChar   fNameBuf[4 * MAX_PATH];
         fNameBuf[0] = '\0';
-		DISABLE_COMPILER_MSC_WARNING_START (4267)
-		DWORD   r   =   ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
-		DISABLE_COMPILER_MSC_WARNING_END (4267)
-			if (r != 0) {
+        DISABLE_COMPILER_MSC_WARNING_START (4267)
+        DWORD   r   =   ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DISABLE_COMPILER_MSC_WARNING_END (4267)
+        if (r != 0) {
             useFName = String::FromSDKString (fNameBuf);
         }
     }
@@ -150,10 +150,10 @@ String FileSystem::GetFileSuffix (const String& fileName)
     SDKChar   dir[_MAX_DIR];
     SDKChar   ext[_MAX_EXT];
     (void)::memset (drive, 0, sizeof (drive));
-	(void)::memset (dir, 0, sizeof (dir));
-	(void)::memset (fname, 0, sizeof (fname));
-	(void)::memset (ext, 0, sizeof (ext));
-	// @todo - probably should check result (errno_t) and throw?
+    (void)::memset (dir, 0, sizeof (dir));
+    (void)::memset (fname, 0, sizeof (fname));
+    (void)::memset (ext, 0, sizeof (ext));
+    // @todo - probably should check result (errno_t) and throw?
     ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     // returns leading '.' in name...
     return String::FromSDKString (ext);
