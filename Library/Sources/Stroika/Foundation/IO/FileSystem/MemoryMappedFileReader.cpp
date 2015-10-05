@@ -59,8 +59,9 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 #if         qPlatform_POSIX
     int fd = -1;
     Execution::ThrowErrNoIfNegative (fd = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
-    size_t fileLength = IO::FileSystem::FileSystem::Default ().GetFileSize (fileName);//
+    size_t fileLength = IO::FileSystem::FileSystem::Default ().GetFileSize (fileName);
     //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
+	//  offset must be a multiple of the page size as returned by sysconf(_SC_PAGE_SIZE). from http://linux.die.net/man/2/mmap
     fFileDataStart_ = reinterpret_cast<const Byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
     fFileDataEnd_ = fFileDataStart_ + fileLength;
     ::close (fd);//http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
