@@ -139,8 +139,8 @@ namespace   Stroika {
                 ProcessRunner () = delete;
                 ProcessRunner (const ProcessRunner&) = delete;
             public:
-                ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr);
-                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr);
+                ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
+                ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>& in = nullptr, const Streams::OutputStream<Byte>& out = nullptr, const Streams::OutputStream<Byte>& error = nullptr);
 #if     !qTargetPlatformSDKUseswchar_t && 0
                 ProcessRunner (const SDKString& commandLine, Streams::InputStream<Byte> in = nullptr, Streams::OutputStream<Byte> out = nullptr, Streams::OutputStream<Byte> error = nullptr)
                     : ProcessRunner (String::FromSDKString (commandLine), in, out, error)

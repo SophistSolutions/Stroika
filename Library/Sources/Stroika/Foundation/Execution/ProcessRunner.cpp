@@ -213,7 +213,7 @@ namespace {
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<Byte> in, Streams::OutputStream<Byte> out, Streams::OutputStream<Byte> error)
+ProcessRunner::ProcessRunner (const String& commandLine, const Streams::InputStream<Byte>& in, const Streams::OutputStream<Byte>& out, const Streams::OutputStream<Byte>& error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -223,7 +223,7 @@ ProcessRunner::ProcessRunner (const String& commandLine, Streams::InputStream<By
 {
 }
 
-ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, Streams::InputStream<Byte> in, Streams::OutputStream<Byte> out, Streams::OutputStream<Byte> error)
+ProcessRunner::ProcessRunner (const String& executable, const Containers::Sequence<String>& args, const Streams::InputStream<Byte>& in, const Streams::OutputStream<Byte>& out, const Streams::OutputStream<Byte>& error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
