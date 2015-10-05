@@ -51,7 +51,9 @@ namespace   Stroika {
              *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
              *  by deafult.
              *
-             *  Float2String maps NAN and INF values to the strings defined in FloatConversionSpecialStrings;
+             *  Float2String () maps NAN valeus to the string "NAN", and negative infinite values to "-INF", and positive infinite
+             *  values to "INF".
+             *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
              */
             struct  Float2StringOptions {
                 enum UseCLocale { eUseCLocale };
@@ -93,8 +95,10 @@ namespace   Stroika {
              *  The argument should be pre-trimmed. If there is any leading or trailing garbage (even whitespace)
              *  this function will return nan().
              *
-             *  @see http://en.cppreference.com/w/cpp/string/byte/strtof
-             *      especially for details on NAN/INF
+             *  If the argument is the string "NAN", a quiet NAN will be returned. If the string -INF or -INFINITY,
+             *  a negative infinite float will be returned, and if INF or INFINITY is passed, a positive infinite
+             *  value will be returned:
+             *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
              *
              *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod () /
              *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
