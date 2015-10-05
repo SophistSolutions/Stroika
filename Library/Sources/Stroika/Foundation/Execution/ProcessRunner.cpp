@@ -168,8 +168,8 @@ namespace {
      *
      *          -- LGP 2006-10-17
      */
-    constexpr size_t	kPipeBufSize    =   256 * 1024;
-	constexpr size_t    kReadBufSize    =   32 * 1024;
+    constexpr size_t    kPipeBufSize    =   256 * 1024;
+    constexpr size_t    kReadBufSize    =   32 * 1024;
 }
 #endif
 
@@ -182,9 +182,9 @@ namespace {
     {
         Byte    buf[kReadBufSize];
 #if     qUsePeekNamedPipe
-		DWORD   nBytesAvail	{};
+        DWORD   nBytesAvail {};
 #endif
-		DWORD   nBytesRead	{};
+        DWORD   nBytesRead  {};
         // Read normally blocks, we don't want to because we may need to write more before it can output
         // and we may need to timeout
         while (
