@@ -130,7 +130,8 @@ namespace {
     static  const   int kMaxFD_ = [] () -> int {
         struct rlimit fds;
         (void)::memset (&fds, 0, sizeof (fds));
-        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
+        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0)
+        {
             return fds.rlim_cur;
         }
         else {
@@ -180,7 +181,7 @@ namespace {
 namespace {
     void    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
     {
-		RequireNotNull (p);
+        RequireNotNull (p);
         Byte    buf[kReadBufSize];
 #if     qUsePeekNamedPipe
         DWORD   nBytesAvail {};
@@ -412,7 +413,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                 ::_exit (EXIT_FAILURE);
             }
             catch (...) {
-				::_exit (EXIT_FAILURE);
+                ::_exit (EXIT_FAILURE);
             }
         }
         else {
@@ -432,13 +433,16 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             }
 
             Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
-                if (useSTDIN >= 0) {
+                if (useSTDIN >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
-                if (useSTDOUT >= 0) {
+                if (useSTDOUT >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
-                if (useSTDERR >= 0) {
+                if (useSTDERR >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
             });
@@ -460,8 +464,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
              *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
              */
             if (not out.empty ()) {
-                Byte	buf[1024];
-                int		nBytesRead  =   0;
+                Byte    buf[1024];
+                int     nBytesRead  =   0;
 
                 // @todo not quite right - unless we have blocking
                 // (NOTE - pretty sure this is blocking - but must handle EINTR)
@@ -476,8 +480,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
 #endif
             }
             if (not err.empty ()) {
-                Byte	buf[1024];
-                int		nBytesRead  =   0;
+                Byte    buf[1024];
+                int     nBytesRead  =   0;
 
                 // @todo not quite right - unless we have blcokgin
                 while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
@@ -547,19 +551,19 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             }
 
             STARTUPINFO startInfo;
-			(void)::memset (&startInfo, 0, sizeof (startInfo));
+            (void)::memset (&startInfo, 0, sizeof (startInfo));
             startInfo.cb = sizeof (startInfo);
             startInfo.hStdInput = jStdin[1];
             startInfo.hStdOutput = jStdout[0];
             startInfo.hStdError = jStderr[0];
             startInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			DWORD   createProcFlags =   0;
+            DWORD   createProcFlags =   0;
             createProcFlags |= CREATE_NO_WINDOW;
             createProcFlags |= NORMAL_PRIORITY_CLASS;
             createProcFlags |= DETACHED_PROCESS;
-            
-			{
+
+            {
                 bool    bInheritHandles     =   true;
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
                 _tcscpy_s (cmdLineBuf, cmdLine.AsSDKString ().c_str ());
@@ -592,37 +596,37 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                          * Set the pipe endpoints to non-blocking mode.
                          */
 #if 1
-						auto	mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
-							DWORD   stdinMode = 0;
-							Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
-							stdinMode |= PIPE_NOWAIT;
-							Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
-						};
-						mkPipeNoWait_ (useSTDIN);
-						mkPipeNoWait_ (useSTDOUT);
-						mkPipeNoWait_ (useSTDERR);
-#else
-						}
-                        {
-                            DWORD   stdinMode   =   0;
-                            Verify (::GetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
+                        auto    mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
+                            DWORD   stdinMode = 0;
+                            Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
                             stdinMode |= PIPE_NOWAIT;
-                            Verify (::SetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr));
-                        }
+                            Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
+                        };
+                        mkPipeNoWait_ (useSTDIN);
+                        mkPipeNoWait_ (useSTDOUT);
+                        mkPipeNoWait_ (useSTDERR);
+#else
+                    }
+                    {
+                        DWORD   stdinMode   =   0;
+                        Verify (::GetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
+                        stdinMode |= PIPE_NOWAIT;
+                        Verify (::SetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr));
+                    }
 
-                        {
-                            DWORD   stdoutMode  =   0;
-                            Verify (::GetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr, nullptr, nullptr, 0));
-                            stdoutMode |= PIPE_NOWAIT;
-                            Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
-                        }
+                    {
+                        DWORD   stdoutMode  =   0;
+                        Verify (::GetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr, nullptr, nullptr, 0));
+                        stdoutMode |= PIPE_NOWAIT;
+                        Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
+                    }
 
-                        {
-                            DWORD   stderrMode  =   0;
-                            Verify (::GetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr, nullptr, nullptr, 0));
-                            stderrMode |= PIPE_NOWAIT;
-                            Verify (::SetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr));
-                        }
+                    {
+                        DWORD   stderrMode  =   0;
+                        Verify (::GetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr, nullptr, nullptr, 0));
+                        stderrMode |= PIPE_NOWAIT;
+                        Verify (::SetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr));
+                    }
 #endif
                     }
 
@@ -831,10 +835,10 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     (void)::memset (&processInfo, 0, sizeof (processInfo));
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-	Finally cleanup = [&processInfo]() {
-		SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-		SAFE_HANDLE_CLOSER (&processInfo.hThread);
-	};
+    Finally cleanup = [&processInfo]() {
+        SAFE_HANDLE_CLOSER (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER (&processInfo.hThread);
+    };
 
     STARTUPINFO startInfo;
     (void)::memset (&startInfo, 0, sizeof (startInfo));
@@ -862,18 +866,18 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 #endif
 
     // @todo - better job both parsing separate args, and documenting how this is done!!!
-    String				exe;
+    String              exe;
     Sequence<String>    args;
-	{
-		Sequence<String> tmp = commandLine.Tokenize (Set<Character> { ' ' });
-		if (tmp.size () == 0) {
-			Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
-		}
-		exe = tmp[0];
-		for (auto i = tmp.begin (); i != tmp.end (); ++i) {
-			args.Append (*i);
-		}
-	}
+    {
+        Sequence<String> tmp = commandLine.Tokenize (Set<Character> { ' ' });
+        if (tmp.size () == 0) {
+            Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
+        }
+        exe = tmp[0];
+        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
+            args.Append (*i);
+        }
+    }
     return DetachedProcessRunner (exe, args);
 }
 
@@ -903,20 +907,20 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     (void)::memset (&processInfo, 0, sizeof (processInfo));
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-	Finally cleanup = [&processInfo]() {
-		SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-		SAFE_HANDLE_CLOSER (&processInfo.hThread);
-	};
-	
-	STARTUPINFO startInfo;
-	(void)::memset (&startInfo, 0, sizeof (startInfo));
+    Finally cleanup = [&processInfo]() {
+        SAFE_HANDLE_CLOSER (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER (&processInfo.hThread);
+    };
+
+    STARTUPINFO startInfo;
+    (void)::memset (&startInfo, 0, sizeof (startInfo));
     startInfo.cb = sizeof (startInfo);
     startInfo.hStdInput = INVALID_HANDLE_VALUE;
     startInfo.hStdOutput = INVALID_HANDLE_VALUE;
     startInfo.hStdError = INVALID_HANDLE_VALUE;
     startInfo.dwFlags |= STARTF_USESTDHANDLES;
-    
-	DWORD   createProcFlags =   0;
+
+    DWORD   createProcFlags =   0;
     createProcFlags |= CREATE_NO_WINDOW;
     createProcFlags |= NORMAL_PRIORITY_CLASS;
     createProcFlags |= DETACHED_PROCESS;
@@ -934,7 +938,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
-	}
+    }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();
