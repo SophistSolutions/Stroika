@@ -24,6 +24,7 @@
 #endif
 #include    "../Execution/CommandLine.h"
 #include    "../Execution/ErrNoException.h"
+#include    "../Execution/Finally.h"
 #include    "../IO/FileSystem/FileSystem.h"
 #include    "../IO/FileSystem/FileUtils.h"
 #include    "../IO/FileSystem/PathName.h"
@@ -128,9 +129,8 @@ namespace {
 namespace {
     static  const   int kMaxFD_ = [] () -> int {
         struct rlimit fds;
-        memset (&fds, 0, sizeof (fds));
-        if (getrlimit(RLIMIT_NOFILE, &fds) == 0)
-        {
+        (void)::memset (&fds, 0, sizeof (fds));
+        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0) {
             return fds.rlim_cur;
         }
         else {
@@ -180,6 +180,7 @@ namespace {
 namespace {
     void    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
     {
+		RequireNotNull (p);
         Byte    buf[kReadBufSize];
 #if     qUsePeekNamedPipe
         DWORD   nBytesAvail {};
@@ -408,10 +409,10 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                     }
                 }
                 int r   =   execvp (thisEXEPath_cstr, thisEXECArgv);
-                _exit (EXIT_FAILURE);
+                ::_exit (EXIT_FAILURE);
             }
             catch (...) {
-                _exit (EXIT_FAILURE);
+				::_exit (EXIT_FAILURE);
             }
         }
         else {
@@ -431,16 +432,13 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             }
 
             Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
-                if (useSTDIN >= 0)
-                {
+                if (useSTDIN >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
-                if (useSTDOUT >= 0)
-                {
+                if (useSTDOUT >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
-                if (useSTDERR >= 0)
-                {
+                if (useSTDERR >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
             });
@@ -462,8 +460,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
              *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
              */
             if (not out.empty ()) {
-                Byte    buf[1024];
-                int   nBytesRead  =   0;
+                Byte	buf[1024];
+                int		nBytesRead  =   0;
 
                 // @todo not quite right - unless we have blocking
                 // (NOTE - pretty sure this is blocking - but must handle EINTR)
@@ -478,8 +476,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
 #endif
             }
             if (not err.empty ()) {
-                Byte    buf[1024];
-                int   nBytesRead  =   0;
+                Byte	buf[1024];
+                int		nBytesRead  =   0;
 
                 // @todo not quite right - unless we have blcokgin
                 while ((nBytesRead = ::read (useSTDERR, buf, sizeof (buf))) > 0) {
@@ -495,7 +493,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             // not sure we need?
             int status = 0;
             int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
-            int result = waitpid (childPID, &status, flags);                /* Wait for child */
+            int result = ::waitpid (childPID, &status, flags);                /* Wait for child */
             // throw / warn if result other than child exited normally
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
                 // @todo fix this message
@@ -532,7 +530,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         try {
             {
                 SECURITY_DESCRIPTOR sd;
-                memset (&sd, 0, sizeof (sd));
+                (void)::memset (&sd, 0, sizeof (sd));
                 Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
                 Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
                 SECURITY_ATTRIBUTES sa  =   {   sizeof (SECURITY_ATTRIBUTES), &sd, true };
@@ -549,17 +547,19 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             }
 
             STARTUPINFO startInfo;
-            memset (&startInfo, 0, sizeof (startInfo));
+			(void)::memset (&startInfo, 0, sizeof (startInfo));
             startInfo.cb = sizeof (startInfo);
             startInfo.hStdInput = jStdin[1];
             startInfo.hStdOutput = jStdout[0];
             startInfo.hStdError = jStderr[0];
             startInfo.dwFlags |= STARTF_USESTDHANDLES;
-            DWORD   createProcFlags =   0;
+
+			DWORD   createProcFlags =   0;
             createProcFlags |= CREATE_NO_WINDOW;
             createProcFlags |= NORMAL_PRIORITY_CLASS;
             createProcFlags |= DETACHED_PROCESS;
-            {
+            
+			{
                 bool    bInheritHandles     =   true;
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
                 _tcscpy_s (cmdLineBuf, cmdLine.AsSDKString ().c_str ());
@@ -591,6 +591,18 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                         /*
                          * Set the pipe endpoints to non-blocking mode.
                          */
+#if 1
+						auto	mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
+							DWORD   stdinMode = 0;
+							Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
+							stdinMode |= PIPE_NOWAIT;
+							Verify (::SetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr));
+						};
+						mkPipeNoWait_ (useSTDIN);
+						mkPipeNoWait_ (useSTDOUT);
+						mkPipeNoWait_ (useSTDERR);
+#else
+						}
                         {
                             DWORD   stdinMode   =   0;
                             Verify (::GetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
@@ -611,6 +623,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                             stderrMode |= PIPE_NOWAIT;
                             Verify (::SetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr));
                         }
+#endif
                     }
 
                     /*
@@ -818,6 +831,10 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     (void)::memset (&processInfo, 0, sizeof (processInfo));
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
+	Finally cleanup = [&processInfo]() {
+		SAFE_HANDLE_CLOSER (&processInfo.hProcess);
+		SAFE_HANDLE_CLOSER (&processInfo.hThread);
+	};
 
     STARTUPINFO startInfo;
     (void)::memset (&startInfo, 0, sizeof (startInfo));
@@ -838,7 +855,6 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
-        (void)::CloseHandle (processInfo.hProcess);
     }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
@@ -846,17 +862,18 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 #endif
 
     // @todo - better job both parsing separate args, and documenting how this is done!!!
-    String  exe;
+    String				exe;
     Sequence<String>    args;
-
-    Sequence<String> tmp =   commandLine.Tokenize (Set<Character> { ' ' });
-    if (tmp.size () == 0) {
-        Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
-    }
-    exe = tmp[0];
-    for (auto i = tmp.begin (); i != tmp.end (); ++i) {
-        args.Append (*i);
-    }
+	{
+		Sequence<String> tmp = commandLine.Tokenize (Set<Character> { ' ' });
+		if (tmp.size () == 0) {
+			Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
+		}
+		exe = tmp[0];
+		for (auto i = tmp.begin (); i != tmp.end (); ++i) {
+			args.Append (*i);
+		}
+	}
     return DetachedProcessRunner (exe, args);
 }
 
@@ -883,17 +900,23 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
 
 #if     qPlatform_Windows
     PROCESS_INFORMATION processInfo;
-    memset (&processInfo, 0, sizeof (processInfo));
+    (void)::memset (&processInfo, 0, sizeof (processInfo));
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-    STARTUPINFO startInfo;
-    memset (&startInfo, 0, sizeof (startInfo));
+	Finally cleanup = [&processInfo]() {
+		SAFE_HANDLE_CLOSER (&processInfo.hProcess);
+		SAFE_HANDLE_CLOSER (&processInfo.hThread);
+	};
+	
+	STARTUPINFO startInfo;
+	(void)::memset (&startInfo, 0, sizeof (startInfo));
     startInfo.cb = sizeof (startInfo);
     startInfo.hStdInput = INVALID_HANDLE_VALUE;
     startInfo.hStdOutput = INVALID_HANDLE_VALUE;
     startInfo.hStdError = INVALID_HANDLE_VALUE;
     startInfo.dwFlags |= STARTF_USESTDHANDLES;
-    DWORD   createProcFlags =   0;
+    
+	DWORD   createProcFlags =   0;
     createProcFlags |= CREATE_NO_WINDOW;
     createProcFlags |= NORMAL_PRIORITY_CLASS;
     createProcFlags |= DETACHED_PROCESS;
@@ -911,8 +934,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
-        (void)::CloseHandle (processInfo.hProcess);
-    }
+	}
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();
@@ -926,7 +948,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         for (int i = 0; i < 3; ++i) {
             ::close (i);
         }
-        int id = open ("/dev/null", O_RDWR);
+        int id = ::open ("/dev/null", O_RDWR);
         dup2 (id, 0);
         dup2 (id, 1);
         dup2 (id, 2);
@@ -945,10 +967,10 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
             useArgsV.push_back (const_cast<char*> (i->c_str ()));
         }
         useArgsV.push_back (nullptr);
-        int r   =   execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+        int r   =   ::execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
-        _exit (-1);
+        ::_exit (-1);
 #if     qPlatform_AIX
         return 0;       // silence bogus compiler warnings
 #endif

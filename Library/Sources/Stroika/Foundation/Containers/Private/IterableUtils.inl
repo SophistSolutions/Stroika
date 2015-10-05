@@ -46,7 +46,8 @@ namespace   Stroika {
                     auto le = lhs.end ();
                     auto ri = rhs.begin ();
                     auto re = rhs.end ();
-                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+					DISABLE_COMPILER_MSC_WARNING_START (6001)
+					DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
                     // no need for c' initialization cuz only used in else return at end, but never get there
                     // unless set at least once
                     int c;
@@ -71,7 +72,8 @@ namespace   Stroika {
                         return c;
                     }
                     DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
-                }
+					DISABLE_COMPILER_MSC_WARNING_END (6001)
+				}
 
 
                 template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
