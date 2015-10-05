@@ -17,7 +17,7 @@
  *
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *                  (one bad implemnation that doesnt even do sorting yet, and regtests so bad they dont notice)
+ *                  (DRAFT/placeholder - no where near functional)
  *
  *
  *  TODO:

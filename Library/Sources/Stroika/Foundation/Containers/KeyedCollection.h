@@ -21,7 +21,7 @@
 /*
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> --- NOFUNCTIONAL DRAFT
  *
  *  TODO:
  *      @todo   Add DEFUALT_EXTRACTOR to traits (optional arg to traits type, or new traits type)
