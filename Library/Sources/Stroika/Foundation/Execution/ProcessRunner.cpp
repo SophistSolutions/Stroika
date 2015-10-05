@@ -168,13 +168,8 @@ namespace {
      *
      *          -- LGP 2006-10-17
      */
-#if     1
-    const size_t    kPipeBufSize    =   256 * 1024;
-    const size_t    kReadBufSize    =   32 * 1024;
-#else
-    const size_t    kPipeBufSize    =   10 * 1024;
-    const size_t    kReadBufSize    =   100;
-#endif
+    constexpr size_t	kPipeBufSize    =   256 * 1024;
+	constexpr size_t    kReadBufSize    =   32 * 1024;
 }
 #endif
 
@@ -187,9 +182,9 @@ namespace {
     {
         Byte    buf[kReadBufSize];
 #if     qUsePeekNamedPipe
-        DWORD   nBytesAvail =   0;
+		DWORD   nBytesAvail	{};
 #endif
-        DWORD   nBytesRead  =   0;
+		DWORD   nBytesRead	{};
         // Read normally blocks, we don't want to because we may need to write more before it can output
         // and we may need to timeout
         while (
@@ -207,6 +202,8 @@ namespace {
     }
 }
 #endif
+
+
 
 
 
@@ -528,7 +525,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         AutoHANDLE_  jStderr[2];
 
         PROCESS_INFORMATION processInfo;
-        memset (&processInfo, 0, sizeof (processInfo));
+        (void)::memset (&processInfo, 0, sizeof (processInfo));
         processInfo.hProcess = INVALID_HANDLE_VALUE;
         processInfo.hThread = INVALID_HANDLE_VALUE;
 
@@ -708,8 +705,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                             }
                     }
                 }
-DoneWithProcess:
 
+DoneWithProcess:
                 SAFE_HANDLE_CLOSER (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER (&processInfo.hThread);
 
