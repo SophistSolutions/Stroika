@@ -476,6 +476,7 @@ namespace   Stroika {
                         result->clear ();
                     }
                     else {
+						AssertNotNull (_fCurrent);	// because not done
                         *result = _fCurrent->fItem;
                     }
                 }

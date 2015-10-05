@@ -135,12 +135,13 @@ String FileSystem::GetFileSuffix (const String& fileName)
 {
 #if     qPlatform_Windows
     String useFName    =   fileName;
-
     {
-        SDKChar   fNameBuf[4 * MAX_PATH ];
+        SDKChar   fNameBuf[4 * MAX_PATH];
         fNameBuf[0] = '\0';
-        DWORD   r   =   ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
-        if (r != 0) {
+		DISABLE_COMPILER_MSC_WARNING_START (4267)
+		DWORD   r   =   ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+		DISABLE_COMPILER_MSC_WARNING_END (4267)
+			if (r != 0) {
             useFName = String::FromSDKString (fNameBuf);
         }
     }
@@ -148,10 +149,11 @@ String FileSystem::GetFileSuffix (const String& fileName)
     SDKChar   drive[_MAX_DRIVE];
     SDKChar   dir[_MAX_DIR];
     SDKChar   ext[_MAX_EXT];
-    memset (drive, 0, sizeof (drive));
-    memset (dir, 0, sizeof (dir));
-    memset (fname, 0, sizeof (fname));
-    memset (ext, 0, sizeof (ext));
+    (void)::memset (drive, 0, sizeof (drive));
+	(void)::memset (dir, 0, sizeof (dir));
+	(void)::memset (fname, 0, sizeof (fname));
+	(void)::memset (ext, 0, sizeof (ext));
+	// @todo - probably should check result (errno_t) and throw?
     ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     // returns leading '.' in name...
     return String::FromSDKString (ext);

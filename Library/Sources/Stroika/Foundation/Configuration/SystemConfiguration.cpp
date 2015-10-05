@@ -568,14 +568,17 @@ namespace {
             SYSTEM_INFO si;
             ::ZeroMemory (&si, sizeof(si));
 
+			HMODULE	kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
+			AssertNotNull (kernel32);
+
             // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-            PGNSI pGNSI = (PGNSI) GetProcAddress (::GetModuleHandle (TEXT("kernel32.dll")), "GetNativeSystemInfo");
-            if (pGNSI != nullptr) {
-                pGNSI (&si);
+            PGNSI pGNSI = (PGNSI) GetProcAddress (kernel32, "GetNativeSystemInfo");
+            if (pGNSI == nullptr) {
+				::GetSystemInfo (&si);
             }
             else {
-                ::GetSystemInfo (&si);
-            }
+				(*pGNSI) (&si);
+			}
 
             if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT and osvi.dwMajorVersion > 4) {
                 result = L"Microsoft ";
@@ -596,9 +599,9 @@ namespace {
                     DWORD   dwType = PRODUCT_UNDEFINED;
                     {
                         // OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
-                        PGPI pGPI = (PGPI)GetProcAddress (::GetModuleHandle (TEXT ("kernel32.dll")), "GetProductInfo");
+                        PGPI pGPI = (PGPI)GetProcAddress (kernel32, "GetProductInfo");
                         AssertNotNull (pGPI);
-                        (pGPI) (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
+                        (*pGPI) (osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
                     }
                     switch (dwType) {
                         case PRODUCT_ULTIMATE:
