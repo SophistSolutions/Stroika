@@ -142,16 +142,16 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<TraitsType::KeyExtractor>::value>::type>
+                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection ();
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<TraitsType::KeyExtractor>::value>::type>
+                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (KeyExtractorFunctionType keyExtractor);
                 KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<TraitsType::KeyExtractor>::value>::type>
+                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (const std::initializer_list<T>& src);
-                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<TraitsType::KeyExtractor>::value>::type>
+                template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<T>*>::value >::type >
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value >::type >
                 explicit KeyedCollection (const CONTAINER_OF_T& src, KeyExtractorFunctionType keyExtractor);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 explicit KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
