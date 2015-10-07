@@ -192,9 +192,9 @@ namespace   Stroika {
                 Remove (i);
             }
             template    <typename T>
-            inline	Bag<T>    Bag<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
+            inline  Bag<T>    Bag<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
-				return Iterable<T>::Where (doToElement, Bag<T> {});
+                return Iterable<T>::Where (doToElement, Bag<T> {});
             }
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)

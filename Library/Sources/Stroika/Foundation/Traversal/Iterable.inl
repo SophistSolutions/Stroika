@@ -304,22 +304,22 @@ namespace   Stroika {
                 return CreateGenerator (getNext);
             }
             template    <typename T>
-			template	<typename RESULT_CONTAINER>
-            inline	RESULT_CONTAINER	Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
-			{
-				return Where<RESULT_CONTAINER> (includeIfTrue, RESULT_CONTAINER {});
-			}
+            template    <typename RESULT_CONTAINER>
+            inline  RESULT_CONTAINER    Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+            {
+                return Where<RESULT_CONTAINER> (includeIfTrue, RESULT_CONTAINER {});
+            }
             template    <typename T>
-			template	<typename RESULT_CONTAINER>
-            RESULT_CONTAINER	Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const
-			{
-				Require (emptyResult.empty ());
-				RESULT_CONTAINER	result	=	emptyResult;
-				for (auto i : Where (includeIfTrue)) {
-					result.Add (i);
-				}
-				return result;
-			}
+            template    <typename RESULT_CONTAINER>
+            RESULT_CONTAINER    Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const
+            {
+                Require (emptyResult.empty ());
+                RESULT_CONTAINER    result  =   emptyResult;
+                for (auto i : Where (includeIfTrue)) {
+                    result.Add (i);
+                }
+                return result;
+            }
             template    <typename T>
             Iterable<T>     Iterable<T>::Distinct () const
             {

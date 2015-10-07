@@ -586,10 +586,10 @@ namespace   Stroika {
                  *  BASED ON Microsoft .net Linq.
                  *
                  *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
-				 *
-				 *	The variants that take a template argument allow constructing a specific container type instead of an iterable.
-				 *	And the variant that takes an optional empty result container allows constructing a specific subtype of container (backend).
-				 *	Mostly ignore these overloads.
+                 *
+                 *  The variants that take a template argument allow constructing a specific container type instead of an iterable.
+                 *  And the variant that takes an optional empty result container allows constructing a specific subtype of container (backend).
+                 *  Mostly ignore these overloads.
                  *
                  *  \par Example Usage
                  *      \code
@@ -597,13 +597,13 @@ namespace   Stroika {
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
                  *      \endcode
                  *
-				 *	\note	Could have been called EachWith, EachWhere, or EachThat ().
+                 *  \note   Could have been called EachWith, EachWhere, or EachThat ().
                  */
                 nonvirtual  Iterable<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
-				template	<typename RESULT_CONTAINER>
-                nonvirtual  RESULT_CONTAINER	Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
-				template	<typename RESULT_CONTAINER>
-                nonvirtual  RESULT_CONTAINER	Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
+                template    <typename RESULT_CONTAINER>
+                nonvirtual  RESULT_CONTAINER    Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+                template    <typename RESULT_CONTAINER>
+                nonvirtual  RESULT_CONTAINER    Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
 
             public:
                 /**

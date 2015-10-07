@@ -260,8 +260,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
-				 *
-				 *	@see Iterable<T>::Where
+                 *
+                 *  @see Iterable<T>::Where
                  */
                 nonvirtual  Set<T, TRAITS>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
