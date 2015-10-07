@@ -57,6 +57,34 @@ using   Debug::TraceContextBumper;
 
 
 
+#if     qPlatform_POSIX
+namespace {
+    inline  void    CLOSE_ (int fd)
+    {
+        Execution::Handle_ErrNoResultInteruption ([fd] () -> int { return ::close (fd);});
+    }
+}
+#endif
+
+#if     qPlatform_POSIX
+namespace {
+    static  const   int kMaxFD_ = [] () -> int {
+        struct rlimit fds;
+        (void)::memset (&fds, 0, sizeof (fds));
+        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0)
+        {
+            return fds.rlim_cur;
+        }
+        else {
+            return 1024;    // wag
+        }
+    } ();
+}
+#endif
+
+
+
+
 #if     qPlatform_Windows
 namespace {
     class   AutoHANDLE_ {
@@ -103,7 +131,7 @@ namespace {
     public:
         HANDLE  fHandle;
     };
-    inline  void    SAFE_HANDLE_CLOSER (HANDLE* h)
+    inline  void    SAFE_HANDLE_CLOSER_ (HANDLE* h)
     {
         RequireNotNull (h);
         if (*h != INVALID_HANDLE_VALUE) {
@@ -111,33 +139,6 @@ namespace {
             *h = INVALID_HANDLE_VALUE;
         }
     }
-}
-#endif
-
-
-
-#if     qPlatform_POSIX
-namespace {
-    inline  void    CLOSE_(int fd)
-    {
-        Execution::Handle_ErrNoResultInteruption ([fd] () -> int { return ::close (fd);});
-    }
-}
-#endif
-
-#if     qPlatform_POSIX
-namespace {
-    static  const   int kMaxFD_ = [] () -> int {
-        struct rlimit fds;
-        (void)::memset (&fds, 0, sizeof (fds));
-        if (::getrlimit (RLIMIT_NOFILE, &fds) == 0)
-        {
-            return fds.rlim_cur;
-        }
-        else {
-            return 1024;    // wag
-        }
-    } ();
 }
 #endif
 
@@ -526,8 +527,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
         AutoHANDLE_  jStdout[2];
         AutoHANDLE_  jStderr[2];
 
-        PROCESS_INFORMATION processInfo;
-        (void)::memset (&processInfo, 0, sizeof (processInfo));
+        PROCESS_INFORMATION processInfo {};
         processInfo.hProcess = INVALID_HANDLE_VALUE;
         processInfo.hThread = INVALID_HANDLE_VALUE;
 
@@ -550,23 +550,19 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                 jStderr[1].ReplaceHandleAsNonInheritable ();
             }
 
-            STARTUPINFO startInfo;
-            (void)::memset (&startInfo, 0, sizeof (startInfo));
+            STARTUPINFO startInfo {};
             startInfo.cb = sizeof (startInfo);
             startInfo.hStdInput = jStdin[1];
             startInfo.hStdOutput = jStdout[0];
             startInfo.hStdError = jStderr[0];
             startInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-            DWORD   createProcFlags =   0;
-            createProcFlags |= CREATE_NO_WINDOW;
-            createProcFlags |= NORMAL_PRIORITY_CLASS;
-            createProcFlags |= DETACHED_PROCESS;
+            DWORD   createProcFlags { CREATE_NO_WINDOW | NORMAL_PRIORITY_CLASS | DETACHED_PROCESS };
 
             {
                 bool    bInheritHandles     =   true;
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
-                _tcscpy_s (cmdLineBuf, cmdLine.AsSDKString ().c_str ());
+                Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), cmdLine.AsSDKString ().c_str ());
                 Execution::Platform::Windows::ThrowIfFalseGetLastError (
                     ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir, &startInfo, &processInfo)
                 );
@@ -595,7 +591,6 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                         /*
                          * Set the pipe endpoints to non-blocking mode.
                          */
-#if 1
                         auto    mkPipeNoWait_ = [](HANDLE ioHandle) -> void {
                             DWORD   stdinMode = 0;
                             Verify (::GetNamedPipeHandleState (ioHandle, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
@@ -605,29 +600,6 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                         mkPipeNoWait_ (useSTDIN);
                         mkPipeNoWait_ (useSTDOUT);
                         mkPipeNoWait_ (useSTDERR);
-#else
-                    }
-                    {
-                        DWORD   stdinMode   =   0;
-                        Verify (::GetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr, nullptr, nullptr, 0));
-                        stdinMode |= PIPE_NOWAIT;
-                        Verify (::SetNamedPipeHandleState (useSTDIN, &stdinMode, nullptr, nullptr));
-                    }
-
-                    {
-                        DWORD   stdoutMode  =   0;
-                        Verify (::GetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr, nullptr, nullptr, 0));
-                        stdoutMode |= PIPE_NOWAIT;
-                        Verify (::SetNamedPipeHandleState (useSTDOUT, &stdoutMode, nullptr, nullptr));
-                    }
-
-                    {
-                        DWORD   stderrMode  =   0;
-                        Verify (::GetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr, nullptr, nullptr, 0));
-                        stderrMode |= PIPE_NOWAIT;
-                        Verify (::SetNamedPipeHandleState (useSTDERR, &stderrMode, nullptr, nullptr));
-                    }
-#endif
                     }
 
                     /*
@@ -724,8 +696,8 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                 }
 
 DoneWithProcess:
-                SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-                SAFE_HANDLE_CLOSER (&processInfo.hThread);
+                SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+                SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
 
                 {
                     DWORD   stdoutMode  =   0;
@@ -754,8 +726,8 @@ DoneWithProcess:
         catch (...) {
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
                 (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it
-                SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-                SAFE_HANDLE_CLOSER (&processInfo.hThread);
+                SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+                SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
             }
             Execution::DoReThrow ();
         }
@@ -836,8 +808,8 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
     Finally cleanup = [&processInfo]() {
-        SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-        SAFE_HANDLE_CLOSER (&processInfo.hThread);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
     };
 
     STARTUPINFO startInfo;
@@ -908,8 +880,8 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
     Finally cleanup = [&processInfo]() {
-        SAFE_HANDLE_CLOSER (&processInfo.hProcess);
-        SAFE_HANDLE_CLOSER (&processInfo.hThread);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
     };
 
     STARTUPINFO startInfo;
