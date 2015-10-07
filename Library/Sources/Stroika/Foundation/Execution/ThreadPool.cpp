@@ -370,7 +370,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 void    ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx ("ThreadPool::Abort");
-    fAborted_ = true;
+    fAborted_ = true;   // No race, because fAborted never 'unset'
     {
         // Clear the task Q and then abort each thread
         auto    critSec { make_unique_lock (fCriticalSection_) };

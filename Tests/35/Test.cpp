@@ -775,7 +775,8 @@ namespace   {
                 p.AddTask (doItHandler);
             }
 
-            Time::DurationSecondsType   betterFinishBy = Time::GetTickCount () + 10.0;
+            const   double  kBigSafetyMultiplierIncaseRunningUnderValgrind_ { 25 };
+            Time::DurationSecondsType   betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
             while (Time::GetTickCount () <= betterFinishBy) {
                 if (p.GetTasksCount () == 0) {
                     break;
@@ -783,7 +784,7 @@ namespace   {
             }
             VerifyTestResult (p.GetTasksCount () == 0);
             Time::DurationSecondsType           totalTestTime = Time::GetTickCount () - testStartedAt;
-            Verify (totalTestTime < 10 * kRoughEstimateOfTime2Run_);
+            Verify (totalTestTime < kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_);
             p.AbortAndWaitForDone ();
         }
     }
