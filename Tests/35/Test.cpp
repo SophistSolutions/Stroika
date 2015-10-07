@@ -775,12 +775,13 @@ namespace   {
                 p.AddTask (doItHandler);
             }
 
-            const   double  kBigSafetyMultiplierIncaseRunningUnderValgrind_ { 25 };
+            const   double  kBigSafetyMultiplierIncaseRunningUnderValgrind_ { 10000 };  // valgrind not speedy ;-)
             Time::DurationSecondsType   betterFinishBy = Time::GetTickCount () + kBigSafetyMultiplierIncaseRunningUnderValgrind_ * kRoughEstimateOfTime2Run_;
             while (Time::GetTickCount () <= betterFinishBy) {
                 if (p.GetTasksCount () == 0) {
                     break;
                 }
+                Execution::Sleep (.5);  // dont spin too aggressively.
             }
             VerifyTestResult (p.GetTasksCount () == 0);
             Time::DurationSecondsType           totalTestTime = Time::GetTickCount () - testStartedAt;
