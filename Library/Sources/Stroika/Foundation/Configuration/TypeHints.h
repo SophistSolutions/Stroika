@@ -25,7 +25,7 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal paraemter.
+             *  \brief  This is an alias for 'T' - but how we want to pass it on stack as formal parameter.
              *
              *  This is NOT intended to be used very widely, but can be used to decide systematically (by type)
              *  if you should pass a given argument by value or by const reference.

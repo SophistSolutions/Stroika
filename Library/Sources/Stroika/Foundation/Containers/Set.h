@@ -181,14 +181,14 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool    Contains (T item) const;
+                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  *  Like Contains - but a Set<> can use a comparison that only examines a part of T,
                  *  making it useful to be able to return the rest of T.
                  */
-                nonvirtual  Memory::Optional<T> Lookup (T item) const;
+                nonvirtual  Memory::Optional<T> Lookup (ArgByValueType<T> item) const;
 
             public:
                 /**
@@ -201,7 +201,7 @@ namespace   Stroika {
                  *
                  *  If you really want an association list (Mapping) from one thing to another, use that.
                  */
-                nonvirtual  void    Add (T item);
+                nonvirtual  void    Add (ArgByValueType<T> item);
 
             public:
                 /**
@@ -216,7 +216,7 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                nonvirtual  bool    AddIf (T item);
+                nonvirtual  bool    AddIf (ArgByValueType<T> item);
 
             public:
                 /**
@@ -229,7 +229,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Remove (T item);
+                nonvirtual  void    Remove (ArgByValueType<T> item);
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
@@ -248,9 +248,8 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                nonvirtual  bool    RemoveIf (T item);
+                nonvirtual  bool    RemoveIf (ArgByValueType<T> item);
 
-            public:
             public:
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
@@ -262,9 +261,9 @@ namespace   Stroika {
                 /**
                  *  \em EXPERIMENTAL API (2014-01-08)
                  *
-                 *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 *  Apply the function function to each element, and return all the ones for which it was true.
                  */
-                nonvirtual  Set<T, TRAITS>    EachWith (const function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Set<T, TRAITS>    EachWith (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**
@@ -324,13 +323,13 @@ namespace   Stroika {
                 /**
                  * \brief STL-ish alias for Add ().
                  */
-                nonvirtual  void    insert (T item);
+                nonvirtual  void    insert (ArgByValueType<T> item);
 
             public:
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                nonvirtual  void    erase (T item);
+                nonvirtual  void    erase (ArgByValueType<T> item);
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy

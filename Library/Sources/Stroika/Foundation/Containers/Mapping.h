@@ -265,28 +265,28 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<ValueType> Lookup (KeyType key) const;
-                nonvirtual  bool                        Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
-                nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
-                nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
+                nonvirtual  Memory::Optional<ValueType> Lookup (ArgByValueType<KeyType> key) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, Memory::Optional<ValueType>* item) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, ValueType* item) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  ValueType   LookupValue (KeyType key, ValueType defaultValue = ValueType ()) const;
+                nonvirtual  ValueType   LookupValue (ArgByValueType<KeyType> key, ArgByValueType<ValueType> defaultValue = ValueType ()) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  ValueType   operator[] (KeyType key) const;
+                nonvirtual  ValueType   operator[] (ArgByValueType<KeyType> key) const;
 
             public:
                 /**
                  *  Synonym for Lookup (key).IsPresent ()
                  */
-                nonvirtual  bool    ContainsKey (KeyType key) const;
+                nonvirtual  bool    ContainsKey (ArgByValueType<KeyType> key) const;
 
             public:
                 /**
@@ -296,7 +296,7 @@ namespace   Stroika {
                  *
                  *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
-                nonvirtual  bool    ContainsValue (ValueType v) const;
+                nonvirtual  bool    ContainsValue (ArgByValueType<ValueType> v) const;
 
             public:
                 /**
@@ -305,8 +305,8 @@ namespace   Stroika {
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
-                nonvirtual  void    Add (KeyType key, ValueType newElt);
-                nonvirtual  void    Add (KeyValuePair<KeyType, ValueType> p);
+                nonvirtual  void    Add (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newElt);
+                nonvirtual  void    Add (ArgByValueType<KeyValuePair<KeyType, ValueType>> p);
 
             public:
                 /**
@@ -324,7 +324,7 @@ namespace   Stroika {
                  *      TBD in the case of Remove() on in iterator???? Probably should have consistent
                  *      answers but review Remove()for other containers as well.
                  */
-                nonvirtual  void    Remove (KeyType key);
+                nonvirtual  void    Remove (ArgByValueType<KeyType> key);
                 nonvirtual  void    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
 
             public:
@@ -391,7 +391,7 @@ namespace   Stroika {
 
             public:
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                inline  static  bool    DefaultAccumulateArg_ (ValueType l, ValueType r)               {        return l + r;       }
+                inline  static  bool    DefaultAccumulateArg_ (ArgByValueType<ValueType> l, ArgByValueType<ValueType> r)               {        return l + r;       }
 #endif
 
             public:
@@ -399,9 +399,9 @@ namespace   Stroika {
                  *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
 #if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = DefaultAccumulateArg_, ValueType initialValue = {})
+                nonvirtual  void    Accumulate (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newValue, const function<ValueType(ArgByValueType<ValueType>, ArgByValueType<ValueType>)>& f = DefaultAccumulateArg_, ValueType initialValue = {})
 #else
-                nonvirtual  void    Accumulate (KeyType key, ValueType newValue, const function<ValueType(ValueType, ValueType)>& f = [] (ValueType l, ValueType r) -> ValueType { return l + r; }, ValueType initialValue = {})
+                nonvirtual  void    Accumulate (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newValue, const function<ValueType(ArgByValueType<ValueType>, ArgByValueType<ValueType>)>& f = [] (ArgByValueType<ValueType> l, ArgByValueType<ValueType> r) -> ValueType { return l + r; }, ValueType initialValue = {})
 #endif
                 {
                     Add (key, f (LookupValue (key, initialValue), newValue));
@@ -411,7 +411,7 @@ namespace   Stroika {
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                nonvirtual  void    erase (KeyType key);
+                nonvirtual  void    erase (ArgByValueType<KeyType> key);
                 nonvirtual  void    erase (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
 
             public:

@@ -100,22 +100,22 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Set<T, TRAITS>::Contains (T item) const
+            inline  bool    Set<T, TRAITS>::Contains (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Contains (item);
             }
             template    <typename T, typename TRAITS>
-            inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
+            inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (item);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Set<T, TRAITS>::Add (T item)
+            inline  void    Set<T, TRAITS>::Add (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Set<T, TRAITS>::AddIf (T item)
+            inline  bool    Set<T, TRAITS>::AddIf (ArgByValueType<T> item)
             {
                 /*
                  *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -148,7 +148,7 @@ namespace   Stroika {
                 AddAll (std::begin (s), std::end (s));
             }
             template    <typename T, typename TRAITS>
-            inline  void    Set<T, TRAITS>::Remove (T item)
+            inline  void    Set<T, TRAITS>::Remove (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item);
             }
@@ -158,7 +158,7 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Set<T, TRAITS>::RemoveIf (T item)
+            inline  bool    Set<T, TRAITS>::RemoveIf (ArgByValueType<T> item)
             {
                 /*
                  *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -201,7 +201,7 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(const T& item)>& doToElement) const
+            Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
                 Set<T, TRAITS>   result;
                 for (T i : *this) {
@@ -280,12 +280,12 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T, typename TRAITS>
-            inline  void    Set<T, TRAITS>::insert (T item)
+            inline  void    Set<T, TRAITS>::insert (ArgByValueType<T> item)
             {
                 Add (item);
             }
             template    <typename T, typename TRAITS>
-            inline  void    Set<T, TRAITS>::erase (T item)
+            inline  void    Set<T, TRAITS>::erase (ArgByValueType<T> item)
             {
                 Remove (item);
             }

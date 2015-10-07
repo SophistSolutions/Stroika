@@ -130,7 +130,7 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Values ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, ValueType* item) const
             {
                 if (item == nullptr) {
                     return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
@@ -145,12 +145,12 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, Memory::Optional<ValueType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
+            inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key) const
             {
                 Memory::Optional<VALUE_TYPE>   r;
                 bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
@@ -158,28 +158,28 @@ namespace   Stroika {
                 return r;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (ArgByValueType<KeyType> key, nullptr_t) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
+            inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (ArgByValueType<KeyType> key, ArgByValueType<ValueType> defaultValue) const
             {
                 Memory::Optional<VALUE_TYPE>   r    { Lookup (key) };
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator[] (KeyType key) const
+            inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator[] (ArgByValueType<KeyType> key) const
             {
                 return *Lookup (key);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (ArgByValueType<KeyType> key) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ArgByValueType<ValueType> v) const
             {
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 for (KeyValuePair<KEY_TYPE, VALUE_TYPE> t : *this) {
@@ -190,12 +190,12 @@ namespace   Stroika {
                 return false;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newElt)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (key, newElt);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (ArgByValueType<KeyValuePair<KeyType, ValueType>> p)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.fKey, p.fValue);
             }
@@ -219,7 +219,7 @@ namespace   Stroika {
                 AddAll (std::begin (items), std::end (items));
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (ArgByValueType<KeyType> key)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (key);
             }
@@ -339,7 +339,7 @@ namespace   Stroika {
                 return li.Done ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::erase (KeyType key)
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::erase (ArgByValueType<KeyType> key)
             {
                 Remove (key);
             }
