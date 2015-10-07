@@ -749,6 +749,48 @@ namespace {
 
 
 
+namespace   {
+    void    RegressionTest15_ThreadPoolStarvationBug_ ()
+    {
+        //?? DO WE NEED TO ADD
+        //#if 0
+        //      //fTasksAdded_.WaitQuietly (0.1);
+        //      fTasksAdded_.Wait ();
+        //#endif
+        // Maybe no bug??? BUt tried to reproduce what looked like it MIGHT be a bug/issue based on behavior in
+        // BLKQCL...--LGP 2015-10-05
+        //
+        Debug::TraceContextBumper traceCtx ("RegressionTest15_ThreadPoolStarvationBug_");
+        {
+            Time::DurationSecondsType           testStartedAt = Time::GetTickCount ();
+            constexpr   unsigned kThreadPoolSize_   =   10;
+            const   unsigned kStepsToGetTrouble_    =   100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            const   Time::DurationSecondsType   kTime2WaitPerTask_      { 0.01 };
+
+            const   Time::DurationSecondsType   kRoughEstimateOfTime2Run_   =   kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            ThreadPool  p;
+            p.SetPoolSize (kThreadPoolSize_);
+            auto    doItHandler = [kTime2WaitPerTask_] () { Execution::Sleep (kTime2WaitPerTask_); };   // sb pretty quick
+
+            for (int i = 0; i < kStepsToGetTrouble_; ++i) {
+                p.AddTask (doItHandler);
+            }
+
+            Time::DurationSecondsType   betterFinishBy = Time::GetTickCount () + 10.0;
+            while (Time::GetTickCount () <= betterFinishBy) {
+                if (p.GetTasksCount () == 0) {
+                    break;
+                }
+            }
+            VerifyTestResult (p.GetTasksCount () == 0);
+            Time::DurationSecondsType           totalTestTime = Time::GetTickCount () - testStartedAt;
+            Verify (totalTestTime < 10 * kRoughEstimateOfTime2Run_);
+            p.AbortAndWaitForDone ();
+        }
+    }
+}
+
+
 
 
 
@@ -771,6 +813,7 @@ namespace   {
         RegressionTest12_WaitAny_ ();
         RegressionTest13_WaitAll_ ();
         RegressionTest14_SpinLock_ ();
+        RegressionTest15_ThreadPoolStarvationBug_ ();
     }
 }
 
