@@ -141,6 +141,20 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  All constructors must agree about what extractor to use: either one from the traits
+                 *  or one provided in all constructors (that dont get it indirectly from another place).
+                 */
+#if     qCompilerAndStdLib_constexpr_Buggy
+                static
+#endif
+                constexpr   bool   kConstructorsHaveExtractorArgument    =   is_function<typename TraitsType::KeyExtractor>::value;
+
+            public:
+                /**
+                 *  All constructors must agree about what extractor to use: either one from the traits
+                 *  or one provided in all constructors (that dont get it indirectly from another place).
+                 *
+                 *  @todo use kConstructorsHaveExtractorArgument in SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR but harder with MSVC2k13
                  */
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
                 KeyedCollection ();
