@@ -417,8 +417,8 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
 ThreadPool::TPInfo_      ThreadPool::mkThread_ ()
 {
-    shared_ptr<MyRunnable_> r   { new ThreadPool::MyRunnable_ (*this) };
-    Thread  t   =   Thread ([r] () { r->Run (); });
+    shared_ptr<MyRunnable_> r   { make_shared<ThreadPool::MyRunnable_> (*this) };
+    Thread                  t   { [r] () { r->Run (); } };
     static  int sThreadNum_ =   1;  // race condition for updating this number, but who cares - its purely cosmetic...
     t.SetThreadName (Characters::CString::Format (L"Thread Pool Entry %d", sThreadNum_++));
     t.Start ();
