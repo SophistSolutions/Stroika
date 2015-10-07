@@ -1,14 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-//  TEST    Foundation::Execution::ProcessRunner
+//  TEST    Foundation::Execution::Exceptions
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Execution/ProcessRunner.h"
-#if     qPlatform_POSIX
-#include    "Stroika/Foundation/Execution/SignalHandlers.h"
+#include    <iostream>
+#include    <sstream>
+
+#if     qPlatform_Windows
+#include    <Windows.h>
+#include    <winerror.h>
+#include    <wininet.h>     // for error codes
 #endif
-#include    "Stroika/Foundation/Streams/MemoryStream.h"
+
+#include    "Stroika/Foundation/Execution/Exceptions.h"
+#include    "Stroika/Foundation/Execution/StringException.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -17,7 +26,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-using   Characters::String;
+
 
 
 
@@ -25,54 +34,50 @@ using   Characters::String;
 namespace   {
     void    RegressionTest1_ ()
     {
-        Streams::MemoryStream<Byte> myStdOut;
-        // quickie about to test..
-        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
-        pr.Run ();
-    }
-    void    RegressionTest2_ ()
-    {
-        Streams::MemoryStream<Byte> myStdOut;
-        // quickie about to test..
-        ProcessRunner pr (L"echo hi mom");
-        String out = pr.Run (L"");
-        VerifyTestResult (out.Trim () == L"hi mom");
-    }
-    void    RegressionTest3_Pipe_ ()
-    {
-        Streams::MemoryStream<Byte> myStdOut;
-        ProcessRunner pr1 (L"echo hi mom");
-        Streams::MemoryStream<Byte> pipe;
-        ProcessRunner pr2 (L"cat");
-        pr1.SetStdOut (pipe);
-        pr2.SetStdIn (pipe);
-
-        Streams::MemoryStream<Byte> pr2Out;
-        pr2.SetStdOut (pr2Out);
-
-        pr1.Run ();
-        pr2.Run ();
-
-        String out = String::FromUTF8 (pr2Out.As<string> ());
-
-        VerifyTestResult (out.Trim () == L"hi mom");
+#if         qPlatform_Windows
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
+#endif
     }
 }
+
+
+namespace {
+    void    Test2_ThrowCatchStringException_ ()
+    {
+        {
+            try {
+                DoThrow (StringException (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const StringException& e) {
+                VerifyTestResult (e.As<wstring> () == L"HiMom");
+            }
+        }
+        {
+            try {
+                DoThrow (StringException (L"HiMom"));
+                VerifyTestResult (false);
+            }
+            catch (const std::exception& e) {
+                VerifyTestResult (strcmp (e.what (), "HiMom") == 0);
+            }
+        }
+    }
+}
+
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-#if     qPlatform_POSIX
-        // Many performance instruments use pipes
-        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
-        //  --LGP 2014-02-05
-        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
-#endif
         RegressionTest1_ ();
-        RegressionTest2_ ();
-        RegressionTest3_Pipe_ ();
+        Test2_ThrowCatchStringException_ ();
     }
 
 }

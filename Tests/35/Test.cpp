@@ -1,170 +1,61 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-//  TEST    Foundation::Execution::ThreadSafetyBuiltinObject
+//  TEST    Foundation::Execution::Threads
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    <iostream>
 #include    <mutex>
 
-#include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Containers/Bijection.h"
-#include    "Stroika/Foundation/Containers/Collection.h"
-#include    "Stroika/Foundation/Containers/Deque.h"
-#include    "Stroika/Foundation/Containers/Queue.h"
-#include    "Stroika/Foundation/Containers/Mapping.h"
-#include    "Stroika/Foundation/Containers/MultiSet.h"
-#include    "Stroika/Foundation/Containers/Sequence.h"
-#include    "Stroika/Foundation/Containers/Set.h"
-#include    "Stroika/Foundation/Containers/Stack.h"
-#include    "Stroika/Foundation/Containers/SortedCollection.h"
-#include    "Stroika/Foundation/Containers/SortedMapping.h"
-#include    "Stroika/Foundation/Containers/SortedMultiSet.h"
-#include    "Stroika/Foundation/Containers/SortedSet.h"
-#include    "Stroika/Foundation/Containers/Mapping.h"
+#include    "Stroika/Foundation/Execution/BlockingQueue.h"
+#include    "Stroika/Foundation/Execution/Finally.h"
+#include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Execution/SpinLock.h"
+#include    "Stroika/Foundation/Execution/Synchronized.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Execution/ThreadPool.h"
+#include    "Stroika/Foundation/Execution/WaitableEvent.h"
+#include    "Stroika/Foundation/Execution/TimeOutException.h"
 
 #include    "../TestHarness/TestHarness.h"
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Characters;
-using   namespace   Containers;
 
-using   Execution::Synchronized;
+
+using   Execution::BlockingQueue;
 using   Execution::Thread;
+using   Execution::Finally;
+using   Execution::SpinLock;
+using   Execution::Synchronized;
+using   Execution::ThreadPool;
 using   Execution::WaitableEvent;
 
 
 
 
-
-
-namespace {
-
-    /*
-     *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
-     *  without worrying about races, just use mutex.
-     */
-    struct  no_lock_ {
-        void lock () {}
-        void unlock () {}
-    };
-
-}
-
-
-
-namespace {
-    void    RunThreads_ (const initializer_list<Thread>& threads)
-    {
-        for (Thread i : threads) {
-            i.Start ();
-        }
-        for (Thread i : threads) {
-            i.WaitForDone ();
-        }
-    }
-}
-
-
-
-
-
-namespace {
-
-    template <typename ITERABLE_TYPE, typename LOCK_TYPE>
-    Thread  mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
-    {
-        using ElementType   =   typename ITERABLE_TYPE::ElementType;
-        return Thread ([iterable, lock, repeatCount] () {
-            Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
-            for (unsigned int i = 0; i < repeatCount; ++i) {
-                //DbgTrace ("Iterate thread loop %d", i);
-                lock_guard<decltype(*lock)> critSec (*lock);
-                for (ElementType e :  iterable->load ()) {
-                    ElementType e2 = e; // do something
-                }
-            }
-        });
-    };
-
-}
-
-
-
-namespace {
-
-    template <typename ITERABLE_TYPE, typename ITERABLE_TYPE2, typename LOCK_TYPE>
-    Thread  mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
-    {
-        return Thread ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2] () {
-            Debug::TraceContextBumper traceCtx ("{}OverwriteThread::MAIN...");
-            for (unsigned int i = 0; i < repeatCount; ++i) {
-                for (int ii = 0; ii <= 100; ++ii) {
-                    if (Math::IsOdd (ii)) {
-                        lock_guard<decltype(*lock)> critSec (*lock);
-                        (*oneToKeepOverwriting) = elt1;
-                    }
-                    else {
-                        lock_guard<decltype(*lock)> critSec (*lock);
-                        (*oneToKeepOverwriting) = elt2;
-                    }
-                }
-            }
-        });
-    };
-
-}
-
-
-
-
+#include    "Stroika/Foundation/Containers/Sequence.h"
+using   Containers::Sequence;
 
 
 
 
 namespace   {
-    namespace AssignAndIterateAtSameTimeTest_1_ {
-        template    <typename ITERABLE_TYPE>
-        void    DoItOnce_ (ITERABLE_TYPE elt1, ITERABLE_TYPE elt2, unsigned int repeatCount)
-        {
-            Debug::TraceContextBumper traceCtx ("{}::AssignAndIterateAtSameTimeTest_1_::DoIt::DoItOnce_ ()");
-            no_lock_ lock ;
-            //mutex lock;
-            Synchronized<ITERABLE_TYPE>  oneToKeepOverwriting { elt1 };
-            Thread  iterateThread   =   mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
-            Thread  overwriteThread =   mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
-            RunThreads_ ({iterateThread, overwriteThread});
-        }
-        void    DoIt ()
-        {
-            Debug::TraceContextBumper traceCtx ("AssignAndIterateAtSameTimeTest_1_::DoIt ()");
-            const unsigned int kRepeatCount_ = 500;
-            //const unsigned int kRepeatCount_ = 1;
-            static const initializer_list<int>  kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
-            static const initializer_list<int>  kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
-            static const initializer_list<pair<int, int>>  kOrigPairValueInit_ = {pair<int, int> (1, 3), pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 13)};
-            static const initializer_list<pair<int, int>>  kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 33), pair<int, int> (4, 5)};
-            DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), kRepeatCount_);
-            DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), kRepeatCount_);
-            // Queue/Deque NYI here cuz of assign from initializer
-            //DoItOnce_<Deque<int>> (Deque<int> (kOrigValueInit_), Deque<int> (kUpdateValueInit_), kRepeatCount_);
-            //DoItOnce_<Queue<int>> (Queue<int> (kOrigValueInit_), Queue<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<MultiSet<int>> (MultiSet<int> (kOrigValueInit_), MultiSet<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Mapping<int, int>> (Mapping<int, int> (kOrigPairValueInit_), Mapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Sequence<int>> (Sequence<int> (kOrigValueInit_), Sequence<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<Set<int>> (Set<int> (kOrigValueInit_), Set<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedCollection<int>> (SortedCollection<int> (kOrigValueInit_), SortedCollection<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedMapping<int, int>> (SortedMapping<int, int> (kOrigPairValueInit_), SortedMapping<int, int> (kUPairpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedMultiSet<int>> (SortedMultiSet<int> (kOrigValueInit_), SortedMultiSet<int> (kUpdateValueInit_), kRepeatCount_);
-            DoItOnce_<SortedSet<int>> (SortedSet<int> (kOrigValueInit_), SortedSet<int> (kUpdateValueInit_), kRepeatCount_);
+    void    RegressionTest1_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest1_");
+        struct  FRED {
+            static  void    DoIt (void* ignored)
+            {
+                for (int i = 1; i < 10; i++) {
+                    Execution::Sleep (.001);
+                }
+            }
+        };
 
-            // Stack NYI cuz not enough of stack implemented (op=)
-            //DoItOnce_<Stack<int>> (Stack<int> (kOrigValueInit_), Stack<int> (kUpdateValueInit_), kRepeatCount_);
-        }
+        Thread  thread (bind (&FRED::DoIt, const_cast<char*> ("foo")));
+        thread.Start ();
+        thread.WaitForDone ();
     }
 }
 
@@ -174,299 +65,733 @@ namespace   {
 
 
 
+namespace   {
+    recursive_mutex sharedCriticalSection_;
+    void    RegressionTest2_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest2_");
+
+        // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
+        struct  FRED {
+            static  void    DoIt (void* ignored)
+            {
+                int*    argP    =   reinterpret_cast<int*> (ignored);
+                for (int i = 0; i < 10; i++) {
+                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
+                    int tmp = *argP;
+                    Execution::Sleep (.001);
+                    //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                    *argP = tmp + 1;
+                }
+            }
+        };
+
+        int updaterValue    =   0;
+        Thread  thread1 (bind (&FRED::DoIt, &updaterValue));
+        Thread  thread2 (bind (&FRED::DoIt, &updaterValue));
+        thread1.Start ();
+        thread2.Start ();
+        thread1.WaitForDone ();
+        thread2.WaitForDone ();
+        VerifyTestResult (updaterValue == 2 * 10);
+    }
+}
+
+
+
+
 
 
 namespace   {
-    namespace IterateWhileMutatingContainer_Test_2_ {
-        template    <typename ITERABLE_TYPE, typename LOCK, typename MUTATE_FUNCTION>
-        void    DoItOnce_ (LOCK* lock, ITERABLE_TYPE elt1, unsigned int repeatCount, MUTATE_FUNCTION baseMutateFunction)
+    WaitableEvent    sRegTest3Event_T1_ (WaitableEvent::eAutoReset);
+    WaitableEvent    sRegTest3Event_T2_ (WaitableEvent::eAutoReset);
+    namespace   WAITABLE_EVENTS_ {
+        void    NOTIMEOUTS_ ()
         {
-            Synchronized<ITERABLE_TYPE>   oneToKeepOverwriting { elt1 };
-            auto mutateFunction =               [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction] () {
-                Debug::TraceContextBumper traceCtx ("{}::MutateFunction ()");
-                DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name());
-                for (unsigned int i = 0; i < repeatCount; ++i) {
-                    baseMutateFunction (&oneToKeepOverwriting);
+            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(NOTIMEOUTS)");
+            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+            struct  FRED1 {
+                static  void    DoIt (void* ignored)
+                {
+                    int*    argP    =   reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T1_.Wait ();
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                        VerifyTestResult (tmp % 2 == 0);
+                        //DbgTrace ("FRED1: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T2_.Set ();
+                    }
                 }
             };
-            Thread  iterateThread   { mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount) };
-            Thread  mutateThread    { mutateFunction };
-            RunThreads_ ({iterateThread, mutateThread});
+            struct  FRED2 {
+                static  void    DoIt (void* ignored)
+                {
+                    int*    argP    =   reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T2_.Wait ();
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        //DbgTrace ("FRED2: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T1_.Set ();
+                    }
+                }
+            };
+
+            sRegTest3Event_T1_.Reset ();
+            sRegTest3Event_T2_.Reset ();
+            int updaterValue    =   0;
+            Thread  thread1 (bind (&FRED1::DoIt, &updaterValue));
+            Thread  thread2 (bind (&FRED2::DoIt, &updaterValue));
+            thread1.Start ();
+            thread2.Start ();
+            // Both threads start out waiting - until we get things rolling telling one to start.
+            // Then they pingpong back and forther
+            sRegTest3Event_T1_.Set ();
+            thread1.WaitForDone ();
+            thread2.WaitForDone ();
+            //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+            // If there was a race - its unlikely you'd end up with exact 20 as your result
+            VerifyTestResult (updaterValue == 2 * 10);
         }
-        void    DoIt ()
+        void    PingBackAndForthWithSimpleTimeouts_ ()
         {
-            // This test demonstrates the need for qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-            Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
+            Debug::TraceContextBumper traceCtx ("pingpong threads with event.wait(WITHTIMEOUT)");
+            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+            struct  FRED1 {
+                static  void    DoIt (void* ignored)
+                {
+                    int*    argP    =   reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T1_.Wait (5.0);
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        // Since fred1/fred2 always take turns, and Fred1 always goes first...
+                        VerifyTestResult (tmp % 2 == 0);
+                        //DbgTrace ("FRED1: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T2_.Set ();
+                    }
+                }
+            };
+            struct  FRED2 {
+                static  void    DoIt (void* ignored)
+                {
+                    int*    argP    =   reinterpret_cast<int*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        sRegTest3Event_T2_.Wait (5.0);
+                        int tmp = *argP;
+                        Execution::Sleep (.001);
+                        //DbgTrace ("FRED2: Updating value in of %d", tmp);
+                        *argP = tmp + 1;
+                        sRegTest3Event_T1_.Set ();
+                    }
+                }
+            };
 
-            const unsigned int kRepeatCount_ = 250;
+            sRegTest3Event_T1_.Reset ();
+            sRegTest3Event_T2_.Reset ();
+            int updaterValue    =   0;
+            Thread  thread1 (bind (&FRED1::DoIt, &updaterValue));
+            Thread  thread2 (bind (&FRED2::DoIt, &updaterValue));
+            thread1.Start ();
+            thread2.Start ();
+            // Both threads start out waiting - until we get things rolling telling one to start.
+            // Then they pingpong back and forther
+            sRegTest3Event_T1_.Set ();
+            thread1.WaitForDone ();
+            thread2.WaitForDone ();
+            //DbgTrace ("Test3 - updaterValue = %d", updaterValue);
+            // If there was a race - its unlikely you'd end up with exact 20 as your result
+            VerifyTestResult (updaterValue == 2 * 10);
+        }
+        void    TEST_TIMEOUT_EXECPETIONS_ ()
+        {
+            Debug::TraceContextBumper traceCtx ("Event wait timeouts");
+            bool    passed  =   false;
+            sRegTest3Event_T1_.Reset ();
+            try {
+                sRegTest3Event_T1_.Wait (0.5);  // should timeout
+            }
+            catch (const Execution::TimeOutException&) {
+                passed = true;
+            }
+            catch (...) {
+            }
+            VerifyTestResult (passed);
+        }
+        void    TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
+        {
+            Debug::TraceContextBumper traceCtx ("Deadlock block on waitable event and abort thread (thread cancelation)");
+            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
+            struct  FRED1 {
+                static  void    DoIt (void* ignored)
+                {
+                    sRegTest3Event_T1_.Wait (60.0);     // just has to be much more than the waits below
+                }
+            };
 
-#if     qCompilerAndStdLib_constexpr_stdinitializer_Buggy
-            static const        initializer_list<int>   kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+            sRegTest3Event_T1_.Reset ();
+            int updaterValue    =   0;
+            Thread  thread1 (bind (&FRED1::DoIt, &updaterValue));
+            thread1.Start ();
+
+            // At this point the thread SHOULD block and wait 30 seconds
+            {
+                const   Time::DurationSecondsType   kMargingOfError  =   .5;
+                const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
+                Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                Time::DurationSecondsType   caughtExceptAt  =   0;
+
+                try {
+                    thread1.WaitForDone (kWaitOnAbortFor);
+                }
+                catch (const Execution::TimeOutException&) {
+                    caughtExceptAt =  Time::GetTickCount ();
+                }
+                Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                VerifyTestResult (expectedEndAt - kMargingOfError <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfError);
+            }
+
+            // Now ABORT and WAITFORDONE - that should kill it nearly immediately
+            {
+#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+                const   Time::DurationSecondsType   kMargingOfError  =   .9;
+                const   Time::DurationSecondsType   kWaitOnAbortFor  =   5.0;   // because of BWA we used
 #else
-            static constexpr    initializer_list<int>   kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
+                const   Time::DurationSecondsType   kMargingOfError  =   .5;
+                const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
 #endif
-            static const        initializer_list<int>   kUpdateValueInit_ = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
+                Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
+                try {
+                    thread1.AbortAndWaitForDone (kWaitOnAbortFor);
+                }
+                catch (const Execution::TimeOutException&) {
+                    VerifyTestResult (false);   // shouldn't fail to wait cuz we did abort
+                }
+                Time::DurationSecondsType   doneAt          =   Time::GetTickCount ();;
+                Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
+                VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError);
+            }
 
-            no_lock_ lock;
-            //mutex lock;
+            // Thread MUST be done/terminated by this point
+            VerifyTestResult (thread1.GetStatus () == Thread::Status::eCompleted);
+        }
+    }
+    void    RegressionTest3_WaitableEvents_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest3_WaitableEvents_");
+        WAITABLE_EVENTS_::NOTIMEOUTS_ ();
+        WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
+        WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
+        WAITABLE_EVENTS_::TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ();
+    }
+}
 
-            DoItOnce_<Set<int>> (
-                                 &lock,
-                                 Set<int> (kOrigValueInit_),
-                                 kRepeatCount_,
-            [&lock] (Synchronized<Set<int>>* oneToKeepOverwriting) {
-                for (int ii = 0; ii <= 100; ++ii) {
-                    //DbgTrace ("doing update loop %d", ii);
-                    if (Math::IsOdd (ii)) {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Set<int> { kUpdateValueInit_ };
-                    }
-                    else {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Set<int> { kUpdateValueInit_ };
+
+namespace   {
+    struct  data_ {};
+    void    RegressionTest4_Synchronized_ ()
+    {
+        //template <typename T> using Synchonized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
+        using namespace Execution;
+        using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
+        using syncofint = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
+
+
+        Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
+        {
+            syncofdata x;
+            syncofdata y = data_ ();
+            x = data_ ();
+        }
+        {
+            syncofint   x;
+            syncofint   y = 3;
+            x = 4;
+        }
+        {
+            // Make 2 concurrent threads, which update a lynchronized variable
+            struct  FRED {
+                static  void    DoIt (void* ignored)
+                {
+                    syncofint*  argP    =   reinterpret_cast<syncofint*> (ignored);
+                    for (int i = 0; i < 10; i++) {
+                        syncofint::WritableReference r =    argP->GetReference ();
+                        int tmp = r;
+                        Execution::Sleep (.01);
+                        //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                        r = tmp + 1;
+#if 0
+                        lock_guard<recursive_mutex> critSect (*argP);
+                        int tmp = *argP;
+                        Execution::Sleep (.01);
+                        //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                        *argP = tmp + 1;
+#endif
                     }
                 }
-            });
-
-            DoItOnce_<Sequence<int>> (
-                                      &lock,
-                                      Sequence<int> (kOrigValueInit_),
-                                      kRepeatCount_,
-            [&lock] (Synchronized<Sequence<int>>* oneToKeepOverwriting) {
-                for (int ii = 0; ii <= 100; ++ii) {
-                    if (Math::IsOdd (ii)) {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Sequence<int> { kUpdateValueInit_ };
-                    }
-                    else {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = Sequence<int> { kUpdateValueInit_ };
-                    }
-                }
-            });
-
-            DoItOnce_<String> (
-                &lock,
-                String (L"123456789"),
-                kRepeatCount_,
-            [&lock] (Synchronized<String>* oneToKeepOverwriting) {
-                for (int ii = 0; ii <= 100; ++ii) {
-                    if (Math::IsOdd (ii)) {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = String {L"abc123"};
-                    }
-                    else {
-                        lock_guard<decltype(lock)> critSec (lock);
-                        (*oneToKeepOverwriting) = String {L"123abc"};
-                    }
-                }
-            });
+            };
+            syncofint   updaterValue    =   0;
+            Thread  thread1 (bind (&FRED::DoIt, &updaterValue));
+            Thread  thread2 (bind (&FRED::DoIt, &updaterValue));
+            thread1.Start ();
+            thread2.Start ();
+            thread1.WaitForDone ();
+            thread2.WaitForDone ();
+            VerifyTestResult (updaterValue == 2 * 10);
         }
     }
 }
 
 
-
-
-
-
-namespace {
-    namespace Test3_SynchonizedOptional_ {
-        void    DoIt_ ()
+namespace   {
+    void    RegressionTest5_Aborting_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest5_Aborting_");
         {
-            using   namespace   Memory;
+            struct  FRED {
+                static  void    DoIt ()
+                {
+                    while (true) {
+                        Execution::CheckForThreadInterruption ();
+                    }
+                }
+            };
+            Thread  thread (&FRED::DoIt);
+            thread.Start ();
             try {
-                Synchronized<Optional<int>> sharedValue { 0 };
-                static  const int kMaxVal_ = 100000;
-                Thread  reader {[&sharedValue] ()
-                {
-                    while (sharedValue.load () < kMaxVal_) {
-                        VerifyTestResult (sharedValue.load () <= kMaxVal_);
-                    }
-                    VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }
-                               };
-                Thread  adder {[&sharedValue] ()
-                {
-                    while (sharedValue.load () < kMaxVal_) {
-                        sharedValue.store (*sharedValue.load () + 1);
-                    }
-                    VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }
-                              };
-                reader.Start ();
-                adder.Start ();
-                Execution::Finally cleanup { [reader, adder] () mutable {
-                        reader.AbortAndWaitForDone ();
-                        adder.AbortAndWaitForDone ();
-                    }
-                };
-                // wait long time cuz of debuggers (esp valgrind) etc
-                adder.WaitForDone(300);
-                reader.WaitForDone(300);
-                VerifyTestResult (sharedValue.load () == kMaxVal_);
+                thread.WaitForDone (0.3);   // should timeout
+                VerifyTestResult (false);
+            }
+            catch (const Execution::TimeOutException&) {
+                // GOOD
             }
             catch (...) {
                 VerifyTestResult (false);
             }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
         }
-    }
-}
-
-
-
-
-namespace {
-    namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
-        void    DoIt ()
+#if     qPlatform_Windows
         {
-#if 0
-            struct  Base {
-                mutable bool    fCalledOp_ = false;
-            };
-            struct  Derived : Base {
-                operator Base () const
-                {
-                    fCalledOp_ = true;
+            Thread  thread ([] () {
+                while (true) {
+                    // test alertable 'throw'
+                    ::SleepEx (0, true);
                 }
-            };
-            Derived dd;
-            Base bb = dd;
-            // sadly this doesnt work
-            // --LGP 2014-09-27
-            VerifyTestResult (bb.fCalledOp_);
+            });
+            thread.Start ();
+            try {
+                thread.WaitForDone (0.3);   // should timeout
+                VerifyTestResult (false);
+            }
+            catch (const Execution::TimeOutException&) {
+                // GOOD
+            }
+            catch (...) {
+                VerifyTestResult (false);
+            }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
+        }
 #endif
-        }
     }
 }
 
 
 
 
-namespace {
-    namespace   Test5_SetSpecificSyncMethods {
-        void    DoIt ()
-        {
-            Set<int>                                sensorsToActuallyRead       { 2, 3 };
-            static  const   Synchronized<Set<int>>  kACUSensors_                { Set<int> { 1, 2 } };
-            Set<int>                                acufpgaSensors1     =   kACUSensors_ ^ sensorsToActuallyRead;
-            Set<int>                                acufpgaSensors2     =   sensorsToActuallyRead ^ kACUSensors_;
-            VerifyTestResult (acufpgaSensors1 == Set<int> ({ 2 }));
-            VerifyTestResult (acufpgaSensors2 == Set<int> ({ 2 }));
-        }
-    }
-}
-
-
-
-
-
-namespace {
-    namespace   Test6_OverloadsWithSyncMethods_ {
-        void    DoIt ()
-        {
-            using   Memory::Optional;
-            String xx;
-            Synchronized<String> yy;
-            if (xx != yy) {
-            }
-            Optional<String> xxo;
-#if 0
-            //////@todo FIX various operator overloads so this works more seemlessly. See
-            //      template    <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value >::type>
-            //      bool    operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs)
-            // and related failed attempts
-            if (xxo != yy.load ()) {
-            }
-            if (xxo == yy.load ()) {
-            }
-#else
-            if (xxo != yy) {
-            }
-            if (xxo == yy) {
-            }
-#endif
-        }
-    }
-}
-
-
-
-
-
-namespace {
-    namespace   Test7_nuSynchonized_ {
-        namespace Private_ {
-            void    TestBasics_ ()
+namespace   {
+    void    RegressionTest6_ThreadWaiting_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest6_ThreadWaiting_");
+        struct  FRED {
+            static  void    DoIt ()
             {
-                using   namespace Execution;
+                Execution::Sleep (0.01);
+            }
+        };
+
+        // Normal usage
+        {
+            Thread  thread (&FRED::DoIt);
+            thread.Start ();
+            thread.WaitForDone ();
+        }
+
+        // OK to never wait
+        for (int i = 0; i < 100; ++i) {
+            Thread  thread (&FRED::DoIt);
+            thread.Start ();
+        }
+
+        // OK to wait and wait
+        {
+            Thread  thread (&FRED::DoIt);
+            thread.Start ();
+            thread.WaitForDone ();
+            thread.WaitForDone (1.0);       // doesn't matter how long cuz its already DONE
+            thread.WaitForDone ();
+            thread.WaitForDone ();
+        }
+    }
+}
+
+
+namespace   {
+    void    RegressionTest7_SimpleThreadPool_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest7_SimpleThreadPool_");
+        {
+            ThreadPool  p;
+            p.SetPoolSize (1);
+            p.Abort ();
+            p.WaitForDone ();
+        }
+        {
+            ThreadPool  p;
+            p.SetPoolSize (1);
+            struct  FRED {
+                static  void    DoIt (void* arg)
                 {
-                    Synchronized<int>    tmp;
-                    tmp = 4;
-                    int a  { tmp };
-                    VerifyTestResult (a == 4);
+                    int*    p   =   reinterpret_cast<int*> (arg);
+                    (*p)++;
                 }
-                {
-                    Synchronized<int>    tmp { 4 };
-                    int a { tmp };
-                    VerifyTestResult (a == 4);
-                }
-                {
-                    Synchronized<String>    tmp { L"x" };
-                    String a { tmp };
-                    VerifyTestResult (a == L"x");
-                    VerifyTestResult (tmp->find ('z') == string::npos);
-                    VerifyTestResult (tmp->find ('x') == 0);
+            };
+            int intVal  =   3;
+            //shared_ptr<Execution::IRunnable>    task    =   Execution::mkIRunnablePtr (bind (FRED::DoIt, &intVal));
+            ThreadPool::TaskType task { bind (FRED::DoIt, &intVal) };
+            p.AddTask (task);
+            p.WaitForTask (task);
+            p.AbortAndWaitForDone ();
+            VerifyTestResult (intVal == 4);
+        }
+    }
+}
+
+
+
+namespace   {
+    void    RegressionTest8_ThreadPool_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest8_ThreadPool_");
+        // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
+        struct  FRED {
+            static  void    DoIt (void* ignored)
+            {
+                int*    argP    =   reinterpret_cast<int*> (ignored);
+                for (int i = 0; i < 10; i++) {
+                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
+                    int tmp = *argP;
+                    Execution::Sleep (.01);
+                    //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                    *argP = tmp + 1;
                 }
             }
-            template <typename INTISH_TYPE>
-            void    DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
+        };
+
+        for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
+            ThreadPool  p;
+            p.SetPoolSize (threadPoolSize);
+            int updaterValue    =   0;
+            //shared_ptr<Execution::IRunnable>    task1   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            //shared_ptr<Execution::IRunnable>    task2   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            ThreadPool::TaskType task1 { bind (FRED::DoIt, &updaterValue) };
+            ThreadPool::TaskType task2 { bind (FRED::DoIt, &updaterValue) };
+            p.AddTask (task1);
+            p.AddTask (task2);
+            p.WaitForTask (task1);
+            p.WaitForTask (task2);
+            p.AbortAndWaitForDone ();
+            VerifyTestResult (updaterValue == 2 * 10);
+        }
+    }
+}
+
+
+namespace   {
+    void    RegressionTest9_ThreadsAbortingEarly_ ()
+    {
+        Debug::TraceContextBumper traceCtx ("RegressionTest9_ThreadsAbortingEarly_");
+        // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
+        // between the create of thread and Abort
+        Containers::Collection<Thread>  innerThreads;
+        auto DoItInnerThread = [] () {
+            Execution::Sleep (.01);
+        };
+        auto DoOuterThread = [DoItInnerThread, &innerThreads] () {
+            while (true) {
+                Thread t (DoItInnerThread);
+                innerThreads.Add (t);
+                Execution::Sleep (.02);
+                t.Start ();
+            }
+        };
+        Thread  thread (DoOuterThread);
+        thread.Start ();
+        Execution::Sleep (.5);
+        thread.AbortAndWaitForDone ();
+        // NB: we must call AbortAndWaitForDone on innerThreads because we could have created the thread but not started it, so
+        // wait for done will never terminate
+        innerThreads.Apply ([] (Thread t) { t.AbortAndWaitForDone (); });  // assure subthreads  complete before the text exits (else valgrind may report leak)
+    }
+}
+
+
+namespace {
+    void    RegressionTest10_BlockingQueue_ ()
+    {
+        enum { START = 0, END = 100 };
+        int expectedValue = (START + END) * (END - START + 1) / 2;
+        int counter =   0;
+        BlockingQueue<function<void()>> q;
+
+        Verify (q.GetLength () == 0);
+
+        Thread  producerThread ([&q, &counter] () {
+            for (int incBy = START; incBy <= END; ++incBy) {
+                q.AddTail ([&counter, incBy] () { counter += incBy; });
+            }
+        });
+        Thread  consumerThread ([&q] () {
+            while (true) {
+                function<void()>    f   =   q.RemoveHead ();
+                f();
+            }
+        });
+        producerThread.Start();
+        consumerThread.Start();
+        Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+        while (counter != expectedValue and Time::GetTickCount () < killAt) {
+            Execution::Sleep (.5);
+        }
+        Verify (counter == expectedValue);
+        producerThread.AbortAndWaitForDone ();
+        consumerThread.AbortAndWaitForDone ();
+    }
+}
+
+
+
+namespace {
+    void    RegressionTest11_AbortSubAbort_ ()
+    {
+        auto    testFailToProperlyAbort = [] () {
+            Thread  innerThread {[] ()
             {
-                using   namespace Execution;
-                constexpr   int     kMaxTimes_ = 100 * 1000;
-                INTISH_TYPE s   =   0;
-                Thread incrementer ([&s, increment, kMaxTimes_] () {
-                    for (int i = 0; i < kMaxTimes_; ++i) {
-                        increment (&s);
-                    }
+                Execution::Sleep (1000);
+            }
+                                };
+            innerThread.SetThreadName (L"innerThread");
+            Thread  testThread  { [&innerThread] ()
+            {
+                innerThread.Start ();
+                Execution::Sleep (1000);
+                innerThread.AbortAndWaitForDone ();
+            }
+                                };
+            testThread.SetThreadName (L"testThread");
+            testThread.Start ();
+            Execution::Sleep (1);  // wait til both threads running and blocked in sleeps
+            testThread.AbortAndWaitForDone ();
+            // This is the BUG SuppressInterruptionInContext was meant to solve!
+            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
+            innerThread.AbortAndWaitForDone ();
+        };
+        auto    testInnerThreadProperlyShutDownByOuterThread = [] () {
+            Thread  innerThread {[] ()
+            {
+                Execution::Sleep (1000);
+            }
+                                };
+            innerThread.SetThreadName (L"innerThread");
+            Thread  testThread {[&innerThread] ()
+            {
+                innerThread.Start ();
+                Finally cleanup ([&innerThread] () {
+                    Thread::SuppressInterruptionInContext  suppressInterruptions;
+                    innerThread.AbortAndWaitForDone ();
                 });
-                Thread decrementer ([&s, decrement, kMaxTimes_] () {
-                    for (int i = 0; i < kMaxTimes_; ++i) {
-                        decrement (&s);
-                    }
-                });
-                incrementer.Start();
-                decrementer.Start();
-                incrementer.WaitForDone();
-                decrementer.WaitForDone();
-                VerifyTestResult (s == INTISH_TYPE (0));
+                Execution::Sleep (1000);
             }
-            void    DoThreadTest_ ()
-            {
-                using   namespace Execution;
-                if (false) {
-                    // Fails cuz no synchonization
-                    DoInterlocktest_<int> ([] (int* i) {(*i)++;} , [] (int* i) {(*i)--;});
-                }
-                struct intish_object1 {
-                    int fVal;
-                    intish_object1 (int i) : fVal (i) {}
-                    bool operator == (const intish_object1& rhs) const { return rhs.fVal == fVal; }
-                };
-                if (false) {
-                    // Fails cuz no synchonization
-                    DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;} , [] (intish_object1 * i) {(i->fVal)--;});
-                }
-                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {((*i)->fVal)++;} , [] (Synchronized<intish_object1>* i) {((*i)->fVal)--;});
+                               };
+            testThread.SetThreadName (L"testThread");
+            testThread.Start ();
+            Execution::Sleep (1);   // wait til both threads running and blocked in sleeps
+            // This is the BUG SuppressInterruptionInContext was meant to solve!
+            testThread.AbortAndWaitForDone ();
+            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eCompleted);
+        };
+        testFailToProperlyAbort ();
+        testInnerThreadProperlyShutDownByOuterThread ();
+    }
+}
+
+
+
+
+
+
+namespace {
+    void    RegressionTest12_WaitAny_ ()
+    {
+        // EXPERIMENTAL
+        WaitableEvent we1 (WaitableEvent::eAutoReset);
+        WaitableEvent we2 (WaitableEvent::eAutoReset);
+        Thread t1 {[&we1] ()
+        {
+            Execution::Sleep (2.0); // wait long enough that we are pretty sure t2 will always trigger before we do
+            we1.Set ();
+        }
+                  };
+        Thread t2 {[&we2] ()
+        {
+            Execution::Sleep (0.1);
+            we2.Set ();
+        }
+                  };
+        Time::DurationSecondsType   startAt = Time::GetTickCount ();
+        t1.Start ();
+        t2.Start ();
+        VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2}));
+        Time::DurationSecondsType   timeTaken = Time::GetTickCount () - startAt;
+        VerifyTestResult (timeTaken < 0.5);     // make sure we didnt wait for the 1.0 second on first thread
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+    }
+}
+
+
+
+
+
+
+
+namespace {
+    void    RegressionTest13_WaitAll_ ()
+    {
+        // EXPERIMENTAL
+        WaitableEvent we1 (WaitableEvent::eAutoReset);
+        WaitableEvent we2 (WaitableEvent::eAutoReset);
+        bool w1Fired = false;
+        bool w2Fired = false;
+        Thread t1 {[&we1, &w1Fired] ()
+        {
+            Execution::Sleep (0.5);
+            w1Fired = true;
+            we1.Set ();
+        }
+                  };
+        Thread t2 {[&we2, &w2Fired] ()
+        {
+            Execution::Sleep (0.1);
+            w2Fired = true;
+            we2.Set ();
+        }
+                  };
+        Time::DurationSecondsType   startAt = Time::GetTickCount ();
+        t2.Start ();
+        t1.Start ();
+        WaitableEvent::WaitForAll (Sequence<WaitableEvent*> ({&we1, &we2}));
+        VerifyTestResult (w1Fired and w2Fired);
+        // They capture so must wait for them to complete
+        t1.AbortAndWaitForDone ();
+        t2.AbortAndWaitForDone ();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+namespace {
+    void    RegressionTest14_SpinLock_ ()
+    {
+        SpinLock lock;
+        int     sum =   0;
+        Thread t1 {[&lock, &sum] ()
+        {
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001);
+                lock_guard<SpinLock> critSec (lock);
+                sum += i;
             }
         }
-        void    DoIt ()
+                  };
+        Thread t2 {[&lock, &sum] ()
         {
-            Private_::TestBasics_ ();
-            Private_::DoThreadTest_ ();
+            for (int i = 0; i < 100; ++i) {
+                Execution::Sleep (0.001);
+                lock_guard<SpinLock> critSec (lock);
+                sum -= i;
+            }
+        }
+                  };
+        t1.Start ();
+        t2.Start ();
+        t1.WaitForDone ();
+        t2.WaitForDone ();
+        VerifyTestResult (sum == 0);
+    }
+}
+
+
+
+
+
+namespace   {
+    void    RegressionTest15_ThreadPoolStarvationBug_ ()
+    {
+        //?? DO WE NEED TO ADD
+        //#if 0
+        //      //fTasksAdded_.WaitQuietly (0.1);
+        //      fTasksAdded_.Wait ();
+        //#endif
+        // Maybe no bug??? BUt tried to reproduce what looked like it MIGHT be a bug/issue based on behavior in
+        // BLKQCL...--LGP 2015-10-05
+        //
+        Debug::TraceContextBumper traceCtx ("RegressionTest15_ThreadPoolStarvationBug_");
+        {
+            Time::DurationSecondsType           testStartedAt = Time::GetTickCount ();
+            constexpr   unsigned kThreadPoolSize_   =   10;
+            const   unsigned kStepsToGetTrouble_    =   100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            const   Time::DurationSecondsType   kTime2WaitPerTask_      { 0.01 };
+
+            const   Time::DurationSecondsType   kRoughEstimateOfTime2Run_   =   kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            ThreadPool  p;
+            p.SetPoolSize (kThreadPoolSize_);
+            auto    doItHandler = [kTime2WaitPerTask_] () { Execution::Sleep (kTime2WaitPerTask_); };   // sb pretty quick
+
+            for (int i = 0; i < kStepsToGetTrouble_; ++i) {
+                p.AddTask (doItHandler);
+            }
+
+            Time::DurationSecondsType   betterFinishBy = Time::GetTickCount () + 10.0;
+            while (Time::GetTickCount () <= betterFinishBy) {
+                if (p.GetTasksCount () == 0) {
+                    break;
+                }
+            }
+            VerifyTestResult (p.GetTasksCount () == 0);
+            Time::DurationSecondsType           totalTestTime = Time::GetTickCount () - testStartedAt;
+            Verify (totalTestTime < 10 * kRoughEstimateOfTime2Run_);
+            p.AbortAndWaitForDone ();
         }
     }
 }
+
+
+
 
 
 
@@ -474,16 +799,23 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        AssignAndIterateAtSameTimeTest_1_::DoIt ();
-        IterateWhileMutatingContainer_Test_2_::DoIt ();
-        Test3_SynchonizedOptional_::DoIt_ ();
-        Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
-        Test5_SetSpecificSyncMethods::DoIt ();
-        Test6_OverloadsWithSyncMethods_::DoIt ();
-        Test7_nuSynchonized_::DoIt ();
+        RegressionTest1_ ();
+        RegressionTest2_ ();
+        RegressionTest3_WaitableEvents_ ();
+        RegressionTest4_Synchronized_ ();
+        RegressionTest5_Aborting_ ();
+        RegressionTest6_ThreadWaiting_ ();
+        RegressionTest7_SimpleThreadPool_ ();
+        RegressionTest8_ThreadPool_ ();
+        RegressionTest9_ThreadsAbortingEarly_ ();
+        RegressionTest10_BlockingQueue_ ();
+        RegressionTest11_AbortSubAbort_ ();
+        RegressionTest12_WaitAny_ ();
+        RegressionTest13_WaitAll_ ();
+        RegressionTest14_SpinLock_ ();
+        RegressionTest15_ThreadPoolStarvationBug_ ();
     }
 }
-
 
 
 

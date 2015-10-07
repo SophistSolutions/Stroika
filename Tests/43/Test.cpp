@@ -1,52 +1,310 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
+ * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  TEST    Foundation::Streams
+//  TEST    Foundation::Memory
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <sstream>
+#include    "Stroika/Foundation/Containers/Mapping.h"
+#include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Debug/Trace.h"
 
-#include    "Stroika/Foundation/Streams/MemoryStream.h"
-#include    "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
-#include    "Stroika/Foundation/Streams/OutputStream.h"
+#include    "Stroika/Foundation/Memory/AnyVariantValue.h"
+#include    "Stroika/Foundation/Memory/Bits.h"
+#include    "Stroika/Foundation/Memory/BLOB.h"
+#include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Memory/SharedByValue.h"
+#include    "Stroika/Foundation/Memory/SharedPtr.h"
 
+#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
+
+
+using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Streams::iostream;
-
-using   Memory::Byte;
+using   namespace   Stroika::Foundation::Memory;
 
 
+//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
 
 namespace   {
-    namespace   BasicBinaryInputStream_ {
-
-        void    TestBasicConstruction_ ()
+    void    Test1_Optional ()
+    {
+#if     !qDebug
         {
-            {
-                MemoryStream<Byte>  s (nullptr, nullptr);
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                const char  kData[] =   "1";
-                MemoryStream<Byte>  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-                Byte    result[100] = { 0 };
-                VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
-                VerifyTestResult (result[0] == '1');
-                VerifyTestResult (result[1] == '\0');
+            struct a {
+                int aaa;
+                int* aaap;
+            };
+            VerifyTestResult (sizeof (Optional<int>) == sizeof (a));
+        }
+#endif
+        {
+            Optional<int>   x;
+            VerifyTestResult (x.IsMissing ());
+            x = 1;
+            VerifyTestResult (not x.IsMissing ());
+            VerifyTestResult (x.IsPresent ());
+            VerifyTestResult (*x == 1);
+        } {
+            // Careful about self-assignment
+            Optional<int>   x;
+            x = 3;
+            x = max (*x, 1);
+            VerifyTestResult (x == 3);
+        }
+        auto testOptionalOfThingNotCopyable = [] () {
+            struct NotCopyable {
+                NotCopyable () {}
+                NotCopyable (const NotCopyable&&) {}    // but is moveable!
+                NotCopyable (const NotCopyable&) = delete;
+                const NotCopyable& operator= (const NotCopyable&) = delete;
+            };
+            Optional<NotCopyable>   n1;
+            VerifyTestResult (n1.IsMissing ());
+            Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+            VerifyTestResult (n2.IsPresent ());
+        };
+        testOptionalOfThingNotCopyable ();
+        {
+            Optional<int> x;
+            if (x) {
+                VerifyTestResult (false);
             }
         }
-
-
-        void    Tests_ ()
         {
-            TestBasicConstruction_ ();
+            Optional<int> x;
+            if (Optional<int> y = x) {
+                VerifyTestResult (false);
+            }
+        }
+        {
+            Optional<int> x = 3;
+            if (Optional<int> y = x) {
+                VerifyTestResult (y == 3);
+            }
+            else {
+                VerifyTestResult (false);
+            }
+        }
+    }
+    void    Test2_SharedByValue ()
+    {
+    }
+    void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
+    {
+        using   namespace   Stroika::Foundation::Memory;
+        using   namespace   Stroika::Foundation::Containers;
+        Mapping<int, float>  ml1, ml2;
+        ml1 = ml2;
+
+        Optional<Mapping<int, float>>  ol1, ol2;
+        if (ol2.IsPresent ()) {
+            ml1 = *ol2;
+        }
+        ol1 = ml1;
+        Optional<Mapping<int, float>>  xxxx2 (ml1);
+
+        // fails to compile prior to 2013-09-09
+        Optional<Mapping<int, float>>  xxxx1 (ol1);
+        // fails to compile prior to 2013-09-09
+        ol1 = ol2;
+    }
+    void    Test_5_AnyVariantValue_ ()
+    {
+        {
+            VerifyTestResult (AnyVariantValue ().empty ());
+            VerifyTestResult (not AnyVariantValue (1).empty ());
+            VerifyTestResult (not AnyVariantValue ("1").empty ());
+            //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            VerifyTestResult (not v.empty ());
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (L"a");
+            //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (not v.empty ());
+            v.clear ();
+            VerifyTestResult (v.empty ());
+            VerifyTestResult (v.GetType () == typeid (void));
+        }
+        {
+            struct JIM {
+                int a;
+            };
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (JIM ());
+            VerifyTestResult (v.GetType () == typeid (JIM));
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            v = v;
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (v);
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+        }
+        {
+            static int nCopies = 0;
+            struct Copyable {
+                Copyable ()
+                {
+                    ++nCopies;
+                }
+                Copyable (const Copyable&)
+                {
+                    ++nCopies;
+                }
+                ~Copyable ()
+                {
+                    --nCopies;
+                }
+                const Copyable& operator= (const Copyable&) = delete;
+            };
+            {
+                AnyVariantValue v;
+                VerifyTestResult (v.empty ());
+                v = AnyVariantValue (Copyable ());
+                v = v;
+                v = AnyVariantValue (AnyVariantValue (v));
+                v = AnyVariantValue (AnyVariantValue (Copyable ()));
+                VerifyTestResult (v.GetType () == typeid (Copyable));
+            }
+            VerifyTestResult (0 == nCopies);
+        }
+    }
+
+
+
+    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
+    // SB nested inside function where used...
+    //  --LGP 2014-02-26
+    namespace {
+        struct X_ { int a = 0; };
+        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
+            int field = 1;
+            shared_ptr<jimStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
+            int field = 1;
+            shared_ptr<jimMIXStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
+            int field = 1;
+            SharedPtr<jimStkSP_>  doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
+            int field = 1;
+            SharedPtr<jimMIStkSP_>  doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+    }
+
+    void    Test_6_SharedPtr ()
+    {
+        {
+            SharedPtr<int> p (new int (3));
+            VerifyTestResult (p.use_count () == 1);
+            VerifyTestResult (p.unique ());
+            VerifyTestResult (*p == 3);
+        }
+        {
+            static int nCreates = 0;
+            static int nDestroys = 0;
+            struct COUNTED_OBJ {
+                COUNTED_OBJ ()
+                {
+                    ++nCreates;
+                }
+                COUNTED_OBJ (const COUNTED_OBJ&)
+                {
+                    ++nCreates;
+                }
+                ~COUNTED_OBJ ()
+                {
+                    ++nDestroys;
+                }
+                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
+            };
+            struct CNT2 : COUNTED_OBJ {
+            };
+            {
+                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
+            }
+            VerifyTestResult (nCreates == nDestroys);
+            {
+                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
+                VerifyTestResult (nCreates == nDestroys + 1);
+            }
+            VerifyTestResult (nCreates == nDestroys);
+        }
+        {
+            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
+            shared_ptr<jimStdSP_> y = x->doIt ();
+            VerifyTestResult (x == y);
+        }
+        {
+            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
+            shared_ptr<jimMIXStdSP_> y = x->doIt ();
+            shared_ptr<X_>           xx = x;
+            VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
+            SharedPtr<jimStkSP_> y = x->doIt ();
+            VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
+            SharedPtr<jimMIStkSP_> y = x->doIt ();
+            SharedPtr<X_>          xx = x;
+            VerifyTestResult (x == y);
+        }
+    }
+}
+
+
+
+
+namespace {
+    void    Test_7_Bits_ ()
+    {
+        {
+            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 1, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 2, 1) == 0);
+            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+            VerifyTestResult (BitSubstring (0xff, 8, 8) == 0x0);
+        }
+        {
+            VerifyTestResult (Bit (0) == 0x1);
+            VerifyTestResult (Bit (1) == 0x2);
+            VerifyTestResult (Bit (3) == 0x8);
+            VerifyTestResult (Bit (15) == 0x8000);
+            VerifyTestResult (Bit<int> (1, 2) == 0x6);
+            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
         }
     }
 }
@@ -55,105 +313,48 @@ namespace   {
 
 
 
-namespace   {
-    namespace   BasicBinaryOutputStream_ {
 
-        void    TestBasicConstruction_ ()
+namespace {
+    void    Test_8_BLOB_ ()
+    {
         {
-            {
-                MemoryStream<Byte>  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                MemoryStream<Byte>  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
+            vector<Byte> b = {1, 2, 3, 4, 5 };
+            Memory::BLOB bl = b;
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
         }
     }
 }
 
 
-
-namespace   {
-    namespace   BasicBinaryInputOutputStream_ {
-
-        void    TestBasicConstruction_ ()
+namespace {
+    namespace Test9PRIVATE_ {
+        template <typename T> using InPlace_Traits = Optional_Traits_Inplace_Storage<T>;
+        template <typename T> using Indirect_Traits = Optional_Traits_Blockallocated_Indirect_Storage<T>;
+        template    <typename OPTIONALOFT>
+        void    BasicOTest_ ()
         {
             {
-                MemoryStream<Byte>  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-                VerifyTestResult (static_cast<InputStream<Byte>> (s).IsSeekable ());
-                VerifyTestResult (static_cast<OutputStream<Byte>> (s).IsSeekable ());
+                OPTIONALOFT o1;
+                OPTIONALOFT o2 { typename OPTIONALOFT::value_type () };
+                OPTIONALOFT o3 = o1;
+                o3 = o2;
+                VerifyTestResult (o3 == o2);
             }
             {
-                MemoryStream<Byte>  s;
-                VerifyTestResult (not s.empty ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+                OPTIONALOFT o1 { typename OPTIONALOFT::value_type () };
+                VerifyTestResult (o1.IsPresent ());
+                OPTIONALOFT o2 = move (o1);
+                VerifyTestResult (o2 == typename OPTIONALOFT::value_type ());
             }
-            {
-                MemoryStream<Byte>  s;
-                VerifyTestResult (s.GetReadOffset () == 0);
-                VerifyTestResult (s.GetWriteOffset () == 0);
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                VerifyTestResult (s.GetReadOffset () == 0);
-                VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
-                Byte bArr[1024];
-                Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
-                VerifyTestResult (s.GetReadOffset () == sizeof (kData_));
-                VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));
-                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.GetReadOffset ()) == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
         }
     }
-}
-
-
-
-
-namespace   {
-    namespace   BinaryOutputStreamFromOStreamAdapter_ {
-
-        void    T1_ ()
-        {
-            {
-                stringstream s;
-                OutputStreamFromStdOStream<Memory::Byte>  so (s);
-                const char kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
-                VerifyTestResult (s.str () == kData_);
-            }
-        }
-
-        void    Tests_ ()
-        {
-            T1_ ();
-        }
+    void    Test9_OptionalStorageTraits_ ()
+    {
+        using   namespace Test9PRIVATE_;
+        BasicOTest_<Optional<int, InPlace_Traits<int>>> ();
+        BasicOTest_<Optional<int, Indirect_Traits<int>>> ();
+        BasicOTest_<Optional<wstring, InPlace_Traits<wstring>>> ();
+        BasicOTest_<Optional<wstring, Indirect_Traits<wstring>>> ();
     }
 }
 
@@ -162,61 +363,20 @@ namespace   {
 
 
 
-
-
 namespace   {
-    namespace   TestBasicTextOutputStream_ {
 
-        namespace  Private_ {
-            using   Characters::Character;
-            using   Characters::String;
-            void    T1_ ()
-            {
-                MemoryStream<Character> out {};
-                out << L"abc";
-                VerifyTestResult (out.As<String> () == L"abc");
-                out << L"123";
-                VerifyTestResult (out.As<String> () == L"abc123");
-            }
-            void    T2_ ()
-            {
-                MemoryStream<Character> out {};
-                out << L"abc";
-                VerifyTestResult (out.As<String> () == L"abc");
-                out << L"123";
-                VerifyTestResult (out.As<String> () == L"abc123");
-                out.SeekWrite (2);
-                out.SeekRead (3);   // safe but irrelevant, as we dont read
-                out << L"C";
-                VerifyTestResult (out.As<String> () == L"abC123");
-            }
-        }
-
-        void    Tests_ ()
-        {
-            Private_::T1_ ();
-        }
-    }
-}
-
-
-
-
-
-
-
-namespace   {
     void    DoRegressionTests_ ()
     {
-        BasicBinaryInputStream_::Tests_ ();
-        BasicBinaryOutputStream_::Tests_ ();
-        BasicBinaryInputOutputStream_::Tests_ ();
-        BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
-        TestBasicTextOutputStream_::Tests_ ();
+        Test1_Optional ();
+        Test2_SharedByValue ();
+        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
+        Test_5_AnyVariantValue_ ();
+        Test_6_SharedPtr ();
+        Test_7_Bits_ ();
+        Test_8_BLOB_ ();
+        Test9_OptionalStorageTraits_ ();
     }
 }
-
-
 
 
 
@@ -226,3 +386,6 @@ int main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
+
+
+

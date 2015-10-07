@@ -119,6 +119,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                using   KeyType     =   KEY_TYPE;
+
+            public:
+                /**
                  *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
@@ -199,22 +204,22 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<ValueType> Lookup (KeyType key) const;
-                nonvirtual  bool                        Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
-                nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
-                nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
+                nonvirtual  Memory::Optional<ElementType>   Lookup (KeyType key) const;
+                nonvirtual  bool                            Lookup (KeyType key, Memory::Optional<ElementType>* item) const;
+                nonvirtual  bool                            Lookup (KeyType key, ElementType* item) const;
+                nonvirtual  bool                            Lookup (KeyType key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  ValueType   LookupValue (KeyType key, ValueType defaultValue = ValueType ()) const;
+                nonvirtual  ElementType     LookupValue (KeyType key, ElementType defaultValue = ElementType {}) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  ValueType   operator[] (KeyType key) const;
+                nonvirtual  ElementType   operator[] (KeyType key) const;
 
             public:
                 /**
@@ -260,10 +265,10 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename T, typename TRAITS>
             class   KeyedCollection<KEY_TYPE, T, TRAITS>::_IRep : public Collection<T>::_IRep {
             public:
-                virtual  Iterable<KEY_TYPE> Keys () const                                                                   =   0;
-                virtual  bool               Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<ValueType>* item) const  =   0;
-                virtual  bool               Contains (KeyType item) const                                                   =   0;
-                virtual  void               Remove (ArgByValueType<KEY_TYPE> key)                                           =   0;
+                virtual  Iterable<KEY_TYPE> Keys () const                                                                       =   0;
+                virtual  bool               Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<ElementType>* item) const    =   0;
+                virtual  bool               Contains (KeyType item) const                                                       =   0;
+                virtual  void               Remove (ArgByValueType<KEY_TYPE> key)                                               =   0;
             };
 
 

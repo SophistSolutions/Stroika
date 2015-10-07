@@ -1,70 +1,61 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-// TEST: Foundation::Execution::Signals
+//  TEST    Foundation::Execution::ProcessRunner
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/ProcessRunner.h"
+#if     qPlatform_POSIX
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
+#endif
+#include    "Stroika/Foundation/Streams/MemoryStream.h"
 
-
-#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
-using   namespace   Stroika;
+
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-using   Containers::Set;
+using   Characters::String;
+
+
 
 
 namespace   {
-    void    Test1_Basic_ ()
+    void    RegressionTest1_ ()
     {
-        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
-        }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        Streams::MemoryStream<Byte> myStdOut;
+        // quickie about to test..
+        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
+        pr.Run ();
     }
-}
-
-
-namespace   {
-    void    Test2_Direct_ ()
+    void    RegressionTest2_ ()
     {
-        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}, SignalHandler::Type::eDirect));
-            ::raise (SIGINT);
-            VerifyTestResult (called);
-        }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        Streams::MemoryStream<Byte> myStdOut;
+        // quickie about to test..
+        ProcessRunner pr (L"echo hi mom");
+        String out = pr.Run (L"");
+        VerifyTestResult (out.Trim () == L"hi mom");
     }
-}
-
-
-
-namespace   {
-    void    Test3_Safe_ ()
+    void    RegressionTest3_Pipe_ ()
     {
-        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
-        }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        Streams::MemoryStream<Byte> myStdOut;
+        ProcessRunner pr1 (L"echo hi mom");
+        Streams::MemoryStream<Byte> pipe;
+        ProcessRunner pr2 (L"cat");
+        pr1.SetStdOut (pipe);
+        pr2.SetStdIn (pipe);
+
+        Streams::MemoryStream<Byte> pr2Out;
+        pr2.SetStdOut (pr2Out);
+
+        pr1.Run ();
+        pr2.Run ();
+
+        String out = String::FromUTF8 (pr2Out.As<string> ());
+
+        VerifyTestResult (out.Trim () == L"hi mom");
     }
 }
 
@@ -73,18 +64,25 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test1_Basic_ ();
-        Test2_Direct_ ();
-        Test3_Safe_ ();
+#if     qPlatform_POSIX
+        // Many performance instruments use pipes
+        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+        //  --LGP 2014-02-05
+        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
+        RegressionTest1_ ();
+        RegressionTest2_ ();
+        RegressionTest3_Pipe_ ();
     }
 
 }
 
 
 
+
+
 int     main (int argc, const char* argv[])
 {
-    SignalHandlerRegistry::SafeSignalsManager   safeSignals;
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
