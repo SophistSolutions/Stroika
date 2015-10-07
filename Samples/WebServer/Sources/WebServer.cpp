@@ -46,6 +46,13 @@ int main (int argc, const char* argv[])
                 Connection conn (s);
                 conn.ReadHeaders ();    // bad API. Must rethink...
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-web-server-demo");
+
+                constexpr bool  kIgnoreSillyCORS_ { true };
+                if (kIgnoreSillyCORS_) {
+                    conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*");
+                    conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, L"Origin, X-Requested-With, Content-Type, Accept, Authorization");
+                }
+
                 String path = conn.GetRequest ().fURL.GetHostRelativePath ();
                 DbgTrace (L"Serving page %s", path.c_str ());
                 try {
