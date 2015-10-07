@@ -125,7 +125,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ElementType     =   inherited::ElementType;
+                using   ElementType     =   typename inherited::ElementType;
 
             public:
                 /**
