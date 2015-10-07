@@ -144,10 +144,7 @@ namespace   Stroika {
                  *  All constructors must agree about what extractor to use: either one from the traits
                  *  or one provided in all constructors (that dont get it indirectly from another place).
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy
-                static
-#endif
-                constexpr   bool   kConstructorsHaveExtractorArgument    =   is_function<typename TraitsType::KeyExtractor>::value;
+                static  constexpr   bool   kConstructorsHaveExtractorArgument    =   is_function<typename TraitsType::KeyExtractor>::value;
 
             public:
                 /**
