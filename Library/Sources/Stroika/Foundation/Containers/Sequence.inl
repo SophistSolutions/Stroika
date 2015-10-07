@@ -114,15 +114,9 @@ namespace   Stroika {
                 return Private::Compare_<T, ELEMENT_COMPARER> (*this, rhs);
             }
             template    <typename T>
-            Sequence<T>    Sequence<T>::EachWith (const function<bool(const T& item)>& doToElement) const
+            inline	Sequence<T>    Sequence<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
-                Sequence<T>  result;
-                for (T i : *this) {
-                    if (doToElement (i)) {
-                        result.Append (i);
-                    }
-                }
-                return result;
+				return Iterable<T>::Where (doToElement, Sequence<T> {});
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>

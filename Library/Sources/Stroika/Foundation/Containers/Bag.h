@@ -159,11 +159,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \em EXPERIMENTAL API (2014-01-08)
-                 *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 *
+                 *  @see Iterable<T>::Where
                  */
-                nonvirtual  Bag<T>    EachWith (const function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Set<T, TRAITS>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**

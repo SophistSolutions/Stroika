@@ -23,7 +23,7 @@
  *
  *  TODO:
  *
- *      @todo   For Iterable<T>::Where() - and probably many similar methods,
+ *      @todo   For methods similar to Iterable<T>::Where() (did for where),
  *              consider a TEMPLATED PARAMETER for the resulting Container type, so you can create a "Set" or whatever by doing
  *              Where... But tricky to unformly add to differnt container types. Maybe only ones you can say add, or the adder is
  *              a template paraM?
@@ -415,7 +415,7 @@ namespace   Stroika {
                  *
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    Contains (const T& element) const;
+                nonvirtual  bool    Contains (ArgByValueType<T> element) const;
 
             public:
                 /**
@@ -522,7 +522,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   The argument function (lambda) may
                  *              directly (or indirectly) access the Iterable<> being iterated over.
                  */
-                nonvirtual  void    Apply (const function<void(const T& item)>& doToElement) const;
+                nonvirtual  void    Apply (const function<void(ArgByValueType<T> item)>& doToElement) const;
 
             public:
                 /**
@@ -560,8 +560,8 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (const T& item)>& doToElement) const;
-                nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (const T& item)>& doToElement) const;
+                nonvirtual  Iterator<T>    FindFirstThat (const function<bool (ArgByValueType<T> item)>& doToElement) const;
+                nonvirtual  Iterator<T>    FindFirstThat (const Iterator<T>& startAt, const function<bool (ArgByValueType<T> item)>& doToElement) const;
 
             public:
                 /**
@@ -586,14 +586,24 @@ namespace   Stroika {
                  *  BASED ON Microsoft .net Linq.
                  *
                  *  This returns an Iterable<T> with a subset of data - including only the items that pass the argument filter funtion.
+				 *
+				 *	The variants that take a template argument allow constructing a specific container type instead of an iterable.
+				 *	And the variant that takes an optional empty result container allows constructing a specific subtype of container (backend).
+				 *	Mostly ignore these overloads.
                  *
                  *  \par Example Usage
                  *      \code
                  *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
                  *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
                  *      \endcode
+                 *
+				 *	\note	Could have been called EachWith, EachWhere, or EachThat ().
                  */
-                nonvirtual  Iterable<T> Where (const function<bool(T)>& includeIfTrue) const;
+                nonvirtual  Iterable<T> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+				template	<typename RESULT_CONTAINER>
+                nonvirtual  RESULT_CONTAINER	Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
+				template	<typename RESULT_CONTAINER>
+                nonvirtual  RESULT_CONTAINER	Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const;
 
             public:
                 /**
@@ -613,7 +623,7 @@ namespace   Stroika {
                  */
                 nonvirtual  Iterable<T> Distinct () const;
                 template    <typename RESULT>
-                nonvirtual  Iterable<RESULT> Distinct (const function<RESULT(T)>& extractElt) const;
+                nonvirtual  Iterable<RESULT> Distinct (const function<RESULT(ArgByValueType<T>)>& extractElt) const;
 
             public:
                 /**
@@ -794,7 +804,7 @@ namespace   Stroika {
                  *  Second overload (with filter function) same as .Where(filter).Any ();
                  */
                 nonvirtual  bool    Any () const;
-                nonvirtual  bool    Any (const function<bool(T)>& includeIfTrue) const;
+                nonvirtual  bool    Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
 
             public:
                 /**

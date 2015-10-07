@@ -201,15 +201,9 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>    Set<T, TRAITS>::EachWith (const function<bool(ArgByValueType<T>)>& doToElement) const
+            inline	Set<T, TRAITS>    Set<T, TRAITS>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
-                Set<T, TRAITS>   result;
-                for (T i : *this) {
-                    if (doToElement (i)) {
-                        result.Add (i);
-                    }
-                }
-                return result;
+				return Iterable<T>::Where (doToElement, Set<T, TRAITS> {});
             }
             template    <typename T, typename TRAITS>
             bool    Set<T, TRAITS>::Intersects (const Iterable<T>& rhs) const

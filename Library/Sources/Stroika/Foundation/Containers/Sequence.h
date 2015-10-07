@@ -45,7 +45,7 @@
  *
  *      @todo       Sequence<> must support RandomAccessIterator<>
  *
- *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
+ *      @todo       Where() and probably other things should use new EmptyClone() strategy - so cheaper and
  *                  returns something of same underlying data structure  type.
  *
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
@@ -271,11 +271,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \em EXPERIMENTAL API (2014-01-08)
-                 *
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
+				 *
+				 *	@see Iterable<T>::Where
                  */
-                nonvirtual  Sequence<T>    EachWith (const function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Sequence<T>    Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**

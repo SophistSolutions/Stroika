@@ -195,15 +195,9 @@ namespace   Stroika {
                 Remove (i);
             }
             template    <typename T>
-            Collection<T>    Collection<T>::EachWith (const function<bool(const T& item)>& doToElement) const
+            inline	Collection<T>    Collection<T>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
-                Collection<T>   result;
-                for (T i : *this) {
-                    if (doToElement (i)) {
-                        result.Add (i);
-                    }
-                }
-                return result;
+				return Iterable<T>::Where (doToElement, Collection<T> {});
             }
             template    <typename T>
             inline  Collection<T>& Collection<T>::operator+= (T item)

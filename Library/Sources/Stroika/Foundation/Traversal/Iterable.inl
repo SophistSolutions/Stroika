@@ -196,7 +196,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
-            bool    Iterable<T>::Contains (const T& element) const
+            bool    Iterable<T>::Contains (ArgByValueType<T> element) const
             {
                 for (T i : *this) {
                     if (EQUALS_COMPARER::Equals (i, element)) {
@@ -286,7 +286,7 @@ namespace   Stroika {
                 return li == le and ri == re;
             }
             template    <typename T>
-            Iterable<T>     Iterable<T>::Where (const function<bool(T)>& includeIfTrue) const
+            Iterable<T>     Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
                 using   Memory::Optional;
                 Iterator<T> tmpIt { this->MakeIterator () };
@@ -303,7 +303,23 @@ namespace   Stroika {
                 };
                 return CreateGenerator (getNext);
             }
-
+            template    <typename T>
+			template	<typename RESULT_CONTAINER>
+            inline	RESULT_CONTAINER	Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+			{
+				return Where<RESULT_CONTAINER> (includeIfTrue, RESULT_CONTAINER {});
+			}
+            template    <typename T>
+			template	<typename RESULT_CONTAINER>
+            RESULT_CONTAINER	Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue, const RESULT_CONTAINER& emptyResult) const
+			{
+				Require (emptyResult.empty ());
+				RESULT_CONTAINER	result	=	emptyResult;
+				for (auto i : Where (includeIfTrue)) {
+					result.Add (i);
+				}
+				return result;
+			}
             template    <typename T>
             Iterable<T>     Iterable<T>::Distinct () const
             {
@@ -324,7 +340,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename RESULT>
-            Iterable<RESULT>     Iterable<T>::Distinct (const function<RESULT(T)>& extractElt) const
+            Iterable<RESULT>     Iterable<T>::Distinct (const function<RESULT(ArgByValueType<T>)>& extractElt) const
             {
                 using   Memory::Optional;
                 set<RESULT>   t1;
@@ -538,7 +554,7 @@ namespace   Stroika {
                 return not IsEmpty ();
             }
             template    <typename T>
-            inline  bool    Iterable<T>::Any (const function<bool(T)>& includeIfTrue) const
+            inline  bool    Iterable<T>::Any (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
                 return not Where (includeIfTrue).IsEmpty ();
             }
@@ -563,19 +579,19 @@ namespace   Stroika {
                 return Iterator<T>::GetEmptyIterator ();
             }
             template    <typename T>
-            inline  void    Iterable<T>::Apply (const function<void(const T& item)>& doToElement) const
+            inline  void    Iterable<T>::Apply (const function<void(ArgByValueType<T> item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 _SafeReadRepAccessor<> { this } ._ConstGetRep ().Apply (doToElement);
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::FindFirstThat (const function<bool(const T& item)>& doToElement) const
+            inline  Iterator<T>    Iterable<T>::FindFirstThat (const function<bool(ArgByValueType<T> item)>& doToElement) const
             {
                 RequireNotNull (doToElement);
                 return _SafeReadRepAccessor<> { this } ._ConstGetRep ().FindFirstThat (doToElement, this);
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool(const T& item)>& doToElement) const
+            inline  Iterator<T>    Iterable<T>::FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const
             {
                 for (Iterator<T> i = startAt; i != Iterable<T>::end (); ++i) {
                     if ((doToElement) (*i)) {
