@@ -179,6 +179,7 @@ ifndef StroikaFoundationSupportLibs
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
 	StroikaFoundationSupportLibs	+=	  -lpthread -lrt
+	StroikaFoundationSupportLibs	+=	  -lm
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
