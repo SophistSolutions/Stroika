@@ -547,7 +547,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
     The issue is really
-            warning: use of this statement in a constexpr function is a C++1y
+            warning: use of this statement in a constexpr function is a C++14
     for require lines at the start of constexp functions
 */
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
@@ -555,8 +555,9 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (__clang__)
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11)
 #elif   defined (__GNUC__)
-// this is still broken even if you say -std=+1y in gcc49
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
+// this is still broken even if you say -std=+14 in gcc49
+// this is still broken even if you say -std=+14 in gcc51
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
