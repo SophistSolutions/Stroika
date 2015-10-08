@@ -203,10 +203,10 @@ sub	SetDefaultForCompilerDriver_
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 		}
 	}
-	if (!(defined $AR) and IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
 		$AR = "gcc-ar";
 	}
-	if (!(defined $RANLIB) and IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
 		$RANLIB = "gcc-ranlib";
 	}
 }
