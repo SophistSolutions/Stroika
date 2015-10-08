@@ -88,7 +88,7 @@ sub	DoHelp_
         print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
         print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
         print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
-        print("	    --compiler-driver {ARG}                    /* default is g++ */\n");
+        print("	    --compiler-driver {ARG}                    /* default is gcc */\n");
         print("	    --ar {ARG}                                 /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}                             /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
         print("	    --extra-compiler-args {ARG}                /* Sets variable with extra args for compiler */\n");
@@ -97,6 +97,22 @@ sub	DoHelp_
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 		
 	exit (0);
+}
+
+
+
+
+sub     IsGCCOrGPlusPlus_
+{
+    my $x = shift(@_);
+	return ($x =~ /gcc/) || (($x =~ /g\+\+/) && !($x =~ /clang\+\+/));
+}
+
+sub     IsClangPlusPlus_
+{
+    my $x = shift(@_);
+	return ($x =~ /clang\+\+/);
+	
 }
 
 
@@ -175,14 +191,14 @@ sub	SetDefaultForCompilerDriver_
 		if ($COMPILER_DRIVER eq "clang++-4.6") {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS + $DEFAULT_CWARNING_FLAGS_EXTRA4CLANG46;
 		}
-		elsif ("$^O" eq "aix" and (($COMPILER_DRIVER eq "g++ -pthread") || ($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+		elsif ("$^O" eq "aix" and IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 		}
 	}
-	if (!(defined $AR) and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+	if (!(defined $AR) and IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 		$AR = "gcc-ar";
 	}
-	if (!(defined $RANLIB) and (($COMPILER_DRIVER eq "g++") || ($COMPILER_DRIVER eq "gcc") || ($COMPILER_DRIVER eq "g++-4.9"))) {
+	if (!(defined $RANLIB) and IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 		$RANLIB = "gcc-ranlib";
 	}
 }
@@ -190,9 +206,9 @@ sub	SetDefaultForCompilerDriver_
 sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
-		$COMPILER_DRIVER = "g++";
+		$COMPILER_DRIVER = "gcc";
 		if ("$^O" eq "aix") {
-			$COMPILER_DRIVER = "g++ -pthread";
+			$COMPILER_DRIVER = "gcc -pthread";
 			$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	# we seem to almost always get these big TOC errors -- LGP 2015-08-21
 		}
 		#$COMPILER_DRIVER = "clang++";
