@@ -799,6 +799,29 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+/*
+Compiling regtests for Median/OrderBy...
+>; _Compare = std::function<bool(const int&, const int&)>]’
+../../..//Library/Sources/Stroika/Foundation/Characters/../Containers/../Traversal/Iterable.inl:538:22:   required from ‘RESULT_TYPE Stroika::Foundation::Traversal::Iterable<T>::Median(const std::function<bool(T, T)>&) const [with RESULT_TYPE = int; T = int]’
+../../../Tests/46/Test.cpp:781:13:   required from here
+/usr/include/c++/5/bits/predefined_ops.h:123:31: error: invalid type argument of unary ‘*’ (have ‘int’)
+*/
+#ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
+#else
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       0
+#endif
+
+#endif
+
+
+
+
+
+
+
 
 
 

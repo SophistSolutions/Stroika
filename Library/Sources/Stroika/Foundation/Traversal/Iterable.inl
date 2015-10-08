@@ -446,7 +446,11 @@ namespace   Stroika {
             {
                 using   Memory::Optional;
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
+#if     qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
+                sort (tmp.begin (), tmp.end (), [compare] (const T & l, const T & r) -> bool { return compare (l, r); });
+#else
                 sort (tmp.begin (), tmp.end (), compare);
+#endif
                 size_t idx { 0 };
                 function<Optional<T>()> getNext = [tmp, idx] () mutable -> Optional<T> {
                     if (idx < tmp.size ())
@@ -531,7 +535,11 @@ namespace   Stroika {
                                               ) const
             {
                 vector<T>   tmp (begin (), end ());     // Somewhat simplistic implementation
+#if     qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
+                sort (tmp.begin (), tmp.end (), [compare] (const T & l, const T & r) -> bool { return compare (l, r); });
+#else
                 sort (tmp.begin (), tmp.end (), compare);
+#endif
                 size_t  sz { tmp.size () };
                 if (sz == 0) {
                     throw range_error ("Cannot take Median () on empty list");
