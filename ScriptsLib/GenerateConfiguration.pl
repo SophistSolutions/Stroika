@@ -207,6 +207,7 @@ sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$COMPILER_DRIVER = "gcc";
+		$CPPSTD_VERSION_FLAG="--std=c++14"
 		if ("$^O" eq "aix") {
 			$COMPILER_DRIVER = "gcc -pthread";
 			$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	# we seem to almost always get these big TOC errors -- LGP 2015-08-21
