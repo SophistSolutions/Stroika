@@ -10,7 +10,9 @@
 #elif   qPlatform_POSIX
 #include    <unistd.h>
 #endif
-
+#if     qPlatform_Linux
+#include    <linux/limits.h>
+#endif
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Containers/Set.h"
 #if     qPlatform_Windows

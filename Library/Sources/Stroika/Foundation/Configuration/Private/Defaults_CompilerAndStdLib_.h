@@ -56,7 +56,7 @@
 #if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
-#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 1))
+#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 2))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -486,7 +486,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
@@ -557,7 +557,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
@@ -628,7 +628,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
@@ -724,6 +724,13 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 
+In file included from ../../../Tests/29/Test.cpp:9:0:
+../../..//Library/Sources/Stroika/Foundation/Containers/Bijection.h:493:49: error: 'bool Stroika::Foundation::Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::Lookup(Stroika::Foundation::Configuration::ArgByValueType<T>, Stroika::Foundation::Memory::Optional<RANGE_TYPE>*) const [with DOMAIN_TYPE = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred; RANGE_TYPE = Stroika::Foundation::Characters::String; TRAITS = Stroika::Foundation::Containers::Bijection_DefaultTraits<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred, Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred>, Stroika::Foundation::Common::ComparerWithEqualsOptionally<Stroika::Foundation::Characters::String> >; Stroika::Foundation::Configuration::ArgByValueType<T> = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred]', declared using local type 'Stroika::Foundation::Configuration::ArgByValueType<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred> {aka {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred}', is used but never defined [-fpermissive]
+                 virtual  bool                   Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const           =   0;
+                                                 ^
+../../..//Library/Sources/Stroika/Foundation/Containers/Bijection.h:495:49: error: 'void Stroika::Foundation::Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::Add(Stroika::Foundation::Configuration::ArgByValueType<T>, Stroika::Foundation::Configuration::ArgByValueType<RANGE_TYPE>) [with DOMAIN_TYPE = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred; RANGE_TYPE = Stroika::Foundation::Characters::String; TRAITS = Stroika::Foundation::Containers::Bijection_DefaultTraits<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred, Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred>, Stroika::Foundation::Common::ComparerWithEqualsOptionally<Stroika::Foundation::Characters::String> >; Stroika::Foundation::Configuration::ArgByValueType<T> = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred; Stroika::Foundation::Configuration::ArgByValueType<RANGE_TYPE> = const Stroika::Foundation::Characters::String&]', declared using local type 'Stroika::Foundation::Configuration::ArgByValueType<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred> {aka {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred}', is used but never defined [-fpermissive]
+                 virtual  void                   Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)                    =   0;
+
 ../../..//Library/Sources/Stroika/Foundation/Containers/Bijection.h:493:49: error: 'bool Stroika::Foundation::Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::Lookup(Stroika::Foundation::Configuration::ArgByValueType<T>, Stroika::Foundation::Memory::Optional<RANGE_TYPE>*) const [with DOMAIN_TYPE = {anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred; RANGE_TYPE = Stroika::Foundation::Characters::String; TRAITS = Stroika::Foundation::Containers::Bijection_DefaultTraits<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred, Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<{anonymous}::DoRegressionTests_SimpleEnumTypes_5_()::Fred>, Stroika::Foundation::Common::ComparerWithEqualsOptionally<Stroika::Foundation::Characters::String> >; Stroika::Foundation::Configuration::ArgByValueType<T> =
 
 
@@ -731,7 +738,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     0
 #endif
@@ -786,7 +793,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
@@ -1464,12 +1471,16 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
-@DESCRIPTION:
+In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/String.h:12:0,
+                 from ../../../Tests/18/Test.cpp:13:
+../../..//Library/Sources/Stroika/Foundation/Characters/../Containers/Sequence.h:548:45: error: 'void Stroika::Foundation::Containers::Sequence<T>::_IRep::Insert(size_t, const T*, const T*) [with T = {anonymous}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_()::StructureFieldInfo_; size_t = long unsigned int]', declared using local type 'const {anonymous}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_()::StructureFieldInfo_', is used but never defined [-fpermissive]
+                 virtual void                Insert (size_t at, const T* from, const T* to)                          =   0;
+                                             ^
 */
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      0
 #endif
