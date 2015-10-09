@@ -28,7 +28,7 @@ WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommo
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver)
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 endif
 
 BUILDS_ROOT=../../Builds/

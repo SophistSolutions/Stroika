@@ -59,6 +59,8 @@ my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
+my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusPlus version
+my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
@@ -203,11 +205,22 @@ sub	SetDefaultForCompilerDriver_
 			$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 		}
 	}
-	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
-		$AR = "gcc-ar";
+
+	$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
+	if ($COMPILER_DRIVER_C eq "") {
+		$COMPILER_DRIVER_C = $COMPILER_DRIVER;
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			$COMPILER_DRIVER_C = `echo g++ | sed 's/g++/gcc/'`;
+		}
 	}
-	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER))) {
-		$RANLIB = "gcc-ranlib";
+
+	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+		# horrible approximatation of what I want but works for common cases
+		$AR = `echo g++ | sed 's/g++/gcc/' | sed 's/gcc/gcc-ar/'`;
+	}
+	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+		# horrible approximatation of what I want but works for common cases
+		$RANLIB = `echo g++ | sed 's/g++/gcc/' | sed 's/gcc/gcc-ranlib/'`;
 	}
 }
 
@@ -502,7 +515,8 @@ sub	WriteConfigFile_
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	#print (OUT "    <Platform>$platform</Platform>\n");
 
-	print (OUT "    <CompilerDriver>$COMPILER_DRIVER</CompilerDriver>\n");
+	print (OUT "    <CompilerDriver-C>$COMPILER_DRIVER_C</CompilerDriver-C>\n");
+	print (OUT "    <CompilerDriver-C++>$COMPILER_DRIVER_CPlusPlus</CompilerDriver-C++>\n");
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
 	}

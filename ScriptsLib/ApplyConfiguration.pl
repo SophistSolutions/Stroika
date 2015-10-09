@@ -50,7 +50,8 @@ my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
-my $COMPILER_DRIVER = "";
+my $COMPILER_DRIVER_C = "";
+my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
@@ -103,7 +104,8 @@ sub	ConfigParam2BoolInt
 sub	ReadConfiguration_
 {
 	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter("ProjectPlatformSubdir");
-	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
+	$COMPILER_DRIVER_C = GetConfigurationParameter("CompilerDriver-C");
+	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter("CompilerDriver-C++");
 	$AR = GetConfigurationParameter("AR");
 	$RANLIB = GetConfigurationParameter("RANLIB");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter("EXTRA_COMPILER_ARGS");
@@ -576,8 +578,13 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "COPTIMIZE_FLAGS=	$COPTIMIZE_FLAGS\n");
 	print (OUT "\n");
 	print (OUT "\n");
+	#@todo simplify compiler driver stuff. Need distinction for gcc versus g++ for some cases - rare - but building third party products.
+	#gcc for all usually works fine
 	print (OUT "#C++-Compiler\n");
-	print (OUT "CPlusPlus=	$COMPILER_DRIVER\n");
+	print (OUT "CC_C=	$COMPILER_DRIVER_C\n");
+	print (OUT "CC_CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
+	print (OUT "CC=	$COMPILER_DRIVER_CPlusPlus\n");
+	print (OUT "CPlusPlus=	$COMPILER_DRIVER_CPlusPlus\n");
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "#Linker-Driver\n");

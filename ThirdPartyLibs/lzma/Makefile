@@ -37,7 +37,7 @@ PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl PATH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver)
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
 endif
 
 BUILDS_ROOT=../../Builds/

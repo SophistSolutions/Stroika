@@ -85,9 +85,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'OptimizerFlag'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CompilerDriver>");
+		my $pps = ReadValue_($line, "<CompilerDriver-C++>");
 		if (defined $pps) {
-			$configuration {'CompilerDriver'} = $pps;
+			$configuration {'CompilerDriver-C++'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<CompilerDriver-C>");
+		if (defined $pps) {
+			$configuration {'CompilerDriver-C'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_LibCurl>");
 		if (defined $pps) {
