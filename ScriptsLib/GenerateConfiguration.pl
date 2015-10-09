@@ -209,23 +209,23 @@ sub	SetDefaultForCompilerDriver_
 	if ($COMPILER_DRIVER_C eq "") {
 		$COMPILER_DRIVER_C = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
-			$COMPILER_DRIVER_C = `echo $COMPILER_DRIVER | sed 's/g++/gcc/'`;
+			$COMPILER_DRIVER_C = trim (`echo $COMPILER_DRIVER | sed 's/g++/gcc/'`);
 		}
 	}
 	if ($COMPILER_DRIVER_CPlusPlus eq "") {
 		$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$COMPILER_DRIVER_CPlusPlus = `echo $COMPILER_DRIVER | sed 's/gcc/g++/'`;
+			$COMPILER_DRIVER_CPlusPlus = trim (`echo $COMPILER_DRIVER | sed 's/gcc/g++/'`);
 		}
 	}
 
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		# horrible approximatation of what I want but works for common cases
-		$AR = `echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ar/'`;
+		$AR = trim (`echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ar/'`);
 	}
 	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		# horrible approximatation of what I want but works for common cases
-		$RANLIB = `echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ranlib/'`;
+		$RANLIB = trim (`echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ranlib/'`);
 	}
 }
 
