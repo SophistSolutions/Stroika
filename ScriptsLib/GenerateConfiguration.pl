@@ -189,10 +189,10 @@ sub     ReplaceLast_
     my $replaceThis = shift(@_);
     my $withThis = shift(@_);
 
-	#@todo find a better way to safely substitute
-	my $rreplaceThis = trim (`echo $replaceThis | rev`)
-	my $rwithThis = trim (`echo $withThis | rev`)
-	return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
+    #@todo find a better way to safely substitute
+    my $rreplaceThis = trim (`echo $replaceThis | rev`);
+    my $rwithThis = trim (`echo $withThis | rev`);
+    return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
 }
 
 
@@ -229,7 +229,7 @@ sub	SetDefaultForCompilerDriver_
 	if ($COMPILER_DRIVER_CPlusPlus eq "") {
 		$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'gcc', 'g++');
+			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'gcc', 'g++');
 		}
 	}
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
@@ -281,6 +281,8 @@ sub	ParseCommandLine_CompilerDriver_
 			$i++;
 			$var = $ARGV[$i];
 			$COMPILER_DRIVER = $var;
+			$COMPILER_DRIVER_C = "";		#reset so computed later
+			$COMPILER_DRIVER_CPlusPlus = "";
 		}
 	}
 }
