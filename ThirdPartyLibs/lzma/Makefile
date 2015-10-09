@@ -38,6 +38,7 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver)
+LIBS=-lc++ -lc
 endif
 
 BUILDS_ROOT=../../Builds/
@@ -135,7 +136,7 @@ doBuilds:
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC=$(CC)
+	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC=$(CC) LIBS=$(LIBS)
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
