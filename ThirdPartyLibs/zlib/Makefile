@@ -106,7 +106,7 @@ endif
 doConfigure:
 	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@(CC=$(CC) cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
+	@(CC="$(CC)" cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
 endif
 	@echo "   ...done"
 
