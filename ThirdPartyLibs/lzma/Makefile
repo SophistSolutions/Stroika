@@ -37,7 +37,7 @@ PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl PATH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 LIBS=-lstdc++ -lc
 endif
 

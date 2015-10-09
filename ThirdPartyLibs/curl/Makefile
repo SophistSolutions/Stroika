@@ -23,7 +23,7 @@ FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
 BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 endif
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
