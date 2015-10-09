@@ -182,6 +182,20 @@ sub	SetInitialDefaults_
 }
 
 
+
+sub     ReplaceLast_
+{
+    my $srcString = shift(@_);
+    my $replaceThis = shift(@_);
+    my $withThis = shift(@_);
+
+	#@todo find a better way to safely substitute
+	my $rreplaceThis = trim (`echo $replaceThis | rev`)
+	my $rwithThis = trim (`echo $withThis | rev`)
+	return trim (`echo $srcString | rev | sed 's/$rreplaceThis/$rwithThis/' | rev`);
+}
+
+
 sub	SetDefaultForCompilerDriver_
 {
 	if ($CPPSTD_VERSION_FLAG eq '') {
@@ -209,23 +223,20 @@ sub	SetDefaultForCompilerDriver_
 	if ($COMPILER_DRIVER_C eq "") {
 		$COMPILER_DRIVER_C = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
-			$COMPILER_DRIVER_C = trim (`echo $COMPILER_DRIVER | sed 's/g++/gcc/'`);
+			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'g++', 'gcc');
 		}
 	}
 	if ($COMPILER_DRIVER_CPlusPlus eq "") {
 		$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			$COMPILER_DRIVER_CPlusPlus = trim (`echo $COMPILER_DRIVER | sed 's/gcc/g++/'`);
+			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'gcc', 'g++');
 		}
 	}
-
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		# horrible approximatation of what I want but works for common cases
-		$AR = trim (`echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ar/'`);
+		$AR = ReplaceLast_ ($COMPILER_DRIVER_C, 'gcc', 'gcc-ar');
 	}
 	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		# horrible approximatation of what I want but works for common cases
-		$RANLIB = trim (`echo $COMPILER_DRIVER_CPlusPlus | sed 's/g++/gcc/' | sed 's/gcc/gcc-ranlib/'`);
+		$RANLIB = ReplaceLast_ ($COMPILER_DRIVER_C, 'gcc', 'gcc-ranlib');
 	}
 }
 
