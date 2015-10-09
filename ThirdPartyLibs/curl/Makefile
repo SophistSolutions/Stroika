@@ -129,7 +129,7 @@ else
                 echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
                 echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
                 echo "CC=$(CC) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
-                (CC=$(CC) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
+                (CC="$(CC)" ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
                 echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
                 make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
 	fi

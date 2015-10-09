@@ -176,7 +176,7 @@ ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@mkdir -p $(BUILDS_DIR)Release64
 	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release64/
 else
-	@$(MAKE) --directory CURRENT --no-print-directory CC=$(CC)
+	@$(MAKE) --directory CURRENT --no-print-directory CC="$(CC)"
 endif
 
 
