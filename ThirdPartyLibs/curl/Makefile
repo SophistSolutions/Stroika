@@ -1,6 +1,7 @@
 CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
+
 .PHONY:	all
 .DEFAULT_GOAL := all
 
@@ -21,6 +22,9 @@ FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
 
 BUILDS_ROOT=../../Builds/
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver)
+endif
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
@@ -103,7 +107,6 @@ endif
 
 
 
-
 doBuilds:
 ifneq (Unix,$(ProjectPlatformSubdir))
 	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
@@ -120,14 +123,15 @@ else
 		echo "         ...into $(BUILDS_DIR)...";\
 		echo "         ...checking tools...";\
 		$(MAKE) --no-print-directory check_prerequisites_;\
-		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONFIG.OUT for details...";\
+		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
 		cd CURRENT;\
-		./buildconf > BUILD-CONFIG.OUT 2>&1;\
+		./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
                 echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
                 echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
-                ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)  > CONFIGURE.OUT 2>&1;\
+                echo "CC=$(CC) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
+                (CC=$(CC) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
                 echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
-                make --no-print-directory install > MAKE.OUT 2>&1;\
+                make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
 	fi
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
