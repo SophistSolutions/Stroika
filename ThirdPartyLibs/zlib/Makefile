@@ -27,6 +27,9 @@ WIN_LIB32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommo
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
 endif
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver)
+endif
 
 BUILDS_ROOT=../../Builds/
 
@@ -103,7 +106,7 @@ endif
 doConfigure:
 	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@(cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
+	@(CC=$(CC) cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
 endif
 	@echo "   ...done"
 
@@ -173,7 +176,7 @@ ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@mkdir -p $(BUILDS_DIR)Release64
 	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release64/
 else
-	@$(MAKE) --directory CURRENT --no-print-directory
+	@$(MAKE) --directory CURRENT --no-print-directory CC=$(CC)
 endif
 
 

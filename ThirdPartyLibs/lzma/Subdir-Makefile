@@ -230,7 +230,6 @@ SubDirs2Compile=	\
 vpath %cpp $(SubDirs2Compile)
 vpath %c $(SubDirs2Compile)
 
-CPlusPlus=g++
 CC=gcc
 CFLAGS+=-D_7ZIP_ST
 
@@ -238,7 +237,7 @@ AR=ar
 ARCRATEFLAGS=cru
 ARTARGETPREFIX=
 
-LD=$(CPlusPlus)
+LD=$(CC)
 LDFLAGS=
 LINKTARGETPREFIX= -o 
 
@@ -248,7 +247,7 @@ LINKTARGETPREFIX= -o
 
 %.$(OBJSUFFIX) : %.cpp
 	@#echo "      Compiling $(subst ../,, $<)..."
-	"$(CPlusPlus)" $(CFLAGS) -c $<
+	"$(CC)" $(CFLAGS) -c $<
 
 %.$(OBJSUFFIX) : %.c
 	@#echo "      Compiling $(subst ../,, $<)..."
