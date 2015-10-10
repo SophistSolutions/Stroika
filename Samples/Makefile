@@ -17,6 +17,7 @@ endif
 
 SUBPROJECTS=
 
+SUBPROJECTS+=	ArchiveUtility
 ifeq ($(qFeatureFlag_ATLMFC), 'use-system')
 SUBPROJECTS+=	ActiveLedIt
 SUBPROJECTS+=	LedIt
