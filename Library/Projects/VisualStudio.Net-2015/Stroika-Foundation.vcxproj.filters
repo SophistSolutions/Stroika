@@ -166,6 +166,9 @@
     <Filter Include="Sources\DataExchange\7z">
       <UniqueIdentifier>{ec2c992c-013e-4939-8212-d4c2e7e10483}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\Zip">
+      <UniqueIdentifier>{7506af22-27f9-44e9-a583-60e131f67d8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -719,6 +722,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
       <Filter>Sources\DataExchange\7z</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
+      <Filter>Sources\DataExchange\Zip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1703,6 +1709,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.h">
       <Filter>Sources\DataExchange\7z</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
+      <Filter>Sources\DataExchange\Zip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
