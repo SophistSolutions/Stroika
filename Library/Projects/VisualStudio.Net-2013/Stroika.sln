@@ -107,6 +107,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312A
 		..\Unix\Makefile-Foundation-DataExchange-INI = ..\Unix\Makefile-Foundation-DataExchange-INI
 		..\Unix\Makefile-Foundation-DataExchange-JSON = ..\Unix\Makefile-Foundation-DataExchange-JSON
 		..\Unix\Makefile-Foundation-DataExchange-XML = ..\Unix\Makefile-Foundation-DataExchange-XML
+		..\Unix\Makefile-Foundation-DataExchange-Zip = ..\Unix\Makefile-Foundation-DataExchange-Zip
 		..\Unix\Makefile-Foundation-Debug = ..\Unix\Makefile-Foundation-Debug
 		..\Unix\Makefile-Foundation-Execution = ..\Unix\Makefile-Foundation-Execution
 		..\Unix\Makefile-Foundation-Execution-Platform-AIX = ..\Unix\Makefile-Foundation-Execution-Platform-AIX
