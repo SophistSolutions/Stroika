@@ -3,14 +3,17 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <mutex>
 #include    <iostream>
 
+#include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #if     qHasFeature_LZMA
 #include    "Stroika/Foundation/DataExchange/7z/Reader.h"
 #endif
+#include    "Stroika/Foundation/IO/Filesystem/Directory.h"
 #include    "Stroika/Foundation/IO/Filesystem/FileInputStream.h"
+#include    "Stroika/Foundation/IO/Filesystem/FileOutputStream.h"
+#include    "Stroika/Foundation/IO/Filesystem/Pathname.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/TextReader.h"
 
@@ -23,6 +26,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 using   Characters::String;
 using   Containers::Sequence;
+using   Memory::BLOB;
 using   Memory::Byte;
 using   Memory::Optional;
 
@@ -46,6 +50,7 @@ namespace {
         cerr << "    --create creates the argument ARHCIVE and adds the argument FILES to it" << endl;
         cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory (defaulting to .)" << endl;
         cerr << "    --update adds to the argument ARHCIVE and adds the argument FILES to it" << endl;
+        cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
     }
     // Emits errors to stderr, and Usage, etc, if needed, and Optional<> IsMissing()
     Optional<Options_>  ParseOptions_ (int argc, const char* argv[])
@@ -58,7 +63,6 @@ namespace {
             if (argi == args.begin ()) {
                 continue;   // skip argv[0] - command name
             }
-            DbgTrace (L"xx=%s", argi->c_str ());
             if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
                 Usage_ ();
                 return Optional<Options_> {};
@@ -109,6 +113,7 @@ namespace {
 
 }
 
+
 namespace {
     void    ListArchive_ (const String& archiveName)
     {
@@ -116,7 +121,32 @@ namespace {
             cout << i.AsNarrowSDKString () << endl;
         }
     }
+    void    ExtractArchive_ (const String& archiveName, const String& toDirectory)
+    {
+        Debug::TraceContextBumper ctx { L"ExtractArchive_" };
+        DbgTrace (L"(archiveName=%s, toDir=%s)", archiveName.c_str (), toDirectory.c_str ());
+        DataExchange::ArchiveReader archive { OpenArchive_ (archiveName) };
+        for (String i : archive.GetContainedFiles ()) {
+            String  srcFileName =   i;
+            String  trgFileName =   toDirectory + L"/" + srcFileName;
+
+            //tmphac
+#if qPlatform_Windows
+            trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
+#endif
+
+            DbgTrace (L"(srcFileName=%s, trgFileName=%s)", srcFileName.c_str (), trgFileName.c_str ());
+            BLOB    b           =   archive.GetData (srcFileName);
+            DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
+            IO::FileSystem::Directory { IO::FileSystem::GetFileDirectory (trgFileName) } .AssureExists ();
+            IO::FileSystem::FileOutputStream ostream  { trgFileName };
+            ostream.Write (b);
+        }
+    }
 }
+
+
+
 
 
 
@@ -128,6 +158,9 @@ int     main (int argc, const char* argv[])
             switch (o->fOperation) {
                 case Options_::Operation::eList:
                     ListArchive_ (o->fArchiveFileName);
+                    break;
+                case Options_::Operation::eExtract:
+                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.Value (L"."));
                     break;
             }
             // rest NYI
