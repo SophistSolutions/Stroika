@@ -169,6 +169,9 @@
     <Filter Include="Sources\Execution\Platform\AIX">
       <UniqueIdentifier>{d853d327-9a14-4838-ba4d-c501ce1042d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\Zip">
+      <UniqueIdentifier>{01053c9a-e9ab-4026-a7eb-7f98ccab3ae6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -725,6 +728,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
       <Filter>Sources\DataExchange\7z</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
+      <Filter>Sources\DataExchange\Zip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1727,6 +1733,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h">
       <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
+      <Filter>Sources\DataExchange\Zip</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

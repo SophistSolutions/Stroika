@@ -1,0 +1,13 @@
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=		../../../../../../
+SrcDir						=		$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchange/Zip/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Reader.o\
+
+all:	$(Objs)
