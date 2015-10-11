@@ -10,10 +10,10 @@
 #if     qHasFeature_LZMA
 #include    "Stroika/Foundation/DataExchange/7z/Reader.h"
 #endif
-#include    "Stroika/Foundation/IO/Filesystem/Directory.h"
-#include    "Stroika/Foundation/IO/Filesystem/FileInputStream.h"
-#include    "Stroika/Foundation/IO/Filesystem/FileOutputStream.h"
-#include    "Stroika/Foundation/IO/Filesystem/Pathname.h"
+#include    "Stroika/Foundation/IO/FileSystem/Directory.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/Pathname.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/TextReader.h"
 
@@ -108,7 +108,7 @@ namespace {
 #if     qHasFeature_LZMA
         return move (_7z::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
 #endif
-        throw "no fmt";
+        Execution::DoThrow (Execution::StringException (L"Unrecognized format"));
     }
 
 }
@@ -131,7 +131,7 @@ namespace {
             String  trgFileName =   toDirectory + L"/" + srcFileName;
 
             //tmphac
-#if		qPlatform_Windows
+#if     qPlatform_Windows
             trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
 #endif
 
