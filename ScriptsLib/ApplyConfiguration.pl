@@ -271,8 +271,12 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../../Tools/Projects/Unix/Makefile-Frameworks-WebServer $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/Makefile");
 		system ("ln -s ../../../../../../Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
+		mkdir "$intermediateFiles$currentConfiguration/Samples_ArchiveUtility";
+		system ("ln -s ../../../Samples/ArchiveUtility/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_ArchiveUtility/Makefile");
+
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPClient";
 		system ("ln -s ../../../Samples/SSDPClient/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
+
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPServer";
 		system ("ln -s ../../../Samples/SSDPServer/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPServer/Makefile");
 
