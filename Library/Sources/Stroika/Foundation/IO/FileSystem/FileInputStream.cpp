@@ -46,7 +46,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  ********************************************************************************
- *********************** FileSystem::FileInputStream **********************
+ **************************** FileSystem::FileInputStream ***********************
  ********************************************************************************
  */
 class   FileInputStream::Rep_ : public InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
