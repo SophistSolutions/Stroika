@@ -117,6 +117,13 @@ sub     IsClangPlusPlus_
 	
 }
 
+sub     GetGCCVersion_
+{
+    my $x = shift(@_);
+	return trim (`$x --version | awk 'NR == 1 { print $3;}'`);
+}
+
+
 
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
@@ -200,7 +207,12 @@ sub	SetDefaultForCompilerDriver_
 {
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			$CPPSTD_VERSION_FLAG="--std=c++14"
+			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '4.9') {
+				$CPPSTD_VERSION_FLAG="--std=c++14"
+			}
+			else {
+				$CPPSTD_VERSION_FLAG="--std=c++11"
+			}
 		}
 		if (IsClangPlusPlus_ ($COMPILER_DRIVER)) {
 			$CPPSTD_VERSION_FLAG="--std=c++14"
