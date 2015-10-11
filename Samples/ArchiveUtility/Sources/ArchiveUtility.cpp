@@ -13,7 +13,7 @@
 #include    "Stroika/Foundation/IO/FileSystem/Directory.h"
 #include    "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
-#include    "Stroika/Foundation/IO/FileSystem/Pathname.h"
+#include    "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/TextReader.h"
 
