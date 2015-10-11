@@ -101,6 +101,7 @@ namespace {
     }
 }
 
+
 namespace {
     DataExchange::ArchiveReader OpenArchive_ (const String& archiveName)
     {
