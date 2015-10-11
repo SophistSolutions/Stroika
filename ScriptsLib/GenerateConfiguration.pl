@@ -264,7 +264,6 @@ sub	SetDefaultForPlatform_
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++ -V5.0";
 	}
-	SetDefaultForCompilerDriver_();
 }
 
 
