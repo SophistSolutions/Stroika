@@ -131,13 +131,13 @@ namespace {
             String  trgFileName =   toDirectory + L"/" + srcFileName;
 
             //tmphac
-#if qPlatform_Windows
+#if		qPlatform_Windows
             trgFileName = trgFileName.ReplaceAll (L"/", L"\\");
 #endif
 
-            DbgTrace (L"(srcFileName=%s, trgFileName=%s)", srcFileName.c_str (), trgFileName.c_str ());
+            //DbgTrace (L"(srcFileName=%s, trgFileName=%s)", srcFileName.c_str (), trgFileName.c_str ());
             BLOB    b           =   archive.GetData (srcFileName);
-            DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
+            //DbgTrace (L"IO::FileSystem::GetFileDirectory (trgFileName)=%s", IO::FileSystem::GetFileDirectory (trgFileName).c_str ());
             IO::FileSystem::Directory { IO::FileSystem::GetFileDirectory (trgFileName) } .AssureExists ();
             IO::FileSystem::FileOutputStream ostream  { trgFileName };
             ostream.Write (b);

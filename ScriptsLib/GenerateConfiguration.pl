@@ -120,7 +120,7 @@ sub     IsClangPlusPlus_
 sub     GetGCCVersion_
 {
     my $x = shift(@_);
-	return trim (`$x --version | sed 's/(.*)/x/' | awk 'NR == 1 { print $3;}'`);
+	return trim (`$x --version | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
 }
 
 
