@@ -41,6 +41,7 @@ namespace   Stroika {
             public:
                 ArchiveReader () = delete;
                 ArchiveReader (const ArchiveReader&) = delete;
+                ArchiveReader (ArchiveReader&& src);
                 ArchiveReader& operator= (const ArchiveReader&) = delete;
 
             protected:

@@ -24,6 +24,10 @@ namespace   Stroika {
                 : fRep_ (rep)
             {
             }
+            inline  ArchiveReader::ArchiveReader (ArchiveReader&& src)
+                : fRep_ (move (src.fRep_))
+            {
+            }
             inline  ArchiveReader::_IRep&   ArchiveReader::_GetRep ()
             {
                 EnsureNotNull (fRep_.get ());
