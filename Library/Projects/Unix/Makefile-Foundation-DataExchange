@@ -25,6 +25,7 @@ SubDirs	=	\
 	INI \
 	JSON \
 	XML \
+	Zip \
 
 .PHONY:				$(SubDirs)
 
@@ -37,11 +38,12 @@ CharacterDelimitedLines_OBJS := $(addprefix "CharacterDelimitedLines/", $(shell 
 INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs))
 JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs))
 XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs))
+Zip_OBJS := $(addprefix "Zip/", $(shell $(MAKE) --directory Zip -s list-objs))
 
 
 list-objs::
-	@echo $(SevenZ_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(XML_OBJS)
+	@echo $(SevenZ_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(XML_OBJS) $(Zip_OBJS)
 
 
-7z INI CharacterDelimitedLines JSON XML:
+7z INI CharacterDelimitedLines JSON XML Zip:
 	@$(MAKE) --directory $@ -s

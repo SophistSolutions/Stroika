@@ -8,12 +8,6 @@
 #include    <cstdlib>
 #include    <cstdint>
 #include    <string.h>
-#if 0
-#  include <stddef.h>
-#  include <string.h>
-#  include <stdlib.h>
-#   include <errno.h>
-#endif
 
 // @todo add Stroika wrapper on this (thirdpartyproducts)
 #ifdef HAVE_BZIP2
@@ -475,22 +469,22 @@ namespace {
 #define UNZ_CRCERROR                    (-105)
 
     /* tm_unz contain date/time info */
-    typedef struct tm_unz_s {
+    struct tm_unz {
         uInt tm_sec;            /* seconds after the minute - [0,59] */
         uInt tm_min;            /* minutes after the hour - [0,59] */
         uInt tm_hour;           /* hours since midnight - [0,23] */
         uInt tm_mday;           /* day of the month - [1,31] */
         uInt tm_mon;            /* months since January - [0,11] */
         uInt tm_year;           /* years - [1980..2044] */
-    } tm_unz;
+    };
 
     /* unz_global_info structure contain global data about the ZIPfile
        These data comes from the end of central dir */
-    typedef struct unz_global_info64_s {
+    struct unz_global_info64 {
         ZPOS64_T number_entry;         /* total number of entries in
                                      the central dir on this disk */
         uLong size_comment;         /* size of the global comment of the zipfile */
-    } unz_global_info64;
+    };
 
     typedef struct unz_global_info_s {
         uLong number_entry;         /* total number of entries in
@@ -540,8 +534,8 @@ namespace {
     } unz_file_info;
 
     int unzStringFileNameCompare OF ((const char* fileName1,
-            const char* fileName2,
-            int iCaseSensitivity));
+                                      const char* fileName2,
+                                      int iCaseSensitivity));
     /*
        Compare two filename (fileName1,fileName2).
        If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
@@ -553,7 +547,7 @@ namespace {
 
 
     unzFile unzOpen OF((const char* path));
-     unzFile unzOpen64 OF((const void* path));
+    unzFile unzOpen64 OF((const void* path));
     /*
       Open a Zip file. path contain the full pathname (by example,
          on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
@@ -571,20 +565,20 @@ namespace {
 
 
     unzFile unzOpen2 OF((const char* path,
-                                        zlib_filefunc_def* pzlib_filefunc_def));
+                         zlib_filefunc_def* pzlib_filefunc_def));
     /*
        Open a Zip file, like unzOpen, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
 
     unzFile unzOpen2_64 OF((const void* path,
-                                           zlib_filefunc64_def* pzlib_filefunc_def));
+                            zlib_filefunc64_def* pzlib_filefunc_def));
     /*
        Open a Zip file, like unz64Open, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
 
-     int unzClose OF((unzFile file));
+    int unzClose OF((unzFile file));
     /*
       Close a ZipFile opened with unzOpen.
       If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
@@ -592,10 +586,10 @@ namespace {
       return UNZ_OK if there is no problem. */
 
     int unzGetGlobalInfo OF((unzFile file,
-                                            unz_global_info* pglobal_info));
+                             unz_global_info* pglobal_info));
 
     int unzGetGlobalInfo64 OF((unzFile file,
-            unz_global_info64* pglobal_info));
+                               unz_global_info64* pglobal_info));
     /*
       Write info about the ZipFile in the *pglobal_info structure.
       No preparation of the structure is needed
@@ -603,8 +597,8 @@ namespace {
 
 
     int unzGetGlobalComment OF((unzFile file,
-            char* szComment,
-            uLong uSizeBuf));
+                                char* szComment,
+                                uLong uSizeBuf));
     /*
       Get the global comment string of the ZipFile, in the szComment buffer.
       uSizeBuf is the size of the szComment buffer.
@@ -629,8 +623,8 @@ namespace {
     */
 
     int unzLocateFile OF((unzFile file,
-                                         const char* szFileName,
-                                         int iCaseSensitivity));
+                          const char* szFileName,
+                          int iCaseSensitivity));
     /*
       Try locate the file szFileName in the zipfile.
       For the iCaseSensitivity signification, see unzStringFileNameCompare
@@ -670,22 +664,22 @@ namespace {
 
     /* ****************************************** */
     int unzGetCurrentFileInfo64 OF((unzFile file,
-            unz_file_info64* pfile_info,
-            char* szFileName,
-            uLong fileNameBufferSize,
-            void* extraField,
-            uLong extraFieldBufferSize,
-            char* szComment,
-            uLong commentBufferSize));
+                                    unz_file_info64* pfile_info,
+                                    char* szFileName,
+                                    uLong fileNameBufferSize,
+                                    void* extraField,
+                                    uLong extraFieldBufferSize,
+                                    char* szComment,
+                                    uLong commentBufferSize));
 
     int unzGetCurrentFileInfo OF((unzFile file,
-            unz_file_info* pfile_info,
-            char* szFileName,
-            uLong fileNameBufferSize,
-            void* extraField,
-            uLong extraFieldBufferSize,
-            char* szComment,
-            uLong commentBufferSize));
+                                  unz_file_info* pfile_info,
+                                  char* szFileName,
+                                  uLong fileNameBufferSize,
+                                  void* extraField,
+                                  uLong extraFieldBufferSize,
+                                  char* szComment,
+                                  uLong commentBufferSize));
     /*
       Get Info about the current file
       if pfile_info!=NULL, the *pfile_info structure will contain somes info about
@@ -714,7 +708,7 @@ namespace {
     */
 
     int unzOpenCurrentFilePassword OF((unzFile file,
-            const char* password));
+                                       const char* password));
     /*
       Open for reading data the current file in the zipfile.
       password is a crypting password
@@ -722,9 +716,9 @@ namespace {
     */
 
     int unzOpenCurrentFile2 OF((unzFile file,
-            int* method,
-            int* level,
-            int raw));
+                                int* method,
+                                int* level,
+                                int raw));
     /*
       Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
         if raw==1
@@ -782,8 +776,8 @@ namespace {
     */
 
     int ZEXPORT unzGetLocalExtrafield OF((unzFile file,
-            voidp buf,
-            unsigned len));
+                                          voidp buf,
+                                          unsigned len));
     /*
       Read extra field from the current file (opened by unzOpenCurrentFile)
       This is the local-header version of the extra field (sometimes, there is
@@ -1197,9 +1191,9 @@ namespace {
 
 
     int unz64local_getByte OF((
-                                        const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                        voidpf filestream,
-                                        int* pi));
+                                  const zlib_filefunc64_32_def* pzlib_filefunc_def,
+                                  voidpf filestream,
+                                  int* pi));
 
     int unz64local_getByte(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream, int* pi)
     {
@@ -1222,8 +1216,8 @@ namespace {
        Reads a long in LSB order from the given gz_stream. Sets
     */
     int unz64local_getShort (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                   voidpf filestream,
-                                   uLong* pX)
+                             voidpf filestream,
+                             uLong* pX)
     {
         uLong x ;
         int i = 0;
@@ -1244,8 +1238,8 @@ namespace {
     }
 
     int unz64local_getLong (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                  voidpf filestream,
-                                  uLong* pX)
+                            voidpf filestream,
+                            uLong* pX)
     {
         uLong x ;
         int i = 0;
@@ -1274,8 +1268,8 @@ namespace {
     }
 
     int unz64local_getLong64 (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                    voidpf filestream,
-                                    ZPOS64_T* pX)
+                              voidpf filestream,
+                              ZPOS64_T* pX)
     {
         ZPOS64_T x ;
         int i = 0;
@@ -1442,7 +1436,7 @@ namespace {
         the global comment)
     */
     ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
-            voidpf filestream)
+                                           voidpf filestream)
     {
         unsigned char* buf;
         ZPOS64_T uSizeFile;
@@ -1546,8 +1540,8 @@ namespace {
            of this unzip package.
     */
     unzFile unzOpenInternal (const void* path,
-                                   zlib_filefunc64_32_def* pzlib_filefunc64_32_def,
-                                   int is64bitOpenFunction)
+                             zlib_filefunc64_32_def* pzlib_filefunc64_32_def,
+                             int is64bitOpenFunction)
     {
         unz64_s us;
         unz64_s* s;
@@ -2052,10 +2046,10 @@ namespace {
       return UNZ_OK if there is no problem.
     */
     int ZEXPORT unzGetCurrentFileInfo64 (unzFile file,
-            unz_file_info64* pfile_info,
-            char* szFileName, uLong fileNameBufferSize,
-            void* extraField, uLong extraFieldBufferSize,
-            char* szComment,  uLong commentBufferSize)
+                                         unz_file_info64* pfile_info,
+                                         char* szFileName, uLong fileNameBufferSize,
+                                         void* extraField, uLong extraFieldBufferSize,
+                                         char* szComment,  uLong commentBufferSize)
     {
         return unz64local_GetCurrentFileInfoInternal(file, pfile_info, NULL,
                 szFileName, fileNameBufferSize,
@@ -2395,7 +2389,7 @@ namespace {
       If there is no error and the file is opened, the return value is UNZ_OK.
     */
     int ZEXPORT unzOpenCurrentFile3 (unzFile file, int* method,
-                                            int* level, int raw, const char* password)
+                                     int* level, int raw, const char* password)
     {
         int err = UNZ_OK;
         uInt iSizeVar;
