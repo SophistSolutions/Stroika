@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-//  TEST    Foundation::DataExchange::Reader/Writers(JSON/XML)
+//  TEST    Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
