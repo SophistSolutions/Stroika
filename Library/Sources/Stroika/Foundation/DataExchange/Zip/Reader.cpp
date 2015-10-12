@@ -25,140 +25,135 @@
  * NOTE/CREDIT:
  *      This code originally cribbed from ZLib (http://www.zlib.net/) 1.2.8 contrib/minizip
  *
-                 Version 1.1, February 14h, 2010
-                   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
+                Version 1.1, February 14h, 2010
+                part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
 
-                         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+                        Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
-                         Modifications for Zip64 support
-                         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+                        Modifications for Zip64 support
+                        Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
-                         For more info read MiniZip_info.txt
+                        For more info read MiniZip_info.txt
 
-                         ---------------------------------------------------------------------------
+                        ---------------------------------------------------------------------------
 
-                   Condition of use and distribution are the same than zlib :
+                Condition of use and distribution are the same than zlib :
 
-                  This software is provided 'as-is', without any express or implied
-                  warranty.  In no event will the authors be held liable for any damages
-                  arising from the use of this software.
+                This software is provided 'as-is', without any express or implied
+                warranty.  In no event will the authors be held liable for any damages
+                arising from the use of this software.
 
-                  Permission is granted to anyone to use this software for any purpose,
-                  including commercial applications, and to alter it and redistribute it
-                  freely, subject to the following restrictions:
+                Permission is granted to anyone to use this software for any purpose,
+                including commercial applications, and to alter it and redistribute it
+                freely, subject to the following restrictions:
 
-                  1. The origin of this software must not be misrepresented; you must not
-                     claim that you wrote the original software. If you use this software
-                     in a product, an acknowledgment in the product documentation would be
-                     appreciated but is not required.
-                  2. Altered source versions must be plainly marked as such, and must not be
-                     misrepresented as being the original software.
-                  3. This notice may not be removed or altered from any source distribution.
+                1. The origin of this software must not be misrepresented; you must not
+                    claim that you wrote the original software. If you use this software
+                    in a product, an acknowledgment in the product documentation would be
+                    appreciated but is not required.
+                2. Altered source versions must be plainly marked as such, and must not be
+                    misrepresented as being the original software.
+                3. This notice may not be removed or altered from any source distribution.
 ....
-                   Version 1.1, February 14h, 2010
-                   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
+                Version 1.1, February 14h, 2010
+                part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
 
-                         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+                        Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
-                         Modifications of Unzip for Zip64
-                         Copyright (C) 2007-2008 Even Rouault
+                        Modifications of Unzip for Zip64
+                        Copyright (C) 2007-2008 Even Rouault
 
-                         Modifications for Zip64 support on both zip and unzip
-                         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+                        Modifications for Zip64 support on both zip and unzip
+                        Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
-                         For more info read MiniZip_info.txt
+                        For more info read MiniZip_info.txt
 
-                         ---------------------------------------------------------------------------------
+                        ---------------------------------------------------------------------------------
 
-                        Condition of use and distribution are the same than zlib :
+                    Condition of use and distribution are the same than zlib :
 
-                  This software is provided 'as-is', without any express or implied
-                  warranty.  In no event will the authors be held liable for any damages
-                  arising from the use of this software.
+                This software is provided 'as-is', without any express or implied
+                warranty.  In no event will the authors be held liable for any damages
+                arising from the use of this software.
 
-                  Permission is granted to anyone to use this software for any purpose,
-                  including commercial applications, and to alter it and redistribute it
-                  freely, subject to the following restrictions:
+                Permission is granted to anyone to use this software for any purpose,
+                including commercial applications, and to alter it and redistribute it
+                freely, subject to the following restrictions:
 
-                  1. The origin of this software must not be misrepresented; you must not
-                     claim that you wrote the original software. If you use this software
-                     in a product, an acknowledgment in the product documentation would be
-                     appreciated but is not required.
-                  2. Altered source versions must be plainly marked as such, and must not be
-                     misrepresented as being the original software.
-                  3. This notice may not be removed or altered from any source distribution.
+                1. The origin of this software must not be misrepresented; you must not
+                    claim that you wrote the original software. If you use this software
+                    in a product, an acknowledgment in the product documentation would be
+                    appreciated but is not required.
+                2. Altered source versions must be plainly marked as such, and must not be
+                    misrepresented as being the original software.
+                3. This notice may not be removed or altered from any source distribution.
 ....
-                   Copyright (C) 1998-2005 Gilles Vollant
+                Copyright (C) 1998-2005 Gilles Vollant
 
-                   This code is a modified version of crypting code in Infozip distribution
+                This code is a modified version of crypting code in Infozip distribution
 
-                   The encryption/decryption parts of this source code (as opposed to the
-                   non-echoing password parts) were originally written in Europe.  The
-                   whole source package can be freely distributed, including from the USA.
-                   (Prior to January 2000, re-export from the US was a violation of US law.)
+                The encryption/decryption parts of this source code (as opposed to the
+                non-echoing password parts) were originally written in Europe.  The
+                whole source package can be freely distributed, including from the USA.
+                (Prior to January 2000, re-export from the US was a violation of US law.)
 
-                   This encryption code is a direct transcription of the algorithm from
-                   Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
-                   file (appnote.txt) is distributed with the PKZIP program (even in the
-                   version without encryption capabilities).
+                This encryption code is a direct transcription of the algorithm from
+                Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
+                file (appnote.txt) is distributed with the PKZIP program (even in the
+                version without encryption capabilities).
 
-                   If you don't need crypting in your application, just define symbols
-                   NOCRYPT and NOUNCRYPT.
+                If you don't need crypting in your application, just define symbols
+                NOCRYPT and NOUNCRYPT.
 
-                   This code support the "Traditional PKWARE Encryption".
+                This code support the "Traditional PKWARE Encryption".
 
-                   The new AES encryption added on Zip format by Winzip (see the page
-                   http://www.winzip.com/aes_info.htm ) and PKWare PKZip 5.x Strong
-                   Encryption is not supported.
+                The new AES encryption added on Zip format by Winzip (see the page
+                http://www.winzip.com/aes_info.htm ) and PKWare PKZip 5.x Strong
+                Encryption is not supported.
 ....
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+                Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
-         Modifications of Unzip for Zip64
-         Copyright (C) 2007-2008 Even Rouault
+                Modifications of Unzip for Zip64
+                Copyright (C) 2007-2008 Even Rouault
 
-         Modifications for Zip64 support on both zip and unzip
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+                Modifications for Zip64 support on both zip and unzip
+                Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
 
-         For more info read MiniZip_info.txt
+                For more info read MiniZip_info.txt
+                ------------------------------------------------------------------------------------
+                Decryption code comes from crypt.c by Info-ZIP but has been greatly reduced in terms of
+                compatibility with older software. The following is from the original crypt.c.
+                Code woven in by Terry Thorsen 1/2003.
 
+                Copyright (c) 1990-2000 Info-ZIP.  All rights reserved.
 
-  ------------------------------------------------------------------------------------
-  Decryption code comes from crypt.c by Info-ZIP but has been greatly reduced in terms of
-  compatibility with older software. The following is from the original crypt.c.
-  Code woven in by Terry Thorsen 1/2003.
+                See the accompanying file LICENSE, version 2000-Apr-09 or later
+                (the contents of which are also included in zip.h) for terms of use.
+                If, for some reason, all these files are missing, the Info-ZIP license
+                also may be found at:  ftp://ftp.info-zip.org/pub/infozip/license.html
 
-  Copyright (c) 1990-2000 Info-ZIP.  All rights reserved.
+                crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
 
-  See the accompanying file LICENSE, version 2000-Apr-09 or later
-  (the contents of which are also included in zip.h) for terms of use.
-  If, for some reason, all these files are missing, the Info-ZIP license
-  also may be found at:  ftp://ftp.info-zip.org/pub/infozip/license.html
+                The encryption/decryption parts of this source code (as opposed to the
+                non-echoing password parts) were originally written in Europe.  The
+                whole source package can be freely distributed, including from the USA.
+                (Prior to January 2000, re-export from the US was a violation of US law.)
 
-        crypt.c (full version) by Info-ZIP.      Last revised:  [see crypt.h]
+                This encryption code is a direct transcription of the algorithm from
+                Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
+                file (appnote.txt) is distributed with the PKZIP program (even in the
+                version without encryption capabilities).
+...
+                Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
-  The encryption/decryption parts of this source code (as opposed to the
-  non-echoing password parts) were originally written in Europe.  The
-  whole source package can be freely distributed, including from the USA.
-  (Prior to January 2000, re-export from the US was a violation of US law.)
+                Modifications for Zip64 support
+                Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+*/
 
-        This encryption code is a direct transcription of the algorithm from
-  Roger Schlafly, described by Phil Katz in the file appnote.txt.  This
-  file (appnote.txt) is distributed with the PKZIP program (even in the
-  version without encryption capabilities).
-
- ...
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Modifications for Zip64 support
-         Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
- */
 
 #if     qHasFeature_ZLib
 #include    <zlib.h>
 #endif
-
-
-
 
 
 #if     qHasFeature_ZLib && defined (_MSC_VER)
@@ -192,7 +187,6 @@ namespace {
         unsigned temp;  /* POTENTIAL BUG:  temp*(temp^1) may overflow in an
                      * unpredictable manner on 16-bit systems; not a problem
                      * with any known compiler so far, though */
-
         temp = ((unsigned)(*(pkeys + 2)) & 0xffff) | 2;
         return (int)(((temp * (temp ^ 1)) >> 8) & 0xff);
     }
@@ -364,9 +358,6 @@ namespace {
 #endif
 #endif
 
-
-
-
     typedef voidpf   (ZCALLBACK* open_file_func)      OF((voidpf opaque, const char* filename, int mode));
     typedef uLong    (ZCALLBACK* read_file_func)      OF((voidpf opaque, voidpf stream, void* buf, uLong size));
     typedef uLong    (ZCALLBACK* write_file_func)     OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
@@ -378,7 +369,7 @@ namespace {
 
 
     /* here is the "old" 32 bits structure structure */
-    typedef struct zlib_filefunc_def_s {
+    struct zlib_filefunc_def {
         open_file_func      zopen_file;
         read_file_func      zread_file;
         write_file_func     zwrite_file;
@@ -387,13 +378,13 @@ namespace {
         close_file_func     zclose_file;
         testerror_file_func zerror_file;
         voidpf              opaque;
-    } zlib_filefunc_def;
+    };
 
     typedef ZPOS64_T (ZCALLBACK* tell64_file_func)    OF((voidpf opaque, voidpf stream));
     typedef long     (ZCALLBACK* seek64_file_func)    OF((voidpf opaque, voidpf stream, ZPOS64_T offset, int origin));
     typedef voidpf   (ZCALLBACK* open64_file_func)    OF((voidpf opaque, const void* filename, int mode));
 
-    typedef struct zlib_filefunc64_def_s {
+    struct zlib_filefunc64_def {
         open64_file_func    zopen64_file;
         read_file_func      zread_file;
         write_file_func     zwrite_file;
@@ -402,7 +393,7 @@ namespace {
         close_file_func     zclose_file;
         testerror_file_func zerror_file;
         voidpf              opaque;
-    } zlib_filefunc64_def;
+    };
 
     void fill_fopen64_filefunc OF((zlib_filefunc64_def* pzlib_filefunc_def));
     void fill_fopen_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def));
@@ -564,19 +555,18 @@ namespace {
     */
 
 
-    unzFile unzOpen2 OF((const char* path,
-                         zlib_filefunc_def* pzlib_filefunc_def));
     /*
        Open a Zip file, like unzOpen, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
+    unzFile unzOpen2 OF((const char* path, zlib_filefunc_def* pzlib_filefunc_def));
 
-    unzFile unzOpen2_64 OF((const void* path,
-                            zlib_filefunc64_def* pzlib_filefunc_def));
+
     /*
        Open a Zip file, like unz64Open, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
+    unzFile unzOpen2_64 OF((const void* path, zlib_filefunc64_def* pzlib_filefunc_def));
 
     int unzClose OF((unzFile file));
     /*
@@ -728,11 +718,11 @@ namespace {
              but you CANNOT set method parameter as NULL
     */
 
-    extern int ZEXPORT unzOpenCurrentFile3 OF((unzFile file,
-            int* method,
-            int* level,
-            int raw,
-            const char* password));
+    int  unzOpenCurrentFile3 OF((unzFile file,
+                                 int* method,
+                                 int* level,
+                                 int raw,
+                                 const char* password));
     /*
       Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
         if raw==1
@@ -743,15 +733,15 @@ namespace {
     */
 
 
-    extern int ZEXPORT unzCloseCurrentFile OF((unzFile file));
+    int  unzCloseCurrentFile OF((unzFile file));
     /*
       Close the file in zip opened with unzOpenCurrentFile
       Return UNZ_CRCERROR if all the file was read but the CRC is not good
     */
 
-    extern int ZEXPORT unzReadCurrentFile OF((unzFile file,
-            voidp buf,
-            unsigned len));
+    int unzReadCurrentFile OF((unzFile file,
+                               voidp buf,
+                               unsigned len));
     /*
       Read bytes from the current file (opened by unzOpenCurrentFile)
       buf contain buffer where data must be copied
@@ -763,21 +753,21 @@ namespace {
         (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
 
-    z_off_t ZEXPORT unztell OF((unzFile file));
+    z_off_t  unztell OF((unzFile file));
 
-    ZPOS64_T ZEXPORT unztell64 OF((unzFile file));
+    ZPOS64_T  unztell64 OF((unzFile file));
     /*
       Give the current position in uncompressed data
     */
 
-    int ZEXPORT unzeof OF((unzFile file));
+    int  unzeof OF((unzFile file));
     /*
       return 1 if the end of file was reached, 0 elsewhere
     */
 
-    int ZEXPORT unzGetLocalExtrafield OF((unzFile file,
-                                          voidp buf,
-                                          unsigned len));
+    int  unzGetLocalExtrafield OF((unzFile file,
+                                   voidp buf,
+                                   unsigned len));
     /*
       Read extra field from the current file (opened by unzOpenCurrentFile)
       This is the local-header version of the extra field (sometimes, there is
@@ -794,12 +784,12 @@ namespace {
     /***************************************************************************/
 
     /* Get the current file offset */
-    extern ZPOS64_T ZEXPORT unzGetOffset64 (unzFile file);
-    extern uLong ZEXPORT unzGetOffset (unzFile file);
+    ZPOS64_T  unzGetOffset64 (unzFile file);
+    uLong  unzGetOffset (unzFile file);
 
     /* Set the current file offset */
-    extern int ZEXPORT unzSetOffset64 (unzFile file, ZPOS64_T pos);
-    extern int ZEXPORT unzSetOffset (unzFile file, uLong pos);
+    int  unzSetOffset64 (unzFile file, ZPOS64_T pos);
+    int  unzSetOffset (unzFile file, uLong pos);
 
 }
 
@@ -1354,9 +1344,9 @@ namespace {
             (like 1 on Unix, 2 on Windows)
 
     */
-    extern int ZEXPORT unzStringFileNameCompare (const char*  fileName1,
-            const char*  fileName2,
-            int iCaseSensitivity)
+    int  unzStringFileNameCompare (const char*  fileName1,
+                                   const char*  fileName2,
+                                   int iCaseSensitivity)
 
     {
         if (iCaseSensitivity == 0)
@@ -1716,8 +1706,8 @@ namespace {
     }
 
 
-    extern unzFile ZEXPORT unzOpen2 (const char* path,
-                                     zlib_filefunc_def* pzlib_filefunc32_def)
+    unzFile  unzOpen2 (const char* path,
+                       zlib_filefunc_def* pzlib_filefunc32_def)
     {
         if (pzlib_filefunc32_def != NULL) {
             zlib_filefunc64_32_def zlib_filefunc64_32_def_fill;
@@ -1728,8 +1718,8 @@ namespace {
             return unzOpenInternal(path, NULL, 0);
     }
 
-    extern unzFile ZEXPORT unzOpen2_64 (const void* path,
-                                        zlib_filefunc64_def* pzlib_filefunc_def)
+    unzFile  unzOpen2_64 (const void* path,
+                          zlib_filefunc64_def* pzlib_filefunc_def)
     {
         if (pzlib_filefunc_def != NULL) {
             zlib_filefunc64_32_def zlib_filefunc64_32_def_fill;
@@ -1742,12 +1732,12 @@ namespace {
             return unzOpenInternal(path, NULL, 1);
     }
 
-    extern unzFile ZEXPORT unzOpen (const char* path)
+    unzFile  unzOpen (const char* path)
     {
         return unzOpenInternal(path, NULL, 0);
     }
 
-    extern unzFile ZEXPORT unzOpen64 (const void* path)
+    unzFile  unzOpen64 (const void* path)
     {
         return unzOpenInternal(path, NULL, 1);
     }
@@ -1757,7 +1747,7 @@ namespace {
       If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
         these files MUST be closed with unzCloseCurrentFile before call unzClose.
       return UNZ_OK if there is no problem. */
-    extern int ZEXPORT unzClose (unzFile file)
+    int  unzClose (unzFile file)
     {
         unz64_s* s;
         if (file == NULL)
@@ -1777,7 +1767,7 @@ namespace {
       Write info about the ZipFile in the *pglobal_info structure.
       No preparation of the structure is needed
       return UNZ_OK if there is no problem. */
-    extern int ZEXPORT unzGetGlobalInfo64 (unzFile file, unz_global_info64* pglobal_info)
+    int  unzGetGlobalInfo64 (unzFile file, unz_global_info64* pglobal_info)
     {
         unz64_s* s;
         if (file == NULL)
@@ -1787,7 +1777,7 @@ namespace {
         return UNZ_OK;
     }
 
-    int ZEXPORT unzGetGlobalInfo (unzFile file, unz_global_info* pglobal_info32)
+    int  unzGetGlobalInfo (unzFile file, unz_global_info* pglobal_info32)
     {
         unz64_s* s;
         if (file == NULL)
@@ -2045,11 +2035,11 @@ namespace {
       No preparation of the structure is needed
       return UNZ_OK if there is no problem.
     */
-    int ZEXPORT unzGetCurrentFileInfo64 (unzFile file,
-                                         unz_file_info64* pfile_info,
-                                         char* szFileName, uLong fileNameBufferSize,
-                                         void* extraField, uLong extraFieldBufferSize,
-                                         char* szComment,  uLong commentBufferSize)
+    int unzGetCurrentFileInfo64 (unzFile file,
+                                 unz_file_info64* pfile_info,
+                                 char* szFileName, uLong fileNameBufferSize,
+                                 void* extraField, uLong extraFieldBufferSize,
+                                 char* szComment,  uLong commentBufferSize)
     {
         return unz64local_GetCurrentFileInfoInternal(file, pfile_info, NULL,
                 szFileName, fileNameBufferSize,
@@ -2057,11 +2047,11 @@ namespace {
                 szComment, commentBufferSize);
     }
 
-    extern int ZEXPORT unzGetCurrentFileInfo (unzFile file,
-            unz_file_info* pfile_info,
-            char* szFileName, uLong fileNameBufferSize,
-            void* extraField, uLong extraFieldBufferSize,
-            char* szComment,  uLong commentBufferSize)
+    int  unzGetCurrentFileInfo (unzFile file,
+                                unz_file_info* pfile_info,
+                                char* szFileName, uLong fileNameBufferSize,
+                                void* extraField, uLong extraFieldBufferSize,
+                                char* szComment,  uLong commentBufferSize)
     {
         int err;
         unz_file_info64 file_info64;
@@ -2094,11 +2084,12 @@ namespace {
         }
         return err;
     }
+
     /*
       Set the current file of the zipfile to the first file.
       return UNZ_OK if there is no problem
     */
-    extern int ZEXPORT unzGoToFirstFile (unzFile file)
+    int  unzGoToFirstFile (unzFile file)
     {
         int err = UNZ_OK;
         unz64_s* s;
@@ -2119,7 +2110,7 @@ namespace {
       return UNZ_OK if there is no problem
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
-    extern int ZEXPORT unzGoToNextFile (unzFile  file)
+    int  unzGoToNextFile (unzFile  file)
     {
         unz64_s* s;
         int err;
@@ -2152,7 +2143,7 @@ namespace {
       UNZ_OK if the file is found. It becomes the current file.
       UNZ_END_OF_LIST_OF_FILE if the file is not found
     */
-    extern int ZEXPORT unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity)
+    int  unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity)
     {
         unz64_s* s;
         int err;
@@ -2226,7 +2217,7 @@ namespace {
     } unz_file_pos;
     */
 
-    extern int ZEXPORT unzGetFilePos64(unzFile file, unz64_file_pos*  file_pos)
+    int  unzGetFilePos64(unzFile file, unz64_file_pos*  file_pos)
     {
         unz64_s* s;
 
@@ -2242,9 +2233,7 @@ namespace {
         return UNZ_OK;
     }
 
-    extern int ZEXPORT unzGetFilePos(
-        unzFile file,
-        unz_file_pos* file_pos)
+    int  unzGetFilePos(unzFile file, unz_file_pos* file_pos)
     {
         unz64_file_pos file_pos64;
         int err = unzGetFilePos64(file, &file_pos64);
@@ -2255,7 +2244,7 @@ namespace {
         return err;
     }
 
-    extern int ZEXPORT unzGoToFilePos64(unzFile file, const unz64_file_pos* file_pos)
+    int  unzGoToFilePos64(unzFile file, const unz64_file_pos* file_pos)
     {
         unz64_s* s;
         int err;
@@ -2277,7 +2266,7 @@ namespace {
         return err;
     }
 
-    extern int ZEXPORT unzGoToFilePos(
+    int  unzGoToFilePos(
         unzFile file,
         unz_file_pos* file_pos)
     {
@@ -2388,8 +2377,8 @@ namespace {
       Open for reading data the current file in the zipfile.
       If there is no error and the file is opened, the return value is UNZ_OK.
     */
-    int ZEXPORT unzOpenCurrentFile3 (unzFile file, int* method,
-                                     int* level, int raw, const char* password)
+    int  unzOpenCurrentFile3 (unzFile file, int* method,
+                              int* level, int raw, const char* password)
     {
         int err = UNZ_OK;
         uInt iSizeVar;
@@ -2555,24 +2544,24 @@ namespace {
         return UNZ_OK;
     }
 
-    extern int ZEXPORT unzOpenCurrentFile (unzFile file)
+    int  unzOpenCurrentFile (unzFile file)
     {
         return unzOpenCurrentFile3(file, NULL, NULL, 0, NULL);
     }
 
-    extern int ZEXPORT unzOpenCurrentFilePassword (unzFile file, const char*  password)
+    int  unzOpenCurrentFilePassword (unzFile file, const char*  password)
     {
         return unzOpenCurrentFile3(file, NULL, NULL, 0, password);
     }
 
-    extern int ZEXPORT unzOpenCurrentFile2 (unzFile file, int* method, int* level, int raw)
+    int  unzOpenCurrentFile2 (unzFile file, int* method, int* level, int raw)
     {
         return unzOpenCurrentFile3(file, method, level, raw, NULL);
     }
 
     /** Addition for GDAL : START */
 
-    extern ZPOS64_T ZEXPORT unzGetCurrentFileZStreamPos64( unzFile file)
+    ZPOS64_T  unzGetCurrentFileZStreamPos64( unzFile file)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;
@@ -2598,7 +2587,7 @@ namespace {
       return <0 with error code if there is an error
         (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
-    extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
+    int  unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
     {
         int err = UNZ_OK;
         uInt iRead = 0;
@@ -2797,7 +2786,7 @@ namespace {
     /*
       Give the current position in uncompressed data
     */
-    extern z_off_t ZEXPORT unztell (unzFile file)
+    z_off_t  unztell (unzFile file)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;
@@ -2812,7 +2801,7 @@ namespace {
         return (z_off_t)pfile_in_zip_read_info->stream.total_out;
     }
 
-    extern ZPOS64_T ZEXPORT unztell64 (unzFile file)
+    ZPOS64_T  unztell64 (unzFile file)
     {
 
         unz64_s* s;
@@ -2832,7 +2821,7 @@ namespace {
     /*
       return 1 if the end of file was reached, 0 elsewhere
     */
-    extern int ZEXPORT unzeof (unzFile file)
+    int  unzeof (unzFile file)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;
@@ -2864,7 +2853,7 @@ namespace {
       the return value is the number of bytes copied in buf, or (if <0)
         the error code
     */
-    int ZEXPORT unzGetLocalExtrafield (unzFile file, voidp buf, unsigned len)
+    int  unzGetLocalExtrafield (unzFile file, voidp buf, unsigned len)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;
@@ -2912,7 +2901,7 @@ namespace {
       Close the file in zip opened with unzOpenCurrentFile
       Return UNZ_CRCERROR if all the file was read but the CRC is not good
     */
-    extern int ZEXPORT unzCloseCurrentFile (unzFile file)
+    int unzCloseCurrentFile (unzFile file)
     {
         int err = UNZ_OK;
 
@@ -2957,7 +2946,7 @@ namespace {
       uSizeBuf is the size of the szComment buffer.
       return the number of byte copied or an error code <0
     */
-    extern int ZEXPORT unzGetGlobalComment (unzFile file, char* szComment, uLong uSizeBuf)
+    int  unzGetGlobalComment (unzFile file, char* szComment, uLong uSizeBuf)
     {
         unz64_s* s;
         uLong uReadThis ;
@@ -2984,7 +2973,7 @@ namespace {
     }
 
     /* Additions by RX '2004 */
-    extern ZPOS64_T ZEXPORT unzGetOffset64(unzFile file)
+    ZPOS64_T  unzGetOffset64(unzFile file)
     {
         unz64_s* s;
 
@@ -2999,7 +2988,7 @@ namespace {
         return s->pos_in_central_dir;
     }
 
-    extern uLong ZEXPORT unzGetOffset (unzFile file)
+    uLong  unzGetOffset (unzFile file)
     {
         ZPOS64_T offset64;
 
@@ -3009,7 +2998,7 @@ namespace {
         return (uLong)offset64;
     }
 
-    extern int ZEXPORT unzSetOffset64(unzFile file, ZPOS64_T pos)
+    int  unzSetOffset64(unzFile file, ZPOS64_T pos)
     {
         unz64_s* s;
         int err;
@@ -3027,7 +3016,7 @@ namespace {
         return err;
     }
 
-    extern int ZEXPORT unzSetOffset (unzFile file, uLong pos)
+    int  unzSetOffset (unzFile file, uLong pos)
     {
         return unzSetOffset64(file, pos);
     }

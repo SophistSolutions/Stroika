@@ -6,7 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../../Configuration/Common.h"
 #include    "../../Streams/InputStream.h"
 
 #include    "../ArchiveReader.h"
