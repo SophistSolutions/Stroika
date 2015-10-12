@@ -293,9 +293,8 @@ namespace {
                 // Not working yet
                 Zip::ArchiveReader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_), end (ksample_zip_)));
 
-                // This test should work, but only after we implement the extract!
                 VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
-#if 0
+#if 1
                 {
                     using   Streams::InputStream;
                     using   Streams::TextReader;

@@ -14,10 +14,10 @@
 #include "bzlib.h"
 #endif
 
-
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Finally.h"
-#include    "../../Streams/iostream/InputStreamFromStdIStream.h"
+#include    "../../Streams/MemoryStream.h"
+//#include    "../../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "Reader.h"
 
@@ -166,7 +166,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-using   Streams::iostream::InputStreamFromStdIStream;
+//using   Streams::iostream::InputStreamFromStdIStream;
 
 
 namespace {
@@ -3059,7 +3059,7 @@ public:
             char filename_inzip[10 * 1024];
             unz_file_info64 file_info;
             uLong ratio = 0;
-            const char* string_method;
+            //const char* string_method;
             char charCrypt = ' ';
             err = unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK) {
@@ -3160,53 +3160,30 @@ public:
     }
     virtual Memory::BLOB    GetData (const String& fileName) const
     {
-#if 0
-        UInt32  idx =   GetIdx_ (fileName);
-        if (idx == -1) {
-            throw "bad";    //filenotfound
+        if (unzLocateFile (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) {
+            Execution::DoThrow (Execution::StringException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
         }
-
-        Byte* outBuffer = 0;            // it must be 0 before first call for each new archive
-        UInt32 blockIndex = 0xFFFFFFFF; // can have any value if outBuffer = 0
-        size_t outBufferSize = 0;       // can have any value if outBuffer = 0
-
-        size_t offset {};
-        size_t outSizeProcessed {};
-
-        Execution::Finally cleanup { [&outBuffer, this] {
-                IAlloc_Free (&fAllocImp_, outBuffer);
+        const char* password = nullptr;
+        int err = unzOpenCurrentFilePassword (fZipFile_, password);
+        Execution::Finally cleanup { [this] {
+                unzCloseCurrentFile (fZipFile_);
             }
         };
-
-        SRes ret;
-        if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
-            throw "bad";
-        }
-        return Memory::BLOB (outBuffer + offset, outBuffer + offset + outSizeProcessed);
-#endif
-        AssertNotImplemented ();
-        return Memory::BLOB {};
-    }
-#if 0
-    UInt32  GetIdx_ (const String& fn) const
-    {
-        // could create map to lookup once and maintain
-        for (UInt32 i = 0; i < fDB_.NumFiles; i++) {
-            if (not SzArEx_IsDir (&fDB_, i)) {
-                size_t nameLen = SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
-                if (nameLen < 1) {
-                    break;
-                }
-                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
-                size_t z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
-                if (String (&fileName[0]) == fn) {
-                    return i;
-                }
+        Streams::MemoryStream<Byte> tmpBuf;
+        do {
+            Byte    buf [10 * 1024];
+            err = unzReadCurrentFile (fZipFile_, buf, NEltsOf (buf));
+            if (err < 0) {
+                Execution::DoThrow (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
+            }
+            else if (err > 0) {
+                Assert (err <= NEltsOf(buf));
+                tmpBuf.Write (buf, buf + err);
             }
         }
-        return static_cast<UInt32> (-1);
+        while (err > 0);
+        return tmpBuf.As<Memory::BLOB> ();
     }
-#endif
 };
 
 Zip::ArchiveReader::ArchiveReader (const Streams::InputStream<Memory::Byte>& in)
