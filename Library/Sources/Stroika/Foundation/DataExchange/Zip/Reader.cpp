@@ -2960,7 +2960,7 @@ private:
         MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
             : fInStream_ (in)
         {
-			// @todo - VERY VERY ROUGH DRAFT - LITTLE ERROR CHECKING AND LITTLE ATETNETION TO >4GB files on 32-bit systems (must fix)
+            // @todo - VERY VERY ROUGH DRAFT - LITTLE ERROR CHECKING AND LITTLE ATETNETION TO >4GB files on 32-bit systems (must fix)
             this->zopen64_file = [] (voidpf opaque, const void* filename, int mode) -> voidpf {
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (not myThis->fOpened_);
@@ -2971,9 +2971,9 @@ private:
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
-				size_t sz = myThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + size);
-				Assert (sz <= size);
-				return sz;
+                size_t sz = myThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + size);
+                Assert (sz <= size);
+                return sz;
             };
             this->zwrite_file = [] (voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
                 RequireNotReached ();   // read only zip
@@ -2988,22 +2988,23 @@ private:
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
-				switch (origin) {
-					case ZLIB_FILEFUNC_SEEK_SET:
-						myThis->fInStream_.Seek (offset);
-						break;
-					case ZLIB_FILEFUNC_SEEK_CUR:
-						myThis->fInStream_.Seek (Streams::Whence::eFromCurrent, offset);
-						break;
-					case ZLIB_FILEFUNC_SEEK_END:
-						myThis->fInStream_.Seek (Streams::Whence::eFromEnd, offset);
-						break;
-					default:
-						AssertNotReached ();
-						//return SZ_ERROR_UNSUPPORTED;
-						return -1;
-				}
-				return 0;
+                switch (origin)
+                {
+                    case ZLIB_FILEFUNC_SEEK_SET:
+                        myThis->fInStream_.Seek (offset);
+                        break;
+                    case ZLIB_FILEFUNC_SEEK_CUR:
+                        myThis->fInStream_.Seek (Streams::Whence::eFromCurrent, offset);
+                        break;
+                    case ZLIB_FILEFUNC_SEEK_END:
+                        myThis->fInStream_.Seek (Streams::Whence::eFromEnd, offset);
+                        break;
+                    default:
+                        AssertNotReached ();
+                        //return SZ_ERROR_UNSUPPORTED;
+                        return -1;
+                }
+                return 0;
             };
             this->zclose_file = [] (voidpf opaque, voidpf stream) -> int {
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
@@ -3044,7 +3045,100 @@ public:
     virtual Set<String>     GetContainedFiles () const override
     {
         Set<String> result;
+        unz_global_info64   gi;
+        int                 err = unzGetGlobalInfo64 (fZipFile_, &gi);
+        if (err != UNZ_OK) {
+            Execution::DoThrow (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGetGlobalInfo", err)));
+        }
+        for (size_t i = 0; i < gi.number_entry; i++) {
+            char filename_inzip[10 * 1024];
+            unz_file_info64 file_info;
+            uLong ratio = 0;
+            const char* string_method;
+            char charCrypt = ' ';
+            err = unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+            if (err != UNZ_OK) {
+                Execution::DoThrow (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
+                break;
+            }
+            if ((i + 1) < gi.number_entry) {
+                err = unzGoToNextFile(fZipFile_);
+                if (err != UNZ_OK) {
+                    Execution::DoThrow (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
+                    break;
+                }
+            }
+            //tmphac
+            if (filename_inzip[::strlen(filename_inzip) - 1] == '/') {
+                continue;   // only list files - not directories for now
+            }
+            result.Add (String::FromAscii (filename_inzip));    // not sure about codepage for conversion?
+        }
 #if 0
+        // Keep temporarily, because we will want a traversal variant that captures this extra info
+        uLong i;
+        unz_global_info64 gi;
+        int err;
+
+        err = unzGetGlobalInfo64(uf, &gi);
+        if (err != UNZ_OK)
+            printf("error %d with zipfile in unzGetGlobalInfo \n", err);
+        printf("  Length  Method     Size Ratio   Date    Time   CRC-32     Name\n");
+        printf("  ------  ------     ---- -----   ----    ----   ------     ----\n");
+        for (i = 0; i < gi.number_entry; i++) {
+            char filename_inzip[256];
+            unz_file_info64 file_info;
+            uLong ratio = 0;
+            const char* string_method;
+            char charCrypt = ' ';
+            err = unzGetCurrentFileInfo64(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
+            if (err != UNZ_OK) {
+                printf("error %d with zipfile in unzGetCurrentFileInfo\n", err);
+                break;
+            }
+            if (file_info.uncompressed_size > 0)
+                ratio = (uLong)((file_info.compressed_size * 100) / file_info.uncompressed_size);
+
+            /* display a '*' if the file is crypted */
+            if ((file_info.flag & 1) != 0)
+                charCrypt = '*';
+
+            if (file_info.compression_method == 0)
+                string_method = "Stored";
+            else if (file_info.compression_method == Z_DEFLATED) {
+                uInt iLevel = (uInt)((file_info.flag & 0x6) / 2);
+                if (iLevel == 0)
+                    string_method = "Defl:N";
+                else if (iLevel == 1)
+                    string_method = "Defl:X";
+                else if ((iLevel == 2) || (iLevel == 3))
+                    string_method = "Defl:F"; /* 2:fast , 3 : extra fast*/
+            }
+            else if (file_info.compression_method == Z_BZIP2ED) {
+                string_method = "BZip2 ";
+            }
+            else
+                string_method = "Unkn. ";
+
+            Display64BitsSize(file_info.uncompressed_size, 7);
+            printf("  %6s%c", string_method, charCrypt);
+            Display64BitsSize(file_info.compressed_size, 7);
+            printf(" %3lu%%  %2.2lu-%2.2lu-%2.2lu  %2.2lu:%2.2lu  %8.8lx   %s\n",
+                   ratio,
+                   (uLong)file_info.tmu_date.tm_mon + 1,
+                   (uLong)file_info.tmu_date.tm_mday,
+                   (uLong)file_info.tmu_date.tm_year % 100,
+                   (uLong)file_info.tmu_date.tm_hour, (uLong)file_info.tmu_date.tm_min,
+                   (uLong)file_info.crc, filename_inzip);
+            if ((i + 1) < gi.number_entry) {
+                err = unzGoToNextFile(uf);
+                if (err != UNZ_OK) {
+                    printf("error %d with zipfile in unzGoToNextFile\n", err);
+                    break;
+                }
+            }
+        }
+
         for (unsigned int i = 0; i < fDB_.NumFiles; i++) {
             if (not SzArEx_IsDir (&fDB_, i)) {
                 size_t nameLen = ::SzArEx_GetFileNameUtf16 (&fDB_, i, nullptr);
