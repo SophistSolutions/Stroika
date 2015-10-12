@@ -160,6 +160,10 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/lzma.a
 	endif
 
+	ifeq ($(qFeatureFlag_ZLib), 'use')
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/zlib.a
+	endif
+
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcrypto.a -ldl
 	endif

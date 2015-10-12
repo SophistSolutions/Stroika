@@ -527,7 +527,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
 	print (OUT "qFeatureFlag_ATLMFC='$FEATUREFLAG_ATLMFC'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
-	print (OUT "qFeatureFlag_LibZLib='$FEATUREFLAG_ZLib'\n");
+	print (OUT "qFeatureFlag_ZLib='$FEATUREFLAG_ZLib'\n");
 	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
 
 
