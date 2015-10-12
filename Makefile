@@ -65,10 +65,7 @@ clobber:
 
 
 documentation:
-ifeq (,$(findstring CYGWIN,$(shell uname)))
-	@(type doxygen) > /dev/null
-endif
-	@cd Documentation/Doxygen && perl ./RunDoxygen.pl
+	@$(MAKE) --directory Documentation --no-print-directory all
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
