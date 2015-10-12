@@ -28,8 +28,9 @@ namespace   Stroika {
         namespace   DataExchange {
 
 
-            using    Containers::Set;
+            using   Containers::Set;
             using   Characters::String;
+            using   Memory::BLOB;
 
 
             /**
@@ -48,11 +49,15 @@ namespace   Stroika {
                 explicit ArchiveReader (const shared_ptr<_IRep>& rep);
 
             public:
+                /**
+                 */
                 nonvirtual  Set<String>     GetContainedFiles () const;
 
             public:
-                // maybe define iterator/indexes and maybe have return stream
-                Memory::BLOB    GetData (const String& fileName) const;
+                /**
+                 *  maybe define iterator/indexes and maybe have return stream
+                 */
+                nonvirtual  BLOB    GetData (const String& fileName) const;
 
             protected:
                 nonvirtual  _IRep&          _GetRep ();
@@ -63,10 +68,12 @@ namespace   Stroika {
             };
 
 
+            /**
+             */
             class   ArchiveReader::_IRep {
             public:
-                virtual Set<String>     GetContainedFiles () const      =   0;
-                virtual Memory::BLOB    GetData (const String& fileName) const = 0;
+                virtual Set<String> GetContainedFiles () const      =   0;
+                virtual BLOB        GetData (const String& fileName) const = 0;
             };
 
 
