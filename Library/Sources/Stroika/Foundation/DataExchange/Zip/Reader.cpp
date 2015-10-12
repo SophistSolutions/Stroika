@@ -153,7 +153,6 @@
 
 #if     qHasFeature_ZLib
 #include    <zlib.h>
-#endif
 
 
 #if     qHasFeature_ZLib && defined (_MSC_VER)
@@ -179,10 +178,8 @@ namespace {
 namespace {
 #define CRC32(c, b) ((*(pcrc_32_tab+(((int)(c) ^ (b)) & 0xff))) ^ ((c) >> 8))
 
-    /***********************************************************************
-     * Return the next byte in the pseudo-random sequence
-     */
-    static int decrypt_byte(unsigned long* pkeys, const z_crc_t* pcrc_32_tab)
+    //  Return the next byte in the pseudo-random sequence
+    int decrypt_byte (unsigned long* pkeys, const z_crc_t* pcrc_32_tab)
     {
         unsigned temp;  /* POTENTIAL BUG:  temp*(temp^1) may overflow in an
                      * unpredictable manner on 16-bit systems; not a problem
@@ -191,26 +188,21 @@ namespace {
         return (int)(((temp * (temp ^ 1)) >> 8) & 0xff);
     }
 
-    /***********************************************************************
-     * Update the encryption keys with the next byte of plain text
-     */
-    static int update_keys(unsigned long* pkeys, const z_crc_t* pcrc_32_tab, int c)
+    //  Update the encryption keys with the next byte of plain text
+    int update_keys (unsigned long* pkeys, const z_crc_t* pcrc_32_tab, int c)
     {
         (*(pkeys + 0)) = CRC32((*(pkeys + 0)), c);
         (*(pkeys + 1)) += (*(pkeys + 0)) & 0xff;
         (*(pkeys + 1)) = (*(pkeys + 1)) * 134775813L + 1;
         {
-            register int keyshift = (int)((*(pkeys + 1)) >> 24);
+            int keyshift = (int)((*(pkeys + 1)) >> 24);
             (*(pkeys + 2)) = CRC32((*(pkeys + 2)), keyshift);
         }
         return c;
     }
 
-    /***********************************************************************
-     * Initialize the encryption keys and the random header according to
-     * the given password.
-     */
-    static void init_keys(const char* passwd, unsigned long* pkeys, const z_crc_t* pcrc_32_tab)
+    //  Initialize the encryption keys and the random header according to the given password.
+    void init_keys (const char* passwd, unsigned long* pkeys, const z_crc_t* pcrc_32_tab)
     {
         *(pkeys + 0) = 305419896L;
         *(pkeys + 1) = 591751049L;
@@ -229,17 +221,15 @@ namespace {
 
 
 #define RAND_HEAD_LEN  12
-    /* "last resort" source for second part of crypt seed pattern */
-#  ifndef ZCR_SEED2
-#    define ZCR_SEED2 3141592654UL     /* use PI as default pattern */
-#  endif
 
-    static int crypthead(const char* passwd,      /* password string */
-                         unsigned char* buf,      /* where to write header */
-                         int bufSize,
-                         unsigned long* pkeys,
-                         const z_crc_t* pcrc_32_tab,
-                         unsigned long crcForCrypting)
+    /* "last resort" source for second part of crypt seed pattern */
+    constexpr   unsigned int    ZCR_SEED2   =   3141592654UL;     /* use PI as default pattern */
+
+    int crypthead(const char* passwd,      /* password string */
+                  unsigned char* buf,      /* where to write header */
+                  int bufSize, unsigned long* pkeys,
+                  const z_crc_t* pcrc_32_tab, unsigned long crcForCrypting
+                 )
     {
         int n;                       /* index in random header */
         int t;                       /* temporary */
@@ -349,23 +339,14 @@ namespace {
 #define ZLIB_FILEFUNC_MODE_EXISTING (4)
 #define ZLIB_FILEFUNC_MODE_CREATE   (8)
 
+    typedef voidpf   (* open_file_func)      (voidpf opaque, const char* filename, int mode);
+    typedef uLong    (* read_file_func)      (voidpf opaque, voidpf stream, void* buf, uLong size);
+    typedef uLong    (* write_file_func)     (voidpf opaque, voidpf stream, const void* buf, uLong size);
+    typedef int      (* close_file_func)     (voidpf opaque, voidpf stream);
+    typedef int      (* testerror_file_func) (voidpf opaque, voidpf stream);
 
-#ifndef ZCALLBACK
-#if (defined(WIN32) || defined(_WIN32) || defined (WINDOWS) || defined (_WINDOWS)) && defined(CALLBACK) && defined (USEWINDOWS_CALLBACK)
-#define ZCALLBACK CALLBACK
-#else
-#define ZCALLBACK
-#endif
-#endif
-
-    typedef voidpf   (ZCALLBACK* open_file_func)      OF((voidpf opaque, const char* filename, int mode));
-    typedef uLong    (ZCALLBACK* read_file_func)      OF((voidpf opaque, voidpf stream, void* buf, uLong size));
-    typedef uLong    (ZCALLBACK* write_file_func)     OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
-    typedef int      (ZCALLBACK* close_file_func)     OF((voidpf opaque, voidpf stream));
-    typedef int      (ZCALLBACK* testerror_file_func) OF((voidpf opaque, voidpf stream));
-
-    typedef long     (ZCALLBACK* tell_file_func)      OF((voidpf opaque, voidpf stream));
-    typedef long     (ZCALLBACK* seek_file_func)      OF((voidpf opaque, voidpf stream, uLong offset, int origin));
+    typedef long     (* tell_file_func)      (voidpf opaque, voidpf stream);
+    typedef long     (* seek_file_func)      (voidpf opaque, voidpf stream, uLong offset, int origin);
 
 
     /* here is the "old" 32 bits structure structure */
@@ -380,9 +361,9 @@ namespace {
         voidpf              opaque;
     };
 
-    typedef ZPOS64_T (ZCALLBACK* tell64_file_func)    OF((voidpf opaque, voidpf stream));
-    typedef long     (ZCALLBACK* seek64_file_func)    OF((voidpf opaque, voidpf stream, ZPOS64_T offset, int origin));
-    typedef voidpf   (ZCALLBACK* open64_file_func)    OF((voidpf opaque, const void* filename, int mode));
+    typedef ZPOS64_T (* tell64_file_func)    (voidpf opaque, voidpf stream);
+    typedef long     (* seek64_file_func)    (voidpf opaque, voidpf stream, ZPOS64_T offset, int origin);
+    typedef voidpf   (* open64_file_func)    (voidpf opaque, const void* filename, int mode);
 
     struct zlib_filefunc64_def {
         open64_file_func    zopen64_file;
@@ -395,22 +376,20 @@ namespace {
         voidpf              opaque;
     };
 
-    void fill_fopen64_filefunc OF((zlib_filefunc64_def* pzlib_filefunc_def));
-    void fill_fopen_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def));
+    void fill_fopen64_filefunc (zlib_filefunc64_def* pzlib_filefunc_def);
+    void fill_fopen_filefunc (zlib_filefunc_def* pzlib_filefunc_def);
 
     /* now internal definition, only for zip.c and unzip.h */
-    typedef struct zlib_filefunc64_32_def_s {
+    struct zlib_filefunc64_32_def {
         zlib_filefunc64_def zfile_func64;
         open_file_func      zopen32_file;
         tell_file_func      ztell32_file;
         seek_file_func      zseek32_file;
-    } zlib_filefunc64_32_def;
+    };
 
 
 #define ZREAD64(filefunc,filestream,buf,size)     ((*((filefunc).zfile_func64.zread_file))   ((filefunc).zfile_func64.opaque,filestream,buf,size))
 #define ZWRITE64(filefunc,filestream,buf,size)    ((*((filefunc).zfile_func64.zwrite_file))  ((filefunc).zfile_func64.opaque,filestream,buf,size))
-//#define ZTELL64(filefunc,filestream)            ((*((filefunc).ztell64_file)) ((filefunc).opaque,filestream))
-//#define ZSEEK64(filefunc,filestream,pos,mode)   ((*((filefunc).zseek64_file)) ((filefunc).opaque,filestream,pos,mode))
 #define ZCLOSE64(filefunc,filestream)             ((*((filefunc).zfile_func64.zclose_file))  ((filefunc).zfile_func64.opaque,filestream))
 #define ZERROR64(filefunc,filestream)             ((*((filefunc).zfile_func64.zerror_file))  ((filefunc).zfile_func64.opaque,filestream))
 
@@ -477,14 +456,14 @@ namespace {
         uLong size_comment;         /* size of the global comment of the zipfile */
     };
 
-    typedef struct unz_global_info_s {
+    struct unz_global_info {
         uLong number_entry;         /* total number of entries in
                                      the central dir on this disk */
         uLong size_comment;         /* size of the global comment of the zipfile */
-    } unz_global_info;
+    };
 
     /* unz_file_info contain information about a file in the zipfile */
-    typedef struct unz_file_info64_s {
+    struct unz_file_info64 {
         uLong version;              /* version made by                 2 bytes */
         uLong version_needed;       /* version needed to extract       2 bytes */
         uLong flag;                 /* general purpose bit flag        2 bytes */
@@ -502,9 +481,9 @@ namespace {
         uLong external_fa;          /* external file attributes        4 bytes */
 
         tm_unz tmu_date;
-    } unz_file_info64;
+    };
 
-    typedef struct unz_file_info_s {
+    struct unz_file_info {
         uLong version;              /* version made by                 2 bytes */
         uLong version_needed;       /* version needed to extract       2 bytes */
         uLong flag;                 /* general purpose bit flag        2 bytes */
@@ -522,11 +501,9 @@ namespace {
         uLong external_fa;          /* external file attributes        4 bytes */
 
         tm_unz tmu_date;
-    } unz_file_info;
+    };
 
-    int unzStringFileNameCompare OF ((const char* fileName1,
-                                      const char* fileName2,
-                                      int iCaseSensitivity));
+    int unzStringFileNameCompare (const char* fileName1, const char* fileName2, int iCaseSensitivity);
     /*
        Compare two filename (fileName1,fileName2).
        If iCaseSenisivity = 1, comparision is case sensitivity (like strcmp)
@@ -537,8 +514,8 @@ namespace {
     */
 
 
-    unzFile unzOpen OF((const char* path));
-    unzFile unzOpen64 OF((const void* path));
+    unzFile unzOpen (const char* path);
+    unzFile unzOpen64 (const void* path);
     /*
       Open a Zip file. path contain the full pathname (by example,
          on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
@@ -586,14 +563,14 @@ namespace {
       return UNZ_OK if there is no problem. */
 
 
-    int unzGetGlobalComment OF((unzFile file,
-                                char* szComment,
-                                uLong uSizeBuf));
     /*
       Get the global comment string of the ZipFile, in the szComment buffer.
       uSizeBuf is the size of the szComment buffer.
       return the number of byte copied or an error code <0
     */
+    int unzGetGlobalComment OF((unzFile file,
+                                char* szComment,
+                                uLong uSizeBuf));
 
 
     /***************************************************************************/
@@ -612,9 +589,7 @@ namespace {
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
 
-    int unzLocateFile OF((unzFile file,
-                          const char* szFileName,
-                          int iCaseSensitivity));
+    int unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity);
     /*
       Try locate the file szFileName in the zipfile.
       For the iCaseSensitivity signification, see unzStringFileNameCompare
@@ -628,48 +603,42 @@ namespace {
     /* ****************************************** */
     /* Ryan supplied functions */
     /* unz_file_info contain information about a file in the zipfile */
-    typedef struct unz_file_pos_s {
+    struct unz_file_pos {
         uLong pos_in_zip_directory;   /* offset in zip file directory */
         uLong num_of_file;            /* # of file */
-    } unz_file_pos;
+    };
 
-    int unzGetFilePos(
-        unzFile file,
-        unz_file_pos* file_pos);
+    int unzGetFilePos(unzFile file, unz_file_pos* file_pos);
 
-    int unzGoToFilePos(
-        unzFile file,
-        unz_file_pos* file_pos);
+    int unzGoToFilePos(unzFile file, unz_file_pos* file_pos);
 
-    typedef struct unz64_file_pos_s {
+    struct unz64_file_pos {
         ZPOS64_T pos_in_zip_directory;   /* offset in zip file directory */
         ZPOS64_T num_of_file;            /* # of file */
-    } unz64_file_pos;
+    };
 
-    int unzGetFilePos64(
-        unzFile file,
-        unz64_file_pos* file_pos);
+    int unzGetFilePos64(unzFile file, unz64_file_pos* file_pos);
 
     int unzGoToFilePos64(unzFile file, const unz64_file_pos* file_pos);
 
     /* ****************************************** */
-    int unzGetCurrentFileInfo64 OF((unzFile file,
-                                    unz_file_info64* pfile_info,
-                                    char* szFileName,
-                                    uLong fileNameBufferSize,
-                                    void* extraField,
-                                    uLong extraFieldBufferSize,
-                                    char* szComment,
-                                    uLong commentBufferSize));
+    int unzGetCurrentFileInfo64 (unzFile file,
+                                 unz_file_info64* pfile_info,
+                                 char* szFileName,
+                                 uLong fileNameBufferSize,
+                                 void* extraField,
+                                 uLong extraFieldBufferSize,
+                                 char* szComment,
+                                 uLong commentBufferSize);
 
-    int unzGetCurrentFileInfo OF((unzFile file,
-                                  unz_file_info* pfile_info,
-                                  char* szFileName,
-                                  uLong fileNameBufferSize,
-                                  void* extraField,
-                                  uLong extraFieldBufferSize,
-                                  char* szComment,
-                                  uLong commentBufferSize));
+    int unzGetCurrentFileInfo (unzFile file,
+                               unz_file_info* pfile_info,
+                               char* szFileName,
+                               uLong fileNameBufferSize,
+                               void* extraField,
+                               uLong extraFieldBufferSize,
+                               char* szComment,
+                               uLong commentBufferSize);
     /*
       Get Info about the current file
       if pfile_info!=NULL, the *pfile_info structure will contain somes info about
@@ -844,8 +813,6 @@ namespace {
 #endif
 
 
-//#include "ioapi.h"
-
 namespace {
 
     voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode)
@@ -901,15 +868,15 @@ namespace {
 
 
 
-    static voidpf  ZCALLBACK fopen_file_func OF((voidpf opaque, const char* filename, int mode));
-    static uLong   ZCALLBACK fread_file_func OF((voidpf opaque, voidpf stream, void* buf, uLong size));
-    static uLong   ZCALLBACK fwrite_file_func OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
-    static ZPOS64_T ZCALLBACK ftell64_file_func OF((voidpf opaque, voidpf stream));
-    static long    ZCALLBACK fseek64_file_func OF((voidpf opaque, voidpf stream, ZPOS64_T offset, int origin));
-    static int     ZCALLBACK fclose_file_func OF((voidpf opaque, voidpf stream));
-    static int     ZCALLBACK ferror_file_func OF((voidpf opaque, voidpf stream));
+    static voidpf   fopen_file_func OF((voidpf opaque, const char* filename, int mode));
+    static uLong    fread_file_func OF((voidpf opaque, voidpf stream, void* buf, uLong size));
+    static uLong    fwrite_file_func OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
+    static ZPOS64_T  ftell64_file_func OF((voidpf opaque, voidpf stream));
+    static long     fseek64_file_func OF((voidpf opaque, voidpf stream, ZPOS64_T offset, int origin));
+    static int      fclose_file_func OF((voidpf opaque, voidpf stream));
+    static int      ferror_file_func OF((voidpf opaque, voidpf stream));
 
-    static voidpf ZCALLBACK fopen_file_func (voidpf opaque, const char* filename, int mode)
+    static voidpf  fopen_file_func (voidpf opaque, const char* filename, int mode)
     {
         FILE* file = NULL;
         const char* mode_fopen = NULL;
@@ -925,7 +892,7 @@ namespace {
         return file;
     }
 
-    static voidpf ZCALLBACK fopen64_file_func (voidpf opaque, const void* filename, int mode)
+    static voidpf  fopen64_file_func (voidpf opaque, const void* filename, int mode)
     {
         FILE* file = NULL;
         const char* mode_fopen = NULL;
@@ -941,21 +908,21 @@ namespace {
         return file;
     }
 
-    static uLong ZCALLBACK fread_file_func (voidpf opaque, voidpf stream, void* buf, uLong size)
+    static uLong  fread_file_func (voidpf opaque, voidpf stream, void* buf, uLong size)
     {
         uLong ret;
         ret = (uLong)fread(buf, 1, (size_t)size, (FILE*)stream);
         return ret;
     }
 
-    static uLong ZCALLBACK fwrite_file_func (voidpf opaque, voidpf stream, const void* buf, uLong size)
+    static uLong  fwrite_file_func (voidpf opaque, voidpf stream, const void* buf, uLong size)
     {
         uLong ret;
         ret = (uLong)fwrite(buf, 1, (size_t)size, (FILE*)stream);
         return ret;
     }
 
-    static long ZCALLBACK ftell_file_func (voidpf opaque, voidpf stream)
+    static long  ftell_file_func (voidpf opaque, voidpf stream)
     {
         long ret;
         ret = ftell((FILE*)stream);
@@ -963,14 +930,14 @@ namespace {
     }
 
 
-    static ZPOS64_T ZCALLBACK ftell64_file_func (voidpf opaque, voidpf stream)
+    static ZPOS64_T  ftell64_file_func (voidpf opaque, voidpf stream)
     {
         ZPOS64_T ret;
         ret = FTELLO_FUNC((FILE*)stream);
         return ret;
     }
 
-    static long ZCALLBACK fseek_file_func (voidpf  opaque, voidpf stream, uLong offset, int origin)
+    static long  fseek_file_func (voidpf  opaque, voidpf stream, uLong offset, int origin)
     {
         int fseek_origin = 0;
         long ret;
@@ -993,7 +960,7 @@ namespace {
         return ret;
     }
 
-    static long ZCALLBACK fseek64_file_func (voidpf  opaque, voidpf stream, ZPOS64_T offset, int origin)
+    static long  fseek64_file_func (voidpf  opaque, voidpf stream, ZPOS64_T offset, int origin)
     {
         int fseek_origin = 0;
         long ret;
@@ -1019,14 +986,14 @@ namespace {
     }
 
 
-    static int ZCALLBACK fclose_file_func (voidpf opaque, voidpf stream)
+    static int  fclose_file_func (voidpf opaque, voidpf stream)
     {
         int ret;
         ret = fclose((FILE*)stream);
         return ret;
     }
 
-    static int ZCALLBACK ferror_file_func (voidpf opaque, voidpf stream)
+    static int  ferror_file_func (voidpf opaque, voidpf stream)
     {
         int ret;
         ret = ferror((FILE*)stream);
@@ -1143,7 +1110,7 @@ namespace {
 
     /* unz64_s contain internal information about the zipfile
     */
-    typedef struct {
+    struct unz64_s {
         zlib_filefunc64_32_def z_filefunc;
         int is64bitOpenFunction;
         voidpf filestream;        /* io structore of the zipfile */
@@ -1170,7 +1137,7 @@ namespace {
         unsigned long keys[3];     /* keys defining the pseudo-random sequence */
         const z_crc_t* pcrc_32_tab;
 #    endif
-    } unz64_s;
+    };
 
 
     /* ===========================================================================
@@ -1178,13 +1145,6 @@ namespace {
        for end of file.
        IN assertion: the stream s has been sucessfully opened for reading.
     */
-
-
-    int unz64local_getByte OF((
-                                  const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                  voidpf filestream,
-                                  int* pi));
-
     int unz64local_getByte(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream, int* pi)
     {
         unsigned char c;
@@ -1205,9 +1165,7 @@ namespace {
     /* ===========================================================================
        Reads a long in LSB order from the given gz_stream. Sets
     */
-    int unz64local_getShort (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                             voidpf filestream,
-                             uLong* pX)
+    int unz64local_getShort (const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream, uLong* pX)
     {
         uLong x ;
         int i = 0;
@@ -1227,9 +1185,7 @@ namespace {
         return err;
     }
 
-    int unz64local_getLong (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                            voidpf filestream,
-                            uLong* pX)
+    int unz64local_getLong (const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream, uLong* pX)
     {
         uLong x ;
         int i = 0;
@@ -1257,9 +1213,7 @@ namespace {
         return err;
     }
 
-    int unz64local_getLong64 (const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                              voidpf filestream,
-                              ZPOS64_T* pX)
+    int unz64local_getLong64 (const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream, ZPOS64_T* pX)
     {
         ZPOS64_T x ;
         int i = 0;
@@ -1425,8 +1379,7 @@ namespace {
       Locate the Central directory 64 of a zipfile (at the end, just before
         the global comment)
     */
-    ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib_filefunc_def,
-                                           voidpf filestream)
+    ZPOS64_T unz64local_SearchCentralDir64(const zlib_filefunc64_32_def* pzlib_filefunc_def, voidpf filestream)
     {
         unsigned char* buf;
         ZPOS64_T uSizeFile;
@@ -1529,9 +1482,7 @@ namespace {
          Else, the return value is a unzFile Handle, usable with other function
            of this unzip package.
     */
-    unzFile unzOpenInternal (const void* path,
-                             zlib_filefunc64_32_def* pzlib_filefunc64_32_def,
-                             int is64bitOpenFunction)
+    unzFile unzOpenInternal (const void* path, zlib_filefunc64_32_def* pzlib_filefunc64_32_def, int is64bitOpenFunction)
     {
         unz64_s us;
         unz64_s* s;
@@ -1705,9 +1656,7 @@ namespace {
         return (unzFile)s;
     }
 
-
-    unzFile  unzOpen2 (const char* path,
-                       zlib_filefunc_def* pzlib_filefunc32_def)
+    unzFile  unzOpen2 (const char* path, zlib_filefunc_def* pzlib_filefunc32_def)
     {
         if (pzlib_filefunc32_def != NULL) {
             zlib_filefunc64_32_def zlib_filefunc64_32_def_fill;
@@ -1718,8 +1667,7 @@ namespace {
             return unzOpenInternal(path, NULL, 0);
     }
 
-    unzFile  unzOpen2_64 (const void* path,
-                          zlib_filefunc64_def* pzlib_filefunc_def)
+    unzFile  unzOpen2_64 (const void* path, zlib_filefunc64_def* pzlib_filefunc_def)
     {
         if (pzlib_filefunc_def != NULL) {
             zlib_filefunc64_32_def zlib_filefunc64_32_def_fill;
@@ -1807,16 +1755,7 @@ namespace {
     /*
       Get Info about the current file in the zipfile, with internal only info
     */
-    int unz64local_GetCurrentFileInfoInternal (unzFile file,
-            unz_file_info64* pfile_info,
-            unz_file_info64_internal
-            *pfile_info_internal,
-            char* szFileName,
-            uLong fileNameBufferSize,
-            void* extraField,
-            uLong extraFieldBufferSize,
-            char* szComment,
-            uLong commentBufferSize)
+    int unz64local_GetCurrentFileInfoInternal (unzFile file, unz_file_info64* pfile_info, unz_file_info64_internal* pfile_info_internal, char* szFileName, uLong fileNameBufferSize, void* extraField,  uLong extraFieldBufferSize,  char* szComment,  uLong commentBufferSize)
     {
         unz64_s* s;
         unz_file_info64 file_info;
@@ -2035,23 +1974,12 @@ namespace {
       No preparation of the structure is needed
       return UNZ_OK if there is no problem.
     */
-    int unzGetCurrentFileInfo64 (unzFile file,
-                                 unz_file_info64* pfile_info,
-                                 char* szFileName, uLong fileNameBufferSize,
-                                 void* extraField, uLong extraFieldBufferSize,
-                                 char* szComment,  uLong commentBufferSize)
+    int unzGetCurrentFileInfo64 (unzFile file,  unz_file_info64* pfile_info, char* szFileName, uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize, char* szComment,  uLong commentBufferSize)
     {
-        return unz64local_GetCurrentFileInfoInternal(file, pfile_info, NULL,
-                szFileName, fileNameBufferSize,
-                extraField, extraFieldBufferSize,
-                szComment, commentBufferSize);
+        return unz64local_GetCurrentFileInfoInternal(file, pfile_info, NULL, szFileName, fileNameBufferSize, extraField, extraFieldBufferSize, szComment, commentBufferSize);
     }
 
-    int  unzGetCurrentFileInfo (unzFile file,
-                                unz_file_info* pfile_info,
-                                char* szFileName, uLong fileNameBufferSize,
-                                void* extraField, uLong extraFieldBufferSize,
-                                char* szComment,  uLong commentBufferSize)
+    int  unzGetCurrentFileInfo (unzFile file, unz_file_info* pfile_info, char* szFileName, uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize, char* szComment,  uLong commentBufferSize)
     {
         int err;
         unz_file_info64 file_info64;
@@ -2291,9 +2219,7 @@ namespace {
       store in *piSizeVar the size of extra info in local header
             (filename and size of extra field data)
     */
-    int unz64local_CheckCurrentFileCoherencyHeader (unz64_s* s, uInt* piSizeVar,
-            ZPOS64_T* poffset_local_extrafield,
-            uInt*   psize_local_extrafield)
+    int unz64local_CheckCurrentFileCoherencyHeader (unz64_s* s, uInt* piSizeVar, ZPOS64_T* poffset_local_extrafield, uInt*   psize_local_extrafield)
     {
         uLong uMagic, uData, uFlags;
         uLong size_filename;
@@ -2377,8 +2303,7 @@ namespace {
       Open for reading data the current file in the zipfile.
       If there is no error and the file is opened, the return value is UNZ_OK.
     */
-    int  unzOpenCurrentFile3 (unzFile file, int* method,
-                              int* level, int raw, const char* password)
+    int  unzOpenCurrentFile3 (unzFile file, int* method, int* level, int raw, const char* password)
     {
         int err = UNZ_OK;
         uInt iSizeVar;
@@ -2539,7 +2464,6 @@ namespace {
             s->encrypted = 1;
         }
 #    endif
-
 
         return UNZ_OK;
     }
@@ -2782,7 +2706,6 @@ namespace {
         return err;
     }
 
-
     /*
       Give the current position in uncompressed data
     */
@@ -2816,7 +2739,6 @@ namespace {
 
         return pfile_in_zip_read_info->total_out_64;
     }
-
 
     /*
       return 1 if the end of file was reached, 0 elsewhere
@@ -3023,8 +2945,7 @@ namespace {
 
 }
 ///////////////////////////////// END OF unzip.c ////////////////////
-
-
+#endif
 
 
 
