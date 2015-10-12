@@ -110,13 +110,13 @@ namespace {
     {
         // @todo - must support other formats, have a registry, and autodetect
 #if     qHasFeature_LZMA
-		if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
-			return move (_7z::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
-		}
+        if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
+            return move (_7z::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
+        }
 #elif   qHasFeature_ZLib
-		if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
-			return move (Zip::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
-		}
+        if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
+            return move (Zip::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
+        }
 #endif
         Execution::DoThrow (Execution::StringException (L"Unrecognized format"));
     }

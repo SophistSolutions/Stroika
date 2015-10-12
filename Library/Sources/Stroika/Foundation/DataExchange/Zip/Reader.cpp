@@ -2956,15 +2956,18 @@ class   Zip::ArchiveReader::Rep_ : public ArchiveReader::_IRep {
 private:
     struct MyISeekInStream  : zlib_filefunc64_def {
         Streams::InputStream<Memory::Byte>  fInStream_;
+#if     qDebug
         bool                                fOpened_ { false };
+#endif
         MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
             : fInStream_ (in)
         {
-            // @todo - VERY VERY ROUGH DRAFT - LITTLE ERROR CHECKING AND LITTLE ATETNETION TO >4GB files on 32-bit systems (must fix)
             this->zopen64_file = [] (voidpf opaque, const void* filename, int mode) -> voidpf {
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+#if     qDebug
                 Assert (not myThis->fOpened_);
                 myThis->fOpened_ = true;
+#endif
                 return myThis;
             };
             this->zread_file = [] (voidpf opaque, voidpf stream, void* buf, uLong size) -> uLong {
@@ -2977,6 +2980,7 @@ private:
             };
             this->zwrite_file = [] (voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
                 RequireNotReached ();   // read only zip
+                return UNZ_PARAMERROR;
             };
             this->ztell64_file = [] (voidpf opaque, voidpf stream) -> ZPOS64_T {
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
@@ -3001,23 +3005,24 @@ private:
                         break;
                     default:
                         AssertNotReached ();
-                        //return SZ_ERROR_UNSUPPORTED;
-                        return -1;
+                        return UNZ_PARAMERROR;
                 }
-                return 0;
+                return UNZ_OK;
             };
             this->zclose_file = [] (voidpf opaque, voidpf stream) -> int {
+#if     qDebug
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
                 myThis->fOpened_ = false;
-                return 0;
+#endif
+                return UNZ_OK;
             };
             this->zerror_file = [] (voidpf opaque, voidpf stream) -> int {
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
-                return 0;       // @todo - see what this means?
+                return UNZ_OK;       // @todo - see what this means?
             };
             this->opaque = this;
         }
