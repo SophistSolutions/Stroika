@@ -576,11 +576,12 @@ namespace {
     /***************************************************************************/
     /* Unzip package allow you browse the directory of the zipfile */
 
-    int unzGoToFirstFile OF((unzFile file));
+
     /*
       Set the current file of the zipfile to the first file.
       return UNZ_OK if there is no problem
     */
+    int unzGoToFirstFile (unzFile file);
 
     int unzGoToNextFile OF((unzFile file));
     /*
@@ -1069,8 +1070,7 @@ namespace {
 #define SIZEZIPLOCALHEADER (0x1e)
 
 
-    const char unz_copyright[] =
-        " unzip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
+    const char unz_copyright[] = " unzip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
 
     /* unz_file_info_interntal contain internal info about a file in zipfile*/
     typedef struct unz_file_info64_internal_s {
@@ -1498,9 +1498,6 @@ namespace {
                                    (same than number_entry on nospan) */
 
         int err = UNZ_OK;
-
-        if (unz_copyright[0] != ' ')
-            return NULL;
 
         us.z_filefunc.zseek32_file = NULL;
         us.z_filefunc.ztell32_file = NULL;
@@ -2955,100 +2952,94 @@ namespace {
 
 
 #if     qHasFeature_ZLib
-namespace {
-    struct InitOnce_ {
-        InitOnce_ ()
-        {
-        }
-    } sInitOnce_;
-}
-
 class   Zip::ArchiveReader::Rep_ : public ArchiveReader::_IRep {
 private:
-#if 0
-    // could do smarter/block allocation or arena allocation, but KISS for now
-    static    void* Alloc_ (void* p, size_t size)
-    {
-        Require (size > 0);
-        return new Byte [size];
-    }
-    static    void Free_ (void* p, void* address)
-    {
-        delete[] reinterpret_cast<Byte*> (address);
-    }
-#endif
-private:
-#if 0
-    mutable ISzAlloc    fAllocImp_      { };
-    mutable ISzAlloc    fAllocTempImp_  { };
-    CSzArEx             fDB_            { };
-    struct MyISeekInStream : ISeekInStream {
-        Streams::InputStream<Memory::Byte> fInStream_;
+    struct MyISeekInStream  : zlib_filefunc64_def {
+        Streams::InputStream<Memory::Byte>  fInStream_;
+        bool                                fOpened_ { false };
         MyISeekInStream (const Streams::InputStream<Memory::Byte>& in)
             : fInStream_ (in)
         {
-            Read = Stream_Read_;
-            Seek = Stream_Seek_;
+			// @todo - VERY VERY ROUGH DRAFT - LITTLE ERROR CHECKING AND LITTLE ATETNETION TO >4GB files on 32-bit systems (must fix)
+            this->zopen64_file = [] (voidpf opaque, const void* filename, int mode) -> voidpf {
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (not myThis->fOpened_);
+                myThis->fOpened_ = true;
+                return myThis;
+            };
+            this->zread_file = [] (voidpf opaque, voidpf stream, void* buf, uLong size) -> uLong {
+                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (myThis->fOpened_);
+				size_t sz = myThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + size);
+				Assert (sz <= size);
+				return sz;
+            };
+            this->zwrite_file = [] (voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
+                RequireNotReached ();   // read only zip
+            };
+            this->ztell64_file = [] (voidpf opaque, voidpf stream) -> ZPOS64_T {
+                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (myThis->fOpened_);
+                return myThis->fInStream_.GetOffset ();
+            };
+            this->zseek64_file = [] (voidpf opaque, voidpf stream, ZPOS64_T offset, int origin) -> long {
+                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (myThis->fOpened_);
+				switch (origin) {
+					case ZLIB_FILEFUNC_SEEK_SET:
+						myThis->fInStream_.Seek (offset);
+						break;
+					case ZLIB_FILEFUNC_SEEK_CUR:
+						myThis->fInStream_.Seek (Streams::Whence::eFromCurrent, offset);
+						break;
+					case ZLIB_FILEFUNC_SEEK_END:
+						myThis->fInStream_.Seek (Streams::Whence::eFromEnd, offset);
+						break;
+					default:
+						AssertNotReached ();
+						//return SZ_ERROR_UNSUPPORTED;
+						return -1;
+				}
+				return 0;
+            };
+            this->zclose_file = [] (voidpf opaque, voidpf stream) -> int {
+                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (myThis->fOpened_);
+                myThis->fOpened_ = false;
+                return 0;
+            };
+            this->zerror_file = [] (voidpf opaque, voidpf stream) -> int {
+                Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
+                MyISeekInStream*    myThis = reinterpret_cast<MyISeekInStream*> (opaque);
+                Assert (myThis->fOpened_);
+                return 0;       // @todo - see what this means?
+            };
+            this->opaque = this;
         }
-        static  SRes    Stream_Read_ (void* pp, void* buf, size_t* size)
+        ~MyISeekInStream ()
         {
-            MyISeekInStream* pThis = (MyISeekInStream*)pp;
-            size_t sz = pThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + *size);
-            Assert (sz <= *size);
-            *size = sz;
-            return SZ_OK;   // not sure on EOF/underflow?SZ_ERROR_READ
-        }
-        static  SRes    Stream_Seek_ (void* pp, Int64* pos, ESzSeek origin)
-        {
-            MyISeekInStream* pThis = (MyISeekInStream*)pp;
-            switch (origin) {
-                case SZ_SEEK_SET:
-                    *pos = pThis->fInStream_.Seek (*pos);
-                    break;
-                case SZ_SEEK_CUR:
-                    *pos = pThis->fInStream_.Seek (Streams::Whence::eFromCurrent, *pos);
-                    break;
-                case SZ_SEEK_END:
-                    *pos = pThis->fInStream_.Seek (Streams::Whence::eFromEnd, *pos);
-                    break;
-                default:
-                    AssertNotReached ();
-                    return SZ_ERROR_UNSUPPORTED;
-            }
-            return SZ_OK;
+            Assert (not fOpened_);
         }
     };
     MyISeekInStream     fInSeekStream_;
-    mutable CLookToRead fLookStream_    { };
-#endif
-
+    unzFile             fZipFile_;
 public:
     Rep_ (const Streams::InputStream<Memory::Byte>& in)
-#if 0
         : fInSeekStream_ (in)
-#endif
+        , fZipFile_ (unzOpen2_64 ("", &fInSeekStream_))
     {
-#if 0
-        fAllocImp_ = ISzAlloc { Alloc_, Free_ };
-        fAllocTempImp_  = ISzAlloc { Alloc_, Free_ };
-
-        ::SzArEx_Init (&fDB_);
-
-        ::LookToRead_CreateVTable (&fLookStream_, false);
-        fLookStream_.realStream = &fInSeekStream_;
-
-        SRes  ret {};
-        if ((ret = ::SzArEx_Open (&fDB_, &fLookStream_.s, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
-            // throw
-            throw "bad";
+        if (fZipFile_ == nullptr) {
+            Execution::DoThrow (Execution::StringException (L"failed to open zipfile"));
         }
-#endif
     }
     ~Rep_ ()
     {
-#if 0
-        ::SzArEx_Free (&fDB_, &fAllocImp_);
-#endif
+        AssertNotNull (fZipFile_);
+        unzClose (fZipFile_);
     }
     virtual Set<String>     GetContainedFiles () const override
     {
