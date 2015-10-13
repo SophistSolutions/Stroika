@@ -119,7 +119,7 @@ sub     IsClangOrClangPlusPlus_
 sub     IsClangPlusPlus_
 {
     my $x = shift(@_);
-	return ($x =~ /clang\+g\+[!\/]*/);
+	return ($x =~ /clang\+\+[!\/]*/);
 }
 
 sub     GetGCCVersion_
@@ -253,7 +253,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			if (!IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-				$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER, 'clang', 'clang++');
+				$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang', 'clang++');
 			}
 		}
 	}
