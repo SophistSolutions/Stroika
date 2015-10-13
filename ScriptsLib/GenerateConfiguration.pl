@@ -129,6 +129,12 @@ sub     GetGCCVersion_
 }
 
 
+sub     GetClangVersion_
+{
+    my $x = shift(@_);
+	return trim (`$x --version | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+}
+
 
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
@@ -219,8 +225,13 @@ sub	SetDefaultForCompilerDriver_
 				$CPPSTD_VERSION_FLAG="--std=c++11"
 			}
 		}
-		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			$CPPSTD_VERSION_FLAG="--std=c++14"
+		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
+			if (GetClangVersion_ ($COMPILER_DRIVER) >= '3.5') {
+				$CPPSTD_VERSION_FLAG="--std=c++14"
+			}
+			else {
+				$CPPSTD_VERSION_FLAG="--std=c++11"
+			}
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
