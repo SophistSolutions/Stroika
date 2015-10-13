@@ -110,10 +110,10 @@ sub     IsGCCOrGPlusPlus_
 	return ($x =~ /gcc/) || (($x =~ /g\+\+/) && !($x =~ /clang\+\+/));
 }
 
-sub     IsClangPlusPlus_
+sub     IsClang_
 {
     my $x = shift(@_);
-	return ($x =~ /clang\+\+/);
+	return ($x =~ /clang/);
 	
 }
 
@@ -214,7 +214,7 @@ sub	SetDefaultForCompilerDriver_
 				$CPPSTD_VERSION_FLAG="--std=c++11"
 			}
 		}
-		if (IsClangPlusPlus_ ($COMPILER_DRIVER)) {
+		if (IsClang_ ($COMPILER_DRIVER)) {
 			$CPPSTD_VERSION_FLAG="--std=c++14"
 		}
 	}
@@ -237,11 +237,17 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
 			$COMPILER_DRIVER_C = ReplaceLast_ ($COMPILER_DRIVER, 'g++', 'gcc');
 		}
+		else if (IsClang_($COMPILER_DRIVER)) {
+			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang++', 'clang');
+		}
 	}
 	if ($COMPILER_DRIVER_CPlusPlus eq "") {
 		$COMPILER_DRIVER_CPlusPlus = $COMPILER_DRIVER;
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'gcc', 'g++');
+		}
+		else if (IsClang_($COMPILER_DRIVER_CPlusPlus)) {
+			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER_CPlusPlus, 'clang', 'clang++');
 		}
 	}
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
