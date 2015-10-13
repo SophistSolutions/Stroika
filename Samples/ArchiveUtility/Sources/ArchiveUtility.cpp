@@ -7,6 +7,7 @@
 
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#include    "Stroika/Foundation/DataExchange/ArchiveReader.h"
 #if     qHasFeature_LZMA
 #include    "Stroika/Foundation/DataExchange/7z/Reader.h"
 #endif
