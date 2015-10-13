@@ -73,9 +73,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
 {
     HostEntry   result;
 
-    addrinfo hints;
-    addrinfo* res = nullptr;
-    memset ((void*)&hints, 0, sizeof(hints));
+    addrinfo    hints {};
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_CANONNAME;
@@ -85,10 +83,11 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
 #if defined (AI_CANONIDN)
     hints.ai_flags |= AI_CANONIDN;
 #endif
-    string  tmp =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
-    int errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
+    string      tmp     =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
+    addrinfo*   res     =   nullptr;
+    int         errCode =   ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
     Execution::Finally cleanup ([res] {
-        freeaddrinfo (res);
+        ::freeaddrinfo (res);
     });
     if (errCode != 0) {
         DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));

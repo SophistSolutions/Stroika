@@ -860,8 +860,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
          *  is a painful, and stupid alternative.
          */
         DISABLE_COMPILER_MSC_WARNING_START(4996)
-        OSVERSIONINFOEX   osvi;
-        memset(&osvi, 0, sizeof (osvi));
+        OSVERSIONINFOEX   osvi {};
         osvi.dwOSVersionInfoSize = sizeof (osvi);
         Verify (::GetVersionEx (reinterpret_cast<LPOSVERSIONINFO> (&osvi)));
         DISABLE_COMPILER_MSC_WARNING_END(4996)

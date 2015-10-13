@@ -69,8 +69,7 @@ namespace {
 #if     qPlatform_POSIX
 namespace {
     static  const   int kMaxFD_ = [] () -> int {
-        struct rlimit fds;
-        (void)::memset (&fds, 0, sizeof (fds));
+        struct rlimit fds {};
         if (::getrlimit (RLIMIT_NOFILE, &fds) == 0)
         {
             return fds.rlim_cur;
@@ -533,8 +532,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
 
         try {
             {
-                SECURITY_DESCRIPTOR sd;
-                (void)::memset (&sd, 0, sizeof (sd));
+                SECURITY_DESCRIPTOR sd {};
                 Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
                 Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
                 SECURITY_ATTRIBUTES sa  =   {   sizeof (SECURITY_ATTRIBUTES), &sd, true };
@@ -803,8 +801,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
 pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 {
 #if     qPlatform_Windows
-    PROCESS_INFORMATION processInfo;
-    (void)::memset (&processInfo, 0, sizeof (processInfo));
+    PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
     Finally cleanup = [&processInfo]() {
@@ -812,8 +809,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
     };
 
-    STARTUPINFO startInfo;
-    (void)::memset (&startInfo, 0, sizeof (startInfo));
+    STARTUPINFO startInfo {};
     startInfo.cb = sizeof (startInfo);
     startInfo.hStdInput = INVALID_HANDLE_VALUE;
     startInfo.hStdOutput = INVALID_HANDLE_VALUE;
@@ -875,8 +871,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     }
 
 #if     qPlatform_Windows
-    PROCESS_INFORMATION processInfo;
-    (void)::memset (&processInfo, 0, sizeof (processInfo));
+    PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
     Finally cleanup = [&processInfo]() {
@@ -884,8 +879,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
     };
 
-    STARTUPINFO startInfo;
-    (void)::memset (&startInfo, 0, sizeof (startInfo));
+    STARTUPINFO startInfo {};
     startInfo.cb = sizeof (startInfo);
     startInfo.hStdInput = INVALID_HANDLE_VALUE;
     startInfo.hStdOutput = INVALID_HANDLE_VALUE;

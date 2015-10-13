@@ -920,8 +920,7 @@ Main::State     Main::WindowsService::_GetState () const
 
     const bool  kUseQueryServiceStatusEx_   =    false;
     if (kUseQueryServiceStatusEx_) {
-        SERVICE_STATUS_PROCESS  serviceProcess;
-        memset (&serviceProcess, 0, sizeof (serviceProcess));
+        SERVICE_STATUS_PROCESS  serviceProcess {};
         DWORD ignored = 0;
         Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
         switch (serviceProcess.dwCurrentState) {
@@ -932,8 +931,7 @@ Main::State     Main::WindowsService::_GetState () const
         }
     }
     else {
-        SERVICE_STATUS  serviceStatus;
-        memset (&serviceStatus, 0, sizeof (serviceStatus));
+        SERVICE_STATUS  serviceStatus {};
         Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatus (hService, &serviceStatus));
         switch (serviceStatus.dwCurrentState) {
             case SERVICE_RUNNING:
@@ -1107,8 +1105,7 @@ pid_t   Main::WindowsService::_GetServicePID () const
         ::CloseServiceHandle (hService);
     });
 
-    SERVICE_STATUS_PROCESS  serviceProcess;
-    memset (&serviceProcess, 0, sizeof (serviceProcess));
+    SERVICE_STATUS_PROCESS  serviceProcess {};
     DWORD ignored = 0;
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
     return serviceProcess.dwProcessId;

@@ -383,8 +383,7 @@ namespace {
                 // on AIX, this returns a bogus disk size. Not sure how to tell otherwise to ignore
                 return;
             }
-            struct  statvfs64 sbuf;
-            (void)::memset (&sbuf, 0, sizeof (sbuf));
+            struct  statvfs64 sbuf {};
             if (::statvfs64 (mountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes = diskSize;
@@ -405,7 +404,7 @@ namespace {
             for (KeyValuePair<String, Set<String>> diskAndVols : disk2MountPointMap) {
                 perfstat_id_t   name;
                 Characters::CString::Copy (name.name, NEltsOf (name.name), diskAndVols.fKey.AsNarrowSDKString ().c_str ());
-                perfstat_disk_t ds;
+                perfstat_disk_t ds {};
                 /*
                  *  From /usr/include/libperfstat.h
                  *      perfstat_disk_t:
@@ -420,7 +419,6 @@ namespace {
                  *          u_longlong_t wq_sampled;        --  accumulated sampled dk_wq_depth
                  *          u_longlong_t q_sampled;         -- accumulated sampled dk_q_depth
                  */
-                (void)::memset (&ds, 0, sizeof (ds));
                 int nDisksResult = ::perfstat_disk (&name, &ds, sizeof (ds), 1);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("perfstat_disk returned %d: name=%s; bsize=%lld; xfers=%lld; rblks=%lld; wblks=%lld; qdepth: %lld; time: %lld; q_sampled: %lld; wq_sampled: %lld; wq_time: %lld", disks, ds.name, ds.bsize, ds.xfers, ds.rblks, ds.wblks, ds.qdepth, ds.time, ds.q_sampled, ds.wq_sampled, ds.wq_time);
@@ -770,8 +768,7 @@ namespace {
         void    UpdateVolumneInfo_statvfs (const String& mountedOnName, MountedFilesystemInfoType* v)
         {
             RequireNotNull (v);
-            struct  statvfs sbuf;
-            memset (&sbuf, 0, sizeof (sbuf));
+            struct  statvfs sbuf {};
             if (::statvfs (mountedOnName.AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                 uint64_t    diskSize = sbuf.f_bsize * sbuf.f_blocks;
                 v->fSizeInBytes = diskSize;
@@ -857,8 +854,7 @@ namespace {
                             }
                             dev_t   useDevT;
                             {
-                                struct stat sbuf;
-                                memset (&sbuf, 0, sizeof (sbuf));
+                                struct stat sbuf {};
                                 if (::stat (vi.fDeviceOrVolumeName->AsNarrowSDKString ().c_str (), &sbuf) == 0) {
                                     useDevT = sbuf.st_rdev;
                                 }
@@ -1352,8 +1348,7 @@ namespace {
                 if (hHandle == INVALID_HANDLE_VALUE) {
                     break;
                 }
-                GET_LENGTH_INFORMATION  li;
-                (void)::memset (&li, 0, sizeof (li));
+                GET_LENGTH_INFORMATION  li {};
                 DWORD dwBytesReturned {};
                 BOOL bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_LENGTH_INFO, NULL, 0, &li, sizeof(li), &dwBytesReturned, NULL);
                 ::CloseHandle (hHandle);
@@ -1522,12 +1517,9 @@ namespace {
                             for (const TCHAR* NameIdx = volPathsBuf; NameIdx[0] != L'\0'; NameIdx += Characters::CString::Length (NameIdx) + 1) {
                                 String  mountedOnName = String::FromSDKString (NameIdx);
                                 {
-                                    ULARGE_INTEGER freeBytesAvailable;
-                                    ULARGE_INTEGER totalNumberOfBytes;
-                                    ULARGE_INTEGER totalNumberOfFreeBytes;
-                                    memset (&freeBytesAvailable, 0, sizeof (freeBytesAvailable));
-                                    memset (&totalNumberOfBytes, 0, sizeof (totalNumberOfBytes));
-                                    memset (&totalNumberOfFreeBytes, 0, sizeof (totalNumberOfFreeBytes));
+                                    ULARGE_INTEGER freeBytesAvailable {};
+                                    ULARGE_INTEGER totalNumberOfBytes {};
+                                    ULARGE_INTEGER totalNumberOfFreeBytes {};
                                     DWORD xxx = GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                                     v.fSizeInBytes = totalNumberOfBytes.QuadPart;
                                     v.fUsedSizeInBytes = *v.fSizeInBytes  - freeBytesAvailable.QuadPart;

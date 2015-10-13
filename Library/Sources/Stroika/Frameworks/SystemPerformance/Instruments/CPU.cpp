@@ -497,12 +497,9 @@ namespace {
         }
         static  inline  WinSysTimeCaptureContext_    GetSysTimes_ ()
         {
-            FILETIME    curIdleTime_;
-            FILETIME    curKernelTime_;
-            FILETIME    curUserTime_;
-            memset (&curIdleTime_, 0, sizeof (curIdleTime_));
-            memset (&curKernelTime_, 0, sizeof (curKernelTime_));
-            memset (&curUserTime_, 0, sizeof (curUserTime_));
+            FILETIME    curIdleTime_ {};
+            FILETIME    curKernelTime_ {};
+            FILETIME    curUserTime_ {};
             Verify (::GetSystemTimes (&curIdleTime_, &curKernelTime_, &curUserTime_));
             return WinSysTimeCaptureContext_ { GetAsSeconds_ (curIdleTime_), GetAsSeconds_ (curKernelTime_), GetAsSeconds_ (curUserTime_) };
         }

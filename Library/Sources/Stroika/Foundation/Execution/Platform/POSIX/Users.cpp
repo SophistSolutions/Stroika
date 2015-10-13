@@ -33,8 +33,7 @@ uid_t   Platform::POSIX::UserName2UID (const String& name)
     }
     Memory::SmallStackBuffer<char>  buf (bufsize);
 
-    struct passwd pwd;
-    memset (&pwd, 0, sizeof (pwd));
+    struct passwd pwd {};
     struct passwd* result   =   nullptr;
     int err = getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf, bufsize, &result);
     if (err < 0) {
@@ -61,10 +60,9 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid)
     }
     Memory::SmallStackBuffer<char>  buf (bufsize);
 
-    struct passwd pwd;
-    memset (&pwd, 0, sizeof (pwd));
-    struct passwd* result   =   nullptr;
-    int err = getpwuid_r (uid, &pwd, buf, bufsize, &result);
+    struct passwd   pwd {};
+    struct passwd*  result   =   nullptr;
+    int err = ::getpwuid_r (uid, &pwd, buf, bufsize, &result);
     if (err < 0) {
         errno_ErrorException::DoThrow (err);
     }

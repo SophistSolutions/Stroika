@@ -145,14 +145,10 @@ String FileSystem::GetFileSuffix (const String& fileName)
             useFName = String::FromSDKString (fNameBuf);
         }
     }
-    SDKChar   fname[_MAX_FNAME];
-    SDKChar   drive[_MAX_DRIVE];
-    SDKChar   dir[_MAX_DIR];
-    SDKChar   ext[_MAX_EXT];
-    (void)::memset (drive, 0, sizeof (drive));
-    (void)::memset (dir, 0, sizeof (dir));
-    (void)::memset (fname, 0, sizeof (fname));
-    (void)::memset (ext, 0, sizeof (ext));
+    SDKChar   fname[_MAX_FNAME] {};
+    SDKChar   drive[_MAX_DRIVE] {};
+    SDKChar   dir[_MAX_DIR] {};
+    SDKChar   ext[_MAX_EXT] {};
     // @todo - probably should check result (errno_t) and throw?
     ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     // returns leading '.' in name...
@@ -175,7 +171,6 @@ String FileSystem::GetFileBaseName (const String& pathName)
 {
 #if     qPlatform_Windows
     String useFName    =   pathName;
-
     {
         SDKChar   fNameBuf[4 * MAX_PATH ];
         DWORD   r   =   ::GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, static_cast<DWORD> (NEltsOf (fNameBuf) - 1));
@@ -183,14 +178,10 @@ String FileSystem::GetFileBaseName (const String& pathName)
             useFName = String::FromSDKString (fNameBuf);
         }
     }
-    SDKChar   fname[_MAX_FNAME];
-    SDKChar   drive[_MAX_DRIVE];
-    SDKChar   dir[_MAX_DIR];
-    SDKChar   ext[_MAX_EXT];
-    memset (drive, 0, sizeof (drive));
-    memset (dir, 0, sizeof (dir));
-    memset (fname, 0, sizeof (fname));
-    memset (ext, 0, sizeof (ext));
+    SDKChar   fname[_MAX_FNAME] {};
+    SDKChar   drive[_MAX_DRIVE] {};
+    SDKChar   dir[_MAX_DIR] {};
+    SDKChar   ext[_MAX_EXT] {};
     ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     return String::FromSDKString (fname);
 #elif   qPlatform_POSIX

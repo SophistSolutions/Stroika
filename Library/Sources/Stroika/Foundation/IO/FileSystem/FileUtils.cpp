@@ -146,9 +146,7 @@ void    IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
                 }
             }
 
-            EXPLICIT_ACCESS ea[1];
-            memset (&ea, 0, sizeof (ea));
-
+            EXPLICIT_ACCESS ea[1] {};
             // Set FULL access for Everyone.
             ea[0].grfAccessPermissions = GENERIC_ALL;
             ea[0].grfAccessMode = SET_ACCESS;
@@ -392,11 +390,10 @@ vector<String> IO::FileSystem::FindFiles (const String& path, const String& file
         return result;
     }
 #if     qPlatform_Windows
-    String usePath         =   AssureDirectoryPathSlashTerminated (path);
-    String matchFullPath   =   usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
-    WIN32_FIND_DATA fd;
-    memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile (matchFullPath.AsSDKString ().c_str (), &fd);
+    String              usePath         =   AssureDirectoryPathSlashTerminated (path);
+    String              matchFullPath   =   usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
+    WIN32_FIND_DATA     fd {};
+    HANDLE              hFind = ::FindFirstFile (matchFullPath.AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {

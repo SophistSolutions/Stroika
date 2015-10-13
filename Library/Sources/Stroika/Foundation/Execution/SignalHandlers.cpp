@@ -237,8 +237,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 
     auto sigSetHandler = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct  sigaction sa;
-        memset (&sa, 0, sizeof (sa));
+        struct  sigaction sa {};
         sa.sa_handler = FirstPassSignalHandler_;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
         sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
@@ -250,8 +249,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetDefault = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct  sigaction sa;
-        memset (&sa, 0, sizeof (sa));
+        struct  sigaction sa {};
         sa.sa_handler = SIG_DFL;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
         sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
@@ -263,8 +261,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
     auto sigSetIgnore = [] (SignalID signal) {
 #if     qPlatform_POSIX
-        struct  sigaction sa;
-        memset (&sa, 0, sizeof (sa));
+        struct  sigaction sa {};
         sa.sa_handler = SIG_IGN;
         Verify (::sigemptyset (&sa.sa_mask) == 0);
         sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?

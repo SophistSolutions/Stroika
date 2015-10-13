@@ -361,8 +361,7 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType  Digester<Algorithm::MD5, Retur
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
-    MD5_CTX ctx;
-    memset (&ctx, 0, sizeof (ctx));
+    MD5_CTX ctx {};
     MD5Init_ (&ctx);
     MD5Update_ (&ctx, from, static_cast<unsigned int> (to - from));
     MD5Final_ (&ctx);

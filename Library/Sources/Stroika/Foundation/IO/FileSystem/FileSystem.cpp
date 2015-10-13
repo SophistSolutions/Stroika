@@ -137,14 +137,13 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
     //      -- LGP 2007-09-23
     //
     {
-        SHFILEINFO   info;
-        memset (&info, 0, sizeof (info));
+        SHFILEINFO   info {};
         if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0)
         {
             return path2FileOrShortcut;
         }
         // not a shortcut?
-        if (!(info.dwAttributes & SFGAO_LINK))
+        if (not (info.dwAttributes & SFGAO_LINK))
         {
             return path2FileOrShortcut;
         }
@@ -348,8 +347,7 @@ C:
 FileOffset_t    IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
 {
 #if     qPlatform_Windows
-    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
-    (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
+    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
     return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
@@ -361,8 +359,7 @@ FileOffset_t    IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
 DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const String& fileName)
 {
 #if     qPlatform_Windows
-    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
-    (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
+    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
     ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
     return DateTime (fileAttrData.ftLastWriteTime);
 #else
@@ -374,8 +371,7 @@ DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const S
 DateTime    IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileName)
 {
 #if     qPlatform_Windows
-    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
-    (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
+    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
     ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
     return DateTime (fileAttrData.ftLastAccessTime);
 #else

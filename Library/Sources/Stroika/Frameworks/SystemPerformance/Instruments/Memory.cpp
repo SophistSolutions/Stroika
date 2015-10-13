@@ -581,8 +581,7 @@ namespace {
         void    Read_GlobalMemoryStatusEx_ (Instruments::Memory::Info* updateResult, uint64_t* totalRAM)
         {
             RequireNotNull (totalRAM);
-            MEMORYSTATUSEX statex;
-            memset (&statex, 0, sizeof (statex));
+            MEMORYSTATUSEX  statex {};
             statex.dwLength = sizeof (statex);
             Verify (::GlobalMemoryStatusEx (&statex) != 0);
             updateResult->fPhysicalMemory.fFree = statex.ullAvailPhys;      // overridden later, but a good first estimate if we dont use WMI

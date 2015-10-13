@@ -289,8 +289,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     }
 
     ios::iostate state = ios::goodbit;
-    tm  when;
-    memset (&when, 0, sizeof (when));
+    tm  when {};
 
 #if     qxxx_supports_locale_time_get_facet_get_time
     {
@@ -370,8 +369,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) {
         return TimeOfDay ();
     }
-    DATE        d;
-    (void)::memset (&d, 0, sizeof (d));
+    DATE        d {};
     try {
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
     }
@@ -390,8 +388,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
         }
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME  sysTime;
-    memset (&sysTime, 0, sizeof (sysTime));
+    SYSTEMTIME  sysTime {};
     Verify (::VariantTimeToSystemTime (d, &sysTime));
     return mkTimeOfDay_ (sysTime);
 }
@@ -464,8 +461,7 @@ String TimeOfDay::Format (const locale& l) const
     // http://en.cppreference.com/w/cpp/locale/time_put/put
 #if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
     const time_put<char>& tmput = use_facet <time_put<char>> (l);
-    tm when;
-    memset (&when, 0, sizeof (when));
+    tm  when {};
     when.tm_hour = GetHours ();
     when.tm_min = GetMinutes ();
     when.tm_sec = GetSeconds ();
@@ -476,8 +472,7 @@ String TimeOfDay::Format (const locale& l) const
     return String::FromNarrowString (oss.str (), l);
 #else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
-    tm when;
-    memset (&when, 0, sizeof (when));
+    tm  when {};
     when.tm_hour = GetHours ();
     when.tm_min = GetMinutes ();
     when.tm_sec = GetSeconds ();

@@ -69,8 +69,7 @@ namespace   {
 #if     qPlatform_Windows
     SYSTEMTIME  toSysTime_ (TimeOfDay tod)
     {
-        SYSTEMTIME  t;
-        memset (&t, 0, sizeof (t));
+        SYSTEMTIME  t {};
         if (not tod.empty ()) {
             unsigned int    seconds =   tod.GetAsSecondsCount ();
             unsigned int    minutes =   seconds / 60;
@@ -97,8 +96,7 @@ namespace   {
 #if     qPlatform_Windows
     SYSTEMTIME toSYSTEM_ (const Date& date)
     {
-        SYSTEMTIME  st;
-        memset (&st, 0, sizeof (st));
+        SYSTEMTIME  st {};
         MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
         DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
         Year        y   =   Year::eEmptyYear;
@@ -159,8 +157,7 @@ DateTime::DateTime (time_t unixTime, Timezone tz)
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    struct  tm  tmTime;
-    memset (&tmTime, 0, sizeof (tmTime));
+    struct  tm  tmTime {};
 #if qPlatform_Windows
     (void)::_gmtime64_s (&tmTime, &unixTime);
 #else
@@ -184,8 +181,7 @@ DateTime::DateTime (const timeval& tmTime, Timezone tz)
     , fTimeOfDay_ ()
 {
     time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
-    struct  tm  tmTimeData;
-    memset (&tmTimeData, 0, sizeof (tmTimeData));
+    struct  tm  tmTimeData {};
     (void)::gmtime_r  (&unixTime, &tmTimeData);
     fDate_ = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
@@ -197,8 +193,7 @@ DateTime::DateTime (const timespec& tmTime, Timezone tz)
     , fTimeOfDay_ ()
 {
     time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
-    struct  tm  tmTimeData;
-    memset (&tmTimeData, 0, sizeof (tmTimeData));
+    struct  tm  tmTimeData {};
     (void)::gmtime_r  (&unixTime, &tmTimeData);
     fDate_ = Date (Year (tmTimeData.tm_year + 1900), MonthOfYear (tmTimeData.tm_mon + 1), DayOfMonth (tmTimeData.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
@@ -217,8 +212,7 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
     , fDate_ ()
     , fTimeOfDay_ ()
 {
-    SYSTEMTIME sysTime;
-    (void)::memset (&sysTime, 0, sizeof (sysTime));
+    SYSTEMTIME sysTime {};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
         fDate_ = mkDate_ (sysTime);
         fTimeOfDay_ = mkTimeOfDay_ (sysTime);
@@ -315,8 +309,7 @@ DateTime    DateTime::Parse (const String& rep, const locale& l)
     wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
-    tm when;
-    memset (&when, 0, sizeof (when));
+    tm  when {};
     tmget.get_date (itbegin, itend, iss, state, &when);
 #if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
     // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
@@ -338,15 +331,13 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
     {
         static  bool    sDidOnce_ = false;
         if (not sDidOnce_) {
-            DATE        d;
-            (void)::memset(&d, 0, sizeof (d));
+            DATE        d {};
             ::VarDateFromStr(CComBSTR(L"7/26/1972 12:00:00 AM"), 1024, 0, &d);
             sDidOnce_ = true;
         }
     }
 #endif
-    DATE        d;
-    (void)::memset (&d, 0, sizeof (d));
+    DATE        d {};
     try {
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, 0, &d));
     }
@@ -355,8 +346,7 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
         Execution::DoThrow (Date::FormatException ());
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME  sysTime;
-    memset (&sysTime, 0, sizeof (sysTime));
+    SYSTEMTIME  sysTime {};
     Verify (::VariantTimeToSystemTime (d, &sysTime));
     return DateTime (mkDate_ (sysTime),  mkTimeOfDay_ (sysTime));
 }
@@ -388,8 +378,7 @@ DateTime    DateTime::AsUTC () const
 DateTime    DateTime::Now ()
 {
 #if     qPlatform_Windows
-    SYSTEMTIME  st;
-    memset (&st, 0, sizeof (st));
+    SYSTEMTIME  st {};
     ::GetLocalTime (&st);
     return DateTime (st, Timezone::eLocalTime);
 #elif   qPlatform_POSIX
@@ -540,8 +529,7 @@ namespace   {
     time_t  OLD_GetUNIXEpochTime_ (const DateTime& dt)
     {
         SYSTEMTIME  st  =   dt.As<SYSTEMTIME> ();
-        struct tm tm;
-        memset(&tm, 0, sizeof(tm));
+        struct tm   tm {};
         tm.tm_year = st.wYear - 1900;
         tm.tm_mon = st.wMonth - 1;
         tm.tm_mday = st.wDay;
@@ -556,8 +544,7 @@ namespace   {
 template    <>
 time_t  DateTime::As () const
 {
-    struct tm tm;
-    memset (&tm, 0, sizeof(tm));
+    struct tm tm {};
     tm.tm_year = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday = static_cast<int> (fDate_.GetDayOfMonth ());
@@ -582,8 +569,7 @@ time_t  DateTime::As () const
 template    <>
 tm  DateTime::As () const
 {
-    struct tm tm;
-    memset(&tm, 0, sizeof(tm));
+    struct tm tm {};
     tm.tm_year = static_cast<int> (fDate_.GetYear ()) - 1900;
     tm.tm_mon = static_cast<int> (fDate_.GetMonth ()) - 1;
     tm.tm_mday = static_cast<int> (fDate_.GetDayOfMonth ());

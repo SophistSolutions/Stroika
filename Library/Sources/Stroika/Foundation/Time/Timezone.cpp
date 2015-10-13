@@ -207,8 +207,7 @@ TimeZoneInformationType    Time::GetTimezoneInfo ()
         KeyValuePair<String, String> { String_Constant { L"West Pacific Standard Time" },       String_Constant { L"Pacific/Port_Moresby" } },
         KeyValuePair<String, String> { String_Constant { L"Yakutsk Standard Time" },            String_Constant { L"Asia/Yakutsk" } },
     };
-    TIME_ZONE_INFORMATION   tzInfo;
-    memset (&tzInfo, 0, sizeof (tzInfo));
+    TIME_ZONE_INFORMATION   tzInfo {};
     (void)::GetTimeZoneInformation (&tzInfo);
     result.fStandardTime.fAbbreviation = tzInfo.StandardName;
     result.fStandardTime.fName = tzInfo.StandardName;
@@ -238,8 +237,7 @@ String    Time::GetTimezone ()
 String    Time::GetTimezone (bool applyDST)
 {
 #if     qPlatform_Windows
-    TIME_ZONE_INFORMATION   tzInfo;
-    memset (&tzInfo, 0, sizeof (tzInfo));
+    TIME_ZONE_INFORMATION   tzInfo {};
     (void)::GetTimeZoneInformation (&tzInfo);
     return tzInfo.StandardName;
 #elif   qPlatform_POSIX
@@ -291,8 +289,7 @@ time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
 #if     0
     // WRONG - but COULD use this API - but not sure needed
 #if     qPlatform_Windows
-    TIME_ZONE_INFORMATION   tzInfo;
-    memset (&tzInfo, 0, sizeof (tzInfo));
+    TIME_ZONE_INFORMATION   tzInfo {};
     (void)::GetTimeZoneInformation (&tzInfo);
     int unsignedBias    =   abs (tzInfo.Bias);
     int hrs =   unsignedBias / 60;
@@ -305,8 +302,7 @@ time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
      * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
      * timezone global var???
      */
-    struct tm tm;
-    memset (&tm, 0, sizeof(tm));
+    struct tm   tm {};
     tm.tm_year = 70;
     tm.tm_mon = 0;      // Jan
     tm.tm_mday = 1;
