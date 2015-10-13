@@ -145,7 +145,7 @@ else
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC32)" \
 		CPlusPlus="$(WIN_CC32)" \
-		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
+		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(LIBDIR32)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
@@ -162,6 +162,30 @@ else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		clobber
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(WIN_CC32)" \
+		CPlusPlus="$(WIN_CC32)" \
+		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
+		INCLUDE="$(INCLUDE)" \
+		LIB="$(LIBDIR32)" \
+		LIBS="oleaut32.lib ole32.lib user32.lib" \
+		LD="$(WIN_LINK32)" \
+		AR="$(WIN_LIB32)" \
+		ARCRATEFLAGS="-nologo" \
+		ARTARGETPREFIX=-out: \
+		LINKTARGETPREFIX=-out: \
+		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		all
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
@@ -181,7 +205,7 @@ else
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC64)" \
 		CPlusPlus="$(WIN_CC64)" \
-		CFLAGS="-nologo -W3 -O2 -Oy- -Z7" \
+		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(LIBDIR64)" \
 		PATH="$(PATH)" \
@@ -199,6 +223,31 @@ else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		clobber
+	make --directory $(TRGDIR) \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(WIN_CC64)" \
+		CPlusPlus="$(WIN_CC64)" \
+		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
+		INCLUDE="$(INCLUDE)" \
+		LIB="$(LIBDIR64)" \
+		PATH="$(PATH)" \
+		LIBS="oleaut32.lib ole32.lib user32.lib" \
+		LD="$(WIN_LINK64)" \
+		AR="$(WIN_LIB64)" \
+		ARCRATEFLAGS="-nologo" \
+		ARTARGETPREFIX=-out: \
+		LINKTARGETPREFIX=-out: \
+		LDFLAGS="-nologo -debug -incremental:no -opt:ref" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		all
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/
