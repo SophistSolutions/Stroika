@@ -113,7 +113,8 @@ namespace {
         if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
             return move (_7z::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
         }
-#elif   qHasFeature_ZLib
+#endif
+#if   qHasFeature_ZLib
         if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
             return move (Zip::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
         }
@@ -174,6 +175,10 @@ int     main (int argc, const char* argv[])
                     break;
             }
             // rest NYI
+        }
+        catch (const Execution::StringException& e) {
+            cerr << "Exception: " << e.As<String> ().AsNarrowSDKString () << " - terminating..." << endl;
+            return EXIT_FAILURE;
         }
         catch (...) {
             cerr << "Exception - terminating..." << endl;
