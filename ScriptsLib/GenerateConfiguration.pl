@@ -252,7 +252,7 @@ sub	SetDefaultForCompilerDriver_
 			$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER, 'gcc', 'g++');
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
-			if (!IsClangPlusPlus_()) {
+			if (!IsClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 				$COMPILER_DRIVER_CPlusPlus = ReplaceLast_ ($COMPILER_DRIVER, 'clang', 'clang++');
 			}
 		}
