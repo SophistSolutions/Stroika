@@ -53,6 +53,9 @@ namespace   Stroika {
             /**
              *  SeekOffsetType is unsigned, normally, because for most purposes its zero based.
              *  @see SignedSeekOffsetType.
+             *
+             *  \note   We use a 64-bit integer here, because streaming >4GB files is common, even in devices so tiny as a cellphone.
+             *          and no larger because its inconcievable to store that much data anytime soon.
              */
             using       SeekOffsetType          =   uint64_t;
 
