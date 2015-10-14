@@ -22,10 +22,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a107">v2.0a107x</a><br/>2015-10-??/td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a107">v2.0a107</a><br/>2015-10-13</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Streams/BufferedOutputStream FLUSH calls internal in implemeatnion causes re-entrant call to non-recursive AssertExternallySynchronizedLock mutex (reported by JohnB @ Block)</li>
+		<li>Cleanup DataExchange/Zip/Reader</li>
 	</ul>
 </td>
 </tr>
@@ -36,7 +37,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a106">v2.0a106</a><br/>2015-10-13/td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a106">v2.0a106</a><br/>2015-10-13</td>
 <td>
 	<ul>
 		<li>SystemPerformance Framework:
