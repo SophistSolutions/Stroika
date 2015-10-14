@@ -74,6 +74,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CONTAINER_BACKENDS2IMPORT",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika-Root", "Stroika-Root", "{07E1639C-4B37-4DEB-8866-E9B6D735BDAF}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\Build-System-TODO.md = ..\..\..\Build-System-TODO.md
+		..\..\..\configure = ..\..\..\configure
+		..\..\..\License.txt = ..\..\..\License.txt
 		..\..\..\Makefile = ..\..\..\Makefile
 		..\..\..\README.md = ..\..\..\README.md
 		..\..\..\Release-Notes.md = ..\..\..\Release-Notes.md

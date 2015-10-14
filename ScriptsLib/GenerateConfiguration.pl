@@ -301,10 +301,7 @@ sub	ParseCommandLine_Platform_
 {
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
-		if ($i == 0) {
-			$configurationName  = $var;
-		}
-		elsif ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+		if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
 			$i++;
 			$var = $ARGV[$i];
 			$platform = $var;
@@ -545,6 +542,14 @@ sub	ParseCommandLine_
 
 	SetInitialDefaults_ ();
 	
+	if ($#ARGV > 0) {
+		$configurationName  = $ARGV[0];
+	}
+	else {
+        print ("Expected configuraiton name as first argument\n");
+        DoHelp_ ();
+	}
+
 	ParseCommandLine_Platform_ ();
 	SetDefaultForPlatform_ ();
 
