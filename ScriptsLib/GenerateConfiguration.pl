@@ -549,7 +549,10 @@ sub	ParseCommandLine_
         print ("Expected configuration name as first argument\n");
         DoHelp_ ();
 	}
-	if ($configurationName =~ /^\-/) { 
+	if ((lc ($configurationName) eq "-h") || (lc ($configurationName) eq "--h") || (lc ($configurationName) eq "-help")  || (lc ($configurationName) eq "--help")) { 
+        DoHelp_ ();
+	}
+	elsif ($configurationName =~ /^\-/) { 
         print ("Expected configuration name (got $configurationName) as first argument\n");
         DoHelp_ ();
 	}
