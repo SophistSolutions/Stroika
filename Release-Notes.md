@@ -17,8 +17,23 @@ History
 
 
 
-
   
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a107">v2.0a107x</a><br/>2015-10-??/td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a106">v2.0a106</a><br/>2015-10-13/td>
@@ -28,42 +43,42 @@ History
 			<ul>
 				<li>Instruments/CPU: support for run-q-length</li>
 				<li>Instruments/Memory: windows OSReserved RAM, fixed minor page faults per second for AIX/Linux, refactored real/virtual/physical
-					 memory stats in SystemPerformance Memory - and added osreserved to phys memory stats (but not used), AIX report virt_active for fCommitedBytes,
-					 better handle missing 'MemAvailable' for older Linuxes - and estimate from SReclaimainble, Free and inactive RAM</li>
+						memory stats in SystemPerformance Memory - and added osreserved to phys memory stats (but not used), AIX report virt_active for fCommitedBytes,
+						better handle missing 'MemAvailable' for older Linuxes - and estimate from SReclaimainble, Free and inactive RAM</li>
 				<li>Instruments/Filesystem cleanups: div-by-zero, fQLength , in-use-pct, refactoring of  - to return stats on Disk and Volume (filesystem),
 					ignore unmounted filesystems, and document todo perhaps having an option/separate list to return them
 					(indexed by volume ID I guess, use q_sampled instead of ws_qsampled in AIX SystemPerformance Filesystem disk Q length monitor
-				    (still found no decent docs, but gives better answers and my guess is that q_sampled is for both read and write q, and wq_sampled is just for READ</li>
+					(still found no decent docs, but gives better answers and my guess is that q_sampled is for both read and write q, and wq_sampled is just for READ</li>
 				<li>Instruments/Network AIX support for total # TCP segment and TCP retransmits, Added another name mapping kluge from description to WMINAME for Windows SystemPerformance Network API</li>
 			</ul>
 		</li>
+		<li>Added FileSystem::GetCurrentDirectory and FileSystem::SetCurrentDirectory methods</li>
+		<li>a little more support for ToString debugging utility (but still not working with Optional)</li>
+		<li>fix compare VariantValue(NAN, Math::nan<double> ()) and with infinity- make equals coerece these special case strings</li>
+		<li>JSON reader/writer now properly handles NAN/INF values - by converting them to/from strings so remains always valid JSON but can still roundtrip these values</li>
+		<li>Major fixups to lzma makefile so pays attention to CC/etc from Stroika configuration, and fixes /MT windows issues etc</li>
+		<li>Major fixups to zip makefile so pays attention to CC/etc from Stroika configuration, and fixes /MT windows issues etc</li>
+		<li>Major fixups to curl makefile so pays attention to CC/etc from Stroika configuration</li>
+		<li>Implemetned now fully functional cross platform LZMA ArchiveReader, and ZIP ArchiveReader (at least miniaml list/extract function),
+			including new ArchiveUtility sample</li>
+		<li>smarter SFINAE code for Optional and narrowing conversion (better warnings)</li>
+		<li>LRUCache defaulttrraits now takes VALUE,a nd deifned OptionalValueType, and changed default to regular default for Optional but documented how to use Memory::Optional_Traits_Blockallocated_Indirect_Storage</li>
+		<li>factored Platform_AIX_GetEXEPathWithHint into its own AIX specific module</li>
+		<li>allow AF_LINK addresses on AIX for reported interface experimental); fix IO/Network/Interface regression</li>
+		<li>Support for gcc5 bug defines</li>
+		<li>Library/Sources/Stroika/Foundation/Execution/ProcessRunner tweaks; rewrote code to layout exec args in ProcessRunnner for POSIX to avoid issue depending on the layout of g++ vector (cuz broke with gcc5)</li>
+		<li>placeholder KeyedCollection container file</li>
+		<li>inor tweaks, asserts etc - based on feedback for msvc 2k15 analysis tool</li>
+		<li>Tons of cosmetic cleanups and use Finally/cleanup code to simplify thread/process handle cleanup in windows CreatePRocess usage (warned by
+			vs2k15 code analyze, but docs from msft said only needed to close process handle?)</li>
+		<li>threadpool regtest improvements; Added RegressionTest15_ThreadPoolStarvationBug_ () - but didnt help and may not really be a problem</li>
+		<li>use much more of ArgByValueType<T> (for performace) - and REPLACED (not backward compat) EachWtih in several containers to use IMPORVED 
+			Where in Iterable (taking optional return container type) - still experimental</li>
+		<li>include -lm in unix link args in case gcc used as driver instead of g++; and redid config code to allow config of gcc/g++ (C/C++ compierl name cuz needed to build lots of third party tools)
+		and detect gcc version# in GeneragteDefaultCOnfig.pl file so we can do right defaykt flags per version.</li>
+		<li>Repalce memset(0...) initialization with POD {} initialization</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc50, gcc51, pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
-	<li>Added FileSystem::GetCurrentDirectory and FileSystem::SetCurrentDirectory methods</li>
-	<li>a little more support for ToString debugging utility (but still not working with Optional)</li>
-	<li>fix compare VariantValue(NAN, Math::nan<double> ()) and with infinity- make equals coerece these special case strings</li>
-	<li>JSON reader/writer now properly handles NAN/INF values - by converting them to/from strings so remains always valid JSON but can still roundtrip these values</li>
-	<li>Major fixups to lzma makefile so pays attention to CC/etc from Stroika configuration, and fixes /MT windows issues etc</li>
-	<li>Major fixups to zip makefile so pays attention to CC/etc from Stroika configuration, and fixes /MT windows issues etc</li>
-	<li>Major fixups to curl makefile so pays attention to CC/etc from Stroika configuration</li>
-	<li>Implemetned now fully functional cross platform LZMA ArchiveReader, and ZIP ArchiveReader (at least miniaml list/extract function),
-		including new ArchiveUtility sample</li>
-	<li>smarter SFINAE code for Optional and narrowing conversion (better warnings)</li>
-	<li>LRUCache defaulttrraits now takes VALUE,a nd deifned OptionalValueType, and changed default to regular default for Optional but documented how to use Memory::Optional_Traits_Blockallocated_Indirect_Storage</li>
-	<li>factored Platform_AIX_GetEXEPathWithHint into its own AIX specific module</li>
-	<li>allow AF_LINK addresses on AIX for reported interface experimental); fix IO/Network/Interface regression</li>
-	<li>Support for gcc5 bug defines</li>
-	<li>Library/Sources/Stroika/Foundation/Execution/ProcessRunner tweaks; rewrote code to layout exec args in ProcessRunnner for POSIX to avoid issue depending on the layout of g++ vector (cuz broke with gcc5)</li>
-	<li>placeholder KeyedCollection container file</li>
-	<li>inor tweaks, asserts etc - based on feedback for msvc 2k15 analysis tool</li>
-	<li>Tons of cosmetic cleanups and use Finally/cleanup code to simplify thread/process handle cleanup in windows CreatePRocess usage (warned by
-		vs2k15 code analyze, but docs from msft said only needed to close process handle?)</li>
-	<li>threadpool regtest improvements; Added RegressionTest15_ThreadPoolStarvationBug_ () - but didnt help and may not really be a problem</li>
-	<li>use much more of ArgByValueType<T> (for performace) - and REPLACED (not backward compat) EachWtih in several containers to use IMPORVED 
-		Where in Iterable (taking optional return container type) - still experimental</li>
-	<li>include -lm in unix link args in case gcc used as driver instead of g++; and redid config code to allow config of gcc/g++ (C/C++ compierl name cuz needed to build lots of third party tools)
-	and detect gcc version# in GeneragteDefaultCOnfig.pl file so we can do right defaykt flags per version.</li>
-	<li>Repalce memset(0...) initialization with POD {} initialization</li>
-	<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc50, gcc51, pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 </td>
 </tr>
 
