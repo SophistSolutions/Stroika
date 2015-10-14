@@ -3,21 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
-// hopefully get rid of these?
-#include    <cstdio>
-#include    <cstdlib>
-#include    <cstdint>
-#include    <string.h>
-
 // @todo add Stroika wrapper on this (thirdpartyproducts)
-#ifdef HAVE_BZIP2
+#ifdef  HAVE_BZIP2
 #include "bzlib.h"
 #endif
 
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Finally.h"
 #include    "../../Streams/MemoryStream.h"
-//#include    "../../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "Reader.h"
 
@@ -166,8 +159,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-//using   Streams::iostream::InputStreamFromStdIStream;
-
 
 namespace {
     constexpr uint32_t  MAXU32 = numeric_limits<uint32_t>::max ();
@@ -277,56 +268,12 @@ namespace {
 
 ///// START OF ioapi.h////////////////////
 namespace {
-#if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
-    // Linux needs this to support file operation on files larger then 4+GB
-    // But might need better if/def to select just the platforms that needs them.
-#ifndef __USE_FILE_OFFSET64
-#define __USE_FILE_OFFSET64
-#endif
-#ifndef __USE_LARGEFILE64
-#define __USE_LARGEFILE64
-#endif
-#ifndef _LARGEFILE64_SOURCE
-#define _LARGEFILE64_SOURCE
-#endif
-#ifndef _FILE_OFFSET_BIT
-#define _FILE_OFFSET_BIT 64
-#endif
-#endif
 
-#if defined(USE_FILE32API)
-#define fopen64 fopen
-#define ftello64 ftell
-#define fseeko64 fseek
-#else
-#ifdef __FreeBSD__
-#define fopen64 fopen
-#define ftello64 ftello
-#define fseeko64 fseeko
-#endif
-#ifdef _MSC_VER
-#define fopen64 fopen
-#if (_MSC_VER >= 1400) && (!(defined(NO_MSCVER_FILE64_FUNC)))
-#define ftello64 _ftelli64
-#define fseeko64 _fseeki64
-#else // old MSC
-#define ftello64 ftell
-#define fseeko64 fseek
-#endif
-#endif
-#endif
-
-#ifdef HAVE_MINIZIP64_CONF_H
+#ifdef  HAVE_MINIZIP64_CONF_H
 #include "mz64conf.h"
 #endif
 
-    /* a type choosen by DEFINE */
-#ifdef HAVE_64BIT_INT_CUSTOM
-    typedef  64BIT_INT_CUSTOM_TYPE ZPOS64_T;
-#else
     typedef uint64_t ZPOS64_T;
-#endif
-
 
 #define ZLIB_FILEFUNC_SEEK_CUR (1)
 #define ZLIB_FILEFUNC_SEEK_END (2)
@@ -376,8 +323,6 @@ namespace {
         voidpf              opaque;
     };
 
-    void fill_fopen64_filefunc (zlib_filefunc64_def* pzlib_filefunc_def);
-    void fill_fopen_filefunc (zlib_filefunc_def* pzlib_filefunc_def);
 
     /* now internal definition, only for zip.c and unzip.h */
     struct zlib_filefunc64_32_def {
@@ -393,9 +338,9 @@ namespace {
 #define ZCLOSE64(filefunc,filestream)             ((*((filefunc).zfile_func64.zclose_file))  ((filefunc).zfile_func64.opaque,filestream))
 #define ZERROR64(filefunc,filestream)             ((*((filefunc).zfile_func64.zerror_file))  ((filefunc).zfile_func64.opaque,filestream))
 
-    voidpf call_zopen64 OF((const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode));
-    long    call_zseek64 OF((const zlib_filefunc64_32_def* pfilefunc, voidpf filestream, ZPOS64_T offset, int origin));
-    ZPOS64_T call_ztell64 OF((const zlib_filefunc64_32_def* pfilefunc, voidpf filestream));
+    voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode);
+    long    call_zseek64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream, ZPOS64_T offset, int origin);
+    ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream);
 
     void    fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32);
 
@@ -514,8 +459,6 @@ namespace {
     */
 
 
-    unzFile unzOpen (const char* path);
-    unzFile unzOpen64 (const void* path);
     /*
       Open a Zip file. path contain the full pathname (by example,
          on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
@@ -530,37 +473,37 @@ namespace {
            is a pointer to a wide unicode string (LPCTSTR is LPCWSTR), so const char*
            does not describe the reality
     */
+    unzFile unzOpen (const char* path);
+    unzFile unzOpen64 (const void* path);
 
 
     /*
        Open a Zip file, like unzOpen, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
-    unzFile unzOpen2 OF((const char* path, zlib_filefunc_def* pzlib_filefunc_def));
+    unzFile unzOpen2 (const char* path, zlib_filefunc_def* pzlib_filefunc_def);
 
 
     /*
        Open a Zip file, like unz64Open, but provide a set of file low level API
           for read/write the zip file (see ioapi.h)
     */
-    unzFile unzOpen2_64 OF((const void* path, zlib_filefunc64_def* pzlib_filefunc_def));
+    unzFile unzOpen2_64 (const void* path, zlib_filefunc64_def* pzlib_filefunc_def);
 
-    int unzClose OF((unzFile file));
+    int unzClose (unzFile file);
     /*
       Close a ZipFile opened with unzOpen.
       If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
         these files MUST be closed with unzCloseCurrentFile before call unzClose.
       return UNZ_OK if there is no problem. */
 
-    int unzGetGlobalInfo OF((unzFile file,
-                             unz_global_info* pglobal_info));
+    int unzGetGlobalInfo (unzFile file, unz_global_info* pglobal_info);
 
-    int unzGetGlobalInfo64 OF((unzFile file,
-                               unz_global_info64* pglobal_info));
     /*
       Write info about the ZipFile in the *pglobal_info structure.
       No preparation of the structure is needed
       return UNZ_OK if there is no problem. */
+    int unzGetGlobalInfo64 (unzFile file, unz_global_info64* pglobal_info);
 
 
     /*
@@ -568,9 +511,7 @@ namespace {
       uSizeBuf is the size of the szComment buffer.
       return the number of byte copied or an error code <0
     */
-    int unzGetGlobalComment OF((unzFile file,
-                                char* szComment,
-                                uLong uSizeBuf));
+    int unzGetGlobalComment (unzFile file,  char* szComment, uLong uSizeBuf);
 
 
     /***************************************************************************/
@@ -583,14 +524,13 @@ namespace {
     */
     int unzGoToFirstFile (unzFile file);
 
-    int unzGoToNextFile OF((unzFile file));
     /*
       Set the current file of the zipfile to the next file.
       return UNZ_OK if there is no problem
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
+    int unzGoToNextFile (unzFile file);
 
-    int unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity);
     /*
       Try locate the file szFileName in the zipfile.
       For the iCaseSensitivity signification, see unzStringFileNameCompare
@@ -599,6 +539,7 @@ namespace {
       UNZ_OK if the file is found. It becomes the current file.
       UNZ_END_OF_LIST_OF_FILE if the file is not found
     */
+    int unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity);
 
 
     /* ****************************************** */
@@ -654,31 +595,36 @@ namespace {
     */
 
 
-    ZPOS64_T unzGetCurrentFileZStreamPos64 OF((unzFile file));
+    ZPOS64_T unzGetCurrentFileZStreamPos64 (unzFile file);
 
 
     /***************************************************************************/
     /* for reading the content of the current zipfile, you can open it, read data
        from it, and close it (you can close it before reading all the file)
        */
-    int unzOpenCurrentFile OF((unzFile file));
     /*
-      Open for reading data the current file in the zipfile.
-      If there is no error, the return value is UNZ_OK.
+     Open for reading data the current file in the zipfile.
+     If there is no error, the return value is UNZ_OK.
     */
+    int unzOpenCurrentFile (unzFile file);
 
-    int unzOpenCurrentFilePassword OF((unzFile file,
-                                       const char* password));
     /*
       Open for reading data the current file in the zipfile.
       password is a crypting password
       If there is no error, the return value is UNZ_OK.
     */
+    int unzOpenCurrentFilePassword (unzFile file, const char* password);
 
-    int unzOpenCurrentFile2 OF((unzFile file,
-                                int* method,
-                                int* level,
-                                int raw));
+    /*
+     Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
+       if raw==1
+     *method will receive method of compression, *level will receive level of
+        compression
+     note : you can set level parameter as NULL (if you did not want known level,
+            but you CANNOT set method parameter as NULL
+    */
+    int unzOpenCurrentFile2 (unzFile file,  int* method, int* level, int raw);
+
     /*
       Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
         if raw==1
@@ -687,69 +633,52 @@ namespace {
       note : you can set level parameter as NULL (if you did not want known level,
              but you CANNOT set method parameter as NULL
     */
-
-    int  unzOpenCurrentFile3 OF((unzFile file,
-                                 int* method,
-                                 int* level,
-                                 int raw,
-                                 const char* password));
-    /*
-      Same than unzOpenCurrentFile, but open for read raw the file (not uncompress)
-        if raw==1
-      *method will receive method of compression, *level will receive level of
-         compression
-      note : you can set level parameter as NULL (if you did not want known level,
-             but you CANNOT set method parameter as NULL
-    */
+    int  unzOpenCurrentFile3 (unzFile file, int* method, int* level, int raw, const char* password);
 
 
-    int  unzCloseCurrentFile OF((unzFile file));
     /*
       Close the file in zip opened with unzOpenCurrentFile
       Return UNZ_CRCERROR if all the file was read but the CRC is not good
     */
+    int  unzCloseCurrentFile (unzFile file);
 
-    int unzReadCurrentFile OF((unzFile file,
-                               voidp buf,
-                               unsigned len));
     /*
-      Read bytes from the current file (opened by unzOpenCurrentFile)
-      buf contain buffer where data must be copied
-      len the size of buf.
+     Read bytes from the current file (opened by unzOpenCurrentFile)
+     buf contain buffer where data must be copied
+     len the size of buf.
 
-      return the number of byte copied if somes bytes are copied
-      return 0 if the end of file was reached
-      return <0 with error code if there is an error
-        (UNZ_ERRNO for IO error, or zLib error for uncompress error)
+     return the number of byte copied if somes bytes are copied
+     return 0 if the end of file was reached
+     return <0 with error code if there is an error
+       (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
+    int unzReadCurrentFile (unzFile file, voidp buf, unsigned len);
 
-    z_off_t  unztell OF((unzFile file));
+    z_off_t  unztell (unzFile file);
 
-    ZPOS64_T  unztell64 OF((unzFile file));
+    ZPOS64_T  unztell64 (unzFile file);
     /*
       Give the current position in uncompressed data
     */
 
-    int  unzeof OF((unzFile file));
     /*
       return 1 if the end of file was reached, 0 elsewhere
     */
+    int  unzeof (unzFile file);
 
-    int  unzGetLocalExtrafield OF((unzFile file,
-                                   voidp buf,
-                                   unsigned len));
     /*
-      Read extra field from the current file (opened by unzOpenCurrentFile)
-      This is the local-header version of the extra field (sometimes, there is
-        more info in the local-header version than in the central-header)
+     Read extra field from the current file (opened by unzOpenCurrentFile)
+     This is the local-header version of the extra field (sometimes, there is
+       more info in the local-header version than in the central-header)
 
-      if buf==NULL, it return the size of the local extra field
+     if buf==NULL, it return the size of the local extra field
 
-      if buf!=NULL, len is the size of the buffer, the extra header is copied in
-        buf.
-      the return value is the number of bytes copied in buf, or (if <0)
-        the error code
+     if buf!=NULL, len is the size of the buffer, the extra header is copied in
+       buf.
+     the return value is the number of bytes copied in buf, or (if <0)
+       the error code
     */
+    int  unzGetLocalExtrafield (unzFile file, voidp buf, unsigned len);
 
     /***************************************************************************/
 
@@ -762,7 +691,6 @@ namespace {
     int  unzSetOffset (unzFile file, uLong pos);
 
 }
-
 //// END OF unzip.h//////////////////////////////////////////////////////////////
 
 
@@ -798,24 +726,7 @@ namespace {
 
 */
 
-#if defined(_WIN32) && (!(defined(_CRT_SECURE_NO_WARNINGS)))
-#define _CRT_SECURE_NO_WARNINGS
-#endif
-
-#if defined(__APPLE__) || defined(IOAPI_NO_64)
-// In darwin and perhaps other BSD variants off_t is a 64 bit value, hence no need for specific 64 bit functions
-#define FOPEN_FUNC(filename, mode) fopen(filename, mode)
-#define FTELLO_FUNC(stream) ftello(stream)
-#define FSEEKO_FUNC(stream, offset, origin) fseeko(stream, offset, origin)
-#else
-#define FOPEN_FUNC(filename, mode) fopen64(filename, mode)
-#define FTELLO_FUNC(stream) ftello64(stream)
-#define FSEEKO_FUNC(stream, offset, origin) fseeko64(stream, offset, origin)
-#endif
-
-
 namespace {
-
     voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode)
     {
         if (pfilefunc->zfile_func64.zopen64_file != NULL)
@@ -824,7 +735,6 @@ namespace {
             return (*(pfilefunc->zopen32_file))(pfilefunc->zfile_func64.opaque, (const char*)filename, mode);
         }
     }
-
     long call_zseek64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream, ZPOS64_T offset, int origin)
     {
         if (pfilefunc->zfile_func64.zseek64_file != NULL)
@@ -837,7 +747,6 @@ namespace {
                 return (*(pfilefunc->zseek32_file))(pfilefunc->zfile_func64.opaque, filestream, offsetTruncated, origin);
         }
     }
-
     ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream)
     {
         if (pfilefunc->zfile_func64.zseek64_file != NULL)
@@ -850,8 +759,7 @@ namespace {
                 return tell_uLong;
         }
     }
-
-    void fill_zlib_filefunc64_32_def_from_filefunc32(zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32)
+    void fill_zlib_filefunc64_32_def_from_filefunc32 (zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32)
     {
         p_filefunc64_32->zfile_func64.zopen64_file = NULL;
         p_filefunc64_32->zopen32_file = p_filefunc32->zopen_file;
@@ -865,164 +773,6 @@ namespace {
         p_filefunc64_32->zfile_func64.opaque = p_filefunc32->opaque;
         p_filefunc64_32->zseek32_file = p_filefunc32->zseek_file;
         p_filefunc64_32->ztell32_file = p_filefunc32->ztell_file;
-    }
-
-
-
-    static voidpf   fopen_file_func OF((voidpf opaque, const char* filename, int mode));
-    static uLong    fread_file_func OF((voidpf opaque, voidpf stream, void* buf, uLong size));
-    static uLong    fwrite_file_func OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
-    static ZPOS64_T  ftell64_file_func OF((voidpf opaque, voidpf stream));
-    static long     fseek64_file_func OF((voidpf opaque, voidpf stream, ZPOS64_T offset, int origin));
-    static int      fclose_file_func OF((voidpf opaque, voidpf stream));
-    static int      ferror_file_func OF((voidpf opaque, voidpf stream));
-
-    static voidpf  fopen_file_func (voidpf opaque, const char* filename, int mode)
-    {
-        FILE* file = NULL;
-        const char* mode_fopen = NULL;
-        if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER) == ZLIB_FILEFUNC_MODE_READ)
-            mode_fopen = "rb";
-        else if (mode & ZLIB_FILEFUNC_MODE_EXISTING)
-            mode_fopen = "r+b";
-        else if (mode & ZLIB_FILEFUNC_MODE_CREATE)
-            mode_fopen = "wb";
-
-        if ((filename != NULL) && (mode_fopen != NULL))
-            file = fopen(filename, mode_fopen);
-        return file;
-    }
-
-    static voidpf  fopen64_file_func (voidpf opaque, const void* filename, int mode)
-    {
-        FILE* file = NULL;
-        const char* mode_fopen = NULL;
-        if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER) == ZLIB_FILEFUNC_MODE_READ)
-            mode_fopen = "rb";
-        else if (mode & ZLIB_FILEFUNC_MODE_EXISTING)
-            mode_fopen = "r+b";
-        else if (mode & ZLIB_FILEFUNC_MODE_CREATE)
-            mode_fopen = "wb";
-
-        if ((filename != NULL) && (mode_fopen != NULL))
-            file = FOPEN_FUNC((const char*)filename, mode_fopen);
-        return file;
-    }
-
-    static uLong  fread_file_func (voidpf opaque, voidpf stream, void* buf, uLong size)
-    {
-        uLong ret;
-        ret = (uLong)fread(buf, 1, (size_t)size, (FILE*)stream);
-        return ret;
-    }
-
-    static uLong  fwrite_file_func (voidpf opaque, voidpf stream, const void* buf, uLong size)
-    {
-        uLong ret;
-        ret = (uLong)fwrite(buf, 1, (size_t)size, (FILE*)stream);
-        return ret;
-    }
-
-    static long  ftell_file_func (voidpf opaque, voidpf stream)
-    {
-        long ret;
-        ret = ftell((FILE*)stream);
-        return ret;
-    }
-
-
-    static ZPOS64_T  ftell64_file_func (voidpf opaque, voidpf stream)
-    {
-        ZPOS64_T ret;
-        ret = FTELLO_FUNC((FILE*)stream);
-        return ret;
-    }
-
-    static long  fseek_file_func (voidpf  opaque, voidpf stream, uLong offset, int origin)
-    {
-        int fseek_origin = 0;
-        long ret;
-        switch (origin) {
-            case ZLIB_FILEFUNC_SEEK_CUR :
-                fseek_origin = SEEK_CUR;
-                break;
-            case ZLIB_FILEFUNC_SEEK_END :
-                fseek_origin = SEEK_END;
-                break;
-            case ZLIB_FILEFUNC_SEEK_SET :
-                fseek_origin = SEEK_SET;
-                break;
-            default:
-                return -1;
-        }
-        ret = 0;
-        if (fseek((FILE*)stream, offset, fseek_origin) != 0)
-            ret = -1;
-        return ret;
-    }
-
-    static long  fseek64_file_func (voidpf  opaque, voidpf stream, ZPOS64_T offset, int origin)
-    {
-        int fseek_origin = 0;
-        long ret;
-        switch (origin) {
-            case ZLIB_FILEFUNC_SEEK_CUR :
-                fseek_origin = SEEK_CUR;
-                break;
-            case ZLIB_FILEFUNC_SEEK_END :
-                fseek_origin = SEEK_END;
-                break;
-            case ZLIB_FILEFUNC_SEEK_SET :
-                fseek_origin = SEEK_SET;
-                break;
-            default:
-                return -1;
-        }
-        ret = 0;
-
-        if(FSEEKO_FUNC((FILE*)stream, offset, fseek_origin) != 0)
-            ret = -1;
-
-        return ret;
-    }
-
-
-    static int  fclose_file_func (voidpf opaque, voidpf stream)
-    {
-        int ret;
-        ret = fclose((FILE*)stream);
-        return ret;
-    }
-
-    static int  ferror_file_func (voidpf opaque, voidpf stream)
-    {
-        int ret;
-        ret = ferror((FILE*)stream);
-        return ret;
-    }
-
-    void fill_fopen_filefunc (zlib_filefunc_def* pzlib_filefunc_def)
-    {
-        pzlib_filefunc_def->zopen_file = fopen_file_func;
-        pzlib_filefunc_def->zread_file = fread_file_func;
-        pzlib_filefunc_def->zwrite_file = fwrite_file_func;
-        pzlib_filefunc_def->ztell_file = ftell_file_func;
-        pzlib_filefunc_def->zseek_file = fseek_file_func;
-        pzlib_filefunc_def->zclose_file = fclose_file_func;
-        pzlib_filefunc_def->zerror_file = ferror_file_func;
-        pzlib_filefunc_def->opaque = NULL;
-    }
-
-    void fill_fopen64_filefunc (zlib_filefunc64_def*  pzlib_filefunc_def)
-    {
-        pzlib_filefunc_def->zopen64_file = fopen64_file_func;
-        pzlib_filefunc_def->zread_file = fread_file_func;
-        pzlib_filefunc_def->zwrite_file = fwrite_file_func;
-        pzlib_filefunc_def->ztell64_file = ftell64_file_func;
-        pzlib_filefunc_def->zseek64_file = fseek64_file_func;
-        pzlib_filefunc_def->zclose_file = fclose_file_func;
-        pzlib_filefunc_def->zerror_file = ferror_file_func;
-        pzlib_filefunc_def->opaque = NULL;
     }
 }
 ///////////////////////////////////////////////// end of IOAPI.c /////////////////////
@@ -1501,10 +1251,9 @@ namespace {
 
         us.z_filefunc.zseek32_file = NULL;
         us.z_filefunc.ztell32_file = NULL;
-        if (pzlib_filefunc64_32_def == NULL)
-            fill_fopen64_filefunc(&us.z_filefunc.zfile_func64);
-        else
-            us.z_filefunc = *pzlib_filefunc64_32_def;
+
+        AssertNotNull (pzlib_filefunc64_32_def);
+        us.z_filefunc = *pzlib_filefunc64_32_def;
         us.is64bitOpenFunction = is64bitOpenFunction;
 
 
@@ -2482,7 +2231,7 @@ namespace {
 
     /** Addition for GDAL : START */
 
-    ZPOS64_T  unzGetCurrentFileZStreamPos64( unzFile file)
+    ZPOS64_T  unzGetCurrentFileZStreamPos64 ( unzFile file)
     {
         unz64_s* s;
         file_in_zip64_read_info_s* pfile_in_zip_read_info;
@@ -2976,7 +2725,7 @@ private:
                 Assert (myThis->fOpened_);
                 size_t sz = myThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + size);
                 Assert (sz <= size);
-                return sz;
+                return static_cast<uLong> (sz);
             };
             this->zwrite_file = [] (voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
                 RequireNotReached ();   // read only zip
