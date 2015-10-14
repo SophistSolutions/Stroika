@@ -81,7 +81,7 @@ string  XML::QuoteForXMLAttribute (const wstring& s)
                 break;
             default:        {
                     wchar_t ccode   =   *i;
-                    if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 || ccode > 127)) {
+                    if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 or ccode > 127)) {
                         r +=  CString::Format ("&#%d;", ccode);
                     }
                     else {
@@ -195,7 +195,7 @@ string  XML::QuoteForXML (const wstring& s)
                 break;
             default:        {
                     wchar_t ccode   =   *i;
-                    if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 || ccode > 127)) {
+                    if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 or ccode > 127)) {
                         r +=  CString::Format ("&#%d;", ccode);
                     }
                     else {

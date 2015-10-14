@@ -145,7 +145,7 @@ namespace   Stroika {
 #if 0
                     template    <typename T>
                     using  UnsignedDifferenceType_ = typename conditional <
-                                                     ((is_integral<T>::value || is_enum<T>::value) && !is_same<T, bool>::value),
+                                                     ((is_integral<T>::value or is_enum<T>::value) && not is_same<T, bool>::value),
                                                      typename make_unsigned < BaseDifferenceType_<T> >::type,
                                                      BaseDifferenceType_<T>
                                                      >::type;

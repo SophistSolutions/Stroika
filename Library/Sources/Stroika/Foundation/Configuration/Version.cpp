@@ -47,7 +47,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     // Helper to throw if out of range
     auto my_wcstol_ = [] (const wchar_t* i, wchar_t** endResult) -> uint8_t {
         long l = wcstol (i, endResult, 10);
-        if (l < 0 || l > numeric_limits<uint8_t>::max ())
+        if (l < 0 or l > numeric_limits<uint8_t>::max ())
         {
             Execution::DoThrow (Execution::StringException (L"Invalid Version String: component out of range"));
         }

@@ -1308,9 +1308,7 @@ namespace {
             if (unz64local_getLong64(&us.z_filefunc, us.filestream, &number_entry_CD) != UNZ_OK)
                 err = UNZ_ERRNO;
 
-            if ((number_entry_CD != us.gi.number_entry) ||
-                    (number_disk_with_CD != 0) ||
-                    (number_disk != 0))
+            if ((number_entry_CD != us.gi.number_entry) or (number_disk_with_CD != 0) or (number_disk != 0))
                 err = UNZ_BADZIPFILE;
 
             /* size of the central directory */
@@ -1895,7 +1893,7 @@ namespace {
     {
         unz64_s* s;
 
-        if (file == NULL || file_pos == NULL)
+        if (file == NULL or file_pos == NULL)
             return UNZ_PARAMERROR;
         s = (unz64_s*)file;
         if (!s->current_file_ok)
@@ -1923,7 +1921,7 @@ namespace {
         unz64_s* s;
         int err;
 
-        if (file == NULL || file_pos == NULL)
+        if (file == NULL or file_pos == NULL)
             return UNZ_PARAMERROR;
         s = (unz64_s*)file;
 
@@ -2865,7 +2863,7 @@ public:
                     string_method = "Defl:N";
                 else if (iLevel == 1)
                     string_method = "Defl:X";
-                else if ((iLevel == 2) || (iLevel == 3))
+                else if ((iLevel == 2) or (iLevel == 3))
                     string_method = "Defl:F"; /* 2:fast , 3 : extra fast*/
             }
             else if (file_info.compression_method == Z_BZIP2ED) {
