@@ -47,7 +47,17 @@ namespace   Stroika {
                      *  Based closely on http://en.wikipedia.org/wiki/Procfs
                      */
                     struct  ProcessType {
-                        Optional<bool>                      fKernelProcess;     // if true (unix only) - this process is really a thread builtin to the kernel
+                        /**
+                         *  If true (unix only) - this process is really a thread builtin to the kernel. If missing, unknown.
+                         */
+                        Optional<bool>                      fKernelProcess;
+
+                        /**
+                         *  This will be omitted if unknown, but can be the special value zero, whose meaning varies from OS to OS, but
+                         *  typically means created by the system sponaneously (like the init process on UNIX has parent process id 0).
+                         *
+                         *  Kernel processes on some operating systems (e.g. AIX) also tend to have parent PID 0)
+                         */
                         Optional<pid_t>                     fParentProcessID;
 
                         /*
@@ -67,7 +77,7 @@ namespace   Stroika {
                         Optional<String>                    fRoot;  // chroot
                         Optional<Time::DateTime>            fProcessStartedAt;
 
-                        /*
+                        /**
                          *  Based on
                          *      http://linux.die.net/man/5/proc (search for /proc/[pid]/stat)
                          *          One character from the string "RSDZTW" where R is running, S is sleeping in
