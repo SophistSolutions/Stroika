@@ -55,7 +55,7 @@ namespace   Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     bufSize = max (bufSize, kMinBufSize_);
                     if (bufSize < fBuffer_.size ()) {
-                        Flush ();
+                        Flush_ ();
                     }
                     fBuffer_.reserve (bufSize);
                 }
@@ -87,17 +87,7 @@ namespace   Stroika {
                 virtual  void    Flush () override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-                    if (fAborted_) {
-                        fBuffer_.clear ();
-                    }
-                    else {
-                        if (not fBuffer_.empty ()) {
-                            fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
-                            fBuffer_.clear ();
-                        }
-                        fRealOut_.Flush ();
-                    }
-                    Ensure (fBuffer_.empty ());
+                    Flush_ ();
                 }
                 // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                 // Writes always succeed fully or throw.
@@ -128,7 +118,7 @@ namespace   Stroika {
                      * At this point - either the buffer is full, OR we are done writing. EITHER way - if the buffer is full - we may as well write it now.
                      */
                     if (fBuffer_.capacity () == fBuffer_.size ()) {
-                        Flush ();
+                        Flush_ ();
                         Assert (fBuffer_.empty ());
                     }
                     Assert (oldCap == fBuffer_.capacity ());
@@ -144,6 +134,22 @@ namespace   Stroika {
                     else {
                         fRealOut_.Write (start + copy2Buffer, end);
                     }
+                }
+
+            private:
+                nonvirtual  void    Flush_ ()
+                {
+                    if (fAborted_) {
+                        fBuffer_.clear ();
+                    }
+                    else {
+                        if (not fBuffer_.empty ()) {
+                            fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
+                            fBuffer_.clear ();
+                        }
+                        fRealOut_.Flush ();
+                    }
+                    Ensure (fBuffer_.empty ());
                 }
 
             private:
