@@ -12,15 +12,37 @@ MULTILIB_CONFIGURE_FLAGS=--disable-multilib
 LANGUAGES_CONFIGURE_FLAGS=--enable-languages=c,c++
 EXTRA_CONFIGURE_FLAGS=
 
+BUILDDIR=`realpath ./BUILD-GCC-$GCC_VERSION`
 
-wget https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.gz
-tar xvf gcc-$GCC_VERSION.tar.gz
+BLDOUT=$BUILDDIR/BLDOUT.txt
+
+
+
+echo "Building GCC $GCC_VERSION to $BUILDDIR with installation to $INSTALL_DIR, and BLDOUT=$BLDOUT..."
+
+
+rm -rf $BUILDDIR
+mkdir -p $BUILDDIR
+cd $BUILDDIR
+
+
+(wget https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.gz 2>&1) >> $BLDOUT
+echo "tar xf gcc-$GCC_VERSION.tar.gz" >> $BLDOUT
+(tar xf gcc-$GCC_VERSION.tar.gz 2>&1) >> $BLDOUT
+
 cd gcc-$GCC_VERSION
-./contrib/download_prerequisites
+echo "./contrib/download_prerequisites" >> $BLDOUT
+(./contrib/download_prerequisites 2>&1) >> $BLDOUT
+
 cd ..
 mkdir objdir
 cd objdir
-$PWD/../gcc-$GCC_VERSION/configure --prefix=$INSTALL_DIR $LANGUAGES_CONFIGURE_FLAGS -$MULTILIB_CONFIGURE_FLAGS $DISABLE_BOOTSTRAP_FLAG $EXTRA_CONFIGURE_FLAGS
-make $PARALLEL_MAKE_FLAG
-make install
+echo "$PWD/../gcc-$GCC_VERSION/configure --prefix=$INSTALL_DIR $LANGUAGES_CONFIGURE_FLAGS $MULTILIB_CONFIGURE_FLAGS $DISABLE_BOOTSTRAP_FLAG $EXTRA_CONFIGURE_FLAGS" >> $BLDOUT
+($PWD/../gcc-$GCC_VERSION/configure --prefix=$INSTALL_DIR $LANGUAGES_CONFIGURE_FLAGS $MULTILIB_CONFIGURE_FLAGS $DISABLE_BOOTSTRAP_FLAG $EXTRA_CONFIGURE_FLAGS 2>&1) >> $BLDOUT
+
+echo "make $PARALLEL_MAKE_FLAG" >> $BLDOUT
+(make $PARALLEL_MAKE_FLAG 2>&1) >> $BLDOUT
+
+echo "make install" >> $BLDOUT
+(make install 2>&1) >> $BLDOUT
 
