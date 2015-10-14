@@ -54,6 +54,8 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	}
 	
 	print (" ...Running openssl tests...");
+	# make rehash to avoid occasional noise in output
+	system ("(make --directory CURRENT --no-print-directory -s rehash 2>& 1) > /dev/null");
 	system ("make --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>& 1");
 	print ("\n");
 }
