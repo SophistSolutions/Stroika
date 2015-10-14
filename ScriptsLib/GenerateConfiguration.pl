@@ -12,9 +12,8 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 my $configurationFiles	=	"ConfigurationFiles/";
 
-my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
+my $configurationName	=	"DefaultConfiguration";
 
-my $forceWriteConfig	=	true;
 
 
 
@@ -73,7 +72,7 @@ my $EXTRA_LINKER_ARGS = "";
 sub	DoHelp_
 {
     print("Usage:\n");
-        print("  make default-configuration DEFAULT_CONFIGURATION_ARGS= OPTIONS where options can be:\n");
+        print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
         print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
@@ -298,7 +297,10 @@ sub	ParseCommandLine_Platform_
 {
 	for ($i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
-		if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
+		if ($i == 0) {
+			$configurationName  = $var;
+		}
+		elsif ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
 			$i++;
 			$var = $ARGV[$i];
 			$platform = $var;
@@ -324,7 +326,7 @@ sub	ParseCommandLine_CompilerDriver_
 
 sub	ParseCommandLine_Remaining_
 {
-	for ($i = 0; $i <= $#ARGV; $i++) {
+	for ($i = 1; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
@@ -563,7 +565,9 @@ ParseCommandLine_ ();
 # build C++/dirs etc from this!
 sub	WriteConfigFile_
 {
-	open(OUT,">$masterXMLConfigFile");
+    my $configFileName = shift(@_);
+
+	open(OUT,">$configFileName");
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	#print (OUT "    <Platform>$platform</Platform>\n");
@@ -638,13 +642,10 @@ sub	WriteConfigFile_
 
 mkdir ($configurationFiles);
 
-#if ($forceWriteConfig) {
-#	#print("Forcing recreate of \"$masterXMLConfigFile\"...\n");
-#}
-
-if (not (-e $masterXMLConfigFile) or $forceWriteConfig) {
+{
+	my $masterXMLConfigFile	=	"$configurationFiles/$configurationName.xml";
 	print("   Writing \"$masterXMLConfigFile\"...\n");
-	WriteConfigFile_ ();
+	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
 }
 

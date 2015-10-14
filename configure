@@ -1,3 +1,2 @@
 #/bin/sh
-#You dont need to do this explicitly, but since many people will look here first when building Stroika...
-make default-configuration project-files
+perl ScriptsLib/GenerateConfiguration.pl $*
