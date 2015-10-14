@@ -268,10 +268,14 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		$AR = ReplaceLast_ ($COMPILER_DRIVER_C, 'gcc', 'gcc-ar');
+		my $ccLessArgs = $COMPILER_DRIVER_C;
+		$ccLessArgs  =~ s/\ .*//;
+		$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
 	}
 	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		$RANLIB = ReplaceLast_ ($COMPILER_DRIVER_C, 'gcc', 'gcc-ranlib');
+		my $ccLessArgs = $COMPILER_DRIVER_C;
+		$ccLessArgs  =~ s/\ .*//;
+		$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
 	}
 }
 
@@ -533,7 +537,7 @@ sub	ParseCommandLine_
 		print "Entering GenerateConfiguration.pl (";
 		for ($i = 0; $i <= $#ARGV; $i++) {
 			my $var = $ARGV[$i];
-			print ($var);
+			print ("\"$var\"");
 			print (" ");
 		}
 		print (")\n");

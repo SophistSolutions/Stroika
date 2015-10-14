@@ -1,2 +1,2 @@
 #/bin/sh
-perl ScriptsLib/GenerateConfiguration.pl $*
+perl ScriptsLib/GenerateConfiguration.pl "$@"
