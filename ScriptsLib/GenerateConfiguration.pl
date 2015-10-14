@@ -12,7 +12,7 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 my $configurationFiles	=	"ConfigurationFiles/";
 
-my $configurationName	=	"DefaultConfiguration";
+my $configurationName	=	undef;
 
 
 
@@ -547,6 +547,10 @@ sub	ParseCommandLine_
 	}
 	else {
         print ("Expected configuration name as first argument\n");
+        DoHelp_ ();
+	}
+	if ($configurationName =~ /^\-/) { 
+        print ("Expected configuration name (got $configurationName) as first argument\n");
         DoHelp_ ();
 	}
 
