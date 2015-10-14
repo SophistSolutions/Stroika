@@ -20,10 +20,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a108">v2.0a108x</a><br/>2015-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a108">v2.0a108</a><br/>2015-10-14</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Significant change to build system: configure script now more central, and works better. make default-configuration now calls configure.  Now support args in --compiler-driver, and fixed AR/RANLIB autogen accordingly.</li>
+		<li>in openssl build: make rehash to avoid occasional noise in output</li>
 	</ul>
 </td>
 </tr>
