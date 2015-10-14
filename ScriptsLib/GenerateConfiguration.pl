@@ -542,11 +542,11 @@ sub	ParseCommandLine_
 
 	SetInitialDefaults_ ();
 	
-	if ($#ARGV > 0) {
+	if ($#ARGV >= 0) {
 		$configurationName  = $ARGV[0];
 	}
 	else {
-        print ("Expected configuraiton name as first argument\n");
+        print ("Expected configuration name as first argument\n");
         DoHelp_ ();
 	}
 
