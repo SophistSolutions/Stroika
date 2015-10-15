@@ -75,18 +75,6 @@ namespace {
     }
 }
 
-#if     qPlatform_Windows
-namespace {
-    template    <typename N>
-    inline  void    ThrowIf_Windows_SOCKET_ERROR_ (N returnCode)
-    {
-        if (returnCode == SOCKET_ERROR ) {
-            Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
-        }
-    }
-}
-#endif
-
 
 
 
@@ -130,11 +118,7 @@ namespace   {
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                int r = ::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags);
-                if (r < 0) {
-                    Execution::DoThrow (StringException (String_Constant (L"fix error")));
-                }
-                return size_t (r);// rough attempt...
+                return size_t (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));// rough attempt...
 #elif   qPlatform_POSIX
                 return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #else
@@ -162,7 +146,7 @@ namespace   {
                     int len  = static_cast<int> (end - start);
                     int flags = 0;
                     int n = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
-                    ThrowIf_Windows_SOCKET_ERROR_ (n);
+                    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (n);
                     Assert (0 <= n and n <= (end - start));
                     return static_cast<size_t> (n);
                 }
@@ -179,7 +163,7 @@ namespace   {
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if     qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
-                Execution::ThrowErrNoIfNegative (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
 #elif   qPlatform_POSIX
                 Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
 #else
@@ -194,7 +178,7 @@ namespace   {
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
                 *fromAddress = sa;
                 return result;
 #elif   qPlatform_POSIX
@@ -349,8 +333,10 @@ Socket::Socket (SocketKind socketKind)
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+#elif	qPlatform_Windows
+    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #else
-    Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
+    AssertNotImplemented ();
 #endif
     fRep_ = std::move (shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sfd)));
 }
@@ -401,7 +387,11 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
 
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
+#if		qPlatform_Windows
+    ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
+#else
     ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
+#endif
 }
 
 
