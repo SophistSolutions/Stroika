@@ -22,10 +22,16 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a109">v2.0a109x</a><br/>2015-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a109">v2.0a109</a><br/>2015-10-16</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>use {} init instead of memset(0) in several places</li>
+		<li>cleanup socket error/throw code for quirky winsock - must call WSAGetLastError - not errno!</li>
+		<li>Added regression tests for sterls bug report about JSON reader/writer and fixed bug with </li>
+		<li>Use ArgByValueType<T> in several more container classes (colelciton/deque/multiset/queue/sequence/stack, etc... should improve performance).</li>
+		<li>SystemPerformance/Instruments/CPU Windows RunLengthQ support</li>
+		<li>Added PerformanceDump-v2.0a109-x86-ReleaseU</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
