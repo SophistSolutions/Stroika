@@ -557,6 +557,7 @@ namespace   {
 
             void    DoIt ()
             {
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\t\r\n\f\x3"));	// proper read/write control characters
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\?"));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\\?"));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
