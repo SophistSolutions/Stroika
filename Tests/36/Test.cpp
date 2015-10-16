@@ -302,8 +302,8 @@ namespace {
                     }
                 };
                 // wait long time cuz of debuggers (esp valgrind) etc
-                adder.WaitForDone(300);
-                reader.WaitForDone(300);
+                adder.WaitForDone (500);
+                reader.WaitForDone (500);
                 VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
