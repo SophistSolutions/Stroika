@@ -79,70 +79,70 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, signed char>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"%d", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, short int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"%d", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"%d", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"%d", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, long int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"%ld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"%ld", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, long long int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"%lld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"%lld", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned char>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned short>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"0x%uld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%uld", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long long>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    swprintf (buf, NEltsOf (buf), L"0x%ulld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ulld", t);
                     return buf;
                 }
 
