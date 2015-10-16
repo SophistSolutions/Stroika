@@ -50,6 +50,37 @@ using   Time::DurationSecondsType;
 
 
 
+#ifndef qUseWMICollectionSupport_
+#define qUseWMICollectionSupport_       qPlatform_Windows
+#endif
+
+
+#if     qUseWMICollectionSupport_
+#include    "../Support/WMICollector.h"
+
+using   SystemPerformance::Support::WMICollector;
+#endif
+
+
+
+
+#if     qUseWMICollectionSupport_
+namespace {
+    const   String_Constant     kInstanceName_          { L"" };
+
+    const   String_Constant     kProcessorQueueLength_  { L"Processor Queue Length" };
+}
+#endif
+
+
+
+
+
+
+
+
+
+
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
 /*
  ********************************************************************************
@@ -476,6 +507,9 @@ namespace {
 #if   qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+#if     qUseWMICollectionSupport_
+        WMICollector            fSystemWMICollector_ { String_Constant { L"System" }, {kInstanceName_},  {kProcessorQueueLength_} };
+#endif
         struct  WinSysTimeCaptureContext_ {
             double  IdleTime;
             double  KernelTime;
@@ -528,6 +562,10 @@ namespace {
             Info    result;
             result.fTotalCPUUsage = cputime_ ();
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage;   // @todo fix - remove irq time etc from above? Or add into above if missing
+#if     qUseWMICollectionSupport_
+            fSystemWMICollector_.Collect ();
+            fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
+#endif
             NoteCompletedCapture_ ();
             return result;
         }

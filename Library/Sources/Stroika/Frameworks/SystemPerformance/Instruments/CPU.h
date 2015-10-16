@@ -16,6 +16,10 @@
  *  \file
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
+ *  TODO:
+ *      @todo   Windows fRunQLength value is a point-in-time snapshot, and it SHOULD be (if we can find out how)
+ *              an average over the measurement interval.
  */
 
 
