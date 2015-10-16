@@ -121,8 +121,7 @@ AppTempFileManager::AppTempFileManager ()
 #if     qPlatform_Windows
     String tmpDir  =   WellKnownLocations::GetTemporary ();
 
-    wchar_t   exePath[MAX_PATH];
-    memset (exePath, 0, sizeof exePath);
+    wchar_t   exePath[MAX_PATH] {};
     Verify (::GetModuleFileNameW (nullptr, exePath, static_cast<DWORD> (NEltsOf (exePath))));
 
     wstring exeFileName =   exePath;

@@ -45,8 +45,7 @@ using   Characters::String_Constant;
 String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
-    wchar_t   fileBuf[MAX_PATH];
-    memset (fileBuf, 0, sizeof (fileBuf));
+    wchar_t   fileBuf[MAX_PATH] {};
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
     String result = fileBuf;
     // Assure non-empty result
@@ -86,8 +85,7 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
 #if     qPlatform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
-    SDKChar   fileBuf[MAX_PATH];
-    memset (fileBuf, 0, sizeof (fileBuf));
+    SDKChar   fileBuf[MAX_PATH] {};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
     SDKString result = fileBuf;
     // Assure non-empty result
@@ -127,8 +125,7 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
-    SDKChar   fileBuf[MAX_PATH];
-    memset (fileBuf, 0, sizeof (fileBuf));
+    SDKChar   fileBuf[MAX_PATH] {};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
     SDKString result = fileBuf;
     // Assure non-empty result
@@ -183,8 +180,7 @@ String FileSystem::WellKnownLocations::GetRuntimeVariableData ()
  */
 String FileSystem::WellKnownLocations::GetWinSxS ()
 {
-    wchar_t   fileBuf[MAX_PATH];
-    memset (fileBuf, 0, sizeof (fileBuf));
+    wchar_t   fileBuf[MAX_PATH] {};
     Verify (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_WINDOWS, false));
     String result = fileBuf;
     // Assure non-empty result

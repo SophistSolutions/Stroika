@@ -323,10 +323,8 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     AdjustSysErrorMode  errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
 
     DWORD   ignored =   0;
-    SDKChar   volNameBuf[1024];
-    memset (volNameBuf, 0, sizeof (volNameBuf));
-    SDKChar   igBuf[1024];
-    memset (igBuf, 0, sizeof (igBuf));
+    SDKChar   volNameBuf[1024] {};
+    SDKChar   igBuf[1024] {};
     BOOL    result  =   ::GetVolumeInformation (
                             AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsSDKString ().c_str (),
                             volNameBuf,
@@ -481,8 +479,7 @@ void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool igno
     }
     String dir2Use =   AssureDirectoryPathSlashTerminated (path);
 
-    WIN32_FIND_DATA fd;
-    (void)::memset (&fd, 0, sizeof (fd));
+    WIN32_FIND_DATA fd {};
     HANDLE          hFind = ::FindFirstFile ((dir2Use + String_Constant (L"*")).AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {

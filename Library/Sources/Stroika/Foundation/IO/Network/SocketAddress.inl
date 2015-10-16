@@ -22,9 +22,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 inline  SocketAddress::SocketAddress ()
-                    : fSocketAddress_ ()
-                {
-                    ::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
+                    : fSocketAddress_ {} {
                 }
                 inline  SocketAddress::SocketAddress (const sockaddr& iaddr)
                     : fSocketAddress_ ()
@@ -45,10 +43,9 @@ namespace   Stroika {
                     (void)::memcpy (&fSocketAddress_, &iaddr, sizeof (iaddr));
                 }
                 inline  SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
-                    : fSocketAddress_ ()
-                {
-                    (void)::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
-                    switch (iaddr.GetAddressFamily ()) {
+                    : fSocketAddress_ {} {
+                    switch (iaddr.GetAddressFamily ())
+                    {
                         case    InternetAddress::AddressFamily::V4: {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
                                 sockaddr_in& as = reinterpret_cast<sockaddr_in&> (fSocketAddress_);

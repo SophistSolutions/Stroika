@@ -124,10 +124,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
     Collection<Interface>   result;
 #if     qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) {
-        char buf[1024];
-
-        struct ifreq ifreq;
-        (void)::memset (&ifreq, 0, sizeof (ifreq));
+        struct ifreq ifreq {};
         Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
 
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
@@ -135,9 +132,8 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         return ifreq.ifr_flags;
     };
 
-    struct ifreq    ifreqs[128];
-    struct ifconf   ifconf;
-    (void)::memset (&ifreqs, 0, sizeof (ifreqs));
+    struct ifreq    ifreqs[128] {};
+    struct ifconf   ifconf {};
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof(ifreqs);
 
@@ -201,11 +197,9 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 #elif   qPlatform_Linux
         {
             auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
-                struct ifreq ifreq;
-                (void)::memset (&ifreq, 0, sizeof (ifreq));
+                struct ifreq ifreq {};
                 Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-                struct ethtool_cmd edata;
-                memset (&edata, 0, sizeof (edata));
+                struct ethtool_cmd edata {};
                 ifreq.ifr_data = reinterpret_cast<caddr_t> (&edata);
                 edata.cmd = ETHTOOL_GSET;
                 int r = ioctl(sd, SIOCETHTOOL, &ifreq);

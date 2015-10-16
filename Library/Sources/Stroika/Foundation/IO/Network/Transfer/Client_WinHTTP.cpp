@@ -379,8 +379,7 @@ RetryWithNoCERTCheck:
      * whatever.
      */
     if (useSecureHTTP and fOptions_.fReturnSSLInfo) {
-        WINHTTP_CERTIFICATE_INFO   certInfo;
-        memset (&certInfo, 0, sizeof (certInfo));
+        WINHTTP_CERTIFICATE_INFO   certInfo {};
         DWORD          dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));

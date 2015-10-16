@@ -37,8 +37,7 @@ Memory::GlobalAllocationStatistics  Memory::GetGlobalAllocationStatistics ()
     HANDLE  hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ::GetCurrentProcessId ());
     if (hProcess != nullptr) {
 #pragma comment (lib, "Psapi.lib")
-        PROCESS_MEMORY_COUNTERS pmc;
-        memset (&pmc, 0, sizeof (pmc));
+        PROCESS_MEMORY_COUNTERS pmc {};
         pmc.cb = sizeof (pmc);
         if (::GetProcessMemoryInfo (hProcess, &pmc, sizeof (pmc))) {
             s.fPageFaultCount = pmc.PageFaultCount;

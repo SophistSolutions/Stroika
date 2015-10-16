@@ -42,8 +42,7 @@ using   namespace   Time;
 namespace   {
     SYSTEMTIME toSYSTEM_ (const Date& date)
     {
-        SYSTEMTIME  st;
-        memset (&st, 0, sizeof (st));
+        SYSTEMTIME  st {};
         MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
         DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
         Year        y   =   Year::eEmptyYear;
@@ -118,8 +117,7 @@ namespace   {
 namespace   {
     tm  Date2TM_ (const Date& d)
     {
-        struct tm tm;
-        memset(&tm, 0, sizeof(tm));
+        struct tm tm {};
         tm.tm_year = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon = static_cast<int> (d.GetMonth ()) - 1;
         tm.tm_mday = static_cast<int> (d.GetDayOfMonth ());
@@ -145,8 +143,7 @@ namespace   {
 namespace {
     void    TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (int tm_Year, int tm_Mon, int tm_mDay, const locale& l)
     {
-        tm origDateTM;
-        memset (&origDateTM, 0, sizeof (origDateTM));
+        tm origDateTM {};
         origDateTM.tm_year = tm_Year;
         origDateTM.tm_mon = tm_Mon;
         origDateTM.tm_mday = tm_mDay;
@@ -161,9 +158,8 @@ namespace {
             tmput.put (oss, oss, ' ', &when, begin (kPattern), begin (kPattern) + ::wcslen (kPattern));
             tmpStringRep = oss.str ();
         }
-        tm resultTM;
+        tm resultTM {};
         {
-            memset (&resultTM, 0, sizeof (resultTM));
             const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
             ios::iostate state = ios::goodbit;
             wistringstream iss (tmpStringRep);
@@ -337,8 +333,7 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
     wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
-    tm when;
-    memset (&when, 0, sizeof (when));
+    tm when {};
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
 #if     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
     if ((state & ios::failbit) and when.tm_year >= 1752 and when.tm_year < 1900) {
@@ -369,8 +364,7 @@ Date    Date::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) {
         return Date ();
     }
-    DATE        d;
-    (void)::memset (&d, 0, sizeof (d));
+    DATE        d {};
     try {
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
     }
@@ -378,8 +372,7 @@ Date    Date::Parse (const String& rep, LCID lcid)
         Execution::DoThrow (FormatException ());
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
-    SYSTEMTIME  sysTime;
-    memset (&sysTime, 0, sizeof (sysTime));
+    SYSTEMTIME  sysTime {};
     Verify (::VariantTimeToSystemTime (d, &sysTime));
     return Date (Safe_jday_ (MonthOfYear (sysTime.wMonth), DayOfMonth (sysTime.wDay), Year (sysTime.wYear)));
 }

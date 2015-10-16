@@ -101,13 +101,12 @@ static const char* flags (int sd, const char* name)
 
 int main (void)
 {
-    static struct ifreq ifreqs[32];
-    struct ifconf ifconf;
-    memset (&ifconf, 0, sizeof(ifconf));
+    static struct ifreq ifreqs[32] {};
+    struct ifconf ifconf {};
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof(ifreqs);
 
-    int sd = socket (PF_INET, SOCK_STREAM, 0);
+    int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     assert (sd >= 0);
 
     int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
@@ -143,7 +142,7 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
 #endif
     char ac[1024];
-    if (gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
+    if (::gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
         return InternetAddress ();
     }
 #if 1
@@ -165,13 +164,9 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
     return InternetAddress ();
 #elif   qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
-        char buf[1024];
-
-        struct ifreq ifreq;
-        memset(&ifreq, 0, sizeof (ifreq));
-        strcpy (ifreq.ifr_name, name);
-
-        int r = ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
+        struct ifreq ifreq {};
+        Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), name);
+        int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, dont throw but
         // return 0
         if (r < 0)
@@ -217,12 +212,11 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
 String  Network::GetPrimaryNetworkDeviceMacAddress ()
 {
     auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
-        char     buf[100];
-        (void)::memset (buf, 0, sizeof (buf));
+        char     buf[100] {};
         (void)snprintf (buf, sizeof (buf), "%02x-%02x-%02x-%02x-%02x-%02x",
-        macaddrBytes[0], macaddrBytes[1],
-        macaddrBytes[2], macaddrBytes[3],
-        macaddrBytes[4], macaddrBytes[5]
+                        macaddrBytes[0], macaddrBytes[1],
+                        macaddrBytes[2], macaddrBytes[3],
+                        macaddrBytes[4], macaddrBytes[5]
                        );
         return String::FromAscii (buf);
     };
@@ -247,8 +241,7 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
 
     const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof(struct ifreq));
     for (const ifreq* it = ifc.ifc_req ; it != end; ++it) {
-        struct ifreq    ifr;
-        memset (&ifr, 0, sizeof (ifr));
+        struct ifreq    ifr {};
         Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
         if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
             if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback

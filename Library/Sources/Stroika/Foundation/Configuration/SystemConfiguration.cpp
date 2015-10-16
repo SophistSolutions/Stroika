@@ -928,8 +928,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
 string  name;
 {
     struct addrinfo* res;
-    struct addrinfo hints;
-    memset(&hints, '\0', sizeof(hints));
+    struct addrinfo hints {};
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_CANONNAME;
     int e = getaddrinfo(nullptr, nullptr, &hints, &res);
