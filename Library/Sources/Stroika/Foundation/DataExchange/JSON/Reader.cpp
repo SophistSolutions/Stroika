@@ -25,11 +25,6 @@ using   Characters::String_Constant;
 namespace   {
 
     /*
-     * Language Docs:
-     *      http://json.org/
-     */
-
-    /*
      * Parse strategy:
      *      o   Pre-pass to map all input to UNICODE - and then just handle a sequence of unicode strings
      *      o   Classic resursive decent parser.

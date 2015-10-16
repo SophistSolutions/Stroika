@@ -94,6 +94,7 @@ namespace   {
     template    <typename CHARITERATOR>
     void    PrettyPrint_ (CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
     {
+        // A backslash can be followed by "\/bfnrtu (@ see http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)
         Characters::StringBuilder   sb; // String builder for performance
         sb.Append (L"\"");
         for (auto i = start; i != end; ++i) {
@@ -101,8 +102,11 @@ namespace   {
                 case '\"':
                     sb.Append (L"\\\"");
                     break;
-                case '\\':
-                    sb.Append (L"\\\\");
+                case '\b':
+                    sb.Append (L"\\b");
+                    break;
+                case '\f':
+                    sb.Append (L"\\f");
                     break;
                 case '\n':
                     sb.Append (L"\\n");
@@ -110,10 +114,25 @@ namespace   {
                 case '\r':
                     sb.Append (L"\\r");
                     break;
-// unclear if we need to quote other chars such as \f\t\b\ but probably not...
+                case '\t':
+                    sb.Append (L"\\t");
+                    break;
+                case '\\':
+                    sb.Append (L"\\\\");
+                    break;
                 default:
+                    // @JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control
+                    // chars
                     wchar_t c = *i;
-                    sb.Append (&c, &c + 1);
+                    if (std::iswcntrl (c)) {
+                        // @todo MAYBE write some charactes as \u - but not clear needed if writing as ut8 anyhow
+                        wchar_t buf [10];
+                        (void)::swprintf (buf, NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
+                        sb.Append (buf);
+                    }
+                    else {
+                        sb.Append (&c, &c + 1);
+                    }
                     break;
             }
         }

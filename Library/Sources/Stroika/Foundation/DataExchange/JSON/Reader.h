@@ -33,6 +33,15 @@ namespace   Stroika {
 
 
                 /**
+                 *  \note   Our definition of the JSON format comes from:
+                 *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
+                 *
+                 *          There are several variations. Please also note that http://jsonlint.com/ disallows
+                 *          json top level values other than array or object, but that doesnt appear to follow
+                 *          the standard as specified in ECMA.
+                 *
+                 *  Another good summary is http://json.org/
+                 *
                  *  @todo add example usage (and docs)
                  */
                 class Reader : public DataExchange::VariantReader {

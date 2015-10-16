@@ -33,6 +33,12 @@ namespace   Stroika {
 
 
                 /**
+                 *  \note   Our definition of the JSON format comes from:
+                 *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
+                 *
+                 *          There are several variations. Please also note that http://jsonlint.com/ disallows
+                 *          json top level values other than array or object, but that doesnt appear to follow
+                 *          the standard as specified in ECMA.
                  *
                  *  \em Note:
                  *
@@ -50,8 +56,7 @@ namespace   Stroika {
                  *
                  *  \note   Note - NAN values (if floating point) - are also illegal, and generate a 'Require' failure.
                  *
-                 * \note    Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
-                 *
+                 *  \note   Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
                  *
                  *  \par Example Usage
                  *      \code

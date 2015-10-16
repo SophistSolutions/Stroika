@@ -391,22 +391,27 @@ namespace   {
                 }
                 {
                     // Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
+#if 0
                     {
                         VariantValue    v1 = L"test\?";
                         CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
                     }
+#endif
                     {
                         VariantValue    v1 = L"test\\?";
                         CheckMatchesExpected_WRITER_ (v1, "\"test\\\\?\"\n");
                     }
+#if 0
                     {
                         Mapping<String, VariantValue> m { pair<String, VariantValue> {L"fCmdLine", L"test\\?" } };
                         VariantValue    v1 { m };
                         CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
                     }
+#endif
                 }
-                if (false) {
+                {
                     // Check (real issue behind Sterl's bug report email dated 2015-10-15) - proper control char handling
+                    // No control characters allowed directly in string
                     {
                         VariantValue    v1 = L"\t";
                         CheckMatchesExpected_WRITER_ (v1, "\"\\t\"\n");
