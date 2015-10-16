@@ -371,8 +371,6 @@ namespace   {
                 DataExchange::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
-                    wchar_t l = x[i];
-                    wchar_t r = expected[i];
                     if (x[i] != expected[i]) {
                         VerifyTestResult (false);
                     }
