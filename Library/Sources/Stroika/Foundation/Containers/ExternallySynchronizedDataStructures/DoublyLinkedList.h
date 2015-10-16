@@ -7,7 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include	"../../Configuration/TypeHints.h"
+#include    "../../Configuration/TypeHints.h"
 #include    "../../Common/Compare.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Memory/Optional.h"
@@ -44,7 +44,7 @@ namespace   Stroika {
             namespace   ExternallySynchronizedDataStructures {
 
 
-				using	Configuration::ArgByValueType;
+                using   Configuration::ArgByValueType;
 
 
                 /**
