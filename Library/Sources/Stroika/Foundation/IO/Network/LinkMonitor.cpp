@@ -165,7 +165,7 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
 #elif   qPlatform_POSIX
     auto getFlags = [] (int sd, const char* name) -> int {
         struct ifreq ifreq {};
-        Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), name);
+        Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
         int r = ::ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
         // Since this is used only to filter the list of addresses, if we get an error, dont throw but
         // return 0
@@ -175,19 +175,18 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
             return 0;
         }
         Assert (r == 0);
-        return (ifreq.ifr_flags);
+        return ifreq.ifr_flags;
     };
 
-    struct ifreq ifreqs[32];
-    struct ifconf ifconf;
-    memset (&ifconf, 0, sizeof(ifconf));
+    struct ifreq ifreqs[32] {};
+    struct ifconf ifconf {};
     ifconf.ifc_req = ifreqs;
     ifconf.ifc_len = sizeof(ifreqs);
 
-    int sd = socket (PF_INET, SOCK_STREAM, 0);
+    int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
 
-    int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+    int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);
 
     InternetAddress result;
@@ -203,7 +202,7 @@ for (InternetAddress i : DNS::Default ().GetHostAddresses (String::FromUTF8 (ac)
         //printf ("%s: %s\n", ifreqs[i].ifr_name, inet_ntoa (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
         //printf (" flags: %s\n", flags (sd, ifreqs[i].ifr_name));
     }
-    close (sd);
+    ::close (sd);
     return result;
 #endif
 }
