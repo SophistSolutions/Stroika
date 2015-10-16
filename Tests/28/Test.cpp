@@ -371,6 +371,8 @@ namespace   {
                 DataExchange::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
+                    wchar_t l = x[i];
+                    wchar_t r = expected[i];
                     if (x[i] != expected[i]) {
                         VerifyTestResult (false);
                     }
@@ -386,6 +388,33 @@ namespace   {
                 {
                     VariantValue    v1 =    3;
                     CheckMatchesExpected_WRITER_ (v1, "3\n");
+                }
+                {
+                    // Sterl's bug report email dated 2015-10-15 - a backslash must be followed by one of “\/bfnrtu
+                    {
+                        VariantValue    v1 = L"test\?";
+                        CheckMatchesExpected_WRITER_ (v1, "\"test?\"\n");
+                    }
+                    {
+                        VariantValue    v1 = L"test\\?";
+                        CheckMatchesExpected_WRITER_ (v1, "\"test\\\\?\"\n");
+                    }
+                    {
+                        Mapping<String, VariantValue> m { pair<String, VariantValue> {L"fCmdLine", L"test\\?" } };
+                        VariantValue    v1 { m };
+                        CheckMatchesExpected_WRITER_ (v1, "{\n    \"fCmdLine\" : \"test\\\\?\"\n}\n");
+                    }
+                }
+                if (false) {
+                    // Check (real issue behind Sterl's bug report email dated 2015-10-15) - proper control char handling
+                    {
+                        VariantValue    v1 = L"\t";
+                        CheckMatchesExpected_WRITER_ (v1, "\"\\t\"\n");
+                    }
+                    {
+                        VariantValue    v1 = L"\x3";
+                        CheckMatchesExpected_WRITER_ (v1, "\"\\u0003\"\n");
+                    }
                 }
                 {
                     VariantValue    v1 =    4.7;
@@ -523,6 +552,8 @@ namespace   {
 
             void    DoIt ()
             {
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\?"));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"test\\?"));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
@@ -541,9 +572,7 @@ namespace   {
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::min ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
-#if 1
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
-#endif
             }
         }
 
