@@ -195,7 +195,14 @@ namespace   {
             }
             virtual void    Listen (unsigned int backlog) override
             {
-                Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
+#if     qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
+#elif   qPlatform_POSIX
+                ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); }));
+#else
+                AssertNotImplemented ();
+#endif
+
             }
             virtual Socket  Accept () override
             {
@@ -210,8 +217,7 @@ namespace   {
                 int maxSD   =   fSD_;
 #endif
 
-                sockaddr    peer;
-                memset (&peer, 0, sizeof (peer));
+                sockaddr    peer {};
 
 AGAIN:
                 Execution::CheckForThreadInterruption ();
@@ -238,8 +244,7 @@ AGAIN:
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
                 DbgTrace (L"Joining multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
-                ip_mreq m;
-                memset (&m, 0, sizeof (m));
+                ip_mreq m {};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
@@ -248,8 +253,7 @@ AGAIN:
             virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
                 DbgTrace (L"Leaving multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());
-                ip_mreq m;
-                memset (&m, 0, sizeof (m));
+                ip_mreq m {};
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
@@ -333,7 +337,7 @@ Socket::Socket (SocketKind socketKind)
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
-#elif	qPlatform_Windows
+#elif   qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #else
     AssertNotImplemented ();
@@ -387,7 +391,7 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
 
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
-#if		qPlatform_Windows
+#if     qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
     ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
@@ -414,9 +418,8 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
         throw Execution::StringException (String_Constant (L"Cannot bind an already bound socket"));
     }
 
-    addrinfo hints;
+    addrinfo hints {};
     addrinfo* res = nullptr;
-    memset ((void*)&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
