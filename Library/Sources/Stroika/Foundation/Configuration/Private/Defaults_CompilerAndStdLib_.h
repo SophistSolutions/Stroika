@@ -431,6 +431,25 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+/*
+*/
+#ifndef qCompilerAndStdLib_is_trivially_copyable_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#elif   defined (__GNUC__)
+// broken in gcc49, and works in gcc52. Untested in gcc50/51
+#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#else
+#define qCompilerAndStdLib_is_trivially_copyable_Buggy      0
+#endif
+
+#endif
+
+
+
 /*
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): error C3256: 'kUpperBound': variable use does not produce a constant expression
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)'

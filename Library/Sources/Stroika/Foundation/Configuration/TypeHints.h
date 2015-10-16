@@ -37,8 +37,13 @@ namespace   Stroika {
              *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
              *          releative cost of main memory access versus stack).
              */
+#if     qCompilerAndStdLib_is_trivially_copyable_Buggy
             template    <typename   T>
             using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2 * sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
+#else
+            template    <typename   T>
+            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2 * sizeof(void*)) and std::is_trivially_copyable<T>::value, T, const T& >::type;
+#endif
 
 
         }
