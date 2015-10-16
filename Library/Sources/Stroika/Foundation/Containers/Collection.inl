@@ -91,7 +91,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
-            bool    Collection<T>::Contains (T item) const
+            bool    Collection<T>::Contains (ArgByValueType<T> item) const
             {
                 for (auto i : *this) {
                     if (EQUALS_COMPARER::Equals (i, item)) {
@@ -125,19 +125,19 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  void    Collection<T>::Add (T item)
+            inline  void    Collection<T>::Add (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item);
                 Ensure (not this->IsEmpty ());
             }
             template    <typename T>
-            inline  void    Collection<T>::Update (const Iterator<T>& i, T newValue)
+            inline  void    Collection<T>::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Update (i, newValue);
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
-            inline  void  Collection<T>::Remove (T item)
+            inline  void  Collection<T>::Remove (ArgByValueType<T> item)
             {
                 for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
                     if (EQUALS_COMPARER::Equals (*i, item)) {
@@ -185,7 +185,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
-            inline  void    Collection<T>::erase (T item)
+            inline  void    Collection<T>::erase (ArgByValueType<T> item)
             {
                 Remove<EQUALS_COMPARER> (item);
             }
@@ -200,7 +200,7 @@ namespace   Stroika {
                 return Iterable<T>::Where (doToElement, Collection<T> {});
             }
             template    <typename T>
-            inline  Collection<T>& Collection<T>::operator+= (T item)
+            inline  Collection<T>& Collection<T>::operator+= (ArgByValueType<T> item)
             {
                 Add (item);
                 return *this;

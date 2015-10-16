@@ -334,7 +334,7 @@ namespace   Stroika {
                  *  cannot be overloaded with template members.
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  size_t  IndexOf (T i) const;
+                nonvirtual  size_t  IndexOf (ArgByValueType<T> i) const;
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
                 template    <typename IGNORED = void>
@@ -353,8 +353,8 @@ namespace   Stroika {
                  *      NB: Adding an item at the CURRENT index has no effect on
                  *  what the iterator says is the current item.
                  */
-                nonvirtual  void    Insert (size_t i, T item);
-                nonvirtual  void    Insert (const Iterator<T>& i, T item);
+                nonvirtual  void    Insert (size_t i, ArgByValueType<T> item);
+                nonvirtual  void    Insert (const Iterator<T>& i, ArgByValueType<T> item);
 
             public:
                 /**
@@ -368,7 +368,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Prepend (T item);
+                nonvirtual  void    Prepend (ArgByValueType<T> item);
 
             public:
                 /**
@@ -383,7 +383,7 @@ namespace   Stroika {
                  *  This is roughly Insert (GetLength(), item), except that there is a race after you call GetLength, and before
                  *  Insert, which calling Append () avoids.
                  */
-                nonvirtual  void    Append (T item);
+                nonvirtual  void    Append (ArgByValueType<T> item);
 
             public:
                 /**
@@ -403,7 +403,7 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
                  */
-                nonvirtual  void    Update (const Iterator<T>& i, T newValue);
+                nonvirtual  void    Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
             public:
                 /**
@@ -450,7 +450,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    push_back (T item);
+                nonvirtual  void    push_back (ArgByValueType<T> item);
 
             public:
                 /**
@@ -470,12 +470,8 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
-                nonvirtual  Sequence<T>&    operator+= (T item);
+                nonvirtual  Sequence<T>&    operator+= (ArgByValueType<T> item);
                 nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
-
-            public:
-                nonvirtual  Sequence<T>&    operator-= (T item);
-                nonvirtual  Sequence<T>&    operator-= (const Sequence<T>& items);
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy

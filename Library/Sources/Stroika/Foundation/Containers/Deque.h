@@ -110,7 +110,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    AddHead (T item);
+                nonvirtual  void    AddHead (ArgByValueType<T> item);
 
             public:
                 /**

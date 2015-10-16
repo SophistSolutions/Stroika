@@ -267,19 +267,19 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  MultiSetEntry<T>::MultiSetEntry (T item)
+            inline  MultiSetEntry<T>::MultiSetEntry (ArgByValueType<T> item)
                 : fItem (item)
                 , fCount (1)
             {
             }
             template    <typename T>
-            inline  MultiSetEntry<T>::MultiSetEntry (T item, size_t count)
+            inline  MultiSetEntry<T>::MultiSetEntry (ArgByValueType<T> item, size_t count)
                 : fItem (item)
                 , fCount (count)
             {
             }
             template    <typename T>
-            inline  MultiSetEntry<T>::MultiSetEntry (pair<T, size_t> item)
+            inline  MultiSetEntry<T>::MultiSetEntry (const pair<T, size_t>& item)
                 : fItem (item.first)
                 , fCount (item.second)
             {
@@ -418,7 +418,7 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            void   MultiSet<T, TRAITS>::RemoveAll (T item)
+            void   MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
             {
                 Remove (item, OccurrencesOf (item));
             }
@@ -461,7 +461,7 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  bool    MultiSet<T, TRAITS>::Contains (T item) const
+            inline  bool    MultiSet<T, TRAITS>::Contains (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Contains (item);
             }
@@ -474,12 +474,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (T item)
+            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (T item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item, size_t count)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, count);
             }
@@ -511,12 +511,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (T item)
+            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (T item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, size_t count)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, count);
             }
@@ -531,12 +531,12 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
-            inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (T item) const
+            inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().OccurrencesOf (item);
             }
             template    <typename T, typename TRAITS>
-            inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (T item)
+            inline  MultiSet<T, TRAITS>&   MultiSet<T, TRAITS>::operator+= (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
                 return *this;

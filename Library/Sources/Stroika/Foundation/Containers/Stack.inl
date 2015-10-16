@@ -72,7 +72,7 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T>
-            inline  void    Stack<T>::Push (T item)
+            inline  void    Stack<T>::Push (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Push (item);
             }

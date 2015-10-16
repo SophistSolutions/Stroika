@@ -92,9 +92,9 @@ namespace   Stroika {
             template    <typename T>
             class   MultiSetEntry {
             public:
-                MultiSetEntry (T item);
-                MultiSetEntry (T item, size_t count);
-                MultiSetEntry (pair<T, size_t> item);
+                MultiSetEntry (ArgByValueType<T> item);
+                MultiSetEntry (ArgByValueType<T> item, size_t count);
+                MultiSetEntry (const pair<T, size_t>& item);
 
             public:
                 nonvirtual  bool    operator== (const MultiSetEntry<T>& rhs) const;
@@ -206,13 +206,13 @@ namespace   Stroika {
                  *  Contains (item) is equivalent to OccurrencesOf (item) != 0, but maybe faster (since it doesn't need to compute
                  *  the fully tally).
                  */
-                nonvirtual  bool    Contains (T item) const;
+                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  */
-                nonvirtual  void    Add (T item);
-                nonvirtual  void    Add (T item, size_t count);
+                nonvirtual  void    Add (ArgByValueType<T> item);
+                nonvirtual  void    Add (ArgByValueType<T> item, size_t count);
                 nonvirtual  void    Add (const MultiSetEntry<T>& item);
 
             public:
@@ -231,15 +231,15 @@ namespace   Stroika {
                  *
                  *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
                  */
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (T item, size_t count);
+                nonvirtual  void    Remove (ArgByValueType<T> item);
+                nonvirtual  void    Remove (ArgByValueType<T> item, size_t count);
                 nonvirtual  void    Remove (const Iterator<MultiSetEntry<T>>& i);
 
             public:
                 /**
                  */
                 nonvirtual  void    RemoveAll ();
-                nonvirtual  void    RemoveAll (T item);
+                nonvirtual  void    RemoveAll (ArgByValueType<T> item);
 
             public:
                 /**
@@ -253,7 +253,7 @@ namespace   Stroika {
                  *
                  *  If there are no copies of item in the MultiSet, 0 is returned.
                  */
-                nonvirtual  size_t  OccurrencesOf (T item) const;
+                nonvirtual  size_t  OccurrencesOf (ArgByValueType<T> item) const;
 
             public:
                 /**
@@ -311,7 +311,7 @@ namespace   Stroika {
                 /**
                  *  Synonym for Add (), or AddAll() (depending on argument);
                  */
-                nonvirtual  MultiSet<T, TRAITS>&   operator+= (T item);
+                nonvirtual  MultiSet<T, TRAITS>&   operator+= (ArgByValueType<T> item);
                 nonvirtual  MultiSet<T, TRAITS>&   operator+= (const MultiSet<T, TRAITS>& t);
 
             protected:

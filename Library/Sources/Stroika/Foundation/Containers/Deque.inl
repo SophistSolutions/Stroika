@@ -72,7 +72,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  void    Deque<T>::AddHead (T item)
+            inline  void    Deque<T>::AddHead (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddHead (item);
             }

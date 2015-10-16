@@ -124,7 +124,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Push (T item);
+                nonvirtual  void    Push (ArgByValueType<T> item);
 
             public:
                 /**

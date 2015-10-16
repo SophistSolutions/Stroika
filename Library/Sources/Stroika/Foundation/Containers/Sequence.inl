@@ -155,7 +155,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
-            inline  size_t    Sequence<T>::IndexOf (T item) const
+            inline  size_t    Sequence<T>::IndexOf (ArgByValueType<T> item) const
             {
                 return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, kBadSequenceIndex);
             }
@@ -172,14 +172,14 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().IndexOf (i);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Insert (size_t i, T item)
+            inline  void    Sequence<T>::Insert (size_t i, ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor { this };
                 Require (i <= accessor._ConstGetRep ().GetLength ());
                 return accessor._GetWriteableRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Insert (const Iterator<T>& i, T item)
+            inline  void    Sequence<T>::Insert (const Iterator<T>& i, ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor { this };
                 size_t idx = accessor._ConstGetRep ().IndexOf (i);
@@ -204,7 +204,7 @@ namespace   Stroika {
                 InsertAll (i, s.begin (), s.end ());
             }
             template    <typename T>
-            inline  void    Sequence<T>::Prepend (T item)
+            inline  void    Sequence<T>::Prepend (ArgByValueType<T> item)
             {
                 Insert (0, item);
             }
@@ -221,7 +221,7 @@ namespace   Stroika {
                 InsertAll (0, start, end);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Append (T item)
+            inline  void    Sequence<T>::Append (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Insert (kBadSequenceIndex, &item, &item + 1);
             }
@@ -259,7 +259,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
+            inline  void    Sequence<T>::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Update (i, newValue);
             }
@@ -307,7 +307,7 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
-            inline  void    Sequence<T>::push_back (T item)
+            inline  void    Sequence<T>::push_back (ArgByValueType<T> item)
             {
                 Append (item);
             }
@@ -327,7 +327,7 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
-            inline  Sequence<T>&    Sequence<T>::operator+= (T item)
+            inline  Sequence<T>&    Sequence<T>::operator+= (ArgByValueType<T> item)
             {
                 Append (item);
                 return *this;

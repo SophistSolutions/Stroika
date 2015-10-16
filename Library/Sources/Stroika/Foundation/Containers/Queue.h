@@ -165,7 +165,7 @@ namespace   Stroika {
                  * Head lets you peek at what would be the result of the next Dequeue. It is
                  * an error to call Head () with an empty Q.
                  */
-                nonvirtual  void    AddTail (T item);
+                nonvirtual  void    AddTail (ArgByValueType<T> item);
 
             public:
                 /**
@@ -194,7 +194,7 @@ namespace   Stroika {
                  * this item will be the removed (by a DeQueue) operation only after all other
                  * elements of the Q have been removed (DeQueued).
                  */
-                nonvirtual  void    Enqueue (T item);       // AddTail
+                nonvirtual  void    Enqueue (ArgByValueType<T> item);       // AddTail
 
             public:
                 /**

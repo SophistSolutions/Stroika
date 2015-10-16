@@ -90,7 +90,7 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
             }
             template    <typename T>
-            inline  void    Queue<T>::AddTail (T item)
+            inline  void    Queue<T>::AddTail (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (item);
             }
@@ -115,7 +115,7 @@ namespace   Stroika {
                 return _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveHeadIf ();
             }
             template    <typename T>
-            inline  void    Queue<T>::Enqueue (T item)
+            inline  void    Queue<T>::Enqueue (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().AddTail (item);
             }

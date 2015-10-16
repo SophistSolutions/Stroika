@@ -159,14 +159,14 @@ namespace   Stroika {
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    Contains (T item) const;
+                nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
             public:
                 /**
                  * Add the given item(s) to this Collection<T>. Note - if the given items are already present, another
                  * copy will be added. No promises are made about where the added value will appear in iteration.
                  */
-                nonvirtual  void    Add (T item);
+                nonvirtual  void    Add (ArgByValueType<T> item);
 
             public:
                 /**
@@ -188,7 +188,7 @@ namespace   Stroika {
                  *
                  *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
                  */
-                nonvirtual  void    Update (const Iterator<T>& i, T newValue);
+                nonvirtual  void    Update (const Iterator<T>& i, ArgByValueType<T> newValue);
 
             public:
                 /**
@@ -202,7 +202,7 @@ namespace   Stroika {
                  * The value pointed to by 'i' is removed.
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  void    Remove (T item);
+                nonvirtual  void    Remove (ArgByValueType<T> item);
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
@@ -238,7 +238,7 @@ namespace   Stroika {
                  * \brief STL-ish alias for Remove ().
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  void    erase (T item);
+                nonvirtual  void    erase (ArgByValueType<T> item);
                 nonvirtual  void    erase (const Iterator<T>& i);
 
             public:
@@ -251,8 +251,8 @@ namespace   Stroika {
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Collection<T>& operator+= (T item);
-                nonvirtual  Collection<T>& operator+= (const Iterable<T>& items);
+                nonvirtual  Collection<T>&  operator+= (ArgByValueType<T> item);
+                nonvirtual  Collection<T>&  operator+= (const Iterable<T>& items);
 
             protected:
 #if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
