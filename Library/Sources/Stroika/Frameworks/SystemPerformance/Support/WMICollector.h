@@ -179,9 +179,9 @@ namespace   Stroika {
                     nonvirtual  Optional<double>    PeekCurrentValue (const String& instance, const String& counterName);
 
                 private:
-                    DurationSecondsType             fTimeOfLastCollection_ {};
-                    String                          fObjectName_;
-                    Set<String>                     fCounterNames_;
+                    DurationSecondsType     fTimeOfLastCollection_ {};
+                    String                  fObjectName_;
+                    Set<String>             fCounterNames_;
 
                 private:
                     struct  PerInstanceData_ {
@@ -197,7 +197,7 @@ namespace   Stroika {
                         void                    AddCounter (const String& counterName);
                         double                  GetCurrentValue (const String& counterName);
                         Optional<double>        PeekCurrentValue (const String& counterName);
-                        Mapping<String, double>  GetCurrentValues (const String& counterName);
+                        Mapping<String, double> GetCurrentValues (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two
                     // collecters refering to the same instance handles (bad)

@@ -89,7 +89,7 @@ void    WMICollector::PerInstanceData_::AddCounter (const String& counterName)
 {
     Require (not fCounters_.ContainsKey (counterName));
     PDH_HCOUNTER newCounter = nullptr;
-    PDH_STATUS  x = PdhAddCounter (fQuery_, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstance_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
+    PDH_STATUS  x = ::PdhAddCounter (fQuery_, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstance_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
     if (x != 0) {
         bool isPDH_CSTATUS_NO_OBJECT = (x == PDH_CSTATUS_NO_OBJECT);
         bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
@@ -112,9 +112,9 @@ double  WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNa
 
 Optional<double>    WMICollector::PerInstanceData_::PeekCurrentValue (const String& counterName)
 {
-    PDH_FMT_COUNTERVALUE counterVal;
-    PDH_HCOUNTER    counter = *fCounters_.Lookup (counterName);
-    PDH_STATUS  x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
+    PDH_FMT_COUNTERVALUE    counterVal {};
+    PDH_HCOUNTER            counter = *fCounters_.Lookup (counterName);
+    PDH_STATUS              x = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
     if (x != 0) {
         return Optional<double> ();
     }
@@ -156,6 +156,7 @@ Mapping<String, double>  WMICollector::PerInstanceData_::GetCurrentValues (const
     }
     return result;
 }
+
 
 
 
