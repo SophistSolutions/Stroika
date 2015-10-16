@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Configuration/TypeHints.h"
 #include    "../../Common/Compare.h"
 
 
@@ -22,7 +23,7 @@ namespace   Stroika {
                  */
                 template<typename T, typename STROIKA_COMPARER>
                 struct less : public binary_function<T, T, bool> {
-                    nonvirtual  bool operator() (const T& _Left, const T& _Right) const;
+                    nonvirtual  bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const;
                 };
 
 

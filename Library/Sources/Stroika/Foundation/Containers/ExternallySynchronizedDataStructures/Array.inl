@@ -82,7 +82,7 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::InsertAt (size_t index, T item)
+                void    Array<T, TRAITS>::InsertAt (size_t index, ArgByValueType<T> item)
                 {
                     Require (index >= 0);
                     Require (index <= _fLength);
@@ -147,7 +147,7 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                bool    Array<T, TRAITS>::Contains (T item) const
+                bool    Array<T, TRAITS>::Contains (ArgByValueType<T> item) const
                 {
                     Invariant ();
                     const   T*   current =   &_fItems [0];
@@ -288,7 +288,7 @@ namespace   Stroika {
                     return *this;
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
+                void    Array<T, TRAITS>::SetLength (size_t newLength, ArgByValueType<T> fillValue)
                 {
                     Invariant ();
 
@@ -388,7 +388,7 @@ namespace   Stroika {
                     return _fItems [i];
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::SetAt (size_t i, T item)
+                inline  void    Array<T, TRAITS>::SetAt (size_t i, ArgByValueType<T> item)
                 {
                     Require (i >= 0);
                     Require (i < _fLength);
@@ -424,49 +424,49 @@ namespace   Stroika {
                     SetCapacity (GetLength ());
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::RemoveAt (const ForwardIterator& i, T newValue)
+                inline  void    Array<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                 {
                     Require (not i.Done ());
                     this->RemoveAt (i.CurrentIndex ());
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::RemoveAt (const BackwardIterator& i, T newValue)
+                inline  void    Array<T, TRAITS>::RemoveAt (const BackwardIterator& i)
                 {
                     Require (not i.Done ());
                     this->RemoveAt (i.CurrentIndex ());
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
+                inline  void    Array<T, TRAITS>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     SetAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::SetAt (const BackwardIterator& i, T newValue)
+                inline  void    Array<T, TRAITS>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     SetAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                void    Array<T, TRAITS>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     // i CAN BE DONE OR NOT
                     InsertAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddBefore (const BackwardIterator& i, T newValue)
+                void    Array<T, TRAITS>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
                     // i CAN BE DONE OR NOT
                     InsertAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                void    Array<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     InsertAt (i.CurrentIndex () + 1, newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddAfter (const BackwardIterator& i, T newValue)
+                void    Array<T, TRAITS>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     InsertAt (i.CurrentIndex () + 1, newValue);

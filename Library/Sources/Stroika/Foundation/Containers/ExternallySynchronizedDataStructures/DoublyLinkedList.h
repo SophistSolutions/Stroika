@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
+#include	"../../Configuration/TypeHints.h"
 #include    "../../Common/Compare.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Memory/Optional.h"
@@ -41,6 +42,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
             namespace   ExternallySynchronizedDataStructures {
+
+
+				using	Configuration::ArgByValueType;
 
 
                 /**
@@ -129,7 +133,7 @@ namespace   Stroika {
                      *
                      *  Utility to search the list for the given item using operator==
                      */
-                    nonvirtual  bool    Contains (T item) const;
+                    nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
                 public:
                     /*
@@ -192,7 +196,7 @@ namespace   Stroika {
                      *  Performance:
                      *      Worst Case: O(1)
                      */
-                    nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+                    nonvirtual  void    SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
 
                 public:
                     /**
@@ -201,14 +205,14 @@ namespace   Stroika {
                      *
                      *  NB: Can be called if done
                      */
-                    nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
+                    nonvirtual  void    AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
 
                 public:
                     /**
                      *  Performance:
                      *      Worst Case: O(1)
                      */
-                    nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
+                    nonvirtual  void    AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
 
                 public:
                     nonvirtual  void    Invariant () const;

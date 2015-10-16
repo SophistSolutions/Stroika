@@ -263,8 +263,9 @@ namespace   Stroika {
                     i.Invariant ();
                     Invariant ();
                 }
+#if 0
                 template      <typename  T, typename TRAITS>
-                void    LinkedList<T, TRAITS>::Remove (T item)
+                void    LinkedList<T, TRAITS>::Remove (ArgByValueType<T> item)
                 {
                     Invariant ();
 
@@ -285,8 +286,9 @@ namespace   Stroika {
 
                     Invariant ();
                 }
+#endif
                 template      <typename  T, typename TRAITS>
-                T*    LinkedList<T, TRAITS>::Lookup (T item)
+                T*    LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item)
                 {
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem , item)) {
@@ -296,7 +298,7 @@ namespace   Stroika {
                     return nullptr;
                 }
                 template      <typename  T, typename TRAITS>
-                const T*    LinkedList<T, TRAITS>::Lookup (T item) const
+                const T*    LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item) const
                 {
                     for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem,  item)) {

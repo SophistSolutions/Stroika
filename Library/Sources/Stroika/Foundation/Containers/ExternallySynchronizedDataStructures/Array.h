@@ -105,6 +105,8 @@ namespace   Stroika {
         namespace   Containers {
             namespace   ExternallySynchronizedDataStructures {
 
+                using   Configuration::ArgByValueType;
+
 
                 /**
                  * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
@@ -141,18 +143,18 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  T       GetAt (size_t i) const;
-                    nonvirtual  void    SetAt (size_t i, T item);
+                    nonvirtual  void    SetAt (size_t i, ArgByValueType<T> item);
                     nonvirtual  T&      operator[] (size_t i);
                     nonvirtual  T       operator[] (size_t i) const;
 
                     nonvirtual  size_t  GetLength () const;
-                    nonvirtual  void    SetLength (size_t newLength, T fillValue);
+                    nonvirtual  void    SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
-                    nonvirtual  void    InsertAt (size_t index, T item);
+                    nonvirtual  void    InsertAt (size_t index, ArgByValueType<T> item);
                     nonvirtual  void    RemoveAt (size_t index);
                     nonvirtual  void    RemoveAll ();
 
-                    nonvirtual  bool    Contains (T item) const;
+                    nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
                     template    <typename FUNCTION>
                     nonvirtual  void    Apply (FUNCTION doToElement) const;
@@ -183,21 +185,21 @@ namespace   Stroika {
                     nonvirtual  void    MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom);
 
                 public:
-                    nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
-                    nonvirtual  void    RemoveAt (const BackwardIterator& i, T newValue);
+                    nonvirtual  void    RemoveAt (const ForwardIterator& i);
+                    nonvirtual  void    RemoveAt (const BackwardIterator& i);
 
                 public:
-                    nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
-                    nonvirtual  void    SetAt (const BackwardIterator& i, T newValue);
+                    nonvirtual  void    SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
+                    nonvirtual  void    SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
 
                 public:
                     //  NB: Can be called if done
-                    nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
-                    nonvirtual  void    AddBefore (const BackwardIterator& i, T item);
+                    nonvirtual  void    AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual  void    AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
 
                 public:
-                    nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
-                    nonvirtual  void    AddAfter (const BackwardIterator& i, T item);
+                    nonvirtual  void    AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
+                    nonvirtual  void    AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
 
                 public:
                     nonvirtual  void    Invariant () const;

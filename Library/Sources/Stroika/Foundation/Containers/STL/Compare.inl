@@ -21,7 +21,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template<class T, typename STROIKA_COMPARER>
-                inline  bool    less<T, STROIKA_COMPARER>::operator()(const T& _Left, const T& _Right) const
+                inline  bool    less<T, STROIKA_COMPARER>::operator()(Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const
                 {
                     return STROIKA_COMPARER::Compare (_Left, _Right) < 0;
                 }

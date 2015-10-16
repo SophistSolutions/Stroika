@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
+#include    "../../Configuration/TypeHints.h"
 #include    "../../Common/Compare.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Memory/Optional.h"
@@ -42,6 +43,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
             namespace   ExternallySynchronizedDataStructures {
+
+
+                using   Configuration::ArgByValueType;
 
 
                 /**
@@ -124,8 +128,8 @@ namespace   Stroika {
                      *
                      *  Contains(T item) == Lookup (item) != nullptr;
                      */
-                    nonvirtual  const T*    Lookup (T item) const;
-                    nonvirtual  T*          Lookup (T item);
+                    nonvirtual  const T*    Lookup (ArgByValueType<T> item) const;
+                    nonvirtual  T*          Lookup (ArgByValueType<T> item);
 
                 public:
                     /*
@@ -165,11 +169,13 @@ namespace   Stroika {
                      */
                     nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
 
+#if 0
                 public:
                     /**
                      *  Note - does nothing if item not found.
                      */
-                    nonvirtual  void    Remove (T item);
+                    nonvirtual  void    Remove (ArgByValueType<T> item);
+#endif
 
                 public:
                     nonvirtual  void    RemoveAll ();

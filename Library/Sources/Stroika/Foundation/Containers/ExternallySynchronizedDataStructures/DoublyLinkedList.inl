@@ -215,7 +215,7 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                bool    DoublyLinkedList<T, TRAITS>::Contains (T item) const
+                bool    DoublyLinkedList<T, TRAITS>::Contains (ArgByValueType<T> item) const
                 {
                     for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (current->fItem, item)) {
@@ -334,7 +334,7 @@ namespace   Stroika {
                     this->Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                void    DoublyLinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
+                void    DoublyLinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     this->Invariant ();
@@ -342,7 +342,7 @@ namespace   Stroika {
                     this->Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                void    DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                void    DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     /*
                      * NB: This code works fine, even if we are done!!!
@@ -367,7 +367,7 @@ namespace   Stroika {
                     this->Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                void    DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                void    DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
                     Require (not i.Done ());
                     AssertNotNull (i._fCurrent); // since not done...

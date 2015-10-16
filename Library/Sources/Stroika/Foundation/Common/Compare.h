@@ -11,6 +11,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
+#include    "../Configuration/TypeHints.h"
 
 
 
@@ -108,7 +109,7 @@ namespace   Stroika {
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
                  *  replace these, but they must remain consistent.
                  */
-                static  bool    Equals (T v1, T v2);
+                static  bool    Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
             };
 
 
@@ -142,8 +143,8 @@ namespace   Stroika {
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                static  int Compare (T v1, T v2);
-                static  bool    Equals (T v1, T v2)
+                static  int Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static  bool    Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
                 {
                     bool    result { not (v1 < v2 or v2 < v1) };
                     //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
