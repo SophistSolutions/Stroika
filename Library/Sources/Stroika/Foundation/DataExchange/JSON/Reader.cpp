@@ -53,7 +53,7 @@ namespace   {
         Require (*i <= end);
         return *i == end;
     }
-    wchar_t NextChar_ (wstring::const_iterator* i, wstring::const_iterator end)
+    wchar_t     NextChar_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (not IsAtEOF_ (i, end));
         wchar_t c   =   *(*i);
@@ -416,8 +416,6 @@ namespace   {
  ********************************************************************************
  */
 class   DataExchange::JSON::Reader::Rep_ : public DataExchange::VariantReader::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
     virtual _SharedPtrIRep  Clone () const override
     {
