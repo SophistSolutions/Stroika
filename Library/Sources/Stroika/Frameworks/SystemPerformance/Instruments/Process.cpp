@@ -2055,7 +2055,7 @@ namespace {
             : fCaptureContext (ctx)
         {
         }
-        virtual MeasurementSet  Capture ()
+        virtual MeasurementSet  Capture () override
         {
             MeasurementSet  results;
             Measurement     m { kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};

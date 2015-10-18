@@ -48,7 +48,7 @@ public:
     }
 
 protected:
-    virtual bool    IsSeekable () const
+    virtual bool    IsSeekable () const override
     {
         return true;
     }
