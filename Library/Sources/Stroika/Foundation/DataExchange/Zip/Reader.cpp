@@ -2905,7 +2905,7 @@ public:
 #endif
         return result;
     }
-    virtual Memory::BLOB    GetData (const String& fileName) const
+    virtual Memory::BLOB    GetData (const String& fileName) const override
     {
         if (unzLocateFile (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) {
             Execution::DoThrow (Execution::StringException (Characters::Format (L"File '%s' not found", fileName.c_str ())));

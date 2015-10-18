@@ -140,7 +140,7 @@ public:
         }
         return result;
     }
-    virtual Memory::BLOB    GetData (const String& fileName) const
+    virtual Memory::BLOB    GetData (const String& fileName) const override
     {
         UInt32  idx =   GetIdx_ (fileName);
         if (idx == -1) {
