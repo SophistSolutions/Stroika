@@ -380,7 +380,9 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                  *  this would be bad...
                  */
                 if (currentDir != nullptr) {
+                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"")
                     (void)::chdir (currentDir);
+                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"")
                 }
                 {
                     /*
@@ -451,9 +453,13 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             {
                 const Byte* p   =   stdinBLOB.begin ();
                 const Byte* e   =   p + stdinBLOB.GetSize ();
-                // @todo need error checking
                 if (p != e) {
-                    write (useSTDIN, p, e - p);
+                    for (const Byte* i = p; i != e;) {
+                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([useSTDIN, i, e] () { return ::write (useSTDIN, i, e - i); });
+                        Assert (bytesWritten >= 0);
+                        Assert (bytesWritten <= (e - i));
+                        i += bytesWritten;
+                    }
                 }
                 // in case child process reads from its STDIN to EOF
                 CLOSE_ (useSTDIN);
