@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TEST_OUT_DIR=RegressionTests-Output
-PARALELLMAKEFLAG=-j 4
+PARALELLMAKEFLAG=-j4
 
 
 rm -rf $TEST_OUT_DIR
