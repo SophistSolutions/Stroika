@@ -1,6 +1,9 @@
 #!/bin/bash
 
 TEST_OUT_DIR=RegressionTests-Output
+PARALELLMAKEFLAG=-j 4
+
+
 rm -rf $TEST_OUT_DIR
 
 
@@ -20,7 +23,7 @@ function doOneTest
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
 	echo -n "."
-	(make all -j4 >> $OUT_FILE_NAME 2>&1) || { echo 'make all failed' ; exit 1; }
+	(make all $PARALELLMAKEFLAG >> $OUT_FILE_NAME 2>&1) || { echo 'make all failed' ; exit 1; }
 	echo -n "."
 	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || { echo 'make run-tests failed' ; exit 1; }
 	X1=`cat $OUT_FILE_NAME | grep seconds | grep -F [Succeeded] | wc -l`
