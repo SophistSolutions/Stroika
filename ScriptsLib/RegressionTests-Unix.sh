@@ -19,13 +19,14 @@ function doOneTest
 	echo -n "Running Test $TESTNAME (see $OUT_FILE_NAME) cfg=($CONFIG_ARGS)..."
 	rm -f $OUT_FILE_NAME
 
-	(./configure DefaultConfiguration $CONFIG_ARGS >> $OUT_FILE_NAME 2>&1) || {echo 'Configure failed' ; exit 1; }
+	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo "fail" ; exit 1; )
+
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
 	echo -n "."
-	(make all $PARALELLMAKEFLAG >> $OUT_FILE_NAME 2>&1) || { echo 'make all failed' ; exit 1; }
+	(make all $PARALELLMAKEFLAG >> $OUT_FILE_NAME 2>&1) || (echo 'make all failed' ; exit 1;)
 	echo -n "."
-	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || { echo 'make run-tests failed' ; exit 1; }
+	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || ( echo 'make run-tests failed' ; exit 1; )
 	X1=`cat $OUT_FILE_NAME | grep seconds | grep -F [Succeeded] | wc -l`
 	XF=`cat $OUT_FILE_NAME | grep -F FAILED | wc -l`
 	if [ $XF -gt 0 ]; then\
