@@ -19,7 +19,7 @@ function doOneTest
 	echo -n "Running Test $TESTNAME (see $OUT_FILE_NAME) cfg=($CONFIG_ARGS)..."
 	rm -f $OUT_FILE_NAME
 
-	./configure DefaultConfiguration $CONFIG_ARGS >> $OUT_FILE_NAME 2>&1 
+	(./configure DefaultConfiguration $CONFIG_ARGS >> $OUT_FILE_NAME 2>&1) || {echo 'Configure failed' ; exit 1; }
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
 	echo -n "."
@@ -47,7 +47,7 @@ doOneTest "DEFAULT_CONFIG" "" ""
 doOneTest "gcc-5.2.0-release" "--assertions disable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --cpp-optimize-flag -O3" ""
 doOneTest "gcc-5.2.0-debug-c++17" "--assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --cppstd-version-flag --std=c++1z" ""
 doOneTest "gcc49-release" "--assertions disable --trace2file enable --compiler-driver 'g++-4.9' --cpp-optimize-flag -O3" ""
-doOneTest "gcc49-debug-no-TPP" "--assertions enable --trace2file enable --compiler-driver 'g++-4.9'--LibCurl no --OpenSSL no --Xerces no" ""
+doOneTest "gcc49-debug-no-TPP" "--assertions enable --trace2file enable --compiler-driver 'g++-4.9' --LibCurl no --OpenSSL no --Xerces no" ""
 doOneTest "gcc-4.8.4-debug" "--assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc'" ""
 doOneTest "gcc48-release" "--assertions disable --trace2file disable --compiler-driver 'g++-4.8' --cpp-optimize-flag -O3" ""
 doOneTest "clang++-3.4-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.4" ""
