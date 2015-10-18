@@ -47,10 +47,10 @@ namespace   {
      *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
      *  detail, since I'm not sure it will be good for all socket implementations?
      */
-#if     qPlatform_Windows
-    constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   INVALID_SOCKET;
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
     constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   -1; // right value??
+#elif   qPlatform_Windows
+    constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   INVALID_SOCKET;
 #endif
 }
 
@@ -85,8 +85,6 @@ namespace   {
         public:
             Socket::PlatformNativeHandle    fSD_;
         public:
-            DECLARE_USE_BLOCK_ALLOCATION(Rep_);
-        public:
             Rep_ (Socket::PlatformNativeHandle sd)
                 : fSD_ (sd)
             {
@@ -100,10 +98,10 @@ namespace   {
             virtual void    Close () override
             {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
-#if     qPlatform_Windows
-                    ::closesocket (fSD_);
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
                     ::close (fSD_);
+#elif   qPlatform_Windows
+                    ::closesocket (fSD_);
 #else
                     AssertNotImplemented ();
 #endif
@@ -113,22 +111,26 @@ namespace   {
             virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
             {
                 // Must do erorr checking and throw exceptions!!!
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+                return Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+#elif   qPlatform_Windows
                 ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                return size_t (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));// rough attempt...
-#elif   qPlatform_POSIX
-                return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));// rough attempt...
 #else
                 AssertNotImplemented ();
 #endif
             }
             virtual void    Write (const Byte* start, const Byte* end) override
             {
+                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
+
                 // Must do erorr checking and throw exceptions!!!
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+                int     n   =   Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+#elif   qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
                  *  file descriptors in windows implemenation.
@@ -151,8 +153,6 @@ namespace   {
                     return static_cast<size_t> (n);
                 }
                 );
-#elif   qPlatform_POSIX
-                int     n   =   Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
 #else
                 AssertNotImplemented ();
 #endif
@@ -161,11 +161,11 @@ namespace   {
             {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr sa = sockAddr.As<sockaddr> ();
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
+#elif   qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
                 ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
-#elif   qPlatform_POSIX
-                Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
 #else
                 AssertNotImplemented ();
 #endif
@@ -176,17 +176,17 @@ namespace   {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr    sa;
                 socklen_t   salen   =   sizeof(sa);
-#if     qPlatform_Windows
-                Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+#if     qPlatform_POSIX
+#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+#else
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+#endif
                 *fromAddress = sa;
                 return result;
-#elif   qPlatform_POSIX
-#if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
-                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
-#else
-                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
-#endif
+#elif   qPlatform_Windows
+                Require (intoEnd - intoStart < numeric_limits<int>::max ());
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
                 *fromAddress = sa;
                 return result;
 #else
@@ -195,10 +195,10 @@ namespace   {
             }
             virtual void    Listen (unsigned int backlog) override
             {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); }));
+#elif   qPlatform_Windows
                 ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
-#elif   qPlatform_POSIX
-                ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); }));
 #else
                 AssertNotImplemented ();
 #endif
@@ -220,7 +220,7 @@ namespace   {
                 sockaddr    peer {};
 
 AGAIN:
-                Execution::CheckForThreadInterruption ();
+                CheckForThreadInterruption ();
                 socklen_t   sz = sizeof (peer);
 #if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
                 Socket::PlatformNativeHandle    r = ::naccept (fSD_, &peer, &sz);
@@ -235,10 +235,10 @@ AGAIN:
                         goto AGAIN;
                     }
                 }
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+                return Socket::Attach (ThrowErrNoIfNegative (r));
+#elif       qPlatform_Windows
                 return Socket::Attach (r);
-#elif   qPlatform_POSIX
-                return Socket::Attach (Execution::ThrowErrNoIfNegative (r));
 #endif
             }
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
@@ -248,7 +248,13 @@ AGAIN:
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
-                Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#elif   qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#else
+                AssertNotImplemented ();
+#endif
             }
             virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
@@ -257,7 +263,13 @@ AGAIN:
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
-                Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#elif   qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+#else
+                AssertNotImplemented ();
+#endif
             }
             virtual uint8_t     GetMulticastTTL ()  const override
             {
@@ -266,7 +278,13 @@ AGAIN:
             virtual void        SetMulticastTTL (uint8_t ttl)  override
             {
                 char useTTL =   ttl;
-                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
+#elif   qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_TTL, &useTTL, sizeof (useTTL)));
+#else
+                AssertNotImplemented ();
+#endif
             }
             virtual bool        GetMulticastLoopMode ()  const override
             {
@@ -275,7 +293,13 @@ AGAIN:
             virtual void        SetMulticastLoopMode (bool loopMode)  override
             {
                 char loop   =   loopMode;
-                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
+#elif   qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
+#else
+                AssertNotImplemented ();
+#endif
             }
             virtual Socket::PlatformNativeHandle    GetNativeSocket () const override
             {
@@ -285,7 +309,13 @@ AGAIN:
             {
                 // According to http://linux.die.net/man/2/getsockopt cannot return EINTR, so no need to retry
                 RequireNotNull (optval);
-                Execution::ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+#if     qPlatform_POSIX
+                ThrowErrNoIfNegative (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+#elif   qPlatform_Windows
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::getsockopt (fSD_, level, optname, reinterpret_cast<char*> (optval), optlen));
+#else
+                AssertNotImplemented ();
+#endif
             }
             template    <typename RESULT_TYPE>
             inline  RESULT_TYPE getsockopt (int level, int optname) const
@@ -336,13 +366,13 @@ Socket::Socket (SocketKind socketKind)
 
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
 #elif   qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #else
     AssertNotImplemented ();
 #endif
-    fRep_ = std::move (shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sfd)));
+    fRep_ = std::move (make_shared<REALSOCKET_::Rep_> (sfd));
 }
 
 Socket::Socket (const shared_ptr<_Rep>& rep)
@@ -353,7 +383,7 @@ Socket::Socket (const shared_ptr<_Rep>& rep)
 #endif
 }
 
-Socket::Socket (shared_ptr<_Rep>&&  rep)
+Socket::Socket (shared_ptr<_Rep>&& rep)
     : fRep_ (std::move (rep))
 {
 #if     qPlatform_Windows
@@ -363,7 +393,7 @@ Socket::Socket (shared_ptr<_Rep>&&  rep)
 
 Socket  Socket::Attach (PlatformNativeHandle sd)
 {
-    return Socket (shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sd)));
+    return Socket (make_shared<REALSOCKET_::Rep_> (sd));
 }
 
 Socket::PlatformNativeHandle    Socket::Detach ()
@@ -387,7 +417,7 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         // there is an active listening socket bound to the address. When the listening socket is bound
         // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
         int    on = bindFlags.fReUseAddr ? 1 : 0;
-        Execution::Handle_ErrNoResultInteruption ([&sfd, &on] () -> int { return ::setsockopt(sfd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
+        Handle_ErrNoResultInteruption ([&sfd, &on] () -> int { return ::setsockopt(sfd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
     }
 
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
