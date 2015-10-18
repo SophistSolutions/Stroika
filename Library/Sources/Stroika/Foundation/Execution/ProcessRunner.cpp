@@ -589,7 +589,6 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
-
                 {
                     {
                         /*
@@ -722,7 +721,6 @@ DoneWithProcess:
                 }
 
                 // wait some reasonable amount of time for hte process to finish, and then KILL IT
-
             }
 
             // @todo MAYBE need to copy STDERRR TOO!!!
