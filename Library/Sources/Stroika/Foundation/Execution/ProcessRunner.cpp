@@ -455,7 +455,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                 const Byte* e   =   p + stdinBLOB.GetSize ();
                 if (p != e) {
                     for (const Byte* i = p; i != e;) {
-                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([useSTDIN, i, e] () { return ::write (useSTDIN, i, e - i); });
+                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([useSTDIN, i, e] () { return ::write (useSTDIN, i, e - i); }));
                         Assert (bytesWritten >= 0);
                         Assert (bytesWritten <= (e - i));
                         i += bytesWritten;
