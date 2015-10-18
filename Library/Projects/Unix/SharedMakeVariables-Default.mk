@@ -69,7 +69,7 @@ endif
 
 
 ifndef CWARNING_FLAGS
-	# @todo - adjust these warnings values - this was just a quick get-started...
+	# These mostly don't matter, since the configure script should set this
 	CWARNING_FLAGS		=	\
 				-Wall \
 				-Wno-switch	\
@@ -80,17 +80,6 @@ ifndef CWARNING_FLAGS
 				-Wno-strict-aliasing \
 				-Wno-unused-local-typedefs \
 				-Wno-comment
-
-	#Generates too many bogus warnings I can find no way to disable --LGP 2013-09-24
-	#CWARNING_FLAGS		+=	-Wextra
-	#CWARNING_FLAGS		+=	-Wno-unused-parameter
-	#CWARNING_FLAGS		+=	-Wno-type-limits
-
-	# This is a library with lots of conditional compiles. It maybe useful to get these unused-function warnings occasionally, but not generally
-	CWARNING_FLAGS		+=	-Wno-unused-function
-
-	# We run against too many different compilers, and doing they have a variety of different warning options.
-	CWARNING_FLAGS		+=	-Wno-unknown-warning-option
 endif
 
 
