@@ -13,7 +13,7 @@ DoCreateSymLink=0
 
 
 
-VERSION=1506
+VERSION=1509
 BASENAME=lzma$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
 
