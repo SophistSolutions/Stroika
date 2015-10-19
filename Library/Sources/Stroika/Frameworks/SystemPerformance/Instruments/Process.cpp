@@ -1400,7 +1400,7 @@ namespace {
             if (nBytes == NEltsOf (data)) {
                 nBytes--;   // ignore trailing byte so we can nul-terminate
             }
-            data[nBytes] = '\0';    // null-terminate so we can treat as string
+            data[nBytes] = '\0';    // null-terminate so we can treat as c-string
 
             const char* S = reinterpret_cast<const char*> (data);
             {
