@@ -63,13 +63,13 @@ namespace   {
     void    PrettyPrint_ (long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, NEltsOf (buf), L"%lld", v);
+        (void)::swprintf (buf, NEltsOf (buf), L"%lld", v);
         out.Write (buf);
     }
     void    PrettyPrint_ (unsigned long long int v, const OutputStream<Character>& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, NEltsOf (buf), L"%llu", v);
+        (void)::swprintf (buf, NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
     void    PrettyPrint_ (const String& v, const OutputStream<Character>& out);
@@ -80,7 +80,7 @@ namespace   {
         }
         else {
             wchar_t buf[1024];
-            ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
+            (void)::swprintf (buf, NEltsOf (buf), L"%Lf", v);
             Assert (::wcslen (buf) >= 1);
             // trim trailing 0
             for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
@@ -95,7 +95,7 @@ namespace   {
     void    PrettyPrint_ (CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>& out)
     {
         // A backslash can be followed by "\/bfnrtu (@ see http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)
-        Characters::StringBuilder   sb; // String builder for performance
+        Characters::StringBuilder   sb;
         sb.Append (L"\"");
         for (auto i = start; i != end; ++i) {
             switch (*i) {
@@ -121,11 +121,9 @@ namespace   {
                     sb.Append (L"\\\\");
                     break;
                 default:
-                    // @JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control
-                    // chars
+                    // JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control chars
                     wchar_t c = *i;
                     if (std::iswcntrl (c)) {
-                        // @todo MAYBE write some charactes as \u - but not clear needed if writing as ut8 anyhow
                         wchar_t buf [10];
                         (void)::swprintf (buf, NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
                         sb.Append (buf);

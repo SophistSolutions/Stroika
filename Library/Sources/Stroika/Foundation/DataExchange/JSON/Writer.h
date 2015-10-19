@@ -70,10 +70,10 @@ namespace   Stroika {
                  *      m.Add (L"max-files", 10);
                  *      m.Add (L"max-processes", 3);
                  *      stringstream stringBuf;
-                 *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamAdapterFromOStream (stringBuf));
+                 *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamFromStdOStream (stringBuf));
                  *      \endcode
                  */
-                class Writer : public DataExchange::VariantWriter {
+                class   Writer : public DataExchange::VariantWriter {
                 private:
                     using   inherited   =   DataExchange::VariantWriter;
 
