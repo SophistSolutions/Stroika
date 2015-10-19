@@ -25,10 +25,12 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a110">v2.0a110x</a><br/>2015-10-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Switched all Windows development from using Visual Studio.net Ultimate to using Community Edition</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 

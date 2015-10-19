@@ -98,6 +98,9 @@ namespace   Stroika {
                      */
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
 
+                    static_assert (HASH_TABLE_SIZE >= 1, "HASH_TABLE_SIZE template parameter must be >= 1");
+
+
                     //tmphack - SHOUDL do smarter defaults!!!!
                     template    <typename SFINAE>
                     static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr);
@@ -267,8 +270,8 @@ namespace   Stroika {
                     typename TraitsType::StatsType  fStats;
 
                     vector<CacheElement_>   fCachedElts_BUF_[TRAITS::kHashTableSize];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                    CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize];
-                    CacheElement_*          fCachedElts_Last_[TRAITS::kHashTableSize];
+                    CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize] = {};
+                    CacheElement_*          fCachedElts_Last_[TRAITS::kHashTableSize] = {};
 
                     nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
                 };
