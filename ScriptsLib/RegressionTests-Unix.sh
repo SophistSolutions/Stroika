@@ -54,6 +54,8 @@ doOneTest "gcc48-release" "--assertions disable --trace2file disable --compiler-
 doOneTest "clang++-3.4-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.4" ""
 doOneTest "clang++-3.5-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.5" "" 
 doOneTest "clang++-3.6-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.6 --cppstd-version-flag --std=c++1y" ""
-doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
+#TESTING if -L needed
+#doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
+doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
 doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "VALGRIND=1"
 
