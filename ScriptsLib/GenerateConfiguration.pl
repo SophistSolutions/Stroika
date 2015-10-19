@@ -91,6 +91,7 @@ my $EXTRA_LINKER_ARGS = "";
 
 sub	DoHelp_
 {
+    my $x = shift(@_);
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
         print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
@@ -117,7 +118,7 @@ sub	DoHelp_
         print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 		
-	exit (0);
+	exit ($x);
 }
 
 
@@ -382,7 +383,7 @@ sub	ParseCommandLine_Remaining_
 			}
 			else  {
                 print ("UNRECOGNIZED assertions ARG: $var\n");
-                DoHelp_ ();
+                DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-glibcxx_debug") or (lc ($var) eq "--glibcxx_debug")) {
@@ -399,7 +400,7 @@ sub	ParseCommandLine_Remaining_
 			}
 			else  {
                 print ("UNRECOGNIZED$ENABLE_GLIBCXX_DEBUG ARG: $var\n");
-                DoHelp_ ();
+                DoHelp_ (1);
 			}
 		}
 		elsif ((lc ($var) eq "-cppstd-version-flag") or (lc ($var) eq "--cppstd-version-flag")) {
@@ -464,7 +465,7 @@ sub	ParseCommandLine_Remaining_
 			}
 			else  {
                 print ("UNRECOGNIZED ENABLE_TRACE2FILEG ARG: $var\n");
-                DoHelp_ ();
+                DoHelp_ (1);
 			}
 		}
         elsif ((lc ($var) eq "-static-link-gccruntime") or (lc ($var) eq "--static-link-gccruntime")) {
@@ -478,7 +479,7 @@ sub	ParseCommandLine_Remaining_
 			}
 			else {
                 print ("UNRECOGNIZED static-link-gccruntime ARG: $var\n");
-                DoHelp_ ();
+                DoHelp_ (1);
 			}
         }
 		elsif ((lc ($var) eq "-cpp-optimize-flag") or (lc ($var) eq "--cpp-optimize-flag")) {
@@ -516,7 +517,7 @@ sub	ParseCommandLine_Remaining_
 			$EXTRA_LINKER_ARGS .= " -pg";
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
-			DoHelp_ ();
+			DoHelp_ (0);
 		}
         else {
             if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
@@ -527,7 +528,7 @@ sub	ParseCommandLine_Remaining_
             }
             else {
                 print ("UNRECOGNIZED ARG: $var\n");
-                DoHelp_ ();
+                DoHelp_ (1);
             }
         }
 	}
@@ -576,14 +577,14 @@ sub	ParseCommandLine_
 	}
 	else {
         print ("Expected configuration name as first argument\n");
-        DoHelp_ ();
+        DoHelp_ (1);
 	}
 	if ((lc ($configurationName) eq "-h") || (lc ($configurationName) eq "--h") || (lc ($configurationName) eq "-help")  || (lc ($configurationName) eq "--help")) { 
-        DoHelp_ ();
+        DoHelp_ (0);
 	}
 	elsif ($configurationName =~ /^\-/) { 
         print ("Expected configuration name (got $configurationName) as first argument\n");
-        DoHelp_ ();
+        DoHelp_ (1);
 	}
 
 	ParseCommandLine_Platform_ ();

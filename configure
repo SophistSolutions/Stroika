@@ -1,2 +1,3 @@
 #/bin/sh
 perl ScriptsLib/GenerateConfiguration.pl "$@"
+exit $?
