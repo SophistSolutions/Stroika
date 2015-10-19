@@ -41,7 +41,7 @@ const   InternetAddress V6::kLocalhost  =   InternetAddress (in6_addr { { { 0, 0
 #if     qPlatform_Windows
 // Not sure why this is necessary, but we get link errors sometimes without it... Maybe a windows makefile issue on regtest apps?
 // -- LGP 2014-11-06
-#pragma comment(lib, "Ws2_32.lib")
+#pragma comment (lib, "Ws2_32.lib")
 #endif
 
 

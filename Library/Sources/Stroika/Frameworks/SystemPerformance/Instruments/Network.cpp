@@ -99,7 +99,7 @@ namespace {
 
 
 #if     qPlatform_Windows
-#pragma comment(lib, "iphlpapi.lib")
+#pragma comment (lib, "iphlpapi.lib")
 #endif
 
 
