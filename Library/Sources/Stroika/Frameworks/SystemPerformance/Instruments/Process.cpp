@@ -1393,6 +1393,13 @@ namespace {
             Streams::InputStream<Byte>   in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
             Byte    data[10 * 1024];
             size_t nBytes = in.ReadAll (begin (data), end (data));
+            Assert (nBytes <= NEltsOf (data));
+            if (nBytes > 0) {
+                data[nBytes] = '\0';    // null-terminate so we can treat as string
+            }
+            else {
+                data[0] = '\0';
+            }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = %d", nBytes);
 #endif
@@ -1417,11 +1424,11 @@ namespace {
             // (warning doesnt appear to check if we have mismatch between types and format args provided.
             //      --LGP 2015-01-07
             DISABLE_COMPILER_MSC_WARNING_START(4996)
-            int                 ignoredInt = 0;
-            long                ignoredLong = 0;
-            unsigned long       ignoredUnsignedLong = 0;
-            unsigned long long  ignoredUnsignedLongLong = 0;
-            unsigned long int   ignored_unsigned_long {};
+            int                 ignoredInt              {};
+            long                ignoredLong             {};
+            unsigned long       ignoredUnsignedLong     {};
+            unsigned long long  ignoredUnsignedLongLong {};
+            unsigned long int   ignored_unsigned_long   {};
             int num = ::sscanf (
                           S,
 
