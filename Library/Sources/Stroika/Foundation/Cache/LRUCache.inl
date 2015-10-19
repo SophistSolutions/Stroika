@@ -145,6 +145,7 @@ namespace   Stroika {
              ***************************** LRUCache_<ELEMENT,TRAITS> ************************
              ********************************************************************************
              */
+            DISABLE_COMPILER_MSC_WARNING_START(4351)
             template    <typename KEY, typename VALUE, typename TRAITS>
             LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LRUCache_ (size_t maxCacheSize)
                 : fStats ()
@@ -158,6 +159,7 @@ namespace   Stroika {
 
                 SetMaxCacheSize (maxCacheSize);
             }
+            DISABLE_COMPILER_MSC_WARNING_END(4351)
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  size_t  LRUCache<KEY, VALUE, TRAITS>::LRUCache_::GetMaxCacheSize () const
             {
