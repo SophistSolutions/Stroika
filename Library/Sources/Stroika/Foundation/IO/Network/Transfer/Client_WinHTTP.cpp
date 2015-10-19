@@ -58,7 +58,7 @@ using   Stroika::Foundation::Memory::SmallStackBuffer;
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
 //      COMMENT FROM HEALTHFRAME - BUT MUST RETEST IF/TO WHAT DEGREE THIS IS TRUE STILL -- LGP 2012-06-26
-//#pragma comment(lib, "Winhttp.lib")
+//#pragma comment (lib, "Winhttp.lib")
 
 namespace   {
     struct  AutoWinHINTERNET {
@@ -133,7 +133,7 @@ private:
 
 // otherwise modules linking with this code will tend to get link errors without explicitly linking
 // to this module...
-#pragma comment(lib, "Winhttp.lib")
+#pragma comment (lib, "Winhttp.lib")
 
 namespace   {
     wstring Extract_WinHttpHeader_ (HINTERNET hRequest, DWORD dwInfoLevel, LPCWSTR pwszName, LPDWORD lpdwIndex)
