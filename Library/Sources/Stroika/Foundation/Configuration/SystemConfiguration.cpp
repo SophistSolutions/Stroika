@@ -18,6 +18,7 @@
 #include    "../Characters/FloatConversion.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Characters/String2Int.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
@@ -553,35 +554,46 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
  */
 #if   qPlatform_Windows
 namespace {
-    // @todo - Cleanup and better integrate with below code
-    wstring GetWinOSDisplayString_ ()
+    /*
+     *  Someday it would be nice to find a better way, but as of 2015-10-19, I've not been able to find one (without using WMI).
+     */
+    String  GetWinOSDisplayString_ ()
     {
-        typedef void (WINAPI * PGNSI)(LPSYSTEM_INFO);
-        typedef BOOL (WINAPI * PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
+        OSVERSIONINFOEX osvi {};
+        {
+            osvi.dwOSVersionInfoSize = sizeof(osvi);
+            // MSFT is crazy. They deprecate GetVersionEx, but then still require it for GetProductInfo, and provide no
+            // other way to find the product description string?
+            // I spent over an hour looking. Give up for now. Sigh...
+            //      --LGP 2015-10-19
+            DISABLE_COMPILER_MSC_WARNING_START(4996)
+            if (not ::GetVersionEx ((OSVERSIONINFO*) &osvi)) {
+                return String ();
+            }
+            DISABLE_COMPILER_MSC_WARNING_END(4996)
+        }
+        Characters::StringBuilder result;
 
-        wstring result;
+        {
+            SYSTEM_INFO si {};
 
-        OSVERSIONINFOEX osvi;
-        ::ZeroMemory (&osvi, sizeof(osvi));
-        osvi.dwOSVersionInfoSize = sizeof(osvi);
-        if (::GetVersionEx ((OSVERSIONINFO*) &osvi)) {
-            SYSTEM_INFO si;
-            ::ZeroMemory (&si, sizeof(si));
-
-            HMODULE kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
+            HMODULE     kernel32 = ::GetModuleHandle (TEXT ("kernel32.dll"));
             AssertNotNull (kernel32);
 
-            // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
-            PGNSI pGNSI = (PGNSI) GetProcAddress (kernel32, "GetNativeSystemInfo");
-            if (pGNSI == nullptr) {
-                ::GetSystemInfo (&si);
-            }
-            else {
-                (*pGNSI) (&si);
+            {
+                // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
+                typedef void (WINAPI * PGNSI)(LPSYSTEM_INFO);
+                PGNSI pGNSI = (PGNSI) GetProcAddress (kernel32, "GetNativeSystemInfo");
+                if (pGNSI == nullptr) {
+                    ::GetSystemInfo (&si);
+                }
+                else {
+                    (*pGNSI) (&si);
+                }
             }
 
             if (osvi.dwPlatformId == VER_PLATFORM_WIN32_NT and osvi.dwMajorVersion > 4) {
-                result = L"Microsoft ";
+                result += L"Microsoft ";
                 if (osvi.dwMajorVersion == 6) {
                     if (osvi.dwMinorVersion == 0)  {
                         result += (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows Vista " : L"Windows Server 2008 ";
@@ -598,6 +610,7 @@ namespace {
 
                     DWORD   dwType = PRODUCT_UNDEFINED;
                     {
+                        typedef BOOL (WINAPI * PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
                         // OK cuz GetProductVersion introuced in vista (https://msdn.microsoft.com/en-us/library/windows/desktop/ms724358(v=vs.85).aspx)
                         PGPI pGPI = (PGPI)GetProcAddress (kernel32, "GetProductInfo");
                         AssertNotNull (pGPI);
@@ -753,7 +766,7 @@ namespace {
                 }
             }
         }
-        return result;
+        return result.str ();
     }
 }
 #endif
