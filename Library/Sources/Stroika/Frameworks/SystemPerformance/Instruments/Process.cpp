@@ -1392,7 +1392,7 @@ namespace {
             StatFileInfo_    result {};
             Streams::InputStream<Byte>   in = FileInputStream::mk (fullPath, FileInputStream::eNotSeekable);
             Byte    data[10 * 1024];
-            size_t nBytes = in.Read (begin (data), end (data));
+            size_t nBytes = in.ReadAll (begin (data), end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = %d", nBytes);
 #endif
