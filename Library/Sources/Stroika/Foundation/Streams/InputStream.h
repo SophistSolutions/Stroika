@@ -250,16 +250,26 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Read from the current seek position, until EOF, and accumulate all of it into a String.
-                 *  Note - since the stream may not start at the beginning, this isn't necessarily ALL
-                 *  that was in the stream -just all that remains.
+                 *  Read/0
+                 *      Read from the current seek position, until EOF, and accumulate all of it into a String.
+                 *      Note - since the stream may not start at the beginning, this isn't necessarily ALL
+                 *      that was in the stream -just all that remains.
                  *
-                 *  Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+                 *      Read from the current stream position until EOF, and accumulate all of it into a BLOB.
+                 *
+                 *  Read/2
+                 *      Like Read, in that it reads all the elements that will fit into the range intoStart...intoEnd.
+                 *      However, this guarantees to read all the data that will fit before returning (Read () only
+                 *      guarantees to read at least one element).
+                 *
+                 *      So this can be handy when you KNOW you have a buffer large enough to read all the data in
+                 *      the file, you can read without having to check the number of elements read and re-call Read().
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual  Characters::String ReadAll () const;
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual  Memory::BLOB ReadAll () const;
+                nonvirtual  size_t  ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
             };
 
 

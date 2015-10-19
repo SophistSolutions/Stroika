@@ -147,6 +147,25 @@ namespace   Stroika {
                 RequireNotNull (offset);
                 return _GetRep ()->Read (offset, intoStart, intoEnd);
             }
+            template    <typename ELEMENT_TYPE>
+            size_t  InputStream<ELEMENT_TYPE>::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
+            {
+                RequireNotNull (intoStart);
+                Require ((intoEnd - intoStart) >= 1);
+                RequireNotNull (_GetRep ().get ());
+                size_t          elementsRead {};
+                for (ElementType* readCursor = intoStart; readCursor < intoEnd; ) {
+                    size_t  eltsReadThisTime    =   Read (readCursor, intoEnd);
+                    Assert (eltsReadThisTime <= (intoEnd - readCursor))
+                    if (eltsReadThisTime == 0) {
+                        // irrevocable EOF
+                        break;
+                    }
+                    elementsRead += eltsReadThisTime;
+                    readCursor += eltsReadThisTime;
+                }
+                return elementsRead;
+            }
 
 
         }
