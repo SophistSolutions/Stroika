@@ -149,10 +149,12 @@ namespace   Stroika {
             LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LRUCache_ (size_t maxCacheSize)
                 : fStats ()
             {
+#if 0
                 // TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
                 // (INCLUDING fCachedElts_BUF_)
                 (void)::memset (&fCachedElts_First_, 0, sizeof (fCachedElts_First_));
                 (void)::memset (&fCachedElts_Last_, 0, sizeof (fCachedElts_Last_));
+#endif
 
                 SetMaxCacheSize (maxCacheSize);
             }
