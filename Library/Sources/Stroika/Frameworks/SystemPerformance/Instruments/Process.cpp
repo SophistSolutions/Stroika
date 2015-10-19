@@ -1488,6 +1488,8 @@ namespace {
                       );
             DISABLE_COMPILER_MSC_WARNING_END(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
 
+            Assert (num == 22);     // if not probably throw away???
+
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("result.start_time=%lld", result.start_time);
             DbgTrace ("result.vsize=%ld", result.vsize);
