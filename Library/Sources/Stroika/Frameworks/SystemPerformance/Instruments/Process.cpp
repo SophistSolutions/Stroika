@@ -1401,7 +1401,7 @@ namespace {
             {
                 ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH! what if S not nul-terminated!
                 S = ::strchr (S, '(') + 1;
-                Assert (S < end (data));
+                Assert (S < reinterpret_cast<const char*> (end (data)));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S = %x", S);
 #endif
@@ -1410,7 +1410,7 @@ namespace {
                 DbgTrace ("S(tmp) = %x", tmp);
 #endif
                 S = tmp + 2;                 // skip ") "
-                Assert (S < end (data));
+                Assert (S < reinterpret_cast<const char*> (end (data)));
             }
 
             // MSVC SILLY WARNING ABOUT USING swscanf_s
