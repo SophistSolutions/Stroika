@@ -1394,15 +1394,13 @@ namespace {
             Byte    data[10 * 1024];
             size_t nBytes = in.ReadAll (begin (data), end (data));
             Assert (nBytes <= NEltsOf (data));
-            if (nBytes > 0) {
-                data[nBytes] = '\0';    // null-terminate so we can treat as string
-            }
-            else {
-                data[0] = '\0';
-            }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("nBytes read = %d", nBytes);
 #endif
+            if (nBytes == NEltsOf (data)) {
+                nBytes--;   // ignore trailing byte so we can nul-terminate
+            }
+            data[nBytes] = '\0';    // null-terminate so we can treat as string
 
             const char* S = reinterpret_cast<const char*> (data);
             {
