@@ -1380,8 +1380,8 @@ namespace {
             unsigned long long  start_time;     //  (22)
             unsigned long long  vsize;          //  (23)
             unsigned long long  rss;            //  (24)
-            unsigned  long  minflt;
-            unsigned  long  majflt;
+            unsigned  long      minflt;
+            unsigned  long      majflt;
         };
         StatFileInfo_   ReadStatFile_ (const String& fullPath)
         {
@@ -1401,6 +1401,7 @@ namespace {
             {
                 ///@TODO - FIX - THIS CODE UNSAFE - CAN CRASH! what if S not nul-terminated!
                 S = ::strchr (S, '(') + 1;
+                Assert (S < end (data));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("S = %x", S);
 #endif
@@ -1409,6 +1410,7 @@ namespace {
                 DbgTrace ("S(tmp) = %x", tmp);
 #endif
                 S = tmp + 2;                 // skip ") "
+                Assert (S < end (data));
             }
 
             // MSVC SILLY WARNING ABOUT USING swscanf_s
