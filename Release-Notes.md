@@ -25,7 +25,14 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a110">v2.0a110x</a><br/>2015-10-??</td>
 <td>
 	<ul>
+	<!-- todo add more but below up to date as of 10/19 -->
 		<li>Switched all Windows development from using Visual Studio.net Ultimate to using Community Edition</li>
+		<li>ScriptsLib/RegressionTests-Unix.sh</li>
+		<li>cleanup of how we generate default warning suppression messages (configure)</li>
+		<li>More cleanups of IO/Network/Socket, including better handle windows ThrowIfErrors() for winsock</li>
+		<li>New InputStream<ELEMENT_TYPE>::ReadAll/2</li>
+		<li>Several fixes to SystemPerformance/Instruments/Process, partly due to Valgrind feedback, including
+		most importantly, was treating an array of bytes as a null-terminated string without ever null-terminating</li>
 	</ul>
 </td>
 </tr>
