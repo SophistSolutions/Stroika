@@ -1733,7 +1733,7 @@ namespace   {
             Test_UTF82WString_win32API, L"win32API",
             Test_UTF82WString_codecvt_utf8, L"codecvt_utf8",
             5950000,
-            1.8,
+            2.4,
             &failedTests
         );
 #endif
@@ -1743,7 +1743,7 @@ namespace   {
             Test_WString2UTF8_win32API, L"win32API",
             Test_WString2UTF8_codecvt_utf8, L"codecvt_utf8",
             3570000,
-            2.1,
+            2.8,
             &failedTests
         );
 #endif
