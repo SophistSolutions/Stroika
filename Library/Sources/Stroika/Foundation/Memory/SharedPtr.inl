@@ -68,6 +68,14 @@ namespace   Stroika {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+                    inline  Envelope_ (Envelope_&& from) noexcept
+                :
+                    fPtr_ (from.GetPtr ())
+                    , fCountHolder_ (from.fCountHolder_)
+                    {
+                        from.fPtr_ = nullptr;
+                        from.fCountHolder_ = nullptr;
+                    }
                     template    <typename T2>
                     inline  Envelope_ (Envelope_<T2>&& from) noexcept
                 :
@@ -211,7 +219,7 @@ namespace   Stroika {
 :
             fEnvelope_ (std::move (from.fEnvelope_))
             {
-				Assert (from.fEnvelope_.GetPtr () == nullptr);
+                Assert (from.fEnvelope_.GetPtr () == nullptr);
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
 #endif
@@ -232,7 +240,7 @@ namespace   Stroika {
 :
             fEnvelope_ (std::move (from.fEnvelope_))
             {
-				Assert (from.fEnvelope_.GetPtr () == nullptr);
+                Assert (from.fEnvelope_.GetPtr () == nullptr);
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
 #endif
@@ -279,7 +287,7 @@ namespace   Stroika {
             template    <typename T>
             inline  SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
                 fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
-				Assert (rhs.fEnvelope_.GetPtr () == nullptr);
+                Assert (rhs.fEnvelope_.GetPtr () == nullptr);
                 return *this;
             }
 #endif
