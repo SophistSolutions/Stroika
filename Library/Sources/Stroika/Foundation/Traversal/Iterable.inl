@@ -101,7 +101,7 @@ namespace   Stroika {
             _fRep (std::move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-#if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+#if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 Require (from._fRep == nullptr);    // after move
 #endif
             }
@@ -117,7 +117,7 @@ namespace   Stroika {
             _fRep (std::move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-#if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr || qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+#if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 Require (rep == nullptr);   // after move
 #endif
             }
