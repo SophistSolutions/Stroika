@@ -177,7 +177,6 @@ int  Memory::BLOB::Compare (const BLOB& rhs) const
 
 namespace {
     using namespace Streams;
-    // @todo - add seekability to this helper!!!
     struct BLOBBINSTREAM_ : InputStream<Byte> {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
             : InputStream<Byte> (_SharedIRep (make_shared<REP> (b)))
