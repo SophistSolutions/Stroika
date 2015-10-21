@@ -83,9 +83,12 @@ namespace   Stroika {
              *
              *  \note We've added a MakeShared template to accomodate this differnce, so retest performance soon,
              *  both on windows and GCC/UNIX.
+             *
+             *  You can configure this to always use shared_ptr using ./configure, but by default
+             *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
+#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
 

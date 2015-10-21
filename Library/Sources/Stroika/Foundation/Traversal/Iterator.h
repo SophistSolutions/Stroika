@@ -97,7 +97,7 @@ namespace   Stroika {
             /**
              *  Probably would get better performance with TRUE, but still fails - @todo DEBUG
              */
-//#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   1
+#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   1
 #ifndef qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   0
 #endif
