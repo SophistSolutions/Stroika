@@ -244,7 +244,11 @@ namespace   Stroika {
             }
 #endif
             template    <typename T>
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+            template    <typename T2>
+#else
             template    <typename T2, typename SFINAE>
+#endif
             SharedPtr<T>::SharedPtr (const SharedPtr<T2>& from) noexcept
 :
             fEnvelope_ (from.fEnvelope_)
@@ -255,7 +259,11 @@ namespace   Stroika {
             }
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
             template    <typename T>
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+            template    <typename T2>
+#else
             template    <typename T2, typename SFINAE>
+#endif
             SharedPtr<T>::SharedPtr (SharedPtr<T2>&& from) noexcept
 :
             fEnvelope_ (std::move (from.fEnvelope_))
