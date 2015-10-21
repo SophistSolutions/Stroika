@@ -86,6 +86,12 @@ namespace   Stroika {
                         from.fCountHolder_ = nullptr;
                     }
 #endif
+                    inline  Envelope_ (const Envelope_& from) noexcept
+                :
+                    fPtr_ (from.GetPtr ())
+                    , fCountHolder_ (from.fCountHolder_)
+                    {
+                    }
                     template    <typename T2>
                     inline  Envelope_ (const Envelope_<T2>& from) noexcept
                 :
