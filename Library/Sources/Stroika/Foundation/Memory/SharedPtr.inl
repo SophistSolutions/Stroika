@@ -67,7 +67,6 @@ namespace   Stroika {
                     {
                         Require ((fPtr_ == nullptr) == (fCountHolder_ == nullptr));
                     }
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                     inline  Envelope_ (Envelope_&& from) noexcept
                 :
                     fPtr_ (from.GetPtr ())
@@ -85,7 +84,6 @@ namespace   Stroika {
                         from.fPtr_ = nullptr;
                         from.fCountHolder_ = nullptr;
                     }
-#endif
                     inline  Envelope_ (const Envelope_& from) noexcept
                 :
                     fPtr_ (from.GetPtr ())
@@ -123,7 +121,6 @@ namespace   Stroika {
                         fCountHolder_ = rhs.fCountHolder_;
                         return *this;
                     }
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                     Envelope_& operator= (Envelope_ && rhs)
                     {
                         fPtr_ = rhs.fPtr_;
@@ -141,7 +138,6 @@ namespace   Stroika {
                         rhs.fCountHolder_ = nullptr;
                         return *this;
                     }
-#endif
                     inline  void    swap (Envelope_& rhs)
                     {
                         std::swap (fPtr_, rhs.fPtr_);
@@ -233,7 +229,6 @@ namespace   Stroika {
                     fEnvelope_.Increment ();
                 }
             }
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
             template    <typename T>
             inline  SharedPtr<T>::SharedPtr (SharedPtr<T>&& from) noexcept
 :
@@ -242,7 +237,6 @@ namespace   Stroika {
                 Assert (from.fEnvelope_.GetPtr () == nullptr);
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
-#endif
             template    <typename T>
 #if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
             template    <typename T2>
@@ -257,7 +251,6 @@ namespace   Stroika {
                     fEnvelope_.Increment ();
                 }
             }
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
             template    <typename T>
 #if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
             template    <typename T2>
@@ -271,7 +264,6 @@ namespace   Stroika {
                 Assert (from.fEnvelope_.GetPtr () == nullptr);
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
-#endif
             template    <typename T>
             template    <typename T2>
             typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)
@@ -311,14 +303,12 @@ namespace   Stroika {
                 }
                 return *this;
             }
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
             template    <typename T>
             inline  SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
                 fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
                 Assert (rhs.fEnvelope_.GetPtr () == nullptr);
                 return *this;
             }
-#endif
             template    <typename T>
             inline  SharedPtr<T>::~SharedPtr ()
             {

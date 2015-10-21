@@ -91,18 +91,6 @@ namespace   Stroika {
 #define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     0
 #endif
 
-/// See why??? not working for gcc?
-/// ALSO not working on VS2k15RC, so my guess its MY bug and a bug in VS2k13 that allows it to work.
-///     -- Just disable altogether for now!!!
-///     --  LGP 2015-05-16
-//#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
-//#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       defined (_MSC_VER)
-//#endif
-//temporarily turn on to test
-#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       1
-#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
-#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       0
-#endif
                 template    <typename   T>
                 class   Envelope_;
             }
@@ -183,9 +171,7 @@ namespace   Stroika {
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 explicit SharedPtr (T2* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 SharedPtr (SharedPtr<T>&& from) noexcept;
-#endif
 #if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
                 template    <typename T2>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
@@ -193,14 +179,12 @@ namespace   Stroika {
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
 #endif
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
 #if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
                 template    <typename T2>
                 SharedPtr (SharedPtr<T2>&&  from) noexcept;
 #else
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (SharedPtr<T2> && from) noexcept;
-#endif
 #endif
 
             private:
@@ -214,9 +198,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual      SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
-#if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 nonvirtual      SharedPtr<T>& operator= (SharedPtr<T> && rhs) noexcept;
-#endif
 
             public:
                 ~SharedPtr ();
