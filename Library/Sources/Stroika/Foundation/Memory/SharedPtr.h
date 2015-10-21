@@ -390,6 +390,22 @@ namespace   Stroika {
         }
 
 
+
+        /**
+         *  Callers can always use EITHER shared_ptr or SharedPtr. But this define tells which is probably faster
+         *  for the most part. Often types, users will want to define a typedef which selects
+         *  the faster implementation.
+         *
+         *  \note   As of 2015-10-21, and version v2.0a109, it appears on windows/VS2k13, SharedPtr is about 30% faster,
+         *          and GCC 4.9 on ubuntu its about 3% faster (not enough to be significant). This requires more testing
+         *          though.
+         *
+         */
+#ifndef     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#define     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr    1
+#endif
+
+
     }
 }
 namespace   std {
