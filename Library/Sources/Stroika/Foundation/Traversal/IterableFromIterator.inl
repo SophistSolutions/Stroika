@@ -116,7 +116,7 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
-            {
+            namespace {
                 template    <typename   T>
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
@@ -156,7 +156,9 @@ namespace   Stroika {
             template    <typename   T>
             Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
             {
-#if     !qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+                return MyIterable_<T> (iterator);
+#else
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
                         using   _SharedPtrIRep      = typename Iterable<T>::_SharedPtrIRep;
@@ -190,8 +192,8 @@ namespace   Stroika {
                     {
                     }
                 };
-#endif
                 return MyIterable_ (iterator);
+#endif
             }
 
 
