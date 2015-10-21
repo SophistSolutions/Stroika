@@ -186,11 +186,21 @@ namespace   Stroika {
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 SharedPtr (SharedPtr<T>&& from) noexcept;
 #endif
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+                template    <typename T2>
+                SharedPtr (const SharedPtr<T2>& from) noexcept;
+#else
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
+#endif
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+                template    <typename T2>
+                SharedPtr (SharedPtr<T2>&&  from) noexcept;
+#else
                 template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (SharedPtr<T2> && from) noexcept;
+#endif
 #endif
 
             private:
