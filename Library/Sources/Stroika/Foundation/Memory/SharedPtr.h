@@ -188,11 +188,11 @@ namespace   Stroika {
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
                 SharedPtr (SharedPtr<T>&& from) noexcept;
 #endif
-                template    <typename T2>
+                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 SharedPtr (const SharedPtr<T2>& from) noexcept;
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
-                template    <typename T2>
-                SharedPtr (SharedPtr<T2>&& from) noexcept;
+                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+                SharedPtr (SharedPtr<T2> && from) noexcept;
 #endif
 
             private:
