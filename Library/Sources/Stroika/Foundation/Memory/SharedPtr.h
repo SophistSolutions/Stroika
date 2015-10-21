@@ -98,6 +98,8 @@ namespace   Stroika {
 //#ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
 //#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       defined (_MSC_VER)
 //#endif
+//temporarily turn on to test
+#define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       1
 #ifndef qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
 #define qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_       0
 #endif
