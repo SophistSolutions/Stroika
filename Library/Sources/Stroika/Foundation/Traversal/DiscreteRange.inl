@@ -21,6 +21,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct   DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep  {
+                using   inherited = typename Iterator<T>::IRep;
                 DECLARE_USE_BLOCK_ALLOCATION(MyIteratorRep_);
                 T fCur;
                 T fEnd;
@@ -67,9 +68,9 @@ namespace   Stroika {
                     AssertNotImplemented ();
                     return false;
                 }
-                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override
+                virtual typename inherited::SharedIRepPtr    Clone () const override
                 {
-                    shared_ptr<MyIteratorRep_>  tmp = shared_ptr<MyIteratorRep_> (new MyIteratorRep_ (fCur, fEnd));
+                    Traversal::IteratorBase::SharedPtrImplementationTemplate<MyIteratorRep_>  tmp  { new MyIteratorRep_ (fCur, fEnd) };
                     tmp->fAtEnd = fAtEnd;
                     return tmp;
                 }
