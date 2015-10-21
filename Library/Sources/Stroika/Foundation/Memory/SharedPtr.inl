@@ -238,11 +238,7 @@ namespace   Stroika {
                 // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
             }
             template    <typename T>
-#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
-            template    <typename T2>
-#else
             template    <typename T2, typename SFINAE>
-#endif
             SharedPtr<T>::SharedPtr (const SharedPtr<T2>& from) noexcept
 :
             fEnvelope_ (from.fEnvelope_)
@@ -252,11 +248,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
-            template    <typename T2>
-#else
             template    <typename T2, typename SFINAE>
-#endif
             SharedPtr<T>::SharedPtr (SharedPtr<T2>&& from) noexcept
 :
             fEnvelope_ (std::move (from.fEnvelope_))
