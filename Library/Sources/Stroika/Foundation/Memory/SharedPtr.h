@@ -117,11 +117,7 @@ namespace   Stroika {
              *       >  Doesnt support weak ptr.
              *
              *       >  Emprically appears faster than std::shared_ptr<> (probably due to block
-             *          allocation of envelope and
-             *          not suppoprting weak_ptr)
-             *
-             *       >  SOON will (optionally through template param) support 'lock flag' so can be used automatically threadsafe copies.
-             *          (STILL MSUST THINK THROUGH IF MAKES SENSE)
+             *          allocation of envelope and not suppoprting weak_ptr)
              *
              *  This class is for keeping track of a data structure with reference counts,
              *  and disposing of that structure when the reference count drops to zero.
@@ -184,7 +180,7 @@ namespace   Stroika {
                  */
                 SharedPtr () noexcept;
                 SharedPtr (nullptr_t) noexcept;
-                template    <typename T2>
+                template    <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
                 explicit SharedPtr (T2* from);
                 SharedPtr (const SharedPtr<T>& from) noexcept;
 #if     qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_
