@@ -165,11 +165,7 @@ namespace   Stroika {
 #endif
             private:
                 UpdatableIterable<T>*   fIterableEnvelope_;
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                _SharedByValueRepType   fAccessor_;
-#else
                 REP_SUB_TYPE&           fRef_;
-#endif
 
             public:
                 _SafeReadWriteRepAccessor () = delete;

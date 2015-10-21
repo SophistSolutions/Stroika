@@ -62,28 +62,17 @@ namespace   Stroika {
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                : fAccessor_ (it->_GetReadOnlyIterableIRepReference ())
-#else
                 : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
-#endif
             {
                 RequireNotNull (it);
-#if     !qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
                 EnsureMember (&fConstRef_, REP_SUB_TYPE);
-#endif
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                EnsureMember (fAccessor_.cget (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.cget ());   // static cast for performance sake - dynamic cast in Ensure
-#else
                 EnsureMember (&fConstRef_, REP_SUB_TYPE);
                 return fConstRef_;
-#endif
             }
 
 

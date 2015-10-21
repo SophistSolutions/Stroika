@@ -91,11 +91,7 @@ namespace   Stroika {
                 :
 #endif
                 fIterableEnvelope_ (iterableEnvelope)
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                , fAccessor_ (iterableEnvelope->_fRep)
-#else
                 , fRef_ (*static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope)))
-#endif
             {
                 RequireNotNull (iterableEnvelope);
             }
@@ -103,65 +99,24 @@ namespace   Stroika {
             template    <typename REP_SUB_TYPE>
             inline  UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::~_SafeReadWriteRepAccessor ()
             {
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                // @todo - CAREFUL ABOUT EXCEPTIONS HERE!
-                //
-                // Not as bad as it looks, since SharedByValue<>::operator= checks for no pointer change and does nothing
-                fIterableEnvelope_->_fRep = move (fAccessor_);
-#endif
             }
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                EnsureMember (fAccessor_.cget (), REP_SUB_TYPE);
-                return static_cast<const REP_SUB_TYPE&> (*fAccessor_.cget ());   // static cast for performance sake - dynamic cast in Ensure
-#else
                 return fRef_;
-#endif
             }
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             inline  REP_SUB_TYPE&    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
             {
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                auto            uc  =   fAccessor_.use_count ();
-                REP_SUB_TYPE*   r;
-                if (uc == 1 or uc == 2) {
-                    // static cast for performance sake - dynamic cast in Ensure() to be sure it was OK
-                    r = const_cast<REP_SUB_TYPE*> (static_cast<const REP_SUB_TYPE*> (fAccessor_.cget ()));
-                    if (uc == 2) {
-                        /*
-                         *  Not 100% sure this is right (explain bettter, think out more carefully)
-                         *      -- LGP 2014-04-13
-                         *
-                         *  If base copy overwritten (that might give false positive and we might ‘add’
-                         *  to other object but there was intrinsic race anyhow, and not exactly a bug on classlib part).
-                         */
-                        if (r != fIterableEnvelope_->_fRep.cget ()) {
-                            r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope_));
-                        }
-                    }
-                }
-                else {
-                    r = static_cast<REP_SUB_TYPE*> (fAccessor_.get (fIterableEnvelope_));
-                }
-                EnsureMember (r, REP_SUB_TYPE);
-                return *r;
-#else
                 return fRef_;
-#endif
             }
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             inline  void    UpdatableIterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
             {
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                fAccessor_ = sp;
-#else
                 fIterableEnvelope_->_fRep = sp;
-#endif
             }
 
 
