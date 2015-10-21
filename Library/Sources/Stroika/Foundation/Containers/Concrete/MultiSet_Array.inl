@@ -155,8 +155,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 Iterator<MultiSetEntry<T>>     MultiSet_Array<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    using   RESULT_TYPE =   Iterator<MultiSetEntry<T>>;
-                    shared_ptr<IteratorRep_> resultRep;
+                    using   RESULT_TYPE     =   Iterator<MultiSetEntry<T>>;
+                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                    SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         size_t i = fData_.FindFirstThat (doToElement);
                         if (i == fData_.GetLength ()) {
@@ -164,9 +165,9 @@ namespace   Stroika {
                         }
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
+                        resultRep = SHARED_REP_TYPE (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
 #else
-                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
+                        resultRep = SHARED_REP_TYPE (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
 #endif
                         resultRep->fIterator.SetIndex (i);
                     }

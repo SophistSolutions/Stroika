@@ -151,8 +151,9 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    using   RESULT_TYPE =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    shared_ptr<IteratorRep_> resultRep;
+                    using   RESULT_TYPE     =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                    SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {
@@ -160,9 +161,9 @@ namespace   Stroika {
                         }
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
+                        resultRep = SHARED_REP_TYPE (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
 #else
-                        resultRep = shared_ptr<IteratorRep_> (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
+                        resultRep = SHARED_REP_TYPE (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fData_));
 #endif
                         resultRep->fIterator.SetCurrentLink (iLink);
                     }

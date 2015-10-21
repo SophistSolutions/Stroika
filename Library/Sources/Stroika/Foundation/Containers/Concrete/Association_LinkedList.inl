@@ -151,7 +151,8 @@ namespace   Stroika {
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    shared_ptr<IteratorRep_> resultRep;
+                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                    SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {

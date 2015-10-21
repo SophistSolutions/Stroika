@@ -150,8 +150,9 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    using   RESULT_TYPE =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    shared_ptr<IteratorRep_> resultRep;
+                    using   RESULT_TYPE     =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                    SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         size_t i = fData_.FindFirstThat (doToElement);
                         if (i == fData_.GetLength ()) {

@@ -97,6 +97,7 @@ namespace   Stroika {
             /**
              *  Probably would get better performance with TRUE, but still fails - @todo DEBUG
              */
+//#define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   1
 #ifndef qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   0
 #endif
@@ -127,7 +128,7 @@ namespace   Stroika {
             /**
              */
             struct  IteratorBase {
-            protected:
+            public:
                 /**
                  *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
                  *      Experimental, so dont use directly (yet) - til stablized.
@@ -135,11 +136,11 @@ namespace   Stroika {
                  */
 #if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
                 template    <typename SHARED_T>
-                using SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
+                using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
                 template    <typename SHARED_T, typename... ARGS_TYPE>
                 inline  static  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
-                    return Memory::MakeSharedPtr (forward<ARGS_TYPE> (args)...);
+                    return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
                 }
 #else
                 template    <typename SHARED_T>
