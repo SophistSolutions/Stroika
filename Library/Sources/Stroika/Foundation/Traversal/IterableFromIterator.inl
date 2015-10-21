@@ -115,9 +115,9 @@ namespace   Stroika {
              **************************** MakeIterableFromIterator **************************
              ********************************************************************************
              */
-            template    <typename   T>
-            Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
+#if     qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
             {
+                template    <typename   T>
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
                         using   _SharedPtrIRep      = typename Iterable<T>::_SharedPtrIRep;
@@ -151,6 +151,46 @@ namespace   Stroika {
                     {
                     }
                 };
+            }
+#endif
+            template    <typename   T>
+            Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
+            {
+#if     !qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
+                struct   MyIterable_ : public Iterable<T> {
+                    struct   Rep : public IterableFromIterator<T>::_Rep {
+                        using   _SharedPtrIRep      = typename Iterable<T>::_SharedPtrIRep;
+                        DECLARE_USE_BLOCK_ALLOCATION(Rep);
+                        Iterator<T>   fOriginalIterator;
+#if     qDebug
+                        mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+#endif
+                        Rep (const Iterator<T>& originalIterator)
+                            : fOriginalIterator (originalIterator)
+#if     qDebug
+                            , fIteratorTracker_ ()
+#endif
+                        {
+                        }
+                        virtual Iterator<T>     MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        {
+#if     qDebug
+                            return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
+#else
+                            return fOriginalIterator;
+#endif
+                        }
+                        virtual _SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
+                        {
+                            return _SharedPtrIRep (Iterable<T>::template MakeSharedPtr<Rep> (*this));
+                        }
+                    };
+                    MyIterable_ (const Iterator<T>& originalIterator)
+                        : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (Iterable<T>::template MakeSharedPtr<Rep> (originalIterator)))
+                    {
+                    }
+                };
+#endif
                 return MyIterable_ (iterator);
             }
 
