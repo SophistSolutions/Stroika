@@ -78,8 +78,11 @@ namespace   Stroika {
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  can be configured (at compile time) to use one or the other, but not both.
              *
-             *  Note - main reasion Stroika SharedPtr<> faster is that we aren't using make_shared. It's possible
+             *  Note - main reason Stroika SharedPtr<> faster is that we aren't using make_shared. It's possible
              *  that might be a better strategy? -- LGP 2014-04-19
+             *
+             *  \note We've added a MakeShared template to accomodate this differnce, so retest performance soon,
+             *  both on windows and GCC/UNIX.
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   1
@@ -106,22 +109,11 @@ namespace   Stroika {
              *  due to assignment. Key to envelope thread safety.
              *
              *  Probably just always leave on.
+             *
+             *  @todo REVIEW - UNSURE OF THIS - NEEDS BETTER EXPLANATION AT LEAST!!!!
              */
 #ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
 #define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        1
-#endif
-
-
-            /**
-             *  EXPERIMENTAL AS OF v2.0a22x
-             *  WILL ALMOST CERTAINLY leave this true, but make an option so I can test performance impact
-             *
-             *      TURN THIS BACK OFF. We are going in a differnt direction. We will use Synchonized<> to fix problems like this.
-             *      Easiest way to experiment and see if this still works safely if off is to turn off by default.
-             *          --LGP 2015-06-21
-             */
-#ifndef qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-#define qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_    0
 #endif
 
 
@@ -913,11 +905,7 @@ namespace   Stroika {
             template    <typename REP_SUB_TYPE>
             class   Iterable<T>::_SafeReadRepAccessor  {
             private:
-#if     qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_
-                _ReadOnlyIterableIRepReference    fAccessor_;
-#else
                 const REP_SUB_TYPE& fConstRef_;
-#endif
 
             public:
                 _SafeReadRepAccessor () = delete;
