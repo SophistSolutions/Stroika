@@ -152,8 +152,9 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    using   RESULT_TYPE =   Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
-                    shared_ptr<IteratorRep_> resultRep;
+                    using   RESULT_TYPE     =   Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
+                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                    SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {

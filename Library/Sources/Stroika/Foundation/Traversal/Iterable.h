@@ -120,7 +120,7 @@ namespace   Stroika {
             /**
              */
             struct  IterableBase {
-            protected:
+            public:
                 /**
                  *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
                  *      Experimental, so dont use directly (yet) - til stablized.
