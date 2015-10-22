@@ -59,8 +59,8 @@ clean:
 
 clobber:
 	@echo "Stroika Clobber..."
-	@rm -rf IntermediateFiles
-	@rm -rf Builds
+	@rm -rf IntermediateFiles/*
+	@rm -rf Builds/*
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber
 
 
