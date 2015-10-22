@@ -22,10 +22,9 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a110">v2.0a110x</a><br/>2015-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a110">v2.0a110</a><br/>2015-10-21</td>
 <td>
 	<ul>
-	<!-- todo add more but below up to date as of 10/19 -->
 		<li>Switched all Windows development from using Visual Studio.net Ultimate to using Community Edition</li>
 		<li>ScriptsLib/RegressionTests-Unix.sh</li>
 		<li>cleanup of how we generate default warning suppression messages (configure)</li>
@@ -33,6 +32,18 @@ History
 		<li>New InputStream<ELEMENT_TYPE>::ReadAll/2</li>
 		<li>Several fixes to SystemPerformance/Instruments/Process, partly due to Valgrind feedback, including
 		most importantly, was treating an array of bytes as a null-terminated string without ever null-terminating</li>
+		<li>lzma sdk version 1509; and libcurl use version 7.45</li>
+		<li>minor cleanups to GetWinOSDisplayString_: mostly to supress the warning about ::GetVersionEx(), and
+		fixed it to show right version of created than windows 8.1</li>
+		<li>Silence more uneeded compiler warnings, and a few timeouts on regression tests triggered by excessively slow machines/valgrind</li>
+		<li>Fixed qStroika_Foundation_Memory_SharedPtrSupportsRValueReferences_ issue, and lose define</li>
+		<li>qCompilerAndStdLib_SFINAE_SharedPtr_Buggy define to workaround bugs</li>
+		<li>qStroika_Foundation_Traveral_Iterator_SafeRepAccessorIsSafe_ DELETED </li>
+		<li>Various Iterator<> fixes so we can define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr 0 or 1</li>
+		<li>New define qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr, and used to drive 
+		qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr</li>
+		<li>Added PerformanceDump-v2.0a110-x86-ReleaseU.txt, PerformanceDump-v2.0a110-linux-gcc-5.2.0-x64.txt</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.4, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
