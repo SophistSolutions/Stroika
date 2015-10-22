@@ -5,6 +5,7 @@ make default-configuration
 configure DefaultConfiguration --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc'
+configure DefaultConfiguration --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto
 configure DefaultConfiguration --assertions enable --trace2file enable --cppstd-version-flag '--std=c++14'
 configure DefaultConfiguration --assertions enable --trace2file enable --cppstd-version-flag '--std=c++14' --c-define '#define qAllowBlockAllocation 0'
 configure DefaultConfiguration --assertions disable --trace2file disable -cpp-optimize-flag "-O2" --cppstd-version-flag '--std=c++14'
