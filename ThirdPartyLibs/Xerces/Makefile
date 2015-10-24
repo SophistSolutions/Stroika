@@ -4,7 +4,6 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check
 
-MIRROR_PREFIX_=http://psg.mtu.edu/pub/apache/
 VERSION=3.1.2
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
@@ -15,7 +14,9 @@ USE_DIRNAME=CURRENT
 
 TRGDIR=CURRENT
 
-FETCHURL=$(MIRROR_PREFIX_)/xerces/c/3/sources/$(BASENAME).tar.gz
+FETCHURLS=
+FETCHURLS+=http://mirror.sdunix.com/apache//xerces/c/3/sources/$(BASENAME).tar.gz
+FETCHURLS+=http://psg.mtu.edu/pub/apache//xerces/c/3/sources/$(BASENAME).tar.gz
 
 
 BUILDS_ROOT=../../Builds/
@@ -77,7 +78,7 @@ clobber:
 
 $(ZIPPEDFILE):
 	@echo -n "      ..."
-	wget --quiet --tries=10 -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
+	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 doCreate:	$(ZIPPEDFILE)
