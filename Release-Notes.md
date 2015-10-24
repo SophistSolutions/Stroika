@@ -21,13 +21,17 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a111">v2.0a111x</a><br/>2015-10-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a111">v2.0a111</a><br/>2015-10-24</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Added ScriptsLib/MakeBuildRoot.sh and ScriptsLib/MakeDirectorySymbolicLink.sh</li>
+		<li>LRUCache and TimedCache performance tweaks</li>
+		<li>new ScriptsLib/WebGet.sh to help download dependent components and used to change Xerces source mirror (cuz was failing)</li>
+		<li>no testing - cuz little changed - emergency release</li>
 	</ul>
 </td>
 </tr>
+
 
 
 
