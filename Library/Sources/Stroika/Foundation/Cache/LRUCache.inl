@@ -55,7 +55,7 @@ namespace   Stroika {
              */
             template    <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
             template    <typename SFINAE>
-            size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void >::type*)
+            size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if < is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void >::type*)
             {
                 using   Cryptography::Digest::Digester;
                 using   Cryptography::Digest::Algorithm::Jenkins;
@@ -64,12 +64,12 @@ namespace   Stroika {
             }
             template    <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
             template    <typename SFINAE>
-            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void >::type*)
+            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if < not (is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void >::type*)
             {
                 return 0;
             }
             template    <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
-            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash (const KEY& e)
+            inline  size_t  LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash (typename Configuration::ArgByValueType<KEY> e)
             {
                 return Hash_SFINAE_<KEY> (e);
             }
@@ -148,15 +148,7 @@ namespace   Stroika {
             DISABLE_COMPILER_MSC_WARNING_START(4351)
             template    <typename KEY, typename VALUE, typename TRAITS>
             LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LRUCache_ (size_t maxCacheSize)
-                : fStats ()
             {
-#if 0
-                // TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
-                // (INCLUDING fCachedElts_BUF_)
-                (void)::memset (&fCachedElts_First_, 0, sizeof (fCachedElts_First_));
-                (void)::memset (&fCachedElts_Last_, 0, sizeof (fCachedElts_Last_));
-#endif
-
                 SetMaxCacheSize (maxCacheSize);
             }
             DISABLE_COMPILER_MSC_WARNING_END(4351)
@@ -244,18 +236,18 @@ namespace   Stroika {
                         of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
                         for this LRUCache_.</p>
             */
-            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (const KeyType& item) -> OptKeyValuePair_* {
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::LookupElement (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_* {
                 size_t      chainIdx    =   Hash_ (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext)
                 {
                     if (cur->fElement and TraitsType::KeyEqualsCompareFunctionType::Equals (cur->fElement->fKey, item)) {
                         ShuffleToHead_ (chainIdx, cur);
-                        fStats.IncrementHits ();
+                        this->IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
                     }
                 }
-                fStats.IncrementMisses ();
+                this->IncrementMisses ();
                 return nullptr;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
@@ -266,7 +258,7 @@ namespace   Stroika {
                         up element is first, and because of this re-ordering, its illegal to do a Lookup while
                         a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
             */
-            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (const KeyType& item) -> OptKeyValuePair_* {
+            inline  auto LRUCache<KEY, VALUE, TRAITS>::LRUCache_::AddNew (typename Configuration::ArgByValueType<KeyType> item) -> OptKeyValuePair_* {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
@@ -327,7 +319,7 @@ namespace   Stroika {
             inline  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-                return fRealCache_.fStats;
+                return fRealCache_;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             void    LRUCache<KEY, VALUE, TRAITS>::clear ()
@@ -336,7 +328,7 @@ namespace   Stroika {
                 fRealCache_.ClearCache ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            void    LRUCache<KEY, VALUE, TRAITS>::clear (const KEY& key)
+            void    LRUCache<KEY, VALUE, TRAITS>::clear (typename Configuration::ArgByValueType<KEY> key)
             {
                 {
                     // Scope for assert because AssertExternallySynchronizedLock is not recursive
@@ -349,7 +341,7 @@ namespace   Stroika {
                 Ensure (not Lookup (key));
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            void    LRUCache<KEY, VALUE, TRAITS>::clear (function<bool(const KEY&)> clearPredicate)
+            void    LRUCache<KEY, VALUE, TRAITS>::clear (function<bool(typename Configuration::ArgByValueType<KEY>)> clearPredicate)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 for (auto i = fRealCache_.begin (); i != fRealCache_.end (); ++i) {
@@ -359,7 +351,7 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (const KEY& key) const -> OptionalValueType
+            auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key) const -> OptionalValueType
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
@@ -370,7 +362,7 @@ namespace   Stroika {
                 return (*v)->fValue;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            void    LRUCache<KEY, VALUE, TRAITS>::Add (const KEY& key, const VALUE& value)
+            void    LRUCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 OptKeyValuePair_*  v   =   fRealCache_.AddNew (key);
@@ -378,12 +370,12 @@ namespace   Stroika {
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             template    <typename SFINAE>
-            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::H_ (const SFINAE& k)
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::H_ (typename Configuration::ArgByValueType<SFINAE> k)
             {
                 return TRAITS::Hash (k);
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::Hash_ (const KEY& e)
+            inline  size_t  LRUCache<KEY, VALUE, TRAITS>::Hash_ (typename Configuration::ArgByValueType<KEY> e)
             {
                 static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
                 if (TRAITS::kHashTableSize == 1) {
@@ -408,7 +400,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
-            VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher)
+            VALUE   LRUCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE(typename Configuration::ArgByValueType<KEY>)>& valueFetcher)
             {
                 auto v = Lookup (key);
                 if (v.IsMissing ()) {

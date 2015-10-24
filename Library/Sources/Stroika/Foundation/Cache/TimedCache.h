@@ -10,6 +10,7 @@
 #include    <mutex>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/TypeHints.h"
 #include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -24,6 +25,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *
+ *      @todo   Add compare template param so can check key by non-standard compare
  *
  *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
  *              Basically - KEY=RESULT? And then the arg to add/lookup dont take key? Maybe key is void?
@@ -123,12 +126,13 @@ namespace   Stroika {
              *
              *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
              *
              */
             template    <typename   KEY, typename RESULT, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, RESULT>>
-            class   TimedCache : private Debug::AssertExternallySynchronizedLock {
+            class   TimedCache : private Debug::AssertExternallySynchronizedLock, private typename TRAITS::StatsType {
             public:
                 TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
                 TimedCache (const TimedCache&) = delete;
@@ -143,23 +147,17 @@ namespace   Stroika {
                 /**
                  *  Lookup the given value and return it if its in the Cache.
                  */
-                nonvirtual  Memory::Optional<RESULT>    AccessElement (const KEY& key);
-                nonvirtual  bool                        AccessElement (const KEY& key, RESULT* result);
+                nonvirtual  Memory::Optional<RESULT>    AccessElement (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  bool                        AccessElement (typename Configuration::ArgByValueType<KEY> key, RESULT* result);
 
             public:
-                nonvirtual  void    AddElement (const KEY& key, const RESULT& result);
+                nonvirtual  void    AddElement (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<RESULT> result);
 
             public:
-                nonvirtual  void    Remove (const KEY& key);
+                nonvirtual  void    Remove (typename Configuration::ArgByValueType<KEY> key);
 
             public:
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
-
-            public:
-                /**
-                 *  This can be peeked at (or reset). This is purely advisory.
-                 */
-                typename TRAITS::StatsType  fStats;
 
             private:
                 bool                        fAccessFreshensDate_;

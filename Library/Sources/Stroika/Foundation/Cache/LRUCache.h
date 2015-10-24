@@ -9,6 +9,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/TypeHints.h"
 #include    "../Characters/String.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -38,13 +39,6 @@
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
  *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why
  *              its better.
- *
- *      @todo   Verify the size of  TRAITS::StatsType   fStats; is zero, or go back to old qKeepLRUCacheStats
- *              macro stuff to avoid wasted space.
- *                  o  Trouble with subobject approach is C++ seems to force all objects to be at least one byte,
- *                      so there WOULD be cost. Could avoid that by having the TRAITS
- *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
- *                      used for testing, could still be usable that way...
  *
  */
 
@@ -103,10 +97,10 @@ namespace   Stroika {
 
                     //tmphack - SHOUDL do smarter defaults!!!!
                     template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr);
+                    static  size_t  Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if < is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void >::type* = nullptr);
                     template    <typename SFINAE>
-                    static  size_t  Hash_SFINAE_ (const KEY& e, typename enable_if < not (is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr);
-                    static  size_t  Hash (const KEY& e);
+                    static  size_t  Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if < not (is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void >::type* = nullptr);
+                    static  size_t  Hash (typename Configuration::ArgByValueType<KEY> e);
 
                     /**
                      */
@@ -180,8 +174,8 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    clear ();
-                nonvirtual  void    clear (const KEY& key);
-                nonvirtual  void    clear (function<bool(const KEY&)> clearPredicate);
+                nonvirtual  void    clear (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  void    clear (function<bool(typename Configuration::ArgByValueType<KEY>)> clearPredicate);
 
             public:
                 /**
@@ -189,7 +183,7 @@ namespace   Stroika {
                  *
                  *  @see LookupValue ()
                  */
-                nonvirtual  OptionalValueType Lookup (const KEY& key) const;
+                nonvirtual  OptionalValueType Lookup (typename Configuration::ArgByValueType<KEY> key) const;
 
             public:
                 /**
@@ -224,12 +218,12 @@ namespace   Stroika {
                  *      }
                  *      \endcode
                  */
-                nonvirtual  VALUE   LookupValue (const KEY& key, const function<VALUE(KEY)>& valueFetcher);
+                nonvirtual  VALUE   LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE(typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
 
             public:
                 /**
                  */
-                nonvirtual  void    Add (const KEY& key, const VALUE& value);
+                nonvirtual  void    Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
 
             public:
                 /**
@@ -244,11 +238,12 @@ namespace   Stroika {
                 using   OptKeyValuePair_ = Memory::Optional<KeyValuePair_, Memory::Optional_Traits_Blockallocated_Indirect_Storage<KeyValuePair_>>;
 
                 template    <typename SFINAE = KEY>
-                static  size_t  H_ (const SFINAE& k);
-                static  size_t  Hash_ (const KEY& e);
+                static  size_t  H_ (typename Configuration::ArgByValueType<SFINAE> k);
+                static  size_t  Hash_ (typename Configuration::ArgByValueType<KEY> e);
 
             private:
-                struct      LRUCache_ {
+                // nb: inherit from TraitsType::StatsType for zero-size base class sub-object rule
+                struct      LRUCache_ : TraitsType::StatsType {
                     LRUCache_ (size_t maxCacheSize);
                     LRUCache_ () = delete;
                     LRUCache_ (const LRUCache_&) = delete;
@@ -264,14 +259,12 @@ namespace   Stroika {
                     nonvirtual  CacheIterator   end ();
 
                     nonvirtual  void        ClearCache ();
-                    nonvirtual  OptKeyValuePair_*    AddNew (const KeyType& item);
-                    nonvirtual  OptKeyValuePair_*    LookupElement (const KeyType& item);
-
-                    typename TraitsType::StatsType  fStats;
+                    nonvirtual  OptKeyValuePair_*    AddNew (typename Configuration::ArgByValueType<KeyType> item);
+                    nonvirtual  OptKeyValuePair_*    LookupElement (typename Configuration::ArgByValueType<KeyType> item);
 
                     vector<CacheElement_>   fCachedElts_BUF_[TRAITS::kHashTableSize];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                    CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize] = {};
-                    CacheElement_*          fCachedElts_Last_[TRAITS::kHashTableSize] = {};
+                    CacheElement_*          fCachedElts_First_[TRAITS::kHashTableSize]  =   {};
+                    CacheElement_*          fCachedElts_Last_[TRAITS::kHashTableSize]   =   {};
 
                     nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
                 };
