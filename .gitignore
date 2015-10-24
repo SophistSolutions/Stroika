@@ -1,6 +1,6 @@
-Builds/
-IntermediateFiles/
-ConfigurationFiles/
+Builds
+IntermediateFiles
+ConfigurationFiles
 .project
 .cproject
 .externalToolBuilders
