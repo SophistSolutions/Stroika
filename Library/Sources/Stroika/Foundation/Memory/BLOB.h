@@ -98,7 +98,7 @@ namespace   Stroika {
                 BLOB ();
                 BLOB (const BLOB& src) = default;
                 BLOB (BLOB&& src);
-                template    < typename CONTAINER_OF_BYTE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_BYTE>::value && std::is_convertible<CONTAINER_OF_BYTE::value_type, Byte>::value >::type >
+                template    < typename CONTAINER_OF_BYTE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_BYTE>::value && std::is_convertible<typename CONTAINER_OF_BYTE::value_type, Byte>::value >::type >
                 BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
                 BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
