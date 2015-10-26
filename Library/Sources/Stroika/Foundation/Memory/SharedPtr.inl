@@ -295,7 +295,6 @@ namespace   Stroika {
             }
             template    <typename T>
             SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
-
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ())
                 {
                     if (fEnvelope_.GetPtr () != nullptr) {
@@ -305,9 +304,9 @@ namespace   Stroika {
                             fEnvelope_.SetPtr (nullptr);
                         }
                     }
-                    fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
+                    fEnvelope_ = std::move (rhs.fEnvelope_);        // no need to bump refcounts - moved from one to another
+                    Assert (rhs.fEnvelope_.GetPtr () == nullptr);   // NB: we ONLY gaurantee this if not self-moving
                 }
-                Assert (rhs.fEnvelope_.GetPtr () == nullptr);
                 return *this;
             }
             template    <typename T>
