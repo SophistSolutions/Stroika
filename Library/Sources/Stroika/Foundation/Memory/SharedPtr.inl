@@ -295,7 +295,18 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
-                fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
+
+                if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ())
+                {
+                    if (fEnvelope_.GetPtr () != nullptr) {
+                        if (fEnvelope_.Decrement ()) {
+                            fEnvelope_.DoDeleteCounter ();
+                            delete fEnvelope_.GetPtr ();
+                            fEnvelope_.SetPtr (nullptr);
+                        }
+                    }
+					fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
+                }
                 Assert (rhs.fEnvelope_.GetPtr () == nullptr);
                 return *this;
             }
