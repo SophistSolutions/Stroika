@@ -47,17 +47,12 @@ namespace {
     }
 }
 
-Memory::BLOB::BasicRep_::BasicRep_ (const Byte* start, const Byte* end)
-    : fData (end - start)
-{
-    (void)::memcpy (fData.begin (), start, end - start);
-}
 
 Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-    : fData (len_ (startEndPairs))
-{
+    : fData { len_ (startEndPairs) } {
     Byte*   pb  =   fData.begin ();
-    for (auto i : startEndPairs) {
+    for (auto i : startEndPairs)
+    {
         (void)::memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
     }
@@ -65,10 +60,10 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, con
 }
 
 Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
-    : fData (len_ (list2Concatenate))
-{
+    : fData { len_ (list2Concatenate) } {
     Byte*   pb  =   fData.begin ();
-    for (auto i : list2Concatenate) {
+    for (auto i : list2Concatenate)
+    {
         (void)::memcpy (pb, i.begin (), i.GetSize ());
         pb += i.GetSize ();
     }
@@ -179,7 +174,7 @@ namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<Byte> {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
-            : InputStream<Byte> (_SharedIRep (make_shared<REP> (b)))
+            : InputStream<Byte> (make_shared<REP> (b))
         {
         }
         struct REP : InputStream<Byte>::_IRep  {
@@ -276,4 +271,3 @@ String    Memory::BLOB::ToString () const
 
     return sb.str ();
 }
-

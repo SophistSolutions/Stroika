@@ -77,7 +77,7 @@ namespace   Stroika {
              *      Empirically, this was slightly faster in the performance regression test.
              */
 #ifndef qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_   1
+#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
 
@@ -102,14 +102,9 @@ namespace   Stroika {
                  */
                 BLOB ();
                 BLOB (const BLOB& src) = default;
-                template    <size_t SIZE>
-                BLOB (const Byte (&data)[SIZE]);
-                BLOB (const initializer_list<Byte>& data);
-                template    <size_t SIZE>
-                BLOB (const array<Byte, SIZE>& data);
-                BLOB (const vector<Byte>& data);
-                template    <typename CONTAINER_OF_BYTE>
-                explicit BLOB (const CONTAINER_OF_BYTE& data);
+                BLOB (BLOB&& src);
+                template    < typename CONTAINER_OF_BYTE, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_BYTE>::value && std::is_convertible<CONTAINER_OF_BYTE::value_type, Byte>::value >::type >
+                BLOB (const CONTAINER_OF_BYTE& data);
                 BLOB (const Byte* start, const Byte* end);
                 BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
                 BLOB (const initializer_list<BLOB>& list2Concatenate);
@@ -118,20 +113,37 @@ namespace   Stroika {
                 struct  _IRep;
 
             protected:
+                /**
+                 */
 #if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-                using   SharedIRep  =   Memory::SharedPtr<_IRep>;
+                template    <typename T>
+                using   _SharedRepImpl  =   Memory::SharedPtr<T>;
 #else
-                using   SharedIRep  =   shared_ptr<_IRep>;
+                template    <typename T>
+                using   _SharedRepImpl  =   shared_ptr<T>;
 #endif
+
+            protected:
+                /**
+                 */
+                using   _SharedIRep  =   _SharedRepImpl<_IRep>;
+
+            protected:
+                /**
+                 */
+                template    <typename T, typename... ARGS_TYPE>
+                static  _SharedRepImpl<T>   _MakeSharedPtr (ARGS_TYPE&& ... args);
 
             protected:
                 /**
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
-                explicit BLOB (const SharedIRep& rep);
-                explicit BLOB (SharedIRep&&  rep);
+                explicit BLOB (const _SharedIRep& rep);
+                explicit BLOB (_SharedIRep&&  rep);
 
             public:
+                /**
+                 */
                 nonvirtual  BLOB& operator= (const BLOB& rhs) = default;
 
             public:
@@ -141,6 +153,11 @@ namespace   Stroika {
                  *  Attach () causes 'move semantics' on the pointer - where
                  *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
                  *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
+                 *
+                 *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
+                 *  \req (start <= end)
+                 *
+                 *  @see AttachApplicationLifetime
                  */
                 static  BLOB    Attach (const Byte* start, const Byte* end);
 
@@ -150,6 +167,11 @@ namespace   Stroika {
                  *
                  *  AttachApplicationLifetime () causes 'move semantics' on the pointer - where
                  *  the BLOB takes over ownership of the pointer, and will never delete the data.
+                 *
+                 *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
+                 *  \req (start <= end)
+                 *
+                 *  @see Attach
                  */
                 static  BLOB    AttachApplicationLifetime (const Byte* start, const Byte* end);
                 template    <size_t SIZE>
@@ -186,6 +208,8 @@ namespace   Stroika {
                  *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* begin () const;
+
+            public:
                 /**
                  *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
                  */
@@ -254,7 +278,7 @@ namespace   Stroika {
                 struct  AdoptAppLifetimeRep_ ;
 
             private:
-                SharedIRep   fRep_;
+                _SharedIRep   fRep_;
             };
 
 
@@ -277,9 +301,9 @@ namespace   Stroika {
                     : public std::enable_shared_from_this<BLOB::_IRep>
 #endif
             {
-                _IRep ();
+                _IRep () = default;
                 _IRep (const _IRep&) = delete;
-                virtual ~_IRep ();
+                virtual ~_IRep () = default;
                 virtual pair<const Byte*, const Byte*>   GetBounds () const =    0;
 
                 nonvirtual  const _IRep& operator= (const _IRep&) = delete;

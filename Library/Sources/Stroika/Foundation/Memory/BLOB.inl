@@ -21,19 +21,6 @@ namespace   Stroika {
         namespace   Memory {
 
 
-            /*
-             ********************************************************************************
-             *********************************** BLOB::_IRep ********************************
-             ********************************************************************************
-             */
-            inline  BLOB::_IRep::_IRep ()
-            {
-            }
-            inline  BLOB::_IRep::~_IRep ()
-            {
-            }
-
-
             struct  BLOB::BasicRep_ : public _IRep {
                 //  really not sure what size to use???
                 //  May not be any universal, good answer...
@@ -41,9 +28,20 @@ namespace   Stroika {
                 //  'rep' type tuned to their application.
                 SmallStackBuffer<Byte, 64>    fData;
 
-                BasicRep_ (const Byte* start, const Byte* end);
+                template <typename BYTE_ITERATOR>
+                BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
+                    : fData { end - start } {
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+                    Memory::Private::VC_BWA_std_copy (start, end, fData.begin ());
+#else
+                    std::copy (start, end, fData.begin ());
+#endif
+                }
+
                 BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
                 BasicRep_ (const initializer_list<BLOB>& list2Concatenate);
+                BasicRep_(const BasicRep_&) = delete;
+                BasicRep_& operator= (const BasicRep_&) = delete;
 
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
@@ -53,7 +51,9 @@ namespace   Stroika {
 
             struct  BLOB::ZeroRep_ : public _IRep {
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
-                inline ZeroRep_ () = default;
+                ZeroRep_ () = default;
+                ZeroRep_(const ZeroRep_&) = delete;
+                ZeroRep_& operator= (const ZeroRep_&) = delete;
                 DECLARE_USE_BLOCK_ALLOCATION (ZeroRep_);
             };
 
@@ -62,8 +62,10 @@ namespace   Stroika {
                 const Byte* fStart;
                 const Byte* fEnd;
 
+                AdoptRep_(const AdoptRep_&) = delete;
                 AdoptRep_ (const Byte* start, const Byte* end);
                 ~AdoptRep_ ();
+                AdoptRep_& operator= (const AdoptRep_&) = delete;
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (AdoptRep_);
@@ -74,7 +76,10 @@ namespace   Stroika {
                 const Byte* fStart;
                 const Byte* fEnd;
 
+                AdoptAppLifetimeRep_() = delete;
+                AdoptAppLifetimeRep_(const AdoptAppLifetimeRep_&) = delete;
                 AdoptAppLifetimeRep_ (const Byte* start, const Byte* end);
+                AdoptAppLifetimeRep_& operator= (const AdoptAppLifetimeRep_&) = delete;
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (AdoptAppLifetimeRep_);
@@ -87,57 +92,77 @@ namespace   Stroika {
              ************************************** BLOB ************************************
              ********************************************************************************
              */
+            template    <typename T, typename... ARGS_TYPE>
+            inline  BLOB::_SharedRepImpl<T>     BLOB::_MakeSharedPtr (ARGS_TYPE&& ... args)
+            {
+#if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
+                return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
+#else
+                return make_shared<T> (forward<ARGS_TYPE> (args)...);
+#endif
+            }
             inline  BLOB::BLOB ()
-                : fRep_ { new ZeroRep_ () } {
+                : fRep_ { _MakeSharedPtr<ZeroRep_> () } {
             }
+            inline  BLOB::BLOB (BLOB&& src)
+                : fRep_ { move (src.fRep_) } {
+            }
+#if 0
             inline  BLOB::BLOB (const initializer_list<Byte>& data)
-                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (data.begin (), data.end ()))))
+                : fRep_ (move (data.begin () == data.end () ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))))
             {
             }
-            template    <typename CONTAINER_OF_BYTE>
+#endif
+            template    <typename CONTAINER_OF_BYTE, typename ENABLE_IF>
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (data.begin (), data.end ()))))
-            {
+                : fRep_ { move ((std::begin (data) == std::end (data)) ? move <_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))) } {
             }
+#if 0
             template    <size_t SIZE>
             inline  BLOB::BLOB (const Byte (&data)[SIZE])
-                : fRep_ (move (SIZE == 0 ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))))
+                : fRep_ (move (SIZE == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::Start (data) + SIZE))))
             {
             }
             template    <size_t SIZE>
             inline  BLOB::BLOB (const array<Byte, SIZE>& data)
-                : fRep_ (move (SIZE == 0 ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::Start (data) + SIZE))))
+                : fRep_ (move (SIZE == 0 ? _MakeSharedPtr<ZeroRep_> () : _MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::Start (data) + SIZE)))
             {
             }
+#endif
+#if 0
             inline  BLOB::BLOB (const vector<Byte>& data)
-                : fRep_ (move (data.begin () == data.end () ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (Containers::Start (data), Containers::End (data)))))
+                : fRep_ (move (data.begin () == data.end () ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::End (data)))))
             {
             }
+#endif
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
-                : fRep_ (move (start == end ? SharedIRep (new ZeroRep_ ()) : SharedIRep (new BasicRep_ (start, end))))
+                : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
             {
             }
             inline  BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-                : fRep_ (new BasicRep_ (startEndPairs))
-            {
+                : fRep_ { _MakeSharedPtr<BasicRep_> (startEndPairs) } {
             }
             inline  BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
-                : fRep_ { new BasicRep_ (list2Concatenate) } {
+                : fRep_ { _MakeSharedPtr<BasicRep_> (list2Concatenate) } {
             }
-            inline  BLOB::BLOB (const SharedIRep& rep)
+            inline  BLOB::BLOB (const _SharedIRep& rep)
                 : fRep_ { rep } {
             }
-            inline  BLOB::BLOB (SharedIRep&& rep)
+            inline  BLOB::BLOB (_SharedIRep&& rep)
                 : fRep_ (std::move (rep))
             {
             }
             inline  BLOB    BLOB::Attach (const Byte* start, const Byte* end)
             {
-                return BLOB (SharedIRep (new AdoptRep_ (start, end)));
+                Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
+                Require (start <= end);
+                return BLOB { _MakeSharedPtr<AdoptRep_> (start, end) };
             }
             inline  BLOB    BLOB::AttachApplicationLifetime (const Byte* start, const Byte* end)
             {
-                return BLOB (SharedIRep (new AdoptAppLifetimeRep_ (start, end)));
+                Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
+                Require (start <= end);
+                return BLOB { _MakeSharedPtr<AdoptAppLifetimeRep_> (start, end) };
             }
             template    <size_t SIZE>
             inline  BLOB    AttachApplicationLifetime (const Byte (&data)[SIZE])
