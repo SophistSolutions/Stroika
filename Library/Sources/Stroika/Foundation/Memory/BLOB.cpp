@@ -268,6 +268,5 @@ String    Memory::BLOB::ToString () const
         sb += Characters::Format (L"%x", b);
     }
     sb += L"]";
-
     return sb.str ();
 }

@@ -22,11 +22,6 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
- *      @todo   THREADSAFETY BUG - shared_ptr<> not threadsafe, so our envelope needs
- *              to be fixed.
- *
- *              FIX AND DOCUMENT: thresafeaty on assignment!
- *
  *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <Byte> and
  *              only (or handle differntly) random access iterators versus just plain forward iteraotrs.
  *

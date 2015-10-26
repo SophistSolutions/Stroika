@@ -107,34 +107,10 @@ namespace   Stroika {
             inline  BLOB::BLOB (BLOB&& src)
                 : fRep_ { move (src.fRep_) } {
             }
-#if 0
-            inline  BLOB::BLOB (const initializer_list<Byte>& data)
-                : fRep_ (move (data.begin () == data.end () ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))))
-            {
-            }
-#endif
             template    <typename CONTAINER_OF_BYTE, typename ENABLE_IF>
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
                 : fRep_ { move ((std::begin (data) == std::end (data)) ? move <_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))) } {
             }
-#if 0
-            template    <size_t SIZE>
-            inline  BLOB::BLOB (const Byte (&data)[SIZE])
-                : fRep_ (move (SIZE == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::Start (data) + SIZE))))
-            {
-            }
-            template    <size_t SIZE>
-            inline  BLOB::BLOB (const array<Byte, SIZE>& data)
-                : fRep_ (move (SIZE == 0 ? _MakeSharedPtr<ZeroRep_> () : _MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::Start (data) + SIZE)))
-            {
-            }
-#endif
-#if 0
-            inline  BLOB::BLOB (const vector<Byte>& data)
-                : fRep_ (move (data.begin () == data.end () ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (Containers::Start (data), Containers::End (data)))))
-            {
-            }
-#endif
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
                 : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
             {
