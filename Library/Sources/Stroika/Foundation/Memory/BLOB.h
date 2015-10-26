@@ -11,6 +11,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/SharedPtr.h"
 
