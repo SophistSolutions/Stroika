@@ -38,7 +38,6 @@ namespace   Stroika {
                     std::copy (start, end, fData.begin ());
 #endif
                 }
-                template <>
                 BasicRep_ (const Byte* start, const Byte* end)
                     : fData (end - start)
                 {
