@@ -229,7 +229,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  void    Delete (T* p);
+                static  void    Delete (T* p) noexcept;
             };
 
 

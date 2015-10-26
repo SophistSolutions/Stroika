@@ -82,10 +82,10 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            inline  void    ManuallyBlockAllocated<T>::Delete (T* p)
-            {
+            inline  void    ManuallyBlockAllocated<T>::Delete (T* p) noexcept {
 #if     qAllowBlockAllocation
-                if (p != nullptr) {
+                if (p != nullptr)
+                {
                     (p)->~T ();
                     BlockAllocator<T>::Deallocate (p);
                 }
