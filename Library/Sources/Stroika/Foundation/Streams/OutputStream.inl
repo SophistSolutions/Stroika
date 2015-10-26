@@ -12,6 +12,7 @@
  */
 #include    <mutex>
 
+#include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
 #include    "../Memory/BLOB.h"
 
