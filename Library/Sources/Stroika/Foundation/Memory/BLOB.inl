@@ -30,12 +30,19 @@ namespace   Stroika {
 
                 template <typename BYTE_ITERATOR>
                 BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
-                    : fData ( end - start ) {
+                    : fData (end - start)
+                {
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                     Memory::Private::VC_BWA_std_copy (start, end, fData.begin ());
 #else
                     std::copy (start, end, fData.begin ());
 #endif
+                }
+                template <>
+                BasicRep_ (const Byte* start, const Byte* end)
+                    : fData (end - start)
+                {
+                    (void)::memcpy (fData.begin (), start, end - start);
                 }
 
                 BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
