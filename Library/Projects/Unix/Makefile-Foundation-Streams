@@ -15,7 +15,6 @@ SubDirs	=	\
 
 Objs	=	\
 	$(ObjDir)InputStream.o\
-	$(ObjDir)InputOutputStream.o\
 	$(ObjDir)OutputStream.o\
 	$(ObjDir)MemoryStream.o\
 	$(ObjDir)TextReader.o\
