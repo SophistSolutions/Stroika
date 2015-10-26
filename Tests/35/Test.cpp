@@ -642,9 +642,10 @@ namespace {
         // EXPERIMENTAL
         WaitableEvent we1 (WaitableEvent::eAutoReset);
         WaitableEvent we2 (WaitableEvent::eAutoReset);
+        static  constexpr   Time::DurationSecondsType   kMaxWaitTime_ { 4.0 };
         Thread t1 {[&we1] ()
         {
-            Execution::Sleep (4.0); // wait long enough that we are pretty sure t2 will always trigger before we do
+            Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
         }
                   };
@@ -659,7 +660,7 @@ namespace {
         t2.Start ();
         VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSecondsType   timeTaken = Time::GetTickCount () - startAt;
-        VerifyTestResult (timeTaken < 0.5);     // make sure we didnt wait for the 1.0 second on first thread
+        VerifyTestResult (timeTaken <= kMaxWaitTime_);     // make sure we didnt wait for the 1.0 second on first thread
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
         t2.AbortAndWaitForDone ();
