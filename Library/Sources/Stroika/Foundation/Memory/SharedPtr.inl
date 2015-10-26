@@ -38,14 +38,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline      Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ ()
-                : fCount (0)
-                , fDeleteCounter_ (true)
-            {
+                : fCount {0}
+            , fDeleteCounter_ { true } {
             }
             inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ (bool deleteCounter)
-                : fCount (0)
-                , fDeleteCounter_ (deleteCounter)
-            {
+                : fCount {0}
+            , fDeleteCounter_ { deleteCounter } {
             }
 
 
@@ -506,7 +504,7 @@ namespace   Stroika {
             template    <typename   T, typename... ARG_TYPES>
             inline  SharedPtr<T>    MakeSharedPtr (ARG_TYPES&& ... args)
             {
-                return SharedPtr<T> (new T (forward<ARG_TYPES>(args)...));
+                return SharedPtr<T> (new T (forward<ARG_TYPES> (args)...));
             }
 
 
