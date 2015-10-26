@@ -73,8 +73,9 @@ namespace   Stroika {
              *
              *      Empirically, this was slightly faster in the performance regression test.
              */
+//#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   1
 #ifndef qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   1
+#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
 
