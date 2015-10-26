@@ -106,20 +106,20 @@ namespace   Stroika {
                         // a common base pointer type
                         Require (newP == from.GetPtr ());
                     }
-                    Envelope_& operator= (const Envelope_& rhs)
+                    inline  Envelope_& operator= (const Envelope_& rhs)
                     {
                         fPtr_ = rhs.fPtr_;
                         fCountHolder_ = rhs.fCountHolder_;
                         return *this;
                     }
                     template    <typename T2>
-                    Envelope_& operator= (const Envelope_<T2>& rhs)
+                    inline  Envelope_& operator= (const Envelope_<T2>& rhs)
                     {
                         fPtr_ = rhs.fPtr_;
                         fCountHolder_ = rhs.fCountHolder_;
                         return *this;
                     }
-                    Envelope_& operator= (Envelope_ && rhs)
+                    inline  Envelope_& operator= (Envelope_ && rhs)
                     {
                         fPtr_ = rhs.fPtr_;
                         fCountHolder_ = rhs.fCountHolder_;
@@ -128,7 +128,7 @@ namespace   Stroika {
                         return *this;
                     }
                     template    <typename T2>
-                    Envelope_& operator= (Envelope_<T2> && rhs)
+                    inline  Envelope_& operator= (Envelope_<T2> && rhs)
                     {
                         fPtr_ = rhs.fPtr_;
                         fCountHolder_ = rhs.fCountHolder_;
@@ -256,7 +256,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename T2>
-            typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)
+            inline  typename SharedPtr<T>::Envelope_    SharedPtr<T>::mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value >::type*)
             {
                 if (from == nullptr) {
                     return  Envelope_ (nullptr, nullptr);
@@ -275,7 +275,7 @@ namespace   Stroika {
                 return  Envelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ());
             }
             template    <typename T>
-            inline  SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr<T>& rhs) noexcept {
+            SharedPtr<T>& SharedPtr<T>::operator= (const SharedPtr<T>& rhs) noexcept {
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ())
                 {
                     if (fEnvelope_.GetPtr () != nullptr) {
@@ -294,7 +294,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
+            SharedPtr<T>& SharedPtr<T>::operator= (SharedPtr<T> && rhs) noexcept {
 
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ())
                 {
