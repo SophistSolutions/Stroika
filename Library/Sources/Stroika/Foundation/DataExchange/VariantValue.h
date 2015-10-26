@@ -282,11 +282,21 @@ namespace   Stroika {
 
             private:
 #if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-                Memory::SharedPtr<IRep_>   fVal_;
-
+                template    <typename T>
+                using   SharedRepImpl_  =   Memory::SharedPtr<T>;
 #else
-                shared_ptr<IRep_>   fVal_;
+                template    <typename T>
+                using   SharedRepImpl_  =   shared_ptr<T>;
 #endif
+
+            private:
+                /**
+                 */
+                template    <typename T, typename... ARGS_TYPE>
+                static  SharedRepImpl_<T>   MakeSharedPtr_ (ARGS_TYPE&& ... args);
+
+            private:
+                SharedRepImpl_<IRep_>   fVal_;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

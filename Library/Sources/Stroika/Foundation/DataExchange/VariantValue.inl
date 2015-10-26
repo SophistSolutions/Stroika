@@ -36,6 +36,15 @@ namespace   Stroika {
              ********************************** VariantValue ********************************
              ********************************************************************************
              */
+            template    <typename T, typename... ARGS_TYPE>
+            inline  VariantValue::SharedRepImpl_<T>     VariantValue::MakeSharedPtr_ (ARGS_TYPE&& ... args)
+            {
+#if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+                return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
+#else
+                return make_shared<T> (forward<ARGS_TYPE> (args)...);
+#endif
+            }
             inline  VariantValue::VariantValue (const vector<VariantValue>& val)
                 : VariantValue (Sequence<VariantValue> (val))
             {

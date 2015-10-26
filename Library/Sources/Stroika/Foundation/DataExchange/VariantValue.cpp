@@ -100,123 +100,99 @@ struct  VariantValue::TIRep_ : VariantValue::IRep_ {
  ********************************************************************************
  */
 VariantValue::VariantValue (bool val)
-    : fVal_ (new TIRep_<bool> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<bool>> (val) } {
 }
 
 VariantValue::VariantValue (signed char val)
-    : fVal_ (new TIRep_<IntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<IntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (short int val)
-    : fVal_ (new TIRep_<IntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<IntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (int val)
-    : fVal_ (new TIRep_<IntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<IntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (long int val)
-    : fVal_ (new TIRep_<IntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<IntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (long long int val)
-    : fVal_ (new TIRep_<IntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<IntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (unsigned char val)
-    : fVal_ (new TIRep_<UnsignedIntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (unsigned short int val)
-    : fVal_ (new TIRep_<UnsignedIntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (unsigned int val)
-    : fVal_ (new TIRep_<UnsignedIntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (unsigned long int val)
-    : fVal_ (new TIRep_<UnsignedIntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (unsigned long long int val)
-    : fVal_ (new TIRep_<UnsignedIntegerType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<UnsignedIntegerType_>> (val) } {
 }
 
 VariantValue::VariantValue (float val)
-    : fVal_ (new TIRep_<FloatType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<FloatType_>> (val) } {
 }
 
 VariantValue::VariantValue (double val)
-    : fVal_ (new TIRep_<FloatType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<FloatType_>> (val) } {
 }
 
 VariantValue::VariantValue (long double val)
-    : fVal_ (new TIRep_<FloatType_> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<FloatType_>> (val) } {
 }
 
 VariantValue::VariantValue (const Date& val)
-    : fVal_ (new TIRep_<Date> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Date>> (val) } {
 }
 
 VariantValue::VariantValue (const DateTime& val)
-    : fVal_ (new TIRep_<DateTime> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<DateTime>> (val) } {
 }
 
 VariantValue::VariantValue (const wchar_t* val)
-    : fVal_ (new TIRep_<String> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<String>> (val) } {
 }
 
 VariantValue::VariantValue (const wstring& val)
-    : fVal_ (new TIRep_<String> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<String>> (val) } {
 }
 
 VariantValue::VariantValue (const String& val)
-    : fVal_ (new TIRep_<String> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<String>> (val) } {
 }
 
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal_ (new TIRep_<Mapping<String, VariantValue>> (Mapping<String, VariantValue> {val}))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (Mapping <String, VariantValue> {val}) } {
 }
 
 VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
-    : fVal_ (new TIRep_<Mapping<String, VariantValue>> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (val) } {
 }
 
 VariantValue::VariantValue (Mapping<String, VariantValue>&& val)
-    : fVal_ (new TIRep_<Mapping<String, VariantValue>> (move (val)))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Mapping<String, VariantValue>>> (move (val)) } {
 }
 
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
-    : fVal_ (new TIRep_<Sequence<VariantValue>> (val))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val) } {
 }
 
 VariantValue::VariantValue (Sequence<VariantValue>&& val)
-    : fVal_ (new TIRep_<Sequence<VariantValue>> (move (val)))
-{
+    : fVal_ { MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (move (val)) } {
 }
 
 bool    VariantValue::empty () const
