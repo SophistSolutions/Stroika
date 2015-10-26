@@ -305,7 +305,7 @@ namespace   Stroika {
                             fEnvelope_.SetPtr (nullptr);
                         }
                     }
-					fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
+                    fEnvelope_ = std::move (rhs.fEnvelope_); // no need to bump refcounts - moved from one to another
                 }
                 Assert (rhs.fEnvelope_.GetPtr () == nullptr);
                 return *this;
