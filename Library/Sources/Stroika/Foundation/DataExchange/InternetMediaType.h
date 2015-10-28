@@ -129,6 +129,7 @@ namespace   Stroika {
                 const   InternetMediaType&  Text_HTML_CT ();
                 const   InternetMediaType&  Text_XHTML_CT ();
                 const   InternetMediaType&  Text_PLAIN_CT ();
+                const   InternetMediaType&  Text_CSV_CT ();
 
                 const   InternetMediaType&  JSON_CT ();
 

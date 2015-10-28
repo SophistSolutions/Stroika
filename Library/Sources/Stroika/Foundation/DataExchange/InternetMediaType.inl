@@ -129,6 +129,7 @@ namespace   Stroika {
                     const   InternetMediaType   kText_HTML_CT;
                     const   InternetMediaType   kText_XHTML_CT;
                     const   InternetMediaType   kText_PLAIN_CT;
+                    const   InternetMediaType   kText_CSV_CT;
 
                     const   InternetMediaType   kJSON_CT;
 
@@ -165,6 +166,7 @@ namespace   Stroika {
                 inline  const   InternetMediaType&  Text_HTML_CT ()                         {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_HTML_CT;    }
                 inline  const   InternetMediaType&  Text_XHTML_CT ()                        {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_XHTML_CT;   }
                 inline  const   InternetMediaType&  Text_PLAIN_CT ()                        {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_PLAIN_CT;   }
+                inline  const   InternetMediaType&  Text_CSV_CT ()                          {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kText_CSV_CT;   }
 
                 inline  const   InternetMediaType&  JSON_CT ()                              {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kJSON_CT; }
 
