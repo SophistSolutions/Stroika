@@ -543,35 +543,6 @@ namespace   {
 
 
 
-/*
- ********************************************************************************
- ******************************* SAXCallbackInterface ***************************
- ********************************************************************************
- */
-void    SAXCallbackInterface::StartDocument ()
-{
-}
-
-void    SAXCallbackInterface::EndDocument ()
-{
-}
-
-void    SAXCallbackInterface::StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
-{
-}
-
-void    SAXCallbackInterface::EndElement (const String& uri, const String& localName, const String& qname)
-{
-}
-
-void    SAXCallbackInterface::CharactersInsideElement (const String& text)
-{
-}
-
-
-
-
-
 
 
 /*
@@ -585,10 +556,10 @@ namespace   {
     class SAX2PrintHandlers_
         : public DefaultHandler {
     private:
-        SAXCallbackInterface&   fCallback;
+        IStructuredDataStreamConsumer&   fCallback;
 
     public:
-        SAX2PrintHandlers_ (SAXCallbackInterface& callback)
+        SAX2PrintHandlers_ (IStructuredDataStreamConsumer& callback)
             : fCallback (callback)
         {
         }
@@ -613,28 +584,28 @@ namespace   {
             for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
                 const XMLCh* localAttrName = attributes.getLocalName (i);
                 const XMLCh* val = attributes.getValue (i);
-                attrs.Add (xercesString2String_ (localAttrName), xercesString2String_ (val).As<wstring> ());
+                attrs.Add (xercesString2String_ (localAttrName), xercesString2String_ (val));
             }
-            fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname), attrs);
+            fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), attrs);
         }
         virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
-            fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname));
+            fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localName));
         }
         virtual     void    characters (const XMLCh* const chars, const XMLSize_t length) override
         {
             Require (chars != nullptr);
             Require (length != 0);
-            fCallback.CharactersInsideElement (wstring (chars, chars + length));
+            fCallback.CharactersInsideElement (String (chars, chars + length));
         }
     };
 }
 #endif
 
-void    XML::SAXParse (const Streams::InputStream<Byte>& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
+void    XML::SAXParse (const Streams::InputStream<Byte>& in, IStructuredDataStreamConsumer& callback, Execution::ProgressMonitor::Updater progres)
 {
 #if     qHasFeature_Xerces
     SAX2PrintHandlers_  handler (callback);

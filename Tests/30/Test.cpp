@@ -109,7 +109,7 @@ namespace   {
             L"</PHRModel>\n"
             ;
 
-        class   MyCallback : public SAXCallbackInterface {
+        class   MyCallback : public IStructuredDataStreamConsumer {
         public:
             virtual void    StartDocument () override
             {
@@ -119,19 +119,16 @@ namespace   {
             {
                 Assert (fEltDepthCount == 0);
             }
-            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+            virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
             {
                 fEltDepthCount++;
-                fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
+                fEltStack.push_back (uri + L"/" + localName);
             }
-            virtual void    EndElement (const String& uri, const String& localName, const String& qname) override
+            virtual void    EndElement (const String& uri, const String& localName) override
             {
-                Assert (fEltStack.back () == uri + L"/" + localName + L"/" + qname);
+                Assert (fEltStack.back () == uri + L"/" + localName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
-            }
-            virtual void    CharactersInsideElement (const String& text) override
-            {
             }
             unsigned int    fEltDepthCount;
             vector<String>  fEltStack;
@@ -164,7 +161,7 @@ namespace   {
             : ComplexObjectReader<Person_> (v)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
         {
             RequireNotNull (fValuePtr);
             if (localName == L"FirstName") {
@@ -194,7 +191,7 @@ namespace   {
             ComplexObjectReader<Appointment_> (v, attrs)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
         {
             if (localName == L"When") {
                 _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));

@@ -71,7 +71,7 @@ namespace   Stroika {
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -87,7 +87,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -103,7 +103,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -119,7 +119,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -135,7 +135,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -151,7 +151,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -167,7 +167,7 @@ namespace   Stroika {
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -186,9 +186,9 @@ namespace   Stroika {
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
                 {
-                    actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
+                    actualReader_.HandleChildStart (r, uri, localName, attrs);
                 }
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -250,7 +250,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
                 {
                     if (localName == TRAITS::ElementName) {
                         if (readingAT_) {

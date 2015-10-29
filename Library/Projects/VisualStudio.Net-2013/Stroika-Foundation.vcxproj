@@ -573,6 +573,7 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp" />
@@ -1153,6 +1154,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h" />
@@ -1505,6 +1507,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl" />

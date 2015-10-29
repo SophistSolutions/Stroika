@@ -26,9 +26,16 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
+		<!---incomplete notes but include this -->
+		<li>Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
+		   replace all use of SAXCallbackInterface with IStructuredDataStreamConsumer, and
+			lose the qname argumetns to StartElement() and EndElement()
+			as well as HandleChildStart () in subclasses of SAXObjectReader</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 

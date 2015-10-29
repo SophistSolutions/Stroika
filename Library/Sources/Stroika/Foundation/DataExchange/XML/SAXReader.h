@@ -12,6 +12,7 @@
 #include    "../../Execution/ProgressMonitor.h"
 #include    "../../Streams/InputStream.h"
 
+#include    "../StructuredDataStreamConsumer.h"
 #include    "../VariantValue.h"
 #include    "Common.h"
 
@@ -37,26 +38,13 @@ namespace   Stroika {
                 using   Characters::String;
                 using   Containers::Mapping;
 
-                /**
-                 *  Override any of these methods you want to recieve notification of the given event. There is no need to call the
-                 *  inherited version.
-                 */
-                class   SAXCallbackInterface {
-                public:
-                    virtual void    StartDocument ();
-                    virtual void    EndDocument ();
-                public:
-                    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs);
-                    virtual void    EndElement (const String& uri, const String& localName, const String& qname);
-                public:
-                    virtual void    CharactersInsideElement (const String& text);
-                };
+
 
 
                 /**
                  * Parse will throw an exception if it encouters any errors parsing.
                  */
-                void    SAXParse (const Streams::InputStream<Memory::Byte>& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progress = nullptr);
+                void    SAXParse (const Streams::InputStream<Memory::Byte>& in, IStructuredDataStreamConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
                 //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
                 //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);

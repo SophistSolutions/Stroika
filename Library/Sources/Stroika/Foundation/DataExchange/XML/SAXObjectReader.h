@@ -89,7 +89,7 @@ namespace   Stroika {
                 class   SAXObjectReader::ObjectBase {
                 public:
                     virtual ~ObjectBase ();
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) = 0;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) = 0;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) = 0;
                     virtual void    HandleEndTag (SAXObjectReader& r) = 0;
                 };
@@ -114,7 +114,7 @@ namespace   Stroika {
                     T* value_;
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -157,7 +157,7 @@ namespace   Stroika {
                     ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -173,7 +173,7 @@ namespace   Stroika {
                 private:
                     int fDepth_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -224,7 +224,7 @@ namespace   Stroika {
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
 
-                    virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void HandleEndTag (SAXObjectReader& r) override;
                 };
 

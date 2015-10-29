@@ -40,7 +40,7 @@ wstring SAXObjectReader::TraceLeader_ () const
     return l;
 }
 #endif
-class   SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
+class   SAXObjectReader::MyCallback_ : public IStructuredDataStreamConsumer {
 public:
     MyCallback_ (SAXObjectReader& r)
         : fSAXObjectReader_ (r)
@@ -55,7 +55,7 @@ public:
     virtual void    EndDocument () override
     {
     }
-    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+    virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
@@ -63,9 +63,9 @@ public:
             DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.c_str ());
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
+        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, attrs);
     }
-    virtual void    EndElement (const String& uri, const String& localName, const String& qname) override
+    virtual void    EndElement (const String& uri, const String& localName) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
@@ -107,7 +107,7 @@ namespace   {
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
         {
             if (not fAnyDocElt) {
                 if (localName != fDocEltName or uri != fDocEltURI) {
@@ -190,7 +190,7 @@ BuiltinReader<String>::BuiltinReader (String* intoVal, const Mapping<String, Var
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -224,7 +224,7 @@ BuiltinReader<int>::BuiltinReader (int* intoVal, const Mapping<String, VariantVa
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -257,7 +257,7 @@ BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const Mapping
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -292,7 +292,7 @@ BuiltinReader<bool>::BuiltinReader (bool* intoVal, const Mapping<String, Variant
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -330,7 +330,7 @@ BuiltinReader<float>::BuiltinReader (float* intoVal, const Mapping<String, Varia
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -362,7 +362,7 @@ BuiltinReader<double>::BuiltinReader (double* intoVal, const Mapping<String, Var
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -396,7 +396,7 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const Map
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -428,7 +428,7 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
+void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
 {
     Require (fDepth_ >= 0);
     fDepth_++;

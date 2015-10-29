@@ -15,6 +15,7 @@ Objs	=	\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)OptionsFile.o\
+	$(ObjDir)StructuredDataStreamConsumer.o\
 	$(ObjDir)VariantReader.o\
 	$(ObjDir)VariantValue.o\
 	$(ObjDir)VariantWriter.o\
