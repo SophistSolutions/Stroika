@@ -17,6 +17,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 using   Characters::Character;
 using   Characters::String;
+using   Characters::StringBuilder;
 using   Memory::BLOB;
 using   Memory::Byte;
 
@@ -34,28 +35,28 @@ template    <>
 String InputStream<Character>::ReadLine () const
 {
     Require (IsSeekable ());
-    String      result;
+    StringBuilder	result;
     while (true) {
         Character   c   =   ReadCharacter ();
         if (c.GetCharacterCode () == '\0') {
             // EOF
-            return result;
+            return result.str ();
         }
         result.push_back (c);
         if (c == '\n') {
-            return result;
+            return result.str ();
         }
         else if (c == '\r') {
             Character   c   =   ReadCharacter ();
             // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
             if (c == '\n') {
                 result.push_back (c);
-                return result;
+                return result.str ();
             }
             else {
                 Seek (Whence::eFromCurrent, -1);
             }
-            return result;
+            return result.str ();
         }
     }
 }
