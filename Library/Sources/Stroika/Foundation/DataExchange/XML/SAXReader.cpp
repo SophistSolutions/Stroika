@@ -591,10 +591,8 @@ namespace   {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Mapping<String, VariantValue>    attrs;
-            for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
-                const XMLCh* localAttrName = attributes.getLocalName (i);
-                const XMLCh* val = attributes.getValue (i);
-                attrs.Add (xercesString2String_ (localAttrName), xercesString2String_ (val));
+            for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
+                attrs.Add (xercesString2String_ (attributes.getLocalName (i)), xercesString2String_ (attributes.getValue (i)));
             }
             fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), attrs);
         }
