@@ -62,6 +62,10 @@ namespace   Stroika {
                 template    <>
                 size_t  Length (const char* p);
                 template    <>
+                size_t  Length (const char16_t* p);
+                template    <>
+                size_t  Length (const char32_t* p);
+                template    <>
                 size_t  Length (const wchar_t* p);
 
 

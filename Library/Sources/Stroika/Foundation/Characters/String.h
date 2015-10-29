@@ -360,6 +360,8 @@ namespace   Stroika {
                 String (const char16_t* cString);
                 String (const char32_t* cString);
                 String (const wchar_t* cString);
+                String (const char16_t* from, const char16_t* to);
+                String (const char32_t* from, const char32_t* to);
                 String (const wchar_t* from, const wchar_t* to);
                 String (const Character* from, const Character* to);
                 String (const wstring& r);

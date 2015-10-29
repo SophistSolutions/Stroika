@@ -12,6 +12,7 @@
 #include    <regex>
 #endif
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Containers/Common.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/StringException.h"
@@ -266,11 +267,24 @@ constexpr   size_t    String::kBadIndex;
 #endif
 
 String::String (const char16_t* cString)
-    : inherited (mkEmpty_ ())
+    : String (cString, cString + Characters::CString::Length (cString))
 {
     RequireNotNull (cString);
+}
+
+String::String (const char32_t* cString)
+    : String (cString, cString + CString::Length (cString))
+{
+}
+
+String::String (const char16_t* from, const char16_t* to)
+    : inherited (mkEmpty_ ())
+{
+    Require ((from == nullptr) == (to == nullptr));
+    Require (from <= to);
+    // @todo fix for if char16_t != wchar_t
     // Horrible, but temporarily OK impl
-    for (const char16_t* i = cString; *i != '\0'; ++i) {
+    for (const char16_t* i = from; i != to; ++i) {
         Append (*i);
     }
 #if     qDebug
@@ -278,12 +292,14 @@ String::String (const char16_t* cString)
 #endif
 }
 
-String::String (const char32_t* cString)
+String::String (const char32_t* from, const char32_t* to)
     : inherited (mkEmpty_ ())
 {
-    RequireNotNull (cString);
+    Require ((from == nullptr) == (to == nullptr));
+    Require (from <= to);
+    // @todo fix for if char16_t != wchar_t
     // Horrible, but temporarily OK impl
-    for (const char32_t* i = cString; *i != '\0'; ++i) {
+    for (const char32_t* i = from; i != to; ++i) {
         Append (*i);
     }
 #if     qDebug

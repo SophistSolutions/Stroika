@@ -38,6 +38,24 @@ namespace   Stroika {
                     RequireNotNull (p);
                     return ::wcslen (p);
                 }
+                template    <>
+                inline  size_t  Length (const char16_t* p)
+                {
+                    RequireNotNull (p);
+                    const char16_t* i   =   p;
+                    while (*i++ != '\0')
+                        ;
+                    return i - p;
+                }
+                template    <>
+                inline  size_t  Length (const char32_t* p)
+                {
+                    RequireNotNull (p);
+                    const char32_t* i   =   p;
+                    while (*i++ != '\0')
+                        ;
+                    return i - p;
+                }
 
 
                 /*
