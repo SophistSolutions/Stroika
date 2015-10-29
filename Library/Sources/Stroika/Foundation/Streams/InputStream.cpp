@@ -35,7 +35,7 @@ template    <>
 String InputStream<Character>::ReadLine () const
 {
     Require (IsSeekable ());
-    StringBuilder	result;
+    StringBuilder   result;
     while (true) {
         Character   c   =   ReadCharacter ();
         if (c.GetCharacterCode () == '\0') {
