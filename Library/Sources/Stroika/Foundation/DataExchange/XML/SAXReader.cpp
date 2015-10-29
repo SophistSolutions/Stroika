@@ -91,6 +91,19 @@ using   namespace   Stroika::Foundation::Streams;
 
 #if     qHasFeature_Xerces
 namespace {
+    String xercesString2String_ (const XMLCh* s, const XMLCh* e)
+    {
+        if (sizeof (XMLCh) == sizeof (char16_t)) {
+            return String (reinterpret_cast<const char16_t*> (s), reinterpret_cast<const char16_t*> (e));
+        }
+        else if (sizeof (XMLCh) == sizeof (wchar_t)) {
+            return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+        }
+        else {
+            AssertNotReached ();
+            return String ();
+        }
+    }
     String xercesString2String_ (const XMLCh* t)
     {
         if (sizeof (XMLCh) == sizeof (char16_t)) {
@@ -573,13 +586,10 @@ namespace   {
         {
             fCallback.EndDocument ();
         }
-
-    public:
         virtual     void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
-            Require (qname != nullptr);
             Mapping<String, VariantValue>    attrs;
             for (XMLSize_t i = 0; i < attributes.getLength(); i++) {
                 const XMLCh* localAttrName = attributes.getLocalName (i);
@@ -599,7 +609,7 @@ namespace   {
         {
             Require (chars != nullptr);
             Require (length != 0);
-            fCallback.CharactersInsideElement (String (chars, chars + length));
+            fCallback.CharactersInsideElement (xercesString2String_ (chars, chars + length));
         }
     };
 }
