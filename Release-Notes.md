@@ -26,11 +26,16 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
-		<!---incomplete notes but include this -->
+		<!---below notes up to date as of 6pm Oct 29 -->
+		<li>COMPATABILITIY WARNING: big refactor of sax reader code - losing qname param to HandleChildStart and StartElement and EndElement (url/qname reddundant) amd new IStructuredDataStreamConsumer instead of SAXCallbackInterface</li>
+		<li>Fixed tiny bug with Windows Transfer/Client_WinHTTP which caused it to never re-use HTTP connections
+			(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
+		</li>
 		<li>Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
 		   replace all use of SAXCallbackInterface with IStructuredDataStreamConsumer, and
 			lose the qname argumetns to StartElement() and EndElement()
 			as well as HandleChildStart () in subclasses of SAXObjectReader</li>
+		<li>InputStream<Character>::ReadLine () performance tweak</li>
 	</ul>
 </td>
 </tr>
