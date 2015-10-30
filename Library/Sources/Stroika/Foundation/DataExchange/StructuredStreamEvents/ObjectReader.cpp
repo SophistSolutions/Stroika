@@ -90,7 +90,7 @@ void    ObjectReader::IConsumerToContextTranslator::TextInsideElement (const Str
  ********************************************************************************
  */
 namespace   {
-	// @todo see https://stroika.atlassian.net/browse/STK-284
+    // @todo see https://stroika.atlassian.net/browse/STK-284
     struct DocumentReader_ : public ObjectReader::IContextReader {
         shared_ptr<IContextReader>      fDocEltBuilder;
         bool                            fAnyDocElt;
@@ -133,7 +133,7 @@ namespace   {
 }
 void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
-	// @todo see https://stroika.atlassian.net/browse/STK-284
+    // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
     Context ctx;
     Require (ctx.fStack_.size () == 0);
@@ -150,7 +150,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
 
 void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
-	// @todo see https://stroika.atlassian.net/browse/STK-284
+    // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
     Context ctx;
     Require (ctx.fStack_.size () == 0);
