@@ -41,8 +41,8 @@
 #if     defined (__clang__)
 
 // Must check CLANG first, since CLANG also defines GCC
-#if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 4))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.4")
+#if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 5))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.5")
 #endif
 #if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 6))
 #pragma message ("Info: Stroika untested with this version of clang++")
@@ -1080,27 +1080,6 @@ EXAMPLE:
 
 
 
-
-
-
-/**
-@CONFIGVAR:     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
-@DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Not well understood.
-*/
-#ifndef qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 4))
-#else
-#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       0
-#endif
-
-#endif
-
-
-
-
-
 //@CONFIGVAR:     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
 // Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr
 // verus std::shared_ptr<> stuff (now I'm getting rid of) over the std::shared_ptr<>
@@ -1222,30 +1201,10 @@ EXAMPLE:
 
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 
-#if     defined (__clang__)
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 4))
-#elif     defined (__GNUC__)
+#if		defined (__GNUC__)
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       0
-#endif
-
-#endif
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
-@DESCRIPTION:
-                Note - this compiles with clang 3.4, but fails to generate the
-                correct code.
-*/
-#ifndef qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 4))
-#else
-#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     0
 #endif
 
 #endif
@@ -1593,9 +1552,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
-#if     defined (__clang__)
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__clang_major__ == 3 && (__clang_minor__ <= 4))
-#elif   defined (_MSC_VER)
+#if		defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
@@ -1724,26 +1681,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #else
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-
-#if     defined (__clang__)
-// Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
-// Works fine with clang++-3.6
-#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy        ((__clang_major__ == 3) && (__clang_minor__ <= 4))
-#else
-#define qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy        0
 #endif
 
 #endif

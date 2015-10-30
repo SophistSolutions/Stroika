@@ -51,7 +51,6 @@ doOneTest "gcc49-release" "--assertions disable --trace2file enable --compiler-d
 doOneTest "gcc49-debug-no-TPP" "--assertions enable --trace2file enable --compiler-driver 'g++-4.9' --LibCurl no --OpenSSL no --Xerces no" ""
 doOneTest "gcc-4.8.4-debug" "--assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc'" ""
 doOneTest "gcc48-release" "--assertions disable --trace2file disable --compiler-driver 'g++-4.8' --cpp-optimize-flag -O3" ""
-doOneTest "clang++-3.4-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.4" ""
 doOneTest "clang++-3.5-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.5" "" 
 doOneTest "clang++-3.6-debug" "--assertions enable --trace2file enable --compiler-driver clang++-3.6 --cppstd-version-flag --std=c++1y" ""
 #TESTING if -L needed

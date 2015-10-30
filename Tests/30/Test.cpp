@@ -117,7 +117,7 @@ namespace   {
             }
             virtual void    EndDocument () override
             {
-                Assert (fEltDepthCount == 0);
+                VerifyTestResult (fEltDepthCount == 0);
             }
             virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
             {
@@ -126,7 +126,7 @@ namespace   {
             }
             virtual void    EndElement (const String& uri, const String& localName) override
             {
-                Assert (fEltStack.back () == uri + L"/" + localName);
+                VerifyTestResult (fEltStack.back () == uri + L"/" + localName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
@@ -153,11 +153,7 @@ namespace   {
         Memory::Optional<String> middleName;
     };
     struct PersonReader_ : public ComplexObjectReader<Person_> {
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
         PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ())
-#else
-        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_)
-#endif
             : ComplexObjectReader<Person_> (v)
         {
         }
@@ -183,11 +179,7 @@ namespace   {
         Person_         withWhom;
     };
     struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
         AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
-#else
-        AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_):
-#endif
             ComplexObjectReader<Appointment_> (v, attrs)
         {
         }

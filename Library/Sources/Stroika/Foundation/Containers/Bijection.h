@@ -425,26 +425,10 @@ namespace   Stroika {
                 nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                template    <typename REP_SUB_TYPE>
-                struct  _SafeReadRepAccessor  {
-                    typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_ReadOnlyIterableIRepReference    fAccessor;
-                    _SafeReadRepAccessor (const Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>* s)
-                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
-                    {
-                    }
-                    nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
-                    {
-                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
-                    }
-                };
-#else
                 /**
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template _SafeReadRepAccessor<T2>;
-#endif
 
             protected:
                 /**

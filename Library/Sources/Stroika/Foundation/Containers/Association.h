@@ -319,26 +319,10 @@ namespace   Stroika {
 #endif
 
             protected:
-#if     qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy
-                template    <typename REP_SUB_TYPE>
-                struct  _SafeReadRepAccessor  {
-                    typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_ReadOnlyIterableIRepReference    fAccessor;
-                    _SafeReadRepAccessor (const Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* s)
-                        : fAccessor (s->_GetReadOnlyIterableIRepReference ())
-                    {
-                    }
-                    nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const
-                    {
-                        EnsureMember (fAccessor.cget (), REP_SUB_TYPE);
-                        return static_cast<const REP_SUB_TYPE&> (*fAccessor.cget ());   // static cast for performance sake - dynamic cast in Ensure
-                    }
-                };
-#else
                 /**
                  */
                 template    <typename T2>
                 using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<T2>;
-#endif
 
             protected:
                 /**

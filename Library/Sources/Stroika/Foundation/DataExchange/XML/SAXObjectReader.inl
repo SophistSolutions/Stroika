@@ -63,11 +63,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<String> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String* value_;
                 public:
@@ -78,11 +74,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<int> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String  tmpVal_;
                     int*    value_;
@@ -94,11 +86,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<unsigned int> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
@@ -110,11 +98,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<float> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String  tmpVal_;
                     float*  value_;
@@ -126,11 +110,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<double> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String  tmpVal_;
                     double* value_;
@@ -142,11 +122,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String  tmpVal_;
                     bool*   value_;
@@ -158,11 +134,7 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;

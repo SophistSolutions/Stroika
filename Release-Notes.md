@@ -26,15 +26,23 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
-		<!---below notes up to date as of 6pm Oct 29 -->
-		<li>COMPATABILITIY WARNING: big refactor of sax reader code - losing qname param to HandleChildStart and StartElement and EndElement (url/qname reddundant) amd new IStructuredDataStreamConsumer instead of SAXCallbackInterface</li>
+		<li>Drop support for Clang-3.4, and so got rid of bug defines: 
+			qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
+			qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
+		qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy because these were only needed for clang-3.4
+		</li>
+<!---below notes up to date as of 6pm Oct 29 -->
 		<li>Fixed tiny bug with Windows Transfer/Client_WinHTTP which caused it to never re-use HTTP connections
 			(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
 		</li>
-		<li>Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
+		<li>COMPATABILITIY WARNING: Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
 		   replace all use of SAXCallbackInterface with IStructuredDataStreamConsumer, and
 			lose the qname argumetns to StartElement() and EndElement()
-			as well as HandleChildStart () in subclasses of SAXObjectReader</li>
+			as well as HandleChildStart () in subclasses of SAXObjectReader
+			<ul>
+					<li>COMPATABILITIY WARNING: losing qname param to HandleChildStart and StartElement and EndElement (url/qname reddundant) amd new IStructuredDataStreamConsumer instead of SAXCallbackInterface</li>
+			</ul>
+			</li>
 		<li>InputStream<Character>::ReadLine () performance tweak</li>
 	</ul>
 </td>

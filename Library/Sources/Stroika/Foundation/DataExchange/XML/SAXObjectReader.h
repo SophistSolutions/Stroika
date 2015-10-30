@@ -36,10 +36,6 @@ namespace   Stroika {
         namespace   DataExchange {
             namespace   XML {
 
-#if     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
-                const   Mapping<String, VariantValue>   kEmptyMapString2VariantVal_;
-#endif
-
 
                 /**
                  *      The basic idea of the SAXObjectReader is to make it easier to write C++ code
@@ -104,11 +100,7 @@ namespace   Stroika {
                 template    <typename   T>
                 class   BuiltinReader : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     BuiltinReader (T* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    BuiltinReader (T* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
 
                 private:
                     T* value_;
@@ -145,11 +137,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
                 class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
                 public:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     OptionalTypesReader (Memory::Optional<T>* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    OptionalTypesReader (Memory::Optional<T>* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
 
                 private:
                     Memory::Optional<T>*    value_;
@@ -185,11 +173,7 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
                 protected:
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     ComplexObjectReader (T* vp, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    ComplexObjectReader (T* vp, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
 
                 public:
                     T*  fValuePtr;
@@ -218,11 +202,7 @@ namespace   Stroika {
                     bool                            readingAT_;
                     typename TRAITS::ElementType    curTReading_;
 
-#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
-#else
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
-#endif
 
                     virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
                     virtual void HandleEndTag (SAXObjectReader& r) override;
