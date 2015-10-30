@@ -169,6 +169,9 @@
     <Filter Include="Sources\DataExchange\Zip">
       <UniqueIdentifier>{7506af22-27f9-44e9-a583-60e131f67d8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\StructuredStreamEvents">
+      <UniqueIdentifier>{5e550cdb-ffe0-4576-8941-d7ec6508fb41}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -722,6 +725,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1710,6 +1719,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
       <Filter>Sources\DataExchange\Zip</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2606,6 +2624,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
   </ItemGroup>
 </Project>
