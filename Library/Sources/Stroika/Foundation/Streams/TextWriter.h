@@ -84,6 +84,12 @@ namespace   Stroika {
                 TextWriter (const OutputStream<Memory::Byte>& src, Format format = Format::eUTF8);
                 TextWriter (const OutputStream<Characters::Character>& src);
 
+
+            public:
+                /**
+                 */
+                nonvirtual  void    PrintF (const wchar_t* format, ...);
+
             private:
                 class   Seekable_UTF8_Rep_;
                 class   Seekable_WCharT_Rep_;
