@@ -252,9 +252,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.cpp">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
@@ -732,6 +729,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -887,9 +887,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
       <Filter>Sources\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.h">
-      <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.h">
       <Filter>Sources\DataExchange\XML</Filter>
@@ -1728,6 +1725,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1825,9 +1825,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl">
       <Filter>Sources\DataExchange\XML</Filter>
@@ -2632,6 +2629,9 @@
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl">
+      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
   </ItemGroup>
