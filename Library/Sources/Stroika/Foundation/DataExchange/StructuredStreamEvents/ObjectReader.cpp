@@ -40,58 +40,55 @@ wstring ObjectReader::Context::TraceLeader_ () const
 #endif
 
 
+
+
+/*
+ ********************************************************************************
+ ******* StructuredStreamEvents::ObjectReader::IConsumerToContextTranslator******
+ ********************************************************************************
+ */
+ObjectReader::IConsumerToContextTranslator::IConsumerToContextTranslator (Context& r)
+    : fContext_ (r)
+{
+}
+
+void    ObjectReader::IConsumerToContextTranslator::StartElement (const StructuredStreamEvents::Name& name)
+{
+    AssertNotNull (fContext_.GetTop ());
+#if     qDefaultTracingOn
+    if (fContext_.fTraceThisReader) {
+        DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+    }
+#endif
+    fContext_.GetTop ()->HandleChildStart (fContext_, name);
+}
+void    ObjectReader::IConsumerToContextTranslator::EndElement (const StructuredStreamEvents::Name& name)
+{
+    AssertNotNull (fContext_.GetTop ());
+#if     qDefaultTracingOn
+    if (fContext_.fTraceThisReader) {
+        DbgTrace (L"%sCalling EndElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+    }
+#endif
+    fContext_.GetTop ()->HandleEndTag (fContext_);
+}
+void    ObjectReader::IConsumerToContextTranslator::TextInsideElement (const String& text)
+{
+    AssertNotNull (fContext_.GetTop ());
+#if     qDefaultTracingOn
+    if (fContext_.fTraceThisReader) {
+        DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), text.c_str () );
+    }
+#endif
+    fContext_.GetTop ()->HandleTextInside (fContext_, text);
+}
+
+
 /*
  ********************************************************************************
  ***************** StructuredStreamEvents::ObjectReader *************************
  ********************************************************************************
  */
-class   ObjectReader::MyCallback_ : public StructuredStreamEvents::IConsumer {
-public:
-    MyCallback_ (Context& r)
-        : fContext_ (r)
-    {
-    }
-private:
-    Context&    fContext_;
-public:
-    virtual void    StartDocument () override
-    {
-    }
-    virtual void    EndDocument () override
-    {
-    }
-    virtual void    StartElement (const StructuredStreamEvents::Name& name) override
-    {
-        AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
-        if (fContext_.fTraceThisReader) {
-            DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
-        }
-#endif
-        fContext_.GetTop ()->HandleChildStart (fContext_, name);
-    }
-    virtual void    EndElement (const StructuredStreamEvents::Name& name) override
-    {
-        AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
-        if (fContext_.fTraceThisReader) {
-            DbgTrace (L"%sCalling EndElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
-        }
-#endif
-        fContext_.GetTop ()->HandleEndTag (fContext_);
-    }
-    virtual void    TextInsideElement (const String& text) override
-    {
-        AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
-        if (fContext_.fTraceThisReader) {
-            DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), text.c_str () );
-        }
-#endif
-        fContext_.GetTop ()->HandleTextInside (fContext_, text);
-    }
-};
-
 namespace   {
     struct DocumentReader_ : public ObjectReader::IContextReader {
         shared_ptr<IContextReader>      fDocEltBuilder;
@@ -141,7 +138,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
 
     ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder)));
 
-    MyCallback_ cb (ctx);
+    IConsumerToContextTranslator cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added
@@ -157,7 +154,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
 
     ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
 
-    MyCallback_ cb (ctx);
+    IConsumerToContextTranslator cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added

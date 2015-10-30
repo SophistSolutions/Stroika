@@ -41,6 +41,8 @@ namespace   Stroika {
 
 
                 /**
+                &&&&&& TODO - @todo - rewrite all these docs
+                *
                  *      The basic idea of the ObjectReader is to make it easier to write C++ code
                  *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
                  *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
@@ -59,6 +61,9 @@ namespace   Stroika {
                     class   Context;
 
                 public:
+                    class   IConsumerToContextTranslator;
+
+                public:
                     ObjectReader () = default;
 
                 public:
@@ -72,6 +77,10 @@ namespace   Stroika {
                 };
 
 
+                /**
+                 *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
+                 *  it into a related object.
+                 */
                 class   ObjectReader::IContextReader {
                 public:
                     virtual ~IContextReader () = default;
@@ -81,7 +90,10 @@ namespace   Stroika {
                 };
 
 
-
+                /**
+                 *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
+                 *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
+                 */
                 class   ObjectReader::Context {
                 public:
 #if     qDefaultTracingOn
@@ -105,7 +117,18 @@ namespace   Stroika {
 
                 private:
                     friend  class   ObjectReader;
+                };
 
+
+                class   ObjectReader::IConsumerToContextTranslator : public StructuredStreamEvents::IConsumer {
+                public:
+                    IConsumerToContextTranslator (Context& r);
+                private:
+                    Context&    fContext_;
+                public:
+                    virtual void    StartElement (const StructuredStreamEvents::Name& name) override;
+                    virtual void    EndElement (const StructuredStreamEvents::Name& name) override;
+                    virtual void    TextInsideElement (const String& text) override;
                 };
 
 
