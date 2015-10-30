@@ -34,6 +34,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
 , kText_CT                              (String_Constant { L"text" })
 , kText_HTML_CT                         (String_Constant { L"text/html" })
 , kText_XHTML_CT                        (String_Constant { L"text/xhtml" })
+, kText_XML_CT                          (String_Constant { L"text/xml" })
 , kText_PLAIN_CT                        (String_Constant { L"text/plain" })
 , kText_CSV_CT                          (String_Constant { L"text/csv" })
 
