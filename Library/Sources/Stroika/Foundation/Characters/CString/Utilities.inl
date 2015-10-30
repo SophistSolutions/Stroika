@@ -45,7 +45,8 @@ namespace   Stroika {
                     const char16_t* i   =   p;
                     while (*i++ != '\0')
                         ;
-                    return i - p;
+                    Assert (i > p);
+                    return i - p - 1;
                 }
                 template    <>
                 inline  size_t  Length (const char32_t* p)
@@ -54,7 +55,8 @@ namespace   Stroika {
                     const char32_t* i   =   p;
                     while (*i++ != '\0')
                         ;
-                    return i - p;
+                    Assert (i > p);
+                    return i - p - 1;
                 }
 
 
