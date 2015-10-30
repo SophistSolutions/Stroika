@@ -607,7 +607,7 @@ namespace   {
         {
             Require (chars != nullptr);
             Require (length != 0);
-            fCallback.CharactersInsideElement (xercesString2String_ (chars, chars + length));
+            fCallback.TextInsideElement (xercesString2String_ (chars, chars + length));
         }
     };
 }

@@ -74,8 +74,12 @@ namespace   Stroika {
                 public:
                     /**
                      *  \note   The default implementation ignores this.
+                     *
+                     *  \note   Callers will report zero to many chunks of text
+                     *          data. They do not necessarily gather it up into one big block.
+                     *
                      */
-                    virtual void    CharactersInsideElement (const String& text);
+                    virtual void    TextInsideElement (const String& text);
                 };
 
 

@@ -35,6 +35,6 @@ void    IConsumer::EndElement (const Name& name)
 {
 }
 
-void    IConsumer::CharactersInsideElement (const String& text)
+void    IConsumer::TextInsideElement (const String& text)
 {
 }

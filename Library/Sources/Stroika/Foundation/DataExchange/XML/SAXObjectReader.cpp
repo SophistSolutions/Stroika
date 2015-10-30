@@ -75,12 +75,12 @@ public:
 #endif
         fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);
     }
-    virtual void    CharactersInsideElement (const String& text) override
+    virtual void    TextInsideElement (const String& text) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling CharactersInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.c_str () );
+            DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.c_str () );
         }
 #endif
         fSAXObjectReader_.GetTop ()->HandleTextInside (fSAXObjectReader_, text);
