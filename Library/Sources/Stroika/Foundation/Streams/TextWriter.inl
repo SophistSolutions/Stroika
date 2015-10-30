@@ -10,7 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Characters/Format.h"
 #include    "../Debug/Assertions.h"
 
 namespace   Stroika {
@@ -26,13 +25,6 @@ namespace   Stroika {
             inline    TextWriter::TextWriter (const OutputStream<Characters::Character>& src)
                 : inherited (src)
             {
-            }
-            inline  void    TextWriter::PrintF (const wchar_t* format, ...)
-            {
-                va_list     argsList;
-                va_start (argsList, format);
-                Write (Characters::FormatV (format, argsList));
-                va_end (argsList);
             }
 
 

@@ -6,8 +6,10 @@
 #if     !qCompilerAndStdLib_string_conversions_Buggy
 #include    <codecvt>
 #endif
+#include    <cstdarg>
 
 #include    "../Characters/CodePage.h"
+#include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -245,3 +247,11 @@ shared_ptr<TextWriter::_IRep> TextWriter::mk_ (const OutputStream<Byte>& src, Fo
     }
 }
 
+void    TextWriter::PrintF (const wchar_t* format, ...)
+{
+    RequireNotNull (format);
+    va_list     argsList;
+    va_start (argsList, format);
+    Write (Characters::FormatV (format, argsList));
+    va_end (argsList);
+}
