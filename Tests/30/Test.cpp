@@ -109,7 +109,7 @@ namespace   {
             L"</PHRModel>\n"
             ;
 
-        class   MyCallback : public IStructuredDataStreamConsumer {
+        class   MyCallback : public StructuredStreamEvents::IConsumer {
         public:
             virtual void    StartDocument () override
             {
