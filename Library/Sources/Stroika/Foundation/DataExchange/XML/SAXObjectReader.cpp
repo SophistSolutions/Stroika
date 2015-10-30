@@ -55,7 +55,7 @@ public:
     virtual void    EndDocument () override
     {
     }
-    virtual void    StartElement (const StructuredStreamEvents::Name& name, const Mapping<String, VariantValue>& attrs) override
+    virtual void    StartElement (const StructuredStreamEvents::Name& name) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
@@ -63,7 +63,7 @@ public:
             DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, name.fNamespaceURI.Value (), name.fLocalName, attrs);
+        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, name);
     }
     virtual void    EndElement (const StructuredStreamEvents::Name& name) override
     {
@@ -107,11 +107,11 @@ namespace   {
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             if (not fAnyDocElt) {
-                if (localName != fDocEltName or uri != fDocEltURI) {
-                    ThrowUnRecognizedStartElt (uri, localName);
+                if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
+                    ThrowUnRecognizedStartElt (name);
                 }
             }
             r.Push (fDocEltBuilder);
@@ -183,16 +183,16 @@ SAXObjectReader::ObjectBase::~ObjectBase ()
  ************************* XML::BuiltinReader<String> ***************************
  ********************************************************************************
  */
-BuiltinReader<String>::BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<String>::BuiltinReader (String* intoVal)
     : value_ (intoVal)
 {
     RequireNotNull (intoVal);
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<String>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -217,16 +217,16 @@ void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
  **************************** XML::BuiltinReader<int> ***************************
  ********************************************************************************
  */
-BuiltinReader<int>::BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<int>::BuiltinReader (int* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<int>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -250,16 +250,16 @@ void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
  ******************* XML::BuiltinReader<unsigned int> ***************************
  ********************************************************************************
  */
-BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<unsigned int>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -285,16 +285,16 @@ void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
  *************************** XML::BuiltinReader<bool> ***************************
  ********************************************************************************
  */
-BuiltinReader<bool>::BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<bool>::BuiltinReader (bool* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<bool>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -323,16 +323,16 @@ void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
  ************************** XML::BuiltinReader<float> ***************************
  ********************************************************************************
  */
-BuiltinReader<float>::BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<float>::BuiltinReader (float* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<float>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -355,16 +355,16 @@ void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
  ************************** XML::BuiltinReader<double> **************************
  ********************************************************************************
  */
-BuiltinReader<double>::BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<double>::BuiltinReader (double* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<double>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -388,7 +388,7 @@ void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
  ********************** XML::BuiltinReader<Time::DateTime> **********************
  ********************************************************************************
  */
-BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs)
+BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
     : tmpVal_ ()
     , value_ (intoVal)
 {
@@ -396,9 +396,9 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const Map
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
-    ThrowUnRecognizedStartElt (uri, localName);
+    ThrowUnRecognizedStartElt (name);
 }
 
 void    BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -428,7 +428,7 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     Require (fDepth_ >= 0);
     fDepth_++;
@@ -457,9 +457,9 @@ void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r)
  ************************** XML::ThrowUnRecognizedStartElt **********************
  ********************************************************************************
  */
-void    XML::ThrowUnRecognizedStartElt (const String& uri, const String& localName)
+void    XML::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
-    Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", localName.c_str ())));
+    Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }
 
 

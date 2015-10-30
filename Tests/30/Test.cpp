@@ -119,7 +119,7 @@ namespace   {
             {
                 VerifyTestResult (fEltDepthCount == 0);
             }
-            virtual void    StartElement (const StructuredStreamEvents::Name& name, const Mapping<String, VariantValue>& attrs) override
+            virtual void    StartElement (const StructuredStreamEvents::Name& name) override
             {
                 fEltDepthCount++;
                 fEltStack.push_back (name.fNamespaceURI.Value () + L"/" + name.fLocalName);
@@ -153,24 +153,24 @@ namespace   {
         Memory::Optional<String> middleName;
     };
     struct PersonReader_ : public ComplexObjectReader<Person_> {
-        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ())
+        PersonReader_ (Person_* v)
             : ComplexObjectReader<Person_> (v)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             RequireNotNull (fValuePtr);
-            if (localName == L"FirstName") {
+            if (name.fLocalName == L"FirstName") {
                 _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
             }
-            else if (localName == L"LastName") {
+            else if (name.fLocalName == L"LastName") {
                 _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->lastName));
             }
-            else if (localName == L"MiddleName") {
+            else if (name.fLocalName == L"MiddleName") {
                 _PushNewObjPtr (r, new OptionalTypesReader<String> (&fValuePtr->middleName));
             }
             else {
-                ThrowUnRecognizedStartElt (uri, localName);
+                ThrowUnRecognizedStartElt (name);
             }
         }
     };
@@ -179,20 +179,20 @@ namespace   {
         Person_         withWhom;
     };
     struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-        AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
-            ComplexObjectReader<Appointment_> (v, attrs)
+        AppointmentReader_ (Appointment_* v):
+            ComplexObjectReader<Appointment_> (v)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
+        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
-            if (localName == L"When") {
+            if (name.fLocalName == L"When") {
                 _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
             }
-            else if (localName == L"WithWhom") {
+            else if (name.fLocalName == L"WithWhom") {
                 _PushNewObjPtr (r, new PersonReader_ (&fValuePtr->withWhom));
             }
             else {
-                ThrowUnRecognizedStartElt (uri, localName);
+                ThrowUnRecognizedStartElt (name);
             }
         }
     };

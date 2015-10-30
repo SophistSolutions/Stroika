@@ -63,83 +63,83 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<String> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (String* intoVal);
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<int> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (int* intoVal);
                 private:
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<unsigned int> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (unsigned int* intoVal);
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<float> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (float* intoVal);
                 private:
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<double> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (double* intoVal);
                 private:
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (bool* intoVal);
                 private:
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (Time::DateTime* intoVal);
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -151,16 +151,16 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T, typename ACTUAL_READER>
-                OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const Mapping<String, VariantValue>& attrs)
+                OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal)
                     : value_ (intoVal)
                     , proxyValue_ ()
                     , actualReader_ (&proxyValue_)
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
                 {
-                    actualReader_.HandleChildStart (r, uri, localName, attrs);
+                    actualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text)
@@ -185,7 +185,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T>
-                inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp, const Mapping<String, VariantValue>& attrs)
+                inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp)
                     : fValuePtr (vp)
                 {
                     RequireNotNull (vp);
@@ -216,15 +216,15 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename TRAITS>
-                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs)
+                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v)
                     : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
                             , readingAT_ (false)
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
                 {
-                    if (localName == TRAITS::ElementName) {
+                    if (name.fLocalName == TRAITS::ElementName) {
                         if (readingAT_) {
                             Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
                             this->fValuePtr->push_back (curTReading_);
@@ -232,7 +232,7 @@ namespace   Stroika {
                         }
                         readingAT_ = true;
                         curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
-                        this->_PushNewObjPtr (r, new typename TRAITS::ReaderType (&curTReading_, attrs));
+                        this->_PushNewObjPtr (r, new typename TRAITS::ReaderType (&curTReading_));
                     }
                     else {
                         ThrowUnRecognizedStartElt (uri, localName);

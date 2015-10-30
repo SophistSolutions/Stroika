@@ -85,7 +85,7 @@ namespace   Stroika {
                 class   SAXObjectReader::ObjectBase {
                 public:
                     virtual ~ObjectBase ();
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) = 0;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) = 0;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) = 0;
                     virtual void    HandleEndTag (SAXObjectReader& r) = 0;
                 };
@@ -100,13 +100,13 @@ namespace   Stroika {
                 template    <typename   T>
                 class   BuiltinReader : public SAXObjectReader::ObjectBase {
                 public:
-                    BuiltinReader (T* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    BuiltinReader (T* intoVal);
 
                 private:
                     T* value_;
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -137,7 +137,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
                 class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
                 public:
-                    OptionalTypesReader (Memory::Optional<T>* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    OptionalTypesReader (Memory::Optional<T>* intoVal);
 
                 private:
                     Memory::Optional<T>*    value_;
@@ -145,7 +145,7 @@ namespace   Stroika {
                     ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -161,7 +161,7 @@ namespace   Stroika {
                 private:
                     int fDepth_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -173,7 +173,7 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
                 protected:
-                    ComplexObjectReader (T* vp, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    ComplexObjectReader (T* vp);
 
                 public:
                     T*  fValuePtr;
@@ -202,14 +202,14 @@ namespace   Stroika {
                     bool                            readingAT_;
                     typename TRAITS::ElementType    curTReading_;
 
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v);
 
-                    virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override;
+                    virtual void HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
                     virtual void HandleEndTag (SAXObjectReader& r) override;
                 };
 
 
-                void    ThrowUnRecognizedStartElt (const String& uri, const String& localName);
+                void    ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
             }

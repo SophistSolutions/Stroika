@@ -590,11 +590,13 @@ namespace   {
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
-            Mapping<String, VariantValue>    attrs;
+            fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)));
             for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
-                attrs.Add (xercesString2String_ (attributes.getLocalName (i)), xercesString2String_ (attributes.getValue (i)));
+                StructuredStreamEvents::Name attrName { xercesString2String_ (attributes.getLocalName (i)), true };
+                fCallback.StartElement (attrName);
+                fCallback.TextInsideElement (xercesString2String_ (attributes.getValue (i)));
+                fCallback.EndElement (attrName);
             }
-            fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)), attrs);
         }
         virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
         {

@@ -27,7 +27,7 @@ void    IConsumer::EndDocument ()
 {
 }
 
-void    IConsumer::StartElement (const Name& name, const Mapping<String, VariantValue>& attrs)
+void    IConsumer::StartElement (const Name& name)
 {
 }
 

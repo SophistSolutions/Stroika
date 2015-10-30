@@ -45,6 +45,12 @@ namespace   Stroika {
                  *      @todo SEE Stax API
                  *
                  *  \note   It MAYBE pointless and hopeless to unify SAX/JSON here... they are very differnt - but try and review these others
+                 *
+                 *  \note   What we call here an "Element" really corresponds more closely to a "Node" in XML. We essentuially include attributes
+                 *          (and may soon include processing instructions or other ignored thigns) as specail type elements).
+                 *
+                 *          @todo then when you configure the SAX parser, tell it (consmer interface returning a set of types of things it wants)
+                 *          to optimize so just the right types of elements sent.
                  */
                 class   IConsumer {
                 public:
@@ -62,8 +68,13 @@ namespace   Stroika {
                 public:
                     /**
                      *  \note   The default implementation ignores this.
+                     *
+                     *  \note   Some XML-based SAX-event-sink classes have a StartElement() taking a map of attributes. Instead,
+                     *          we represent those as sub-elements, with names having the 'IsAttribute' field true.
+                     *
+                     *          The reason for this departure is to help harmonize SAX-like parsing of JSON and XML.
                      */
-                    virtual void    StartElement (const Name& name, const Mapping<String, VariantValue>& attrs);
+                    virtual void    StartElement (const Name& name);
 
                 public:
                     /**
@@ -77,7 +88,6 @@ namespace   Stroika {
                      *
                      *  \note   Callers will report zero to many chunks of text
                      *          data. They do not necessarily gather it up into one big block.
-                     *
                      */
                     virtual void    TextInsideElement (const String& text);
                 };
