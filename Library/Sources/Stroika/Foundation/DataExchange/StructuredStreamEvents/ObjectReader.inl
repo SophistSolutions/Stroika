@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_XML_SAXObjectReader_inl_
-#define _Stroika_Foundation_DataExchange_XML_SAXObjectReader_inl_ 1
+#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_
+#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_ 1
 
 
 /*
@@ -15,40 +15,40 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
-            namespace   XML {
+            namespace   StructuredStreamEvents {
 
 
                 /*
                  ********************************************************************************
-                 ********************************** SAXObjectReader *****************************
+                 ************************************* ObjectReader *****************************
                  ********************************************************************************
                  */
-                inline  SAXObjectReader::SAXObjectReader ()
+                inline  ObjectReader::ObjectReader ()
 #if     qDefaultTracingOn
                     : fTraceThisReader (false)
 #endif
                 {
                 }
-                inline  void    SAXObjectReader::Push (const shared_ptr<ObjectBase>& elt)
+                inline  void    ObjectReader::Push (const shared_ptr<ObjectBase>& elt)
                 {
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
-                        DbgTrace ("%sSAXObjectReader::Push", TraceLeader_ ().c_str ());
+                        DbgTrace ("%sObjectReader::Push", TraceLeader_ ().c_str ());
                     }
 #endif
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
                     fStack_.push_back (elt);
                 }
-                inline  void    SAXObjectReader::Pop ()
+                inline  void    ObjectReader::Pop ()
                 {
                     fStack_.pop_back ();
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
-                        DbgTrace ("%sSAXObjectReader::Popped", TraceLeader_ ().c_str ());
+                        DbgTrace ("%sObjectReader::Popped", TraceLeader_ ().c_str ());
                     }
 #endif
                 }
-                inline  shared_ptr<SAXObjectReader::ObjectBase>  SAXObjectReader::GetTop () const
+                inline  shared_ptr<ObjectReader::ObjectBase>  ObjectReader::GetTop () const
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
@@ -61,87 +61,87 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <>
-                class   BuiltinReader<String> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<String> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (String* intoVal);
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<int> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<int> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (int* intoVal);
                 private:
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<unsigned int> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<unsigned int> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (unsigned int* intoVal);
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<float> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<float> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (float* intoVal);
                 private:
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<double> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<double> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (double* intoVal);
                 private:
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<bool> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (bool* intoVal);
                 private:
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
-                class   BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader<Time::DateTime> : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (Time::DateTime* intoVal);
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
 
 
@@ -158,17 +158,17 @@ namespace   Stroika {
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
                 {
                     actualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (SAXObjectReader& r, const String& text)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (ObjectReader& r, const String& text)
                 {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (SAXObjectReader& r)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (ObjectReader& r)
                 {
                     shared_ptr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
@@ -191,19 +191,19 @@ namespace   Stroika {
                     RequireNotNull (vp);
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleTextInside (SAXObjectReader& r, const String& text)
+                void    ComplexObjectReader<T>::HandleTextInside (ObjectReader& r, const String& text)
                 {
                     // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
                     // assure input is valid
                     Assert (text.IsWhitespace ());
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleEndTag (SAXObjectReader& r)
+                void    ComplexObjectReader<T>::HandleEndTag (ObjectReader& r)
                 {
                     r.Pop ();
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::_PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push)
+                void    ComplexObjectReader<T>::_PushNewObjPtr (ObjectReader& r, ObjectBase* newlyAllocatedObject2Push)
                 {
                     RequireNotNull (newlyAllocatedObject2Push);
                     r.Push (shared_ptr<ObjectBase> (newlyAllocatedObject2Push));
@@ -222,7 +222,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+                void ListOfObjectReader<TRAITS>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
                 {
                     if (name.fLocalName == TRAITS::ElementName) {
                         if (readingAT_) {
@@ -239,7 +239,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleEndTag (SAXObjectReader& r)
+                void ListOfObjectReader<TRAITS>::HandleEndTag (ObjectReader& r)
                 {
                     if (readingAT_) {
                         Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
@@ -254,4 +254,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchange_XML_SAXObjectReader_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_*/

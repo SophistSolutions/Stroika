@@ -41,6 +41,7 @@ History
 			as well as HandleChildStart () in subclasses of SAXObjectReader
 			<ul>
 					<li>COMPATABILITIY WARNING: HandleChildStart and StartElement and EndElement (uri/name combined into new Name type) amd new StructuredStreamEvents::IConsumer instead of SAXCallbackInterface</li>
+					<li>COMPATABILITIY WARNING: SAXObjecReader renanmed -> StructuredStreamEvent/ObjectReader</li>
 			</ul>
 			</li>
 		<li>InputStream<Character>::ReadLine () performance tweak</li>

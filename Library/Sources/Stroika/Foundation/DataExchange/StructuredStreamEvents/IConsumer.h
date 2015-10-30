@@ -9,8 +9,6 @@
 #include    "../../Containers/Mapping.h"
 #include    "../../Characters/String.h"
 
-#include    "../VariantValue.h"
-
 #include    "Name.h"
 
 

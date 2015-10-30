@@ -9,7 +9,7 @@
 
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#include    "Stroika/Foundation/DataExchange/XML/SAXObjectReader.h"
+#include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
@@ -23,6 +23,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Stroika::Foundation::Debug::TraceContextBumper;
@@ -152,12 +153,12 @@ namespace   {
         String lastName;
         Memory::Optional<String> middleName;
     };
-    struct PersonReader_ : public ComplexObjectReader<Person_> {
+    struct PersonReader_ : public StructuredStreamEvents::ComplexObjectReader<Person_> {
         PersonReader_ (Person_* v)
             : ComplexObjectReader<Person_> (v)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             RequireNotNull (fValuePtr);
             if (name.fLocalName == L"FirstName") {
@@ -183,7 +184,7 @@ namespace   {
             ComplexObjectReader<Appointment_> (v)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             if (name.fLocalName == L"When") {
                 _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
@@ -231,12 +232,12 @@ namespace   {
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
 
-        SAXObjectReader reader;
+        ObjectReader reader;
 #if     qDefaultTracingOn
         reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
 #endif
         CalendarType_       calendar;
-        reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+        reader.Run (shared_ptr<ObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
         VerifyTestResult (calendar.size () == 2);
         VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
         VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");

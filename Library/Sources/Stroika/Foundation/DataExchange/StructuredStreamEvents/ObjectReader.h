@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_
-#define _Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_   1
+#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_
+#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_   1
 
 #include    "../../StroikaPreComp.h"
 
@@ -11,13 +11,16 @@
 #include    "../../Memory/Optional.h"
 #include    "../../Time/DateTime.h"
 
-#include    "SAXReader.h"
+//tmphac
+#include    "../XML/SAXReader.h"
 
 
 
 /**
  *  \file
  *
+ *              \\\ MIDDLE OF MASSIVE REFACTORING - SO DONT TOUCH FOR A WHILE TIL STABLE....
+ *              \\\ AND MANY COMMENTS MAYBE WRONG/OUTDATED
  *  TODO:
  *      @todo   This was hard to use. See if I can find example of where I used it, and either cleanup,
  *              or maybe get rid of this - OBSOLETE - and see if easier using new ObjectVairantMapper stuff.
@@ -34,11 +37,11 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchange {
-            namespace   XML {
+            namespace   StructuredStreamEvents {
 
 
                 /**
-                 *      The basic idea of the SAXObjectReader is to make it easier to write C++ code
+                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
                  *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
                  *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
                  *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
@@ -48,12 +51,12 @@ namespace   Stroika {
                  *      We need good docs - on how to use this - but for the time being, just look at the
                  *  example usage in the regression test.
                  */
-                class SAXObjectReader {
+                class   ObjectReader {
                 public:
                     class   ObjectBase;
 
                 public:
-                    SAXObjectReader ();
+                    ObjectReader ();
 
 #if     qDefaultTracingOn
                 public:
@@ -82,12 +85,12 @@ namespace   Stroika {
                 };
 
 
-                class   SAXObjectReader::ObjectBase {
+                class   ObjectReader::ObjectBase {
                 public:
                     virtual ~ObjectBase ();
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) = 0;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) = 0;
-                    virtual void    HandleEndTag (SAXObjectReader& r) = 0;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) = 0;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) = 0;
+                    virtual void    HandleEndTag (ObjectReader& r) = 0;
                 };
 
 
@@ -98,7 +101,7 @@ namespace   Stroika {
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   BuiltinReader : public SAXObjectReader::ObjectBase {
+                class   BuiltinReader : public ObjectReader::ObjectBase {
                 public:
                     BuiltinReader (T* intoVal);
 
@@ -106,9 +109,9 @@ namespace   Stroika {
                     T* value_;
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
                 template    <>
                 class   BuiltinReader<String>;
@@ -135,7 +138,7 @@ namespace   Stroika {
                  *  element which might never have triggered the invocation of this class.
                  */
                 template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
-                class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
+                class   OptionalTypesReader : public ObjectReader::ObjectBase {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
 
@@ -145,9 +148,9 @@ namespace   Stroika {
                     ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
 
 
@@ -155,15 +158,15 @@ namespace   Stroika {
                  *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                  *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
-                class   IgnoreNodeReader : public SAXObjectReader::ObjectBase {
+                class   IgnoreNodeReader : public ObjectReader::ObjectBase {
                 public:
                     IgnoreNodeReader ();
                 private:
                     int fDepth_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 };
 
 
@@ -171,7 +174,7 @@ namespace   Stroika {
                  *  Helper class for reading complex (structured) objects.
                  */
                 template    <typename   T>
-                class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
+                class   ComplexObjectReader : public ObjectReader::ObjectBase {
                 protected:
                     ComplexObjectReader (T* vp);
 
@@ -179,10 +182,10 @@ namespace   Stroika {
                     T*  fValuePtr;
 
                 public:
-                    virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (SAXObjectReader& r) override;
+                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader& r) override;
                 protected:
-                    nonvirtual  void    _PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push);
+                    nonvirtual  void    _PushNewObjPtr (ObjectReader& r, ObjectBase* newlyAllocatedObject2Push);
                 };
 
 
@@ -204,8 +207,8 @@ namespace   Stroika {
 
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v);
 
-                    virtual void HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void HandleEndTag (SAXObjectReader& r) override;
+                    virtual void HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void HandleEndTag (ObjectReader& r) override;
                 };
 
 
@@ -224,6 +227,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "SAXObjectReader.inl"
+#include    "ObjectReader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_h_*/

@@ -9,13 +9,13 @@
 #include    "../../Characters/String2Int.h"
 #include    "../BadFormatException.h"
 
-#include    "SAXObjectReader.h"
+#include    "ObjectReader.h"
 
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
-using   namespace   Stroika::Foundation::DataExchange::XML;
+using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 
 
 using   Memory::Byte;
@@ -26,11 +26,11 @@ using   Memory::Byte;
 
 /*
  ********************************************************************************
- ****************************** XML::SAXObjectReader ****************************
+ ***************** StructuredStreamEvents::ObjectReader *************************
  ********************************************************************************
  */
 #if     qDefaultTracingOn
-wstring SAXObjectReader::TraceLeader_ () const
+wstring ObjectReader::TraceLeader_ () const
 {
     wstring l;
     l.reserve (fStack_.size ());
@@ -40,14 +40,14 @@ wstring SAXObjectReader::TraceLeader_ () const
     return l;
 }
 #endif
-class   SAXObjectReader::MyCallback_ : public StructuredStreamEvents::IConsumer {
+class   ObjectReader::MyCallback_ : public StructuredStreamEvents::IConsumer {
 public:
-    MyCallback_ (SAXObjectReader& r)
+    MyCallback_ (ObjectReader& r)
         : fSAXObjectReader_ (r)
     {
     }
 private:
-    SAXObjectReader&    fSAXObjectReader_;
+    ObjectReader&    fSAXObjectReader_;
 public:
     virtual void    StartDocument () override
     {
@@ -88,7 +88,7 @@ public:
 };
 
 namespace   {
-    struct DocumentReader_ : public SAXObjectReader::ObjectBase {
+    struct DocumentReader_ : public ObjectReader::ObjectBase {
         shared_ptr<ObjectBase>          fDocEltBuilder;
         bool                            fAnyDocElt;
         String                          fDocEltURI;
@@ -107,7 +107,7 @@ namespace   {
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             if (not fAnyDocElt) {
                 if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
@@ -116,19 +116,19 @@ namespace   {
             }
             r.Push (fDocEltBuilder);
         }
-        virtual void    HandleTextInside (SAXObjectReader& r, const String& text)  override
+        virtual void    HandleTextInside (ObjectReader& r, const String& text)  override
         {
             // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
             // assure input is valid
             Assert (text.IsWhitespace ());
         }
-        virtual void    HandleEndTag (SAXObjectReader& r) override
+        virtual void    HandleEndTag (ObjectReader& r) override
         {
             r.Pop ();
         }
     };
 }
-void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::InputStream<Byte>& in)
+void    ObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);
@@ -136,14 +136,14 @@ void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const
     Push (shared_ptr<ObjectBase> (new DocumentReader_ (docEltBuilder)));
 
     MyCallback_ cb (*this);
-    SAXParse (in, cb);
+    XML::SAXParse (in, cb);
 
     Pop (); // the docuemnt reader we just added
 
     Ensure (fStack_.size () == 0);
 }
 
-void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
+void    ObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     RequireNotNull (docEltBuilder);
     Require (fStack_.size () == 0);
@@ -151,7 +151,7 @@ void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const
     Push (shared_ptr<ObjectBase> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
 
     MyCallback_ cb (*this);
-    SAXParse (in, cb);
+    XML::SAXParse (in, cb);
 
     Pop (); // the docuemnt reader we just added
 
@@ -166,10 +166,10 @@ void    SAXObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const
 
 /*
  ********************************************************************************
- ********************* XML::SAXObjectReader::ObjectBase *************************
+ **************************** StructuredStreamEvent::ObjectBase *****************
  ********************************************************************************
  */
-SAXObjectReader::ObjectBase::~ObjectBase ()
+ObjectReader::ObjectBase::~ObjectBase ()
 {
 }
 
@@ -180,7 +180,7 @@ SAXObjectReader::ObjectBase::~ObjectBase ()
 
 /*
  ********************************************************************************
- ************************* XML::BuiltinReader<String> ***************************
+ ******************** StructuredStreamEvents::BuiltinReader<String> *************
  ********************************************************************************
  */
 BuiltinReader<String>::BuiltinReader (String* intoVal)
@@ -190,17 +190,17 @@ BuiltinReader<String>::BuiltinReader (String* intoVal)
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<String>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<String>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<String>::HandleTextInside (ObjectReader& r, const String& text)
 {
     (*value_) += text;
 }
 
-void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<String>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -214,7 +214,7 @@ void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- **************************** XML::BuiltinReader<int> ***************************
+ *************** StructuredStreamEvents::BuiltinReader<int> *********************
  ********************************************************************************
  */
 BuiltinReader<int>::BuiltinReader (int* intoVal)
@@ -224,18 +224,18 @@ BuiltinReader<int>::BuiltinReader (int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<int>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<int>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<int>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<int>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -247,7 +247,7 @@ void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ******************* XML::BuiltinReader<unsigned int> ***************************
+ *************** StructuredStreamEvents::BuiltinReader<unsigned int> ************
  ********************************************************************************
  */
 BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
@@ -257,18 +257,18 @@ BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<unsigned int>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<unsigned int>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<unsigned int>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<unsigned int>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -282,7 +282,7 @@ void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- *************************** XML::BuiltinReader<bool> ***************************
+ ******************* StructuredStreamEvents::BuiltinReader<bool> ****************
  ********************************************************************************
  */
 BuiltinReader<bool>::BuiltinReader (bool* intoVal)
@@ -292,19 +292,19 @@ BuiltinReader<bool>::BuiltinReader (bool* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<bool>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<bool>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<bool>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     String  tmp =   tmpVal_.Trim ().ToLowerCase ();
     (*value_) = (tmp == L"true");
 }
 
-void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<bool>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -320,7 +320,7 @@ void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ************************** XML::BuiltinReader<float> ***************************
+ *********** StructuredStreamEvents::BuiltinReader<float> ***********************
  ********************************************************************************
  */
 BuiltinReader<float>::BuiltinReader (float* intoVal)
@@ -330,18 +330,18 @@ BuiltinReader<float>::BuiltinReader (float* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<float>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<float>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<float>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
 }
 
-void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<float>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -352,7 +352,7 @@ void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ************************** XML::BuiltinReader<double> **************************
+ **************** StructuredStreamEvents::BuiltinReader<double> *****************
  ********************************************************************************
  */
 BuiltinReader<double>::BuiltinReader (double* intoVal)
@@ -362,18 +362,18 @@ BuiltinReader<double>::BuiltinReader (double* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<double>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<double>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<double>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<double>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -385,7 +385,7 @@ void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ********************** XML::BuiltinReader<Time::DateTime> **********************
+ ************* StructuredStreamEvents::BuiltinReader<Time::DateTime> ************
  ********************************************************************************
  */
 BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
@@ -396,19 +396,19 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<Time::DateTime>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<Time::DateTime>::HandleTextInside (SAXObjectReader& r, const String& text)
+void    BuiltinReader<Time::DateTime>::HandleTextInside (ObjectReader& r, const String& text)
 {
     tmpVal_ += text;
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::ParseFormat::eXML));
 }
 
-void    BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader& r)
+void    BuiltinReader<Time::DateTime>::HandleEndTag (ObjectReader& r)
 {
     r.Pop ();
 }
@@ -420,7 +420,7 @@ void    BuiltinReader<Time::DateTime>::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ******************************* XML::IgnoreNodeReader **************************
+ ****************** StructuredStreamEvents::IgnoreNodeReader ********************
  ********************************************************************************
  */
 IgnoreNodeReader::IgnoreNodeReader ()
@@ -428,18 +428,18 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const StructuredStreamEvents::Name& name)
+void    IgnoreNodeReader::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
 {
     Require (fDepth_ >= 0);
     fDepth_++;
 }
 
-void    IgnoreNodeReader::HandleTextInside (SAXObjectReader& r, const String& text)
+void    IgnoreNodeReader::HandleTextInside (ObjectReader& r, const String& text)
 {
     // Ignore text
 }
 
-void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r)
+void    IgnoreNodeReader::HandleEndTag (ObjectReader& r)
 {
     Require (fDepth_ >= 0);
     --fDepth_;
@@ -454,10 +454,10 @@ void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r)
 
 /*
  ********************************************************************************
- ************************** XML::ThrowUnRecognizedStartElt **********************
+ ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
  ********************************************************************************
  */
-void    XML::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+void    StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
     Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }

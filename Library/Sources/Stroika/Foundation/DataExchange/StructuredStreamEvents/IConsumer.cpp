@@ -18,7 +18,6 @@ using   namespace  Stroika::Foundation::DataExchange::StructuredStreamEvents;
  ***************************** DataExchange::IConsumer **************************
  ********************************************************************************
  */
-
 void    IConsumer::StartDocument ()
 {
 }
