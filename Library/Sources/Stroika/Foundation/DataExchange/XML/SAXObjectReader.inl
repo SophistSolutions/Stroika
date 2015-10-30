@@ -235,7 +235,7 @@ namespace   Stroika {
                         this->_PushNewObjPtr (r, new typename TRAITS::ReaderType (&curTReading_));
                     }
                     else {
-                        ThrowUnRecognizedStartElt (uri, localName);
+                        ThrowUnRecognizedStartElt (name);
                     }
                 }
                 template    <typename TRAITS>

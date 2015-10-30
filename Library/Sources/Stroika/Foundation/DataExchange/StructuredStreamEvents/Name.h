@@ -36,11 +36,21 @@ namespace   Stroika {
                 struct Name {
                     Optional<String>    fNamespaceURI;
                     String              fLocalName;
-                    bool                fIsAttribute { false };
+
+                    /**
+                     *  \note   This terminology differences from XML practice. Here ElementType is really like NodeType.
+                     *          But for now we only have 2 types of nodes (because that so far seems all that will be needed for
+                     *          what we do).
+                     */
+                    enum    NameType {
+                        eElement,
+                        eAttribute,
+                    };
+                    NameType        fType { eElement };
 
                     Name () = delete;
-                    Name (const String& localName, bool isAttribute = false);
-                    Name (const String& namespaceURI, const String& localName, bool isAttribute = false);
+                    Name (const String& localName, NameType type = eElement);
+                    Name (const String& namespaceURI, const String& localName, NameType type = eElement);
                 };
 
 

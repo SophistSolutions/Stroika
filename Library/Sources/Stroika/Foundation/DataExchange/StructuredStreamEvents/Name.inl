@@ -23,14 +23,14 @@ namespace   Stroika {
                  *********************** StructuredStreamEvents::Name ***************************
                  ********************************************************************************
                  */
-                inline  Name::Name (const String& localName, bool isAttribute)
+                inline  Name::Name (const String& localName, NameType type)
                     : fLocalName { localName }
-                , fIsAttribute { isAttribute } {
+                , fType { type } {
                 }
-                inline  Name::Name (const String& namespaceURI, const String& localName, bool isAttribute)
+                inline  Name::Name (const String& namespaceURI, const String& localName, NameType type)
                     : fNamespaceURI { namespaceURI }
                 , fLocalName { localName }
-                , fIsAttribute { isAttribute } {
+                , fType { type } {
                 }
 
 

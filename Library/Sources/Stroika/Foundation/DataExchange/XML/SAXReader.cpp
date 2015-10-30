@@ -592,7 +592,7 @@ namespace   {
             Require (localName != nullptr);
             fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)));
             for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
-                StructuredStreamEvents::Name attrName { xercesString2String_ (attributes.getLocalName (i)), true };
+                StructuredStreamEvents::Name attrName { xercesString2String_ (attributes.getLocalName (i)), StructuredStreamEvents::Name::eAttribute };
                 fCallback.StartElement (attrName);
                 fCallback.TextInsideElement (xercesString2String_ (attributes.getValue (i)));
                 fCallback.EndElement (attrName);
