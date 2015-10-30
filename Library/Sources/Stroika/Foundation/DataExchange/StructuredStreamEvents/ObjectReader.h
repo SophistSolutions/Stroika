@@ -104,6 +104,8 @@ namespace   Stroika {
 
                 public:
                     Context ();
+                    Context (const Context&) = delete;
+                    Context& operator= (const Context&) = delete;
 
                 public:
                     nonvirtual  void    Push (const shared_ptr<IContextReader>& elt);
@@ -122,7 +124,10 @@ namespace   Stroika {
 
                 class   ObjectReader::IConsumerToContextTranslator : public StructuredStreamEvents::IConsumer {
                 public:
+                    IConsumerToContextTranslator () = delete;
                     IConsumerToContextTranslator (Context& r);
+                    IConsumerToContextTranslator (const Context&) = delete;
+                    IConsumerToContextTranslator& operator= (const IConsumerToContextTranslator&) = delete;
                 private:
                     Context&    fContext_;
                 public:

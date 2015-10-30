@@ -136,7 +136,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
     Context ctx;
     Require (ctx.fStack_.size () == 0);
 
-    ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder)));
+    ctx.Push (make_shared<DocumentReader_> (docEltBuilder));
 
     IConsumerToContextTranslator cb (ctx);
     XML::SAXParse (in, cb);
@@ -152,7 +152,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
     Context ctx;
     Require (ctx.fStack_.size () == 0);
 
-    ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
+    ctx.Push (make_shared<DocumentReader_> (docEltBuilder, docEltUri, docEltLocalName));
 
     IConsumerToContextTranslator cb (ctx);
     XML::SAXParse (in, cb);
