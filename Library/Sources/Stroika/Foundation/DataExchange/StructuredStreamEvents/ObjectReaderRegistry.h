@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_ObjectReaderRegistry_h_
-#define _Stroika_Foundation_DataExchange_ObjectReaderRegistry_h_    1
+#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReaderRegistry_h_
+#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReaderRegistry_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -415,7 +415,7 @@ namespace   Stroika {
                  *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
                  *      the approach/question (could  we use pointer to member?).
                  *
-                 *  @see Stroika_Foundation_DataExchange_ObjectReaderRegistry_FieldInfoKey
+                 *  @see Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReaderRegistry_FieldInfoKey
                  */
 #define     ObjectReaderRegistry_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
     DataExchange::ObjectReaderRegistry::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
@@ -436,7 +436,7 @@ namespace   Stroika {
                  *
                  *  @see ObjectReaderRegistry_StructureFieldInfo_Construction_Helper
                  */
-#define     Stroika_Foundation_DataExchange_ObjectReaderRegistry_FieldInfoKey(CLASS,MEMBER)\
+#define     Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReaderRegistry_FieldInfoKey(CLASS,MEMBER)\
     offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))
 
 
@@ -500,4 +500,4 @@ namespace   Stroika {
  */
 #include    "ObjectReaderRegistry.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_ObjectReaderRegistry_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReaderRegistry_h_*/

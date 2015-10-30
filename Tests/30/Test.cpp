@@ -119,14 +119,14 @@ namespace   {
             {
                 VerifyTestResult (fEltDepthCount == 0);
             }
-            virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
+            virtual void    StartElement (const StructuredStreamEvents::Name& name, const Mapping<String, VariantValue>& attrs) override
             {
                 fEltDepthCount++;
-                fEltStack.push_back (uri + L"/" + localName);
+                fEltStack.push_back (name.fNamespaceURI.Value () + L"/" + name.fLocalName);
             }
-            virtual void    EndElement (const String& uri, const String& localName) override
+            virtual void    EndElement (const StructuredStreamEvents::Name& name) override
             {
-                VerifyTestResult (fEltStack.back () == uri + L"/" + localName);
+                VerifyTestResult (fEltStack.back () == name.fNamespaceURI.Value () + L"/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }

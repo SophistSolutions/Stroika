@@ -27,11 +27,11 @@ void    IConsumer::EndDocument ()
 {
 }
 
-void    IConsumer::StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs)
+void    IConsumer::StartElement (const Name& name, const Mapping<String, VariantValue>& attrs)
 {
 }
 
-void    IConsumer::EndElement (const String& uri, const String& localName)
+void    IConsumer::EndElement (const Name& name)
 {
 }
 

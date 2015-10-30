@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_IConsumer_h_
-#define _Stroika_Foundation_DataExchange_IConsumer_h_ 1
+#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_
+#define _Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
@@ -10,6 +10,8 @@
 #include    "../../Characters/String.h"
 
 #include    "../VariantValue.h"
+
+#include    "Name.h"
 
 
 
@@ -61,13 +63,13 @@ namespace   Stroika {
                     /**
                      *  \note   The default implementation ignores this.
                      */
-                    virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs);
+                    virtual void    StartElement (const Name& name, const Mapping<String, VariantValue>& attrs);
 
                 public:
                     /**
                      *  \note   The default implementation ignores this.
                      */
-                    virtual void    EndElement (const String& uri, const String& localName);
+                    virtual void    EndElement (const Name& name);
 
                 public:
                     /**
@@ -93,4 +95,4 @@ namespace   Stroika {
  */
 #include    "IConsumer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_IConsumer_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_h_*/

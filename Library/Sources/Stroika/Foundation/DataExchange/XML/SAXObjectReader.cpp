@@ -55,22 +55,22 @@ public:
     virtual void    EndDocument () override
     {
     }
-    virtual void    StartElement (const String& uri, const String& localName, const Mapping<String, VariantValue>& attrs) override
+    virtual void    StartElement (const StructuredStreamEvents::Name& name, const Mapping<String, VariantValue>& attrs) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.c_str ());
+            DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, attrs);
+        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, name.fNamespaceURI.Value (), name.fLocalName, attrs);
     }
-    virtual void    EndElement (const String& uri, const String& localName) override
+    virtual void    EndElement (const StructuredStreamEvents::Name& name) override
     {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), localName.c_str ());
+            DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
         }
 #endif
         fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);

@@ -594,14 +594,14 @@ namespace   {
             for (XMLSize_t i = 0; i < attributes.getLength (); i++) {
                 attrs.Add (xercesString2String_ (attributes.getLocalName (i)), xercesString2String_ (attributes.getValue (i)));
             }
-            fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), attrs);
+            fCallback.StartElement (StructuredStreamEvents::Name (xercesString2String_ (uri), xercesString2String_ (localName)), attrs);
         }
         virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
-            fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localName));
+            fCallback.EndElement (StructuredStreamEvents::Name { xercesString2String_ (uri), xercesString2String_ (localName) });
         }
         virtual     void    characters (const XMLCh* const chars, const XMLSize_t length) override
         {
