@@ -10,6 +10,7 @@
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
+#include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
@@ -247,6 +248,75 @@ namespace   {
         VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
         VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
     }
+    void    Test_2a_ObjectReader_viaRegistry_ ()
+    {
+        TraceContextBumper ctx ("Test_2_SAXObjectReader_");
+        const wstring   kNSTest =   L"Test-NAMESPACE";
+        wstring newDocXML   =
+            L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
+            L"  <Appointment>\n"
+            L"	  <When>2005-06-01T13:00:00-05:00</When>"
+            L"	  <WithWhom>\n"
+            L"		  <FirstName>Jim</FirstName>"
+            L"		  <LastName>Smith</LastName>"
+            L"		  <MiddleName>Up</MiddleName>"
+            L"	  </WithWhom>\n"
+            L"  </Appointment>\n"
+            L"  <Appointment>\n"
+            L"	  <When>2005-08-01T13:00:00-05:00</When>"
+            L"	  <WithWhom>\n"
+            L"		  <FirstName>Fred</FirstName>"
+            L"		  <LastName>Down</LastName>"
+            L"	  </WithWhom>\n"
+            L"  </Appointment>\n"
+            L"</Calendar>\n"
+            ;
+        stringstream tmpStrm;
+        WriteTextStream_ (newDocXML, tmpStrm);
+
+
+        ObjectReaderRegistry registry;
+        registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<BuiltinReader<Time::DateTime>> (d); });
+        registry.Add<String> ([] (String * d) { return make_shared<BuiltinReader<String>> (d); });
+        registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
+
+        {
+            Mapping<String, pair<type_index, size_t>>   metaInfo;
+            metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
+            metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
+            metaInfo.Add (L"MiddleName", pair<type_index, size_t> {typeid(decltype (Person_::middleName)), offsetof(Person_, middleName)});
+            registry.Add<Person_> (mkComplexObjectReader2Factory<Person_> (&registry, metaInfo));
+        }
+        {
+            Mapping<String, pair<type_index, size_t>>   metaInfo;
+            metaInfo.Add (L"When", pair<type_index, size_t> {typeid(decltype (Appointment_::when)), offsetof(Appointment_, when)});
+            metaInfo.Add (L"WithWhom", pair<type_index, size_t> {typeid(decltype (Appointment_::withWhom)), offsetof(Appointment_, withWhom)});
+            registry.Add<Appointment_> (mkComplexObjectReader2Factory<Appointment_> (&registry, metaInfo));
+        }
+
+
+        CalendarType_       calendar;
+        {
+            ObjectReader reader;
+            reader.Run (make_shared<CalendarReader_> (&calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+        }
+#if 0
+        {
+            calendar = CalendarType_ ();    // clear to test
+            shared_ptr<ComplexObjectReader2<CalendarType_>> calendarReadernew = make_shared<ComplexObjectReader2<CalendarType_>>     (&registry, &calendar);
+
+            ObjectReader reader;
+            reader.Run (calendarReadernew, InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+        }
+#endif
+        VerifyTestResult (calendar.size () == 2);
+        VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+        VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+        VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+        VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+        VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+        VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+    }
 }
 
 
@@ -258,6 +328,7 @@ namespace   {
         try {
             Test_1_SAXParser_ ();
             Test_2_SAXObjectReader_ ();
+            Test_2a_ObjectReader_viaRegistry_ ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces

@@ -58,82 +58,70 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry {
                 public:
-                    using ReaderFromVoidStar = function<shared_ptr<ObjectReader::IContextReader> (void*)>;
-
-
-                public:
-                    // @todo use ArgByValueType
-                    template    <typename T>
-                    void    Add (const function<shared_ptr<ObjectReader::IContextReader> (T*)>& readerFactory)
-                    {
-                        Add (typeof (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
-                    }
+                    using ReaderFromVoidStarFactory = function<shared_ptr<ObjectReader::IContextReader> (void*)>;
 
                 public:
-                    void    Add (type_index forType, const ReaderFromVoidStar& readerFactory)
+                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
                     {
                         fFactories_.Add (forType, readerFactory);
                     }
+                    template    <typename T>
+                    void    Add (const function<shared_ptr<ObjectReader::IContextReader> (T*)>& readerFactory)
+                    {
+                        Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
+                    }
 
                 public:
+                    shared_ptr<ObjectReader::IContextReader>    MakeContextReader (type_index ti, void* data)
+                    {
+                        ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
+                        return factory (data);
+                    }
                     template    <typename T>
                     shared_ptr<ObjectReader::IContextReader>    MakeContextReader (T* data)
                     {
-                        ReaderFromVoidStar  factory = *fFactories_.Lookup (typeof (T)); // must be found or caller/assert error
-                        return factory (data);
-                    }
-                    shared_ptr<ObjectReader::IContextReader>    MakeContextReader (type_index ti, void* data)
-                    {
-                        ReaderFromVoidStar  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
-                        return factory (data);
+                        return MakeContextReader (typeid (T), data);
                     }
 
                 private:
-                    Mapping<type_index, ReaderFromVoidStar> fFactories_;
-
+                    Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
                 };
 
 
 
                 template    <typename   T>
                 class   ComplexObjectReader2 : public ComplexObjectReader<T> {
-                    ComplexObjectReader2 (ObjectReaderRegistry& objReg, T* vp)
+                public:
+                    ComplexObjectReader2 (ObjectReaderRegistry* objReg, T* vp)
                         : ComplexObjectReader<T>(vp)
-                        , fObjRegistry  (objReg)
+                        , fObjRegistry  (*objReg)
                     {
                     }
-
                     virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
                     {
                         Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name.fLocalName);
                         if (ti) {
-                            Byte*   operatingOnObj = reinterpret_cast<Byte*> (fValuePtr);
+                            Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
                             Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                            _PushNewObjPtr (r, fObjRegistry.MakeContextReader (ti->first, operatingOnObjField));
+                            this->_PushNewObjPtr (r, fObjRegistry.MakeContextReader (ti->first, operatingOnObjField));
                         }
-#if 0
-                        if (name.fLocalName == L"When") {
-                            _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
+                        else if (fThrowOnUnrecongizedelts) {
+                            ThrowUnRecognizedStartElt (name);
                         }
-                        else if (name.fLocalName == L"WithWhom") {
-                            _PushNewObjPtr (r, make_shared<PersonReader_> (&fValuePtr->withWhom));
-                        }
-#endif
                         else {
-                            if (fThrowOnUnrecongizedelts) {
-                                ThrowUnRecognizedStartElt (name);
-                            }
-                            else {
-                                _PushNewObjPtr (r, make_shared<IgnoreNodeReader> ());
-                            }
+                            this->_PushNewObjPtr (r, make_shared<IgnoreNodeReader> ());
                         }
                     }
 
-                    ObjectReaderRegistry&   fObjRegistry;
-
-                    Mapping<String, pair<type_index, size_t>> fFieldNameToTypeMap;      // @todo fix to be mapping on Name but need op< etc defined
-                    bool                fThrowOnUnrecongizedelts;       // else ignroe
+                    ObjectReaderRegistry&                       fObjRegistry;
+                    Mapping<String, pair<type_index, size_t>>   fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
+                    bool                                        fThrowOnUnrecongizedelts;       // else ignroe
                 };
+                template    <typename T>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (ObjectReaderRegistry* objReg, const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
+                {
+                    return [objReg, fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReader::IContextReader> { return make_shared<ComplexObjectReader2<T>> (objReg, reinterpret_cast<T*> (data)); };
+                }
 
 
             }
