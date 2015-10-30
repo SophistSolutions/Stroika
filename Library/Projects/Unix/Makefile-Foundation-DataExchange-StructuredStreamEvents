@@ -10,6 +10,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)IConsumer.o\
 	$(ObjDir)ObjectReaderRegistry.o\
+	$(ObjDir)ObjectReader.o\
 
 all:	$(Objs)
 
