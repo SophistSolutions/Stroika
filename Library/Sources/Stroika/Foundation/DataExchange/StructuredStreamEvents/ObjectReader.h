@@ -53,11 +53,37 @@ namespace   Stroika {
                  */
                 class   ObjectReader {
                 public:
-                    class   ObjectBase;
+                    class   IContextReader;
 
                 public:
-                    ObjectReader ();
+                    class   Context;
 
+                public:
+                    ObjectReader () = default;
+
+                public:
+                    // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
+                    // a HandleChildStar tand HandleEndTag() method call (exactly once).
+                    nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+
+                private:
+                    class   MyCallback_;
+                };
+
+
+                class   ObjectReader::IContextReader {
+                public:
+                    virtual ~IContextReader () = default;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) = 0;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) = 0;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) = 0;
+                };
+
+
+
+                class   ObjectReader::Context {
+                public:
 #if     qDefaultTracingOn
                 public:
                     bool    fTraceThisReader;       // very noisy - off by default even for tracemode
@@ -65,32 +91,21 @@ namespace   Stroika {
 #endif
 
                 public:
-                    nonvirtual  void    Push (const shared_ptr<ObjectBase>& elt);
+                    Context ();
+
+                public:
+                    nonvirtual  void    Push (const shared_ptr<IContextReader>& elt);
                     nonvirtual  void    Pop ();
 
                 public:
-                    nonvirtual  shared_ptr<ObjectBase>   GetTop () const;
-
-                public:
-                    // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
-                    // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                    nonvirtual  void    Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual  shared_ptr<IContextReader>   GetTop () const;
 
                 private:
-                    vector<shared_ptr<ObjectBase>> fStack_;
+                    vector<shared_ptr<IContextReader>> fStack_;
 
                 private:
-                    class   MyCallback_;
-                };
+                    friend  class   ObjectReader;
 
-
-                class   ObjectReader::ObjectBase {
-                public:
-                    virtual ~ObjectBase () = default;
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) = 0;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) = 0;
-                    virtual void    HandleEndTag (ObjectReader& r) = 0;
                 };
 
 
@@ -101,7 +116,7 @@ namespace   Stroika {
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   BuiltinReader : public ObjectReader::ObjectBase {
+                class   BuiltinReader : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (T* intoVal);
 
@@ -109,9 +124,9 @@ namespace   Stroika {
                     T* value_;
 
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<String>;
@@ -138,7 +153,7 @@ namespace   Stroika {
                  *  element which might never have triggered the invocation of this class.
                  */
                 template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
-                class   OptionalTypesReader : public ObjectReader::ObjectBase {
+                class   OptionalTypesReader : public ObjectReader::IContextReader {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
 
@@ -148,9 +163,9 @@ namespace   Stroika {
                     ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
 
 
@@ -158,15 +173,15 @@ namespace   Stroika {
                  *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                  *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
-                class   IgnoreNodeReader : public ObjectReader::ObjectBase {
+                class   IgnoreNodeReader : public ObjectReader::IContextReader {
                 public:
                     IgnoreNodeReader ();
                 private:
                     int fDepth_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
 
 
@@ -174,7 +189,7 @@ namespace   Stroika {
                  *  Helper class for reading complex (structured) objects.
                  */
                 template    <typename   T>
-                class   ComplexObjectReader : public ObjectReader::ObjectBase {
+                class   ComplexObjectReader : public ObjectReader::IContextReader {
                 protected:
                     ComplexObjectReader (T* vp);
 
@@ -182,10 +197,10 @@ namespace   Stroika {
                     T*  fValuePtr;
 
                 public:
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 protected:
-                    nonvirtual  void    _PushNewObjPtr (ObjectReader& r, const shared_ptr<ObjectBase>& newlyAllocatedObject2Push);
+                    nonvirtual  void    _PushNewObjPtr (ObjectReader::Context& r, const shared_ptr<IContextReader>& newlyAllocatedObject2Push);
                 };
 
 
@@ -207,8 +222,8 @@ namespace   Stroika {
 
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v);
 
-                    virtual void HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void HandleEndTag (ObjectReader& r) override;
+                    virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void HandleEndTag (ObjectReader::Context& r) override;
                 };
 
 

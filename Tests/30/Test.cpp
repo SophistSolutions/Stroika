@@ -158,7 +158,7 @@ namespace   {
             : ComplexObjectReader<Person_> (v)
         {
         }
-        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
         {
             RequireNotNull (fValuePtr);
             if (name.fLocalName == L"FirstName") {
@@ -184,7 +184,7 @@ namespace   {
             ComplexObjectReader<Appointment_> (v)
         {
         }
-        virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
         {
             if (name.fLocalName == L"When") {
                 _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
@@ -233,7 +233,8 @@ namespace   {
         WriteTextStream_ (newDocXML, tmpStrm);
 
         ObjectReader reader;
-#if     qDefaultTracingOn
+#if     qDefaultTracingOn && 0
+        //tmp disable for now - ... must restrucutr ecode a bit
         reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
 #endif
         CalendarType_       calendar;

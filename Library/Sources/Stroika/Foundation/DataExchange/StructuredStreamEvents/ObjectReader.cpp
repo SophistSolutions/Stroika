@@ -22,15 +22,13 @@ using   Memory::Byte;
 
 
 
-
-
 /*
  ********************************************************************************
- ***************** StructuredStreamEvents::ObjectReader *************************
+ ************ StructuredStreamEvents::ObjectReader::Context *********************
  ********************************************************************************
  */
 #if     qDefaultTracingOn
-wstring ObjectReader::TraceLeader_ () const
+wstring ObjectReader::Context::TraceLeader_ () const
 {
     wstring l;
     l.reserve (fStack_.size ());
@@ -40,14 +38,21 @@ wstring ObjectReader::TraceLeader_ () const
     return l;
 }
 #endif
+
+
+/*
+ ********************************************************************************
+ ***************** StructuredStreamEvents::ObjectReader *************************
+ ********************************************************************************
+ */
 class   ObjectReader::MyCallback_ : public StructuredStreamEvents::IConsumer {
 public:
-    MyCallback_ (ObjectReader& r)
-        : fSAXObjectReader_ (r)
+    MyCallback_ (Context& r)
+        : fContext_ (r)
     {
     }
 private:
-    ObjectReader&    fSAXObjectReader_;
+    Context&    fContext_;
 public:
     virtual void    StartDocument () override
     {
@@ -57,57 +62,57 @@ public:
     }
     virtual void    StartElement (const StructuredStreamEvents::Name& name) override
     {
-        AssertNotNull (fSAXObjectReader_.GetTop ());
+        AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
-        if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        if (fContext_.fTraceThisReader) {
+            DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, name);
+        fContext_.GetTop ()->HandleChildStart (fContext_, name);
     }
     virtual void    EndElement (const StructuredStreamEvents::Name& name) override
     {
-        AssertNotNull (fSAXObjectReader_.GetTop ());
+        AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
-        if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling EndElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        if (fContext_.fTraceThisReader) {
+            DbgTrace (L"%sCalling EndElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);
+        fContext_.GetTop ()->HandleEndTag (fContext_);
     }
     virtual void    TextInsideElement (const String& text) override
     {
-        AssertNotNull (fSAXObjectReader_.GetTop ());
+        AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
-        if (fSAXObjectReader_.fTraceThisReader) {
-            DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fSAXObjectReader_.TraceLeader_ ().c_str (), text.c_str () );
+        if (fContext_.fTraceThisReader) {
+            DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), text.c_str () );
         }
 #endif
-        fSAXObjectReader_.GetTop ()->HandleTextInside (fSAXObjectReader_, text);
+        fContext_.GetTop ()->HandleTextInside (fContext_, text);
     }
 };
 
 namespace   {
-    struct DocumentReader_ : public ObjectReader::ObjectBase {
-        shared_ptr<ObjectBase>          fDocEltBuilder;
+    struct DocumentReader_ : public ObjectReader::IContextReader {
+        shared_ptr<IContextReader>      fDocEltBuilder;
         bool                            fAnyDocElt;
         String                          fDocEltURI;
         String                          fDocEltName;
-        DocumentReader_ (const shared_ptr<ObjectBase>& docEltBuilder)
+        DocumentReader_ (const shared_ptr<IContextReader>& docEltBuilder)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (true)
             , fDocEltURI ()
             , fDocEltName ()
         {
         }
-        DocumentReader_ (const shared_ptr<ObjectBase>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
+        DocumentReader_ (const shared_ptr<IContextReader>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (false)
             , fDocEltURI (checkURI)
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override
+        virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
         {
             if (not fAnyDocElt) {
                 if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
@@ -116,48 +121,49 @@ namespace   {
             }
             r.Push (fDocEltBuilder);
         }
-        virtual void    HandleTextInside (ObjectReader& r, const String& text)  override
+        virtual void    HandleTextInside (ObjectReader::Context& r, const String& text)  override
         {
             // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
             // assure input is valid
             Assert (text.IsWhitespace ());
         }
-        virtual void    HandleEndTag (ObjectReader& r) override
+        virtual void    HandleEndTag (ObjectReader::Context& r) override
         {
             r.Pop ();
         }
     };
 }
-void    ObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const Streams::InputStream<Byte>& in)
+void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
     RequireNotNull (docEltBuilder);
-    Require (fStack_.size () == 0);
+    Context ctx;
+    Require (ctx.fStack_.size () == 0);
 
-    Push (shared_ptr<ObjectBase> (new DocumentReader_ (docEltBuilder)));
+    ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder)));
 
-    MyCallback_ cb (*this);
+    MyCallback_ cb (ctx);
     XML::SAXParse (in, cb);
 
-    Pop (); // the docuemnt reader we just added
+    ctx.Pop (); // the docuemnt reader we just added
 
-    Ensure (fStack_.size () == 0);
+    Ensure (ctx.fStack_.size () == 0);
 }
 
-void    ObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
+void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     RequireNotNull (docEltBuilder);
-    Require (fStack_.size () == 0);
+    Context ctx;
+    Require (ctx.fStack_.size () == 0);
 
-    Push (shared_ptr<ObjectBase> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
+    ctx.Push (shared_ptr<IContextReader> (new DocumentReader_ (docEltBuilder, docEltUri, docEltLocalName)));
 
-    MyCallback_ cb (*this);
+    MyCallback_ cb (ctx);
     XML::SAXParse (in, cb);
 
-    Pop (); // the docuemnt reader we just added
+    ctx.Pop (); // the docuemnt reader we just added
 
-    Ensure (fStack_.size () == 0);
+    Ensure (ctx.fStack_.size () == 0);
 }
-
 
 
 
@@ -175,17 +181,17 @@ BuiltinReader<String>::BuiltinReader (String* intoVal)
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<String>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<String>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<String>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     (*value_) += text;
 }
 
-void    BuiltinReader<String>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<String>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -209,18 +215,18 @@ BuiltinReader<int>::BuiltinReader (int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<int>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<int>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<int>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<int>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<int>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -242,18 +248,18 @@ BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<unsigned int>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<unsigned int>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<unsigned int>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<unsigned int>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<unsigned int>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -277,19 +283,19 @@ BuiltinReader<bool>::BuiltinReader (bool* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<bool>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<bool>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<bool>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     String  tmp =   tmpVal_.Trim ().ToLowerCase ();
     (*value_) = (tmp == L"true");
 }
 
-void    BuiltinReader<bool>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<bool>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -315,18 +321,18 @@ BuiltinReader<float>::BuiltinReader (float* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<float>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<float>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<float>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
 }
 
-void    BuiltinReader<float>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<float>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -347,18 +353,18 @@ BuiltinReader<double>::BuiltinReader (double* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<double>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<double>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<double>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<double>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<double>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -381,19 +387,19 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    BuiltinReader<Time::DateTime>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
 
-void    BuiltinReader<Time::DateTime>::HandleTextInside (ObjectReader& r, const String& text)
+void    BuiltinReader<Time::DateTime>::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     tmpVal_ += text;
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::ParseFormat::eXML));
 }
 
-void    BuiltinReader<Time::DateTime>::HandleEndTag (ObjectReader& r)
+void    BuiltinReader<Time::DateTime>::HandleEndTag (ObjectReader::Context& r)
 {
     r.Pop ();
 }
@@ -413,18 +419,18 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+void    IgnoreNodeReader::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
 {
     Require (fDepth_ >= 0);
     fDepth_++;
 }
 
-void    IgnoreNodeReader::HandleTextInside (ObjectReader& r, const String& text)
+void    IgnoreNodeReader::HandleTextInside (ObjectReader::Context& r, const String& text)
 {
     // Ignore text
 }
 
-void    IgnoreNodeReader::HandleEndTag (ObjectReader& r)
+void    IgnoreNodeReader::HandleEndTag (ObjectReader::Context& r)
 {
     Require (fDepth_ >= 0);
     --fDepth_;

@@ -19,17 +19,17 @@ namespace   Stroika {
 
 
                 /*
-                 ********************************************************************************
-                 ************************************* ObjectReader *****************************
-                 ********************************************************************************
-                 */
-                inline  ObjectReader::ObjectReader ()
+                  ********************************************************************************
+                  **************************** ObjectReader::Context *****************************
+                  ********************************************************************************
+                  */
+                inline  ObjectReader::Context::Context ()
 #if     qDefaultTracingOn
                     : fTraceThisReader (false)
 #endif
                 {
                 }
-                inline  void    ObjectReader::Push (const shared_ptr<ObjectBase>& elt)
+                inline  void    ObjectReader::Context::Push (const shared_ptr<IContextReader>& elt)
                 {
 #if     qDefaultTracingOn
                     if (fTraceThisReader) {
@@ -39,7 +39,7 @@ namespace   Stroika {
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
                     fStack_.push_back (elt);
                 }
-                inline  void    ObjectReader::Pop ()
+                inline  void    ObjectReader::Context::Pop ()
                 {
                     fStack_.pop_back ();
 #if     qDefaultTracingOn
@@ -48,11 +48,12 @@ namespace   Stroika {
                     }
 #endif
                 }
-                inline  shared_ptr<ObjectReader::ObjectBase>  ObjectReader::GetTop () const
+                inline  shared_ptr<ObjectReader::IContextReader>  ObjectReader::Context::GetTop () const
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
                 }
+
 
 
                 /*
@@ -61,87 +62,87 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <>
-                class   BuiltinReader<String> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<String> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (String* intoVal);
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<int> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<int> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (int* intoVal);
                 private:
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<unsigned int> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<unsigned int> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (unsigned int* intoVal);
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<float> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<float> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (float* intoVal);
                 private:
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<double> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<double> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (double* intoVal);
                 private:
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<bool> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<bool> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (bool* intoVal);
                 private:
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<Time::DateTime> : public ObjectReader::ObjectBase {
+                class   BuiltinReader<Time::DateTime> : public ObjectReader::IContextReader {
                 public:
                     BuiltinReader (Time::DateTime* intoVal);
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader& r) override;
+                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
+                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
                 };
 
 
@@ -158,19 +159,19 @@ namespace   Stroika {
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
                 {
                     actualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (ObjectReader& r, const String& text)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (ObjectReader::Context& r, const String& text)
                 {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (ObjectReader& r)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (ObjectReader::Context& r)
                 {
-                    shared_ptr<ObjectBase>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
+                    shared_ptr<IContextReader>   saveCopyOfUs        =   r.GetTop ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
                     // it also might do some additioanl processing on its value
@@ -191,19 +192,19 @@ namespace   Stroika {
                     RequireNotNull (vp);
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleTextInside (ObjectReader& r, const String& text)
+                void    ComplexObjectReader<T>::HandleTextInside (ObjectReader::Context& r, const String& text)
                 {
                     // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
                     // assure input is valid
                     Assert (text.IsWhitespace ());
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleEndTag (ObjectReader& r)
+                void    ComplexObjectReader<T>::HandleEndTag (ObjectReader::Context& r)
                 {
                     r.Pop ();
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::_PushNewObjPtr (ObjectReader& r, const shared_ptr<ObjectBase>& newlyAllocatedObject2Push)
+                void    ComplexObjectReader<T>::_PushNewObjPtr (ObjectReader::Context& r, const shared_ptr<IContextReader>& newlyAllocatedObject2Push)
                 {
                     RequireNotNull (newlyAllocatedObject2Push);
                     r.Push (newlyAllocatedObject2Push);
@@ -222,7 +223,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name)
+                void ListOfObjectReader<TRAITS>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
                 {
                     if (name.fLocalName == TRAITS::ElementName) {
                         if (readingAT_) {
@@ -239,7 +240,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleEndTag (ObjectReader& r)
+                void ListOfObjectReader<TRAITS>::HandleEndTag (ObjectReader::Context& r)
                 {
                     if (readingAT_) {
                         Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
