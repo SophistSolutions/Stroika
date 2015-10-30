@@ -46,7 +46,7 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	abstract class specifying interface for readers that map a source like XML or JSON to a VariantValue objects
+             *  \brief  abstract class specifying interface for readers that map a source like XML or JSON to a VariantValue objects
              */
             class   VariantReader {
             protected:

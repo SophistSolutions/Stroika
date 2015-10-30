@@ -1201,7 +1201,7 @@ EXAMPLE:
 
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 
-#if		defined (__GNUC__)
+#if     defined (__GNUC__)
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       0
@@ -1552,7 +1552,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
-#if		defined (_MSC_VER)
+#if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update2_FULLVER_
 // still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_

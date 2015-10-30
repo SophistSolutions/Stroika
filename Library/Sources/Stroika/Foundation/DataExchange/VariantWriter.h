@@ -39,7 +39,7 @@ namespace   Stroika {
 
 
             /**
-			 *	\brief	abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
+             *  \brief  abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
              */
             class   VariantWriter {
             protected:
