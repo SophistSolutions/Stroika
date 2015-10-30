@@ -162,13 +162,13 @@ namespace   {
         {
             RequireNotNull (fValuePtr);
             if (name.fLocalName == L"FirstName") {
-                _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
+                _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
             }
             else if (name.fLocalName == L"LastName") {
-                _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->lastName));
+                _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
             }
             else if (name.fLocalName == L"MiddleName") {
-                _PushNewObjPtr (r, new OptionalTypesReader<String> (&fValuePtr->middleName));
+                _PushNewObjPtr (r, make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
             }
             else {
                 ThrowUnRecognizedStartElt (name);
@@ -187,10 +187,10 @@ namespace   {
         virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) override
         {
             if (name.fLocalName == L"When") {
-                _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
+                _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
             }
             else if (name.fLocalName == L"WithWhom") {
-                _PushNewObjPtr (r, new PersonReader_ (&fValuePtr->withWhom));
+                _PushNewObjPtr (r, make_shared<PersonReader_> (&fValuePtr->withWhom));
             }
             else {
                 ThrowUnRecognizedStartElt (name);
@@ -237,7 +237,7 @@ namespace   {
         reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
 #endif
         CalendarType_       calendar;
-        reader.Run (shared_ptr<ObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+        reader.Run (make_shared<CalendarReader_> (&calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
         VerifyTestResult (calendar.size () == 2);
         VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
         VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");

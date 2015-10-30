@@ -87,7 +87,7 @@ namespace   Stroika {
 
                 class   ObjectReader::ObjectBase {
                 public:
-                    virtual ~ObjectBase ();
+                    virtual ~ObjectBase () = default;
                     virtual void    HandleChildStart (ObjectReader& r, const StructuredStreamEvents::Name& name) = 0;
                     virtual void    HandleTextInside (ObjectReader& r, const String& text) = 0;
                     virtual void    HandleEndTag (ObjectReader& r) = 0;
@@ -185,7 +185,7 @@ namespace   Stroika {
                     virtual void    HandleTextInside (ObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (ObjectReader& r) override;
                 protected:
-                    nonvirtual  void    _PushNewObjPtr (ObjectReader& r, ObjectBase* newlyAllocatedObject2Push);
+                    nonvirtual  void    _PushNewObjPtr (ObjectReader& r, const shared_ptr<ObjectBase>& newlyAllocatedObject2Push);
                 };
 
 

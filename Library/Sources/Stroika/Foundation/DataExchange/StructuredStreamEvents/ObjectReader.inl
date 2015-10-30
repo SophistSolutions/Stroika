@@ -203,10 +203,10 @@ namespace   Stroika {
                     r.Pop ();
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::_PushNewObjPtr (ObjectReader& r, ObjectBase* newlyAllocatedObject2Push)
+                void    ComplexObjectReader<T>::_PushNewObjPtr (ObjectReader& r, const shared_ptr<ObjectBase>& newlyAllocatedObject2Push)
                 {
                     RequireNotNull (newlyAllocatedObject2Push);
-                    r.Push (shared_ptr<ObjectBase> (newlyAllocatedObject2Push));
+                    r.Push (newlyAllocatedObject2Push);
                 }
 
 
@@ -232,7 +232,7 @@ namespace   Stroika {
                         }
                         readingAT_ = true;
                         curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
-                        this->_PushNewObjPtr (r, new typename TRAITS::ReaderType (&curTReading_));
+                        this->_PushNewObjPtr (r, make_shared<typename TRAITS::ReaderType> (&curTReading_));
                     }
                     else {
                         ThrowUnRecognizedStartElt (name);

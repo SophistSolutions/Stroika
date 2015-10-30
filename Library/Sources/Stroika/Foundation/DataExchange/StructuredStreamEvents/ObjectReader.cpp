@@ -163,21 +163,6 @@ void    ObjectReader::Run (const shared_ptr<ObjectBase>& docEltBuilder, const St
 
 
 
-
-/*
- ********************************************************************************
- **************************** StructuredStreamEvent::ObjectBase *****************
- ********************************************************************************
- */
-ObjectReader::ObjectBase::~ObjectBase ()
-{
-}
-
-
-
-
-
-
 /*
  ********************************************************************************
  ******************** StructuredStreamEvents::BuiltinReader<String> *************
