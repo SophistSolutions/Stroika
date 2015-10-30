@@ -1,0 +1,17 @@
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchange/StructuredStreamEvents/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)IConsumer.o\
+	$(ObjDir)ObjectReaderRegistry.o\
+
+all:	$(Objs)
+
+
+

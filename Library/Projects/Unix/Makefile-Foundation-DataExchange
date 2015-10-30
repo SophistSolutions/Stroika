@@ -15,7 +15,6 @@ Objs	=	\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)OptionsFile.o\
-	$(ObjDir)StructuredStreamEventConsumer.o\
 	$(ObjDir)VariantReader.o\
 	$(ObjDir)VariantValue.o\
 	$(ObjDir)VariantWriter.o\
@@ -25,6 +24,7 @@ SubDirs	=	\
 	CharacterDelimitedLines \
 	INI \
 	JSON \
+	StructuredStreamEvents \
 	XML \
 	Zip \
 
@@ -38,13 +38,14 @@ SevenZ_OBJS := $(addprefix "7z/", $(shell $(MAKE) --directory 7z -s list-objs))
 CharacterDelimitedLines_OBJS := $(addprefix "CharacterDelimitedLines/", $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs))
 INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs))
 JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs))
+StructuredStreamEvents_OBJS := $(addprefix "StructuredStreamEvents/", $(shell $(MAKE) --directory StructuredStreamEvents -s list-objs))
 XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs))
 Zip_OBJS := $(addprefix "Zip/", $(shell $(MAKE) --directory Zip -s list-objs))
 
 
 list-objs::
-	@echo $(SevenZ_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(XML_OBJS) $(Zip_OBJS)
+	@echo $(SevenZ_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(StructuredStreamEvents_OBJS) $(XML_OBJS) $(Zip_OBJS)
 
 
-7z INI CharacterDelimitedLines JSON XML Zip:
+7z CharacterDelimitedLines INI JSON StructuredStreamEvents XML Zip:
 	@$(MAKE) --directory $@ -s

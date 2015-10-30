@@ -233,6 +233,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/DataExchange/CharacterDelimitedLines", "Makefile-Foundation-DataExchange-CharacterDelimitedLines");
 		mkDirWithLinks2("Foundation/DataExchange/INI", "Makefile-Foundation-DataExchange-INI");
 		mkDirWithLinks2("Foundation/DataExchange/JSON", "Makefile-Foundation-DataExchange-JSON");
+		mkDirWithLinks2("Foundation/DataExchange/StructuredStreamEvents", "Makefile-Foundation-DataExchange-StructuredStreamEvents");
 		mkDirWithLinks2("Foundation/DataExchange/XML", "Makefile-Foundation-DataExchange-XML");
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");

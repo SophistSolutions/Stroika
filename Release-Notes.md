@@ -36,11 +36,11 @@ History
 			(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
 		</li>
 		<li>COMPATABILITIY WARNING: Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
-		   replace all use of SAXCallbackInterface with IStructuredStreamEventConsumer, and
+		   replace all use of SAXCallbackInterface with StructuredStreamEvents::IConsumer, and
 			lose the qname argumetns to StartElement() and EndElement()
 			as well as HandleChildStart () in subclasses of SAXObjectReader
 			<ul>
-					<li>COMPATABILITIY WARNING: losing qname param to HandleChildStart and StartElement and EndElement (url/qname reddundant) amd new IStructuredStreamEventConsumer instead of SAXCallbackInterface</li>
+					<li>COMPATABILITIY WARNING: losing qname param to HandleChildStart and StartElement and EndElement (url/qname reddundant) amd new StructuredStreamEvents::IConsumer instead of SAXCallbackInterface</li>
 			</ul>
 			</li>
 		<li>InputStream<Character>::ReadLine () performance tweak</li>
