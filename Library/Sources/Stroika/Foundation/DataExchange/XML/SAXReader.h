@@ -12,7 +12,7 @@
 #include    "../../Execution/ProgressMonitor.h"
 #include    "../../Streams/InputStream.h"
 
-#include    "../StructuredDataStreamConsumer.h"
+#include    "../StructuredStreamEventConsumer.h"
 #include    "../VariantValue.h"
 #include    "Common.h"
 
@@ -44,7 +44,7 @@ namespace   Stroika {
                 /**
                  * Parse will throw an exception if it encouters any errors parsing.
                  */
-                void    SAXParse (const Streams::InputStream<Memory::Byte>& in, IStructuredDataStreamConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
+                void    SAXParse (const Streams::InputStream<Memory::Byte>& in, IStructuredStreamEventConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
                 //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
                 //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);

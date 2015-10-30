@@ -569,10 +569,10 @@ namespace   {
     class SAX2PrintHandlers_
         : public DefaultHandler {
     private:
-        IStructuredDataStreamConsumer&   fCallback;
+        IStructuredStreamEventConsumer&   fCallback;
 
     public:
-        SAX2PrintHandlers_ (IStructuredDataStreamConsumer& callback)
+        SAX2PrintHandlers_ (IStructuredStreamEventConsumer& callback)
             : fCallback (callback)
         {
         }
@@ -613,7 +613,7 @@ namespace   {
 }
 #endif
 
-void    XML::SAXParse (const Streams::InputStream<Byte>& in, IStructuredDataStreamConsumer& callback, Execution::ProgressMonitor::Updater progres)
+void    XML::SAXParse (const Streams::InputStream<Byte>& in, IStructuredStreamEventConsumer& callback, Execution::ProgressMonitor::Updater progres)
 {
 #if     qHasFeature_Xerces
     SAX2PrintHandlers_  handler (callback);

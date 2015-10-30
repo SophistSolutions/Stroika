@@ -729,7 +729,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
       <Filter>Sources\DataExchange\Zip</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEventConsumer.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1737,7 +1737,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
       <Filter>Sources\DataExchange\Zip</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEventConsumer.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2643,7 +2643,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredDataStreamConsumer.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEventConsumer.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>

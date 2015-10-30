@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_StructuredDataStreamConsumer_h_
-#define _Stroika_Foundation_DataExchange_StructuredDataStreamConsumer_h_ 1
+#ifndef _Stroika_Foundation_DataExchange_StructuredStreamEventConsumer_h_
+#define _Stroika_Foundation_DataExchange_StructuredStreamEventConsumer_h_ 1
 
 #include    "../StroikaPreComp.h"
 
@@ -43,7 +43,7 @@ namespace   Stroika {
              *
              *  \note   It MAYBE pointless and hopeless to unify SAX/JSON here... they are very differnt - but try and review these others
              */
-            class   IStructuredDataStreamConsumer {
+            class   IStructuredStreamEventConsumer {
             public:
                 /**
                  *  \note   The default implementation ignores this.
@@ -89,6 +89,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "StructuredDataStreamConsumer.inl"
+#include    "StructuredStreamEventConsumer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_StructuredDataStreamConsumer_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_StructuredStreamEventConsumer_h_*/

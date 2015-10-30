@@ -40,7 +40,7 @@ wstring SAXObjectReader::TraceLeader_ () const
     return l;
 }
 #endif
-class   SAXObjectReader::MyCallback_ : public IStructuredDataStreamConsumer {
+class   SAXObjectReader::MyCallback_ : public IStructuredStreamEventConsumer {
 public:
     MyCallback_ (SAXObjectReader& r)
         : fSAXObjectReader_ (r)

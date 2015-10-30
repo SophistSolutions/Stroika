@@ -118,7 +118,7 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  ObjectVariantMapper can be used to map C++ types to variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
+             *  \brief  ObjectVariantMapper can be used to map C++ types to and from variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
              *
              *  ObjectVariantMapper IS COPYABLE. Make one instance, register your types into it and use this to
              *  serialized/ToObject
