@@ -130,10 +130,10 @@ namespace   Stroika {
 
                 template    <typename ELEMENT_TYPE>
                 struct ListOfObjectReader2: public ComplexObjectReader<vector<ELEMENT_TYPE>> {
-                    bool					readingAT_;
-                    ELEMENT_TYPE			curTReading_;
+                    bool                    readingAT_;
+                    ELEMENT_TYPE            curTReading_;
                     ObjectReaderRegistry&   fObjRegistry;
-                    String  fName;
+                    String                  fName;
 
                     ListOfObjectReader2 (ObjectReaderRegistry* objReg, const String& name, vector<ELEMENT_TYPE>* v)
                         : ComplexObjectReader<vector<ELEMENT_TYPE>> (v)
@@ -142,7 +142,6 @@ namespace   Stroika {
                                 , fName  (name)
                     {
                     }
-
                     virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
                     {
                         if (name.fLocalName == fName) {
@@ -159,18 +158,14 @@ namespace   Stroika {
                             ThrowUnRecognizedStartElt (name);
                         }
                     }
-
                     virtual void HandleEndTag (ObjectReader::Context& r) override
                     {
-                        {
-                            if (readingAT_) {
-                                Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                                this->fValuePtr->push_back (curTReading_);
-                                readingAT_ = false;
-                            }
-                            ComplexObjectReader<vector<ELEMENT_TYPE>>::HandleEndTag (r);
+                        if (readingAT_) {
+                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
+                            this->fValuePtr->push_back (curTReading_);
+                            readingAT_ = false;
                         }
-
+                        ComplexObjectReader<vector<ELEMENT_TYPE>>::HandleEndTag (r);
                     }
                 };
             }
