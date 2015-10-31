@@ -149,164 +149,154 @@ namespace   {
 
 
 namespace   {
-    struct  Person_ {
-        String firstName;
-        String lastName;
-        Memory::Optional<String> middleName;
-    };
-    struct PersonReader_ : public StructuredStreamEvents::ComplexObjectReader<Person_> {
-        PersonReader_ (Person_* v)
-            : ComplexObjectReader<Person_> (v)
-        {
-        }
-        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
-        {
-            RequireNotNull (fValuePtr);
-            if (name.fLocalName == L"FirstName") {
-                _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
-            }
-            else if (name.fLocalName == L"LastName") {
-                _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
-            }
-            else if (name.fLocalName == L"MiddleName") {
-                _PushNewObjPtr (r, make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
-            }
-            else {
-                ThrowUnRecognizedStartElt (name);
-            }
-        }
-    };
-    struct  Appointment_ {
-        Time::DateTime  when;
-        Person_         withWhom;
-    };
-    struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-        AppointmentReader_ (Appointment_* v):
-            ComplexObjectReader<Appointment_> (v)
-        {
-        }
-        virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
-        {
-            if (name.fLocalName == L"When") {
-                _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
-            }
-            else if (name.fLocalName == L"WithWhom") {
-                _PushNewObjPtr (r, make_shared<PersonReader_> (&fValuePtr->withWhom));
-            }
-            else {
-                ThrowUnRecognizedStartElt (name);
-            }
-        }
-    };
-    using       CalendarType_       =   vector<Appointment_>;
-    struct  CalendarReaderTraits_ {
-        using   ElementType =   Appointment_;
-        using   ReaderType  =   AppointmentReader_;
-        static  const wchar_t       ElementName[];
-    };
-    const wchar_t   CalendarReaderTraits_::ElementName[]        =   L"Appointment";
-    using       CalendarReader_ =   ListOfObjectReader<CalendarReaderTraits_>;
-
-    void    Test_2_SAXObjectReader_ ()
-    {
-        TraceContextBumper ctx ("Test_2_SAXObjectReader_");
+    namespace SAX_ObjectReader_EXAMPLE_1_ {
         const wstring   kNSTest =   L"Test-NAMESPACE";
-        wstring newDocXML   =
-            L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-06-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Jim</FirstName>"
-            L"		  <LastName>Smith</LastName>"
-            L"		  <MiddleName>Up</MiddleName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-08-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Fred</FirstName>"
-            L"		  <LastName>Down</LastName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"</Calendar>\n"
-            ;
-        stringstream tmpStrm;
-        WriteTextStream_ (newDocXML, tmpStrm);
-
-        ObjectReader reader;
-#if     qDefaultTracingOn && 0
-        //tmp disable for now - ... must restrucutr ecode a bit
-        reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
-#endif
-        CalendarType_       calendar;
-        reader.Run (make_shared<CalendarReader_> (&calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
-        VerifyTestResult (calendar.size () == 2);
-        VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-        VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-        VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-        VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
-        VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-        VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
-    }
-    void    Test_2a_ObjectReader_viaRegistry_ ()
-    {
-        TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
-        const wstring   kNSTest =   L"Test-NAMESPACE";
-        wstring newDocXML   =
-            L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-06-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Jim</FirstName>"
-            L"		  <LastName>Smith</LastName>"
-            L"		  <MiddleName>Up</MiddleName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-08-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Fred</FirstName>"
-            L"		  <LastName>Down</LastName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"</Calendar>\n"
-            ;
-        stringstream tmpStrm;
-        WriteTextStream_ (newDocXML, tmpStrm);
-
-
-        ObjectReaderRegistry registry;
-        registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<BuiltinReader<Time::DateTime>> (d); });
-        registry.Add<String> ([] (String * d) { return make_shared<BuiltinReader<String>> (d); });
-        registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
-
+        struct  Person_ {
+            String firstName;
+            String lastName;
+            Memory::Optional<String> middleName;
+        };
+        struct  Appointment_ {
+            Time::DateTime  when;
+            Person_         withWhom;
+        };
+        using       CalendarType_       =   vector<Appointment_>;
+        Memory::BLOB    mkdata_ ()
         {
-            Mapping<String, pair<type_index, size_t>>   metaInfo;
-            metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
-            metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
-            metaInfo.Add (L"MiddleName", pair<type_index, size_t> {typeid(decltype (Person_::middleName)), offsetof(Person_, middleName)});
-            registry.Add<Person_> (mkComplexObjectReader2Factory<Person_> (&registry, metaInfo));
+            wstring newDocXML   =
+                L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
+                L"  <Appointment>\n"
+                L"	  <When>2005-06-01T13:00:00-05:00</When>"
+                L"	  <WithWhom>\n"
+                L"		  <FirstName>Jim</FirstName>"
+                L"		  <LastName>Smith</LastName>"
+                L"		  <MiddleName>Up</MiddleName>"
+                L"	  </WithWhom>\n"
+                L"  </Appointment>\n"
+                L"  <Appointment>\n"
+                L"	  <When>2005-08-01T13:00:00-05:00</When>"
+                L"	  <WithWhom>\n"
+                L"		  <FirstName>Fred</FirstName>"
+                L"		  <LastName>Down</LastName>"
+                L"	  </WithWhom>\n"
+                L"  </Appointment>\n"
+                L"</Calendar>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
-        {
-            Mapping<String, pair<type_index, size_t>>   metaInfo;
-            metaInfo.Add (L"When", pair<type_index, size_t> {typeid(decltype (Appointment_::when)), offsetof(Appointment_, when)});
-            metaInfo.Add (L"WithWhom", pair<type_index, size_t> {typeid(decltype (Appointment_::withWhom)), offsetof(Appointment_, withWhom)});
-            registry.Add<Appointment_> (mkComplexObjectReader2Factory<Appointment_> (&registry, metaInfo));
+        namespace T1_ {
+            struct PersonReader_ : public StructuredStreamEvents::ComplexObjectReader<Person_> {
+                PersonReader_ (Person_* v)
+                    : ComplexObjectReader<Person_> (v)
+                {
+                }
+                virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
+                {
+                    RequireNotNull (fValuePtr);
+                    if (name.fLocalName == L"FirstName") {
+                        _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
+                    }
+                    else if (name.fLocalName == L"LastName") {
+                        _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
+                    }
+                    else if (name.fLocalName == L"MiddleName") {
+                        _PushNewObjPtr (r, make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
+                    }
+                    else {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                }
+            };
+            struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
+                AppointmentReader_ (Appointment_* v):
+                    ComplexObjectReader<Appointment_> (v)
+                {
+                }
+                virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
+                {
+                    if (name.fLocalName == L"When") {
+                        _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
+                    }
+                    else if (name.fLocalName == L"WithWhom") {
+                        _PushNewObjPtr (r, make_shared<PersonReader_> (&fValuePtr->withWhom));
+                    }
+                    else {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                }
+            };
+            struct  CalendarReaderTraits_ {
+                using   ElementType =   Appointment_;
+                using   ReaderType  =   AppointmentReader_;
+                static  const wchar_t       ElementName[];
+            };
+            const wchar_t   CalendarReaderTraits_::ElementName[]        =   L"Appointment";
+            using       CalendarReader_ =   ListOfObjectReader<CalendarReaderTraits_>;
         }
-
-
-        CalendarType_       calendar;
+        void    Test_2_SAXObjectReader_ ()
         {
+            TraceContextBumper ctx ("Test_2_SAXObjectReader_");
+            using namespace T1_;
             ObjectReader reader;
-            reader.Run (make_shared<ListOfObjectReader2<CalendarReaderTraits_>>     (&registry, &calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+#if     qDefaultTracingOn && 0
+            //tmp disable for now - ... must restrucutr ecode a bit
+            reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
+#endif
+            CalendarType_       calendar;
+            reader.Run (make_shared<CalendarReader_> (&calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            VerifyTestResult (calendar.size () == 2);
+            VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+            VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+            VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+            VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+            VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+            VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
         }
-        VerifyTestResult (calendar.size () == 2);
-        VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-        VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-        VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-        VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
-        VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-        VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+        void    Test_2a_ObjectReader_viaRegistry_ ()
+        {
+            TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
+
+            ObjectReaderRegistry registry;
+            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<BuiltinReader<Time::DateTime>> (d); });
+            registry.Add<String> ([] (String * d) { return make_shared<BuiltinReader<String>> (d); });
+            registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
+
+            {
+                Mapping<String, pair<type_index, size_t>>   metaInfo;
+                metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
+                metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
+                metaInfo.Add (L"MiddleName", pair<type_index, size_t> {typeid(decltype (Person_::middleName)), offsetof(Person_, middleName)});
+                registry.Add<Person_> (mkComplexObjectReader2Factory<Person_> (&registry, metaInfo));
+            }
+            {
+                Mapping<String, pair<type_index, size_t>>   metaInfo;
+                metaInfo.Add (L"When", pair<type_index, size_t> {typeid(decltype (Appointment_::when)), offsetof(Appointment_, when)});
+                metaInfo.Add (L"WithWhom", pair<type_index, size_t> {typeid(decltype (Appointment_::withWhom)), offsetof(Appointment_, withWhom)});
+                registry.Add<Appointment_> (mkComplexObjectReader2Factory<Appointment_> (&registry, metaInfo));
+            }
+
+            CalendarType_       calendar;
+            {
+                ObjectReader reader;
+                reader.Run (make_shared<ListOfObjectReader2<Appointment_>> (&registry, L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            }
+            VerifyTestResult (calendar.size () == 2);
+            VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+            VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+            VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+            VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+            VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+            VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+        }
+    }
+    void    Test_SAX_ObjectReader_EXAMPLE_1_ ()
+    {
+        using namespace SAX_ObjectReader_EXAMPLE_1_;
+        Test_2_SAXObjectReader_ ();
+        Test_2a_ObjectReader_viaRegistry_ ();
+
     }
 }
 
@@ -318,8 +308,7 @@ namespace   {
     {
         try {
             Test_1_SAXParser_ ();
-            Test_2_SAXObjectReader_ ();
-            Test_2a_ObjectReader_viaRegistry_ ();
+            Test_SAX_ObjectReader_EXAMPLE_1_ ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
