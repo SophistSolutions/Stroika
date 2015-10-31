@@ -250,7 +250,7 @@ namespace   {
     }
     void    Test_2a_ObjectReader_viaRegistry_ ()
     {
-        TraceContextBumper ctx ("Test_2_SAXObjectReader_");
+        TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
         const wstring   kNSTest =   L"Test-NAMESPACE";
         wstring newDocXML   =
             L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
@@ -298,17 +298,8 @@ namespace   {
         CalendarType_       calendar;
         {
             ObjectReader reader;
-            reader.Run (make_shared<CalendarReader_> (&calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
+            reader.Run (make_shared<ListOfObjectReader2<CalendarReaderTraits_>>     (&registry, &calendar), InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
         }
-#if 0
-        {
-            calendar = CalendarType_ ();    // clear to test
-            shared_ptr<ComplexObjectReader2<CalendarType_>> calendarReadernew = make_shared<ComplexObjectReader2<CalendarType_>>     (&registry, &calendar);
-
-            ObjectReader reader;
-            reader.Run (calendarReadernew, InputStreamFromStdIStream<Memory::Byte> (tmpStrm));
-        }
-#endif
         VerifyTestResult (calendar.size () == 2);
         VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
         VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");

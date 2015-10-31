@@ -36,7 +36,9 @@
  *
  *  TODO:
  *
- *      @todo    */
+ *      @todo    gross hacks - replciatigng basic objectreaders to get this limping along...
+ 
+ */
 
 
 
@@ -92,9 +94,10 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ComplexObjectReader2 : public ComplexObjectReader<T> {
                 public:
-                    ComplexObjectReader2 (ObjectReaderRegistry* objReg, T* vp)
+                    ComplexObjectReader2 (ObjectReaderRegistry* objReg, Mapping<String, pair<type_index, size_t>> maps, T* vp)
                         : ComplexObjectReader<T>(vp)
                         , fObjRegistry  (*objReg)
+						, fFieldNameToTypeMap (maps)
                     {
                     }
                     virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
@@ -120,10 +123,54 @@ namespace   Stroika {
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (ObjectReaderRegistry* objReg, const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
                 {
-                    return [objReg, fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReader::IContextReader> { return make_shared<ComplexObjectReader2<T>> (objReg, reinterpret_cast<T*> (data)); };
+                    return [objReg, fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReader::IContextReader> { return make_shared<ComplexObjectReader2<T>> (objReg, fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }
 
 
+
+                template    <typename TRAITS>
+                struct ListOfObjectReader2: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
+                    bool                            readingAT_;
+                    typename TRAITS::ElementType    curTReading_;
+                    ObjectReaderRegistry&                       fObjRegistry;
+
+                    ListOfObjectReader2 (ObjectReaderRegistry* objReg, vector<typename TRAITS::ElementType>* v)
+						 : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
+								, readingAT_ (false)
+								 , fObjRegistry  (*objReg)
+					{
+					}
+
+                    virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
+					{
+						if (name.fLocalName == TRAITS::ElementName) {
+							if (readingAT_) {
+								Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
+								this->fValuePtr->push_back (curTReading_);
+								readingAT_ = false;
+							}
+							readingAT_ = true;
+							curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
+							this->_PushNewObjPtr (r, fObjRegistry.MakeContextReader<typename TRAITS::ElementType> (&curTReading_));
+						}
+						else {
+							ThrowUnRecognizedStartElt (name);
+						}
+					}
+
+                    virtual void HandleEndTag (ObjectReader::Context& r) override
+					{
+						{
+							if (readingAT_) {
+								Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
+								this->fValuePtr->push_back (curTReading_);
+								readingAT_ = false;
+							}
+							ComplexObjectReader<vector<typename TRAITS::ElementType>>::HandleEndTag (r);
+						}
+
+					}
+                };
             }
         }
     }
