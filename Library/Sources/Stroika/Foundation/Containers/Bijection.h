@@ -108,6 +108,10 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   Bijection could not inherit from Mapping<> because the semantics of Removing a value are incompatible,
+             *          and because (depending on the policy we adopt about error checking for invalid value in add) - we can have legit
+             *          behavior on a Mapping BE illegal on the Bijection<>
+             *
              *  \em Concrete Implementations:
              *      o   @see Concrete::Bijection_LinkedList<>
              *
