@@ -728,6 +728,8 @@ namespace   Stroika {
                  *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
                  *  is non-empty, and kBadIndex if this string was empty.
                  *
+                 *  \note   Alias - could have been called IndexOf()
+                 *
                  *  \req (startAt <= GetLength ());
                  *
                  *  \par Example Usage
