@@ -222,12 +222,15 @@ namespace   Stroika {
              *      sequence of numbers each time you make an iterate and run.
              *
              *  *Design Note*:
-             *      Chose NOT to include an Equals(Iterable<T> rhs) const method here, but instead duplicatively in
+             *      Chose NOT to include an Equals (Iterable<T> rhs) const method here, but instead duplicatively in
              *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
              *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
              *      their values were the same.
              *
-             *      ((REVISION - 2013-12-21 - SEE NEW SetEquals/MultiSetEquals/SequnceEquals methods below)
+             *      Also, Equals() meaning is just wrong if you implement it the only way you can for an Iterable,
+             *      (iterating over elements) if the container has a differnt logical notion of equals (like Set).
+             *
+             *      We DO have methods SetEquals/MultiSetEquals/SequnceEquals (see below).
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,

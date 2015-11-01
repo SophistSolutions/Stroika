@@ -26,6 +26,20 @@
  *                  WORKS - BUT TOTAL CLONE OF MAPPING. STILL TODO ALLOWING MULTIPLE ASSOCIATIONS and MAYBE not calling KEY KEY somewhat misleading
  *                  but no obviously better term).
  *
+ * STUF FOR DOCS (from original notes):
+
+
+o   Association<T>
+o   This is stl::multimap<>
+o   Details foggy in my head
+o   Could subclass from Iterable<pair<T1,T2>> or Iterable<KeyValuePair<T1, Iterable<T2>>
+o   Key diffs with Mapping<>
+    o   Add (T1, T2) doesn’t overwrite the value at T1 just appends
+    o   Remove (T1 removes ALL things with T1 on LHS)
+    o   Remove (T1, T2) exists and removes that entry only
+
+
+
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:

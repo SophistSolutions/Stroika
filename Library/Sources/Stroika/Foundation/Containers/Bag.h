@@ -52,9 +52,19 @@ namespace   Stroika {
              *  can COPY a bag (which preserves order).
              *
              *  This could have been called 'RandomizedCollection'.
-             &
+             *
              *
                     @todo CRITICAL - NEVER ADDED SHAKE METHOD - !!!! THATS THE POINT!
+                    <<< not su sure this is right. Yes random - but think out and document when the ordering is randomized. When you
+                    add, or maybe just when you 'shake'. When you add its ARBITRARY where things go (not documented but maybe predictable).
+                    Call SHAKE to force items to be re-randomized.
+
+                    * SOME DOCS ABOVE SAY FIRST APPROACH AND SOME SAY SECOND ... DECIDE
+
+                    o   See email 2013-12-27 email dioscission
+                    o   Maybe call this BlackBox
+                    o   Shake is what std::random_shuffle does. I’d usually prefer the no-argument version to the stl iterator one. Obviously there are performance issues with some backends,  but as long as you always return a new Collection (or other abstract type) with no promise about the backend it should be okay.
+
              */
             template    <typename T>
             class   Bag : public Iterable<T> {
