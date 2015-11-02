@@ -33,7 +33,8 @@ namespace   Stroika {
                  */
                 struct Name {
                     /**
-                     *  fNamespaceURI empty treated as 'wildcard' - matching other URI name.
+                     *  fNamespaceURI missing treated as 'wildcard' - matching any other URI name, and
+                     *  empty string ("") means no namespace (to require no namespace as ns="").
                      */
                     Optional<String>    fNamespaceURI;
                     String              fLocalName;
