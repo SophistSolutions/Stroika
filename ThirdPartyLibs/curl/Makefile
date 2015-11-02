@@ -74,12 +74,28 @@ $(BUILDS_DIR):	$(TRGDIR)
 	make --no-print-directory doBuilds
 
 
+PKG_CONFIG=
+ifeq ($(qFeatureFlag_OpenSSL), use)
+ifeq (Unix,$(ProjectPlatformSubdir))
+PKG_CONFIG=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyLibs/lib/pkgconfig
+endif
+endif
+
+PKG_CONFIG_CONFIGURE_PREFIX=
+ifneq (,$(PKG_CONFIG))
+PKG_CONFIG_CONFIGURE_PREFIX=	env PKG_CONFIG=$(PKG_CONFIG)
+endif
+
+
+
+
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += --enable-static
 ifeq ($(qFeatureFlag_OpenSSL), use)
 #SOMETHING LIKE THIS BUT NOT WORKING YET --LGP 2015-11-01
 #LIBCURL_CONFIGURE += --with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
-LIBCURL_CONFIGURE += --without-ssl
+#LIBCURL_CONFIGURE += --without-ssl
+LIBCURL_CONFIGURE += --with-ssl
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use-system)
 LIBCURL_CONFIGURE += --with-ssl
@@ -139,12 +155,12 @@ else
 		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
-                echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
-                echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
-                echo "CC=$(CC) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
-                (CC="$(CC)" ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
-                echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
-                make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
+		echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
+		echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
+		echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
+		(CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
+		echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
+		make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
 	fi
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
