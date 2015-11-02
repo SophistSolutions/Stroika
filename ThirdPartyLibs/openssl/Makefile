@@ -26,7 +26,7 @@ BUILDS_ROOT=../../Builds/
 CONFIG_ARGS=
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CONFIG_ARGS+=	-no-shared
-CONFIG_ARGS+=	--prefix=$(shell realpath `pwd`)/CURRENT/Builds
+CONFIG_ARGS+=	--prefix=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyLibs/
 else
 endif
 
