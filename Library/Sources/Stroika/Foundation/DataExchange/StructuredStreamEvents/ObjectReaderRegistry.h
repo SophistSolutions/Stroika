@@ -102,7 +102,7 @@ namespace   Stroika {
                     }
                     virtual void    HandleChildStart (StructuredStreamEvents::ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
                     {
-                        Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name.fLocalName);
+                        Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
                         if (ti) {
                             Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
                             Byte*   operatingOnObjField = operatingOnObj + ti->second;
@@ -116,9 +116,9 @@ namespace   Stroika {
                         }
                     }
 
-                    ObjectReaderRegistry&                       fObjRegistry;
-                    Mapping<String, pair<type_index, size_t>>   fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
-                    bool                                        fThrowOnUnrecongizedelts;       // else ignroe
+                    ObjectReaderRegistry&                                               fObjRegistry;
+                    Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
+                    bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
                 };
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (ObjectReaderRegistry* objReg, const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
@@ -144,7 +144,7 @@ namespace   Stroika {
                     }
                     virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override
                     {
-                        if (name.fLocalName == fName) {
+                        if (name == fName) {
                             if (readingAT_) {
                                 Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
                                 this->fValuePtr->push_back (curTReading_);
