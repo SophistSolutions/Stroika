@@ -36,32 +36,32 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libz.a			\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/zconf.h
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libz.a			\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/zlib.h		\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/zconf.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/zlib.lib					\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/zlib.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/zlib.lib		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/zconf.h	\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/zlib.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/zconf.h		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/zlib.lib					\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/zlib.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zlib.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/zconf.h				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/zlib.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/zconf.h
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/zlib.h				\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/zconf.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/zlib.lib				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/zlib.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/zconf.h				\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/zlib.lib		\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/zlib.h		\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/zconf.h	\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/zconf.h		\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/zlib.h				\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/zconf.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib/zlib.lib				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/zlib.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/zconf.h				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zconf.h
 endif
 
 
@@ -133,23 +133,23 @@ doBuilds:
 	fi
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
 else
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Debug64/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Debug64/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/
 endif
 
 	
