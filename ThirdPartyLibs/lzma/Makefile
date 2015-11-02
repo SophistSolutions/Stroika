@@ -17,7 +17,8 @@ VERSION=1509
 BASENAME=lzma$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
 
-FETCHURL=http://www.7-zip.org/a/$(BASENAME).7z
+FETCHURLS=
+FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 
@@ -105,7 +106,8 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 
 $(ZIPEDFILE):
 	@echo -n "      ..." 
-	wget --quiet --tries=10 -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
+	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+
 
 $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate

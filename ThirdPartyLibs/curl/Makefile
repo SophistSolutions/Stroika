@@ -18,7 +18,9 @@ EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
-FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
+FETCHURLS=
+FETCHURLS+=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
+
 
 BUILDS_ROOT=../../Builds/
 
@@ -53,7 +55,7 @@ all:
 
 $(ZIPPEDFILE):
 	@echo -n "      ..."
-	wget --quiet --tries=10 -O $(ZIPPEDFILE) $(FETCHURL) || (rm -f $(ZIPPEDFILE) && false)
+	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 $(TRGDIR):	$(ZIPPEDFILE)

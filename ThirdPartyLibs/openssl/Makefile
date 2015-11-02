@@ -18,7 +18,10 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
-FETCHURL=http://www.openssl.org/source/$(BASENAME).tar.gz
+FETCHURLS=
+FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
+
+
 	
 BUILDS_ROOT=../../Builds/
 
@@ -145,7 +148,7 @@ endif
 
 $(ZIPEDFILE):
 	@echo -n "      ..."
-	wget --quiet --tries=10 -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
+	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate

@@ -15,8 +15,8 @@ EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
-FETCHURL=http://zlib.net/$(BASENAME).tar.gz
-#FETCHURL=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
+FETCHURLS=
+FETCHURLS+=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
@@ -87,7 +87,7 @@ CURRENT/Builds:
 
 $(ZIPEDFILE):
 	@echo -n "      ..." 
-	wget --quiet --tries=10 -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
+	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 $(TRGDIR):	$(ZIPPEDFILE)
 	@$(MAKE) --no-print-directory doCreate
