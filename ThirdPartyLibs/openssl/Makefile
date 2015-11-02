@@ -25,7 +25,8 @@ BUILDS_ROOT=../../Builds/
 
 CONFIG_ARGS=
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CONFIG_ARGS+=	-no-shared --prefix=/home/lewis/Sandbox/Stroika-DevRoot/ThirdPartyLibs/openssl/Builds
+CONFIG_ARGS+=	-no-shared
+CONFIG_ARGS+=	--prefix=$(shell realpath openssl/Builds)
 else
 endif
 
@@ -178,9 +179,11 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\
 		BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`;\
 		echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CONFIG.OUT;\
-		(cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) > CONFIG.OUT 2>&1;\
+		(cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CONFIG.OUT 2>&1;\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		$(MAKE) --directory CURRENT --no-print-directory all install > BUILD.OUT 2>&1;\
+		$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;\
+		echo "      ...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";\
+		$(MAKE) --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;\
 		echo "      ...Running openssl tests...";\
 		($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
 		($(MAKE) --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
