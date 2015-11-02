@@ -44,7 +44,6 @@ sub	CopyBuilds2Out
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	unless (-e "CURRENT/CONFIG.OUT") {
 		print ("Creating CURRENT/CONFIG.OUT - new configuration\n");
-		system ("cd CURRENT ; ./config -no-shared 2>&1  > CONFIG.OUT");
 	}
 	if (-e "CURRENT/libssl.a") {
 		print (" ...Skipping build (already built)\n");
@@ -111,43 +110,12 @@ else {
 	else {
 		chdir ("CURRENT");
 			print ("\n ...Configuring openssl 64-bit...\n");
-			#RunAndStopOnFailure ("perl Configure VC-WIN64A no-asm --prefix=c:/some/openssl/dir");
 			RunAndStopOnFailure ("perl Configure no-asm VC-WIN64A");
-			#RunAndStopOnFailure ("perl Configure VC-WIN64A");
 			
 			open(my $fh, '>', 'doRun64Configure.bat');
 			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
 			print $fh "ms\\do_win64a.bat\n";
-			#script values copied inline 1.0.2d (2015-08-04 cuz they didnt quite work with my perl)
-			#		perl util\mkfiles.pl >MINFO
-			#		
-			#		cmd /c "nasm -f win64 -v" >NUL 2>&1
-			#		if %errorlevel% neq 0 goto ml64
-			#		
-			#		perl ms\uplink-x86_64.pl nasm > ms\uptable.asm
-			#		nasm -f win64 -o ms\uptable.obj ms\uptable.asm
-			#		goto proceed
-			#		
-			#		:ml64
-			#		perl ms\uplink-x86_64.pl masm > ms\uptable.asm
-			#		ml64 -c -Foms\uptable.obj ms\uptable.asm
-			#		
-			#		:proceed
-			#		perl util\mk1mf.pl VC-WIN64A >ms\nt.mak
-			#		perl util\mk1mf.pl dll VC-WIN64A >ms\ntdll.mak
-			#		
-			#		perl util\mkdef.pl 32 libeay > ms\libeay32.def
-			#		perl util\mkdef.pl 32 ssleay > ms\ssleay32.def
-			
-			#print $fh "perl util\\mkfiles.pl >MINFO\n";
-			#print $fh "perl ms\\uplink-x86_64.pl masm > ms\\uptable.asm\n";
-			#print $fh "ml64 -c -Foms\\uptable.obj ms\\uptable.asm\n";
-			#print $fh "perl util\\mk1mf.pl VC-WIN64A >ms\\nt.mak\n";
-			#print $fh "perl util\\mk1mf.pl dll VC-WIN64A >ms\\ntdll.mak\n";
-			#print $fh "perl util\\mkdef.pl 32 libeay > ms\\libeay32.def\n";
-			#print $fh "perl util\\mkdef.pl 32 ssleay > ms\\ssleay32.def\n";
 			#close $fh;
-			#RunAndStopOnFailure ("cmd /c doRun64Configure.bat");
 
 			system ("cmd /c \"ms\\do_win64a.bat\"");
 			#I THINK OBSOLETE/UNNEEDED - BAD COPY FROM 32-bit days...system ("perl util/mk1mf.pl debug no-asm VC-WIN64A >ms/nt-DBG.mak");

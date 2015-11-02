@@ -22,6 +22,13 @@ FETCHURL=http://www.openssl.org/source/$(BASENAME).tar.gz
 	
 BUILDS_ROOT=../../Builds/
 
+
+CONFIG_ARGS=
+ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CONFIG_ARGS+=	-no-shared
+else
+endif
+
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libcrypto.a				\
@@ -168,17 +175,21 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
-		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\;\
-		cd CURRENT ; ./config -no-shared > CONFIG.OUT 2>&1;\
+		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\
+		echo "cd CURRENT ; ./config $(CONFIG_ARGS)" > CONFIG.OUT;\
+		(cd CURRENT ; ./config $(CONFIG_ARGS)) > CONFIG.OUT 2>&1;\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		make --directory CURRENT --no-print-directory -s all > BUILD.OUT 2>&1;\
+		echo "      ...Running openssl tests...";\
+		(make --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
+		(make --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
 	fi
 else
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		./buildall_.pl > BUILD.OUT 2>&1;\
+		./buildall_windows_.pl > BUILD.OUT 2>&1;\
 	fi
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
