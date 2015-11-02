@@ -24,19 +24,19 @@ BUILDS_ROOT=../../Builds/
 
 
 CONFIG_ARGS=
-ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	-no-shared
 CONFIG_ARGS+=	--prefix=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyLibs/
-else
 endif
 
-ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libcrypto.a				\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libssl.a					\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/bin/openssl					\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/openssl/aes.h
-else
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/libeay32.lib						\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/ssleay32.lib						\
@@ -112,7 +112,7 @@ check:
 			exit 1;\
 		fi;\
 	done
-ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 2236 ]; then\
 		echo "  Test DIFFS";\
@@ -120,7 +120,8 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
 		exit 1;\
 	 fi
-else
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
@@ -152,7 +153,7 @@ $(TRGDIR):	$(ZIPPEDFILE)
 
 doPatch:
 	@echo -n "      ...Patching OpenSSL...   "
-ifneq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@echo -n .
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
@@ -172,7 +173,7 @@ doCreate:	$(ZIPEDFILE)
 	fi
 
 doBuilds:
-ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
@@ -188,7 +189,8 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
 		($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
 	fi
-else
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
@@ -197,7 +199,7 @@ else
 	fi
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
-ifneq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* CURRENT/Builds/Debug32/lib.pdb $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/
