@@ -276,6 +276,11 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
         };
         overrideHeaders = kSilenceTheseHeaders_ + overrideHeaders;
     }
+    {
+        // ignore error if compiled without ssl
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions.fFailConnectionIfSSLCertificateInvalid ? 1L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions.fFailConnectionIfSSLCertificateInvalid ? 2L : 0L);
+    }
 
     if (request.fMethod == HTTP::Methods::kGet) {
         if (not fCURLCacheUTF8_Method_.empty ()) {

@@ -390,6 +390,14 @@ namespace   Stroika {
                      */
                     struct  Connection::Options {
                         bool    fReturnSSLInfo { false };
+                        /**
+                         *  fFailConnectionIfSSLCertificateInvalid could be because of expired CERT, or because of non-matching
+                         *  host.
+                         *
+                         *      \note - we may want to do something more sophisticated, like a callback with stats about the remote side
+                         *              and allow that to throw, indicating rejection. BUt this is good enuf for now.
+                         */
+                        bool    fFailConnectionIfSSLCertificateInvalid { true };
                         bool    fAssumeLowestCommonDenominatorHTTPServer { false };
                     };
 
