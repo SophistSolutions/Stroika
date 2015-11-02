@@ -34,7 +34,7 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libcrypto.a				\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libssl.a					\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/openssl						\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/bin/openssl					\
 	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/openssl/aes.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
