@@ -30,7 +30,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 endif
 
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_32)")
 WIN_CC64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl CC_64)")
 WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl AS_32)")
@@ -74,6 +74,8 @@ $(BUILDS_DIR):	$(TRGDIR)
 	make --no-print-directory doBuilds
 
 
+#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
+#didn't work (failed to find crypto lib)
 PKG_CONFIG=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -92,9 +94,7 @@ endif
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += --enable-static
 ifeq ($(qFeatureFlag_OpenSSL), use)
-#SOMETHING LIKE THIS BUT NOT WORKING YET --LGP 2015-11-01
-#LIBCURL_CONFIGURE += --with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
-#LIBCURL_CONFIGURE += --without-ssl
+#finds right one through PKG_CONFIG
 LIBCURL_CONFIGURE += --with-ssl
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use-system)
@@ -137,14 +137,7 @@ endif
 
 
 doBuilds:
-ifneq (Unix,$(ProjectPlatformSubdir))
-	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
-	@rm -rf $(BUILDS_DIR)
-	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR)/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
-else
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@if [ -e  $(BUILDS_DIR) ]; then\
 		echo "      ...Libcurl in $(BUILDS_DIR) complete";\
 	else\
@@ -162,12 +155,17 @@ else
 		echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
 		make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
 	fi
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
-else
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
+	@rm -rf $(BUILDS_DIR)
+	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
+	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
+
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR)/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
 
