@@ -184,9 +184,9 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;\
 		echo "      ...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";\
 		$(MAKE) --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;\
-		echo "      ...Running openssl tests...";\
+		echo "      ...Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";\
 		($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
-		($(MAKE) --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
+		($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
 	fi
 else
 	@if [ -e  BUILD.OUT ]; then\
