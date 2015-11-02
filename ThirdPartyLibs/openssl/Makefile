@@ -25,7 +25,7 @@ BUILDS_ROOT=../../Builds/
 
 CONFIG_ARGS=
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-CONFIG_ARGS+=	-no-shared
+CONFIG_ARGS+=	-no-shared --prefix=/home/lewis/Sandbox/Stroika-DevRoot/ThirdPartyLibs/openssl/Builds
 else
 endif
 
@@ -176,13 +176,14 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      ...BUILD.OUT already exists";\
 	else\
 		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\
-		echo "cd CURRENT ; ./config $(CONFIG_ARGS)" > CONFIG.OUT;\
-		(cd CURRENT ; ./config $(CONFIG_ARGS)) > CONFIG.OUT 2>&1;\
+		BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`;\
+		echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CONFIG.OUT;\
+		(cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) > CONFIG.OUT 2>&1;\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		make --directory CURRENT --no-print-directory -s all > BUILD.OUT 2>&1;\
+		$(MAKE) --directory CURRENT --no-print-directory all install > BUILD.OUT 2>&1;\
 		echo "      ...Running openssl tests...";\
-		(make --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
-		(make --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
+		($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
+		($(MAKE) --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
 	fi
 else
 	@if [ -e  BUILD.OUT ]; then\
@@ -225,3 +226,4 @@ endif
 ORIG:	$(ZIPEDFILE)
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) ORIGS
+
