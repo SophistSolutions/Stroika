@@ -44,15 +44,15 @@ wstring ObjectReader::Context::TraceLeader_ () const
 
 /*
  ********************************************************************************
- ******* StructuredStreamEvents::ObjectReader::IConsumerToContextTranslator******
+ ******** StructuredStreamEvents::ObjectReader::IConsumerDelegateToContext ******
  ********************************************************************************
  */
-ObjectReader::IConsumerToContextTranslator::IConsumerToContextTranslator (Context& r)
+ObjectReader::IConsumerDelegateToContext::IConsumerDelegateToContext (Context& r)
     : fContext_ (r)
 {
 }
 
-void    ObjectReader::IConsumerToContextTranslator::StartElement (const StructuredStreamEvents::Name& name)
+void    ObjectReader::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
@@ -62,7 +62,7 @@ void    ObjectReader::IConsumerToContextTranslator::StartElement (const Structur
 #endif
     fContext_.GetTop ()->HandleChildStart (fContext_, name);
 }
-void    ObjectReader::IConsumerToContextTranslator::EndElement (const StructuredStreamEvents::Name& name)
+void    ObjectReader::IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
@@ -72,7 +72,7 @@ void    ObjectReader::IConsumerToContextTranslator::EndElement (const Structured
 #endif
     fContext_.GetTop ()->HandleEndTag (fContext_);
 }
-void    ObjectReader::IConsumerToContextTranslator::TextInsideElement (const String& text)
+void    ObjectReader::IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qDefaultTracingOn
@@ -140,7 +140,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
 
     ctx.Push (make_shared<DocumentReader_> (docEltBuilder));
 
-    IConsumerToContextTranslator cb (ctx);
+    IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added
@@ -157,7 +157,7 @@ void    ObjectReader::Run (const shared_ptr<IContextReader>& docEltBuilder, cons
 
     ctx.Push (make_shared<DocumentReader_> (docEltBuilder, docEltUri, docEltLocalName));
 
-    IConsumerToContextTranslator cb (ctx);
+    IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added

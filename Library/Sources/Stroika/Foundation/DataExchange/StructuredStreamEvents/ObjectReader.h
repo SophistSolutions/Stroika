@@ -61,7 +61,7 @@ namespace   Stroika {
                     class   Context;
 
                 public:
-                    class   IConsumerToContextTranslator;
+                    class   IConsumerDelegateToContext;
 
                 public:
                     ObjectReader () = default;
@@ -71,9 +71,6 @@ namespace   Stroika {
                     // a HandleChildStar tand HandleEndTag() method call (exactly once).
                     nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
                     nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
-
-                private:
-                    class   MyCallback_;
                 };
 
 
@@ -122,12 +119,12 @@ namespace   Stroika {
                 };
 
 
-                class   ObjectReader::IConsumerToContextTranslator : public StructuredStreamEvents::IConsumer {
+                class   ObjectReader::IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
                 public:
-                    IConsumerToContextTranslator () = delete;
-                    IConsumerToContextTranslator (Context& r);
-                    IConsumerToContextTranslator (const Context&) = delete;
-                    IConsumerToContextTranslator& operator= (const IConsumerToContextTranslator&) = delete;
+                    IConsumerDelegateToContext () = delete;
+                    IConsumerDelegateToContext (Context& r);
+                    IConsumerDelegateToContext (const Context&) = delete;
+                    IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
                 private:
                     Context&    fContext_;
                 public:
