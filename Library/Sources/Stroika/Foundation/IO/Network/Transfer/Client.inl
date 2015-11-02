@@ -94,6 +94,11 @@ namespace   Stroika {
                     }
                     inline  void    Connection::SetURL (const URL& url)
                     {
+#if     qDebug
+                        if (url.GetHostRelativePath ().StartsWith (L"/")) {
+                            DbgTrace (L"Connection::SetURL (URL has host-relative path (%s) starting with / - which is not technically illegal, but often a bug", url.GetHostRelativePath ().c_str ());
+                        }
+#endif
                         fRep_->SetURL (url);
                     }
                     inline  void    Connection::Close ()
