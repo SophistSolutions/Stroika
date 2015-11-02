@@ -34,6 +34,88 @@ namespace   Stroika {
                 }
 
 
+                /*
+                 ********************************************************************************
+                 ******************** StructuredStreamEvents::Name operators ********************
+                 ********************************************************************************
+                 */
+                inline  bool    operator< (const Name& lhs, const Name& rhs)
+                {
+                    if (lhs.fNamespaceURI.IsPresent () and rhs.fNamespaceURI.IsPresent ()) {
+                        int cmp = lhs.fNamespaceURI->Compare (*rhs.fNamespaceURI);
+                        if (cmp < 0) {
+                            return true;
+                        }
+                        else if (cmp > 0) {
+                            return false;
+                        }
+                    }
+                    {
+                        int cmp = lhs.fLocalName.Compare (rhs.fLocalName);
+                        if (cmp < 0) {
+                            return true;
+                        }
+                        else if (cmp > 0) {
+                            return false;
+                        }
+                    }
+                    if (lhs.fType < rhs.fType) {
+                        return true;
+                    }
+                    return false;
+                }
+                inline  bool    operator<= (const Name& lhs, const Name& rhs)
+                {
+                    if (lhs.fNamespaceURI.IsPresent () and rhs.fNamespaceURI.IsPresent ()) {
+                        int cmp = lhs.fNamespaceURI->Compare (*rhs.fNamespaceURI);
+                        if (cmp < 0) {
+                            return true;
+                        }
+                        else if (cmp > 0) {
+                            return false;
+                        }
+                    }
+                    {
+                        int cmp = lhs.fLocalName.Compare (rhs.fLocalName);
+                        if (cmp < 0) {
+                            return true;
+                        }
+                        else if (cmp > 0) {
+                            return false;
+                        }
+                    }
+                    if (lhs.fType <= rhs.fType) {
+                        return true;
+                    }
+                    return false;
+                }
+                inline  bool    operator== (const Name& lhs, const Name& rhs)
+                {
+                    if (lhs.fNamespaceURI.IsPresent () and rhs.fNamespaceURI.IsPresent () and lhs.fNamespaceURI  != rhs.fNamespaceURI) {
+                        return false;
+                    }
+                    if (lhs.fLocalName != rhs.fLocalName) {
+                        return false;
+                    }
+                    if (lhs.fType != rhs.fType) {
+                        return false;
+                    }
+                    return true;
+                }
+                inline  bool    operator!= (const Name& lhs, const Name& rhs)
+                {
+                    return not (lhs == rhs);
+                }
+                inline  bool    operator>= (const Name& lhs, const Name& rhs)
+                {
+                    return not (lhs < rhs);
+                }
+                inline  bool    operator> (const Name& lhs, const Name& rhs)
+                {
+                    return not (lhs <= rhs);
+                }
+
+
             }
         }
     }

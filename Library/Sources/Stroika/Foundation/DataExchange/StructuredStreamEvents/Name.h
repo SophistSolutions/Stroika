@@ -32,6 +32,9 @@ namespace   Stroika {
                 /**
                  */
                 struct Name {
+                    /**
+                     *  fNamespaceURI empty treated as 'wildcard' - matching other URI name.
+                     */
                     Optional<String>    fNamespaceURI;
                     String              fLocalName;
 
@@ -46,10 +49,44 @@ namespace   Stroika {
                     };
                     NameType        fType { eElement };
 
+
+                    /**
+                     */
                     Name () = delete;
                     Name (const String& localName, NameType type = eElement);
                     Name (const String& namespaceURI, const String& localName, NameType type = eElement);
                 };
+
+
+                /**
+                 *  Basic operator< with the obivous meaning.
+                 */
+                bool    operator< (const Name& lhs, const Name& rhs);
+
+                /**
+                 *  Basic operator<= with the obivous meaning
+                 */
+                bool    operator<= (const Name& lhs, const Name& rhs);
+
+                /**
+                 *  Basic operator== with the obivous meaning
+                 */
+                bool    operator== (const Name& lhs, const Name& rhs);
+
+                /**
+                 *  Basic operator!= with the obivous meaning
+                 */
+                bool    operator!= (const Name& lhs, const Name& rhs);
+
+                /**
+                 *  Basic operator>= with the obivous meaning
+                 */
+                bool    operator>= (const Name& lhs, const Name& rhs);
+
+                /**
+                 *  Basic operator> with the obivous meaning
+                 */
+                bool    operator> (const Name& lhs, const Name& rhs);
 
 
             }
