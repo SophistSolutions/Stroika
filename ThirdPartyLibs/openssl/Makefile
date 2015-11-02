@@ -168,17 +168,17 @@ ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
+		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\;\
+		cd CURRENT ; ./config -no-shared > CONFIG.OUT 2>&1;\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		./buildall_.pl > BUILD.OUT 2>&1;\
+		make --directory CURRENT --no-print-directory -s all > BUILD.OUT 2>&1;\
 	fi
 else
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
-		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\;\
-		cd CURRENT ; ./config -no-shared > CONFIG.OUT 2>&1;\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		make --directory CURRENT --no-print-directory -s all > BUILD.OUT 2>&1;\
+		./buildall_.pl > BUILD.OUT 2>&1;\
 	fi
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
