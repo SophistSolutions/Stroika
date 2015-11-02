@@ -41,6 +41,10 @@ namespace   {
         {
             ::curl_global_init (CURL_GLOBAL_ALL);
         }
+        ~ModuleInit_ ()
+        {
+            ::curl_global_cleanup ();
+        }
     };
     ModuleInit_ sIniter_;
 }

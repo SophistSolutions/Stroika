@@ -21,7 +21,8 @@
  *
  *      @todo   Handle pass in of headers. Treat special headers like content type proeprly. Same for content-length.
  *
- *
+ *      @todo   Consider if curl global init/global_free stuff safe (look at curl code). May run into issue if other
+ *              librraries lusing curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
 
