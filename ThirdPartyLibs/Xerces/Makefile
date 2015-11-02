@@ -23,24 +23,24 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/libxerces-c.a				\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libxerces-c.a				\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/xercesc/dom/DOM.hpp
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib	\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp	\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs/xerces-c_static_3D.lib					\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs/xerces-c_static_3.lib		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/xercesc/dom/DOM.hpp
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/xerces-c_static_3D.lib					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/xerces-c_static_3.lib				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/xerces-c_static_3.lib	\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/xercesc/dom/DOM.hpp	\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/xerces-c_static_3.lib		\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/xercesc/dom/DOM.hpp		\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/xerces-c_static_3D.lib					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib/xerces-c_static_3.lib				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/xercesc/dom/DOM.hpp				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/xerces-c_static_3.lib		\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/xercesc/dom/DOM.hpp
 endif
 
 
@@ -109,21 +109,21 @@ doBuilds:
 	@./buildall_.pl build > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
 else
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win64/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/Includes/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Libs
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib && cp "CURRENT/Build/Win64/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/
 endif
