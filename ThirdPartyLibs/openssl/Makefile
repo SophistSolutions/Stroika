@@ -102,7 +102,7 @@ clean:
 	@rm -rf $(TRGDIR)
 
 clobber:	clean
-	@rm -f BUILD.OUT
+	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT
 
 check:
 	@echo -n "      ...Checking..."
