@@ -145,6 +145,15 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  -lxerces
 	endif
 
+	ifeq ($(qFeatureFlag_LibCurl), 'use')
+		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
+		#StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/curl-config --static-libs)
+		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcurl.a
+	endif
+	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
+		StroikaFoundationSupportLibs	+=  -lcurl
+	endif
+
 	ifeq ($(qFeatureFlag_LZMA), 'use')
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/lzma.a
 	endif
@@ -157,16 +166,7 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcrypto.a -ldl
 	endif
 	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
-		StroikaFoundationSupportLibs	+=  -lopenssl -lcrypto
-	endif
-
-	ifeq ($(qFeatureFlag_LibCurl), 'use')
-		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
-		#StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/curl-config --static-libs)
-		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcurl.a
-	endif
-	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
-		StroikaFoundationSupportLibs	+=  -lcurl
+		StroikaFoundationSupportLibs	+=  -lssl -lcrypto
 	endif
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
