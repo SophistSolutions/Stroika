@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Blend for Visual Studio 14
+# Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\..\Library\Projects\VisualStudio.Net-2015\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
@@ -40,9 +40,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{0D9311A4-3664-4903-A8CA-66B67CEC1727}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AcvtiveLedIt", "AcvtiveLedIt", "{69148F2F-A902-4C92-B39B-F78D19B3E81F}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\ActiveLedIt\Projects\VisualStudio.Net-2015\ActiveLedIt.vcxproj = ..\..\ActiveLedIt\Projects\VisualStudio.Net-2015\ActiveLedIt.vcxproj
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LedIt", "..\..\LedIt\Projects\VisualStudio.Net-2015\LedIt.vcxproj", "{CB990386-9FDE-4FBA-9B1F-8A373322E978}"
 EndProject
@@ -83,6 +80,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ArchiveUtility", "ArchiveUtility", "{ACCC81B9-F689-4BA0-A253-4BDF70F7BC13}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArchiveUtility", "..\..\ArchiveUtility\Projects\VisualStudio.Net-2015\ArchiveUtility.vcxproj", "{E6501207-BB83-4CE7-94CA-7429272D4977}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ActiveLedIt", "..\..\ActiveLedIt\Projects\VisualStudio.Net-2015\ActiveLedIt.vcxproj", "{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -479,6 +478,28 @@ Global
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.Build.0 = Release-U-64|x64
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.ActiveCfg = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.Build.0 = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|x64.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|x64.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-32|Win32.ActiveCfg = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-32|Win32.Build.0 = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-32|x64.ActiveCfg = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Win32.ActiveCfg = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Win32.Build.0 = Debug-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|x64.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|x64.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|Win32.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|Win32.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|x64.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|x64.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-32|x64.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|Win32.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|Win32.Build.0 = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|x64.ActiveCfg = Release-U-32|Win32
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|x64.Build.0 = Release-U-32|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -513,5 +534,6 @@ Global
 		{6AB25F09-C4AC-4839-90C7-44A230B4412F} = {0D9311A4-3664-4903-A8CA-66B67CEC1727}
 		{ACCC81B9-F689-4BA0-A253-4BDF70F7BC13} = {0D9311A4-3664-4903-A8CA-66B67CEC1727}
 		{E6501207-BB83-4CE7-94CA-7429272D4977} = {ACCC81B9-F689-4BA0-A253-4BDF70F7BC13}
+		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6} = {69148F2F-A902-4C92-B39B-F78D19B3E81F}
 	EndGlobalSection
 EndGlobal
