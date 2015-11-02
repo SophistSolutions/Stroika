@@ -22,6 +22,10 @@ FETCHURL=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
 
 BUILDS_ROOT=../../Builds/
 
+
+qFeatureFlag_OpenSSL	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL)
+
+
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 endif
@@ -72,8 +76,17 @@ $(BUILDS_DIR):	$(TRGDIR)
 
 LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += --enable-static
-LIBCURL_CONFIGURE += --without-openssl
+ifeq ($(qFeatureFlag_OpenSSL), use)
+#SOMETHING LIKE THIS BUT NOT WORKING YET --LGP 2015-11-01
+#LIBCURL_CONFIGURE += --with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/Includes/openssl/)
 LIBCURL_CONFIGURE += --without-ssl
+endif
+ifeq ($(qFeatureFlag_OpenSSL), use-system)
+LIBCURL_CONFIGURE += --with-ssl
+endif
+ifeq ($(qFeatureFlag_OpenSSL), no)
+LIBCURL_CONFIGURE += --without-ssl
+endif
 LIBCURL_CONFIGURE += --disable-shared
 LIBCURL_CONFIGURE += --without-cyassl
 LIBCURL_CONFIGURE += --without-librtmp
