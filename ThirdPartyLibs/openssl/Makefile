@@ -107,7 +107,7 @@ check:
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 2236 ]; then\
-		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
+		echo "  Test DIFFS";\
 		echo "    Diff should be less than 2236 to be safe.";\
 		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
 		exit 1;\
@@ -116,7 +116,7 @@ else
 	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
-		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
+		echo "  Test DIFFS";\
 		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
 		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
 		echo "      diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
@@ -125,7 +125,7 @@ else
 	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
-		echo "  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC.";\
+		echo "  Test DIFFS";\
 		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
 		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
 		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
@@ -164,12 +164,23 @@ doCreate:	$(ZIPEDFILE)
 	fi
 
 doBuilds:
+ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@if [ -e  BUILD.OUT ]; then\
 		echo "      ...BUILD.OUT already exists";\
 	else\
 		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
 		./buildall_.pl > BUILD.OUT 2>&1;\
 	fi
+else
+	@if [ -e  BUILD.OUT ]; then\
+		echo "      ...BUILD.OUT already exists";\
+	else\
+		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\;\
+		cd CURRENT ; ./config -no-shared > CONFIG.OUT 2>&1;\
+		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
+		make --directory CURRENT --no-print-directory -s all > BUILD.OUT 2>&1;\
+	fi
+endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/apps/openssl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
