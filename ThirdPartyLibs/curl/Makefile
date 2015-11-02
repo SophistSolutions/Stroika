@@ -78,7 +78,7 @@ LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += --enable-static
 ifeq ($(qFeatureFlag_OpenSSL), use)
 #SOMETHING LIKE THIS BUT NOT WORKING YET --LGP 2015-11-01
-#LIBCURL_CONFIGURE += --with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/Includes/openssl/)
+#LIBCURL_CONFIGURE += --with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
 LIBCURL_CONFIGURE += --without-ssl
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use-system)
@@ -149,8 +149,8 @@ else
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Libs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/Includes/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
 else
 	@todo - INCOMPLETE WINDOZE BUILD
 endif

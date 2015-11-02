@@ -42,13 +42,13 @@ Includes	+=	-I$(RelPathToStroikaDevRoot)/IntermediateFiles/DefaultConfiguration/
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/include/
 else ifeq ($(qFeatureFlag_LibCurl), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/include/
 else ifeq ($(qFeatureFlag_LZMA), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/include/
 else ifeq ($(qFeatureFlag_OpenSSL), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Includes/
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyLibs/include/
 endif
 
 
@@ -139,7 +139,7 @@ ifndef StroikaFoundationSupportLibs
 	StroikaFoundationSupportLibs	=
 
 	ifeq ($(qFeatureFlag_Xerces), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libxerces-c.a
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/libxerces-c.a
 	endif
 	ifeq ($(qFeatureFlag_Xerces), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lxerces
@@ -148,22 +148,22 @@ ifndef StroikaFoundationSupportLibs
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
 		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
 		#StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/curl-config --static-libs)
-		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcurl.a
+		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/libcurl.a
 	endif
 	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lcurl
 	endif
 
 	ifeq ($(qFeatureFlag_LZMA), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/lzma.a
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/lzma.a
 	endif
 
 	ifeq ($(qFeatureFlag_ZLib), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libz.a
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/libz.a
 	endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/Libs/libcrypto.a -ldl
+		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyLibs/lib/libcrypto.a -ldl
 	endif
 	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lssl -lcrypto
