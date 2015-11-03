@@ -83,7 +83,7 @@ namespace   Stroika {
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
                  *  it into a related object.
                  */
-                class   ObjectReader::IContextReader {
+                class   ObjectReader::IContextReader : public enable_shared_from_this<ObjectReader::IContextReader> {
                 public:
                     virtual ~IContextReader () = default;
                     virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) = 0;
