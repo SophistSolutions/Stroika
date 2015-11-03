@@ -7,6 +7,7 @@
 #include    "../../Characters/FloatConversion.h"
 #include    "../../Characters/Format.h"
 #include    "../../Characters/String2Int.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../BadFormatException.h"
 
 #include    "ObjectReader.h"
@@ -14,6 +15,7 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 
@@ -28,14 +30,10 @@ using   Memory::Byte;
  ********************************************************************************
  */
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-wstring ObjectReader::Context::TraceLeader_ () const
+String ObjectReader::Context::TraceLeader_ () const
 {
-    wstring l;
-    l.reserve (fStack_.size ());
-    for (size_t i = 0; i < fStack_.size (); ++i) {
-        l += L" ";
-    }
-    return l;
+    static  const   String_Constant     kOneTabLevel_ { L"    " };
+    return kOneTabLevel_.Repeat (fStack_.size ());
 }
 #endif
 

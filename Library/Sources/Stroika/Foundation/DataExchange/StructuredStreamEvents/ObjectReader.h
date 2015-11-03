@@ -101,7 +101,7 @@ namespace   Stroika {
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
                     bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
-                    nonvirtual  wstring TraceLeader_ () const;
+                    nonvirtual  String TraceLeader_ () const;
 #endif
 
                 public:
