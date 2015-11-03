@@ -27,7 +27,7 @@ using   Memory::Byte;
  ************ StructuredStreamEvents::ObjectReader::Context *********************
  ********************************************************************************
  */
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 wstring ObjectReader::Context::TraceLeader_ () const
 {
     wstring l;
@@ -55,7 +55,7 @@ ObjectReader::IConsumerDelegateToContext::IConsumerDelegateToContext (Context& r
 void    ObjectReader::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
         DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
@@ -65,7 +65,7 @@ void    ObjectReader::IConsumerDelegateToContext::StartElement (const Structured
 void    ObjectReader::IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
         DbgTrace (L"%sCalling EndElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
@@ -75,7 +75,7 @@ void    ObjectReader::IConsumerDelegateToContext::EndElement (const StructuredSt
 void    ObjectReader::IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
     AssertNotNull (fContext_.GetTop ());
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
         DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), text.c_str () );
     }

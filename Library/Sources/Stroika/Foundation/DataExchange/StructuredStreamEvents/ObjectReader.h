@@ -40,6 +40,11 @@ namespace   Stroika {
             namespace   StructuredStreamEvents {
 
 
+#ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+#define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
+#endif
+
+
                 /**
                 &&&&&& TODO - @todo - rewrite all these docs
                 *
@@ -93,7 +98,7 @@ namespace   Stroika {
                  */
                 class   ObjectReader::Context {
                 public:
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
                     bool    fTraceThisReader;       // very noisy - off by default even for tracemode
                     nonvirtual  wstring TraceLeader_ () const;

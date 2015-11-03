@@ -24,14 +24,14 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 inline  ObjectReader::Context::Context ()
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     : fTraceThisReader (false)
 #endif
                 {
                 }
                 inline  void    ObjectReader::Context::Push (const shared_ptr<IContextReader>& elt)
                 {
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
                         DbgTrace ("%sObjectReader::Push", TraceLeader_ ().c_str ());
                     }
@@ -42,7 +42,7 @@ namespace   Stroika {
                 inline  void    ObjectReader::Context::Pop ()
                 {
                     fStack_.pop_back ();
-#if     qDefaultTracingOn
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
                         DbgTrace ("%sObjectReader::Popped", TraceLeader_ ().c_str ());
                     }
