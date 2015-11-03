@@ -57,7 +57,7 @@ void    ObjectReader::IConsumerDelegateToContext::StartElement (const Structured
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling HandleChildStart ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
     fContext_.GetTop ()->HandleChildStart (fContext_, name);
@@ -67,7 +67,7 @@ void    ObjectReader::IConsumerDelegateToContext::EndElement (const StructuredSt
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling EndElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
     fContext_.GetTop ()->HandleEndTag (fContext_);
@@ -77,7 +77,7 @@ void    ObjectReader::IConsumerDelegateToContext::TextInsideElement (const Strin
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
     if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling TextInsideElement ('%s',...)...", fContext_.TraceLeader_ ().c_str (), text.c_str () );
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext_.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
     }
 #endif
     fContext_.GetTop ()->HandleTextInside (fContext_, text);

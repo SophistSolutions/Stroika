@@ -23,17 +23,12 @@ namespace   Stroika {
                   **************************** ObjectReader::Context *****************************
                   ********************************************************************************
                   */
-                inline  ObjectReader::Context::Context ()
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-                    : fTraceThisReader (false)
-#endif
-                {
-                }
                 inline  void    ObjectReader::Context::Push (const shared_ptr<IContextReader>& elt)
                 {
+                    RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
-                        DbgTrace ("%sObjectReader::Push", TraceLeader_ ().c_str ());
+                        DbgTrace ("%sObjectReader::Push [%s]", TraceLeader_ ().c_str (), typeid (*elt.get ()).name ());
                     }
 #endif
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
@@ -44,7 +39,12 @@ namespace   Stroika {
                     fStack_.pop_back ();
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
-                        DbgTrace ("%sObjectReader::Popped", TraceLeader_ ().c_str ());
+                        if (fStack_.empty ()) {
+                            DbgTrace ("%sObjectReader::Popped [empty stack]", TraceLeader_ ().c_str ());
+                        }
+                        else {
+                            DbgTrace ("%sObjectReader::Popped [back to: %s]", TraceLeader_ ().c_str (), typeid (*GetTop ().get ()).name ());
+                        }
                     }
 #endif
                 }

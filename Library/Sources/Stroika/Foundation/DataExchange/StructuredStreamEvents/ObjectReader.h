@@ -100,12 +100,12 @@ namespace   Stroika {
                 public:
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
-                    bool    fTraceThisReader;       // very noisy - off by default even for tracemode
+                    bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
                     nonvirtual  wstring TraceLeader_ () const;
 #endif
 
                 public:
-                    Context ();
+                    Context () = default;
                     Context (const Context&) = delete;
                     Context& operator= (const Context&) = delete;
 
