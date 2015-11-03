@@ -171,7 +171,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (ObjectReader::Context& r)
                 {
-                    shared_ptr<IContextReader>   saveCopyOfUs        =   shared_from_this ();    // bump our reference count til the end of the procedure
+                    shared_ptr<IContextReader>   saveCopyOfUs        =   this->shared_from_this ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
                     // it also might do some additioanl processing on its value
@@ -239,7 +239,7 @@ namespace   Stroika {
                         //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
                         /// we are at the top of the stack, but we want to pop, and hand this 'new child' to our parent
                         if (fUnknownSubElementDisposition_ == eEndList) {
-                            auto save  = shared_from_this ();
+                            auto save  = this->shared_from_this ();
                             r.Pop ();
                             r.GetTop ()->HandleChildStart (r, name);
                         }
