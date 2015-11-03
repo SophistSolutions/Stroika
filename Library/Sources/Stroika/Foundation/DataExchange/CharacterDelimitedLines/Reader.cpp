@@ -63,6 +63,9 @@ public:
     }
     nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx ("DataExchange::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
+#endif
         Sequence<Sequence<String>>  result;
         for (String line : in.ReadLines ()) {
             Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };

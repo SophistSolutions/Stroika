@@ -22,6 +22,11 @@ using   Memory::Byte;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 /*
  ********************************************************************************
@@ -46,6 +51,9 @@ public:
     }
     virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx ("DataExchange::INI::Reader::Rep_::Read");
+#endif
         Profile  p;
         Optional<String>    readingSection;
         Section             currentSection;

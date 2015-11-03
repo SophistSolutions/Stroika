@@ -23,6 +23,13 @@ using   Characters::String_Constant;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 class   DataExchange::XML::Reader::Rep_ : public DataExchange::VariantReader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -47,6 +54,9 @@ public:
     }
     virtual VariantValue    Read (const Streams::InputStream<Character>& in) override
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx ("DataExchange::XML::Reader::Rep_::Read");
+#endif
         // TODO - USE SAXREADER HERE!!!
 #if     qHasFeature_Xerces
         AssertNotImplemented ();

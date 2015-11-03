@@ -22,6 +22,11 @@ using   Characters::String_Constant;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 namespace   {
 
     /*
@@ -431,6 +436,9 @@ public:
     }
     virtual VariantValue    Read (const Streams::InputStream<Characters::Character>& in) override
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx ("DataExchange::JSON::Reader::Rep_::Read");
+#endif
         wstring     tmp =   in.ReadAll ().As<wstring> ();
         wstring::const_iterator i = tmp.begin ();
         return Reader_value_ (&i, tmp.end ());
