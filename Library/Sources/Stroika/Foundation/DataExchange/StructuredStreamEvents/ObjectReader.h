@@ -95,6 +95,19 @@ namespace   Stroika {
                 /**
                  *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
                  *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
+                 *
+                 *  \note   Important Design Principle for Reader
+                 *
+                 *          We only recognize a new 'type' by its 'Start' element. So its at that (or sometimes the start/end of a child) that
+                 *          we can PUSH a new reader in place.
+                 *
+                 *          The current tags and text get delivered to the top of the stack.
+                 *
+                 *          When we encounter a close tag, we end that reading, and so pop.
+                 *
+                 *          This means that the start and end tags for a given pair, go to differnt 'IContextReader'
+                 *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
+                 *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
                  */
                 class   ObjectReader::Context {
                 public:
@@ -244,12 +257,16 @@ namespace   Stroika {
                  *              using   ReaderType      =   BuiltinReader<String>;
                  *              static  const wchar_t           ElementName[] =  L"Name";
                  *      };
+                 *
+                 *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
                  */
                 template    <typename TRAITS>
                 struct ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
+                private:
                     bool                            readingAT_;
                     typename TRAITS::ElementType    curTReading_;
 
+                public:
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v);
 
                     virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
@@ -257,6 +274,8 @@ namespace   Stroika {
                 };
 
 
+                /**
+                 */
                 void    ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
