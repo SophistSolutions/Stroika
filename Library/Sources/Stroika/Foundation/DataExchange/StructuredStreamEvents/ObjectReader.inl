@@ -217,37 +217,46 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename TRAITS>
-                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v)
+                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition)
                     : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
-                            , readingAT_ (false)
+                            , fUnknownSubElementDisposition_ (unknownEltDisposition)
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
+                void    ListOfObjectReader<TRAITS>::HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    if (name.fLocalName == TRAITS::ElementName) {
-                        if (readingAT_) {
-                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                            this->fValuePtr->push_back (curTReading_);
-                            readingAT_ = false;
-                        }
-                        readingAT_ = true;
-                        curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
-                        this->_PushNewObjPtr (r, make_shared<typename TRAITS::ReaderType> (&curTReading_));
+                    // if we have an existing reader, we must save the data from it, and close it out
+                    if (fCurReader_ != nullptr) {
+                        this->fValuePtr->push_back (fCurTReading_);
+                        fCurReader_ = nullptr;
+                    }
+                    if (fCurReader_ == nullptr and name.fLocalName == TRAITS::ElementName) {
+                        fCurTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
+                        fCurReader_ = make_shared<typename TRAITS::ReaderType> (&fCurTReading_);
+                        this->_PushNewObjPtr (r, fCurReader_);
                     }
                     else {
-                        ThrowUnRecognizedStartElt (name);
+                        //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
+                        /// we are at the top of the stack, but we want to pop, and hand this 'new child' to our parent
+                        if (fUnknownSubElementDisposition_ == eEndList) {
+                            auto save  = shared_from_this ();
+                            r.Pop ();
+                            r.GetTop ()->HandleChildStart (r, name);
+                        }
+                        else {
+                            AssertNotImplemented ();    // @todo
+                        }
                     }
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleEndTag (ObjectReader::Context& r)
+                void    ListOfObjectReader<TRAITS>::HandleEndTag (ObjectReader::Context& r)
                 {
-                    if (readingAT_) {
-                        Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                        this->fValuePtr->push_back (curTReading_);
-                        readingAT_ = false;
+                    // if we have an existing reader, we must save the data from it, and close it out
+                    if (fCurReader_ != nullptr) {
+                        this->fValuePtr->push_back (fCurTReading_);
+                        fCurReader_ = nullptr;
                     }
-                    ComplexObjectReader<vector<typename TRAITS::ElementType>>::HandleEndTag (r);
+                    r.Pop ();
                 }
 
 

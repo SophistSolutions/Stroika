@@ -261,16 +261,19 @@ namespace   Stroika {
                  *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
                  */
                 template    <typename TRAITS>
-                struct ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
-                private:
-                    bool                            readingAT_;
-                    typename TRAITS::ElementType    curTReading_;
-
+                struct  ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
                 public:
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v);
+                    enum    UnknownSubElementDisposition { eIgnore, eEndList };
+                public:
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = eEndList);
 
                     virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void HandleEndTag (ObjectReader::Context& r) override;
+
+                private:
+                    typename TRAITS::ElementType                fCurTReading_;
+                    shared_ptr<typename TRAITS::ReaderType>     fCurReader_;
+                    UnknownSubElementDisposition                fUnknownSubElementDisposition_;
                 };
 
 
