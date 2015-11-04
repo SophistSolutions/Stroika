@@ -87,12 +87,6 @@ namespace   Stroika {
                 class   IConsumerDelegateToContext;
 
 
-                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
-
-                // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
-                // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
 
 
                 /**
@@ -111,7 +105,7 @@ namespace   Stroika {
                 public:
                     virtual ~IContextReader () = default;
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) = 0;
-                    virtual void    HandleTextInside (Context& r, const String& text) = 0;
+                    virtual void    HandleTextInside (Context& r, const String& text) {};
                     virtual void    HandleEndTag (Context& r) = 0;
 
 
@@ -160,18 +154,12 @@ namespace   Stroika {
                     const ObjectReaderRegistry& fObjectReaderRegistry_;
 
                 public:
-                    Context (const ObjectReaderRegistry& objectReaderRegistry)
-                        : fObjectReaderRegistry_ (objectReaderRegistry)
-                    {
-                    }
+                    Context (const ObjectReaderRegistry& objectReaderRegistry);
                     Context (const Context&) = delete;
                     Context& operator= (const Context&) = delete;
 
                 public:
-                    const   ObjectReaderRegistry&   GetObjectReaderRegistry () const
-                    {
-                        return fObjectReaderRegistry_;
-                    }
+                    const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
 
                 public:
                     nonvirtual  void    Push (const shared_ptr<IContextReader>& elt);
@@ -291,7 +279,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
 
-
+#if 0
                 /**
                  *  Helper class for reading complex (structured) objects.
                  */
@@ -306,9 +294,8 @@ namespace   Stroika {
                 public:
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                     virtual void    HandleEndTag (Context& r) override;
-                protected:
-                    nonvirtual  void    _PushNewObjPtr (Context& r, const shared_ptr<IContextReader>& newlyAllocatedObject2Push);
                 };
+#endif
 
 
                 /**
@@ -325,7 +312,7 @@ namespace   Stroika {
                  *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
                  */
                 template    <typename TRAITS>
-                struct  ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
+                struct  ListOfObjectReader: public IContextReader {
                 public:
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
@@ -333,6 +320,7 @@ namespace   Stroika {
                     virtual void HandleEndTag (Context& r) override;
 
                 private:
+                    vector<typename TRAITS::ElementType>*  fValuePtr;
                     typename TRAITS::ElementType                fCurTReading_;
                     shared_ptr<typename TRAITS::ReaderType>     fCurReader_;
                     UnknownSubElementDisposition                fUnknownSubElementDisposition_;
@@ -375,11 +363,20 @@ namespace   Stroika {
                 };
 
 
+                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
+
+                // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
+                // a HandleChildStar tand HandleEndTag() method call (exactly once).
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+
+
                 template    <typename   T>
-                class   ComplexObjectReader2 : public ComplexObjectReader<T> {
+                class   ComplexObjectReader2 : public IContextReader {
                 public:
-                    ComplexObjectReader2 (Mapping<String, pair<type_index, size_t>> maps, T* vp)
-                        : ComplexObjectReader<T>(vp)
+                    ComplexObjectReader2 (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
+                        : IContextReader()
+                        , fValuePtr (vp)
                         , fFieldNameToTypeMap (maps)
                     {
                     }
@@ -389,16 +386,20 @@ namespace   Stroika {
                         if (ti) {
                             Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
                             Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                            this->_PushNewObjPtr (r, r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField));
+                            r.Push (r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField));
                         }
                         else if (fThrowOnUnrecongizedelts) {
                             ThrowUnRecognizedStartElt (name);
                         }
                         else {
-                            this->_PushNewObjPtr (r, make_shared<IgnoreNodeReader> ());
+                            r.Push (make_shared<IgnoreNodeReader> ());
                         }
                     }
-
+                    virtual void    HandleEndTag (Context& r)override
+                    {
+                        r.Pop ();
+                    }
+                    T*  fValuePtr;;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
                     bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
                 };
@@ -411,17 +412,19 @@ namespace   Stroika {
 
 
                 template    <typename ELEMENT_TYPE>
-                struct ListOfObjectReader2: public ComplexObjectReader<vector<ELEMENT_TYPE>> {
+                struct ListOfObjectReader2: public IContextReader {
                     bool                    readingAT_;
                     ELEMENT_TYPE            curTReading_;
                     ObjectReaderRegistry&   fObjRegistry;
                     String                  fName;
+                    vector<ELEMENT_TYPE>*    fValuePtr;
 
                     ListOfObjectReader2 (ObjectReaderRegistry* objReg, const String& name, vector<ELEMENT_TYPE>* v)
-                        : ComplexObjectReader<vector<ELEMENT_TYPE>> (v)
-                                , readingAT_ (false)
-                                , fObjRegistry  (*objReg)
-                                , fName  (name)
+                        : IContextReader ()
+                        , readingAT_ (false)
+                        , fObjRegistry  (*objReg)
+                        , fName  (name)
+                        , fValuePtr (v)
                     {
                     }
                     virtual void HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
@@ -434,7 +437,7 @@ namespace   Stroika {
                             }
                             readingAT_ = true;
                             curTReading_ = ELEMENT_TYPE (); // clear because dont' want to keep values from previous elements
-                            this->_PushNewObjPtr (r, fObjRegistry.MakeContextReader<ELEMENT_TYPE> (&curTReading_));
+                            r.Push (fObjRegistry.MakeContextReader<ELEMENT_TYPE> (&curTReading_));
                         }
                         else {
                             ThrowUnRecognizedStartElt (name);
@@ -447,9 +450,11 @@ namespace   Stroika {
                             this->fValuePtr->push_back (curTReading_);
                             readingAT_ = false;
                         }
-                        ComplexObjectReader<vector<ELEMENT_TYPE>>::HandleEndTag (r);
+                        r.Pop ();
                     }
                 };
+
+
             }
         }
     }

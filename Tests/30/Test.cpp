@@ -187,44 +187,56 @@ namespace   {
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
         namespace T1_ {
-            struct PersonReader_ : public StructuredStreamEvents::ComplexObjectReader<Person_> {
+            struct PersonReader_ : public IContextReader {
+                Person_* fValuePtr;
                 PersonReader_ (Person_* v)
-                    : ComplexObjectReader<Person_> (v)
+                    : IContextReader ()
+                    , fValuePtr (v)
                 {
                 }
                 virtual void    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                 {
                     RequireNotNull (fValuePtr);
                     if (name.fLocalName == L"FirstName") {
-                        _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
+                        r.Push (make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
                     }
                     else if (name.fLocalName == L"LastName") {
-                        _PushNewObjPtr (r, make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
+                        r.Push (make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
                     }
                     else if (name.fLocalName == L"MiddleName") {
-                        _PushNewObjPtr (r, make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
+                        r.Push (make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
                     }
                     else {
                         ThrowUnRecognizedStartElt (name);
                     }
                 }
+                virtual void    HandleEndTag (Context& r) override
+                {
+                    r.Pop ();
+                }
             };
-            struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-                AppointmentReader_ (Appointment_* v):
-                    ComplexObjectReader<Appointment_> (v)
+            struct AppointmentReader_ : public IContextReader {
+                Appointment_* fValuePtr;
+                AppointmentReader_ (Appointment_* v)
+                    : IContextReader ()
+                    , fValuePtr (v)
                 {
                 }
                 virtual void    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                 {
                     if (name.fLocalName == L"When") {
-                        _PushNewObjPtr (r, make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
+                        r.Push (make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
                     }
                     else if (name.fLocalName == L"WithWhom") {
-                        _PushNewObjPtr (r, make_shared<PersonReader_> (&fValuePtr->withWhom));
+                        r.Push (make_shared<PersonReader_> (&fValuePtr->withWhom));
                     }
                     else {
                         ThrowUnRecognizedStartElt (name);
                     }
+                }
+                virtual void    HandleEndTag (Context& r) override
+                {
+                    r.Pop ();
                 }
             };
             struct  CalendarReaderTraits_ {

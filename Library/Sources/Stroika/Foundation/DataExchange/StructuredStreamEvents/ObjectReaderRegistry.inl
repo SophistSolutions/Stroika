@@ -24,7 +24,10 @@ namespace   Stroika {
                   **************************** Context *****************************
                   ********************************************************************************
                   */
-                inline  void    Context::Push (const shared_ptr<IContextReader>& elt)
+                inline   Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
+                    : fObjectReaderRegistry_ (objectReaderRegistry)
+                {
+                }                inline  void    Context::Push (const shared_ptr<IContextReader>& elt)
                 {
                     RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -53,6 +56,10 @@ namespace   Stroika {
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
+                }
+                inline  const   ObjectReaderRegistry&   Context::GetObjectReaderRegistry () const
+                {
+                    return fObjectReaderRegistry_;
                 }
 
 
@@ -181,6 +188,8 @@ namespace   Stroika {
                 }
 
 
+#if 0
+
                 /*
                  ********************************************************************************
                  ******************************* ComplexObjectReader<T> *************************
@@ -204,13 +213,7 @@ namespace   Stroika {
                 {
                     r.Pop ();
                 }
-                template    <typename   T>
-                void    ComplexObjectReader<T>::_PushNewObjPtr (Context& r, const shared_ptr<IContextReader>& newlyAllocatedObject2Push)
-                {
-                    RequireNotNull (newlyAllocatedObject2Push);
-                    r.Push (newlyAllocatedObject2Push);
-                }
-
+#endif
 
                 /*
                  ********************************************************************************
@@ -219,8 +222,9 @@ namespace   Stroika {
                  */
                 template    <typename TRAITS>
                 ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition)
-                    : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
-                            , fUnknownSubElementDisposition_ (unknownEltDisposition)
+                    : IContextReader ()
+                    , fValuePtr (v)
+                    , fUnknownSubElementDisposition_ (unknownEltDisposition)
                 {
                 }
                 template    <typename TRAITS>
@@ -234,7 +238,7 @@ namespace   Stroika {
                     if (fCurReader_ == nullptr and name.fLocalName == TRAITS::ElementName) {
                         fCurTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
                         fCurReader_ = make_shared<typename TRAITS::ReaderType> (&fCurTReading_);
-                        this->_PushNewObjPtr (r, fCurReader_);
+                        r.Push (fCurReader_);
                     }
                     else {
                         //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
