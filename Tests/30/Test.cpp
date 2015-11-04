@@ -160,7 +160,6 @@ namespace   {
             Time::DateTime  when;
             Person_         withWhom;
         };
-        using       CalendarType_       =   vector<Appointment_>;
         Memory::BLOB    mkdata_ ()
         {
             wstring newDocXML   =
@@ -192,12 +191,12 @@ namespace   {
 
             ObjectReaderRegistry registry;
 
-			// @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
+            // @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
             registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<SimpleReader<Time::DateTime>> (d); });
             registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
             registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
 
-			// not sure if this is clearer or macro version
+            // not sure if this is clearer or macro version
             {
                 Mapping<String, pair<type_index, size_t>>   metaInfo;
                 metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
@@ -212,9 +211,9 @@ namespace   {
                 registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
             }
 
-            CalendarType_       calendar;
+            vector<Appointment_>       calendar;
             {
-                Run (registry, make_shared<ListOfObjectReader2<Appointment_>> (&registry, L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                Run (registry, make_shared<ListOfObjectReader<Appointment_>> (L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
             }
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");

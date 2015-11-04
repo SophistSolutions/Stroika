@@ -372,17 +372,15 @@ namespace   Stroika {
 
 
                 template    <typename ELEMENT_TYPE>
-                struct ListOfObjectReader2: public IElementConsumer {
+                struct ListOfObjectReader: public IElementConsumer {
                     bool                    readingAT_;
                     ELEMENT_TYPE            curTReading_;
-                    ObjectReaderRegistry&   fObjRegistry;
                     String                  fName;
-                    vector<ELEMENT_TYPE>*    fValuePtr;
+                    vector<ELEMENT_TYPE>*   fValuePtr;
 
-                    ListOfObjectReader2 (ObjectReaderRegistry* objReg, const String& name, vector<ELEMENT_TYPE>* v)
+                    ListOfObjectReader (const String& name, vector<ELEMENT_TYPE>* v)
                         : IElementConsumer ()
                         , readingAT_ (false)
-                        , fObjRegistry  (*objReg)
                         , fName  (name)
                         , fValuePtr (v)
                     {
@@ -397,7 +395,7 @@ namespace   Stroika {
                             }
                             readingAT_ = true;
                             curTReading_ = ELEMENT_TYPE (); // clear because dont' want to keep values from previous elements
-                            return fObjRegistry.MakeContextReader<ELEMENT_TYPE> (&curTReading_);
+                            return r.GetObjectReaderRegistry ().MakeContextReader<ELEMENT_TYPE> (&curTReading_);
                         }
                         else {
                             ThrowUnRecognizedStartElt (name);
