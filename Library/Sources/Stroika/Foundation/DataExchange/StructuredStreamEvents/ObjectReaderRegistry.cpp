@@ -123,24 +123,7 @@ IgnoreNodeReader::IgnoreNodeReader ()
 
 shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
-    Require (fDepth_ >= 0);
-    fDepth_++;
-    return nullptr;
-}
-
-void    IgnoreNodeReader::HandleTextInside (Context& r, const String& text)
-{
-    // Ignore text
-}
-
-bool    IgnoreNodeReader::HandleEndTag (Context& r)
-{
-    Require (fDepth_ >= 0);
-    --fDepth_;
-    if (fDepth_ < 0) {
-        r.Pop ();
-    }
-    return false;
+    return shared_from_this ();
 }
 
 

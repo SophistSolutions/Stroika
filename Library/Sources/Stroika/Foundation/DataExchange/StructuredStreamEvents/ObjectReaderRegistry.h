@@ -292,11 +292,7 @@ namespace   Stroika {
                     int fDepth_;
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
-
-
 
 
                 /**
