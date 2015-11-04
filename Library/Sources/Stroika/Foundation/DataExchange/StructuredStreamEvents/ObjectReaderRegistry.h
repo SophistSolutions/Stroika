@@ -113,10 +113,6 @@ namespace   Stroika {
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return nullptr; };
                     virtual void    HandleTextInside (Context& r, const String& text) {};
 
-
-                    // tmphack - return true if caller should Pop
-                    virtual bool    HandleEndTag (Context& r) { return true; };
-
                     /**
                      *  pushed onto context stack
                      */
@@ -276,7 +272,6 @@ namespace   Stroika {
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                     virtual void    Deactivating (Context& r) override;
                 };
 
@@ -314,7 +309,6 @@ namespace   Stroika {
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
                     virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual bool HandleEndTag (Context& r) override;
                     virtual void Deactivating (Context& r) override;
 
                 private:
@@ -364,7 +358,7 @@ namespace   Stroika {
                 /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
 
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
-                // a HandleChildStar tand HandleEndTag() method call (exactly once).
+                // a HandleChildStar  method call (exactly once).
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
 

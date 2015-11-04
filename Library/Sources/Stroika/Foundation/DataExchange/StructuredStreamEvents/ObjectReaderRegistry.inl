@@ -119,11 +119,6 @@ namespace   Stroika {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                bool    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (Context& r)
-                {
-                    return actualReader_.HandleEndTag (r);
-                }
-                template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::Deactivating (Context& r)
                 {
                     actualReader_.Deactivating (r);
@@ -170,20 +165,6 @@ namespace   Stroika {
                         }
                         return nullptr;
                     }
-                }
-                template    <typename TRAITS>
-                bool    ListOfObjectReader<TRAITS>::HandleEndTag (Context& r)
-                {
-
-                    /// tricky - we need to rewrite this/REDO???
-                    // if we have an existing reader, we must save the data from it, and close it out
-                    if (fCurReader_ != nullptr) {
-                        this->fValuePtr->push_back (fCurTReading_);
-                        fCurReader_ = nullptr;
-                    }
-
-                    r.Pop ();
-                    return false;
                 }
                 template    <typename TRAITS>
                 void    ListOfObjectReader<TRAITS>::Deactivating (Context& r)

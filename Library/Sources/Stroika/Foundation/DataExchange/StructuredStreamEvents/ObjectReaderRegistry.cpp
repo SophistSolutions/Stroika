@@ -179,9 +179,7 @@ void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Na
         DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    if (fContext_.GetTop ()->HandleEndTag (fContext_)) {
-        fContext_.Pop ();
-    }
+    fContext_.Pop ();
 }
 void    IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
