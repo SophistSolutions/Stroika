@@ -167,9 +167,9 @@ void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::
         DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    if (shared_ptr<IElementConsumer> eltToPush = fContext_.GetTop ()->HandleChildStart (fContext_, name)) {
-        fContext_.Push (eltToPush);
-    }
+    shared_ptr<IElementConsumer> eltToPush = fContext_.GetTop ()->HandleChildStart (fContext_, name);
+    AssertNotNull (eltToPush);
+    fContext_.Push (eltToPush);
 }
 void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
