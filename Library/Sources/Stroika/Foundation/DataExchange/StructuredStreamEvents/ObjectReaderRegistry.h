@@ -10,6 +10,7 @@
 #include    <typeindex>
 
 #include    "../../Characters/String.h"
+#include    "../../Characters/StringBuilder.h"
 #include    "../../Configuration/Enumeration.h"
 #include    "../../Containers/Bijection.h"
 #include    "../../Containers/Collection.h"
@@ -109,7 +110,7 @@ namespace   Stroika {
 
                 public:
                     virtual ~IElementConsumer () = default;
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return shared_ptr<IElementConsumer> (); };
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return nullptr; };
                     virtual void    HandleTextInside (Context& r, const String& text) {};
 
 
@@ -214,52 +215,55 @@ namespace   Stroika {
                 void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
-
-
-
                 /**
-                 * BuiltinReader<> is not implemented for all types - just for the specialized ones listed below:
+                &&& @todo - docoment - to specialize - just replace Deactivating with type specific value
+                *
+                 * SimpleReader<> is not implemented for all types - just for the specialized ones listed below:
                  *      String
                  *      int
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   BuiltinReader : public IElementConsumer {
+                class   SimpleReader : public IElementConsumer {
                 public:
-                    BuiltinReader (T* intoVal);
+                    SimpleReader (T* intoVal);
 
                 private:
-                    T* value_;
+                    Characters::StringBuilder   fBuf_;
+                    T*                          fValue_;
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            Deactivating (Context& r) override;
                 };
-                template    <>
-                class   BuiltinReader<String>;
-                template    <>
-                class   BuiltinReader<int>;
-                template    <>
-                class   BuiltinReader<unsigned int>;
-                template    <>
-                class   BuiltinReader<bool>;
-                template    <>
-                class   BuiltinReader<float>;
-                template    <>
-                class   BuiltinReader<double>;
-                template    <>
-                class   BuiltinReader<Time::DateTime>;
+
+
+                template <>
+                void   SimpleReader<String>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<int>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<unsigned int>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<bool>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<float>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<double>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<Time::DateTime>::Deactivating (Context& r);
 
 
                 /**
                  *  OptionalTypesReader supports reads of optional types. This will work - for any types for
-                 *  which BuiltinReader<T> is implemented.
+                 *  which SimpleReader<T> is implemented.
                  *
                  *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
                  *  already occurred. The reaosn for Optional<> part is because the caller had an optional
                  *  element which might never have triggered the invocation of this class.
                  */
-                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
+                template    <typename   T, typename ACTUAL_READER = SimpleReader<T>>
                 class   OptionalTypesReader : public IElementConsumer {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
@@ -302,7 +306,7 @@ namespace   Stroika {
                  *  EXAMPLE TRAITS:
                  *      struct  ReaderTraits {
                  *              using   ElementType     =   String;
-                 *              using   ReaderType      =   BuiltinReader<String>;
+                 *              using   ReaderType      =   SimpleReader<String>;
                  *              static  const wchar_t           ElementName[] =  L"Name";
                  *      };
                  *

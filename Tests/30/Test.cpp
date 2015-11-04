@@ -198,10 +198,10 @@ namespace   {
                 {
                     RequireNotNull (fValuePtr);
                     if (name.fLocalName == L"FirstName") {
-                        return make_shared<BuiltinReader<String>> (&fValuePtr->firstName);
+                        return make_shared<SimpleReader<String>> (&fValuePtr->firstName);
                     }
                     else if (name.fLocalName == L"LastName") {
-                        return make_shared<BuiltinReader<String>> (&fValuePtr->lastName);
+                        return make_shared<SimpleReader<String>> (&fValuePtr->lastName);
                     }
                     else if (name.fLocalName == L"MiddleName") {
                         return make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName);
@@ -221,7 +221,7 @@ namespace   {
                 virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                 {
                     if (name.fLocalName == L"When") {
-                        return make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when);
+                        return make_shared<SimpleReader<Time::DateTime>> (&fValuePtr->when);
                     }
                     else if (name.fLocalName == L"WithWhom") {
                         return make_shared<PersonReader_> (&fValuePtr->withWhom);
@@ -263,8 +263,8 @@ namespace   {
             TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
 
             ObjectReaderRegistry registry;
-            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<BuiltinReader<Time::DateTime>> (d); });
-            registry.Add<String> ([] (String * d) { return make_shared<BuiltinReader<String>> (d); });
+            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<SimpleReader<Time::DateTime>> (d); });
+            registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
             registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
 
             {

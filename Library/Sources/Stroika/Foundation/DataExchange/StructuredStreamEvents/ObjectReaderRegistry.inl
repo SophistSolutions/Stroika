@@ -66,87 +66,34 @@ namespace   Stroika {
 
 
 
+
                 /*
                  ********************************************************************************
-                 ********************************** BuiltinReader *******************************
+                 ********************************** SimpleReader *******************************
                  ********************************************************************************
                  */
-                template    <>
-                class   BuiltinReader<String> : public IElementConsumer {
-                public:
-                    BuiltinReader (String* intoVal);
-                private:
-                    String* value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<int> : public IElementConsumer {
-                public:
-                    BuiltinReader (int* intoVal);
-                private:
-                    String  tmpVal_;
-                    int*    value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<unsigned int> : public IElementConsumer {
-                public:
-                    BuiltinReader (unsigned int* intoVal);
-                private:
-                    String  tmpVal_;
-                    unsigned int*   value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<float> : public IElementConsumer {
-                public:
-                    BuiltinReader (float* intoVal);
-                private:
-                    String  tmpVal_;
-                    float*  value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<double> : public IElementConsumer {
-                public:
-                    BuiltinReader (double* intoVal);
-                private:
-                    String  tmpVal_;
-                    double* value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<bool> : public IElementConsumer {
-                public:
-                    BuiltinReader (bool* intoVal);
-                private:
-                    String  tmpVal_;
-                    bool*   value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
-                template    <>
-                class   BuiltinReader<Time::DateTime> : public IElementConsumer {
-                public:
-                    BuiltinReader (Time::DateTime* intoVal);
-                private:
-                    String          tmpVal_;
-                    Time::DateTime* value_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                };
+                template    <typename   T>
+                SimpleReader<T>::SimpleReader (T* intoVal)
+                    : fBuf_ ()
+                    , fValue_ (intoVal)
+                {
+                }
+                template    <typename   T>
+                shared_ptr<IElementConsumer>    SimpleReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                {
+                    ThrowUnRecognizedStartElt (name);
+                }
+                template    <typename   T>
+                void    SimpleReader<T>::HandleTextInside (Context& r, const String& text)
+                {
+                    fBuf_ += text;
+                }
+                template    <typename   T>
+                void   SimpleReader<T>::Deactivating (Context& r)
+                {
+                    AssertNotReached ();   // redo with static asserts, but issues on some compilers - anyhow - SB template specialzied away
+                    // *value = CONVERTFROM (fBuf_.str ());
+                }
 
 
                 /*
@@ -179,6 +126,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::Deactivating (Context& r)
                 {
+                    actualReader_.Deactivating (r);
                     *value_ = proxyValue_;
                 }
 

@@ -53,201 +53,56 @@ using   Time::TimeOfDay;
  */
 
 
-/*
- ********************************************************************************
- ******************** StructuredStreamEvents::BuiltinReader<String> *************
- ********************************************************************************
- */
-BuiltinReader<String>::BuiltinReader (String* intoVal)
-    : value_ (intoVal)
-{
-    RequireNotNull (intoVal);
-    *intoVal = String ();
-}
-
-shared_ptr<IElementConsumer>    BuiltinReader<String>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-{
-    ThrowUnRecognizedStartElt (name);
-}
-
-void    BuiltinReader<String>::HandleTextInside (Context& r, const String& text)
-{
-    (*value_) += text;
-}
-
-
 
 
 
 /*
  ********************************************************************************
- *************** StructuredStreamEvents::BuiltinReader<int> *********************
+ ******************** StructuredStreamEvents::SimpleReader<> ********************
  ********************************************************************************
  */
-BuiltinReader<int>::BuiltinReader (int* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
+template <>
+void   SimpleReader<String>::Deactivating (Context& r)
 {
-    RequireNotNull (intoVal);
+    *fValue_ = fBuf_.str ();
 }
 
-shared_ptr<IElementConsumer>    BuiltinReader<int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+template <>
+void   SimpleReader<int>::Deactivating (Context& r)
 {
-    ThrowUnRecognizedStartElt (name);
+    *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
-void    BuiltinReader<int>::HandleTextInside (Context& r, const String& text)
+template <>
+void   SimpleReader<unsigned int>::Deactivating (Context& r)
 {
-    tmpVal_ += text;
-    (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
+    //@ todo fix
+    *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
-
-
-
-
-
-/*
- ********************************************************************************
- *************** StructuredStreamEvents::BuiltinReader<unsigned int> ************
- ********************************************************************************
- */
-BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
+template <>
+void   SimpleReader<bool>::Deactivating (Context& r)
 {
-    RequireNotNull (intoVal);
+    *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
-shared_ptr<IElementConsumer>    BuiltinReader<unsigned int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+template <>
+void   SimpleReader<float>::Deactivating (Context& r)
 {
-    ThrowUnRecognizedStartElt (name);
+    (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
-void    BuiltinReader<unsigned int>::HandleTextInside (Context& r, const String& text)
+template <>
+void   SimpleReader<double>::Deactivating (Context& r)
 {
-    tmpVal_ += text;
-    (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
+    (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
-
-
-
-
-
-
-/*
- ********************************************************************************
- ******************* StructuredStreamEvents::BuiltinReader<bool> ****************
- ********************************************************************************
- */
-BuiltinReader<bool>::BuiltinReader (bool* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
+template <>
+void   SimpleReader<Time::DateTime>::Deactivating (Context& r)
 {
-    RequireNotNull (intoVal);
-}
-
-shared_ptr<IElementConsumer>    BuiltinReader<bool>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-{
-    ThrowUnRecognizedStartElt (name);
-    return nullptr;
-}
-
-void    BuiltinReader<bool>::HandleTextInside (Context& r, const String& text)
-{
-    tmpVal_ += text;
-    String  tmp =   tmpVal_.Trim ().ToLowerCase ();
-    (*value_) = (tmp == L"true");
-}
-
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- *********** StructuredStreamEvents::BuiltinReader<float> ***********************
- ********************************************************************************
- */
-BuiltinReader<float>::BuiltinReader (float* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
-{
-    RequireNotNull (intoVal);
-}
-
-shared_ptr<IElementConsumer>    BuiltinReader<float>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-{
-    ThrowUnRecognizedStartElt (name);
-}
-
-void    BuiltinReader<float>::HandleTextInside (Context& r, const String& text)
-{
-    tmpVal_ += text;
-    (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
-}
-
-
-
-
-
-/*
- ********************************************************************************
- **************** StructuredStreamEvents::BuiltinReader<double> *****************
- ********************************************************************************
- */
-BuiltinReader<double>::BuiltinReader (double* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
-{
-    RequireNotNull (intoVal);
-}
-
-shared_ptr<IElementConsumer>    BuiltinReader<double>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-{
-    ThrowUnRecognizedStartElt (name);
-}
-
-void    BuiltinReader<double>::HandleTextInside (Context& r, const String& text)
-{
-    tmpVal_ += text;
-    (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
-}
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ************* StructuredStreamEvents::BuiltinReader<Time::DateTime> ************
- ********************************************************************************
- */
-BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
-    : tmpVal_ ()
-    , value_ (intoVal)
-{
-    RequireNotNull (intoVal);
-    *intoVal = Time::DateTime ();
-}
-
-shared_ptr<IElementConsumer>    BuiltinReader<Time::DateTime>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-{
-    ThrowUnRecognizedStartElt (name);
-}
-
-void    BuiltinReader<Time::DateTime>::HandleTextInside (Context& r, const String& text)
-{
-    tmpVal_ += text;
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
-    IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::ParseFormat::eXML));
+    IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
 }
 
 
