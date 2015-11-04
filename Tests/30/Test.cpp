@@ -187,10 +187,10 @@ namespace   {
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
         namespace T1_ {
-            struct PersonReader_ : public IContextReader {
+            struct PersonReader_ : public IElementConsumer {
                 Person_* fValuePtr;
                 PersonReader_ (Person_* v)
-                    : IContextReader ()
+                    : IElementConsumer ()
                     , fValuePtr (v)
                 {
                 }
@@ -215,10 +215,10 @@ namespace   {
                     r.Pop ();
                 }
             };
-            struct AppointmentReader_ : public IContextReader {
+            struct AppointmentReader_ : public IElementConsumer {
                 Appointment_* fValuePtr;
                 AppointmentReader_ (Appointment_* v)
-                    : IContextReader ()
+                    : IElementConsumer ()
                     , fValuePtr (v)
                 {
                 }

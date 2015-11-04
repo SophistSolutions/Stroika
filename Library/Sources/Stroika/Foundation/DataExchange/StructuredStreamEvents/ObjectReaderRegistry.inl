@@ -27,7 +27,7 @@ namespace   Stroika {
                 inline   Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
                     : fObjectReaderRegistry_ (objectReaderRegistry)
                 {
-                }                inline  void    Context::Push (const shared_ptr<IContextReader>& elt)
+                }                inline  void    Context::Push (const shared_ptr<IElementConsumer>& elt)
                 {
                     RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -37,9 +37,11 @@ namespace   Stroika {
 #endif
                     Containers::ReserveSpeedTweekAdd1 (fStack_);
                     fStack_.push_back (elt);
+                    elt->Activated (*this);
                 }
                 inline  void    Context::Pop ()
                 {
+                    fStack_.back()->Deactivating (*this);
                     fStack_.pop_back ();
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                     if (fTraceThisReader) {
@@ -52,7 +54,7 @@ namespace   Stroika {
                     }
 #endif
                 }
-                inline  shared_ptr<IContextReader>  Context::GetTop () const
+                inline  shared_ptr<IElementConsumer>  Context::GetTop () const
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
@@ -70,7 +72,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <>
-                class   BuiltinReader<String> : public IContextReader {
+                class   BuiltinReader<String> : public IElementConsumer {
                 public:
                     BuiltinReader (String* intoVal);
                 private:
@@ -81,7 +83,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<int> : public IContextReader {
+                class   BuiltinReader<int> : public IElementConsumer {
                 public:
                     BuiltinReader (int* intoVal);
                 private:
@@ -93,7 +95,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<unsigned int> : public IContextReader {
+                class   BuiltinReader<unsigned int> : public IElementConsumer {
                 public:
                     BuiltinReader (unsigned int* intoVal);
                 private:
@@ -105,7 +107,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<float> : public IContextReader {
+                class   BuiltinReader<float> : public IElementConsumer {
                 public:
                     BuiltinReader (float* intoVal);
                 private:
@@ -117,7 +119,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<double> : public IContextReader {
+                class   BuiltinReader<double> : public IElementConsumer {
                 public:
                     BuiltinReader (double* intoVal);
                 private:
@@ -129,7 +131,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<bool> : public IContextReader {
+                class   BuiltinReader<bool> : public IElementConsumer {
                 public:
                     BuiltinReader (bool* intoVal);
                 private:
@@ -141,7 +143,7 @@ namespace   Stroika {
                     virtual void    HandleEndTag (Context& r) override;
                 };
                 template    <>
-                class   BuiltinReader<Time::DateTime> : public IContextReader {
+                class   BuiltinReader<Time::DateTime> : public IElementConsumer {
                 public:
                     BuiltinReader (Time::DateTime* intoVal);
                 private:
@@ -179,7 +181,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (Context& r)
                 {
-                    shared_ptr<IContextReader>   saveCopyOfUs        =   this->shared_from_this ();    // bump our reference count til the end of the procedure
+                    shared_ptr<IElementConsumer>   saveCopyOfUs        =   this->shared_from_this ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
                     // it also might do some additioanl processing on its value
@@ -222,7 +224,7 @@ namespace   Stroika {
                  */
                 template    <typename TRAITS>
                 ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition)
-                    : IContextReader ()
+                    : IElementConsumer ()
                     , fValuePtr (v)
                     , fUnknownSubElementDisposition_ (unknownEltDisposition)
                 {

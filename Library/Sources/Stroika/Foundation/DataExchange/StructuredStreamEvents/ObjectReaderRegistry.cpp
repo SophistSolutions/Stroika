@@ -395,19 +395,19 @@ void    IConsumerDelegateToContext::TextInsideElement (const String& text)
  */
 namespace   {
     // @todo see https://stroika.atlassian.net/browse/STK-284
-    struct DocumentReader_ : public IContextReader {
-        shared_ptr<IContextReader>      fDocEltBuilder;
+    struct DocumentReader_ : public IElementConsumer {
+        shared_ptr<IElementConsumer>      fDocEltBuilder;
         bool                            fAnyDocElt;
         String                          fDocEltURI;
         String                          fDocEltName;
-        DocumentReader_ (const shared_ptr<IContextReader>& docEltBuilder)
+        DocumentReader_ (const shared_ptr<IElementConsumer>& docEltBuilder)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (true)
             , fDocEltURI ()
             , fDocEltName ()
         {
         }
-        DocumentReader_ (const shared_ptr<IContextReader>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
+        DocumentReader_ (const shared_ptr<IElementConsumer>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (false)
             , fDocEltURI (checkURI)
@@ -435,7 +435,7 @@ namespace   {
         }
     };
 }
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Byte>& in)
+void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
@@ -452,7 +452,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     Require (ctx.empty ());
 }
 
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
+void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);

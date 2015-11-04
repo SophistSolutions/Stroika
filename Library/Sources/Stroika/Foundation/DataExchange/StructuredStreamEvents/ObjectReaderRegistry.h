@@ -80,7 +80,7 @@ namespace   Stroika {
                  *      We need good docs - on how to use this - but for the time being, just look at the
                  *  example usage in the regression test.
                  */
-                class   IContextReader;
+                class   IElementConsumer;
 
                 class   Context;
 
@@ -101,13 +101,27 @@ namespace   Stroika {
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
                  *  it into a related object.
                  */
-                class   IContextReader : public enable_shared_from_this<IContextReader> {
-                public:
-                    virtual ~IContextReader () = default;
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) = 0;
-                    virtual void    HandleTextInside (Context& r, const String& text) {};
-                    virtual void    HandleEndTag (Context& r) = 0;
+                class   IElementConsumer : public enable_shared_from_this<IElementConsumer> {
+                protected:
+                    /**
+                     */
+                    IElementConsumer () = default;
 
+                public:
+                    virtual ~IElementConsumer () = default;
+                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  {};
+                    virtual void    HandleTextInside (Context& r, const String& text) {};
+                    virtual void    HandleEndTag (Context& r) {};
+
+                    /**
+                     *  pushed onto context stack
+                     */
+                    virtual void    Activated (Context& r) {};
+
+                    /**
+                     * About to pop from ontext stack
+                     */
+                    virtual void    Deactivating (Context& r) {};
 
 #if 0
                     // not used yet
@@ -116,10 +130,6 @@ namespace   Stroika {
 
                     virtual void    HandleChildEnd (Context& r, const StructuredStreamEvents::Name& name) {};
 
-                    // pushed onto context stack
-                    virtual void    Activated (Context& r) {};
-                    // About to pop from ontext stack
-                    virtual void    Deactivating (Context& r) {};
 #endif
                 };
 
@@ -137,7 +147,7 @@ namespace   Stroika {
                  *
                  *          When we encounter a close tag, we end that reading, and so pop.
                  *
-                 *          This means that the start and end tags for a given pair, go to differnt 'IContextReader'
+                 *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
                  *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
                  *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
                  */
@@ -162,17 +172,17 @@ namespace   Stroika {
                     const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
 
                 public:
-                    nonvirtual  void    Push (const shared_ptr<IContextReader>& elt);
+                    nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
                     nonvirtual  void    Pop ();
 
                 public:
-                    nonvirtual  shared_ptr<IContextReader>   GetTop () const;
+                    nonvirtual  shared_ptr<IElementConsumer>   GetTop () const;
 
                 public:
                     bool    empty () const { return fStack_.empty (); }
 
                 private:
-                    vector<shared_ptr<IContextReader>> fStack_;
+                    vector<shared_ptr<IElementConsumer>> fStack_;
 
                 private:
                     friend  class   ObjectReader;
@@ -211,7 +221,7 @@ namespace   Stroika {
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   BuiltinReader : public IContextReader {
+                class   BuiltinReader : public IElementConsumer {
                 public:
                     BuiltinReader (T* intoVal);
 
@@ -248,7 +258,7 @@ namespace   Stroika {
                  *  element which might never have triggered the invocation of this class.
                  */
                 template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
-                class   OptionalTypesReader : public IContextReader {
+                class   OptionalTypesReader : public IElementConsumer {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
 
@@ -268,7 +278,7 @@ namespace   Stroika {
                  *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                  *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
-                class   IgnoreNodeReader : public IContextReader {
+                class   IgnoreNodeReader : public IElementConsumer {
                 public:
                     IgnoreNodeReader ();
                 private:
@@ -284,7 +294,7 @@ namespace   Stroika {
                  *  Helper class for reading complex (structured) objects.
                  */
                 template    <typename   T>
-                class   ComplexObjectReader : public IContextReader {
+                class   ComplexObjectReader : public IElementConsumer {
                 protected:
                     ComplexObjectReader (T* vp);
 
@@ -312,7 +322,7 @@ namespace   Stroika {
                  *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
                  */
                 template    <typename TRAITS>
-                struct  ListOfObjectReader: public IContextReader {
+                struct  ListOfObjectReader: public IElementConsumer {
                 public:
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
@@ -333,7 +343,7 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry {
                 public:
-                    using   ReaderFromVoidStarFactory = function<shared_ptr<IContextReader> (void* destinationObject)>;
+                    using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
 
                 public:
                     void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
@@ -341,19 +351,19 @@ namespace   Stroika {
                         fFactories_.Add (forType, readerFactory);
                     }
                     template    <typename T>
-                    void    Add (const function<shared_ptr<IContextReader> (T*)>& readerFactory)
+                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory)
                     {
                         Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
                     }
 
                 public:
-                    shared_ptr<IContextReader>    MakeContextReader (type_index ti, void* destinationObject) const
+                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const
                     {
                         ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
                         return factory (destinationObject);
                     }
                     template    <typename T>
-                    shared_ptr<IContextReader>    MakeContextReader (T* destinationObject) const
+                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const
                     {
                         return MakeContextReader (typeid (T), destinationObject);
                     }
@@ -367,15 +377,15 @@ namespace   Stroika {
 
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                 // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
 
 
                 template    <typename   T>
-                class   ComplexObjectReader2 : public IContextReader {
+                class   ComplexObjectReader2 : public IElementConsumer {
                 public:
                     ComplexObjectReader2 (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
-                        : IContextReader()
+                        : IElementConsumer()
                         , fValuePtr (vp)
                         , fFieldNameToTypeMap (maps)
                     {
@@ -406,13 +416,13 @@ namespace   Stroika {
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
                 {
-                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IContextReader> { return make_shared<ComplexObjectReader2<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
+                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ComplexObjectReader2<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }
 
 
 
                 template    <typename ELEMENT_TYPE>
-                struct ListOfObjectReader2: public IContextReader {
+                struct ListOfObjectReader2: public IElementConsumer {
                     bool                    readingAT_;
                     ELEMENT_TYPE            curTReading_;
                     ObjectReaderRegistry&   fObjRegistry;
@@ -420,7 +430,7 @@ namespace   Stroika {
                     vector<ELEMENT_TYPE>*    fValuePtr;
 
                     ListOfObjectReader2 (ObjectReaderRegistry* objReg, const String& name, vector<ELEMENT_TYPE>* v)
-                        : IContextReader ()
+                        : IElementConsumer ()
                         , readingAT_ (false)
                         , fObjRegistry  (*objReg)
                         , fName  (name)
