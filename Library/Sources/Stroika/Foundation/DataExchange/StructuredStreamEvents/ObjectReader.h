@@ -15,6 +15,7 @@
 #include    "../XML/SAXReader.h"
 
 
+////// @todo I THINK LOSE THIS FILE
 
 /**
  *  \file
