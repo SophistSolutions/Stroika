@@ -80,6 +80,14 @@ namespace   Stroika {
 
 
                 /**
+                 */
+                enum    class  UnknownSubElementDisposition {
+                    eIgnore,
+                    eEndObject
+                };
+
+
+                /**
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
                  *  it into a related object.
                  */
@@ -263,9 +271,7 @@ namespace   Stroika {
                 template    <typename TRAITS>
                 struct  ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
                 public:
-                    enum    UnknownSubElementDisposition { eIgnore, eEndList };
-                public:
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = eEndList);
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
                     virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void HandleEndTag (ObjectReader::Context& r) override;

@@ -238,7 +238,7 @@ namespace   Stroika {
                     else {
                         //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
                         /// we are at the top of the stack, but we want to pop, and hand this 'new child' to our parent
-                        if (fUnknownSubElementDisposition_ == eEndList) {
+                        if (fUnknownSubElementDisposition_ == UnknownSubElementDisposition::eEndObject) {
                             auto save  = this->shared_from_this ();
                             r.Pop ();
                             r.GetTop ()->HandleChildStart (r, name);
