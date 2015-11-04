@@ -78,7 +78,7 @@ namespace   Stroika {
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -89,7 +89,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -100,7 +100,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -111,7 +111,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -122,7 +122,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -133,7 +133,7 @@ namespace   Stroika {
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -144,7 +144,7 @@ namespace   Stroika {
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
 
@@ -162,9 +162,9 @@ namespace   Stroika {
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<IElementConsumer>    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    actualReader_.HandleChildStart (r, name);
+                    return actualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (Context& r, const String& text)
@@ -197,7 +197,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename TRAITS>
-                void    ListOfObjectReader<TRAITS>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<IElementConsumer>    ListOfObjectReader<TRAITS>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     // if we have an existing reader, we must save the data from it, and close it out
                     if (fCurReader_ != nullptr) {
@@ -207,7 +207,7 @@ namespace   Stroika {
                     if (fCurReader_ == nullptr and name.fLocalName == TRAITS::ElementName) {
                         fCurTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
                         fCurReader_ = make_shared<typename TRAITS::ReaderType> (&fCurTReading_);
-                        r.Push (fCurReader_);
+                        return (fCurReader_);
                     }
                     else {
                         //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
@@ -220,6 +220,7 @@ namespace   Stroika {
                         else {
                             AssertNotImplemented ();    // @todo
                         }
+                        return nullptr;
                     }
                 }
                 template    <typename TRAITS>

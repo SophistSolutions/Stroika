@@ -194,17 +194,17 @@ namespace   {
                     , fValuePtr (v)
                 {
                 }
-                virtual void    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
+                virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                 {
                     RequireNotNull (fValuePtr);
                     if (name.fLocalName == L"FirstName") {
-                        r.Push (make_shared<BuiltinReader<String>> (&fValuePtr->firstName));
+                        return make_shared<BuiltinReader<String>> (&fValuePtr->firstName);
                     }
                     else if (name.fLocalName == L"LastName") {
-                        r.Push (make_shared<BuiltinReader<String>> (&fValuePtr->lastName));
+                        return make_shared<BuiltinReader<String>> (&fValuePtr->lastName);
                     }
                     else if (name.fLocalName == L"MiddleName") {
-                        r.Push (make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName));
+                        return make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName);
                     }
                     else {
                         ThrowUnRecognizedStartElt (name);
@@ -218,13 +218,13 @@ namespace   {
                     , fValuePtr (v)
                 {
                 }
-                virtual void    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
+                virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                 {
                     if (name.fLocalName == L"When") {
-                        r.Push (make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when));
+                        return make_shared<BuiltinReader<Time::DateTime>> (&fValuePtr->when);
                     }
                     else if (name.fLocalName == L"WithWhom") {
-                        r.Push (make_shared<PersonReader_> (&fValuePtr->withWhom));
+                        return make_shared<PersonReader_> (&fValuePtr->withWhom);
                     }
                     else {
                         ThrowUnRecognizedStartElt (name);

@@ -109,7 +109,7 @@ namespace   Stroika {
 
                 public:
                     virtual ~IElementConsumer () = default;
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  {};
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return shared_ptr<IElementConsumer> (); };
                     virtual void    HandleTextInside (Context& r, const String& text) {};
 
 
@@ -158,7 +158,7 @@ namespace   Stroika {
                 public:
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
-                    bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
+                    bool    fTraceThisReader { true };       // very noisy - off by default even for tracemode
                     nonvirtual  String TraceLeader_ () const;
 #endif
 
@@ -232,7 +232,7 @@ namespace   Stroika {
                     T* value_;
 
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                 };
                 template    <>
@@ -270,7 +270,7 @@ namespace   Stroika {
                     ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                     virtual bool    HandleEndTag (Context& r) override;
                     virtual void    Deactivating (Context& r) override;
@@ -287,7 +287,7 @@ namespace   Stroika {
                 private:
                     int fDepth_;
                 public:
-                    virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
                     virtual bool    HandleEndTag (Context& r) override;
                 };
@@ -313,7 +313,7 @@ namespace   Stroika {
                 public:
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
-                    virtual void HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual bool HandleEndTag (Context& r) override;
                     virtual void Deactivating (Context& r) override;
 
@@ -378,19 +378,19 @@ namespace   Stroika {
                         , fFieldNameToTypeMap (maps)
                     {
                     }
-                    virtual void    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
                     {
                         Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
                         if (ti) {
                             Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
                             Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                            r.Push (r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField));
+                            return r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField);
                         }
                         else if (fThrowOnUnrecongizedelts) {
                             ThrowUnRecognizedStartElt (name);
                         }
                         else {
-                            r.Push (make_shared<IgnoreNodeReader> ());
+                            return make_shared<IgnoreNodeReader> ();
                         }
                     }
                     T*  fValuePtr;;
@@ -421,7 +421,7 @@ namespace   Stroika {
                         , fValuePtr (v)
                     {
                     }
-                    virtual void HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
+                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
                     {
                         if (name == fName) {
                             if (readingAT_) {
@@ -431,7 +431,7 @@ namespace   Stroika {
                             }
                             readingAT_ = true;
                             curTReading_ = ELEMENT_TYPE (); // clear because dont' want to keep values from previous elements
-                            r.Push (fObjRegistry.MakeContextReader<ELEMENT_TYPE> (&curTReading_));
+                            return fObjRegistry.MakeContextReader<ELEMENT_TYPE> (&curTReading_);
                         }
                         else {
                             ThrowUnRecognizedStartElt (name);

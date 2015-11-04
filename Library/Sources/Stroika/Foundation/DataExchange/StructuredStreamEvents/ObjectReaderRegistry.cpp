@@ -65,7 +65,7 @@ BuiltinReader<String>::BuiltinReader (String* intoVal)
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<String>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -91,7 +91,7 @@ BuiltinReader<int>::BuiltinReader (int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -119,7 +119,7 @@ BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<unsigned int>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -148,9 +148,10 @@ BuiltinReader<bool>::BuiltinReader (bool* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<bool>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
+    return nullptr;
 }
 
 void    BuiltinReader<bool>::HandleTextInside (Context& r, const String& text)
@@ -180,7 +181,7 @@ BuiltinReader<float>::BuiltinReader (float* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<float>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -207,7 +208,7 @@ BuiltinReader<double>::BuiltinReader (double* intoVal)
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<double>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -237,7 +238,7 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal)
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    BuiltinReader<Time::DateTime>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     ThrowUnRecognizedStartElt (name);
 }
@@ -265,10 +266,11 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     Require (fDepth_ >= 0);
     fDepth_++;
+    return nullptr;
 }
 
 void    IgnoreNodeReader::HandleTextInside (Context& r, const String& text)
@@ -327,7 +329,9 @@ void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::
         DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    fContext_.GetTop ()->HandleChildStart (fContext_, name);
+    if (shared_ptr<IElementConsumer> eltToPush = fContext_.GetTop ()->HandleChildStart (fContext_, name)) {
+        fContext_.Push (eltToPush);
+    }
 }
 void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
@@ -379,14 +383,14 @@ namespace   {
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
+        virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
         {
             if (not fAnyDocElt) {
                 if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
                     ThrowUnRecognizedStartElt (name);
                 }
             }
-            r.Push (fDocEltBuilder);
+            return (fDocEltBuilder);
         }
         virtual void    HandleTextInside (Context& r, const String& text)  override
         {
