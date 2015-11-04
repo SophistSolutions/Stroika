@@ -97,6 +97,20 @@ namespace   Stroika {
                     virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) = 0;
                     virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) = 0;
                     virtual void    HandleEndTag (ObjectReader::Context& r) = 0;
+
+
+#if 0
+					// not used yet
+
+
+
+					virtual void    HandleChildEnd (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) {};
+
+					// pushed onto context stack
+                    virtual void    Activated (ObjectReader::Context& r) {};
+					// About to pop from ontext stack
+                    virtual void    Deactivating (ObjectReader::Context& r) {};
+#endif
                 };
 
 
