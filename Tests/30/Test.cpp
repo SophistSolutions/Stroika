@@ -245,7 +245,8 @@ namespace   {
             reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
 #endif
             CalendarType_       calendar;
-            reader.Run (make_shared<CalendarReader_> (&calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            ObjectReaderRegistry registry;
+            reader.Run (registry, make_shared<CalendarReader_> (&calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
             VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
@@ -280,7 +281,7 @@ namespace   {
             CalendarType_       calendar;
             {
                 ObjectReader reader;
-                reader.Run (make_shared<ListOfObjectReader2<Appointment_>> (&registry, L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                reader.Run (registry, make_shared<ListOfObjectReader2<Appointment_>> (&registry, L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
             }
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");

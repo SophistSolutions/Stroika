@@ -40,9 +40,16 @@ namespace   Stroika {
             namespace   StructuredStreamEvents {
 
 
+                /**
+                 */
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 #define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
 #endif
+
+
+                /**
+                 */
+                class   ObjectReaderRegistry;
 
 
                 /**
@@ -74,8 +81,8 @@ namespace   Stroika {
                 public:
                     // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                     // a HandleChildStar tand HandleEndTag() method call (exactly once).
-                    nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                    nonvirtual  void    Run (const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                    nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
                 };
 
 
@@ -100,15 +107,15 @@ namespace   Stroika {
 
 
 #if 0
-					// not used yet
+                    // not used yet
 
 
 
-					virtual void    HandleChildEnd (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) {};
+                    virtual void    HandleChildEnd (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) {};
 
-					// pushed onto context stack
+                    // pushed onto context stack
                     virtual void    Activated (ObjectReader::Context& r) {};
-					// About to pop from ontext stack
+                    // About to pop from ontext stack
                     virtual void    Deactivating (ObjectReader::Context& r) {};
 #endif
                 };
@@ -139,10 +146,23 @@ namespace   Stroika {
                     nonvirtual  String TraceLeader_ () const;
 #endif
 
+
+                private:
+                    const ObjectReaderRegistry& fObjectReaderRegistry_;
+
                 public:
-                    Context () = default;
+                    Context (const ObjectReaderRegistry& objectReaderRegistry)
+                        : fObjectReaderRegistry_ (objectReaderRegistry)
+                    {
+                    }
                     Context (const Context&) = delete;
                     Context& operator= (const Context&) = delete;
+
+                public:
+                    const   ObjectReaderRegistry&   GetObjectReaderRegistry () const
+                    {
+                        return fObjectReaderRegistry_;
+                    }
 
                 public:
                     nonvirtual  void    Push (const shared_ptr<IContextReader>& elt);
@@ -174,127 +194,6 @@ namespace   Stroika {
                 };
 
 
-                /**
-                 * BuiltinReader<> is not implemented for all types - just for the specialized ones listed below:
-                 *      String
-                 *      int
-                 *      Time::DateTime
-                 */
-                template    <typename   T>
-                class   BuiltinReader : public ObjectReader::IContextReader {
-                public:
-                    BuiltinReader (T* intoVal);
-
-                private:
-                    T* value_;
-
-                public:
-                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
-                };
-                template    <>
-                class   BuiltinReader<String>;
-                template    <>
-                class   BuiltinReader<int>;
-                template    <>
-                class   BuiltinReader<unsigned int>;
-                template    <>
-                class   BuiltinReader<bool>;
-                template    <>
-                class   BuiltinReader<float>;
-                template    <>
-                class   BuiltinReader<double>;
-                template    <>
-                class   BuiltinReader<Time::DateTime>;
-
-
-                /**
-                 *  OptionalTypesReader supports reads of optional types. This will work - for any types for
-                 *  which BuiltinReader<T> is implemented.
-                 *
-                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
-                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
-                 *  element which might never have triggered the invocation of this class.
-                 */
-                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
-                class   OptionalTypesReader : public ObjectReader::IContextReader {
-                public:
-                    OptionalTypesReader (Memory::Optional<T>* intoVal);
-
-                private:
-                    Memory::Optional<T>*    value_;
-                    T                       proxyValue_;
-                    ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
-
-                public:
-                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
-                };
-
-
-                /**
-                 *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
-                 *  This is necessary to balance out the Start Tag / End Tag combinations.
-                 */
-                class   IgnoreNodeReader : public ObjectReader::IContextReader {
-                public:
-                    IgnoreNodeReader ();
-                private:
-                    int fDepth_;
-                public:
-                    virtual void    HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
-                };
-
-
-                /**
-                 *  Helper class for reading complex (structured) objects.
-                 */
-                template    <typename   T>
-                class   ComplexObjectReader : public ObjectReader::IContextReader {
-                protected:
-                    ComplexObjectReader (T* vp);
-
-                public:
-                    T*  fValuePtr;
-
-                public:
-                    virtual void    HandleTextInside (ObjectReader::Context& r, const String& text) override;
-                    virtual void    HandleEndTag (ObjectReader::Context& r) override;
-                protected:
-                    nonvirtual  void    _PushNewObjPtr (ObjectReader::Context& r, const shared_ptr<IContextReader>& newlyAllocatedObject2Push);
-                };
-
-
-                /**
-                 *  The ListOfObjectReader<> template can be used to create a vector of type "T" -
-                 *  to capture repeating elements in a sequence.
-                 *
-                 *  EXAMPLE TRAITS:
-                 *      struct  ReaderTraits {
-                 *              using   ElementType     =   String;
-                 *              using   ReaderType      =   BuiltinReader<String>;
-                 *              static  const wchar_t           ElementName[] =  L"Name";
-                 *      };
-                 *
-                 *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
-                 */
-                template    <typename TRAITS>
-                struct  ListOfObjectReader: public ComplexObjectReader<vector<typename TRAITS::ElementType>> {
-                public:
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
-
-                    virtual void HandleChildStart (ObjectReader::Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void HandleEndTag (ObjectReader::Context& r) override;
-
-                private:
-                    typename TRAITS::ElementType                fCurTReading_;
-                    shared_ptr<typename TRAITS::ReaderType>     fCurReader_;
-                    UnknownSubElementDisposition                fUnknownSubElementDisposition_;
-                };
 
 
                 /**
