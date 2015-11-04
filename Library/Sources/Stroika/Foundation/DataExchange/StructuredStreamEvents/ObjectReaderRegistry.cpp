@@ -75,9 +75,10 @@ void    BuiltinReader<String>::HandleTextInside (Context& r, const String& text)
     (*value_) += text;
 }
 
-void    BuiltinReader<String>::HandleEndTag (Context& r)
+bool    BuiltinReader<String>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -110,9 +111,10 @@ void    BuiltinReader<int>::HandleTextInside (Context& r, const String& text)
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<int>::HandleEndTag (Context& r)
+bool    BuiltinReader<int>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -143,9 +145,10 @@ void    BuiltinReader<unsigned int>::HandleTextInside (Context& r, const String&
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<unsigned int>::HandleEndTag (Context& r)
+bool    BuiltinReader<unsigned int>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -179,9 +182,10 @@ void    BuiltinReader<bool>::HandleTextInside (Context& r, const String& text)
     (*value_) = (tmp == L"true");
 }
 
-void    BuiltinReader<bool>::HandleEndTag (Context& r)
+bool    BuiltinReader<bool>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -216,9 +220,10 @@ void    BuiltinReader<float>::HandleTextInside (Context& r, const String& text)
     (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
 }
 
-void    BuiltinReader<float>::HandleEndTag (Context& r)
+bool    BuiltinReader<float>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -248,9 +253,10 @@ void    BuiltinReader<double>::HandleTextInside (Context& r, const String& text)
     (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
 }
 
-void    BuiltinReader<double>::HandleEndTag (Context& r)
+bool    BuiltinReader<double>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -283,9 +289,10 @@ void    BuiltinReader<Time::DateTime>::HandleTextInside (Context& r, const Strin
     IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::ParseFormat::eXML));
 }
 
-void    BuiltinReader<Time::DateTime>::HandleEndTag (Context& r)
+bool    BuiltinReader<Time::DateTime>::HandleEndTag (Context& r)
 {
     r.Pop ();
+    return false;
 }
 
 
@@ -314,13 +321,14 @@ void    IgnoreNodeReader::HandleTextInside (Context& r, const String& text)
     // Ignore text
 }
 
-void    IgnoreNodeReader::HandleEndTag (Context& r)
+bool    IgnoreNodeReader::HandleEndTag (Context& r)
 {
     Require (fDepth_ >= 0);
     --fDepth_;
     if (fDepth_ < 0) {
         r.Pop ();
     }
+    return false;
 }
 
 
@@ -374,7 +382,9 @@ void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Na
         DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    fContext_.GetTop ()->HandleEndTag (fContext_);
+    if (fContext_.GetTop ()->HandleEndTag (fContext_)) {
+        fContext_.Pop ();
+    }
 }
 void    IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
@@ -429,9 +439,10 @@ namespace   {
             // assure input is valid
             Assert (text.IsWhitespace ());
         }
-        virtual void    HandleEndTag (Context& r) override
+        virtual bool    HandleEndTag (Context& r) override
         {
             r.Pop ();
+            return false;
         }
     };
 }

@@ -80,7 +80,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<int> : public IElementConsumer {
@@ -92,7 +92,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<unsigned int> : public IElementConsumer {
@@ -104,7 +104,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<float> : public IElementConsumer {
@@ -116,7 +116,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<double> : public IElementConsumer {
@@ -128,7 +128,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<bool> : public IElementConsumer {
@@ -140,7 +140,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<Time::DateTime> : public IElementConsumer {
@@ -152,7 +152,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
 
 
@@ -179,13 +179,19 @@ namespace   Stroika {
                     actualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (Context& r)
+                bool    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (Context& r)
                 {
                     shared_ptr<IElementConsumer>   saveCopyOfUs        =   this->shared_from_this ();    // bump our reference count til the end of the procedure
                     // because the HandleEndTag will typically cause a POP on the reader that destroys us!
                     // However, we cannot do the copy back to value beofre the base POP, because
                     // it also might do some additioanl processing on its value
                     actualReader_.HandleEndTag (r);
+                    //  *value_ = proxyValue_;
+                    return false;
+                }
+                template    <typename   T, typename ACTUAL_READER>
+                void    OptionalTypesReader<T, ACTUAL_READER>::Deactivating (Context& r)
+                {
                     *value_ = proxyValue_;
                 }
 
@@ -211,9 +217,10 @@ namespace   Stroika {
                     Assert (text.IsWhitespace ());
                 }
                 template    <typename   T>
-                void    ComplexObjectReader<T>::HandleEndTag (Context& r)
+                bool    ComplexObjectReader<T>::HandleEndTag (Context& r)
                 {
                     r.Pop ();
+                    return false;
                 }
 #endif
 
@@ -256,14 +263,28 @@ namespace   Stroika {
                     }
                 }
                 template    <typename TRAITS>
-                void    ListOfObjectReader<TRAITS>::HandleEndTag (Context& r)
+                bool    ListOfObjectReader<TRAITS>::HandleEndTag (Context& r)
+                {
+
+                    /// tricky - we need to rewrite this/REDO???
+                    // if we have an existing reader, we must save the data from it, and close it out
+                    if (fCurReader_ != nullptr) {
+                        this->fValuePtr->push_back (fCurTReading_);
+                        fCurReader_ = nullptr;
+                    }
+
+
+                    r.Pop ();
+                    return false;
+                }
+                template    <typename TRAITS>
+                void    ListOfObjectReader<TRAITS>::Deactivating (Context& r)
                 {
                     // if we have an existing reader, we must save the data from it, and close it out
                     if (fCurReader_ != nullptr) {
                         this->fValuePtr->push_back (fCurTReading_);
                         fCurReader_ = nullptr;
                     }
-                    r.Pop ();
                 }
 
             }

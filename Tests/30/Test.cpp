@@ -210,9 +210,10 @@ namespace   {
                         ThrowUnRecognizedStartElt (name);
                     }
                 }
-                virtual void    HandleEndTag (Context& r) override
+                virtual bool    HandleEndTag (Context& r) override
                 {
                     r.Pop ();
+                    return false;
                 }
             };
             struct AppointmentReader_ : public IElementConsumer {
@@ -234,9 +235,10 @@ namespace   {
                         ThrowUnRecognizedStartElt (name);
                     }
                 }
-                virtual void    HandleEndTag (Context& r) override
+                virtual bool    HandleEndTag (Context& r) override
                 {
                     r.Pop ();
+                    return false;
                 }
             };
             struct  CalendarReaderTraits_ {

@@ -111,7 +111,10 @@ namespace   Stroika {
                     virtual ~IElementConsumer () = default;
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  {};
                     virtual void    HandleTextInside (Context& r, const String& text) {};
-                    virtual void    HandleEndTag (Context& r) {};
+
+
+                    // tmphack - return true if caller should Pop
+                    virtual bool    HandleEndTag (Context& r) { return true; };
 
                     /**
                      *  pushed onto context stack
@@ -231,7 +234,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<String>;
@@ -270,7 +273,8 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
+                    virtual void    Deactivating (Context& r) override;
                 };
 
 
@@ -286,7 +290,7 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
 
 #if 0
@@ -303,7 +307,7 @@ namespace   Stroika {
 
                 public:
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    HandleEndTag (Context& r) override;
+                    virtual bool    HandleEndTag (Context& r) override;
                 };
 #endif
 
@@ -327,7 +331,8 @@ namespace   Stroika {
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
 
                     virtual void HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void HandleEndTag (Context& r) override;
+                    virtual bool HandleEndTag (Context& r) override;
+                    virtual void Deactivating (Context& r) override;
 
                 private:
                     vector<typename TRAITS::ElementType>*  fValuePtr;
@@ -405,9 +410,10 @@ namespace   Stroika {
                             r.Push (make_shared<IgnoreNodeReader> ());
                         }
                     }
-                    virtual void    HandleEndTag (Context& r)override
+                    virtual bool    HandleEndTag (Context& r) override
                     {
                         r.Pop ();
+                        return false;
                     }
                     T*  fValuePtr;;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
@@ -453,14 +459,18 @@ namespace   Stroika {
                             ThrowUnRecognizedStartElt (name);
                         }
                     }
-                    virtual void HandleEndTag (Context& r) override
+                    virtual bool HandleEndTag (Context& r) override
+                    {
+                        r.Pop ();
+                        return false;
+                    }
+                    virtual void    Deactivating (Context& r) override
                     {
                         if (readingAT_) {
                             Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
                             this->fValuePtr->push_back (curTReading_);
                             readingAT_ = false;
                         }
-                        r.Pop ();
                     }
                 };
 
