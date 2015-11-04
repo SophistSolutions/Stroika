@@ -234,7 +234,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<String>;
@@ -293,23 +292,7 @@ namespace   Stroika {
                     virtual bool    HandleEndTag (Context& r) override;
                 };
 
-#if 0
-                /**
-                 *  Helper class for reading complex (structured) objects.
-                 */
-                template    <typename   T>
-                class   ComplexObjectReader : public IElementConsumer {
-                protected:
-                    ComplexObjectReader (T* vp);
 
-                public:
-                    T*  fValuePtr;
-
-                public:
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
-                };
-#endif
 
 
                 /**
@@ -410,11 +393,6 @@ namespace   Stroika {
                             r.Push (make_shared<IgnoreNodeReader> ());
                         }
                     }
-                    virtual bool    HandleEndTag (Context& r) override
-                    {
-                        r.Pop ();
-                        return false;
-                    }
                     T*  fValuePtr;;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
                     bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
@@ -458,11 +436,6 @@ namespace   Stroika {
                         else {
                             ThrowUnRecognizedStartElt (name);
                         }
-                    }
-                    virtual bool HandleEndTag (Context& r) override
-                    {
-                        r.Pop ();
-                        return false;
                     }
                     virtual void    Deactivating (Context& r) override
                     {

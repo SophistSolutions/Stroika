@@ -75,15 +75,6 @@ void    BuiltinReader<String>::HandleTextInside (Context& r, const String& text)
     (*value_) += text;
 }
 
-bool    BuiltinReader<String>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
-
-
-
-
 
 
 
@@ -109,12 +100,6 @@ void    BuiltinReader<int>::HandleTextInside (Context& r, const String& text)
 {
     tmpVal_ += text;
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
-}
-
-bool    BuiltinReader<int>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
 }
 
 
@@ -145,13 +130,6 @@ void    BuiltinReader<unsigned int>::HandleTextInside (Context& r, const String&
     (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
-bool    BuiltinReader<unsigned int>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
-
-
 
 
 
@@ -181,13 +159,6 @@ void    BuiltinReader<bool>::HandleTextInside (Context& r, const String& text)
     String  tmp =   tmpVal_.Trim ().ToLowerCase ();
     (*value_) = (tmp == L"true");
 }
-
-bool    BuiltinReader<bool>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
-
 
 
 
@@ -220,12 +191,6 @@ void    BuiltinReader<float>::HandleTextInside (Context& r, const String& text)
     (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
 }
 
-bool    BuiltinReader<float>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
-
 
 
 
@@ -253,11 +218,6 @@ void    BuiltinReader<double>::HandleTextInside (Context& r, const String& text)
     (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
 }
 
-bool    BuiltinReader<double>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
 
 
 
@@ -289,11 +249,6 @@ void    BuiltinReader<Time::DateTime>::HandleTextInside (Context& r, const Strin
     IgnoreExceptionsForCall ((*value_) = Time::DateTime::Parse (tmpVal_.As<wstring> (), Time::DateTime::ParseFormat::eXML));
 }
 
-bool    BuiltinReader<Time::DateTime>::HandleEndTag (Context& r)
-{
-    r.Pop ();
-    return false;
-}
 
 
 
@@ -438,11 +393,6 @@ namespace   {
             // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
             // assure input is valid
             Assert (text.IsWhitespace ());
-        }
-        virtual bool    HandleEndTag (Context& r) override
-        {
-            r.Pop ();
-            return false;
         }
     };
 }

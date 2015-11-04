@@ -80,7 +80,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<int> : public IElementConsumer {
@@ -92,7 +91,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<unsigned int> : public IElementConsumer {
@@ -104,7 +102,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<float> : public IElementConsumer {
@@ -116,7 +113,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<double> : public IElementConsumer {
@@ -128,7 +124,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<bool> : public IElementConsumer {
@@ -140,7 +135,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
                 template    <>
                 class   BuiltinReader<Time::DateTime> : public IElementConsumer {
@@ -152,7 +146,6 @@ namespace   Stroika {
                 public:
                     virtual void    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                     virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual bool    HandleEndTag (Context& r) override;
                 };
 
 
@@ -196,33 +189,6 @@ namespace   Stroika {
                 }
 
 
-#if 0
-
-                /*
-                 ********************************************************************************
-                 ******************************* ComplexObjectReader<T> *************************
-                 ********************************************************************************
-                 */
-                template    <typename   T>
-                inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp)
-                    : fValuePtr (vp)
-                {
-                    RequireNotNull (vp);
-                }
-                template    <typename   T>
-                void    ComplexObjectReader<T>::HandleTextInside (Context& r, const String& text)
-                {
-                    // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
-                    // assure input is valid
-                    Assert (text.IsWhitespace ());
-                }
-                template    <typename   T>
-                bool    ComplexObjectReader<T>::HandleEndTag (Context& r)
-                {
-                    r.Pop ();
-                    return false;
-                }
-#endif
 
                 /*
                  ********************************************************************************
@@ -272,7 +238,6 @@ namespace   Stroika {
                         this->fValuePtr->push_back (fCurTReading_);
                         fCurReader_ = nullptr;
                     }
-
 
                     r.Pop ();
                     return false;
