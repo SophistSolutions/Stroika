@@ -228,7 +228,6 @@ namespace   {
     {
         using namespace SAX_ObjectReader_EXAMPLE_1_;
         Test_2a_ObjectReader_viaRegistry_ ();
-
     }
 }
 
