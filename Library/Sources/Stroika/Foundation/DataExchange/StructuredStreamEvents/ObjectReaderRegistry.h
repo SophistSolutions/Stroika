@@ -290,34 +290,6 @@ namespace   Stroika {
                 };
 
 
-                /**
-                 *  The ListOfObjectReader<> template can be used to create a vector of type "T" -
-                 *  to capture repeating elements in a sequence.
-                 *
-                 *  EXAMPLE TRAITS:
-                 *      struct  ReaderTraits {
-                 *              using   ElementType     =   String;
-                 *              using   ReaderType      =   SimpleReader<String>;
-                 *              static  const wchar_t           ElementName[] =  L"Name";
-                 *      };
-                 *
-                 *  @todo REPLACE THIS TRAITS API WITH A FACTORY BUILDING NEW READER_OF_T
-                 */
-                template    <typename TRAITS>
-                struct  ListOfObjectReader: public IElementConsumer {
-                public:
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition = UnknownSubElementDisposition::eEndObject);
-
-                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void Deactivating (Context& r) override;
-
-                private:
-                    vector<typename TRAITS::ElementType>*  fValuePtr;
-                    typename TRAITS::ElementType                fCurTReading_;
-                    shared_ptr<typename TRAITS::ReaderType>     fCurReader_;
-                    UnknownSubElementDisposition                fUnknownSubElementDisposition_;
-                };
-
 
 
                 /**

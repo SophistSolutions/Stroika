@@ -186,87 +186,18 @@ namespace   {
             WriteTextStream_ (newDocXML, tmpStrm);
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
-        namespace T1_ {
-            struct PersonReader_ : public IElementConsumer {
-                Person_* fValuePtr;
-                PersonReader_ (Person_* v)
-                    : IElementConsumer ()
-                    , fValuePtr (v)
-                {
-                }
-                virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
-                {
-                    RequireNotNull (fValuePtr);
-                    if (name.fLocalName == L"FirstName") {
-                        return make_shared<SimpleReader<String>> (&fValuePtr->firstName);
-                    }
-                    else if (name.fLocalName == L"LastName") {
-                        return make_shared<SimpleReader<String>> (&fValuePtr->lastName);
-                    }
-                    else if (name.fLocalName == L"MiddleName") {
-                        return make_shared<OptionalTypesReader<String>> (&fValuePtr->middleName);
-                    }
-                    else {
-                        ThrowUnRecognizedStartElt (name);
-                    }
-                }
-            };
-            struct AppointmentReader_ : public IElementConsumer {
-                Appointment_* fValuePtr;
-                AppointmentReader_ (Appointment_* v)
-                    : IElementConsumer ()
-                    , fValuePtr (v)
-                {
-                }
-                virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
-                {
-                    if (name.fLocalName == L"When") {
-                        return make_shared<SimpleReader<Time::DateTime>> (&fValuePtr->when);
-                    }
-                    else if (name.fLocalName == L"WithWhom") {
-                        return make_shared<PersonReader_> (&fValuePtr->withWhom);
-                    }
-                    else {
-                        ThrowUnRecognizedStartElt (name);
-                    }
-                }
-            };
-            struct  CalendarReaderTraits_ {
-                using   ElementType =   Appointment_;
-                using   ReaderType  =   AppointmentReader_;
-                static  const wchar_t       ElementName[];
-            };
-            const wchar_t   CalendarReaderTraits_::ElementName[]        =   L"Appointment";
-            using       CalendarReader_ =   ListOfObjectReader<CalendarReaderTraits_>;
-        }
-        void    Test_2_SAXObjectReader_ ()
-        {
-            TraceContextBumper ctx ("Test_2_SAXObjectReader_");
-            using namespace T1_;
-#if     qDefaultTracingOn && 0
-            //tmp disable for now - ... must restrucutr ecode a bit
-            reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
-#endif
-            CalendarType_       calendar;
-            ObjectReaderRegistry registry;
-            Run (registry, make_shared<CalendarReader_> (&calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
-            VerifyTestResult (calendar.size () == 2);
-            VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-            VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-            VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-            VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
-            VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-            VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
-        }
         void    Test_2a_ObjectReader_viaRegistry_ ()
         {
             TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
 
             ObjectReaderRegistry registry;
+
+			// @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
             registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<SimpleReader<Time::DateTime>> (d); });
             registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
             registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
 
+			// not sure if this is clearer or macro version
             {
                 Mapping<String, pair<type_index, size_t>>   metaInfo;
                 metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
@@ -297,7 +228,6 @@ namespace   {
     void    Test_SAX_ObjectReader_EXAMPLE_1_ ()
     {
         using namespace SAX_ObjectReader_EXAMPLE_1_;
-        Test_2_SAXObjectReader_ ();
         Test_2a_ObjectReader_viaRegistry_ ();
 
     }

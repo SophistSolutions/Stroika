@@ -126,56 +126,6 @@ namespace   Stroika {
                 }
 
 
-
-                /*
-                 ********************************************************************************
-                 *************************** ListOfObjectReader<TRAITS> *************************
-                 ********************************************************************************
-                 */
-                template    <typename TRAITS>
-                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, UnknownSubElementDisposition unknownEltDisposition)
-                    : IElementConsumer ()
-                    , fValuePtr (v)
-                    , fUnknownSubElementDisposition_ (unknownEltDisposition)
-                {
-                }
-                template    <typename TRAITS>
-                shared_ptr<IElementConsumer>    ListOfObjectReader<TRAITS>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
-                {
-                    // if we have an existing reader, we must save the data from it, and close it out
-                    if (fCurReader_ != nullptr) {
-                        this->fValuePtr->push_back (fCurTReading_);
-                        fCurReader_ = nullptr;
-                    }
-                    if (fCurReader_ == nullptr and name.fLocalName == TRAITS::ElementName) {
-                        fCurTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
-                        fCurReader_ = make_shared<typename TRAITS::ReaderType> (&fCurTReading_);
-                        return (fCurReader_);
-                    }
-                    else {
-                        //// @todo SHOULD allow for EITHER pass back to parent or just keep going and ignore other elements
-                        /// we are at the top of the stack, but we want to pop, and hand this 'new child' to our parent
-                        if (fUnknownSubElementDisposition_ == UnknownSubElementDisposition::eEndObject) {
-                            auto save  = this->shared_from_this ();
-                            r.Pop ();
-                            r.GetTop ()->HandleChildStart (r, name);
-                        }
-                        else {
-                            AssertNotImplemented ();    // @todo
-                        }
-                        return nullptr;
-                    }
-                }
-                template    <typename TRAITS>
-                void    ListOfObjectReader<TRAITS>::Deactivating (Context& r)
-                {
-                    // if we have an existing reader, we must save the data from it, and close it out
-                    if (fCurReader_ != nullptr) {
-                        this->fValuePtr->push_back (fCurTReading_);
-                        fCurReader_ = nullptr;
-                    }
-                }
-
             }
         }
     }
