@@ -272,13 +272,13 @@ namespace   {
                 metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
                 metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
                 metaInfo.Add (L"MiddleName", pair<type_index, size_t> {typeid(decltype (Person_::middleName)), offsetof(Person_, middleName)});
-                registry.Add<Person_> (mkComplexObjectReader2Factory<Person_> (metaInfo));
+                registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
             }
             {
                 Mapping<String, pair<type_index, size_t>>   metaInfo;
                 metaInfo.Add (L"When", pair<type_index, size_t> {typeid(decltype (Appointment_::when)), offsetof(Appointment_, when)});
                 metaInfo.Add (L"WithWhom", pair<type_index, size_t> {typeid(decltype (Appointment_::withWhom)), offsetof(Appointment_, withWhom)});
-                registry.Add<Appointment_> (mkComplexObjectReader2Factory<Appointment_> (metaInfo));
+                registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
             }
 
             CalendarType_       calendar;

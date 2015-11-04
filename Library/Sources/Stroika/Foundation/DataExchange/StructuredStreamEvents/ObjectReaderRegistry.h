@@ -364,9 +364,9 @@ namespace   Stroika {
 
 
                 template    <typename   T>
-                class   ComplexObjectReader2 : public IElementConsumer {
+                class   ClassReader : public IElementConsumer {
                 public:
-                    ComplexObjectReader2 (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
+                    ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
                         : IElementConsumer()
                         , fValuePtr (vp)
                         , fFieldNameToTypeMap (maps)
@@ -392,9 +392,9 @@ namespace   Stroika {
                     bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
                 };
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
                 {
-                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ComplexObjectReader2<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
+                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }
 
 
