@@ -279,6 +279,33 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
 
 /*
  ********************************************************************************
+ ****************** StructuredStreamEvents::ReadDownToReader ********************
+ ********************************************************************************
+ */
+ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
+    : fReader2Delegate2_ (theUseReader)
+    , fTagToHandOff_ (tagToHandOff)
+{
+    RequireNotNull (theUseReader);
+}
+
+shared_ptr<IElementConsumer>    ReadDownToReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+{
+    if (name == fTagToHandOff_) {
+        return fReader2Delegate2_;
+    }
+    else {
+        return shared_from_this ();
+    }
+}
+
+
+
+
+
+
+/*
+ ********************************************************************************
  ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
  ********************************************************************************
  */
@@ -286,5 +313,10 @@ void    _NoReturn_  StructuredStreamEvents::ThrowUnRecognizedStartElt (const Str
 {
     Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }
+
+
+
+
+
 
 

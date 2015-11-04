@@ -233,6 +233,70 @@ namespace   {
 
 
 
+
+
+
+namespace {
+    namespace  T3_SAXObjectReader_ReadDown2Sample_ {
+
+        struct  Person_ {
+            String firstName;
+            String lastName;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<envelope1>\n"
+                L"  <envelope2>\n"
+                L"	  <When>2005-06-01T13:00:00-05:00</When>"
+                L"	  <WithWhom>\n"
+                L"		  <FirstName>Jim</FirstName>"
+                L"		  <LastName>Smith</LastName>"
+                //              L"          <MiddleName>Up</MiddleName>"
+                L"	  </WithWhom>\n"
+                L"  </envelope2>\n"
+                L"  <envelope2>\n"
+                L"	  <When>2005-08-01T13:00:00-05:00</When>"
+                L"	  <WithWhom>\n"
+                L"		  <FirstName>Fred</FirstName>"
+                L"		  <LastName>Down</LastName>"
+                L"	  </WithWhom>\n"
+                L"  </envelope2>\n"
+                L"</envelope1>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+
+
+        void    DoTest ()
+        {
+            ObjectReaderRegistry registry;
+            registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
+            {
+                Mapping<String, pair<type_index, size_t>>   metaInfo;
+                metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
+                metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
+                registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
+            }
+
+            vector<Person_> people;
+            Run (registry, make_shared<ReadDownToReader> (make_shared<ListOfObjectReader<Person_>> (Name (L"WithWhom"), &people), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
+
+            VerifyTestResult (people.size () == 2);
+            VerifyTestResult (people[0].firstName == L"Jim");
+            VerifyTestResult (people[0].lastName == L"Smith");
+            VerifyTestResult (people[1].firstName == L"Fred");
+            VerifyTestResult (people[1].lastName == L"Down");
+        }
+    }
+
+}
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -240,6 +304,7 @@ namespace   {
         try {
             Test_1_SAXParser_ ();
             Test_SAX_ObjectReader_EXAMPLE_1_ ();
+            T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces

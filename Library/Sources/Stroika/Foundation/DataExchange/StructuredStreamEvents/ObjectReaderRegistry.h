@@ -155,7 +155,7 @@ namespace   Stroika {
                 public:
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
-                    bool    fTraceThisReader { true };       // very noisy - off by default even for tracemode
+                    bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
                     nonvirtual  String TraceLeader_ () const;
 #endif
 
@@ -374,12 +374,35 @@ namespace   Stroika {
 
 
 
+                /**
+                 *   Eat/ignore everything down the level named by 'tagToHandoff'.
+                 *    Note - its not an error to call theUseReader with multiple starts, but never two at a time.
+                 *
+                 *    \note - the tag == tagToHandoff will be handed to theUseReader.
+                 */
+                class   ReadDownToReader : public IElementConsumer {
+                public:
+                    ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
+
+                private:
+                    shared_ptr<IElementConsumer>    fReader2Delegate2_;
+                    Name                            fTagToHandOff_;
+
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                };
+
+
+
+
+
                 template    <typename ELEMENT_TYPE>
                 struct ListOfObjectReader: public IElementConsumer {
                     bool                    readingAT_;
                     ELEMENT_TYPE            curTReading_;
                     Name                    fName;
                     vector<ELEMENT_TYPE>*   fValuePtr;
+                    bool fThrowOnUnrecongizedelts { false };
 
                     ListOfObjectReader (const Name& name, vector<ELEMENT_TYPE>* v)
                         : IElementConsumer ()
@@ -400,8 +423,11 @@ namespace   Stroika {
                             curTReading_ = ELEMENT_TYPE (); // clear because dont' want to keep values from previous elements
                             return r.GetObjectReaderRegistry ().MakeContextReader<ELEMENT_TYPE> (&curTReading_);
                         }
-                        else {
+                        else if (fThrowOnUnrecongizedelts) {
                             ThrowUnRecognizedStartElt (name);
+                        }
+                        else {
+                            return make_shared<IgnoreNodeReader> ();
                         }
                     }
                     virtual void    Deactivating (Context& r) override
