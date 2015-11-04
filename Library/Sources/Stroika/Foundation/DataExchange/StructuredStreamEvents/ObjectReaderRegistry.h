@@ -87,6 +87,8 @@ namespace   Stroika {
                 class   IConsumerDelegateToContext;
 
 
+                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
+
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                 // a HandleChildStar tand HandleEndTag() method call (exactly once).
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IContextReader>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
@@ -357,13 +359,13 @@ namespace   Stroika {
                     }
 
                 public:
-                    shared_ptr<IContextReader>    MakeContextReader (type_index ti, void* destinationObject)
+                    shared_ptr<IContextReader>    MakeContextReader (type_index ti, void* destinationObject) const
                     {
                         ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
                         return factory (destinationObject);
                     }
                     template    <typename T>
-                    shared_ptr<IContextReader>    MakeContextReader (T* destinationObject)
+                    shared_ptr<IContextReader>    MakeContextReader (T* destinationObject) const
                     {
                         return MakeContextReader (typeid (T), destinationObject);
                     }
@@ -376,9 +378,8 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ComplexObjectReader2 : public ComplexObjectReader<T> {
                 public:
-                    ComplexObjectReader2 (ObjectReaderRegistry* objReg, Mapping<String, pair<type_index, size_t>> maps, T* vp)
+                    ComplexObjectReader2 (Mapping<String, pair<type_index, size_t>> maps, T* vp)
                         : ComplexObjectReader<T>(vp)
-                        , fObjRegistry  (*objReg)
                         , fFieldNameToTypeMap (maps)
                     {
                     }
@@ -388,7 +389,7 @@ namespace   Stroika {
                         if (ti) {
                             Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
                             Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                            this->_PushNewObjPtr (r, fObjRegistry.MakeContextReader (ti->first, operatingOnObjField));
+                            this->_PushNewObjPtr (r, r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField));
                         }
                         else if (fThrowOnUnrecongizedelts) {
                             ThrowUnRecognizedStartElt (name);
@@ -398,14 +399,13 @@ namespace   Stroika {
                         }
                     }
 
-                    ObjectReaderRegistry&                                               fObjRegistry;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
                     bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
                 };
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (ObjectReaderRegistry* objReg, const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkComplexObjectReader2Factory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
                 {
-                    return [objReg, fieldname2Typeamps] (void* data) -> shared_ptr<IContextReader> { return make_shared<ComplexObjectReader2<T>> (objReg, fieldname2Typeamps, reinterpret_cast<T*> (data)); };
+                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IContextReader> { return make_shared<ComplexObjectReader2<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }
 
 
