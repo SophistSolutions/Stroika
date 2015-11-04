@@ -174,13 +174,7 @@ namespace   Stroika {
                 template    <typename   T, typename ACTUAL_READER>
                 bool    OptionalTypesReader<T, ACTUAL_READER>::HandleEndTag (Context& r)
                 {
-                    shared_ptr<IElementConsumer>   saveCopyOfUs        =   this->shared_from_this ();    // bump our reference count til the end of the procedure
-                    // because the HandleEndTag will typically cause a POP on the reader that destroys us!
-                    // However, we cannot do the copy back to value beofre the base POP, because
-                    // it also might do some additioanl processing on its value
-                    actualReader_.HandleEndTag (r);
-                    //  *value_ = proxyValue_;
-                    return false;
+                    return actualReader_.HandleEndTag (r);
                 }
                 template    <typename   T, typename ACTUAL_READER>
                 void    OptionalTypesReader<T, ACTUAL_READER>::Deactivating (Context& r)
