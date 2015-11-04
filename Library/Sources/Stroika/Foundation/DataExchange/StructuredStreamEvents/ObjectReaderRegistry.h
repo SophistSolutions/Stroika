@@ -136,27 +136,14 @@ namespace   Stroika {
                     using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
 
                 public:
-                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
-                    {
-                        fFactories_.Add (forType, readerFactory);
-                    }
+                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
                     template    <typename T>
-                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory)
-                    {
-                        Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
-                    }
+                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory);
 
                 public:
-                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const
-                    {
-                        ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
-                        return factory (destinationObject);
-                    }
+                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
-                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const
-                    {
-                        return MakeContextReader (typeid (T), destinationObject);
-                    }
+                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -169,7 +156,6 @@ namespace   Stroika {
                 // a HandleChildStar  method call (exactly once).
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
-
 
 
 
@@ -197,7 +183,6 @@ namespace   Stroika {
                     bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
                     nonvirtual  String TraceLeader_ () const;
 #endif
-
 
                 private:
                     const ObjectReaderRegistry& fObjectReaderRegistry_;
@@ -267,37 +252,15 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ClassReader : public IElementConsumer {
                 public:
-                    ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
-                        : IElementConsumer()
-                        , fValuePtr (vp)
-                        , fFieldNameToTypeMap (maps)
-                    {
-                    }
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override
-                    {
-                        Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
-                        if (ti) {
-                            Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
-                            Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                            return r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField);
-                        }
-                        else if (fThrowOnUnrecongizedelts) {
-                            ThrowUnRecognizedStartElt (name);
-                        }
-                        else {
-                            return make_shared<IgnoreNodeReader> ();
-                        }
-                    }
+                    ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp);
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override;
+                private:
                     T*  fValuePtr;;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
                     bool                                                                fThrowOnUnrecongizedelts { false };       // else ignroe
                 };
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
-                {
-                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
-                }
-
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps);
 
 
                 /**
@@ -365,41 +328,12 @@ namespace   Stroika {
                 class   ListOfObjectReader: public IElementConsumer {
                 public:
                     using   ElementType = T;
+
                 public:
-                    ListOfObjectReader (const Name& name, vector<ElementType>* v)
-                        : IElementConsumer ()
-                        , fReadingAT_ (false)
-                        , fName  (name)
-                        , fValuePtr (v)
-                    {
-                    }
-                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
-                    {
-                        if (name == fName) {
-                            if (fReadingAT_) {
-                                Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                                this->fValuePtr->push_back (fCurTReading_);
-                                fReadingAT_ = false;
-                            }
-                            fReadingAT_ = true;
-                            fCurTReading_ = ElementType (); // clear because dont' want to keep values from previous elements
-                            return r.GetObjectReaderRegistry ().MakeContextReader<T> (&fCurTReading_);
-                        }
-                        else if (fThrowOnUnrecongizedelts) {
-                            ThrowUnRecognizedStartElt (name);
-                        }
-                        else {
-                            return make_shared<IgnoreNodeReader> ();
-                        }
-                    }
-                    virtual void    Deactivating (Context& r) override
-                    {
-                        if (fReadingAT_) {
-                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                            this->fValuePtr->push_back (fCurTReading_);
-                            fReadingAT_ = false;
-                        }
-                    }
+                    ListOfObjectReader (const Name& name, vector<ElementType>* v);
+                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    Deactivating (Context& r) override;
+
                 private:
                     bool                    fReadingAT_;
                     T                       fCurTReading_;

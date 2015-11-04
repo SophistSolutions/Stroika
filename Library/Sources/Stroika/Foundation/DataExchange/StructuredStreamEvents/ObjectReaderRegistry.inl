@@ -18,10 +18,9 @@ namespace   Stroika {
             namespace   StructuredStreamEvents {
 
 
-
                 /*
                   ********************************************************************************
-                  **************************** Context *****************************
+                  ********************************** Context *************************************
                   ********************************************************************************
                   */
                 inline   Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
@@ -65,11 +64,116 @@ namespace   Stroika {
                 }
 
 
+                /*
+                  ********************************************************************************
+                  ************************************ ClassReader *******************************
+                  ********************************************************************************
+                  */
+                template    <typename   T>
+                ClassReader<T>::ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
+                    : IElementConsumer()
+                    , fValuePtr (vp)
+                    , fFieldNameToTypeMap (maps)
+                {
+                }
+                template    <typename   T>
+                shared_ptr<IElementConsumer>    ClassReader<T>::HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name)
+                {
+                    Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
+                    if (ti) {
+                        Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
+                        Byte*   operatingOnObjField = operatingOnObj + ti->second;
+                        return r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField);
+                    }
+                    else if (fThrowOnUnrecongizedelts) {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                    else {
+                        return make_shared<IgnoreNodeReader> ();
+                    }
+                }
+
+                template    <typename T>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
+                {
+                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
+                }
+
+
+                /*
+                  ********************************************************************************
+                  ******************************* ListOfObjectReader *****************************
+                  ********************************************************************************
+                  */
+                template    <typename T>
+                ListOfObjectReader<T>::ListOfObjectReader (const Name& name, vector<ElementType>* v)
+                    : IElementConsumer ()
+                    , fReadingAT_ (false)
+                    , fName  (name)
+                    , fValuePtr (v)
+                {
+                }
+                template    <typename T>
+                shared_ptr<IElementConsumer> ListOfObjectReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                {
+                    if (name == fName) {
+                        if (fReadingAT_) {
+                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
+                            this->fValuePtr->push_back (fCurTReading_);
+                            fReadingAT_ = false;
+                        }
+                        fReadingAT_ = true;
+                        fCurTReading_ = ElementType (); // clear because dont' want to keep values from previous elements
+                        return r.GetObjectReaderRegistry ().MakeContextReader<T> (&fCurTReading_);
+                    }
+                    else if (fThrowOnUnrecongizedelts) {
+                        ThrowUnRecognizedStartElt (name);
+                    }
+                    else {
+                        return make_shared<IgnoreNodeReader> ();
+                    }
+                }
+                template    <typename T>
+                void    ListOfObjectReader<T>::Deactivating (Context& r)
+                {
+                    if (fReadingAT_) {
+                        Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
+                        this->fValuePtr->push_back (fCurTReading_);
+                        fReadingAT_ = false;
+                    }
+                }
 
 
                 /*
                  ********************************************************************************
-                 ********************************** SimpleReader *******************************
+                 *************************** ObjectReaderRegistry *******************************
+                 ********************************************************************************
+                 */
+                inline void    ObjectReaderRegistry::Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
+                {
+                    fFactories_.Add (forType, readerFactory);
+                }
+                template    <typename T>
+                void    ObjectReaderRegistry::Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory)
+                {
+                    Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
+                }
+
+                inline shared_ptr<IElementConsumer>    ObjectReaderRegistry::MakeContextReader (type_index ti, void* destinationObject) const
+                {
+                    ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
+                    return factory (destinationObject);
+                }
+                template    <typename T>
+                shared_ptr<IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
+                {
+                    return MakeContextReader (typeid (T), destinationObject);
+                }
+
+
+                /*
+                 ********************************************************************************
+                 ********************************** SimpleReader ********************************
                  ********************************************************************************
                  */
                 template    <typename   T>
