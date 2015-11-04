@@ -65,29 +65,7 @@ namespace   Stroika {
 
                 /**
                  */
-                class   ObjectReaderRegistry;
-
-
-                /**
-                &&&&&& TODO - @todo - rewrite all these docs
-                *
-                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
-                 *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
-                 *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
-                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
-                 *  For one thing - there is no need to have the entire source in memory at a time, and there
-                 *  is no need to ever construct intermediary DOM nodes.
-                 *
-                 *      We need good docs - on how to use this - but for the time being, just look at the
-                 *  example usage in the regression test.
-                 */
-                class   IElementConsumer;
-
                 class   Context;
-
-                class   IConsumerDelegateToContext;
-
-
 
 
                 /**
@@ -109,194 +87,49 @@ namespace   Stroika {
                     IElementConsumer () = default;
 
                 public:
+                    /**
+                     */
                     virtual ~IElementConsumer () = default;
+
+                public:
+                    /**
+                     */
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return nullptr; };
+
+                public:
+                    /**
+                     */
                     virtual void    HandleTextInside (Context& r, const String& text) {};
 
+                public:
                     /**
                      *  pushed onto context stack
                      */
                     virtual void    Activated (Context& r) {};
 
+                public:
                     /**
                      * About to pop from ontext stack
                      */
                     virtual void    Deactivating (Context& r) {};
-
-#if 0
-                    // not used yet
-
-
-
-                    virtual void    HandleChildEnd (Context& r, const StructuredStreamEvents::Name& name) {};
-
-#endif
                 };
 
 
                 /**
-                 *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
-                 *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
-                 *
-                 *  \note   Important Design Principle for Reader
-                 *
-                 *          We only recognize a new 'type' by its 'Start' element. So its at that (or sometimes the start/end of a child) that
-                 *          we can PUSH a new reader in place.
-                 *
-                 *          The current tags and text get delivered to the top of the stack.
-                 *
-                 *          When we encounter a close tag, we end that reading, and so pop.
-                 *
-                 *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
-                 *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
-                 *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
-                 */
-                class   Context {
-                public:
-#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-                public:
-                    bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
-                    nonvirtual  String TraceLeader_ () const;
-#endif
 
-
-                private:
-                    const ObjectReaderRegistry& fObjectReaderRegistry_;
-
-                public:
-                    Context (const ObjectReaderRegistry& objectReaderRegistry);
-                    Context (const Context&) = delete;
-                    Context& operator= (const Context&) = delete;
-
-                public:
-                    const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
-
-                public:
-                    nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
-                    nonvirtual  void    Pop ();
-
-                public:
-                    nonvirtual  shared_ptr<IElementConsumer>   GetTop () const;
-
-                public:
-                    bool    empty () const { return fStack_.empty (); }
-
-                private:
-                    vector<shared_ptr<IElementConsumer>> fStack_;
-
-                private:
-                    friend  class   ObjectReader;
-                };
-
-
-                class   IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
-                public:
-                    IConsumerDelegateToContext () = delete;
-                    IConsumerDelegateToContext (Context& r);
-                    IConsumerDelegateToContext (const Context&) = delete;
-                    IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
-                private:
-                    Context&    fContext_;
-                public:
-                    virtual void    StartElement (const StructuredStreamEvents::Name& name) override;
-                    virtual void    EndElement (const StructuredStreamEvents::Name& name) override;
-                    virtual void    TextInsideElement (const String& text) override;
-                };
-
-
-
-
-                /**
-                 */
-                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
-
-
-                /**
-                &&& @todo - docoment - to specialize - just replace Deactivating with type specific value
+                &&&&&& TODO - @todo - rewrite all these docs
                 *
-                 * SimpleReader<> is not implemented for all types - just for the specialized ones listed below:
-                 *      String
-                 *      int
-                 *      Time::DateTime
-                 */
-                template    <typename   T>
-                class   SimpleReader : public IElementConsumer {
-                public:
-                    SimpleReader (T* intoVal);
-
-                private:
-                    Characters::StringBuilder   fBuf_;
-                    T*                          fValue_;
-
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void                            HandleTextInside (Context& r, const String& text) override;
-                    virtual void                            Deactivating (Context& r) override;
-                };
-
-
-                template <>
-                void   SimpleReader<String>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<int>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<unsigned int>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<bool>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<float>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<double>::Deactivating (Context& r);
-                template <>
-                void   SimpleReader<Time::DateTime>::Deactivating (Context& r);
-
-
-                /**
-                 *  @todo merge this into SimpleTypeReader, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
+                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
+                 *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
+                 *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
+                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
+                 *  For one thing - there is no need to have the entire source in memory at a time, and there
+                 *  is no need to ever construct intermediary DOM nodes.
                  *
-                 *
-                 *  OptionalTypesReader supports reads of optional types. This will work - for any types for
-                 *  which SimpleReader<T> is implemented.
-                 *
-                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
-                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
-                 *  element which might never have triggered the invocation of this class.
-                 */
-                template    <typename   T, typename ACTUAL_READER = SimpleReader<T>>
-                class   OptionalTypesReader : public IElementConsumer {
-                public:
-                    OptionalTypesReader (Memory::Optional<T>* intoVal);
+                 *      We need good docs - on how to use this - but for the time being, just look at the
+                 *  example usage in the regression test.
 
-                private:
-                    Memory::Optional<T>*    value_;
-                    T                       proxyValue_;
-                    ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
-
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    Deactivating (Context& r) override;
-                };
-
-
-                /**
-                 *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
-                 *  This is necessary to balance out the Start Tag / End Tag combinations.
-                 */
-                class   IgnoreNodeReader : public IElementConsumer {
-                public:
-                    IgnoreNodeReader ();
-                private:
-                    int fDepth_;
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                };
-
-
-
-
-                /**
-                // Look back to DataExchange::ObjectVariantmapper, but for now - KISS
+                   *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
                  */
                 class   ObjectReaderRegistry {
                 public:
@@ -336,6 +169,99 @@ namespace   Stroika {
                 // a HandleChildStar  method call (exactly once).
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+
+
+
+
+                /**
+                              *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
+                              *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
+                              *
+                              *  \note   Important Design Principle for Reader
+                              *
+                              *          We only recognize a new 'type' by its 'Start' element. So its at that (or sometimes the start/end of a child) that
+                              *          we can PUSH a new reader in place.
+                              *
+                              *          The current tags and text get delivered to the top of the stack.
+                              *
+                              *          When we encounter a close tag, we end that reading, and so pop.
+                              *
+                              *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
+                              *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
+                              *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
+                              */
+                class   Context {
+                public:
+#if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
+                public:
+                    bool    fTraceThisReader { false };       // very noisy - off by default even for tracemode
+                    nonvirtual  String TraceLeader_ () const;
+#endif
+
+
+                private:
+                    const ObjectReaderRegistry& fObjectReaderRegistry_;
+
+                public:
+                    Context (const ObjectReaderRegistry& objectReaderRegistry);
+                    Context (const Context&) = delete;
+                    Context& operator= (const Context&) = delete;
+
+                public:
+                    const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
+
+                public:
+                    nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
+                    nonvirtual  void    Pop ();
+
+                public:
+                    nonvirtual  shared_ptr<IElementConsumer>   GetTop () const;
+
+                public:
+                    bool    empty () const { return fStack_.empty (); }
+
+                private:
+                    vector<shared_ptr<IElementConsumer>> fStack_;
+
+                private:
+                    friend  class   ObjectReader;
+                };
+
+
+                /**
+                 */
+                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
+
+
+                /**
+                 */
+                class   IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
+                public:
+                    IConsumerDelegateToContext () = delete;
+                    IConsumerDelegateToContext (Context& r);
+                    IConsumerDelegateToContext (const Context&) = delete;
+                    IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
+                private:
+                    Context&    fContext_;
+                public:
+                    virtual void    StartElement (const StructuredStreamEvents::Name& name) override;
+                    virtual void    EndElement (const StructuredStreamEvents::Name& name) override;
+                    virtual void    TextInsideElement (const String& text) override;
+                };
+
+
+                /**
+                 *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
+                 *  This is necessary to balance out the Start Tag / End Tag combinations.
+                 */
+                class   IgnoreNodeReader : public IElementConsumer {
+                public:
+                    IgnoreNodeReader ();
+                private:
+                    int fDepth_;
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                };
 
 
                 template    <typename   T>
@@ -384,29 +310,65 @@ namespace   Stroika {
                 public:
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
                     Name                            fTagToHandOff_;
-
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
                 };
 
 
+                /**
+                &&& @todo - docoment - to specialize - just replace Deactivating with type specific value
+                *
+                 * SimpleReader<> is not implemented for all types - just for the specialized ones listed below:
+                 *      String
+                 *      int
+                 *      Time::DateTime
+                 */
+                template    <typename   T>
+                class   SimpleReader : public IElementConsumer {
+                public:
+                    SimpleReader (T* intoVal);
+
+                private:
+                    Characters::StringBuilder   fBuf_;
+                    T*                          fValue_;
+
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void                            HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            Deactivating (Context& r) override;
+                };
 
 
+                template <>
+                void   SimpleReader<String>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<int>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<unsigned int>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<bool>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<float>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<double>::Deactivating (Context& r);
+                template <>
+                void   SimpleReader<Time::DateTime>::Deactivating (Context& r);
 
-                template    <typename ELEMENT_TYPE>
-                struct ListOfObjectReader: public IElementConsumer {
-                    bool                    readingAT_;
-                    ELEMENT_TYPE            curTReading_;
-                    Name                    fName;
-                    vector<ELEMENT_TYPE>*   fValuePtr;
-                    bool fThrowOnUnrecongizedelts { false };
 
-                    ListOfObjectReader (const Name& name, vector<ELEMENT_TYPE>* v)
+                /**
+                 */
+                template    <typename T>
+                class   ListOfObjectReader: public IElementConsumer {
+                public:
+                    using   ElementType = T;
+                public:
+                    ListOfObjectReader (const Name& name, vector<ElementType>* v)
                         : IElementConsumer ()
-                        , readingAT_ (false)
+                        , fReadingAT_ (false)
                         , fName  (name)
                         , fValuePtr (v)
                     {
@@ -414,14 +376,14 @@ namespace   Stroika {
                     virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
                     {
                         if (name == fName) {
-                            if (readingAT_) {
+                            if (fReadingAT_) {
                                 Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                                this->fValuePtr->push_back (curTReading_);
-                                readingAT_ = false;
+                                this->fValuePtr->push_back (fCurTReading_);
+                                fReadingAT_ = false;
                             }
-                            readingAT_ = true;
-                            curTReading_ = ELEMENT_TYPE (); // clear because dont' want to keep values from previous elements
-                            return r.GetObjectReaderRegistry ().MakeContextReader<ELEMENT_TYPE> (&curTReading_);
+                            fReadingAT_ = true;
+                            fCurTReading_ = ElementType (); // clear because dont' want to keep values from previous elements
+                            return r.GetObjectReaderRegistry ().MakeContextReader<T> (&fCurTReading_);
                         }
                         else if (fThrowOnUnrecongizedelts) {
                             ThrowUnRecognizedStartElt (name);
@@ -432,12 +394,46 @@ namespace   Stroika {
                     }
                     virtual void    Deactivating (Context& r) override
                     {
-                        if (readingAT_) {
+                        if (fReadingAT_) {
                             Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                            this->fValuePtr->push_back (curTReading_);
-                            readingAT_ = false;
+                            this->fValuePtr->push_back (fCurTReading_);
+                            fReadingAT_ = false;
                         }
                     }
+                private:
+                    bool                    fReadingAT_;
+                    T                       fCurTReading_;
+                    Name                    fName;
+                    vector<ElementType>*    fValuePtr;
+                    bool                    fThrowOnUnrecongizedelts { false };
+                };
+
+
+                /**
+                 *  @todo merge this into SimpleTypeReader, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
+                 *
+                 *
+                 *  OptionalTypesReader supports reads of optional types. This will work - for any types for
+                 *  which SimpleReader<T> is implemented.
+                 *
+                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
+                 *  element which might never have triggered the invocation of this class.
+                 */
+                template    <typename   T, typename ACTUAL_READER = SimpleReader<T>>
+                class   OptionalTypesReader : public IElementConsumer {
+                public:
+                    OptionalTypesReader (Memory::Optional<T>* intoVal);
+
+                private:
+                    Memory::Optional<T>*    value_;
+                    T                       proxyValue_;
+                    ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+
+                public:
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual void    HandleTextInside (Context& r, const String& text) override;
+                    virtual void    Deactivating (Context& r) override;
                 };
 
 
