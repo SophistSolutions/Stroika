@@ -252,6 +252,9 @@ namespace   Stroika {
 
 
                 /**
+                 *  @todo merge this into SimpleTypeReader, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
+                 *
+                 *
                  *  OptionalTypesReader supports reads of optional types. This will work - for any types for
                  *  which SimpleReader<T> is implemented.
                  *
@@ -361,7 +364,7 @@ namespace   Stroika {
                     }
                     T*  fValuePtr;;
                     Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
-                    bool                                                                fThrowOnUnrecongizedelts;       // else ignroe
+                    bool                                                                fThrowOnUnrecongizedelts { false };       // else ignroe
                 };
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
