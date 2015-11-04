@@ -378,10 +378,10 @@ namespace   Stroika {
                 struct ListOfObjectReader: public IElementConsumer {
                     bool                    readingAT_;
                     ELEMENT_TYPE            curTReading_;
-                    String                  fName;
+                    Name                    fName;
                     vector<ELEMENT_TYPE>*   fValuePtr;
 
-                    ListOfObjectReader (const String& name, vector<ELEMENT_TYPE>* v)
+                    ListOfObjectReader (const Name& name, vector<ELEMENT_TYPE>* v)
                         : IElementConsumer ()
                         , readingAT_ (false)
                         , fName  (name)

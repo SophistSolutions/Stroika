@@ -213,7 +213,7 @@ namespace   {
 
             vector<Appointment_>       calendar;
             {
-                Run (registry, make_shared<ListOfObjectReader<Appointment_>> (L"Appointment", &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                Run (registry, make_shared<ListOfObjectReader<Appointment_>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
             }
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
