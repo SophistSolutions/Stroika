@@ -211,7 +211,7 @@ namespace   Stroika {
 
                 /**
                  */
-                void    ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
+                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
 

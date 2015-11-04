@@ -442,7 +442,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
  ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
  ********************************************************************************
  */
-void    StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+void    _NoReturn_  StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
     Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }
