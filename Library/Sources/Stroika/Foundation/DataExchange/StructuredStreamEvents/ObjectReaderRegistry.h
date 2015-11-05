@@ -173,6 +173,19 @@ namespace   Stroika {
                     template    <typename T>
                     static  ReaderFromVoidStarFactory  MakeCommonReader ();
 
+
+                public:
+                    /**
+                     */
+                    template    <typename CLASS>
+                    nonvirtual  void    AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
+
+                public:
+                    /**
+                     */
+                    template    <typename CLASS>
+                    nonvirtual  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
+
                 private:
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf );
@@ -349,9 +362,6 @@ namespace   Stroika {
                     bool                                    fThrowOnUnrecongizedelts_ { false };       // else ignore
                 };
 
-                // @todo SOON to be replaced with a MakeSerializer ish method of ObjectReaderRegistry!!! (and AddClass) - just like wtih ObjectVariantMapper
-                template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<Name, StructFieldMetaInfo>& fieldname2Typeamps);
 
 
                 /**

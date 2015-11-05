@@ -203,13 +203,13 @@ namespace   {
                 metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
                 metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
                 metaInfo.Add (Name { L"MiddleName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName));
-                registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
+                registry.AddClass<Person_> (metaInfo);
             }
             {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"When" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when));
                 metaInfo.Add (Name { L"WithWhom" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
-                registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
+                registry.AddClass<Appointment_> (metaInfo);
             }
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -281,7 +281,7 @@ namespace {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
                 metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
-                registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
+                registry.AddClass<Person_> (metaInfo);
                 DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
             }
@@ -367,13 +367,13 @@ namespace {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
                 metaInfo.Add (Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
-                mapper.Add<ManagedObjectReference> (mkClassReaderFactory<ManagedObjectReference> (metaInfo));
+                mapper.AddClass<ManagedObjectReference> (metaInfo);
             }
             {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
-                mapper.Add<ObjectContent> (mkClassReaderFactory<ObjectContent> (metaInfo));
+                mapper.AddClass<ObjectContent> (metaInfo);
             }
 
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");

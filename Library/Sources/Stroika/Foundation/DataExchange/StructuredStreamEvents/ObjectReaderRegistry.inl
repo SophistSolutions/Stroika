@@ -125,18 +125,6 @@ namespace   Stroika {
 
 
                 /*
-                 ********************************************************************************
-                 ******************************* mkClassReaderFactory ***************************
-                 ********************************************************************************
-                 */
-                template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<Name, StructFieldMetaInfo>& fieldname2Typeamps)
-                {
-                    return [fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
-                }
-
-
-                /*
                   ********************************************************************************
                   ******************************* ListOfObjectReader *****************************
                   ********************************************************************************
@@ -209,14 +197,21 @@ namespace   Stroika {
                 {
                     Add<T> (MakeCommonReader<T> ());
                 }
-                template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::cvtFactory_ (const ReaderFromTStarFactory<T>& tf )
+                template    <typename CLASS>
+                void    ObjectReaderRegistry::AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo)
                 {
+                    Add<CLASS> (MakeClassReader<CLASS> (fieldInfo));
+                }
+                template    <typename CLASS>
+                auto    ObjectReaderRegistry::MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo) -> ReaderFromVoidStarFactory {
+                    return [fieldInfo] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<CLASS>> (fieldInfo, reinterpret_cast<CLASS*> (data)); };
+                }
+                template    <typename T>
+                auto   ObjectReaderRegistry::cvtFactory_ (const ReaderFromTStarFactory<T>& tf) -> ReaderFromVoidStarFactory {
                     return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
                 }
                 template    <typename T>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_SIMPLEREADER_ ()
-                {
+                inline  auto   ObjectReaderRegistry::MakeCommonReader_SIMPLEREADER_ () -> ReaderFromVoidStarFactory {
                     return cvtFactory_<T> ( [] (T * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
                 }
                 template <>
