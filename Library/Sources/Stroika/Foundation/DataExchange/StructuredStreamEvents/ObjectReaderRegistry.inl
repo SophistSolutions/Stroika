@@ -71,7 +71,7 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename   T>
-                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
+                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<String, StructFieldMetaInfo>& maps, T* vp)
                     : IElementConsumer()
                     , fValuePtr (vp)
                     , fFieldNameToTypeMap (maps)
@@ -80,11 +80,11 @@ namespace   Stroika {
                 template    <typename   T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ClassReader<T>::HandleChildStart (ObjectReaderRegistry::Context& r, const Name& name)
                 {
-                    Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
+                    Optional<StructFieldMetaInfo>   ti = fFieldNameToTypeMap.Lookup (name);
                     if (ti) {
                         Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
-                        Byte*   operatingOnObjField = operatingOnObj + ti->second;
-                        return r.GetObjectReaderRegistry ().MakeContextReader (ti->first, operatingOnObjField);
+                        Byte*   operatingOnObjField = operatingOnObj + ti->fOffset;
+                        return r.GetObjectReaderRegistry ().MakeContextReader (ti->fTypeInfo, operatingOnObjField);
                     }
                     else if (fThrowOnUnrecongizedelts) {
                         ThrowUnRecognizedStartElt (name);
@@ -101,7 +101,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, StructFieldMetaInfo>& fieldname2Typeamps)
                 {
                     return [fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }

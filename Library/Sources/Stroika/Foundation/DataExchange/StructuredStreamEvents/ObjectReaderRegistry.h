@@ -26,6 +26,8 @@
 #include    "../../Traversal/DiscreteRange.h"
 #include    "../../Traversal/Range.h"
 
+#include    "../StructFieldMetaInfo.h"
+
 #include    "ObjectReader.h"
 
 
@@ -162,7 +164,7 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)  { return nullptr; };
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name)  { return nullptr; };
 
                 public:
                     /**
@@ -248,8 +250,8 @@ namespace   Stroika {
                 private:
                     Context&    fContext_;
                 public:
-                    virtual void    StartElement (const StructuredStreamEvents::Name& name) override;
-                    virtual void    EndElement (const StructuredStreamEvents::Name& name) override;
+                    virtual void    StartElement (const Name& name) override;
+                    virtual void    EndElement (const Name& name) override;
                     virtual void    TextInsideElement (const String& text) override;
                 };
 
@@ -264,22 +266,24 @@ namespace   Stroika {
                 private:
                     int fDepth_;
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                 };
 
 
+                /**
+                 */
                 template    <typename   T>
                 class   ObjectReaderRegistry::ClassReader : public IElementConsumer {
                 public:
-                    ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp);
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override;
+                    ClassReader (const Mapping<String, StructFieldMetaInfo>& maps, T* vp);
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                 private:
                     T*  fValuePtr;;
-                    Mapping<StructuredStreamEvents::Name, pair<type_index, size_t>>     fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
-                    bool                                                                fThrowOnUnrecongizedelts { false };       // else ignroe
+                    Mapping<Name, StructFieldMetaInfo>  fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
+                    bool                                fThrowOnUnrecongizedelts { false };       // else ignroe
                 };
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps);
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, StructFieldMetaInfo>& fieldname2Typeamps);
 
 
                 /**
@@ -293,7 +297,7 @@ namespace   Stroika {
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
 
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
@@ -319,7 +323,7 @@ namespace   Stroika {
                     T*                          fValue_;
 
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            HandleTextInside (Context& r, const String& text) override;
                     virtual void                            Deactivating (Context& r) override;
                 };
@@ -350,7 +354,7 @@ namespace   Stroika {
 
                 public:
                     ListOfObjectReader (const Name& name, vector<ElementType>* v);
-                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const Name& name) override;
                     virtual void    Deactivating (Context& r) override;
 
                 private:
@@ -384,7 +388,7 @@ namespace   Stroika {
                     SimpleReader<T>         actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            HandleTextInside (Context& r, const String& text) override;
                     virtual void                            Deactivating (Context& r) override;
                 };
@@ -392,7 +396,7 @@ namespace   Stroika {
 
                 /**
                  */
-                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
+                void    _NoReturn_  ThrowUnRecognizedStartElt (const Name& name);
 
 
             }

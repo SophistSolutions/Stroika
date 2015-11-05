@@ -198,16 +198,16 @@ namespace   {
 
             // not sure if this is clearer or macro version
             {
-                Mapping<String, pair<type_index, size_t>>   metaInfo;
-                metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
-                metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
-                metaInfo.Add (L"MiddleName", pair<type_index, size_t> {typeid(decltype (Person_::middleName)), offsetof(Person_, middleName)});
+                Mapping<String, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
+                metaInfo.Add (L"LastName", ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
+                metaInfo.Add (L"MiddleName", ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName));
                 registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
             }
             {
-                Mapping<String, pair<type_index, size_t>>   metaInfo;
-                metaInfo.Add (L"When", pair<type_index, size_t> {typeid(decltype (Appointment_::when)), offsetof(Appointment_, when)});
-                metaInfo.Add (L"WithWhom", pair<type_index, size_t> {typeid(decltype (Appointment_::withWhom)), offsetof(Appointment_, withWhom)});
+                Mapping<String, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (L"When", ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when));
+                metaInfo.Add (L"WithWhom", ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
                 registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
             }
 
@@ -274,9 +274,9 @@ namespace {
             ObjectReaderRegistry registry;
             registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
             {
-                Mapping<String, pair<type_index, size_t>>   metaInfo;
-                metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
-                metaInfo.Add (L"LastName", pair<type_index, size_t> {typeid(decltype (Person_::lastName)), offsetof(Person_, lastName)});
+                Mapping<String, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
+                metaInfo.Add (L"LastName", ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
                 registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
             }
 

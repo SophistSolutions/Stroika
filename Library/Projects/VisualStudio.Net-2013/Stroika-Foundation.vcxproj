@@ -1155,6 +1155,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h" />
@@ -1510,6 +1511,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl" />

@@ -36,6 +36,8 @@
  *
  *  TODO:
  *
+ *      @todo   Use StructFiledMetaInfo.h instead of our own 'struct' offset stuff (just code vectoring)
+ *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
