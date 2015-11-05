@@ -199,16 +199,16 @@ namespace   {
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             {
-                Mapping<String, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
-                metaInfo.Add (L"LastName", ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
-                metaInfo.Add (L"MiddleName", ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName));
+                Mapping<Name, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
+                metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
+                metaInfo.Add (Name { L"MiddleName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName));
                 registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
             }
             {
-                Mapping<String, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (L"When", ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when));
-                metaInfo.Add (L"WithWhom", ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
+                Mapping<Name, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (Name { L"When" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when));
+                metaInfo.Add (Name { L"WithWhom" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
                 registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
             }
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
@@ -278,9 +278,9 @@ namespace {
             {
                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
                 DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-                Mapping<String, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
-                metaInfo.Add (L"LastName", ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
+                Mapping<Name, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
+                metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
                 registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
                 DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
                 DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -362,14 +362,14 @@ namespace {
             mapper.AddCommonType<String> ();
 
             {
-                Mapping<String, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (L"type", ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
-                metaInfo.Add (L"value", ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
+                Mapping<Name, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
+                metaInfo.Add (Name { L"value" }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
                 mapper.Add<ManagedObjectReference> (mkClassReaderFactory<ManagedObjectReference> (metaInfo));
             }
             {
-                Mapping<String, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (L"obj", ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
+                Mapping<Name, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
                 mapper.Add<ObjectContent> (mkClassReaderFactory<ObjectContent> (metaInfo));
             }
@@ -387,8 +387,9 @@ namespace {
 
             //? @todo - must fix to parse complex elements like
             // <obj type="VirtualMachine">8</obj>
+            VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
+            VerifyTestResult (objsContent[1].obj.type == L"VirtualMachine");
 #if 0
-            VerifyTestResult (people[0].firstName == L"Jim");
             VerifyTestResult (people[0].lastName == L"Smith");
             VerifyTestResult (people[1].firstName == L"Fred");
             VerifyTestResult (people[1].lastName == L"Down");

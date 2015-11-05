@@ -71,7 +71,7 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename   T>
-                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<String, StructFieldMetaInfo>& maps, T* vp)
+                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp)
                     : IElementConsumer()
                     , fValuePtr (vp)
                     , fFieldNameToTypeMap (maps)
@@ -101,7 +101,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, StructFieldMetaInfo>& fieldname2Typeamps)
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<Name, StructFieldMetaInfo>& fieldname2Typeamps)
                 {
                     return [fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }

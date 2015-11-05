@@ -337,17 +337,17 @@ namespace   Stroika {
                 template    <typename   T>
                 class   ObjectReaderRegistry::ClassReader : public IElementConsumer {
                 public:
-                    ClassReader (const Mapping<String, StructFieldMetaInfo>& maps, T* vp);
+                    ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp);
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                 private:
-                    T*  fValuePtr;;
-                    Mapping<Name, StructFieldMetaInfo>  fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
+                    T*                                  fValuePtr;
+                    Mapping<Name, StructFieldMetaInfo>  fFieldNameToTypeMap;
                     bool                                fThrowOnUnrecongizedelts { false };       // else ignroe
                 };
 
                 // @todo SOON to be replaced with a MakeSerializer ish method of ObjectReaderRegistry!!! (and AddClass) - just like wtih ObjectVariantMapper
                 template    <typename T>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, StructFieldMetaInfo>& fieldname2Typeamps);
+                ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<Name, StructFieldMetaInfo>& fieldname2Typeamps);
 
 
                 /**
