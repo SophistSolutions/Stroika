@@ -38,7 +38,10 @@
  *  TODO:
  *
  *      @todo    gross hacks - replciatigng basic objectreaders to get this limping along...
-
+ *
+ *      @todo   make nested READER classes PRIVATE, and have public ADDCOMMON<T> methods to registry - like we do
+ *              For ObjectVariantMapper.
+ *
  */
 
 
@@ -91,10 +94,17 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry {
                 public:
+                    ObjectReaderRegistry () = default;
+                    ObjectReaderRegistry (const ObjectReaderRegistry&) = default;
+
+                public:
+                    ObjectReaderRegistry& operator= (const ObjectReaderRegistry&) = default;
+
+                public:
                     class   Context;
                     class   IElementConsumer;
-                    class IConsumerDelegateToContext;
-                    class IgnoreNodeReader;
+                    class   IConsumerDelegateToContext;
+                    class   IgnoreNodeReader;
                     template    <typename   T>
                     class   ClassReader;
                     class   ReadDownToReader;
@@ -114,6 +124,9 @@ namespace   Stroika {
                     void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory);
 
                 public:
+                    /**
+                     *  This is generally just called inside of another composite reader to read sub-objects.
+                     */
                     shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
                     shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
@@ -129,8 +142,6 @@ namespace   Stroika {
                 // a HandleChildStar  method call (exactly once).
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
-
-
 
 
                 /**
@@ -173,22 +184,22 @@ namespace   Stroika {
 
 
                 /**
-                              *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
-                              *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
-                              *
-                              *  \note   Important Design Principle for Reader
-                              *
-                              *          We only recognize a new 'type' by its 'Start' element. So its at that (or sometimes the start/end of a child) that
-                              *          we can PUSH a new reader in place.
-                              *
-                              *          The current tags and text get delivered to the top of the stack.
-                              *
-                              *          When we encounter a close tag, we end that reading, and so pop.
-                              *
-                              *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
-                              *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
-                              *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
-                              */
+                 *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
+                 *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
+                 *
+                 *  \note   Important Design Principle for Reader
+                 *
+                 *          We only recognize a new 'type' by its 'Start' element. So its at that (or sometimes the start/end of a child) that
+                 *          we can PUSH a new reader in place.
+                 *
+                 *          The current tags and text get delivered to the top of the stack.
+                 *
+                 *          When we encounter a close tag, we end that reading, and so pop.
+                 *
+                 *          This means that the start and end tags for a given pair, go to differnt 'IElementConsumer'
+                 *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
+                 *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
+                 */
                 class   ObjectReaderRegistry::Context {
                 public:
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -224,11 +235,6 @@ namespace   Stroika {
                 private:
                     friend  class   ObjectReader;
                 };
-
-
-                /**
-                 */
-                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
                 /**
@@ -379,9 +385,14 @@ namespace   Stroika {
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;
-                    virtual void    HandleTextInside (Context& r, const String& text) override;
-                    virtual void    Deactivating (Context& r) override;
+                    virtual void                            HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            Deactivating (Context& r) override;
                 };
+
+
+                /**
+                 */
+                void    _NoReturn_  ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name);
 
 
             }
