@@ -302,6 +302,105 @@ namespace {
 
 
 
+
+
+
+namespace {
+    namespace  T4_SAXObjectReader_ReadDown2Sample_MixedContent_ {
+
+        struct  ManagedObjectReference {
+            String  type;
+            String  value;
+        };
+        struct  ObjectContent {
+            ManagedObjectReference  obj;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                L"<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:soapenc=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
+                L"   <soapenv:Body>\n"
+                L"      <RetrievePropertiesResponse xmlns=\"urn:vim25\">\n"
+                L"         <returnval>\n"
+                L"            <obj type=\"VirtualMachine\">8</obj>"
+                L"            <propSet>"
+                L"               <name>availableField</name>\n"
+                L"               <val xsi:type=\"ArrayOfCustomFieldDef\" />\n"
+                L"            </propSet>\n"
+                L"            <propSet>"
+                L"               <name>capability</name>\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\" />\n"
+                L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"            </propSet>\n"
+                L"         </returnval>\n"
+                L"         <returnval>\n"
+                L"            <obj type=\"VirtualMachine\">9</obj>"
+                L"            <propSet>"
+                L"               <name>capability</name>\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\" />\n"
+                L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"            </propSet>\n"
+                L"         </returnval>\n"
+                L"      </RetrievePropertiesResponse>\n"
+                L"   </soapenv:Body>\n"
+                L"</soapenv:Envelope>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+
+        void    DoTest ()
+        {
+            ObjectReaderRegistry mapper;
+
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+
+            using   Memory::Optional;
+            mapper.AddCommonType<String> ();
+
+            {
+                Mapping<String, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (L"type", ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
+                metaInfo.Add (L"value", ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
+                mapper.Add<ManagedObjectReference> (mkClassReaderFactory<ManagedObjectReference> (metaInfo));
+            }
+            {
+                Mapping<String, StructFieldMetaInfo>   metaInfo;
+                metaInfo.Add (L"obj", ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
+                /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
+                mapper.Add<ObjectContent> (mkClassReaderFactory<ObjectContent> (metaInfo));
+            }
+
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
+
+            vector<ObjectContent> objsContent;
+            Run (
+                mapper,
+                make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<ObjectContent>> (Name (L"returnval"), &objsContent), Name (L"RetrievePropertiesResponse")),
+                mkdata_ ().As<Streams::InputStream<Byte>> ()
+            );
+            VerifyTestResult (objsContent.size () == 2);
+
+            //? @todo - must fix to parse complex elements like
+            // <obj type="VirtualMachine">8</obj>
+#if 0
+            VerifyTestResult (people[0].firstName == L"Jim");
+            VerifyTestResult (people[0].lastName == L"Smith");
+            VerifyTestResult (people[1].firstName == L"Fred");
+            VerifyTestResult (people[1].lastName == L"Down");
+#endif
+        }
+    }
+
+}
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -310,6 +409,7 @@ namespace   {
             Test_1_SAXParser_ ();
             Test_SAX_ObjectReader_EXAMPLE_1_ ();
             T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
+            T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
