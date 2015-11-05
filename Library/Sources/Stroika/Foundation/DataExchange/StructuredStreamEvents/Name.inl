@@ -32,6 +32,18 @@ namespace   Stroika {
                 , fLocalName { localName }
                 , fType { type } {
                 }
+                inline  String  Name::ToString () const
+                {
+                    String  result;
+                    if (fType == NameType::eAttribute) {
+                        result += L"@";
+                    }
+                    if (fNamespaceURI) {
+                        result += *fNamespaceURI + L":";
+                    }
+                    result += fLocalName;
+                    return result;
+                }
 
 
                 /*

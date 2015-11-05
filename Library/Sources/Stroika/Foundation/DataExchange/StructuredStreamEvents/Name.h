@@ -50,12 +50,16 @@ namespace   Stroika {
                     };
                     NameType        fType { eElement };
 
-
                     /**
                      */
                     Name () = delete;
                     Name (const String& localName, NameType type = eElement);
                     Name (const String& namespaceURI, const String& localName, NameType type = eElement);
+
+                    /**
+                     *  Purely for debugging / diagnostic purposes. Don't count on this format.
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
