@@ -62,44 +62,44 @@ using   Time::TimeOfDay;
  ********************************************************************************
  */
 template <>
-void   SimpleReader<String>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<String>::Deactivating (Context& r)
 {
     *fValue_ = fBuf_.str ();
 }
 
 template <>
-void   SimpleReader<int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<int>::Deactivating (Context& r)
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   SimpleReader<unsigned int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<unsigned int>::Deactivating (Context& r)
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   SimpleReader<bool>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<bool>::Deactivating (Context& r)
 {
     *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
 template <>
-void   SimpleReader<float>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<float>::Deactivating (Context& r)
 {
     (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
 template <>
-void   SimpleReader<double>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<double>::Deactivating (Context& r)
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
 template <>
-void   SimpleReader<Time::DateTime>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader<Time::DateTime>::Deactivating (Context& r)
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
@@ -113,15 +113,15 @@ void   SimpleReader<Time::DateTime>::Deactivating (Context& r)
 
 /*
  ********************************************************************************
- ****************** StructuredStreamEvents::IgnoreNodeReader ********************
+ ******************** ObjectReaderRegistry::IgnoreNodeReader ********************
  ********************************************************************************
  */
-IgnoreNodeReader::IgnoreNodeReader ()
+ObjectReaderRegistry::IgnoreNodeReader::IgnoreNodeReader ()
     : fDepth_ (0)
 {
 }
 
-shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
 }
@@ -135,11 +135,11 @@ shared_ptr<IElementConsumer>    IgnoreNodeReader::HandleChildStart (Context& r, 
 
 /*
  ********************************************************************************
- ************ StructuredStreamEvents::Context *********************
+ ********************** ObjectReaderRegistry::Context ***************************
  ********************************************************************************
  */
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-String Context::TraceLeader_ () const
+String ObjectReaderRegistry::Context::TraceLeader_ () const
 {
     static  const   String_Constant     kOneTabLevel_ { L"    " };
     return kOneTabLevel_.Repeat (fStack_.size ());
@@ -151,15 +151,15 @@ String Context::TraceLeader_ () const
 
 /*
  ********************************************************************************
- ******** StructuredStreamEvents::IConsumerDelegateToContext ******
+ ************ ObjectReaderRegistry::IConsumerDelegateToContext ******************
  ********************************************************************************
  */
-IConsumerDelegateToContext::IConsumerDelegateToContext (Context& r)
+ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context& r)
     : fContext_ (r)
 {
 }
 
-void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
+void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -171,7 +171,7 @@ void    IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::
     AssertNotNull (eltToPush);
     fContext_.Push (eltToPush);
 }
-void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
+void    ObjectReaderRegistry::IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -181,7 +181,7 @@ void    IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Na
 #endif
     fContext_.Pop ();
 }
-void    IConsumerDelegateToContext::TextInsideElement (const String& text)
+void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
     AssertNotNull (fContext_.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -200,7 +200,7 @@ void    IConsumerDelegateToContext::TextInsideElement (const String& text)
  */
 namespace   {
     // @todo see https://stroika.atlassian.net/browse/STK-284
-    struct DocumentReader_ : public IElementConsumer {
+    struct DocumentReader_ : public ObjectReaderRegistry::IElementConsumer {
         shared_ptr<IElementConsumer>      fDocEltBuilder;
         bool                            fAnyDocElt;
         String                          fDocEltURI;
@@ -219,7 +219,7 @@ namespace   {
             , fDocEltName (checkDocEltName)
         {
         }
-        virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override
+        virtual shared_ptr<ObjectReaderRegistry::IElementConsumer>    HandleChildStart (ObjectReaderRegistry::Context& r, const StructuredStreamEvents::Name& name) override
         {
             if (not fAnyDocElt) {
                 if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
@@ -228,7 +228,7 @@ namespace   {
             }
             return (fDocEltBuilder);
         }
-        virtual void    HandleTextInside (Context& r, const String& text)  override
+        virtual void    HandleTextInside (ObjectReaderRegistry::Context& r, const String& text)  override
         {
             // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
             // assure input is valid
@@ -236,16 +236,16 @@ namespace   {
         }
     };
 }
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Byte>& in)
+void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    Context ctx { objectReaderRegistry };
+    ObjectReaderRegistry::Context ctx { objectReaderRegistry };
     Require (ctx.empty ());
 
     ctx.Push (make_shared<DocumentReader_> (docEltBuilder));
 
-    IConsumerDelegateToContext cb (ctx);
+    ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added
@@ -253,16 +253,16 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     Require (ctx.empty ());
 }
 
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
+void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    Context ctx { objectReaderRegistry };
+    ObjectReaderRegistry::Context ctx { objectReaderRegistry };
     Require (ctx.empty ());
 
     ctx.Push (make_shared<DocumentReader_> (docEltBuilder, docEltUri, docEltLocalName));
 
-    IConsumerDelegateToContext cb (ctx);
+    ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
 
     ctx.Pop (); // the docuemnt reader we just added
@@ -279,17 +279,17 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
 
 /*
  ********************************************************************************
- ****************** StructuredStreamEvents::ReadDownToReader ********************
+ ****************** ObjectReaderRegistry::ReadDownToReader **********************
  ********************************************************************************
  */
-ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
+ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
     : fReader2Delegate2_ (theUseReader)
     , fTagToHandOff_ (tagToHandOff)
 {
     RequireNotNull (theUseReader);
 }
 
-shared_ptr<IElementConsumer>    ReadDownToReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (Context& r, const Name& name)
 {
     if (name == fTagToHandOff_) {
         return fReader2Delegate2_;

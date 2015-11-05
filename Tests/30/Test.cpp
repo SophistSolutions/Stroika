@@ -192,9 +192,9 @@ namespace   {
             ObjectReaderRegistry registry;
 
             // @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
-            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<SimpleReader<Time::DateTime>> (d); });
-            registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
-            registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<OptionalTypesReader<String>> (d); });
+            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<ObjectReaderRegistry::SimpleReader<Time::DateTime>> (d); });
+            registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
+            registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<ObjectReaderRegistry::OptionalTypesReader<String>> (d); });
 
             // not sure if this is clearer or macro version
             {
@@ -213,7 +213,7 @@ namespace   {
 
             vector<Appointment_>       calendar;
             {
-                Run (registry, make_shared<ListOfObjectReader<Appointment_>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<Appointment_>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
             }
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -269,11 +269,10 @@ namespace {
             return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
         }
 
-
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
-            registry.Add<String> ([] (String * d) { return make_shared<SimpleReader<String>> (d); });
+            registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
             {
                 Mapping<String, pair<type_index, size_t>>   metaInfo;
                 metaInfo.Add (L"FirstName", pair<type_index, size_t> {typeid(decltype (Person_::firstName)), offsetof(Person_, firstName)});
@@ -282,7 +281,7 @@ namespace {
             }
 
             vector<Person_> people;
-            Run (registry, make_shared<ReadDownToReader> (make_shared<ListOfObjectReader<Person_>> (Name (L"WithWhom"), &people), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<Person_>> (Name (L"WithWhom"), &people), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
 
             VerifyTestResult (people.size () == 2);
             VerifyTestResult (people[0].firstName == L"Jim");

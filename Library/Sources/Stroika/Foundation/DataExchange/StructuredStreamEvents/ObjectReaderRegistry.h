@@ -63,10 +63,6 @@ namespace   Stroika {
 #endif
 
 
-                /**
-                 */
-                class   Context;
-
 
                 /**
                  */
@@ -76,11 +72,72 @@ namespace   Stroika {
                 };
 
 
+
+                /**
+
+                &&&&&& TODO - @todo - rewrite all these docs
+                *
+                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
+                 *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
+                 *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
+                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
+                 *  For one thing - there is no need to have the entire source in memory at a time, and there
+                 *  is no need to ever construct intermediary DOM nodes.
+                 *
+                 *      We need good docs - on how to use this - but for the time being, just look at the
+                 *  example usage in the regression test.
+
+                   *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
+                 */
+                class   ObjectReaderRegistry {
+                public:
+                    class   Context;
+                    class   IElementConsumer;
+                    class IConsumerDelegateToContext;
+                    class IgnoreNodeReader;
+                    template    <typename   T>
+                    class   ClassReader;
+                    class   ReadDownToReader;
+                    template    <typename   T>
+                    class   SimpleReader;
+                    template    <typename   T>
+                    class   ListOfObjectReader;
+                    template    <typename   T>
+                    class   OptionalTypesReader;
+
+                public:
+                    using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
+
+                public:
+                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
+                    template    <typename T>
+                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory);
+
+                public:
+                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
+                    template    <typename T>
+                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+
+                private:
+                    Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
+                };
+
+
+                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
+
+                // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
+                // a HandleChildStar  method call (exactly once).
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+
+
+
+
                 /**
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
                  *  it into a related object.
                  */
-                class   IElementConsumer : public enable_shared_from_this<IElementConsumer> {
+                class   ObjectReaderRegistry::IElementConsumer : public enable_shared_from_this<IElementConsumer> {
                 protected:
                     /**
                      */
@@ -116,50 +173,6 @@ namespace   Stroika {
 
 
                 /**
-
-                &&&&&& TODO - @todo - rewrite all these docs
-                *
-                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
-                 *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
-                 *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
-                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
-                 *  For one thing - there is no need to have the entire source in memory at a time, and there
-                 *  is no need to ever construct intermediary DOM nodes.
-                 *
-                 *      We need good docs - on how to use this - but for the time being, just look at the
-                 *  example usage in the regression test.
-
-                   *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
-                 */
-                class   ObjectReaderRegistry {
-                public:
-                    using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
-
-                public:
-                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
-                    template    <typename T>
-                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory);
-
-                public:
-                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
-                    template    <typename T>
-                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
-
-                private:
-                    Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
-                };
-
-
-                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
-
-                // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
-                // a HandleChildStar  method call (exactly once).
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
-
-
-
-                /**
                               *  This concrete class is used to capture the state of an ongoing StructuredStreamParse/transformation. Logically, it
                               *  mainstains the 'stack' you would have in constructing a recursive decent object mapping.
                               *
@@ -176,7 +189,7 @@ namespace   Stroika {
                               *          subclasses. The START goes to the parent (so it can create the right type), and the EndTag
                               *          goes to the created/pushed type, so it can close itself and pop back to the parent context.
                               */
-                class   Context {
+                class   ObjectReaderRegistry::Context {
                 public:
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
                 public:
@@ -220,7 +233,7 @@ namespace   Stroika {
 
                 /**
                  */
-                class   IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
+                class   ObjectReaderRegistry::IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
                 public:
                     IConsumerDelegateToContext () = delete;
                     IConsumerDelegateToContext (Context& r);
@@ -239,7 +252,7 @@ namespace   Stroika {
                  *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
                  *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
-                class   IgnoreNodeReader : public IElementConsumer {
+                class   ObjectReaderRegistry::IgnoreNodeReader : public IElementConsumer {
                 public:
                     IgnoreNodeReader ();
                 private:
@@ -250,7 +263,7 @@ namespace   Stroika {
 
 
                 template    <typename   T>
-                class   ClassReader : public IElementConsumer {
+                class   ObjectReaderRegistry::ClassReader : public IElementConsumer {
                 public:
                     ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp);
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name) override;
@@ -269,7 +282,7 @@ namespace   Stroika {
                  *
                  *    \note - the tag == tagToHandoff will be handed to theUseReader.
                  */
-                class   ReadDownToReader : public IElementConsumer {
+                class   ObjectReaderRegistry::ReadDownToReader : public IElementConsumer {
                 public:
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
@@ -291,7 +304,7 @@ namespace   Stroika {
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   SimpleReader : public IElementConsumer {
+                class   ObjectReaderRegistry::SimpleReader : public IElementConsumer {
                 public:
                     SimpleReader (T* intoVal);
 
@@ -307,25 +320,25 @@ namespace   Stroika {
 
 
                 template <>
-                void   SimpleReader<String>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<String>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<int>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<unsigned int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<unsigned int>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<bool>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<bool>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<float>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<float>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<double>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<double>::Deactivating (Context& r);
                 template <>
-                void   SimpleReader<Time::DateTime>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader<Time::DateTime>::Deactivating (Context& r);
 
 
                 /**
                  */
                 template    <typename T>
-                class   ListOfObjectReader: public IElementConsumer {
+                class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
                 public:
                     using   ElementType = T;
 
@@ -354,15 +367,15 @@ namespace   Stroika {
                  *  already occurred. The reaosn for Optional<> part is because the caller had an optional
                  *  element which might never have triggered the invocation of this class.
                  */
-                template    <typename   T, typename ACTUAL_READER = SimpleReader<T>>
-                class   OptionalTypesReader : public IElementConsumer {
+                template    <typename   T>
+                class   ObjectReaderRegistry::OptionalTypesReader : public IElementConsumer {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
 
                 private:
                     Memory::Optional<T>*    value_;
                     T                       proxyValue_;
-                    ACTUAL_READER           actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+                    SimpleReader<T>         actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const StructuredStreamEvents::Name& name) override;

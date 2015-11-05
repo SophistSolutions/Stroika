@@ -20,13 +20,14 @@ namespace   Stroika {
 
                 /*
                   ********************************************************************************
-                  ********************************** Context *************************************
+                  ****************** ObjectReaderRegistry::Context *******************************
                   ********************************************************************************
                   */
-                inline   Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
+                inline   ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
                     : fObjectReaderRegistry_ (objectReaderRegistry)
                 {
-                }                inline  void    Context::Push (const shared_ptr<IElementConsumer>& elt)
+                }
+                inline  void    ObjectReaderRegistry::Context::Push (const shared_ptr<IElementConsumer>& elt)
                 {
                     RequireNotNull (elt);
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
@@ -38,7 +39,7 @@ namespace   Stroika {
                     fStack_.push_back (elt);
                     elt->Activated (*this);
                 }
-                inline  void    Context::Pop ()
+                inline  void    ObjectReaderRegistry::Context::Pop ()
                 {
                     fStack_.back()->Deactivating (*this);
                     fStack_.pop_back ();
@@ -53,12 +54,12 @@ namespace   Stroika {
                     }
 #endif
                 }
-                inline  shared_ptr<IElementConsumer>  Context::GetTop () const
+                inline  shared_ptr<ObjectReaderRegistry::IElementConsumer>  ObjectReaderRegistry::Context::GetTop () const
                 {
                     Require (not fStack_.empty ());
                     return fStack_.back ();
                 }
-                inline  const   ObjectReaderRegistry&   Context::GetObjectReaderRegistry () const
+                inline  const   ObjectReaderRegistry&   ObjectReaderRegistry::Context::GetObjectReaderRegistry () const
                 {
                     return fObjectReaderRegistry_;
                 }
@@ -70,14 +71,14 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename   T>
-                ClassReader<T>::ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
+                ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<String, pair<type_index, size_t>>& maps, T* vp)
                     : IElementConsumer()
                     , fValuePtr (vp)
                     , fFieldNameToTypeMap (maps)
                 {
                 }
                 template    <typename   T>
-                shared_ptr<IElementConsumer>    ClassReader<T>::HandleChildStart (StructuredStreamEvents::Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ClassReader<T>::HandleChildStart (ObjectReaderRegistry::Context& r, const Name& name)
                 {
                     Optional<pair<type_index, size_t>>   ti = fFieldNameToTypeMap.Lookup (name);
                     if (ti) {
@@ -93,10 +94,16 @@ namespace   Stroika {
                     }
                 }
 
+
+                /*
+                 ********************************************************************************
+                 ******************************* mkClassReaderFactory ***************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, pair<type_index, size_t>>& fieldname2Typeamps)
                 {
-                    return [fieldname2Typeamps] (void* data) -> shared_ptr<IElementConsumer> { return make_shared<ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
+                    return [fieldname2Typeamps] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<T>> (fieldname2Typeamps, reinterpret_cast<T*> (data)); };
                 }
 
 
@@ -106,7 +113,7 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename T>
-                ListOfObjectReader<T>::ListOfObjectReader (const Name& name, vector<ElementType>* v)
+                ObjectReaderRegistry::ListOfObjectReader<T>::ListOfObjectReader (const Name& name, vector<ElementType>* v)
                     : IElementConsumer ()
                     , fReadingAT_ (false)
                     , fName  (name)
@@ -114,7 +121,7 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                shared_ptr<IElementConsumer> ListOfObjectReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     if (name == fName) {
                         if (fReadingAT_) {
@@ -134,7 +141,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T>
-                void    ListOfObjectReader<T>::Deactivating (Context& r)
+                void    ObjectReaderRegistry::ListOfObjectReader<T>::Deactivating (Context& r)
                 {
                     if (fReadingAT_) {
                         Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
@@ -146,7 +153,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************************** ObjectReaderRegistry *******************************
+                 ***************************** ObjectReaderRegistry *****************************
                  ********************************************************************************
                  */
                 inline void    ObjectReaderRegistry::Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory)
@@ -159,13 +166,13 @@ namespace   Stroika {
                     Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
                 }
 
-                inline shared_ptr<IElementConsumer>    ObjectReaderRegistry::MakeContextReader (type_index ti, void* destinationObject) const
+                inline shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (type_index ti, void* destinationObject) const
                 {
                     ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
                     return factory (destinationObject);
                 }
                 template    <typename T>
-                shared_ptr<IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
                 {
                     return MakeContextReader (typeid (T), destinationObject);
                 }
@@ -173,27 +180,27 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************** SimpleReader ********************************
+                 ******************* ObjectReaderRegistry::SimpleReader *************************
                  ********************************************************************************
                  */
                 template    <typename   T>
-                SimpleReader<T>::SimpleReader (T* intoVal)
+                ObjectReaderRegistry::SimpleReader<T>::SimpleReader (T* intoVal)
                     : fBuf_ ()
                     , fValue_ (intoVal)
                 {
                 }
                 template    <typename   T>
-                shared_ptr<IElementConsumer>    SimpleReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::SimpleReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     ThrowUnRecognizedStartElt (name);
                 }
                 template    <typename   T>
-                void    SimpleReader<T>::HandleTextInside (Context& r, const String& text)
+                void    ObjectReaderRegistry::SimpleReader<T>::HandleTextInside (Context& r, const String& text)
                 {
                     fBuf_ += text;
                 }
                 template    <typename   T>
-                void   SimpleReader<T>::Deactivating (Context& r)
+                void   ObjectReaderRegistry::SimpleReader<T>::Deactivating (Context& r)
                 {
                     AssertNotReached ();   // redo with static asserts, but issues on some compilers - anyhow - SB template specialzied away
                     // *value = CONVERTFROM (fBuf_.str ());
@@ -202,28 +209,28 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************** OptionalTypesReader<T, ACTUAL_READER> *********************
+                 ******** ObjectReaderRegistry::OptionalTypesReader<T, ACTUAL_READER> ***********
                  ********************************************************************************
                  */
-                template    <typename   T, typename ACTUAL_READER>
-                OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal)
+                template    <typename   T>
+                inline  ObjectReaderRegistry::OptionalTypesReader<T>::OptionalTypesReader (Memory::Optional<T>* intoVal)
                     : value_ (intoVal)
                     , proxyValue_ ()
                     , actualReader_ (&proxyValue_)
                 {
                 }
-                template    <typename   T, typename ACTUAL_READER>
-                shared_ptr<IElementConsumer>    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                template    <typename   T>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     return actualReader_.HandleChildStart (r, name);
                 }
-                template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleTextInside (Context& r, const String& text)
+                template    <typename   T>
+                void    ObjectReaderRegistry::OptionalTypesReader<T>::HandleTextInside (Context& r, const String& text)
                 {
                     actualReader_.HandleTextInside (r, text);
                 }
-                template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::Deactivating (Context& r)
+                template    <typename   T>
+                void    ObjectReaderRegistry::OptionalTypesReader<T>::Deactivating (Context& r)
                 {
                     actualReader_.Deactivating (r);
                     *value_ = proxyValue_;
