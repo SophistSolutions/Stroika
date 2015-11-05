@@ -134,7 +134,7 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename CONTAINER_OF_T>
-                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (const Name& memberElementName, vector<ElementType>* v)
+                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (const Name& memberElementName, CONTAINER_OF_T* v)
                     : IElementConsumer ()
                     , fReadingAT_ (false)
                     , fMemberElementName_  (memberElementName)
@@ -146,7 +146,6 @@ namespace   Stroika {
                 {
                     if (name == fMemberElementName_) {
                         if (fReadingAT_) {
-                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr_);
                             this->fValuePtr_->push_back (fCurTReading_);
                             fReadingAT_ = false;
                         }
@@ -165,7 +164,6 @@ namespace   Stroika {
                 void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::Deactivating (Context& r)
                 {
                     if (fReadingAT_) {
-                        Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr_);
                         this->fValuePtr_->push_back (fCurTReading_);
                         fReadingAT_ = false;
                     }

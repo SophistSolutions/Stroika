@@ -437,17 +437,17 @@ namespace   Stroika {
                     using   ElementType = typename CONTAINER_OF_T::value_type;
 
                 public:
-                    ListOfObjectReader (const Name& memberElementName, vector<ElementType>* v);
+                    ListOfObjectReader (const Name& memberElementName, CONTAINER_OF_T* v);
 
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            Deactivating (Context& r) override;
 
                 private:
-                    bool                    fReadingAT_;
-                    ElementType             fCurTReading_;
-                    Name                    fMemberElementName_;
-                    vector<ElementType>*    fValuePtr_;
-                    bool                    fThrowOnUnrecongizedelts_ { false };
+                    bool            fReadingAT_;
+                    ElementType     fCurTReading_;
+                    Name            fMemberElementName_;
+                    CONTAINER_OF_T* fValuePtr_;
+                    bool            fThrowOnUnrecongizedelts_ { false };
                 };
 
 
