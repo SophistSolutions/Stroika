@@ -123,12 +123,70 @@ namespace   Stroika {
                     class   OptionalTypesReader;
 
                 public:
+                    template    <typename T>
+                    using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
+
+                public:
                     using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
 
                 public:
-                    void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
+                    nonvirtual  void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
                     template    <typename T>
-                    void    Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory);
+                    nonvirtual  void    Add (const ReaderFromTStarFactory<T>& readerFactory);
+
+                public:
+                    /**
+                     *  Shortcut for Add (MakeCommonReader<T> ());
+                     *
+                     *  So - this is supported for any type for which (@see MakeCommonReader) is supported.
+                     *
+                     *  Note this this is not needed (because it's done by default), but is supported,
+                     *  for the builtin types.
+                     */
+                    template    <typename T>
+                    nonvirtual  void    AddCommonType ();
+
+                public:
+                    /**
+
+                    &todo
+                    &&&& FROM ObjectVaarianeMapper... .nDOPCS NOT RIGHT BUT A START
+                    ....
+                     *  This creates serializers for many common types.
+                     *      o   Mapping<Key,Value>
+                     *      o   Optional<T>
+                     *      o   Range<T,TRAITS>
+                     *      o   Sequence<T>
+                     *      o   Set<T>
+                     *  ###NYI    o   T[N]      -- so far cannot get to work
+                     *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
+                     *
+                     *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
+                     *
+                     *  This function also works (but is generally unneeded for) any of the types defined in
+                     *  @see ResetToDefaultTypeRegistry () (int, short, String, etc).
+                     *
+                     *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
+                     *  fit what the deserailizer expects.
+                     */
+                    template    <typename T>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader ()
+                    {
+                        const T*  n = nullptr;    // arg unused, just for overloading
+                        DISABLE_COMPILER_MSC_WARNING_START (6011)
+                        return MakeCommonSerializer_ (*n);
+                        DISABLE_COMPILER_MSC_WARNING_END (6011)
+                    }
+
+                private:
+                    template    <typename T>
+                    ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf )
+                    {
+                        return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
+                    }
+                private:
+                    template    <typename T>
+                    ReaderFromVoidStarFactory  MakeCommonReader_ (T*);
 
                 public:
                     /**
@@ -137,6 +195,9 @@ namespace   Stroika {
                     shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
                     shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+
+
+                private:
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -348,6 +409,13 @@ namespace   Stroika {
                 void   ObjectReaderRegistry::SimpleReader<double>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader<Time::DateTime>::Deactivating (Context& r);
+
+
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (String*)
+                {
+                    return cvtFactory_<String> ( [] (String * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader<String>> (o); });
+                }
 
 
                 /**

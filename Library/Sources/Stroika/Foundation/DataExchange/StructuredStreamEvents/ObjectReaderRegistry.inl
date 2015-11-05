@@ -161,11 +161,10 @@ namespace   Stroika {
                     fFactories_.Add (forType, readerFactory);
                 }
                 template    <typename T>
-                void    ObjectReaderRegistry::Add (const function<shared_ptr<IElementConsumer> (T*)>& readerFactory)
+                void    ObjectReaderRegistry::Add (const ReaderFromTStarFactory<T>& readerFactory)
                 {
                     Add (typeid (T), [readerFactory] (void* data) { return readerFactory (reinterpret_cast<T*> (data)); });
                 }
-
                 inline shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (type_index ti, void* destinationObject) const
                 {
                     ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
@@ -175,6 +174,11 @@ namespace   Stroika {
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
                 {
                     return MakeContextReader (typeid (T), destinationObject);
+                }
+                template    <typename T>
+                inline  void    ObjectReaderRegistry::AddCommonType ()
+                {
+                    Add (MakeCommonSerializer<T> ());
                 }
 
 
@@ -216,7 +220,7 @@ namespace   Stroika {
                 inline  ObjectReaderRegistry::OptionalTypesReader<T>::OptionalTypesReader (Memory::Optional<T>* intoVal)
                     : fValue_ (intoVal)
                     , fProxyValue_ ()
-                    , fActualReader_ (&proxyValue_)
+                    , fActualReader_ (&fProxyValue_)
                 {
                 }
                 template    <typename   T>

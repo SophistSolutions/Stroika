@@ -9,7 +9,6 @@
 
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
-#include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReader.h"
 #include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
