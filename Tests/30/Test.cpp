@@ -197,6 +197,8 @@ namespace   {
             registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<ObjectReaderRegistry::OptionalTypesReader<String>> (d); });
 
             // not sure if this is clearer or macro version
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             {
                 Mapping<String, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
@@ -210,6 +212,8 @@ namespace   {
                 metaInfo.Add (L"WithWhom", ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
                 registry.Add<Appointment_> (mkClassReaderFactory<Appointment_> (metaInfo));
             }
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Appointment_>       calendar;
             {
@@ -274,10 +278,14 @@ namespace {
             ObjectReaderRegistry registry;
             registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
             {
+                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
                 Mapping<String, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (L"FirstName", ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
                 metaInfo.Add (L"LastName", ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
                 registry.Add<Person_> (mkClassReaderFactory<Person_> (metaInfo));
+                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
             }
 
             vector<Person_> people;
