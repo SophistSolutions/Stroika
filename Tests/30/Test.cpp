@@ -191,8 +191,13 @@ namespace   {
             ObjectReaderRegistry registry;
 
             // @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
+#if 1
+            registry.AddCommonType<Time::DateTime> ();
+            registry.AddCommonType<String> ();
+#else
             registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<ObjectReaderRegistry::SimpleReader<Time::DateTime>> (d); });
             registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
+#endif
             registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<ObjectReaderRegistry::OptionalTypesReader<String>> (d); });
 
             // not sure if this is clearer or macro version
@@ -275,7 +280,7 @@ namespace {
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
-            registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
+            registry.AddCommonType<String> ();
             {
                 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
                 DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04

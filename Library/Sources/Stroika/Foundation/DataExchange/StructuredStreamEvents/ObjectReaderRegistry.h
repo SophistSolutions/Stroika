@@ -116,12 +116,13 @@ namespace   Stroika {
                     class   ClassReader;
                     class   ReadDownToReader;
                     template    <typename   T>
-                    class   SimpleReader;
-                    template    <typename   T>
                     class   ListOfObjectReader;
                     template    <typename   T>
                     class   OptionalTypesReader;
 
+                private:
+                    template    <typename   T>
+                    class   SimpleReader_;
                 public:
                     template    <typename T>
                     using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
@@ -170,23 +171,16 @@ namespace   Stroika {
                      *  fit what the deserailizer expects.
                      */
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader ()
-                    {
-                        const T*  n = nullptr;    // arg unused, just for overloading
-                        DISABLE_COMPILER_MSC_WARNING_START (6011)
-                        return MakeCommonSerializer_ (*n);
-                        DISABLE_COMPILER_MSC_WARNING_END (6011)
-                    }
+                    static  ReaderFromVoidStarFactory  MakeCommonReader ();
 
                 private:
                     template    <typename T>
-                    ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf )
-                    {
-                        return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
-                    }
+                    static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf );
+                    template    <typename T>
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_SIMPLEREADER_ ();
                 private:
                     template    <typename T>
-                    ReaderFromVoidStarFactory  MakeCommonReader_ (T*);
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const T*);
 
                 public:
                     /**
@@ -380,9 +374,9 @@ namespace   Stroika {
                  *      Time::DateTime
                  */
                 template    <typename   T>
-                class   ObjectReaderRegistry::SimpleReader : public IElementConsumer {
+                class   ObjectReaderRegistry::SimpleReader_ : public IElementConsumer {
                 public:
-                    SimpleReader (T* intoVal);
+                    SimpleReader_ (T* intoVal);
 
                 private:
                     Characters::StringBuilder   fBuf_;
@@ -396,26 +390,35 @@ namespace   Stroika {
 
 
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<String>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<unsigned int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<bool>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<float>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<double>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r);
                 template <>
-                void   ObjectReaderRegistry::SimpleReader<Time::DateTime>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r);
 
 
                 template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (String*)
-                {
-                    return cvtFactory_<String> ( [] (String * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader<String>> (o); });
-                }
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const int*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned int*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const bool*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const float*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const double*);
+                template <>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::DateTime*);
 
 
                 /**
@@ -440,7 +443,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  @todo merge this into SimpleTypeReader, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
+                 *  @todo merge this into SimpleReader_, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
                  *
                  *
                  *  OptionalTypesReader supports reads of optional types. This will work - for any types for
@@ -458,7 +461,7 @@ namespace   Stroika {
                 private:
                     Memory::Optional<T>*    fValue_;
                     T                       fProxyValue_;
-                    SimpleReader<T>         fActualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+                    SimpleReader_<T>        fActualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;

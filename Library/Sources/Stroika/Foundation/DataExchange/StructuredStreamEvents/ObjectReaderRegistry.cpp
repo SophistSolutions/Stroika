@@ -58,48 +58,48 @@ using   Time::TimeOfDay;
 
 /*
  ********************************************************************************
- ******************** StructuredStreamEvents::SimpleReader<> ********************
+ ******************** StructuredStreamEvents::SimpleReader_<> ********************
  ********************************************************************************
  */
 template <>
-void   ObjectReaderRegistry::SimpleReader<String>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r)
 {
     *fValue_ = fBuf_.str ();
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r)
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<unsigned int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r)
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<bool>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating (Context& r)
 {
     *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<float>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating (Context& r)
 {
     (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<double>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r)
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader<Time::DateTime>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r)
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));

@@ -178,33 +178,85 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    ObjectReaderRegistry::AddCommonType ()
                 {
-                    Add (MakeCommonSerializer<T> ());
+                    Add<T> (MakeCommonReader<T> ());
                 }
-
+                template    <typename T>
+                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::cvtFactory_ (const ReaderFromTStarFactory<T>& tf )
+                {
+                    return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
+                }
+                template    <typename T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_SIMPLEREADER_ ()
+                {
+                    return cvtFactory_<T> ( [] (T * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<String> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<unsigned int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const bool*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<bool> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const float*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<float> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const double*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<double> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::DateTime*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<Time::DateTime> ();
+                }
+                template    <typename T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader ()
+                {
+                    const T*  n = nullptr;    // arg unused, just for overloading
+                    DISABLE_COMPILER_MSC_WARNING_START (6011)
+                    return MakeCommonReader_ (n);
+                    DISABLE_COMPILER_MSC_WARNING_END (6011)
+                }
 
                 /*
                  ********************************************************************************
-                 ******************* ObjectReaderRegistry::SimpleReader *************************
+                 ******************* ObjectReaderRegistry::SimpleReader_ ************************
                  ********************************************************************************
                  */
                 template    <typename   T>
-                ObjectReaderRegistry::SimpleReader<T>::SimpleReader (T* intoVal)
+                ObjectReaderRegistry::SimpleReader_<T>::SimpleReader_ (T* intoVal)
                     : fBuf_ ()
                     , fValue_ (intoVal)
                 {
                 }
                 template    <typename   T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::SimpleReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::SimpleReader_<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     ThrowUnRecognizedStartElt (name);
                 }
                 template    <typename   T>
-                void    ObjectReaderRegistry::SimpleReader<T>::HandleTextInside (Context& r, const String& text)
+                void    ObjectReaderRegistry::SimpleReader_<T>::HandleTextInside (Context& r, const String& text)
                 {
                     fBuf_ += text;
                 }
                 template    <typename   T>
-                void   ObjectReaderRegistry::SimpleReader<T>::Deactivating (Context& r)
+                void   ObjectReaderRegistry::SimpleReader_<T>::Deactivating (Context& r)
                 {
                     AssertNotReached ();   // redo with static asserts, but issues on some compilers - anyhow - SB template specialzied away
                     // *value = CONVERTFROM (fBuf_.str ());
