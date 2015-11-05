@@ -63,6 +63,10 @@ namespace   Stroika {
                 {
                     return fObjectReaderRegistry_;
                 }
+                inline  bool    ObjectReaderRegistry::Context::empty () const
+                {
+                    return fStack_.empty ();
+                }
 
 
                 /*

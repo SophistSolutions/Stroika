@@ -42,7 +42,7 @@
  *
  *      @todo    Need much improved ObjectReaderRegistry docs
  *
- *      @todo   make nested READER classes PRIVATE, and have public ADDCOMMON<T> methods to registry - like we do
+ *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
  *
  *      @todo   Get rid of or do diffenrtly the Run() methods - so can turn on/off Contextg debugging easier.
@@ -71,7 +71,6 @@ namespace   Stroika {
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 #define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
 #endif
-
 
 
                 /**
@@ -173,7 +172,6 @@ namespace   Stroika {
                     template    <typename T>
                     static  ReaderFromVoidStarFactory  MakeCommonReader ();
 
-
                 public:
                     /**
                      */
@@ -204,9 +202,6 @@ namespace   Stroika {
                     shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
                     shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
-
-
-                private:
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -304,7 +299,7 @@ namespace   Stroika {
                     nonvirtual  shared_ptr<IElementConsumer>   GetTop () const;
 
                 public:
-                    bool    empty () const { return fStack_.empty (); }
+                    nonvirtual  bool    empty () const;
 
                 private:
                     vector<shared_ptr<IElementConsumer>> fStack_;
@@ -363,7 +358,6 @@ namespace   Stroika {
                 };
 
 
-
                 /**
                  *   Eat/ignore everything down the level named by 'tagToHandoff'.
                  *    Note - its not an error to call theUseReader with multiple starts, but never two at a time.
@@ -384,12 +378,8 @@ namespace   Stroika {
 
 
                 /**
-                &&& @todo - docoment - to specialize - just replace Deactivating with type specific value
-                *
-                 * SimpleReader<> is not implemented for all types - just for the specialized ones listed below:
-                 *      String
-                 *      int
-                 *      Time::DateTime
+                 *  [private]
+                 *  SimpleReader_<> is not implemented for all types - just for the with Deactivating specialized below;
                  */
                 template    <typename   T>
                 class   ObjectReaderRegistry::SimpleReader_ : public IElementConsumer {
@@ -462,8 +452,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  @todo merge this into SimpleReader_, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
-                 *
+                 *  [private]
                  *
                  *  OptionalTypesReader_ supports reads of optional types. This will work - for any types for
                  *  which SimpleReader<T> is implemented.

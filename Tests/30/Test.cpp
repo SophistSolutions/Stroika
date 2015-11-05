@@ -151,9 +151,9 @@ namespace   {
     namespace SAX_ObjectReader_EXAMPLE_1_ {
         const wstring   kNSTest =   L"Test-NAMESPACE";
         struct  Person_ {
-            String firstName;
-            String lastName;
-            Memory::Optional<String> middleName;
+            String                      firstName;
+            String                      lastName;
+            Memory::Optional<String>    middleName;
         };
         struct  Appointment_ {
             Time::DateTime  when;
@@ -190,7 +190,6 @@ namespace   {
 
             ObjectReaderRegistry registry;
 
-            // @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
             registry.AddCommonType<Time::DateTime> ();
             registry.AddCommonType<String> ();
             registry.AddCommonType<Optional<String>> ();
@@ -198,26 +197,21 @@ namespace   {
             // not sure if this is clearer or macro version
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            {
-                Mapping<Name, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
-                metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
-                metaInfo.Add (Name { L"MiddleName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName));
-                registry.AddClass<Person_> (metaInfo);
-            }
-            {
-                Mapping<Name, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (Name { L"When" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when));
-                metaInfo.Add (Name { L"WithWhom" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom));
-                registry.AddClass<Appointment_> (metaInfo);
-            }
+            registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName) },
+                { Name { L"MiddleName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName) },
+            });
+            registry.AddClass<Appointment_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"When" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when) },
+                { Name { L"WithWhom" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom) },
+            });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Appointment_>       calendar;
-            {
-                Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
-            }
+            Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
             VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
@@ -275,16 +269,15 @@ namespace {
         {
             ObjectReaderRegistry registry;
             registry.AddCommonType<String> ();
-            {
-                DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-                Mapping<Name, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName));
-                metaInfo.Add (Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName));
-                registry.AddClass<Person_> (metaInfo);
-                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-                DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
-            }
+
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
             Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (Name (L"WithWhom"), &people), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
@@ -363,34 +356,14 @@ namespace {
             using   Memory::Optional;
             mapper.AddCommonType<String> ();
 
-#if 1
-            mapper.AddClass<ManagedObjectReference> ( {
-                pair<Name, StructFieldMetaInfo> { Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type) }
-                , pair<Name, StructFieldMetaInfo> { Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value) }
-            }
-                                                    );
-#else
-            {
-                Mapping<Name, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
-                metaInfo.Add (Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
-                mapper.AddClass<ManagedObjectReference> (metaInfo);
-            }
-#endif
-#if 1
-            mapper.AddClass<ObjectContent> (
-            initializer_list<pair<Name, StructFieldMetaInfo>> {
+            mapper.AddClass<ManagedObjectReference> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type) },
+                { Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value) }
+            });
+            mapper.AddClass<ObjectContent> (initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj) }
-            }
-            );
-#else
-            {
-                Mapping<Name, StructFieldMetaInfo>   metaInfo;
-                metaInfo.Add (Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
-                mapper.AddClass<ObjectContent> (metaInfo);
-            }
-#endif
+            });
 
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
