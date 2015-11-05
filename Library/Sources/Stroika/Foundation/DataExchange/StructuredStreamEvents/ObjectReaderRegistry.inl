@@ -129,40 +129,40 @@ namespace   Stroika {
                   ******************************* ListOfObjectReader *****************************
                   ********************************************************************************
                   */
-                template    <typename T>
-                ObjectReaderRegistry::ListOfObjectReader<T>::ListOfObjectReader (const Name& name, vector<ElementType>* v)
+                template    <typename CONTAINER_OF_T>
+                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (const Name& memberElementName, vector<ElementType>* v)
                     : IElementConsumer ()
                     , fReadingAT_ (false)
-                    , fName  (name)
-                    , fValuePtr (v)
+                    , fMemberElementName_  (memberElementName)
+                    , fValuePtr_ (v)
                 {
                 }
-                template    <typename T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                template    <typename CONTAINER_OF_T>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    if (name == fName) {
+                    if (name == fMemberElementName_) {
                         if (fReadingAT_) {
-                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                            this->fValuePtr->push_back (fCurTReading_);
+                            Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr_);
+                            this->fValuePtr_->push_back (fCurTReading_);
                             fReadingAT_ = false;
                         }
                         fReadingAT_ = true;
                         fCurTReading_ = ElementType (); // clear because dont' want to keep values from previous elements
-                        return r.GetObjectReaderRegistry ().MakeContextReader<T> (&fCurTReading_);
+                        return r.GetObjectReaderRegistry ().MakeContextReader<ElementType> (&fCurTReading_);
                     }
-                    else if (fThrowOnUnrecongizedelts) {
+                    else if (fThrowOnUnrecongizedelts_) {
                         ThrowUnRecognizedStartElt (name);
                     }
                     else {
                         return make_shared<IgnoreNodeReader> ();
                     }
                 }
-                template    <typename T>
-                void    ObjectReaderRegistry::ListOfObjectReader<T>::Deactivating (Context& r)
+                template    <typename CONTAINER_OF_T>
+                void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::Deactivating (Context& r)
                 {
                     if (fReadingAT_) {
-                        Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr);
-                        this->fValuePtr->push_back (fCurTReading_);
+                        Containers::ReserveSpeedTweekAdd1 (*this->fValuePtr_);
+                        this->fValuePtr_->push_back (fCurTReading_);
                         fReadingAT_ = false;
                     }
                 }

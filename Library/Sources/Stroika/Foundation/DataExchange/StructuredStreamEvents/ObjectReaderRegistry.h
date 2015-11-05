@@ -441,22 +441,23 @@ namespace   Stroika {
 
                 /**
                  */
-                template    <typename T>
+                template    <typename CONTAINER_OF_T>
                 class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
                 public:
-                    using   ElementType = T;
+                    using   ElementType = typename CONTAINER_OF_T::value_type;
 
                 public:
-                    ListOfObjectReader (const Name& name, vector<ElementType>* v);
-                    virtual shared_ptr<IElementConsumer> HandleChildStart (Context& r, const Name& name) override;
-                    virtual void    Deactivating (Context& r) override;
+                    ListOfObjectReader (const Name& memberElementName, vector<ElementType>* v);
+
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
+                    virtual void                            Deactivating (Context& r) override;
 
                 private:
                     bool                    fReadingAT_;
-                    T                       fCurTReading_;
-                    Name                    fName;
-                    vector<ElementType>*    fValuePtr;
-                    bool                    fThrowOnUnrecongizedelts { false };
+                    ElementType             fCurTReading_;
+                    Name                    fMemberElementName_;
+                    vector<ElementType>*    fValuePtr_;
+                    bool                    fThrowOnUnrecongizedelts_ { false };
                 };
 
 
