@@ -330,16 +330,18 @@ namespace {
                 L"            </propSet>\n"
                 L"            <propSet>"
                 L"               <name>capability</name>\n"
-                L"               <val xsi:type=\"VirtualMachineCapability\" />\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\">\n"
                 L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"               </val>\n"
                 L"            </propSet>\n"
                 L"         </returnval>\n"
                 L"         <returnval>\n"
                 L"            <obj type=\"VirtualMachine\">9</obj>"
                 L"            <propSet>"
                 L"               <name>capability</name>\n"
-                L"               <val xsi:type=\"VirtualMachineCapability\" />\n"
+                L"               <val xsi:type=\"VirtualMachineCapability\">\n"
                 L"                  <snapshotOperationsSupported>true</snapshotOperationsSupported>\n"
+                L"               </val>\n"
                 L"            </propSet>\n"
                 L"         </returnval>\n"
                 L"      </RetrievePropertiesResponse>\n"
@@ -384,9 +386,6 @@ namespace {
                 mkdata_ ().As<Streams::InputStream<Byte>> ()
             );
             VerifyTestResult (objsContent.size () == 2);
-
-            //? @todo - must fix to parse complex elements like
-            // <obj type="VirtualMachine">8</obj>
             VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
             VerifyTestResult (objsContent[0].obj.value == L"8");
             VerifyTestResult (objsContent[1].obj.type == L"VirtualMachine");
