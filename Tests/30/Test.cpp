@@ -363,18 +363,34 @@ namespace {
             using   Memory::Optional;
             mapper.AddCommonType<String> ();
 
+#if 1
+            mapper.AddClass<ManagedObjectReference> ( {
+                pair<Name, StructFieldMetaInfo> { Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type) }
+                , pair<Name, StructFieldMetaInfo> { Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value) }
+            }
+                                                    );
+#else
             {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
                 metaInfo.Add (Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
                 mapper.AddClass<ManagedObjectReference> (metaInfo);
             }
+#endif
+#if 1
+            mapper.AddClass<ObjectContent> (
+            initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj) }
+            }
+            );
+#else
             {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj));
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
                 mapper.AddClass<ObjectContent> (metaInfo);
             }
+#endif
 
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
