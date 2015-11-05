@@ -574,7 +574,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp" />
@@ -1158,7 +1157,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
@@ -1514,7 +1512,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.inl" />

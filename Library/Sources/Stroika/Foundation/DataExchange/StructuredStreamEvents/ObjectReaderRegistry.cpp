@@ -18,6 +18,7 @@
 #include    "../../Time/DurationRange.h"
 
 #include    "../BadFormatException.h"
+#include    "../XML/SAXReader.h"
 
 #include    "ObjectReaderRegistry.h"
 
@@ -27,7 +28,6 @@ using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 
 using   Characters::String_Constant;
-using   DataExchange::VariantValue;
 using   Time::Date;
 using   Time::DateTime;
 using   Time::Duration;

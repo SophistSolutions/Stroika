@@ -735,9 +735,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.cpp">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1749,9 +1746,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.h">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
@@ -2662,9 +2656,6 @@
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReader.inl">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
