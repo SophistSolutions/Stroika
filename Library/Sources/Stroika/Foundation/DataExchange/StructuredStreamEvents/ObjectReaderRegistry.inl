@@ -214,26 +214,26 @@ namespace   Stroika {
                  */
                 template    <typename   T>
                 inline  ObjectReaderRegistry::OptionalTypesReader<T>::OptionalTypesReader (Memory::Optional<T>* intoVal)
-                    : value_ (intoVal)
-                    , proxyValue_ ()
-                    , actualReader_ (&proxyValue_)
+                    : fValue_ (intoVal)
+                    , fProxyValue_ ()
+                    , fActualReader_ (&proxyValue_)
                 {
                 }
                 template    <typename   T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    return actualReader_.HandleChildStart (r, name);
+                    return fActualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T>
                 void    ObjectReaderRegistry::OptionalTypesReader<T>::HandleTextInside (Context& r, const String& text)
                 {
-                    actualReader_.HandleTextInside (r, text);
+                    fActualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T>
                 void    ObjectReaderRegistry::OptionalTypesReader<T>::Deactivating (Context& r)
                 {
-                    actualReader_.Deactivating (r);
-                    *value_ = proxyValue_;
+                    fActualReader_.Deactivating (r);
+                    *fValue_ = fProxyValue_;
                 }
 
 

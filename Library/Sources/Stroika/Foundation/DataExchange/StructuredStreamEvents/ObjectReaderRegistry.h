@@ -40,10 +40,14 @@
  *
  *  TODO:
  *
- *      @todo    gross hacks - replciatigng basic objectreaders to get this limping along...
+ *      @todo    Need much improved ObjectReaderRegistry docs
  *
  *      @todo   make nested READER classes PRIVATE, and have public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
+ *
+ *      @todo   Get rid of or do diffenrtly the Run() methods - so can turn on/off Contextg debugging easier.
+ *
+ *      @todo   USE UnknownSubElementDisposition more throughly...
  *
  */
 
@@ -384,9 +388,9 @@ namespace   Stroika {
                     OptionalTypesReader (Memory::Optional<T>* intoVal);
 
                 private:
-                    Memory::Optional<T>*    value_;
-                    T                       proxyValue_;
-                    SimpleReader<T>         actualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+                    Memory::Optional<T>*    fValue_;
+                    T                       fProxyValue_;
+                    SimpleReader<T>         fActualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
