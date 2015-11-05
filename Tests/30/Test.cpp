@@ -364,7 +364,7 @@ namespace {
             {
                 Mapping<Name, StructFieldMetaInfo>   metaInfo;
                 metaInfo.Add (Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type));
-                metaInfo.Add (Name { L"value" }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
+                metaInfo.Add (Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value));
                 mapper.Add<ManagedObjectReference> (mkClassReaderFactory<ManagedObjectReference> (metaInfo));
             }
             {
@@ -388,12 +388,9 @@ namespace {
             //? @todo - must fix to parse complex elements like
             // <obj type="VirtualMachine">8</obj>
             VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
+            VerifyTestResult (objsContent[0].obj.value == L"8");
             VerifyTestResult (objsContent[1].obj.type == L"VirtualMachine");
-#if 0
-            VerifyTestResult (people[0].lastName == L"Smith");
-            VerifyTestResult (people[1].firstName == L"Fred");
-            VerifyTestResult (people[1].lastName == L"Down");
-#endif
+            VerifyTestResult (objsContent[1].obj.value == L"9");
         }
     }
 

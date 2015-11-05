@@ -73,24 +73,53 @@ namespace   Stroika {
                 template    <typename   T>
                 ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp)
                     : IElementConsumer()
-                    , fValuePtr (vp)
-                    , fFieldNameToTypeMap (maps)
+                    , fValuePtr_ (vp)
                 {
+                    for (Common::KeyValuePair<Name, StructFieldMetaInfo> i : maps) {
+                        if (i.fKey.fType == Name::eValue) {
+                            fValueFieldMetaInfo_ = i.fValue;
+                        }
+                        else {
+                            fFieldNameToTypeMap_.Add (i.fKey, i.fValue);
+                        }
+                    }
                 }
                 template    <typename   T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ClassReader<T>::HandleChildStart (ObjectReaderRegistry::Context& r, const Name& name)
                 {
-                    Optional<StructFieldMetaInfo>   ti = fFieldNameToTypeMap.Lookup (name);
+                    Optional<StructFieldMetaInfo>   ti = fFieldNameToTypeMap_.Lookup (name);
                     if (ti) {
-                        Byte*   operatingOnObj = reinterpret_cast<Byte*> (this->fValuePtr);
+                        Byte*   operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
                         Byte*   operatingOnObjField = operatingOnObj + ti->fOffset;
                         return r.GetObjectReaderRegistry ().MakeContextReader (ti->fTypeInfo, operatingOnObjField);
                     }
-                    else if (fThrowOnUnrecongizedelts) {
+                    else if (fThrowOnUnrecongizedelts_) {
                         ThrowUnRecognizedStartElt (name);
                     }
                     else {
                         return make_shared<IgnoreNodeReader> ();
+                    }
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::ClassReader<T>::HandleTextInside (Context& r, const String& text)
+                {
+                    if (fValueFieldMetaInfo_) {
+                        Assert (fValueFieldConsumer_ == nullptr);
+                        Byte*   operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
+                        Byte*   operatingOnObjField = operatingOnObj + fValueFieldMetaInfo_->fOffset;
+                        fValueFieldConsumer_ = r.GetObjectReaderRegistry ().MakeContextReader (fValueFieldMetaInfo_->fTypeInfo, operatingOnObjField);
+                        fValueFieldConsumer_->Activated (r);
+                        fValueFieldMetaInfo_.clear ();
+                    }
+                    if (fValueFieldConsumer_) {
+                        fValueFieldConsumer_->HandleTextInside (r, text);
+                    }
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::ClassReader<T>::Deactivating (Context& r)
+                {
+                    if (fValueFieldConsumer_) {
+                        fValueFieldConsumer_->Deactivating (r);
                     }
                 }
 

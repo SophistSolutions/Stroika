@@ -43,16 +43,22 @@ namespace   Stroika {
                      *  \note   This terminology differences from XML practice. Here ElementType is really like NodeType.
                      *          But for now we only have 2 types of nodes (because that so far seems all that will be needed for
                      *          what we do).
+                     *
+                     *  \note   Value must have an empty string localname and URI, and refers to XML 'mixed' structures, with both
+                     *          complex fields, and simple data.
                      */
                     enum    NameType {
                         eElement,
                         eAttribute,
+                        eValue
                     };
                     NameType        fType { eElement };
 
                     /**
+                     *  The overload with only NameType \req type == NameType::eValue
                      */
                     Name () = delete;
+                    Name (NameType type);
                     Name (const String& localName, NameType type = eElement);
                     Name (const String& namespaceURI, const String& localName, NameType type = eElement);
 

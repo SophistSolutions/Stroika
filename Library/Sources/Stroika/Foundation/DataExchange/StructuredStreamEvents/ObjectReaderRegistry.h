@@ -339,10 +339,14 @@ namespace   Stroika {
                 public:
                     ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp);
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
+                    virtual void                            HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            Deactivating (Context& r) override;
                 private:
-                    T*                                  fValuePtr;
-                    Mapping<Name, StructFieldMetaInfo>  fFieldNameToTypeMap;
-                    bool                                fThrowOnUnrecongizedelts { false };       // else ignroe
+                    T*                                      fValuePtr_;
+                    Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;
+                    Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
+                    shared_ptr<IElementConsumer>            fValueFieldConsumer_;
+                    bool                                    fThrowOnUnrecongizedelts_ { false };       // else ignore
                 };
 
                 // @todo SOON to be replaced with a MakeSerializer ish method of ObjectReaderRegistry!!! (and AddClass) - just like wtih ObjectVariantMapper

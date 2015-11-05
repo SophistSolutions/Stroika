@@ -23,6 +23,10 @@ namespace   Stroika {
                  *********************** StructuredStreamEvents::Name ***************************
                  ********************************************************************************
                  */
+                inline  Name::Name (NameType type)
+                    : fType { eValue } {
+                    Require (type == eValue);
+                }
                 inline  Name::Name (const String& localName, NameType type)
                     : fLocalName { localName }
                 , fType { type } {
@@ -37,6 +41,9 @@ namespace   Stroika {
                     String  result;
                     if (fType == NameType::eAttribute) {
                         result += L"@";
+                    }
+                    else if (fType == NameType::eValue) {
+                        return L"{value}";
                     }
                     if (fNamespaceURI) {
                         result += *fNamespaceURI + L":";
