@@ -191,14 +191,9 @@ namespace   {
             ObjectReaderRegistry registry;
 
             // @todo replace with addbuilt type sna ddd common types like we do for ObjectVariantMapper
-#if 1
             registry.AddCommonType<Time::DateTime> ();
             registry.AddCommonType<String> ();
-#else
-            registry.Add<Time::DateTime> ([] (Time::DateTime * d) { return make_shared<ObjectReaderRegistry::SimpleReader<Time::DateTime>> (d); });
-            registry.Add<String> ([] (String * d) { return make_shared<ObjectReaderRegistry::SimpleReader<String>> (d); });
-#endif
-            registry.Add<Optional<String>> ([] (Optional<String>* d) { return make_shared<ObjectReaderRegistry::OptionalTypesReader<String>> (d); });
+            registry.AddCommonType<Optional<String>> ();
 
             // not sure if this is clearer or macro version
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
@@ -260,7 +255,6 @@ namespace {
                 L"	  <WithWhom>\n"
                 L"		  <FirstName>Jim</FirstName>"
                 L"		  <LastName>Smith</LastName>"
-                //              L"          <MiddleName>Up</MiddleName>"
                 L"	  </WithWhom>\n"
                 L"  </envelope2>\n"
                 L"  <envelope2>\n"

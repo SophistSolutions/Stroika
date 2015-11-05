@@ -225,6 +225,11 @@ namespace   Stroika {
                 {
                     return MakeCommonReader_SIMPLEREADER_<Time::DateTime> ();
                 }
+                template    <typename T, typename TRAITS>
+                inline   ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
+                {
+                    return cvtFactory_<Memory::Optional<T>> ( [] (Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OptionalTypesReader_<T>> (o); });
+                }
                 template    <typename T>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader ()
                 {
@@ -265,28 +270,28 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******** ObjectReaderRegistry::OptionalTypesReader<T, ACTUAL_READER> ***********
+                 ******* ObjectReaderRegistry::OptionalTypesReader_<T, ACTUAL_READER> ***********
                  ********************************************************************************
                  */
                 template    <typename   T>
-                inline  ObjectReaderRegistry::OptionalTypesReader<T>::OptionalTypesReader (Memory::Optional<T>* intoVal)
+                inline  ObjectReaderRegistry::OptionalTypesReader_<T>::OptionalTypesReader_ (Memory::Optional<T>* intoVal)
                     : fValue_ (intoVal)
                     , fProxyValue_ ()
                     , fActualReader_ (&fProxyValue_)
                 {
                 }
                 template    <typename   T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
                     return fActualReader_.HandleChildStart (r, name);
                 }
                 template    <typename   T>
-                void    ObjectReaderRegistry::OptionalTypesReader<T>::HandleTextInside (Context& r, const String& text)
+                void    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleTextInside (Context& r, const String& text)
                 {
                     fActualReader_.HandleTextInside (r, text);
                 }
                 template    <typename   T>
-                void    ObjectReaderRegistry::OptionalTypesReader<T>::Deactivating (Context& r)
+                void    ObjectReaderRegistry::OptionalTypesReader_<T>::Deactivating (Context& r)
                 {
                     fActualReader_.Deactivating (r);
                     *fValue_ = fProxyValue_;

@@ -82,7 +82,6 @@ namespace   Stroika {
                 };
 
 
-
                 /**
 
                 &&&&&& TODO - @todo - rewrite all these docs
@@ -117,12 +116,13 @@ namespace   Stroika {
                     class   ReadDownToReader;
                     template    <typename   T>
                     class   ListOfObjectReader;
-                    template    <typename   T>
-                    class   OptionalTypesReader;
 
                 private:
                     template    <typename   T>
                     class   SimpleReader_;
+                    template    <typename   T>
+                    class   OptionalTypesReader_;
+
                 public:
                     template    <typename T>
                     using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
@@ -181,6 +181,8 @@ namespace   Stroika {
                 private:
                     template    <typename T>
                     static  ReaderFromVoidStarFactory  MakeCommonReader_ (const T*);
+                    template    <typename T, typename TRAITS>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
 
                 public:
                     /**
@@ -342,6 +344,8 @@ namespace   Stroika {
                     Mapping<Name, StructFieldMetaInfo>  fFieldNameToTypeMap;            // @todo fix to be mapping on Name but need op< etc defined
                     bool                                fThrowOnUnrecongizedelts { false };       // else ignroe
                 };
+
+                // @todo SOON to be replaced with a MakeSerializer ish method of ObjectReaderRegistry!!! (and AddClass) - just like wtih ObjectVariantMapper
                 template    <typename T>
                 ObjectReaderRegistry::ReaderFromVoidStarFactory mkClassReaderFactory (const Mapping<String, StructFieldMetaInfo>& fieldname2Typeamps);
 
@@ -446,7 +450,7 @@ namespace   Stroika {
                  *  @todo merge this into SimpleReader_, or at least make sure handled atuoamtically by ObjectRegistryReader (hidden)
                  *
                  *
-                 *  OptionalTypesReader supports reads of optional types. This will work - for any types for
+                 *  OptionalTypesReader_ supports reads of optional types. This will work - for any types for
                  *  which SimpleReader<T> is implemented.
                  *
                  *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
@@ -454,9 +458,9 @@ namespace   Stroika {
                  *  element which might never have triggered the invocation of this class.
                  */
                 template    <typename   T>
-                class   ObjectReaderRegistry::OptionalTypesReader : public IElementConsumer {
+                class   ObjectReaderRegistry::OptionalTypesReader_ : public IElementConsumer {
                 public:
-                    OptionalTypesReader (Memory::Optional<T>* intoVal);
+                    OptionalTypesReader_ (Memory::Optional<T>* intoVal);
 
                 private:
                     Memory::Optional<T>*    fValue_;
