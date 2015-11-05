@@ -358,17 +358,21 @@ RetryWithNoCERTCheck:
         data = BLOB (bytesArray.begin (), bytesArray.end ());
     }
 
+    // dont throw here - record the bad status in the response. The reason is we often wish to read the whole body of the response.
+    // It can contain an explanation of the erorr (such as soap fault) more detailed than the status line response
     {
         wstring statusStr   =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_CODE, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         wstring statusText  =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         status      =       static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
         DbgTrace (_T ("Status = %d"), status);
+#if 0
         if (not HTTP::Exception::IsHTTPStatusOK (status)) {
             if (WINHTTP_ERROR_BASE <= status and status <= WINHTTP_ERROR_BASE) {
                 Execution::DoThrow (Execution::Platform::Windows::HRESULTErrorException (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_INTERNET, status)));
             }
             HTTP::Exception::DoThrowIfError (status, statusText);
         }
+#endif
     }
 
 
