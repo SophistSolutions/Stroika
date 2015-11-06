@@ -263,14 +263,11 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     fResponseHeaders_.clear ();
 
     {
-        String      userAgent = String_Constant (L"Stroika/2.0");
-        fCURLCacheUTF8_UA_  = userAgent.AsUTF8 ();
-
-        //grab useragent from request headers...
-        //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        fCURLCacheUTF8_UA_  = fOptions_.fUserAgent.AsUTF8 ();
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fCURLCacheUTF8_UA_.c_str ()));
     }
     if (fOptions_.fSupportSessionCookies) {
+        //@todo horrible kludge, but I couldnt find a better way. Will need to use soemthing else for windows, probably!
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
     }
 

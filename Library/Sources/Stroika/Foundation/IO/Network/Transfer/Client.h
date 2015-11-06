@@ -9,6 +9,7 @@
 #include    <string>
 
 #include    "../../../Characters/String.h"
+#include    "../../../Characters/String_Constant.h"
 #include    "../../../Configuration/Common.h"
 #include    "../../../Containers/Mapping.h"
 #include    "../../../DataExchange/InternetMediaType.h"
@@ -389,7 +390,10 @@ namespace   Stroika {
                     /**
                      */
                     struct  Connection::Options {
+                        /**
+                         */
                         bool    fReturnSSLInfo { false };
+
                         /**
                          *  fFailConnectionIfSSLCertificateInvalid could be because of expired CERT, or because of non-matching
                          *  host.
@@ -397,9 +401,19 @@ namespace   Stroika {
                          *      \note - we may want to do something more sophisticated, like a callback with stats about the remote side
                          *              and allow that to throw, indicating rejection. BUt this is good enuf for now.
                          */
-                        bool    fFailConnectionIfSSLCertificateInvalid { true };
-                        bool    fAssumeLowestCommonDenominatorHTTPServer { false };
-                        bool    fSupportSessionCookies { true };
+                        bool    fFailConnectionIfSSLCertificateInvalid      { true };
+
+                        /**
+                         */
+                        bool    fAssumeLowestCommonDenominatorHTTPServer    { false };
+
+                        /**
+                         */
+                        bool    fSupportSessionCookies                      { true };
+
+                        /**
+                         */
+                        String  fUserAgent                                  { Characters::String_Constant { L"Stroika/2.0" } };
                     };
 
 

@@ -221,7 +221,7 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
      * when called within HealthFrameWorks - for example.
      *
      */
-    String      userAgent = String_Constant (L"Stroika/2.0");
+    String      userAgent = fOptions_.fUserAgent;
     Mapping<String, String>  useHeadersMap   =   request.fOverrideHeaders;
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
@@ -480,7 +480,7 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
         fSessionHandle_UserAgent_ = userAgent;
         if (not fOptions_.fSupportSessionCookies) {
             DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
-            Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
+            Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
         }
     }
 }
