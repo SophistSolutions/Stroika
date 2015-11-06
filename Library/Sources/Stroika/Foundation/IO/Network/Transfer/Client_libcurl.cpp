@@ -56,12 +56,12 @@ namespace   {
 
 #if     qHasFeature_LibCurl
 class   Connection_LibCurl::Rep_ : public _IRep {
-public:
-    Connection::Options fOptions;
+private:
+    Connection::Options fOptions_;
 
 public:
     Rep_ (const Connection::Options& options)
-        : fOptions (options)
+        : fOptions_ (options)
     {
     }
     Rep_ (const Rep_&) = delete;
@@ -272,7 +272,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     }
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
-    if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
+    if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
         // @todo CONSIDER if we need to use Synchonized<> here. At one point we did, but perhaps no longer?
         // --LGP 2015-01-10
         static  const   Mapping<String, String>    kSilenceTheseHeaders_  {
@@ -285,8 +285,8 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     }
     {
         // ignore error if compiled without ssl
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions.fFailConnectionIfSSLCertificateInvalid ? 1L : 0L);
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions.fFailConnectionIfSSLCertificateInvalid ? 2L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions_.fFailConnectionIfSSLCertificateInvalid ? 1L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions_.fFailConnectionIfSSLCertificateInvalid ? 2L : 0L);
     }
 
     if (request.fMethod == HTTP::Methods::kGet) {
