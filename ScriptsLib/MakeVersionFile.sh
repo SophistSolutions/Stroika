@@ -31,7 +31,6 @@ if [ "$VERSIONFINAL" == "true" ] ; then VERSIONFINALBUILD="1"; fi
 rm -f $VERSION_OUT_FILE
 touch $VERSION_OUT_FILE
 
-echo hi
 if [ "$OUT_FILE_TYPE" == "AppCPlusPlusVersion" ]
   then
 	DEFINE_PROTECTOR="__"`basename $VERSION_OUT_FILE | tr '-' '_' | tr '.' '_'`"__"
