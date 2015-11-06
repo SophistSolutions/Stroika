@@ -45,6 +45,8 @@
  *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
  *
+ *      @todo   ConvertReaderToFactory() should do varargs perfect forwarding of extra params!
+ *
  *      @todo   Get rid of or do diffenrtly the Run() methods - so can turn on/off Contextg debugging easier.
  *
  *      @todo   USE UnknownSubElementDisposition more throughly...
@@ -184,6 +186,25 @@ namespace   Stroika {
                     template    <typename CLASS>
                     nonvirtual  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
 
+                public:
+                    /**
+                     *  It's pretty easy to code up a 'reader' class - just a simple subclass of IElementConsumer.
+                     *  There are lots of examples in this module.
+                     *
+                     *  But the APIs in the ObjectReaderRegistry require factories, and this utility function constructs
+                     *  a factory from the given READER class template parameter.
+                     */
+                    template    <typename T, typename READER>
+                    static  auto    ConvertReaderToFactory () -> ObjectReaderRegistry::ReaderFromVoidStarFactory;
+
+                public:
+                    /**
+                     *  This is generally just called inside of another composite reader to read sub-objects.
+                     */
+                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
+                    template    <typename T>
+                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+
                 private:
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf );
@@ -194,14 +215,6 @@ namespace   Stroika {
                     static  ReaderFromVoidStarFactory  MakeCommonReader_ (const T*);
                     template    <typename T, typename TRAITS>
                     static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
-
-                public:
-                    /**
-                     *  This is generally just called inside of another composite reader to read sub-objects.
-                     */
-                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
-                    template    <typename T>
-                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;

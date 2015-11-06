@@ -208,6 +208,11 @@ namespace   Stroika {
                 auto    ObjectReaderRegistry::MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo) -> ReaderFromVoidStarFactory {
                     return [fieldInfo] (void* data) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<ObjectReaderRegistry::ClassReader<CLASS>> (fieldInfo, reinterpret_cast<CLASS*> (data)); };
                 }
+                template    <typename T, typename READER>
+                auto    ObjectReaderRegistry::ConvertReaderToFactory () -> ReaderFromVoidStarFactory {
+                    ObjectReaderRegistry::ReaderFromTStarFactory<T>   tmpFactory      { [] (T * o) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<READER> (o); } };
+                    return [tmpFactory] (void* data) { return tmpFactory (reinterpret_cast<T*> (data)); };
+                }
                 template    <typename T>
                 auto   ObjectReaderRegistry::cvtFactory_ (const ReaderFromTStarFactory<T>& tf) -> ReaderFromVoidStarFactory {
                     return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
