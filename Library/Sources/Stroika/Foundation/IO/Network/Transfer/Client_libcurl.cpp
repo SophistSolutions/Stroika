@@ -95,8 +95,9 @@ private:
 
 private:
     void*                   fCurlHandle_ { nullptr };
-    string                  fCURLCacheUTF8_URL_;    // cuz of quirky memory management policies of libcurl
-    string                  fCURLCacheUTF8_Method_;     // cuz of quirky memory management policies of libcurl
+    string                  fCURLCacheUTF8_URL_;        // cuz of quirky memory management policies of libcurl
+    string                  fCURLCacheUTF8_Method_;     // ''
+    string                  fCURLCacheUTF8_UA_;         // ''
     vector<Byte>            fUploadData_;
     size_t                  fUploadDataCursor_ {};
     vector<Byte>            fResponseData_;
@@ -261,8 +262,12 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
 
+    String      userAgent = String_Constant (L"Stroika/2.0");
+    fCURLCacheUTF8_UA_  = userAgent.AsUTF8 ();
+
     //grab useragent from request headers...
     //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+    LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fCURLCacheUTF8_UA_.c_str ()));
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {
