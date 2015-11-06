@@ -262,12 +262,17 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     fResponseData_.clear ();
     fResponseHeaders_.clear ();
 
-    String      userAgent = String_Constant (L"Stroika/2.0");
-    fCURLCacheUTF8_UA_  = userAgent.AsUTF8 ();
+    {
+        String      userAgent = String_Constant (L"Stroika/2.0");
+        fCURLCacheUTF8_UA_  = userAgent.AsUTF8 ();
 
-    //grab useragent from request headers...
-    //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
-    LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fCURLCacheUTF8_UA_.c_str ()));
+        //grab useragent from request headers...
+        //curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, "libcurl-agent/1.0");
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_USERAGENT, fCURLCacheUTF8_UA_.c_str ()));
+    }
+    if (fOptions_.fSupportSessionCookies) {
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_COOKIEFILE, "/dev/null"));
+    }
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions.fAssumeLowestCommonDenominatorHTTPServer) {

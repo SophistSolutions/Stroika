@@ -478,6 +478,10 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
     if (fSessionHandle_.get () == nullptr) {
         fSessionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)));
         fSessionHandle_UserAgent_ = userAgent;
+        if (not fOptions_.fSupportSessionCookies) {
+            DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
+            Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
+        }
     }
 }
 

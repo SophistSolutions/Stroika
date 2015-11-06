@@ -399,6 +399,7 @@ namespace   Stroika {
                          */
                         bool    fFailConnectionIfSSLCertificateInvalid { true };
                         bool    fAssumeLowestCommonDenominatorHTTPServer { false };
+                        bool    fSupportSessionCookies { true };
                     };
 
 
