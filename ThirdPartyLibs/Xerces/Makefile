@@ -106,7 +106,12 @@ endif
 
 doBuilds:
 	@echo "      ...Compiling REDIRECT to BUILD.OUT..."
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
+	make --directory CURRENT --no-print-directory -s all 2>&1 >> BUILD.OUT
+else
 	@./buildall_.pl build > BUILD.OUT 2>&1
+endif
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib
