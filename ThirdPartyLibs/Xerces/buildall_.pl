@@ -11,28 +11,18 @@ if ($BLD_TRG eq '') {
 
 
 
-my $BASENAME	=	"xerces-c-3.1.1";
 
-my $EXTRACTED_DIRNAME	=	$BASENAME;
-my $trgDirName	=			$BASENAME;
 
 
 #print (">>>>>>>>******************** STARTING ThirdPartyLibs/Xerces ******************\n");
 
 if ((lc ("$BLD_TRG") eq "clean") || (lc ("$BLD_TRG") eq "clobber")) {
-	system ("rm -rf $trgDirName CURRENT");
+	system ("rm -rf CURRENT");
 	exit (0);
 }
 if (lc ("$BLD_TRG") eq "rebuild") {
-	system ("rm -rf $trgDirName CURRENT");
+	system ("rm -rf CURRENT");
 }
-
-if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
-	#my $MIRROR_PREFIX_ = "http://www.fightrice.com/mirrors/apache/";
-	my $MIRROR_PREFIX_ = "http://psg.mtu.edu/pub/apache/";
-	system ("wget --quiet --tries=10 --output-document=../Origs-Cache/$BASENAME.tar.gz $MIRROR_PREFIX_/xerces/c/3/sources/$BASENAME.tar.gz || (rm -f ../Origs-Cache/$BASENAME.tar.gz && false)");
-}
-	
 
 require "../../ScriptsLib/ConfigurationReader.pl";
 
@@ -41,26 +31,6 @@ require "../../ScriptsLib/ConfigurationReader.pl";
 my $projectPlatformSubdir = GetProjectPlatformSubdir();
 
 print ($projectPlatformSubdir);
-
-# Only extract if its not already extracted. Make clobber if its partly 
-# extracted
-#if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
-#	
-#	print ("Extracting Xerces...\n");
-#	
-#	system ("rm -rf $trgDirName CURRENT");
-#	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
-#	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-#	system ("mv $EXTRACTED_DIRNAME CURRENT");
-#	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-#	
-#	print ("Patching Xerces...\n");
-#	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
-#	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
-#	system ("chmod -R +rw CURRENT/projects");
-#	system ("chmod -R +rwx CURRENT/projects CURRENT/projects/Win32 CURRENT/projects/Win32/VC* CURRENT/projects/Win32/VC*/xerces-all CURRENT/projects/Win32/VC*/xerces-all/*");
-#}
-
 
 
 
@@ -90,12 +60,6 @@ sub BuildVCDotNet
 		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:$BLD_TRG");
 		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:$BLD_TRG");
 	chdir ("../../../../../../");
-
-	# cleaning needless objs (leave libs)
-	#RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Debug/obj/'");
-	#RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Release/obj/'");
-	#RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Debug/obj/'");
-	#RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Release/obj/'");
 }
 
 
