@@ -34,7 +34,7 @@ touch $VERSION_OUT_FILE
 if [ "$OUT_FILE_TYPE" == "AppCPlusPlusVersion" ]
   then
 	DEFINE_PROTECTOR="__"`basename $VERSION_OUT_FILE | tr '-' '_' | tr '.' '_'`"__"
-	CPPNAMESPACE=`basename --suffix=.h $VERSION_OUT_FILE | tr '-' '_' | tr '.' '_'`
+	CPPNAMESPACE=`basename $VERSION_OUT_FILE .h | tr '-' '_' | tr '.' '_'`
 	echo "#ifndef $DEFINE_PROTECTOR " >> $VERSION_OUT_FILE
 	echo "#define $DEFINE_PROTECTOR 1" >> $VERSION_OUT_FILE
 	echo "#include \"Stroika/Foundation/StroikaPreComp.h\"" >> $VERSION_OUT_FILE
