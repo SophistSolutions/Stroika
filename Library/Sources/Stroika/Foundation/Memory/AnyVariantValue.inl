@@ -75,6 +75,11 @@ namespace   Stroika {
                 const TIRep_<RETURNTYPE>*   t   =   reinterpret_cast<TIRep_<RETURNTYPE>*> (fVal_.get ());
                 return t->fValue;
             }
+            template    <typename   RETURNTYPE>
+            inline  Optional<RETURNTYPE>  AnyVariantValue::IfAs () const
+            {
+                return empty () ? Optional<RETURNTYPE> : As<RETURNTYPE> ();
+            }
 
 
         }

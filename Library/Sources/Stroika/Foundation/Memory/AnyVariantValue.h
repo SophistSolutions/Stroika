@@ -10,7 +10,7 @@
 #include    <type_traits>
 
 #include    "../Configuration/Common.h"
-
+#include    "Optional.h"
 
 
 /**
@@ -124,9 +124,24 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see IfAs<>
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual  RETURNTYPE  As () const;
+
+            public:
+                /**
+                 *  Return Optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      if (auto o = anyVVal.IfAs<T>) {
+                 *          print (o->xxx);
+                 *      }
+                 *      \endcode
+                 */
+                template    <typename   RETURNTYPE>
+                nonvirtual  Optional<RETURNTYPE>  IfAs () const;
 
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
