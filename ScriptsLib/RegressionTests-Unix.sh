@@ -34,11 +34,13 @@ function doOneTest
 
 	COMP2TEST=$COMPILER_DRIVER_WITH_EXTRA_ARGS2TEST
 	if [ "COMP2TEST" == "" ]; then
-		COMP2TEST=COMPILER_DRIVER
+		COMP2TEST=$COMPILER_DRIVER
 	fi
 	if [ "$COMP2TEST" != "" ]; then
 		if [ $(hasCompiler($COMP2TEST); echo $?) -eq 1 ]; then
-			CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
+			if [ "$COMPILER_DRIVER" != "" ]; then
+				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
+			fi
 		else
 			echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed"
 			return 0
