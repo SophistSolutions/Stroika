@@ -27,6 +27,8 @@ FETCHURLS=
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
 
 
+.PHONY:	doCreate doBuild
+
 	
 BUILDS_ROOT=../../Builds/
 
@@ -102,13 +104,10 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
-	
-CURRENT/Builds:
+$(PRODUCED_OUTPUT_ARTIFACTS):
 	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
-
 
 clean:
 	@rm -rf $(TRGDIR)
@@ -159,9 +158,6 @@ $(ZIPEDFILE):
 	@echo -n "      ..."
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
-$(TRGDIR):	$(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory doCreate
-
 
 doPatch:
 	@echo -n "      ...Patching OpenSSL...   "
@@ -174,41 +170,28 @@ endif
 	@echo "done"
 
 doCreate:	$(ZIPEDFILE)
-	@if [ -e  $(TRGDIR) ]; then\
-		echo "      ...CURRENT dir already exists";\
-	else\
-		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner;\
-		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
-		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
-		$(MAKE) --no-print-directory doPatch;\
-	fi
+	@echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)..."
+	@rm -rf $(TRGDIR)
+	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
+	@#sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;
+	@mv $(EXTRACTED_DIRNAME) $(TRGDIR);
+	@$(MAKE) --no-print-directory doPatch;
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@if [ -e  BUILD.OUT ]; then\
-		echo "      ...BUILD.OUT already exists";\
-	else\
-		echo "      ...Creating CURRENT/CONFIG.OUT - new configuration";\
-		BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`;\
-		echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CONFIG.OUT;\
-		(cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CONFIG.OUT 2>&1;\
-		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;\
-		echo "      ...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";\
-		$(MAKE) -j1 --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;\
-		echo "      ...Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";\
-		($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;\
-		($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);\
-	fi
+	@echo "      ...Creating CURRENT/CONFIG.OUT - new configuration"
+	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CONFIG.OUT 2>&1
+	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
+	@$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;
+	@echo "      ...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";
+	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;
+	@echo "      ...Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
+	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@if [ -e  BUILD.OUT ]; then\
-		echo "      ...BUILD.OUT already exists";\
-	else\
-		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		./buildall_windows_.pl > BUILD.OUT 2>&1;\
-	fi
+	echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
+	./buildall_windows_.pl > BUILD.OUT 2>&1;
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
