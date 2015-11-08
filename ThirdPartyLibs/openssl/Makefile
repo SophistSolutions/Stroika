@@ -16,6 +16,11 @@ EXTRACTED_DIRNAME=$(BASENAME)
 CONFIGURATION			?=   $(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
+CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
+
+
+
+
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
@@ -30,6 +35,9 @@ CONFIG_ARGS=
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	-no-shared
 CONFIG_ARGS+=	--prefix=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyLibs/
+ifeq(PURIFY,$(findstring PURIFY,$(CONFIGURED_EXTRA_ARGS)))
+#see https://stroika.atlassian.net/browse/STK-400 - -DPURIFY to cleanly valgrind
+CONFIG_ARGS+=	-DPURIFY
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))

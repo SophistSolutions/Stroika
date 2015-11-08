@@ -56,4 +56,7 @@ doOneTest "clang++-3.6-debug" "--assertions enable --trace2file enable --compile
 #TESTING if -L needed
 #doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
 doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
+
+
+doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
 VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "VALGRIND=1"

@@ -68,6 +68,7 @@ my $DEFAULT_CWARNING_FLAGS_CLANG36EXTRA	= '-Wno-future-compat ';
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
@@ -100,6 +101,7 @@ sub	DoHelp_
         print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
+        print("	    --OpenSSL-ExtraArgs { PURIFY? }			   /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
         print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --ATLMFC {use-system|no}                   /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
@@ -418,6 +420,11 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_OpenSSL = $var;
         }
+        elsif ((lc ($var) eq "-openssl-extraargs") or (lc ($var) eq "--openssl-extraargs")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_OpenSSLExtraArgs = $var;
+        }
         elsif ((lc ($var) eq "-winhttp") or (lc ($var) eq "--winhttp")) {
             $i++;
             $var = $ARGV[$i];
@@ -629,6 +636,14 @@ sub	WriteConfigFile_
 	
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
+	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
+		if ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) {
+			print (OUT "    <qFeatureFlag_OpenSSL_ExtraArgs>$FEATUREFLAG_OpenSSLExtraArgs</qFeatureFlag_OpenSSL_ExtraArgs>\n");
+		}
+		else {
+            die ("Cannot specify OpenSSL-ExtraArgs unless --OpenSSL use\n");
+		}
+	}
 	print (OUT "    <qFeatureFlag_WinHTTP>$FEATUREFLAG_WinHTTP</qFeatureFlag_WinHTTP>\n");
 	print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
