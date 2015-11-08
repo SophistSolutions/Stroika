@@ -205,6 +205,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\..\..\Documentation\Code-Status.md = ..\..\..\Documentation\Code-Status.md
 		..\..\..\Documentation\Coding Conventions.docx = ..\..\..\Documentation\Coding Conventions.docx
 		..\..\..\Documentation\Coding Conventions.pdf = ..\..\..\Documentation\Coding Conventions.pdf
+		..\..\..\Documentation\CommonDefaultConfigurations.txt = ..\..\..\Documentation\CommonDefaultConfigurations.txt
+		..\..\..\Documentation\Makefile = ..\..\..\Documentation\Makefile
 		..\..\..\Documentation\Thread-Safety.md = ..\..\..\Documentation\Thread-Safety.md
 	EndProjectSection
 EndProject

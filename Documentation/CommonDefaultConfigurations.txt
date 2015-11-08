@@ -16,6 +16,9 @@ configure DefaultConfiguration --assertions disable --trace2file enable --cpp-op
 configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto
 configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --pg --lto
 
+#to test with valgrind
+configure DefaultConfiguration --openssl-extraargs purify --block-allocation disable
+
 
 #untested WAG at how to target 32bits
 configure DefaultConfiguration --trace2file enable --LibCurl no --OpenSSL no --Xerces no --compiler-driver 'g++ -m32 -L/usr/lib32/'
