@@ -10,6 +10,14 @@ PARALELLMAKEFLAG=-j4
 rm -rf $TEST_OUT_DIR
 
 
+function hasCompiler
+{
+	COMPILER_DRIVER=$1
+	echo "#include <stdio.h>" > /tmp/foo.cpp
+	($COMPILER_DRIVER -c /tmp/foo.cpp n 2>&1 > /dev/null)  || return 0;
+	return 1
+}
+
 function doOneTest
 {
 	TESTNAME=$1
@@ -24,8 +32,14 @@ function doOneTest
 	rm -f $OUT_FILE_NAME
 
 	if [ "$COMPILER_DRIVER" != "" ]; then
-		($COMPILER_DRIVER --version 2>&1 > /dev/null)  || (echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed" ; return 0;)
-		CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
+		if [ $(hasCompiler($COMPILER_DRIVER); echo $?) -eq 1 ]; then
+			CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
+		else
+			echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed"
+			return 0
+		fi
+		#($COMPILER_DRIVER --version 2>&1 > /dev/null)  || (echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed" ; return 0;)
+		#CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 	fi
 
 	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo "fail" && exit 77;)
