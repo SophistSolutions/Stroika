@@ -12,7 +12,7 @@ rm -rf $TEST_OUT_DIR
 
 function hasCompiler
 {
-	COMPILER_DRIVER=$1
+	COMPILER_DRIVER="$1"
 	echo "#include <stdio.h>" > /tmp/foo.cpp
 	($COMPILER_DRIVER -c /tmp/foo.cpp 2>&1 > /dev/null) || (echo "0" ; return 0)
 	echo "1"
@@ -37,7 +37,8 @@ function doOneTest
 		COMP2TEST=$COMPILER_DRIVER
 	fi
 	if [ "$COMP2TEST" != "" ]; then
-		if [ "$(hasCompiler $COMP2TEST)" == "1" ] ; then
+		tmp=$(hasCompiler "$COMP2TEST")
+		if [ "$tmp" == "1" ] ; then
 			if [ "$COMPILER_DRIVER" != "" ]; then
 				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 			fi
