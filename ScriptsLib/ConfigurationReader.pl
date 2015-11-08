@@ -101,6 +101,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_OpenSSL'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_OpenSSL_ExtraArgs>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_OpenSSL_ExtraArgs'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_Xerces>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_Xerces'} = $pps;
