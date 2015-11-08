@@ -153,6 +153,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3
 		..\..\..\ThirdPartyLibs\openssl\Makefile = ..\..\..\ThirdPartyLibs\openssl\Makefile
 		..\..\..\ThirdPartyLibs\openssl\ReadMe.txt = ..\..\..\ThirdPartyLibs\openssl\ReadMe.txt
 		..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt = ..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt
+		..\..\..\ThirdPartyLibs\openssl\REFERENCE_UNIX_OUTPUT.txt = ..\..\..\ThirdPartyLibs\openssl\REFERENCE_UNIX_OUTPUT.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6D62-4C7F-9477-C38D6BE9FE14}"
