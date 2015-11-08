@@ -95,30 +95,31 @@ sub	DoHelp_
     my $x = shift(@_);
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
-        print("	    --platform {PLATFORM}                      /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
-        print("	    --assertions { enable|disable|default }    /* Enables/disable assertion feature (setting qDebug) */\n");
-        print("	    --GLIBCXX_DEBUG { enable|disable|default } /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
-        print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
-        print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
-        print("	    --OpenSSL-ExtraArgs { purify? }			   /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
-        print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
-        print("	    --ATLMFC {use-system|no}                   /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
-        print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
-        print("	    --ZLib {build-only|use|use-system|no}      /* Enables/disables use of ZLib for this configuration [default use] */\n");
-        print("	    --lzma {build-only|use|use-system|no}      /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
-        print("	    --trace2file { enable|disable|default }    /* Enables/disable trace2file feature */\n");
-        print("	    --static-link-gccruntime { enable|disable }/* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
-        print("	    --cpp-optimize-flag  {FLAG}                /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-        print("	    --c-define {ARG}                           /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
-        print("	    --make-define {ARG}                        /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
-        print("	    --compiler-driver {ARG}                    /* default is gcc */\n");
-        print("	    --ar {ARG}                                 /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
-        print("	    --ranlib {ARG}                             /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
-        print("	    --extra-compiler-args {ARG}                /* Sets variable with extra args for compiler */\n");
-        print("	    --extra-linker-args {ARG}                  /* Sets variable with extra args for linker */\n");
-        print("	    --pg {ARG}                                 /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
-        print("	    --lto {ARG}                                /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015, VisualStudio.Net-2013) - usually auto-detected */\n");
+        print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
+        print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
+        print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
+        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+        print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
+        print("	    --OpenSSL-ExtraArgs { purify? }			        /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+        print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
+        print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
+        print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
+        print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
+        print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
+        print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
+        print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
+        print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
+        print("	    --c-define {ARG}                                /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
+        print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
+        print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
+        print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
+        print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+        print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
+        print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
+        print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
+        print("	    --lto {ARG}                                     /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
 		
 	exit ($x);
 }
@@ -364,12 +365,12 @@ sub	ParseCommandLine_Remaining_
 		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
 			$var = $ARGV[$i];
-			$useExtraCDefines[@useExtraCDefines] = $var;
+			push (@useExtraCDefines, $var);
 		}
 		elsif (lc ($var) eq "-make-define" or lc ($var) eq "--make-define") {
 			$i++;
 			$var = $ARGV[$i];
-			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
+			push (@useExtraMakeDefines, $var);
 		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
@@ -385,6 +386,22 @@ sub	ParseCommandLine_Remaining_
 			}
 			else  {
                 print ("UNRECOGNIZED assertions ARG: $var\n");
+                DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-block-allocation") or (lc ($var) eq "--block-allocation")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				push (@useExtraCDefines, '#define qAllowBlockAllocation 1');
+			}
+			elsif ($var eq "disable") {
+				push (@useExtraCDefines, '#define qAllowBlockAllocation 0');
+			}
+			elsif ($var eq "default") {
+			}
+			else  {
+                print ("UNRECOGNIZED block-allocation ARG: $var\n");
                 DoHelp_ (1);
 			}
 		}
@@ -602,6 +619,11 @@ sub	ParseCommandLine_
 ParseCommandLine_ ();
 
 
+sub PostProcessOptions_ ()
+{
+}
+
+PostProcessOptions_ ();
 
 
 
