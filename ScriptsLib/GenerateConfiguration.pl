@@ -408,14 +408,6 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$CPPSTD_VERSION_FLAG = $var;
 		}
-		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
-			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
-			print ("$var flag DEPRECATED - use --openssl\n");
-		}
-		elsif ((lc ($var) eq "-no-has-openssl") or (lc ($var) eq "--no-has-openssl")) {
-			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
-			print ("$var flag DEPRECATED - use --openssl\n");
-		}
         elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
             $i++;
             $var = $ARGV[$i];
