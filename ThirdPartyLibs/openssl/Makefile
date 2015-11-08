@@ -173,9 +173,8 @@ doCreate:	$(ZIPEDFILE)
 	@echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)..."
 	@rm -rf $(TRGDIR)
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
-	@#sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR);
-	@$(MAKE) --no-print-directory doPatch;
+	@$(MAKE) --no-print-directory doPatch
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -190,8 +189,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
-	./buildall_windows_.pl > BUILD.OUT 2>&1;
+	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
+	@./buildall_windows_.pl > BUILD.OUT 2>&1;
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
