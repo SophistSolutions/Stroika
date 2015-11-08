@@ -14,8 +14,8 @@ function hasCompiler
 {
 	COMPILER_DRIVER=$1
 	echo "#include <stdio.h>" > /tmp/foo.cpp
-	($COMPILER_DRIVER -c /tmp/foo.cpp n 2>&1 > /dev/null)  || return 0;
-	return 1
+	($COMPILER_DRIVER -c /tmp/foo.cpp 2>&1 > /dev/null) || (echo "0" ; return 0)
+	echo "1"
 }
 
 function doOneTest
@@ -33,11 +33,11 @@ function doOneTest
 	rm -f $OUT_FILE_NAME
 
 	COMP2TEST=$COMPILER_DRIVER_WITH_EXTRA_ARGS2TEST
-	if [ "COMP2TEST" == "" ]; then
+	if [ "$COMP2TEST" == "" ]; then
 		COMP2TEST=$COMPILER_DRIVER
 	fi
 	if [ "$COMP2TEST" != "" ]; then
-		if [ $(hasCompiler($COMP2TEST); echo $?) -eq 1 ]; then
+		if [ "$(hasCompiler $COMP2TEST)" == "1" ] ; then
 			if [ "$COMPILER_DRIVER" != "" ]; then
 				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 			fi
