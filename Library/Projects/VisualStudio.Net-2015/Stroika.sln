@@ -147,6 +147,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3
 		..\..\..\ThirdPartyLibs\openssl\Makefile = ..\..\..\ThirdPartyLibs\openssl\Makefile
 		..\..\..\ThirdPartyLibs\openssl\ReadMe.txt = ..\..\..\ThirdPartyLibs\openssl\ReadMe.txt
 		..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt = ..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt
+		..\..\..\ThirdPartyLibs\openssl\REFERENCE_UNIX_OUTPUT.txt = ..\..\..\ThirdPartyLibs\openssl\REFERENCE_UNIX_OUTPUT.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6D62-4C7F-9477-C38D6BE9FE14}"
@@ -199,6 +200,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\..\..\Documentation\Coding Conventions.docx = ..\..\..\Documentation\Coding Conventions.docx
 		..\..\..\Documentation\Coding Conventions.pdf = ..\..\..\Documentation\Coding Conventions.pdf
 		..\..\..\Documentation\Thread-Safety.md = ..\..\..\Documentation\Thread-Safety.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{D21F3707-4413-4F9F-AB52-4E1CB6483829}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\openssl\Patches\LosePRINTOfCopyingInUtils.PATCH = ..\..\..\ThirdPartyLibs\openssl\Patches\LosePRINTOfCopyingInUtils.PATCH
 	EndProjectSection
 EndProject
 Global
@@ -513,5 +519,6 @@ Global
 		{76839A1E-6D62-4C7F-9477-C38D6BE9FE14} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 		{8857755D-8E18-476D-BEB5-5C3B5ED79FB2} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 		{A60110B0-721D-48EE-81A9-9FFB510B4A07} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
+		{D21F3707-4413-4F9F-AB52-4E1CB6483829} = {0AB3C96C-D218-4BE1-99E9-96B9290537AE}
 	EndGlobalSection
 EndGlobal
