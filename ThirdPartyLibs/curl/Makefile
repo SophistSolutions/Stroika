@@ -150,7 +150,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
 		cd CURRENT;\
 		./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
-		echo "         ...TODO - fix to use my copy of ssl, if we build SSL...";\
 		echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
 		echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
 		(CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
