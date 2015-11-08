@@ -101,7 +101,7 @@ sub	DoHelp_
         print("	    --cppstd-version-flag {FLAG}               /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}   /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}   /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
-        print("	    --OpenSSL-ExtraArgs { PURIFY? }			   /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+        print("	    --OpenSSL-ExtraArgs { purify? }			   /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
         print("	    --WinHTTP {use-system|no}                  /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --ATLMFC {use-system|no}                   /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}    /* Enables/disables use of Xerces for this configuration [default use] */\n");
