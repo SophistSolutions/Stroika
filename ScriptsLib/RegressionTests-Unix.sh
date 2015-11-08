@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -E
+trap '[ "$?" -ne 77 ] || exit 77' ERR
+
 TEST_OUT_DIR=RegressionTests-Output
 PARALELLMAKEFLAG=-j4
 
@@ -19,14 +22,14 @@ function doOneTest
 	echo -n "Running Test $TESTNAME (see $OUT_FILE_NAME) cfg=($CONFIG_ARGS)..."
 	rm -f $OUT_FILE_NAME
 
-	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo "fail" ; exit 1; )
+	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo "fail" && exit 77;)
 
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
 	echo -n "."
 	(make all $PARALELLMAKEFLAG >> $OUT_FILE_NAME 2>&1) || (echo 'make all failed' ; exit 1;)
 	echo -n "."
-	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || ( echo 'make run-tests failed' ; exit 1; )
+	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || (echo 'make run-tests failed' ; exit 77;)
 	X1=`cat $OUT_FILE_NAME | grep seconds | grep -F [Succeeded] | wc -l`
 	XF=`cat $OUT_FILE_NAME | grep -F FAILED | wc -l`
 	if [ $XF -gt 0 ]; then\
@@ -36,13 +39,15 @@ function doOneTest
 		echo "$X1 tests succeeded and expected 46";\
 	fi
 	if [ $XF -gt 0 ]; then\
-		exit 1;\
+		exit 77;\
 	fi
 	if [ $X1 -lt 46 ]; then\
-		exit 1;\
+		exit 77;\
 	fi
 	echo "done"
 }
+
+
 
 doOneTest "DEFAULT_CONFIG" "" ""
 doOneTest "gcc-5.2.0-release" "--assertions disable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --cpp-optimize-flag -O3" ""
@@ -57,9 +62,8 @@ doOneTest "clang++-3.6-debug" "--assertions enable --trace2file enable --compile
 #doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
 doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
 
-
 #disable blockalloc, and valgrind, so we test with minimal valgrind suppressions
-doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "--openssl use --openssl-extraargs purify --c-define '#define qAllowBlockAllocation 0'" "VALGRIND=1"
+doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "--openssl use --openssl-extraargs purify --block-allocation disable" "VALGRIND=1"
 
 #test with usual set of valgrind suppressions
 VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_WITH_BLOCK_ALLOC" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
