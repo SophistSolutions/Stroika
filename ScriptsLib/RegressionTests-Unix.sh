@@ -58,5 +58,11 @@ doOneTest "clang++-3.6-debug" "--assertions enable --trace2file enable --compile
 doOneTest "gcc-release-32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
 
 
-doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
-VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "VALGRIND=1"
+#disable blockalloc, and valgrind, so we test with minimal valgrind suppressions
+doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "--openssl use --openssl-extraargs purify --c-define '#define qAllowBlockAllocation 0'" "VALGRIND=1"
+
+#test with usual set of valgrind suppressions
+VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_WITH_BLOCK_ALLOC" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
+
+#slow, and largely useless test...
+#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "VALGRIND=1"
