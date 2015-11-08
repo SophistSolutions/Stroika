@@ -35,7 +35,7 @@ CONFIG_ARGS=
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	-no-shared
 CONFIG_ARGS+=	--prefix=$(shell realpath `pwd`/../../)/Builds/$(CONFIGURATION)/ThirdPartyLibs/
-ifeq (PURIFY,$(findstring purify,$(CONFIGURED_EXTRA_ARGS)))
+ifeq (purify,$(findstring purify,$(CONFIGURED_EXTRA_ARGS)))
 #see https://stroika.atlassian.net/browse/STK-400 - -DPURIFY to cleanly valgrind
 CONFIG_ARGS+=	-DPURIFY
 endif
