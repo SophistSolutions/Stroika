@@ -24,7 +24,7 @@ function doOneTest
 	rm -f $OUT_FILE_NAME
 
 	if [ "$COMPILER_DRIVER" != "" ]; then
-		($COMPILER_DRIVER --version 2>&1 > /dev/null)  || echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed" ; return 0;
+		($COMPILER_DRIVER --version 2>&1 > /dev/null)  || (echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed" ; return 0;)
 		CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 	fi
 
