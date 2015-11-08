@@ -113,7 +113,7 @@ clean:
 	@rm -rf $(TRGDIR)
 
 clobber:	clean
-	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT
+	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT $(PRODUCED_OUTPUT_ARTIFACTS)
 
 check:
 	@echo -n "      ...Checking..."
