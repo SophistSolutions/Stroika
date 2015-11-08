@@ -50,9 +50,9 @@ check:
 
 
 clean:
-	@make --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-	@(cd Tools; perl buildall.pl clean)
+	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
 
