@@ -86,6 +86,11 @@ namespace   Stroika {
              *      Using AnyVariantValue can be a simple remedy to this. At the message routing (between producer/consumer) layer
              *      you wrap your objects in AnyVariantValue, and then (type safely) unpack them on the other end.
              *
+             *  \note   Design Note - Equals and less/greater not supported
+             *          Supporting this generically would require a virtual method, and as such, would
+             *          be tricky todo without requiring the underlying 'T' type to have an equals method. For now
+             *          we can just avoid that.
+             *
              *  @see VariantValue
              */
             class   AnyVariantValue {
@@ -94,8 +99,9 @@ namespace   Stroika {
                  *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
                  *  accidentally assign the wrong type and get surprising results.
                  */
-                AnyVariantValue ();
+                AnyVariantValue () = default;
                 AnyVariantValue (const AnyVariantValue& from) = default;
+                AnyVariantValue (AnyVariantValue&& from);
                 AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
                 template    <typename   T>
                 explicit AnyVariantValue (T val);
@@ -122,11 +128,6 @@ namespace   Stroika {
                 template    <typename   RETURNTYPE>
                 nonvirtual  RETURNTYPE  As () const;
 
-            public:
-                /**
-                 */
-                nonvirtual  bool    Equals (const AnyVariantValue& rhs) const;
-
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -143,14 +144,6 @@ namespace   Stroika {
                 template    <typename T>
                 struct  TIRep_;
             };
-
-            /**
-             */
-            bool    operator== (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
-
-            /**
-             */
-            bool    operator!= (const AnyVariantValue& lhs, const AnyVariantValue& rhs);
 
 
         }

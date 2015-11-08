@@ -40,13 +40,13 @@ namespace   Stroika {
              ******************************* AnyVariantValue ********************************
              ********************************************************************************
              */
-            inline  AnyVariantValue::AnyVariantValue ()
-                : fVal_ ()
+            inline  AnyVariantValue::AnyVariantValue (AnyVariantValue&& from)
+                : fVal_ (move (from.fVal_))
             {
             }
             template    <typename   T>
             inline  AnyVariantValue::AnyVariantValue (T val)
-                : fVal_ (shared_ptr<IRep_> (new TIRep_<T> (val)))
+                : fVal_ (make_shared<TIRep_<T>> (val))
             {
             }
             inline  const type_info&  AnyVariantValue::GetType () const
@@ -74,21 +74,6 @@ namespace   Stroika {
                 // efficient
                 const TIRep_<RETURNTYPE>*   t   =   reinterpret_cast<TIRep_<RETURNTYPE>*> (fVal_.get ());
                 return t->fValue;
-            }
-
-
-            /*
-             ********************************************************************************
-             **************************** Iterator operators ********************************
-             ********************************************************************************
-             */
-            inline  bool    operator== (const AnyVariantValue& lhs, const AnyVariantValue& rhs)
-            {
-                return lhs.Equals (rhs);
-            }
-            inline  bool    operator!= (const AnyVariantValue& lhs, const AnyVariantValue& rhs)
-            {
-                return not rhs.Equals (rhs);
             }
 
 
