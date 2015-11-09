@@ -29,7 +29,8 @@ function doOneTest
 	mkdir -p $TEST_OUT_DIR
 	OUT_FILE_NAME="$TEST_OUT_DIR/$TESTNAME"
 
-	echo -n "Running Test $TESTNAME (see $OUT_FILE_NAME) cfg=($CONFIG_ARGS)..."
+	echo "Running Test $TESTNAME (see $OUT_FILE_NAME)"
+	echo -n "   cfg=($CONFIG_ARGS)..."
 	rm -f $OUT_FILE_NAME
 
 	COMP2TEST=$COMPILER_DRIVER_WITH_EXTRA_ARGS2TEST
@@ -43,7 +44,7 @@ function doOneTest
 				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 			fi
 		else
-			echo && echo "   skipping compiler-driver $COMPILER_DRIVER cuz not installed"
+			echo && echo "   skipping because $COMP2TEST cuz not installed"
 			return 0
 		fi
 	fi
