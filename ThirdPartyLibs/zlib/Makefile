@@ -184,6 +184,6 @@ check:
 clean:
 	@rm -rf CURRENT
 
-clobber:	cleam
+clobber:	clean
 	@rm -f BUILD.OUT PATCHING.OUT
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
