@@ -20,6 +20,7 @@ USE_DIRNAME=CURRENT
 
 FETCHURLS=
 FETCHURLS+=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
+FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
 
 BUILDS_ROOT=../../Builds/
@@ -154,21 +155,20 @@ endif
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	echo "      ...Building libcurl $(TRGDIR)...";\
-	echo "         ...into $(BUILDS_DIR)...";\
-	echo "         ...checking tools...";\
-	$(MAKE) --no-print-directory check_prerequisites_;\
-	echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
-	cd CURRENT;\
-	./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
-	echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
-	echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
-	(CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
-	echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
-	make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
-	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
-	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
-	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
+	@echo "      ...Building libcurl $(TRGDIR)...";
+	@echo "         ...into $(BUILDS_DIR)...";
+	@echo "         ...checking tools...";
+	@$(MAKE) --no-print-directory check_prerequisites_;
+	@echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";
+	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;
+	@echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";
+	@echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;
+	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;
+	@echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";
+	@make --directory --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
@@ -201,5 +201,4 @@ clean:
 
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)
-	@rm -rf $(TRGDIR)
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
