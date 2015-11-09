@@ -2,7 +2,7 @@ CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .DEFAULT_GOAL := all
-.PHONY:	all clean clobber check
+.PHONY:	all clean clobber check doBuild doCreate doPatch
 
 VERSION=3.1.2
 BASENAME=xerces-c-$(VERSION)
@@ -49,9 +49,10 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Build
-	
-CURRENT/Build:
+.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
+
+
+$(PRODUCED_OUTPUT_ARTIFACTS):
 	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
@@ -73,7 +74,7 @@ check:
 
 
 clobber:
-	@rm -rf $(EXTRACTED_DIRNAME) CURRENT $(BUILDS_ROOT)*/ThirdPartyLibs/*xerces*
+	@rm -rf $(EXTRACTED_DIRNAME) CURRENT $(BUILDS_ROOT)*/ThirdPartyLibs/*xerces* $(PRODUCED_OUTPUT_ARTIFACTS)
 
 
 $(ZIPPEDFILE):
@@ -82,20 +83,15 @@ $(ZIPPEDFILE):
 
 
 doCreate:	$(ZIPPEDFILE)
-	@if [ -e  CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp ]; then\
-		echo "      ...CURRENT dir already exists";\
-	else\
-		echo "      ...Creating $(TRGDIR)...";\
-		rm -rf $(USE_DIRNAME) CURRENT;\
-		tar xf $(ZIPPEDFILE) --no-same-owner;\
-		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
-		$(MAKE) --no-print-directory doPatching_;\
-	fi
+	@echo "      ...Creating $(TRGDIR)...";
+	@rm -rf $(USE_DIRNAME) CURRENT;
+	@tar xf $(ZIPPEDFILE) --no-same-owner;
+	@mv $(EXTRACTED_DIRNAME) $(TRGDIR);
+	@$(MAKE) --no-print-directory doPatching_;
 
 
 doPatching_:
 	@echo "      ...Patching Xerces...";
-	@(cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
 ifeq (AIX,$(shell uname))

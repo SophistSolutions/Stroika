@@ -43,12 +43,12 @@ function doOneTest
 				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
 			fi
 		else
-			echo "Skipping compiler-driver $COMPILER_DRIVER cuz not installed"
+			echo && echo "   skipping compiler-driver $COMPILER_DRIVER cuz not installed"
 			return 0
 		fi
 	fi
 
-	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo "fail" && exit 77;)
+	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo && echo "   fail" && exit 77;)
 
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
@@ -70,7 +70,7 @@ function doOneTest
 	if [ $X1 -lt 46 ]; then\
 		exit 77;\
 	fi
-	echo "done"
+	echo && echo "   done"
 }
 
 

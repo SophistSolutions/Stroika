@@ -1,7 +1,9 @@
 #
 # ROUGH DRAFT - STARTING TO MOVE AWAY FROM OLD PERL STUFF
 #
-.PHONY:	all clean clobber check
+
+.DEFAULT_GOAL := all
+.PHONY:	all clean clobber check doBuild doCreate doPatch
 
 #VERSION=1.0.1o
 VERSION=1.0.2d
