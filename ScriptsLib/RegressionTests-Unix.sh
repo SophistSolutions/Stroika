@@ -14,7 +14,8 @@ function hasCompiler
 {
 	COMPILER_DRIVER="$1"
 	echo "#include <stdio.h>" > /tmp/foo.cpp
-	($COMPILER_DRIVER -c /tmp/foo.cpp 2>&1 > /dev/null) || (echo "0" ; return 0)
+	cd /tmp && ($COMPILER_DRIVER -c /tmp/foo.cpp 2>&1 > /dev/null) || (echo "0" ; return 0)
+	rm /tmp/foo.cpp
 	echo "1"
 }
 
