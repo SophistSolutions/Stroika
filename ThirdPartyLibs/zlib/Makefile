@@ -110,7 +110,7 @@ endif
 doCreate:	$(ZIPEDFILE)
 	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
 	@tar xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+	@mv $(EXTRACTED_DIRNAME) CURRENT
 	@$(MAKE) --no-print-directory doPatch
 	@$(MAKE) --no-print-directory doConfigure
 
