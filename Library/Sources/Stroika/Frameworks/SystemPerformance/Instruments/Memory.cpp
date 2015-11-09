@@ -257,15 +257,16 @@ namespace {
             result.fPhysicalMemory.fActive = (memResults.real_inuse - memResults.real_avail + memResults.real_free) * 4 * 1024 - *result.fPhysicalMemory.fOSReserved;
 
             // Check for bad that that just cannot happen (I think would be kernel/libperf bug)
-            static  const   uint64_t    kTotalRAM_  =   GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
-            Assert (result.fPhysicalMemory.fActive.Value () <= kTotalRAM_);
-            Assert (result.fPhysicalMemory.fInactive.Value () <= kTotalRAM_);
-            Assert (result.fPhysicalMemory.fFree.Value () <= kTotalRAM_);
-            if (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () != kTotalRAM_) {
+            // Not 100% sure if total RAM can change while running on AIX, but it can on some systems
+            uint64_t   totalRAM_  =   GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+            Assert (result.fPhysicalMemory.fActive.Value () <= totalRAM_);
+            Assert (result.fPhysicalMemory.fInactive.Value () <= totalRAM_);
+            Assert (result.fPhysicalMemory.fFree.Value () <= totalRAM_);
+            if (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () != totalRAM_) {
                 // Due to apparent races gathering these stats, they may be out of sync. So split the difference (no other obvious way
                 // to reconcile them)
                 int64_t overage = result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value ();
-                overage -= kTotalRAM_;
+                overage -= totalRAM_;
                 DbgTrace ("Adjusting reported RAM values for overrage %lld", static_cast<long long int> (overage));
                 if (result.fPhysicalMemory.fFree.Value () > overage / 3) {
                     result.fPhysicalMemory.fFree -= overage / 3;
@@ -415,7 +416,6 @@ namespace {
              *          look for them more, and stop when none left to look for (wont work if some like sreclaimable not found).
              */
             static  const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
-            //const String_Constant kProcMemInfoFileName_ { L"c:\\Sandbox\\VMSharedFolder\\meminfo" };
             DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             // Note - /procfs files always unseekable
             Optional<uint64_t>  memTotal;

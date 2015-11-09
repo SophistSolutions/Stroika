@@ -743,6 +743,8 @@ namespace {
             using   Execution::ProcessRunner;
             // @TODO - much of this is wrong - elapsed not used, tdkskIO not used, TIME always zero, and %MEM reproted as RSS - so many bugs.. But testable...
 
+            uint64_t    totalSystemRAM = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
+
             /*
              *  Thought about STIME but too hard to parse???
              *
@@ -824,9 +826,8 @@ namespace {
                     }
                 }
                 processDetails.fResidentMemorySize =  Characters::String2Int<int> (l[4].Trim ()) * 1024;    // RSS in /proc/xx/stat is * pagesize but this is *1024
-                static  uint64_t    kTotalRAM_ = Stroika::Foundation::Configuration::GetSystemConfiguration_Memory ().fTotalPhysicalRAM;
                 processDetails.fResidentMemorySize /= 1024;
-                processDetails.fResidentMemorySize *= kTotalRAM_ / 100;
+                processDetails.fResidentMemorySize *= totalSystemRAM / 100;
                 processDetails.fPrivateVirtualMemorySize =  Characters::String2Int<int> (l[kVSZ_Idx_].Trim ()) * 1024;
                 processDetails.fUserName = l[kUser_Idx_].Trim ();
                 processDetails.fThreadCount =  Characters::String2Int<unsigned int> (l[kThreadCnt_Idx_].Trim ());

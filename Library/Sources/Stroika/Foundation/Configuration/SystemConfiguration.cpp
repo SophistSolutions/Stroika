@@ -530,8 +530,11 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
     result.fPageSize = ::sysconf (_SC_PAGESIZE);
     result.fTotalPhysicalRAM = ptrConf.MemorySize;      // @todo UNCLEAR why ::sysconf (_SC_PHYS_PAGES) * result.fPageSize different than this? --LGP 2015-09-08
 #elif   qPlatform_POSIX
-    result.fPageSize = ::sysconf (_SC_PAGESIZE);
-    result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * result.fPageSize;
+    // page size cannot change while running, but number of pages can
+    // (e.g. https://pubs.vmware.com/vsphere-50/index.jsp?topic=%2Fcom.vmware.vsphere.vm_admin.doc_50%2FGUID-0B4C3128-F854-43B9-9D80-A20C0C8B0FF7.html)
+    static  const   size_t  kPageSize_   { ::sysconf (_SC_PAGESIZE) };
+    result.fPageSize = kPageSize_;
+    result.fTotalPhysicalRAM = ::sysconf (_SC_PHYS_PAGES) * kPageSize_;
 #elif   qPlatform_Windows
     SYSTEM_INFO sysInfo;
     ::GetNativeSystemInfo (&sysInfo);
