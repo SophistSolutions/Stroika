@@ -1,6 +1,8 @@
 -include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
 
 .PHONY:	all clean clobber check
+.NOTPARALLEL:
+
 
 all:
 	@echo "Building Stroika ThirdPartyLibs..."
