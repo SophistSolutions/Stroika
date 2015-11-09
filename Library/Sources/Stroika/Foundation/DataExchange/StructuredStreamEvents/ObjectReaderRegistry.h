@@ -345,9 +345,7 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry::IgnoreNodeReader : public IElementConsumer {
                 public:
-                    IgnoreNodeReader ();
-                private:
-                    int fDepth_;
+                    IgnoreNodeReader () = default;
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                 };

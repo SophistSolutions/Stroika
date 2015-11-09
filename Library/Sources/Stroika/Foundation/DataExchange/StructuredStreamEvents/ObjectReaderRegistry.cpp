@@ -116,11 +116,6 @@ void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Contex
  ******************** ObjectReaderRegistry::IgnoreNodeReader ********************
  ********************************************************************************
  */
-ObjectReaderRegistry::IgnoreNodeReader::IgnoreNodeReader ()
-    : fDepth_ (0)
-{
-}
-
 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
