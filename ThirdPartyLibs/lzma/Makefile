@@ -90,7 +90,7 @@ BUILDS_DIR=	CURRENT/Builds/
 
 
 all:
-	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
+	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
 	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
