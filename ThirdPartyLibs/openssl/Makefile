@@ -104,7 +104,7 @@ STRIP_ANNOYING_MESSAGES=		1
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
-	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 

@@ -61,7 +61,7 @@ endif
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/libcurl $(VERSION)..."
-	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 $(ZIPPEDFILE):
