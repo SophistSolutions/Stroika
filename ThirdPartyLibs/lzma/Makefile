@@ -2,9 +2,8 @@ CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
-.NOTPARALLEL:
-.PHONY:	all
 .DEFAULT_GOAL := all
+.PHONY:	all clean clobber check doBuild doCreate doPatch
 
 DoCreateSymLink=0
 
@@ -87,18 +86,19 @@ endif
 
 
 
-TRGDIR=CURRENT
-
 BUILDS_DIR=	CURRENT/Builds/
 
 
-all:		$(PRODUCED_OUTPUT_ARTIFACTS)
+all:
+	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
+	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
+.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
+
+
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
-	@echo "      ...checking tools..."
 	@$(MAKE) --no-print-directory check_prerequisites_
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
@@ -109,41 +109,27 @@ $(ZIPEDFILE):
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
-$(TRGDIR):	$(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory doCreate
-
-
-
 check_prerequisites_:
+	@echo "      ...checking tools..."
 	@type 7za > /dev/null || echo "......Missing 7za"
 
-
-
 doCreate:	$(ZIPEDFILE)
-	@if [ -e  $(TRGDIR) ]; then\
-		echo "      ...$(TRGDIR) dir already exists";\
-	else\
-		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		7za x -o$(TRGDIR) $(ZIPEDFILE) > /dev/null;\
-		cp Subdir-Makefile $(TRGDIR)/Makefile;\
-	fi
-
-
+	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
+	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
+	@cp Subdir-Makefile CURRENT/Makefile
 
 doBuilds:
-	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ..."
-	@make doBuildInternal_ > BUILD.OUT 2>&1
-
-
+	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
+	@make doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	make --directory $(TRGDIR) ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" LIBS="$(LIBS)"
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	make --directory CURRENT ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" LIBS="$(LIBS)"
+	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 else
-	make --directory $(TRGDIR) \
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC32)" \
 		CPlusPlus="$(WIN_CC32)" \
@@ -161,16 +147,16 @@ else
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
-	make --directory $(TRGDIR) \
+	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		clobber
-	make --directory $(TRGDIR) \
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC32)" \
 		CPlusPlus="$(WIN_CC32)" \
@@ -188,22 +174,22 @@ else
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/
-	make --directory $(TRGDIR) \
+	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/
+	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/
+	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		clobber
-	make --directory $(TRGDIR) \
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC64)" \
 		CPlusPlus="$(WIN_CC64)" \
@@ -222,16 +208,16 @@ else
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/
-	make --directory $(TRGDIR) \
+	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		clobber
-	make --directory $(TRGDIR) \
+	make --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC64)" \
 		CPlusPlus="$(WIN_CC64)" \
@@ -273,7 +259,7 @@ check:
 	@echo "   Stroika/ThirdPartyLibs/lzma - [Succeeded]";
 
 clean:
-	@-$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
+	@rm -rf CURRENT
 
-clobber:
-	@rm -rf $(TRGDIR) BUILD.OUT $(PRODUCED_OUTPUT_ARTIFACTS)
+clobber:	clean
+	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
