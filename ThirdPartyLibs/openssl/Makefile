@@ -102,14 +102,15 @@ endif
 # COULD make this conditional
 STRIP_ANNOYING_MESSAGES=		1
 
-all:		$(PRODUCED_OUTPUT_ARTIFACTS)
+all:
+	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
+	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
 .NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 

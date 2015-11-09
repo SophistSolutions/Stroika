@@ -45,7 +45,9 @@ endif
 
 
 
-all:		$(PRODUCED_OUTPUT_ARTIFACTS)
+all:
+	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
+	@$(MAKE) --no-print-directory $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
@@ -53,7 +55,6 @@ all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 
