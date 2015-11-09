@@ -64,23 +64,21 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zconf.h
 endif
 
+.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
 
 
 
-
-TRGDIR=CURRENT
 
 BUILDS_DIR=	CURRENT/Builds/
 
 
-all:		$(PRODUCED_OUTPUT_ARTIFACTS)
+all:
+	@echo "   Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
+	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 
-$(PRODUCED_OUTPUT_ARTIFACTS):	CURRENT/Builds
-	
-CURRENT/Builds:
-	@echo "   Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
+$(PRODUCED_OUTPUT_ARTIFACTS):
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
 
@@ -89,8 +87,6 @@ $(ZIPEDFILE):
 	@echo -n "      ..." 
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
-$(TRGDIR):	$(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory doCreate
 
 doPatch:
 	@echo -n "      ...Patching"
@@ -112,25 +108,15 @@ endif
 
 
 doCreate:	$(ZIPEDFILE)
-	@if [ -e  $(TRGDIR) ]; then\
-		echo "      ...CURRENT dir already exists";\
-	else\
-		echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)...";\
-		tar xf $(ZIPEDFILE) --no-same-owner;\
-		sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7;\
-		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
-		$(MAKE) --no-print-directory doPatch;\
-		$(MAKE) --no-print-directory doConfigure;\
-	fi
-
+	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
+	@tar xf $(ZIPEDFILE) --no-same-owner
+	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+	@$(MAKE) --no-print-directory doPatch
+	@$(MAKE) --no-print-directory doConfigure
 
 doBuilds:
-	@if [ -e  BUILD.OUT ]; then\
-		echo "      ...BUILD.OUT already exists";\
-	else\
-		echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";\
-		make doBuildInternal_ > BUILD.OUT 2>&1;\
-	fi
+	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ..."
+	@make doBuildInternal_ > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
@@ -156,25 +142,25 @@ endif
 doBuildInternal_:
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@rm -rf $(BUILDS_DIR)
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/safeseh /MTd -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)' zlib.lib"
+	@cd CURRENT && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd CURRENT && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/safeseh /MTd -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Debug32
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Debug32/
+	@mv CURRENT/zlib.lib $(BUILDS_DIR)Debug32/
 
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/safeseh /MT -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' 'CC=$(WIN_CC32)' 'AR=$(WIN_LIB32)' zlib.lib"
+	@cd CURRENT && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd CURRENT && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/safeseh /MT -DASMV -DASMINF' OBJA='inffas32.obj match686.obj' AS='$(WIN_AS32)' 'CC=$(WIN_CC32)' 'AR=$(WIN_LIB32)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Release32
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release32/
+	@mv CURRENT/zlib.lib $(BUILDS_DIR)Release32/
 
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MTd -DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' CC='$(WIN_CC64)' AR='$(WIN_LIB64)' zlib.lib"
+	@cd CURRENT && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd CURRENT && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MTd -DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' CC='$(WIN_CC64)' AR='$(WIN_LIB64)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Debug64
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Debug64/
+	@mv CURRENT/zlib.lib $(BUILDS_DIR)Debug64/
 
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR) && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MT -DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' 'CC=$(WIN_CC64)' 'AR=$(WIN_LIB64)' zlib.lib"
+	@cd CURRENT && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd CURRENT && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f win32/Makefile.msc LOC='/MT -DASMV -DASMINF -I.' OBJA='inffasx64.obj gvmat64.obj inffas8664.obj' AS='$(WIN_AS64)' 'CC=$(WIN_CC64)' 'AR=$(WIN_LIB64)' zlib.lib"
 	@mkdir -p $(BUILDS_DIR)Release64
-	@mv $(TRGDIR)/zlib.lib $(BUILDS_DIR)Release64/
+	@mv CURRENT/zlib.lib $(BUILDS_DIR)Release64/
 else
 	@$(MAKE) --directory CURRENT --no-print-directory CC="$(CC)"
 endif
@@ -196,8 +182,8 @@ check:
 	@echo "   Stroika/ThirdPartyLibs/zlib - [Succeeded]";
 
 clean:
-	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
+	@rm -rf CURRENT
 
-clobber:
-	@rm -rf $(TRGDIR)
+clobber:	cleam
 	@rm -f BUILD.OUT PATCHING.OUT
+	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
