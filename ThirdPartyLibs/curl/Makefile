@@ -42,8 +42,6 @@ WIN_LIB32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommo
 WIN_LIB64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl LIB_64)")
 endif
 
-TRGDIR=CURRENT
-
 BUILDS_DIR=	$(shell pwd)/Builds/
 
 
@@ -79,17 +77,9 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 
 
 doCreate:	$(ZIPPEDFILE)
-	@if [ -e  $(TRGDIR) ]; then\
-		echo "      ...CURRENT dir already exists";\
-	else\
-		echo "      ...Creating $(TRGDIR)...";\
-		tar xf $(ZIPPEDFILE) --no-same-owner;\
-		mv $(EXTRACTED_DIRNAME) $(TRGDIR);\
-	fi
-
-
-$(BUILDS_DIR):	$(TRGDIR)
-	make --no-print-directory doBuilds
+	@echo "      ...Creating CURRENT...";
+	@tar xf $(ZIPPEDFILE) --no-same-owner
+	@mv $(EXTRACTED_DIRNAME) CURRENT
 
 
 #note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
@@ -153,39 +143,35 @@ LIBCURL_CONFIGURE += --disable-curldebug
 endif
 
 
-
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@echo "      ...Building libcurl $(TRGDIR)...";
-	@echo "         ...into $(BUILDS_DIR)...";
-	@echo "         ...checking tools...";
-	@$(MAKE) --no-print-directory check_prerequisites_;
-	@echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";
-	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;
-	@echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";
-	@echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT;
-	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;
-	@echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";
-	@make --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1;
+	@echo "      ...Building libcurl CURRENT..."
+	@echo "         ...into $(BUILDS_DIR)..."
+	@echo "         ...checking tools..."
+	@$(MAKE) --no-print-directory check_prerequisites_
+	@echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
+	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
+	@echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."
+	@echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
+	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
+	@make --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "      ....Building libcurl $(TRGDIR) into $(BUILDS_DIR)..."
+	@echo "      ....Building libcurl CURRENT into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
-	@cd $(TRGDIR) && rm -f *.obj *.pdb *.lib
-
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd $(TRGDIR)/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
+	@cd CURRENT && rm -f *.obj *.pdb *.lib
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl "cd CURRENT/winbuild && MFLAGS= && MAKEFLAGS= && nmake MAKEFLAGS= MFLAGS= -f Makefile.vc mode=static AS='$(WIN_AS32)' CC='$(WIN_CC32)' AR='$(WIN_LIB32)'"
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
-
 
 check_prerequisites_:
 	@type automake > /dev/null || echo "......Missing automake"
 	@type libtool > /dev/null || echo "......Missing libtool"
-
 
 check:
 	@echo -n "      ...Checking..."
@@ -198,7 +184,7 @@ check:
 	@echo "   Stroika/ThirdPartyLibs/curl - [Succeeded]";
 
 clean:
-	@rm -rf $(TRGDIR)
+	@rm -rf CURRENT
 
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)
