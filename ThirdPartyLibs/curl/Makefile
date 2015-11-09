@@ -2,8 +2,8 @@ CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
-.PHONY:	all
 .DEFAULT_GOAL := all
+.PHONY:	all clean clobber check doBuild doCreate doPatch
 
 DoCreateSymLink=0
 
@@ -46,20 +46,34 @@ TRGDIR=CURRENT
 BUILDS_DIR=	$(shell pwd)/Builds/
 
 
+
+ifeq (Unix,$(ProjectPlatformSubdir))
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libcurl.a				\
+	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/curl/curl.h
+else
+PRODUCED_OUTPUT_ARTIFACTS=\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/curl/curl.h
+endif
+
+
+
+
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
-all:
-	@echo "   Building Stroika/ThirdPartyProducts/libcurl $(VERSION)..."
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+all:		$(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
 
 $(ZIPPEDFILE):
 	@echo -n "      ..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
+.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
 
-$(TRGDIR):	$(ZIPPEDFILE)
+$(PRODUCED_OUTPUT_ARTIFACTS):
+	@echo "   Building Stroika/ThirdPartyLibs/libcurl $(VERSION)..."
 	@$(MAKE) --no-print-directory doCreate
+	@$(MAKE) --no-print-directory doBuilds
+
 
 
 doCreate:	$(ZIPPEDFILE)
@@ -140,22 +154,18 @@ endif
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@if [ -e  $(BUILDS_DIR) ]; then\
-		echo "      ...Libcurl in $(BUILDS_DIR) complete";\
-	else\
-		echo "      ...Building libcurl $(TRGDIR)...";\
-		echo "         ...into $(BUILDS_DIR)...";\
-		echo "         ...checking tools...";\
-		$(MAKE) --no-print-directory check_prerequisites_;\
-		echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
-		cd CURRENT;\
-		./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
-		echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
-		echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
-		(CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
-		echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
-		make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
-	fi
+	echo "      ...Building libcurl $(TRGDIR)...";\
+	echo "         ...into $(BUILDS_DIR)...";\
+	echo "         ...checking tools...";\
+	$(MAKE) --no-print-directory check_prerequisites_;\
+	echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details...";\
+	cd CURRENT;\
+	./buildconf > BUILD-CONF-TOOLS.OUT 2>&1;\
+	echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details...";\
+	echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CONFIGURE.OUT;\
+	(CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT;\
+	echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details...";\
+	make --no-print-directory install CC="$(CC)" > MAKE.OUT 2>&1;\
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la  Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
@@ -177,9 +187,14 @@ check_prerequisites_:
 
 
 check:
-	@##THMPHACK
 	@echo -n "      ...Checking..."
-	@echo "         ThirdPartyLibs/curl - [Succeeded]"
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			echo "      FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@echo "   Stroika/ThirdPartyLibs/curl - [Succeeded]";
 
 clean:
 	@rm -rf $(TRGDIR)
