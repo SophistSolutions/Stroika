@@ -883,7 +883,6 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             }
         }
 
-
 #if     defined (_POSIX_V6_LP64_OFF64)
         //
         // @todo FIX/FIND BETTER WAY!
