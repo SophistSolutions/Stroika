@@ -25,6 +25,7 @@
 #include    "../Traversal/DiscreteRange.h"
 #include    "../Traversal/Range.h"
 
+#include    "StructFieldMetaInfo.h"
 #include    "VariantValue.h"
 
 
@@ -35,8 +36,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
- *
- *      @todo   Use StructFiledMetaInfo.h instead of our own 'struct' offset stuff (just code vectoring)
  *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
@@ -264,7 +263,16 @@ namespace   Stroika {
                 nonvirtual  void    ResetToDefaultTypeRegistry ();
 
             public:
-                struct  StructureFieldInfo;
+                struct  StructFieldInfo;
+
+
+            public:
+                //DEPRECATED...
+#if     qCompilerAndStdLib_deprecatedFeatureMissing
+                using StructureFieldInfo = StructFieldInfo;
+#else
+                using  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo = StructFieldInfo;
+#endif
 
             public:
                 /**
@@ -273,21 +281,21 @@ namespace   Stroika {
                  *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
                  */
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
+                nonvirtual  void    AddClass (const Sequence<StructFieldInfo>& fieldDescriptions);
 #if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions);
+                nonvirtual  void    AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions);
 #endif
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd);
+                nonvirtual  void    AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd);
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
+                nonvirtual  void    AddClass (const Sequence<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
 #if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
+                nonvirtual  void    AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
 #endif
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject);
+                nonvirtual  void    AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject);
 
             public:
                 /**
@@ -427,8 +435,8 @@ namespace   Stroika {
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const;
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const;
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields) const;
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
@@ -448,7 +456,7 @@ namespace   Stroika {
             /**
              *  This is just for use the with the ObjectVariantMapper::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
              */
-            struct  ObjectVariantMapper::StructureFieldInfo {
+            struct  ObjectVariantMapper::StructFieldInfo {
                 enum class NullFieldHandling {
                     eOmit,
                     eInclude
@@ -458,52 +466,38 @@ namespace   Stroika {
                     eTryExtraArray
                 };
 
-                size_t                  fOffset;
-                type_index              fTypeInfo;
+                StructFieldMetaInfo     fFieldMetaInfo;
                 String                  fSerializedFieldName;
                 NullFieldHandling       fNullFields;
                 ArrayElementHandling    fSpecialArrayHandling;
 
-                StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
+                StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
             };
 
 
+
+#if 0
             /**
-             *  Greatly regret adding a macro, but it just seems SO HELPFUL (makes things much more terse).
-             *  No need to use - but some may find it helpfull...
-             *
-             *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
-             *  thing and offsetof()).
-             *
-             *  \note
-             *      This macro uses offsetof(). According to the C++11 spec, offsetof() is only supported
-             *      for 'standard-layout' objects (e.g. those without virtual functions, or other fancy
-             *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
-             *      the approach/question (could  we use pointer to member?).
-             *
-             *  @see Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey
+             *  DEPRECATED in v2.0a115
+             *      PLEASE REPLACE ObjectVariantMapper_StructureFieldInfo_Construction_Helper(A,B,C)
+             *  with:
+             *      ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (A,B), C }
              */
 #define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
     DataExchange::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
+#endif
 
 
+#if 0
             /**
-             *  Greatly regret adding a macro, but it just seems SO HELPFUL (makes things much more terse).
-             *  No need to use - but some may find it helpfull...
-             *
-             *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
-             *  thing and offsetof()).
-             *
-             *  \note
-             *      This macro uses offsetof(). According to the C++11 spec, offsetof() is only supported
-             *      for 'standard-layout' objects (e.g. those without virtual functions, or other fancy
-             *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
-             *      the approach/question (could  we use pointer to member?).
-             *
-             *  @see ObjectVariantMapper_StructureFieldInfo_Construction_Helper
+             *  DEPRECATED in v2.0a115
+             *      PLEASE REPLACE Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey
+             *  with:
+             *      Stroika_Foundation_DataExchange_StructFieldMetaInfo
              */
 #define     Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey(CLASS,MEMBER)\
-    offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))
+    Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS,MEMBER)
+#endif
 
 
             template    <>

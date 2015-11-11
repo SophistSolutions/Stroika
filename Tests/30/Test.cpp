@@ -198,13 +198,13 @@ namespace   {
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName) },
-                { Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName) },
-                { Name { L"MiddleName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, middleName) },
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                { Name { L"MiddleName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, middleName) },
             });
             registry.AddClass<Appointment_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"When" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, when) },
-                { Name { L"WithWhom" }, ObjectVariantMapper_StructFieldMetaInfo (Appointment_, withWhom) },
+                { Name { L"When" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, when) },
+                { Name { L"WithWhom" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, withWhom) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -273,8 +273,8 @@ namespace {
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"FirstName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, firstName) },
-                { Name { L"LastName" }, ObjectVariantMapper_StructFieldMetaInfo (Person_, lastName) },
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
@@ -357,11 +357,11 @@ namespace {
             mapper.AddCommonType<String> ();
 
             mapper.AddClass<ManagedObjectReference> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"type", Name::eAttribute }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, type) },
-                { Name { Name::eValue }, ObjectVariantMapper_StructFieldMetaInfo (ManagedObjectReference, value) }
+                { Name { L"type", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, type) },
+                { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ManagedObjectReference, value) }
             });
             mapper.AddClass<ObjectContent> (initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"obj" }, ObjectVariantMapper_StructFieldMetaInfo (ObjectContent, obj) }
+                { Name { L"obj" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (ObjectContent, obj) }
                 /// wrong - must be mapping of this --metaInfo.Add (L"propSet", pair<type_index, size_t> {typeid(decltype (ObjectContent::value)), offsetof(ObjectContent, propSet)});
             });
 

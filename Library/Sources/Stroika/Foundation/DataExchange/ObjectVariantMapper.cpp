@@ -317,22 +317,22 @@ void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
     fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
 }
 
-ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields) const
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields) const
 {
     return MakeCommonSerializer_ForClassObject_ (forTypeInfo, n, fields, [] (VariantValue*) {});
 }
 
-ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const
 {
 #if     qDebug
     for (auto i : fields) {
-        Require (i.fOffset < n);
+        Require (i.fFieldMetaInfo.fOffset < n);
     }
     {
         // assure each field unique
         Containers::MultiSet<size_t> t;
         for (auto i : fields) {
-            t.Add (i.fOffset);
+            t.Add (i.fFieldMetaInfo.fOffset);
         }
         for (auto i : t) {
             Require (i.fCount == 1);        //  not necessarily something we want to prohibit?
@@ -343,7 +343,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         // If you ever need to avoid it (I dont see how because this mapper doesnt work with circular data structures)
         // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
         for (auto i : fields) {
-            (void)Lookup_ (i.fTypeInfo);
+            (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
         }
     }
 #endif
@@ -356,11 +356,11 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         for (auto i : fields)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
+            DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
-            const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
-            VariantValue    vv = mapper.FromObjectMapper (i.fTypeInfo) (mapper, fromObjOfTypeT + i.fOffset);
-            if (i.fNullFields == ObjectVariantMapper::StructureFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
+            const Byte* fieldObj = fromObjOfTypeT + i.fFieldMetaInfo.fOffset;
+            VariantValue    vv = mapper.FromObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, fromObjOfTypeT + i.fFieldMetaInfo.fOffset);
+            if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
                 m.Add (i.fSerializedFieldName, vv);
             }
         }
@@ -377,18 +377,18 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"(fieldname = %s, offset=%d, present=%d)", i.fSerializedFieldName.c_str (), i.fOffset, o.IsPresent ());
+            DbgTrace (L"(fieldname = %s, offset=%d, present=%d)", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
 #endif
             if (o) {
                 switch (i.fSpecialArrayHandling) {
-                    case StructureFieldInfo::ArrayElementHandling::eExact: {
-                            mapper.ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
+                    case StructFieldInfo::ArrayElementHandling::eExact: {
+                            mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
                         }
                         break;
-                    case StructureFieldInfo::ArrayElementHandling::eTryExtraArray: {
+                    case StructFieldInfo::ArrayElementHandling::eTryExtraArray: {
                             exception_ptr savedException;
                             try {
-                                mapper.ToObjectMapper (i.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fOffset);
+                                mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, *o, intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
                             }
                             catch (...) {
                                 // Because of ambiguity in xml between arrays and single elements, we optionally allow special mapping to array
@@ -397,7 +397,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
                                 Sequence<VariantValue> v;
                                 v.Append (*o);
                                 try {
-                                    mapper.ToObjectMapper (i.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fOffset);
+                                    mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
                                 }
                                 catch (...) {
                                     Execution::DoReThrow (savedException);

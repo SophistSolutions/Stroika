@@ -68,9 +68,9 @@ namespace   Stroika {
              *          L"MyModule",
              *          [] () -> ObjectVariantMapper {
              *              ObjectVariantMapper mapper;
-             *              mapper.AddClass<MyData_> (initializer_list<StructureFieldInfo> {
-             *                  { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MyData_, fEnabled), L"Enabled" },
-             *                  { Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey (MyData_, fLastSynchronizedAt), L"Last-Synchronized-At" },
+             *              mapper.AddClass<MyData_> (initializer_list<StructFieldInfo> {
+             *                  { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled), L"Enabled" },
+             *                  { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt), L"Last-Synchronized-At" },
              *              });
              *              return mapper;
              *          } (),

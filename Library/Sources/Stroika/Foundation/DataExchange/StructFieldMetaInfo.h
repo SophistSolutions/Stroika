@@ -42,8 +42,9 @@ namespace   Stroika {
 
 
             /**
-             *  Greatly regret adding a macro, but it just seems SO HELPFUL (makes things much more terse).
-             *  No need to use - but some may find it helpfull...
+             *  Regret adding a macro, but it just seems helpful (makes things much more terse,
+             *  and avoids the possible bugs from specifing the CLASS twice).
+             *  No need to use - but some may find it helpful...
              *
              *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype
              *  thing and offsetof()).
@@ -54,8 +55,17 @@ namespace   Stroika {
              *      c++ stuff). As near as I can tell, this always works, but we may need to revisit
              *      the approach/question (could  we use pointer to member?).
              *
+             *  \par Example Usage
+             *      \code
+             *      struct  Person {
+             *          String  firstName;
+             *          String  lastName;
+             *      };
+             *      StructFieldMetaInfo firstNameFieldInfo      =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, firstName)
+             *      StructFieldMetaInfo lastNameFieldInfo       =   Stroika_Foundation_DataExchange_StructFieldMetaInfo(Person, lastName)
+             *      \endcode
              */
-#define     ObjectVariantMapper_StructFieldMetaInfo(CLASS,MEMBER)\
+#define     Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS,MEMBER)\
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
 
 

@@ -63,8 +63,8 @@ namespace {
             [] () -> ObjectVariantMapper {
                 ObjectVariantMapper mapper;
                 mapper.AddClass<MyData_> ({
-                    ObjectVariantMapper_StructureFieldInfo_Construction_Helper (MyData_, fEnabled, L"Enabled"),
-                    ObjectVariantMapper_StructureFieldInfo_Construction_Helper (MyData_, fLastSynchronizedAt, L"Last-Synchronized-At"),
+                    ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled), L"Enabled" },
+                    ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt), L"Last-Synchronized-At" },
                 });
                 return mapper;
             } (),

@@ -1313,15 +1313,15 @@ namespace {
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<ScanDetails_> ({
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanID, L"Scan-ID"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanStart, L"Scan-Start"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanEnd, L"Scan-End"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanKind, L"Scan-Kind"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fScanLabel, L"Scan-Label"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fRawSpectrum, L"Raw-Spectrum"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fAuxData, L"Aux-Data"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseBackground, L"Background-ID"),
-                ObjectVariantMapper_StructureFieldInfo_Construction_Helper (ScanDetails_, fUseReference, L"Reference-ID"),
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID), L"Scan-ID" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart), L"Scan-Start" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanEnd), L"Scan-End" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanKind), L"Scan-Kind" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanLabel), L"Scan-Label" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fRawSpectrum), L"Raw-Spectrum" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fAuxData), L"Aux-Data" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground), L"Background-ID" },
+                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference), L"Reference-ID" },
             });
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04

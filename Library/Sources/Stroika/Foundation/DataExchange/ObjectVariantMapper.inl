@@ -25,12 +25,11 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************* ObjectVariantMapper::StructureFieldInfo ********************
+             ********************** ObjectVariantMapper::StructFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::StructureFieldInfo::StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
-                : fOffset (fieldOffset)
-                , fTypeInfo (typeInfo)
+            inline  ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const StructFieldMetaInfo&  fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields, ArrayElementHandling arrayHandling)
+                : fFieldMetaInfo (fieldMetaInfo)
                 , fSerializedFieldName (serializedFieldName)
                 , fNullFields (nullFields)
                 , fSpecialArrayHandling (arrayHandling)
@@ -78,38 +77,38 @@ namespace   Stroika {
                 Add (MakeCommonSerializer<T> ());
             }
             template    <typename CLASS>
-            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
+            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions)
             {
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
 #if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
             template    <typename CLASS>
-            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions)
+            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions)
             {
-                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptions));
+                return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptions));
             }
 #endif
             template    <typename CLASS>
-            void    ObjectVariantMapper::AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd)
+            void    ObjectVariantMapper::AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd)
             {
-                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd));
+                return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd));
             }
             template    <typename CLASS>
-            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
+            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
             {
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
             }
 #if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
             template    <typename CLASS>
-            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
+            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
             {
-                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptions), preflightBeforeToObject);
+                return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptions), preflightBeforeToObject);
             }
 #endif
             template    <typename CLASS>
-            void    ObjectVariantMapper::AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject)
+            void    ObjectVariantMapper::AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject)
             {
-                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd), preflightBeforeToObject);
+                return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd), preflightBeforeToObject);
             }
             inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const ->FromVariantMapperType
             {
