@@ -789,7 +789,6 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface), String_Constant (L"Interface") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics), String_Constant (L"IO-Statistics") },
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
         mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
         mapper.AddCommonType<Optional<IOStatistics>> ();
@@ -797,6 +796,7 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), String_Constant (L"Interfaces"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), String_Constant (L"Summary-IO-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
     } ();
     return sMapper_;
