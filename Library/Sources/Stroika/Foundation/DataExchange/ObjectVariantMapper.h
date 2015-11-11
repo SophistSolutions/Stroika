@@ -137,9 +137,9 @@ namespace   Stroika {
              *
              *      // register each of your mappable (even private) types
              *      mapper.AddClass<SharedContactsConfig_> ({
-             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
-             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
-             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
+             *          ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled), L"Enabled" },
+             *          ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt), L"Last-Synchronized-At" },
+             *          ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID), L"This-HR-ContactID-To-SharedContactID-Map" },
              *      });
              *
              *      SharedContactsConfig_   tmp;
@@ -268,7 +268,7 @@ namespace   Stroika {
 
             public:
                 //DEPRECATED...
-#if     qCompilerAndStdLib_deprecatedFeatureMissing
+#if     qCompilerAndStdLib_deprecatedFeatureMissing || defined (__clang__)
                 using StructureFieldInfo = StructFieldInfo;
 #else
                 using  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo = StructFieldInfo;

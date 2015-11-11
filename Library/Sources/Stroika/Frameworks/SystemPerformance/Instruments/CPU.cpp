@@ -110,8 +110,6 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
         mapper.AddClass<Info::LoadAverage> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f1MinuteAve), String_Constant (L"1-minute") },
@@ -129,8 +127,6 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fTotalCPUUsage), String_Constant (L"Total-CPU-Usage") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fRunQLength), String_Constant (L"Run-Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
     } ();
     return sMapper_;

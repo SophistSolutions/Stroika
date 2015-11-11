@@ -1779,8 +1779,6 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<String>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> (Stroika_Enum_Names(BlockDeviceKind)));
         mapper.AddCommonType<Optional<BlockDeviceKind>> ();
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<IOStatsType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), String_Constant (L"Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fQLength), String_Constant (L"Q-Length"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -1817,8 +1815,6 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fDisks), String_Constant (L"Disks") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fMountedFilesystems), String_Constant (L"Mounted-Filesystems") },
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
     } ();
     return sMapper_;

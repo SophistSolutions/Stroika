@@ -756,8 +756,6 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> (Interface::Stroika_Enum_Names(Status)));
         mapper.AddCommonType<Set<Interface::Status>> ();
         mapper.AddCommonType<Optional<Set<Interface::Status>>> ();
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         using   Interface = InterfaceInfo::Interface;
         mapper.AddClass<Interface> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fInternalInterfaceID), String_Constant (L"Interface-Internal-ID") },
@@ -790,13 +788,9 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fInterface), String_Constant (L"Interface") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics), String_Constant (L"IO-Statistics") },
         });
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
-        DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
         mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
         mapper.AddCommonType<Optional<IOStatistics>> ();
-        DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), String_Constant (L"Interfaces"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), String_Constant (L"Summary-IO-Statistics"), StructureFieldInfo::NullFieldHandling::eOmit },
