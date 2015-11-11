@@ -1310,6 +1310,7 @@ namespace {
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ScanKindType> (Stroika_Enum_Names(ScanKindType)));
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<SpectrumType> ());
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<PersistenceScanAuxDataType> ());
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<ScanDetails_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanID), L"Scan-ID" },
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fScanStart), L"Scan-Start" },
@@ -1321,6 +1322,7 @@ namespace {
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseBackground), L"Background-ID" },
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ScanDetails_, fUseReference), L"Reference-ID" },
             });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             return mapper;
         }
         ScanDetails_    doRead_ (const InputStream<Byte> in)

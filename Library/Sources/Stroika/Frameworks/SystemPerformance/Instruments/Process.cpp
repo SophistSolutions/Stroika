@@ -250,6 +250,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<Time::DateTime>> ();
         mapper.AddCommonType<Optional<DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), String_Constant (L"Kernel-Process"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), String_Constant (L"Parent-Process-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -278,6 +279,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), String_Constant (L"Combined-IO-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), String_Constant (L"Combined-IO-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<ProcessMapType> ();
         return mapper;
     } ();

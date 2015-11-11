@@ -677,6 +677,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), String_Constant (L"Available"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fActive), String_Constant (L"Active"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -702,6 +703,7 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fVirtualMemory), String_Constant (L"Virtual-Memory") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fPaging), String_Constant (L"Paging") },
         });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
     } ();
     return sMapper_;
