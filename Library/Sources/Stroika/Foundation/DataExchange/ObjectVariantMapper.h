@@ -268,12 +268,8 @@ namespace   Stroika {
 
             private://private so name matches and easy to find/fix when building with new code...
                 //DEPRECATED...
-#if     1
                 using StructureFieldInfo = StructFieldInfo;
-#else
-               // typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
-                typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
-#endif
+                // typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
 
             public:
                 /**

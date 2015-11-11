@@ -236,7 +236,7 @@ namespace   {
  */
 ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
 {
-    using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
+    using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (ProcessType::Stroika_Enum_Names(RunStatus)));

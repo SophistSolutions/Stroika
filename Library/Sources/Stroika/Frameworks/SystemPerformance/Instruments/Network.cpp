@@ -745,7 +745,7 @@ namespace {
  */
 ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
 {
-    using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
+    using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         mapper.AddCommonType<Optional<uint64_t>> ();

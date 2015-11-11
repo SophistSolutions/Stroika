@@ -107,7 +107,7 @@ Instruments::CPU::Info::LoadAverage::LoadAverage (double oneMinuteAve, double fi
  */
 ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 {
-    using   StructureFieldInfo = ObjectVariantMapper::StructureFieldInfo;
+    using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
