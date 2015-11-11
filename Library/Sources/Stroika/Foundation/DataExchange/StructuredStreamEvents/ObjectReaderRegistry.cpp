@@ -193,44 +193,6 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
  ***************** StructuredStreamEvents::ObjectReader *************************
  ********************************************************************************
  */
-namespace   {
-    // @todo see https://stroika.atlassian.net/browse/STK-284
-    struct DocumentReader_ : public ObjectReaderRegistry::IElementConsumer {
-        shared_ptr<IElementConsumer>      fDocEltBuilder;
-        bool                            fAnyDocElt;
-        String                          fDocEltURI;
-        String                          fDocEltName;
-        DocumentReader_ (const shared_ptr<IElementConsumer>& docEltBuilder)
-            : fDocEltBuilder (docEltBuilder)
-            , fAnyDocElt (true)
-            , fDocEltURI ()
-            , fDocEltName ()
-        {
-        }
-        DocumentReader_ (const shared_ptr<IElementConsumer>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
-            : fDocEltBuilder (docEltBuilder)
-            , fAnyDocElt (false)
-            , fDocEltURI (checkURI)
-            , fDocEltName (checkDocEltName)
-        {
-        }
-        virtual shared_ptr<ObjectReaderRegistry::IElementConsumer>    HandleChildStart (ObjectReaderRegistry::Context& r, const StructuredStreamEvents::Name& name) override
-        {
-            if (not fAnyDocElt) {
-                if (name.fLocalName != fDocEltName or name.fNamespaceURI.Value () != fDocEltURI) {
-                    ThrowUnRecognizedStartElt (name);
-                }
-            }
-            return (fDocEltBuilder);
-        }
-        virtual void    HandleTextInside (ObjectReaderRegistry::Context& r, const String& text)  override
-        {
-            // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
-            // assure input is valid
-            Assert (text.IsWhitespace ());
-        }
-    };
-}
 void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
@@ -238,7 +200,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     ObjectReaderRegistry::Context ctx { objectReaderRegistry };
     Require (ctx.empty ());
 
-    ctx.Push (make_shared<DocumentReader_> (docEltBuilder));
+    ctx.Push (make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder));
 
     ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
@@ -255,7 +217,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     ObjectReaderRegistry::Context ctx { objectReaderRegistry };
     Require (ctx.empty ());
 
-    ctx.Push (make_shared<DocumentReader_> (docEltBuilder, docEltUri, docEltLocalName));
+    ctx.Push (make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}));
 
     ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
     XML::SAXParse (in, cb);
@@ -277,6 +239,12 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
  ****************** ObjectReaderRegistry::ReadDownToReader **********************
  ********************************************************************************
  */
+ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader)
+    : fReader2Delegate2_ (theUseReader)
+{
+    RequireNotNull (theUseReader);
+}
+
 ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff)
     : fReader2Delegate2_ (theUseReader)
     , fTagToHandOff_ (tagToHandOff)
@@ -286,7 +254,7 @@ ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElem
 
 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (Context& r, const Name& name)
 {
-    if (name == fTagToHandOff_) {
+    if (fTagToHandOff_.IsMissing () or * fTagToHandOff_ == name) {
         return fReader2Delegate2_;
     }
     else {

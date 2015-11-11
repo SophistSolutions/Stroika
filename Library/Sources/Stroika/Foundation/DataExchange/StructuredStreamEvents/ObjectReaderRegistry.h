@@ -377,6 +377,7 @@ namespace   Stroika {
                  */
                 class   ObjectReaderRegistry::ReadDownToReader : public IElementConsumer {
                 public:
+                    ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
                 public:
@@ -384,7 +385,7 @@ namespace   Stroika {
 
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
-                    Name                            fTagToHandOff_;
+                    Optional<Name>                  fTagToHandOff_;
                 };
 
 
