@@ -293,11 +293,9 @@ namespace   Stroika {
                     nonvirtual  String TraceLeader_ () const;
 #endif
 
-                private:
-                    const ObjectReaderRegistry& fObjectReaderRegistry_;
-
                 public:
                     Context (const ObjectReaderRegistry& objectReaderRegistry);
+                    Context (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop);
                     Context (const Context&) = delete;
                     Context& operator= (const Context&) = delete;
 
@@ -315,7 +313,8 @@ namespace   Stroika {
                     nonvirtual  bool    empty () const;
 
                 private:
-                    vector<shared_ptr<IElementConsumer>> fStack_;
+                    const ObjectReaderRegistry&             fObjectReaderRegistry_;
+                    vector<shared_ptr<IElementConsumer>>    fStack_;
 
                 private:
                     friend  class   ObjectReader;

@@ -133,6 +133,12 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Igno
  ********************** ObjectReaderRegistry::Context ***************************
  ********************************************************************************
  */
+ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop)
+    : fObjectReaderRegistry_ (objectReaderRegistry)
+{
+    Push (initialTop);
+}
+
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 String ObjectReaderRegistry::Context::TraceLeader_ () const
 {
@@ -197,34 +203,28 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    ObjectReaderRegistry::Context ctx { objectReaderRegistry };
-    Require (ctx.empty ());
+    ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder) };
 
-    ctx.Push (make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder));
+    XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
 
-    ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
-    XML::SAXParse (in, cb);
-
+#if     qDebug
     ctx.Pop (); // the docuemnt reader we just added
-
     Require (ctx.empty ());
+#endif
 }
 
 void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    ObjectReaderRegistry::Context ctx { objectReaderRegistry };
-    Require (ctx.empty ());
+    ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) };
 
-    ctx.Push (make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}));
+    XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
 
-    ObjectReaderRegistry::IConsumerDelegateToContext cb (ctx);
-    XML::SAXParse (in, cb);
-
+#if     qDebug
     ctx.Pop (); // the docuemnt reader we just added
-
     Require (ctx.empty ());
+#endif
 }
 
 
