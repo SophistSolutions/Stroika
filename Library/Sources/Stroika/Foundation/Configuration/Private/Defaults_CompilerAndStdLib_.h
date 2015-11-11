@@ -78,6 +78,9 @@
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
 #endif
+#if      _MSC_VER ==_MS_VS_2k13_VER_ && (_MSC_FULL_VER < _MS_VS_2k13_Update5_FULLVER_)
+#pragma message ("Warning: Stroika requires update 5 if using Microsoft Visual Studio.net 2013")
+#endif
 #if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
 #elif    _MSC_FULL_VER > _MS_VS_2k15_RTM_FULLVER_
@@ -122,8 +125,6 @@
 
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     0
 #endif
@@ -173,9 +174,6 @@
 #ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
 
 #if   defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -214,9 +212,6 @@
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 // VERIFIED fixed in VS 2k15 RTM
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
@@ -232,7 +227,6 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-@DESCRIPTION:   See also qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
     crazy bug - regression - with VC2k13
     Maybe same thing...
 */
@@ -296,8 +290,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_alignas_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_alignas_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -323,7 +315,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_union_designators_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
@@ -343,9 +334,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_constexpr_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
 // Fixed (ish) in _MS_VS_2k15_RTM_FULLVER_
 #define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
@@ -477,8 +465,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
 #define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
@@ -811,35 +797,6 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
-@DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
-*               numbers produces nan/#IND... Workraround is to just do bogus early use.
-*
-*               See also qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-*
-*               MSFT analyzed this. Its
-*                   https://connect.microsoft.com/VisualStudio/feedback/details/808199/visual-c-2013-floating-point-broken-on-first-use
-*
-*                   There's a bug in a CRT function (dtoui3) which is used to convert from double to unsigned,
-*                   it "leaks" a x87 stack register and ends up causing a stack overflow. That's how the fld1
-*                   instruction used by foo ends up producing an IND.
-*
-*/
-#ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
-#else
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   0
-#endif
-
-#endif
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 @DESCRIPTION:   <p>Defined true if the compiler generates errors for static assertions in functions
             which should never be expanded. Such functions/static_assertions CAN be handy to make it
@@ -885,39 +842,6 @@ Compiling regtests for Median/OrderBy...
 
 
 
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_UsingInheritedConstructor_Buggy
-@DESCRIPTION:
-EXAMPLE:
-        struct UnAssignedableCharacter : Character {
-#if     qCompilerAndStdLib_UsingInheritedConstructor_Buggy
-            UnAssignedableCharacter (const Character&c) : Character (c) {}
-#else
-            using Character::Character;
-#endif
-
-            operator Character () const
-            {
-                return *this;
-            }
-
-            UnAssignedableCharacter& operator= (const UnAssignedableCharacter&) = delete;
-        };
-*/
-#ifndef qCompilerAndStdLib_UsingInheritedConstructor_Buggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
-#else
-#define qCompilerAndStdLib_UsingInheritedConstructor_Buggy      0
-#endif
-
-#endif
 
 
 
@@ -990,9 +914,6 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// Still broken in _MS_VS_2k13_Update3_FULLVER_
-// Still broken in _MS_VS_2k13_Update4_FULLVER_
 // Still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          qCompilerAndStdLib_constexpr_Buggy
 #else
@@ -1037,9 +958,6 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_noexcept_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_noexcept_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1061,9 +979,6 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_make_unique_lock_IsSlow
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// ASSUME still broken in _MS_VS_2k13_Update4_FULLVER_
 // ASSUME still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_make_unique_lock_IsSlow      (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1120,8 +1035,6 @@ EXAMPLE:
 #ifndef qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // FIXED in _MS_VS_2k15_RTM_FULLVER_
@@ -1286,9 +1199,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_thread_local_keyword_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1361,9 +1271,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1395,9 +1302,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1419,20 +1323,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   0
-#endif
-
-#endif
-
-
-
-
-
-#ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
-#else
-#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug        0
 #endif
 
 #endif
@@ -1525,9 +1415,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1553,9 +1440,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1646,9 +1530,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
-// still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k13_Update5_FULLVER_
 #define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1675,8 +1556,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #else
@@ -1722,8 +1601,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #elif   defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update2_FULLVER_
-// still broken in _MS_VS_2k13_Update3_FULLVER_
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 #define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
 #else
@@ -1996,27 +1873,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-
-#if     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
-#define FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA()\
-    namespace {\
-        struct _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_ {\
-            double f ()\
-            {\
-                return 1.0;\
-            }\
-            double  MatchWord_ ()\
-            {\
-                double ttt = f ();\
-                return ttt;\
-            }\
-            _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_ ()\
-            {\
-                double x = MatchWord_ ();\
-            }\
-        } _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_data_; \
-    }
-#endif
 
 
 

@@ -89,9 +89,7 @@ namespace   {
 
 
 
-#if     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
-FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA();
-#endif
+
 
 
 

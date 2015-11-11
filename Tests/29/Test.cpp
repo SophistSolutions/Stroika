@@ -117,22 +117,12 @@ namespace   {
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled), L"Enabled"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt), L"Last-Synchronized-At" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID), L"This-HR-ContactID-To-SharedContactID-Map" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID2), L"This-HR-ContactID-To-SharedContactID-Bijection" },
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnabled), L"Enabled" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fLastSynchronizedAt), L"Last-Synchronized-At" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID), L"This-HR-ContactID-To-SharedContactID-Map" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fThisPHRsIDToSharedContactID2), L"This-HR-ContactID-To-SharedContactID-Bijection"},
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -202,22 +192,12 @@ namespace   {
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         // register each of your mappable (even private) types
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1), L"Int1" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), L"Int2" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt3), L"Int3" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt4), L"Int4" },
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1), L"Int1" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), L"Int2" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt3), L"Int3" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt4), L"Int4" },
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -282,18 +262,10 @@ namespace   {
 
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fIntRange), L"fIntRange" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDiscIntRange2), L"fDiscIntRange2" },
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fIntRange), L"fIntRange" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDiscIntRange2), L"fDiscIntRange2" },
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -392,16 +364,9 @@ namespace   {
             mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-            ObjectVariantMapper::StructFieldInfo kInfo[] = {
-                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
-            };
-            mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
-#else
             mapper.AddClass<SharedContactsConfig_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
             });
-#endif
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -432,16 +397,9 @@ namespace   {
             mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Stroika_Enum_Names(Fred))));
             DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-            ObjectVariantMapper::StructFieldInfo kInfo[] = {
-                ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
-            };
-            mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
-#else
             mapper.AddClass<SharedContactsConfig_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
             });
-#endif
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -508,22 +466,12 @@ namespace   {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDuration1), L"fDuration1" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDateTime1), L"fDateTime1" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDate1), L"fDate1" },
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fTimeOfDay1), L"fTimeOfDay1" },
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDuration1), L"fDuration1" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDateTime1), L"fDateTime1" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fDate1), L"fDate1" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fTimeOfDay1), L"fTimeOfDay1" },
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -582,16 +530,9 @@ namespace   {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVV1), L"fVV1" },
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVV1), L"fVV1" },
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -677,18 +618,6 @@ namespace   {
 
         DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-offsetof\"");   // Really probably an issue, but not to debug here -- LGP 2014-01-04
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructFieldInfo kInfo[] = {
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1), L"fInt1"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), L"fInt2"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fMapping1), L"fMapping1"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSequence1), L"fSequence1"}
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fBasicArray1), L"fBasicArray1"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), L"fSet1_"},
-            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_), L"fVector1_"},
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt1), L"fInt1" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fInt2), L"fInt2" },
@@ -698,7 +627,6 @@ namespace   {
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fSet1_), L"fSet1_" },
             ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fVector1_), L"fVector1_" },
         });
-#endif
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-offsetof\"");
 

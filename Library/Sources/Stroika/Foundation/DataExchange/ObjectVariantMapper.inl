@@ -81,13 +81,11 @@ namespace   Stroika {
             {
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
-#if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
             template    <typename CLASS>
             void    ObjectVariantMapper::AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions)
             {
                 return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptions));
             }
-#endif
             template    <typename CLASS>
             void    ObjectVariantMapper::AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd)
             {
@@ -98,13 +96,11 @@ namespace   Stroika {
             {
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
             }
-#if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
             template    <typename CLASS>
             void    ObjectVariantMapper::AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
             {
                 return AddClass<CLASS> (Sequence<StructFieldInfo> (fieldDescriptions), preflightBeforeToObject);
             }
-#endif
             template    <typename CLASS>
             void    ObjectVariantMapper::AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject)
             {
