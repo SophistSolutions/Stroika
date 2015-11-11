@@ -266,12 +266,13 @@ namespace   Stroika {
                 struct  StructFieldInfo;
 
 
-            public:
+            private://private so name matches and easy to find/fix when building with new code...
                 //DEPRECATED...
-#if     qCompilerAndStdLib_deprecatedFeatureMissing || defined (__clang__)
+#if     1
                 using StructureFieldInfo = StructFieldInfo;
 #else
-                using  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo = StructFieldInfo;
+               // typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
+                typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
 #endif
 
             public:
