@@ -25,23 +25,65 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a115">v2.0a115x</a><br/>2015-10-?</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Attempt at getting rid of many Winvalid-offsetof  DISABLE_COMPILER_CLANG_WARNING_START/DISABLE_COMPILER_GCC_WARNING_START by migrating them to Stroika_Foundation_DataExchange_StructFieldMetaInfo - but only really fixed for clang</li>
+		<li>If using MSVC2k13 - require at least Update5.
+    
+    Because of this, we could lose:
+    	qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
+    	qCompilerAndStdLib_UsingInheritedConstructor_Buggy
+    	qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+    
+    	FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA
+    
+    and related detritus in code to workaround.</li>
+		<li>minor tweaks to accomodate the possability to the total system memory changing while we run (can happen with vmware/linux)</li>
+		<li>ScriptsLib/RegressionTests-Unix.sh major improvements
+			<ul>
+			</ul>
+		</li>
+		<li>ThirdPartyLibs makefile improvements
+			<ul>
+			</ul>
+		</li>
+		<li>Attempt to allow automatic skip in regresison tests of missing compilers</li>
+		<li> AnyVariantValue - comments; move CTOR, use make_shared, and lose Equals and related operators (and document why), Added AnyVariantValue::IfAs () template</li>
+		<li>lose last two params for MakeVersionFile.sh: can do a good job of infering from filenames</li>
+		<li>OpenSSL.supp and -DPURIFY support so that we cna pass all regression tests with openssl/libcurl and valgrind (configure --openssl-extraargs PURIFY, and --block-allocation)</li>
+		<li>IO/Network/Transfer/Client:
+    	allow configure of option for fSupportSessionCookies;
+    	Supprot for WinHTTP (which defaaulted on) and curl (whcih had defaulted off).
+    	(NEITHER implemeation good, and curl worst, but usable)</li>
+		<li>IO/Network/Transfer/Client option to specify useragent; cleanup other options</li>
+		<li>set user agent for Client_libcurl (for now just Stroika/2.0)</li>
+		<li>libcurl support for new fFailConnectionIfSSLCertificateInvalid transfer option</li>
+		<li>dangerous bug good update - Network/Transfer/Client_WinHTTP no longer throws internally on bad result - returns Reponse with status=500. We should return what is needed in the response, and only throw if we cannot get a valid response. That way the caller can inspect the resposne (oftne it has a soap fault or something). TODO - verify we do likewise with curl and document!)</li>
+		<li>use ScriptsLib/WebGet.sh to fetch thirdparty packages insgtead of direct wget call so it supports mirrors</li>
+		<li>got libcurl to respect qFeatureFlag_OpenSSL, and tons of fixes to building openssl, curl, and other thirdpartylibs, using pkg_config</li>
 		<li>Drop support for Clang-3.4, and so got rid of bug defines: 
 			qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 			qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
 		qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy because these were only needed for clang-3.4
 		</li>
-<!---below notes up to date as of 6pm Oct 29 -->
 		<li>Fixed tiny bug with Windows Transfer/Client_WinHTTP which caused it to never re-use HTTP connections
 			(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
 		</li>
-		<li>COMPATABILITIY WARNING: Refactoring of SAX like streaming reader code. Some non-backward compatible changes:
+		<li>COMPATABILITIY WARNING: Refactoring of SAX like streaming reader code. Almost total rewrite.
+		Some non-backward compatible changes include:
 		   replace all use of SAXCallbackInterface with StructuredStreamEvents::IConsumer, and
 			lose the qname argumetns to StartElement() and EndElement()
 			as well as HandleChildStart () in subclasses of SAXObjectReader
 			<ul>
 					<li>COMPATABILITIY WARNING: HandleChildStart and StartElement and EndElement (uri/name combined into new Name type) amd new StructuredStreamEvents::IConsumer instead of SAXCallbackInterface</li>
 					<li>COMPATABILITIY WARNING: SAXObjecReader renanmed -> StructuredStreamEvent/ObjectReader</li>
+					<li>Now very much patterend after ObjectVariantMapper</li>
+    				<li>	ObjectVariantMapper now uses DataExchange::StructFieldInfo with
+    					its macro for creation</li>
+    				<li>	ObjectVariantMapper::StructureFieldInfo deprecated and renamed to
+    					ObjectVariantMapper::StructFieldInfo</li>
+    				<li>	ObjectVariantMapper_StructureFieldInfo_Construction_Helper macro deprecated</li>
+    				<li>	Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey macro deprecated
+    					ObjectVariantMapper_StructureFieldInfo_Construction_Helper(A,B,C) -> ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (A,B), C }
+    					(identical to Stroika_Foundation_DataExchange_StructFieldMetaInfo)</li>
 			</ul>
 			</li>
 		<li>InputStream<Character>::ReadLine () performance tweak</li>
