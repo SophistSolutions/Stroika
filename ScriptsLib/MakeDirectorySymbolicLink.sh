@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 FROM=$1
 TO=$2
 if [[ `uname` =~ "CYGWIN" ]] ; then
-	cmd /C "mklink /D $FROM $TO"
+	#Sigh...
+	cmd /C "ScriptsLib\\RunMKLinkViaUAC.bat $FROM $TO" || (echo "mklink failed- Allow UAC or run as administrator"  && exit 1)
 else
 	ln -s $TO $FROM
 fi

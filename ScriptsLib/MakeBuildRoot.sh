@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 ROOT=$1
 if [ ! -e $ROOT ] ; then
 	echo "$ROOT doesn't exist, so you cannot link to it as a build root"
@@ -7,6 +7,9 @@ fi
 ROOT=`realpath $ROOT`
 
 echo "Linking Stroika output and configuration directories from `pwd` to $ROOT"
+if [[ `uname` =~ "CYGWIN" ]] ; then
+	echo "***NOTE - this may need to invoke UAC to create symbolic links***"
+fi
 
 rm -rf Builds ConfigurationFiles IntermediateFiles
 
@@ -20,11 +23,10 @@ if [[ `uname` =~ "CYGWIN" ]] ; then
 fi
 
 mkdir -p $TARGET_INTERMEDIATEFILES
-sh ScriptsLib/MakeDirectorySymbolicLink.sh IntermediateFiles $TARGET_INTERMEDIATEFILES
+ScriptsLib/MakeDirectorySymbolicLink.sh IntermediateFiles $TARGET_INTERMEDIATEFILES
 
 mkdir -p $TARGET_BUILDS
-sh ScriptsLib/MakeDirectorySymbolicLink.sh Builds $TARGET_BUILDS
+ScriptsLib/MakeDirectorySymbolicLink.sh Builds $TARGET_BUILDS
 
 mkdir -p $TARGET_CONFIGURATIONFILES
-sh ScriptsLib/MakeDirectorySymbolicLink.sh ConfigurationFiles $TARGET_CONFIGURATIONFILES
-
+ScriptsLib/MakeDirectorySymbolicLink.sh ConfigurationFiles $TARGET_CONFIGURATIONFILES
