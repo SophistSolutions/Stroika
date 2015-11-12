@@ -104,22 +104,22 @@ namespace   Stroika {
                             String                      firstName;
                             String                      lastName;
                         };
-						ObjectReaderRegistry mapper;
-						mapper.AddCommonType<String> ();
-						mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-							{ Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-							{ Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
-						});
-						Person_ p;
-						ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
-						XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
+                        ObjectReaderRegistry mapper;
+                        mapper.AddCommonType<String> ();
+                        mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                            { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                            { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                        });
+                        Person_ p;
+                        ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
+                        XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
 
 
                  * Example 2:
                         ... Same as #1 down to Person_ p;
 
                         Person_ p;
-						XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
+                        XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
 
 
                  */
@@ -171,12 +171,12 @@ namespace   Stroika {
                     template    <typename T, typename... ARGS>
                     nonvirtual  void    AddCommonType (ARGS&& ... args);
 
-				public:
+                public:
                     class   ReadDownToReader;
 
-				public:
-					static	shared_ptr<ReadDownToReader>	mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
-					static	shared_ptr<ReadDownToReader>	mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
+                public:
+                    static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
+                    static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
                 public:
                     /**
@@ -263,8 +263,8 @@ namespace   Stroika {
 
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                 // a HandleChildStar  method call (exactly once).
-                nonvirtual  void    _DeprecatedFunction_ (Run,"De") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    _DeprecatedFunction_ (Run,"X") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    _DeprecatedFunction_ (Run, "De") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    _DeprecatedFunction_ (Run, "X") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
 #endif
 
                 /**
