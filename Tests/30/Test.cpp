@@ -210,7 +210,11 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" }), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                //Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" }), mkdata_ ().As<Streams::InputStream<Byte>> ());
+                ObjectReaderRegistry::Context tmp { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+                XML::SAXParse (mkdata_ (), ctx);
+
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
@@ -289,7 +293,10 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
-            Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            //Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            ObjectReaderRegistry::Context tmp { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2"))) };
+            ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+            XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (people.size () == 2);
             VerifyTestResult (people[0].firstName == L"Jim");
@@ -376,11 +383,16 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<ObjectContent> objsContent;
+            ObjectReaderRegistry::Context tmp { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> ( make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse"))) };
+            ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+            XML::SAXParse (mkdata_ (), ctx);
+#if 0
             Run (
                 mapper,
                 make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse")),
                 mkdata_ ().As<Streams::InputStream<Byte>> ()
             );
+#endif
             VerifyTestResult (objsContent.size () == 2);
             VerifyTestResult (objsContent[0].obj.type == L"VirtualMachine");
             VerifyTestResult (objsContent[0].obj.value == L"8");

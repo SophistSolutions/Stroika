@@ -256,13 +256,6 @@ namespace   Stroika {
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
                 };
 
-#if 1
-                /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
-
-                // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
-                // a HandleChildStar  method call (exactly once).
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-#endif
 
                 /**
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform

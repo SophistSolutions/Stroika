@@ -201,43 +201,6 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
     fContext_.GetTop ()->HandleTextInside (fContext_, text);
 }
 
-#if 1
-/*
- ********************************************************************************
- ***************** StructuredStreamEvents::ObjectReader *************************
- ********************************************************************************
- */
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Byte>& in)
-{
-    // @todo see https://stroika.atlassian.net/browse/STK-284
-    RequireNotNull (docEltBuilder);
-
-    ObjectReaderRegistry::Context tmp { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder) };
-    ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
-    XML::SAXParse (in, ctx);
-}
-#if 0
-void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
-{
-    // @todo see https://stroika.atlassian.net/browse/STK-284
-    RequireNotNull (docEltBuilder);
-    ObjectReaderRegistry::Context tmp { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) };
-    ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
-    XML::SAXParse (in, ctx);
-#if 0
-    if (true) {
-        XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) })));
-    }
-    else {
-        ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) };
-        XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (move (ctx)));
-    }
-#endif
-}
-#endif
-#endif
-
-
 
 
 /*
