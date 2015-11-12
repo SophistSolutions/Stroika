@@ -210,7 +210,7 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -223,7 +223,8 @@ namespace   {
             // must figure out how to get below working
             {
                 vector<Appointment_>       calendar;
-                XML::SAXParse (mkdata_ (), ObjectReaderRegistry::IConsumerDelegateToContext { registry, registry.mkReadDownToReader (registry.MakeContextReader (&calendar)) });
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&calendar)) };
+                XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (calendar.size () == 2);
                 VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
                 VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
