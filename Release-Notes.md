@@ -22,12 +22,10 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a115">v2.0a115x</a><br/>2015-10-?</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a115">v2.0a115</a><br/>2015-11-11</td>
 <td>
 	<ul>
-		<li>Attempt at getting rid of many Winvalid-offsetof  DISABLE_COMPILER_CLANG_WARNING_START/DISABLE_COMPILER_GCC_WARNING_START by migrating them to Stroika_Foundation_DataExchange_StructFieldMetaInfo - but only really fixed for clang</li>
 		<li>If using MSVC2k13 - require at least Update5.
-    
     Because of this, we could lose:
     	qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
     	qCompilerAndStdLib_UsingInheritedConstructor_Buggy
@@ -39,33 +37,36 @@ History
 		<li>minor tweaks to accomodate the possability to the total system memory changing while we run (can happen with vmware/linux)</li>
 		<li>ScriptsLib/RegressionTests-Unix.sh major improvements
 			<ul>
+				<li>Attempt to allow automatic skip in regresison tests of missing compilers</li>
 			</ul>
 		</li>
 		<li>ThirdPartyLibs makefile improvements
 			<ul>
+				<li>got libcurl to respect qFeatureFlag_OpenSSL, and tons of fixes to building openssl, curl, and other thirdpartylibs, using pkg_config</li>
+				<li>use ScriptsLib/WebGet.sh to fetch thirdparty packages insgtead of direct wget call so it supports mirrors</li>
 			</ul>
 		</li>
-		<li>Attempt to allow automatic skip in regresison tests of missing compilers</li>
+		<li>IO/Network/Transfer/Client:
+			<ul>
+				<li>allow configure of option for fSupportSessionCookies;
+    			Supprot for WinHTTP (which defaaulted on) and curl (whcih had defaulted off).
+    			(NEITHER implemeation good, and curl worst, but usable)</li>
+				<li>IO/Network/Transfer/Client option to specify useragent; cleanup other options</li>
+				<li>set user agent for Client_libcurl (for now just Stroika/2.0)</li>
+				<li>libcurl support for new fFailConnectionIfSSLCertificateInvalid transfer option</li>
+				<li>Fixed tiny bug with Windows Transfer/Client_WinHTTP which caused it to never re-use HTTP connections
+					(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
+				</li>
+				<li>dangerous bug good update - Network/Transfer/Client_WinHTTP no longer throws internally on bad result - returns Reponse with status=500. We should return what is needed in the response, and only throw if we cannot get a valid response. That way the caller can inspect the resposne (oftne it has a soap fault or something). TODO - verify we do likewise with curl and document!)</li>
+			</ul>
+		</li>
 		<li> AnyVariantValue - comments; move CTOR, use make_shared, and lose Equals and related operators (and document why), Added AnyVariantValue::IfAs () template</li>
 		<li>lose last two params for MakeVersionFile.sh: can do a good job of infering from filenames</li>
 		<li>OpenSSL.supp and -DPURIFY support so that we cna pass all regression tests with openssl/libcurl and valgrind (configure --openssl-extraargs PURIFY, and --block-allocation)</li>
-		<li>IO/Network/Transfer/Client:
-    	allow configure of option for fSupportSessionCookies;
-    	Supprot for WinHTTP (which defaaulted on) and curl (whcih had defaulted off).
-    	(NEITHER implemeation good, and curl worst, but usable)</li>
-		<li>IO/Network/Transfer/Client option to specify useragent; cleanup other options</li>
-		<li>set user agent for Client_libcurl (for now just Stroika/2.0)</li>
-		<li>libcurl support for new fFailConnectionIfSSLCertificateInvalid transfer option</li>
-		<li>dangerous bug good update - Network/Transfer/Client_WinHTTP no longer throws internally on bad result - returns Reponse with status=500. We should return what is needed in the response, and only throw if we cannot get a valid response. That way the caller can inspect the resposne (oftne it has a soap fault or something). TODO - verify we do likewise with curl and document!)</li>
-		<li>use ScriptsLib/WebGet.sh to fetch thirdparty packages insgtead of direct wget call so it supports mirrors</li>
-		<li>got libcurl to respect qFeatureFlag_OpenSSL, and tons of fixes to building openssl, curl, and other thirdpartylibs, using pkg_config</li>
 		<li>Drop support for Clang-3.4, and so got rid of bug defines: 
 			qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 			qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
-		qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy because these were only needed for clang-3.4
-		</li>
-		<li>Fixed tiny bug with Windows Transfer/Client_WinHTTP which caused it to never re-use HTTP connections
-			(a big performance problem and a bigger semantics problem for talking ESXi proxy wire protocol)
+			qCompilerAndStdLib_SafeReadRepAccessor_mystery_Buggy because these were only needed for clang-3.4
 		</li>
 		<li>COMPATABILITIY WARNING: Refactoring of SAX like streaming reader code. Almost total rewrite.
 		Some non-backward compatible changes include:
@@ -82,11 +83,13 @@ History
     					ObjectVariantMapper::StructFieldInfo</li>
     				<li>	ObjectVariantMapper_StructureFieldInfo_Construction_Helper macro deprecated</li>
     				<li>	Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey macro deprecated
-    					ObjectVariantMapper_StructureFieldInfo_Construction_Helper(A,B,C) -> ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (A,B), C }
+    					ObjectVariantMapper_StructureFieldInfo_Construction_Helper(A,B,C) -> ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (A,B), C }
     					(identical to Stroika_Foundation_DataExchange_StructFieldMetaInfo)</li>
+					<li>Attempt at getting rid of many Winvalid-offsetof  DISABLE_COMPILER_CLANG_WARNING_START/DISABLE_COMPILER_GCC_WARNING_START by migrating them to Stroika_Foundation_DataExchange_StructFieldMetaInfo - but only really fixed for clang</li>
 			</ul>
 			</li>
 		<li>InputStream<Character>::ReadLine () performance tweak</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 {Pro} (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
