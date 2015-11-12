@@ -40,7 +40,11 @@
  *
  *  TODO:
  *
- *      @todo    Need much improved ObjectReaderRegistry docs
+ *      @todo   Review names: I dont think we use the term reader and readerfactory totally uniformly, and
+ *              we also need to clearly document why/when we use one versus the other (type system stores factories
+ *              because you encounter them in parsing, and need instances to pop on stack to read a particular element).
+ *
+ *      @todo   Need much improved ObjectReaderRegistry docs
  *
  *      @todo   make more nested READER classes PRIVATE, and improve public ADDCOMMON<T> methods to registry - like we do
  *              For ObjectVariantMapper.
@@ -131,20 +135,23 @@ namespace   Stroika {
                     template    <typename   T>
                     class   ListOfObjectReader;
 
-                private:
-                    template    <typename   T>
-                    class   SimpleReader_;
-                    template    <typename   T>
-                    class   OptionalTypesReader_;
-
                 public:
+                    /**
+                     */
                     template    <typename T>
                     using   ReaderFromTStarFactory = function<shared_ptr<IElementConsumer> (T* destinationObject)>;
 
                 public:
-                    using   ReaderFromVoidStarFactory = function<shared_ptr<IElementConsumer> (void* destinationObject)>;
+                    /**
+                     *  We store in our database factories that read into a 'void*' that must be of the right type,
+                     *  but we use (at the last minute) the appropriate type. This is typesafe iff the readers do casts
+                     *  safely (and all the readers we provide do).
+                     */
+                    using   ReaderFromVoidStarFactory = ReaderFromTStarFactory<void>;
 
                 public:
+                    /**
+                     */
                     nonvirtual  void    Add (type_index forType, const ReaderFromVoidStarFactory& readerFactory);
                     template    <typename T>
                     nonvirtual  void    Add (const ReaderFromTStarFactory<T>& readerFactory);
@@ -162,9 +169,13 @@ namespace   Stroika {
                     nonvirtual  void    AddCommonType (ARGS&& ... args);
 
                 public:
+                    /**
+                     */
                     class   ReadDownToReader;
 
                 public:
+                    /**
+                     */
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
@@ -224,6 +235,12 @@ namespace   Stroika {
                     shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
                     shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+
+                private:
+                    template    <typename   T>
+                    class   SimpleReader_;
+                    template    <typename   T>
+                    class   OptionalTypesReader_;
 
                 private:
                     template    <typename T>
