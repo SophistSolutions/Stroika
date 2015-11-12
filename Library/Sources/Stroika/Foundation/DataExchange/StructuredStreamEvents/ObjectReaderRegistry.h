@@ -111,10 +111,9 @@ namespace   Stroika {
                  *     Person_ p;
                  *     ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
                  *     XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
-
-
+                 *
                  * Example 2:
-                        ... Same as #1 down to Person_ p;
+                  *        ... Same as #1 down to Person_ p;
 
                         Person_ p;
                         XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
