@@ -208,16 +208,28 @@ namespace   {
             registry.AddCommonType<vector<Appointment_>> (Name { L"Appointment" });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
-            vector<Appointment_>       calendar;
-            Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" }), mkdata_ ().As<Streams::InputStream<Byte>> ());
-
-            VerifyTestResult (calendar.size () == 2);
-            VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-            VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-            VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-            VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
-            VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-            VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+			{
+				vector<Appointment_>       calendar;
+				Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" }), mkdata_ ().As<Streams::InputStream<Byte>> ());
+				VerifyTestResult (calendar.size () == 2);
+				VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+				VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+				VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+				VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+				VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+				VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+			}
+			{
+				vector<Appointment_>       calendar;
+				XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { registry, registry.mkReadDownToReader (registry.MakeContextReader (&calendar)) }});
+				VerifyTestResult (calendar.size () == 2);
+				VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
+				VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
+				VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
+				VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
+				VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
+				VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+			}
         }
     }
     void    Test_SAX_ObjectReader_EXAMPLE_1_ ()
@@ -382,6 +394,69 @@ namespace {
 
 
 
+
+namespace {
+    namespace T5_SAXObjectReader_DocSamples_ {
+        struct  Person_ {
+            String firstName;
+            String lastName;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"	  <PERSON>\n"
+                L"		  <FirstName>Jim</FirstName>"
+                L"		  <LastName>Smith</LastName>"
+                L"	  </PERSON>\n"
+                ;
+            ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+
+        void    DoTest1 ()
+        {
+            ObjectReaderRegistry mapper;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            mapper.AddCommonType<String> ();
+            mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            Person_ p;
+            ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
+            XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
+            VerifyTestResult (p.firstName == L"Jim");
+            VerifyTestResult (p.lastName == L"Smith");
+        }
+        void    DoTest2 ()
+        {
+            ObjectReaderRegistry mapper;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            mapper.AddCommonType<String> ();
+            mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            Person_ p;
+			XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
+            VerifyTestResult (p.firstName == L"Jim");
+            VerifyTestResult (p.lastName == L"Smith");
+        }
+        void    DoTests ()
+        {
+            DoTest1 ();
+            DoTest2 ();
+        }
+
+    }
+}
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -391,6 +466,7 @@ namespace   {
             Test_SAX_ObjectReader_EXAMPLE_1_ ();
             T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
             T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
+            T5_SAXObjectReader_DocSamples_::DoTests ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces

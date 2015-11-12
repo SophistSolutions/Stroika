@@ -45,20 +45,28 @@ using   Time::TimeOfDay;
 
 
 
-
+#if 0
 /*
  ********************************************************************************
- ********************* DataExchange::ObjectReaderRegistry ************************
+ ********************* DataExchange::ObjectReaderRegistry ***********************
  ********************************************************************************
  */
+ObjectReaderRegistry::IConsumerDelegateToContext    ObjectReaderRegistry::MakeDelegator (const shared_ptr<ObjectReaderRegistry::IElementConsumer>& topLevelElementBuilder) const
+{
+    return move (ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { *this, make_shared<ObjectReaderRegistry::ReadDownToReader> (topLevelElementBuilder) })));
+}
 
+ObjectReaderRegistry::IConsumerDelegateToContext    ObjectReaderRegistry::MakeDelegator (const shared_ptr<ObjectReaderRegistry::IElementConsumer>& firstElementNamedBuilder, const Name& name) const
+{
+    return move (ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { *this, make_shared<ObjectReaderRegistry::ReadDownToReader> (firstElementNamedBuilder, name) })));
+}
 
-
+#endif
 
 
 /*
  ********************************************************************************
- ******************** StructuredStreamEvents::SimpleReader_<> ********************
+ ******************* StructuredStreamEvents::SimpleReader_<> ********************
  ********************************************************************************
  */
 template <>
@@ -193,7 +201,7 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
     fContext_.GetTop ()->HandleTextInside (fContext_, text);
 }
 
-
+#if 1
 /*
  ********************************************************************************
  ***************** StructuredStreamEvents::ObjectReader *************************
@@ -203,33 +211,23 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder) };
-
-    XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
-
-#if     qDebug
-    ctx.Pop (); // the docuemnt reader we just added
-    Require (ctx.empty ());
-#endif
+	XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder) })));
 }
 
 void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
     RequireNotNull (docEltBuilder);
-    ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) };
+	if (true) {
+		XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) })));
+	}
+	else {
+		ObjectReaderRegistry::Context ctx { objectReaderRegistry, make_shared<ObjectReaderRegistry::ReadDownToReader> (docEltBuilder, Name {docEltLocalName, docEltUri}) };
+		XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (move (ctx)));
+	}
 
-    XML::SAXParse (in, ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
-
-#if     qDebug
-    ctx.Pop (); // the docuemnt reader we just added
-    Require (ctx.empty ());
-#endif
 }
-
-
-
-
+#endif
 
 
 

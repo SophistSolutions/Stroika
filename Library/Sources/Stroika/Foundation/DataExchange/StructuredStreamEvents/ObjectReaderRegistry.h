@@ -98,6 +98,30 @@ namespace   Stroika {
                  *  example usage in the regression test.
 
                    *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
+                 *
+                 *  Example1:
+                       struct  Person_ {
+                            String                      firstName;
+                            String                      lastName;
+                        };
+						ObjectReaderRegistry mapper;
+						mapper.AddCommonType<String> ();
+						mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+							{ Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+							{ Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+						});
+						Person_ p;
+						ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
+						XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
+
+
+                 * Example 2:
+                        ... Same as #1 down to Person_ p;
+
+                        Person_ p;
+						XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
+
+
                  */
                 class   ObjectReaderRegistry {
                 public:
@@ -114,7 +138,6 @@ namespace   Stroika {
                     class   IgnoreNodeReader;
                     template    <typename   T>
                     class   ClassReader;
-                    class   ReadDownToReader;
                     template    <typename   T>
                     class   ListOfObjectReader;
 
@@ -147,6 +170,13 @@ namespace   Stroika {
                      */
                     template    <typename T, typename... ARGS>
                     nonvirtual  void    AddCommonType (ARGS&& ... args);
+
+				public:
+                    class   ReadDownToReader;
+
+				public:
+					static	shared_ptr<ReadDownToReader>	mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
+					static	shared_ptr<ReadDownToReader>	mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
                 public:
                     /**
@@ -228,14 +258,14 @@ namespace   Stroika {
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
                 };
 
-
+#if 1
                 /// @todo - make these unneeded by exposing docEltBuilder helper or bette rclass
 
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                 // a HandleChildStar  method call (exactly once).
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
-
+                nonvirtual  void    _DeprecatedFunction_ (Run,"De") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    _DeprecatedFunction_ (Run,"X") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+#endif
 
                 /**
                  *  Subclasses of this abstract class are responsible for consuming data at a given level of the SAX 'tree', and transform
@@ -310,6 +340,8 @@ namespace   Stroika {
                 public:
                     const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
 
+
+
                 public:
                     nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
                     nonvirtual  void    Pop ();
@@ -335,7 +367,7 @@ namespace   Stroika {
                 public:
                     IConsumerDelegateToContext () = delete;
                     IConsumerDelegateToContext (Context& r);
-                    IConsumerDelegateToContext (const Context&) = delete;
+                    IConsumerDelegateToContext (const IConsumerDelegateToContext& r) = default;
                     IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
                 private:
                     Context&    fContext_;
