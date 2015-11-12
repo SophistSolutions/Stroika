@@ -218,7 +218,11 @@ namespace   Stroika {
                     template    <typename T>
                     static  ReaderFromVoidStarFactory  MakeCommonReader_ (const vector<T>*);
                     template    <typename T>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const vector<T>*, const Name& name);
+                    template    <typename T>
                     static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Sequence<T>*);
+                    template    <typename T>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Sequence<T>*, const Name& name);
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;

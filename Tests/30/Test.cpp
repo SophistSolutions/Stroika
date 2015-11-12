@@ -205,7 +205,7 @@ namespace   {
                 { Name { L"When" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, when) },
                 { Name { L"WithWhom" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Appointment_, withWhom) },
             });
-            registry.AddCommonType<vector<Appointment_>> ();
+            registry.AddCommonType<vector<Appointment_>> (Name { L"Appointment" });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Appointment_>       calendar;
