@@ -84,7 +84,6 @@ namespace   Stroika {
 
 
                 /**
-                 *
                  *      The basic idea of the ObjectReaderRegistry is to make it easier to write C++ code
                  *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
                  *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
@@ -97,28 +96,22 @@ namespace   Stroika {
                  *
                  *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
                  *
-                 *  Example1:
+                 *  \par Example Usage
+                 *      \code
                  *      struct  Person_ {
                  *          String      firstName;
                  *          String      lastName;
                  *      };
                  *      ObjectReaderRegistry mapper;
                  *      mapper.AddCommonType<String> ();
-                 *      mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *      mapper.AddClass<Person_> (initializer_list<pair<Name, StructFieldMetaInfo>> {
                  *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
-                 *     Person_ p;
-                 *     ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
-                 *     XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
-                 *
-                 * Example 2:
-                  *        ... Same as #1 down to Person_ p;
-
-                        Person_ p;
-                        XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
-
-
+                 *      Person_ p;
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
+                 *      XML::SAXParse (mkdata_ (), tmp);
+                 *      \endcode
                  */
                 class   ObjectReaderRegistry {
                 public:

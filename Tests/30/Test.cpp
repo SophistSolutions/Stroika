@@ -432,22 +432,6 @@ namespace {
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
         }
-        void    DoTest2 ()
-        {
-            ObjectReaderRegistry mapper;
-            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            mapper.AddCommonType<String> ();
-            mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
-            });
-            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-            Person_ p;
-            ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
-            XML::SAXParse (mkdata_ (), tmp);
-            VerifyTestResult (p.firstName == L"Jim");
-            VerifyTestResult (p.lastName == L"Smith");
-        }
         void    DoTests ()
         {
             DoTest1 ();
