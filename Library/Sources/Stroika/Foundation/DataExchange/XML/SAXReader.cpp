@@ -630,6 +630,11 @@ void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEve
 #endif
 }
 
+void    XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progres)
+{
+    SAXParse (in.As<Streams::InputStream<Byte>> (), callback, progres);
+}
+
 #if 0
 //SCHEMA NOT YET SUPPORTED
 void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
