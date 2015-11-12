@@ -448,7 +448,7 @@ namespace   Stroika {
                     using   ElementType = typename CONTAINER_OF_T::value_type;
 
                 public:
-                    ListOfObjectReader (const Name& memberElementName, CONTAINER_OF_T* v);
+                    ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            Deactivating (Context& r) override;

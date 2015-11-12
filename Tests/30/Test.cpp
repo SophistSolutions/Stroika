@@ -208,7 +208,7 @@ namespace   {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Appointment_>       calendar;
-            Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (Name { L"Appointment" }, &calendar), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            Run (registry, make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" }), mkdata_ ().As<Streams::InputStream<Byte>> ());
 
             VerifyTestResult (calendar.size () == 2);
             VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
@@ -276,7 +276,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
-            Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (Name (L"WithWhom"), &people), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
+            Run (registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")), mkdata_ ().As<Streams::InputStream<Byte>> ());
 
             VerifyTestResult (people.size () == 2);
             VerifyTestResult (people[0].firstName == L"Jim");
@@ -365,7 +365,7 @@ namespace {
             vector<ObjectContent> objsContent;
             Run (
                 mapper,
-                make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (Name (L"returnval"), &objsContent), Name (L"RetrievePropertiesResponse")),
+                make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse")),
                 mkdata_ ().As<Streams::InputStream<Byte>> ()
             );
             VerifyTestResult (objsContent.size () == 2);

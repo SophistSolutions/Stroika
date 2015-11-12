@@ -134,7 +134,7 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename CONTAINER_OF_T>
-                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (const Name& memberElementName, CONTAINER_OF_T* v)
+                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
                     : IElementConsumer ()
                     , fReadingAT_ (false)
                     , fMemberElementName_  (memberElementName)
