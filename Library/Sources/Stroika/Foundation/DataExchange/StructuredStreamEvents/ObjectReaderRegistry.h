@@ -145,8 +145,8 @@ namespace   Stroika {
                      *  Note this this is not needed (because it's done by default), but is supported,
                      *  for the builtin types.
                      */
-                    template    <typename T>
-                    nonvirtual  void    AddCommonType ();
+                    template    <typename T, typename... ARGS>
+                    nonvirtual  void    AddCommonType (ARGS&& ... args);
 
                 public:
                     /**
@@ -171,8 +171,8 @@ namespace   Stroika {
                      *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
                      *  fit what the deserailizer expects.
                      */
-                    template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader ();
+                    template    <typename T, typename... ARGS>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader (ARGS&& ... args);
 
                 public:
                     /**

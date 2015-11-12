@@ -201,10 +201,10 @@ namespace   Stroika {
                 {
                     return MakeContextReader (typeid (T), destinationObject);
                 }
-                template    <typename T>
-                inline  void    ObjectReaderRegistry::AddCommonType ()
+                template    <typename T, typename... ARGS>
+                inline  void    ObjectReaderRegistry::AddCommonType (ARGS&& ... args)
                 {
-                    Add<T> (MakeCommonReader<T> ());
+                    Add<T> (MakeCommonReader<T> (forward<ARGS> (args)...));
                 }
                 template    <typename CLASS>
                 void    ObjectReaderRegistry::AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo)
@@ -278,12 +278,12 @@ namespace   Stroika {
                 {
                     return cvtFactory_<Sequence<T>> ( [] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o); });
                 }
-                template    <typename T>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader ()
+                template    <typename T, typename... ARGS>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader (ARGS&& ... args)
                 {
                     const T*  n = nullptr;    // arg unused, just for overloading
                     DISABLE_COMPILER_MSC_WARNING_START (6011)
-                    return MakeCommonReader_ (n);
+                    return MakeCommonReader_ (n, forward<ARGS> (args)...);
                     DISABLE_COMPILER_MSC_WARNING_END (6011)
                 }
 
