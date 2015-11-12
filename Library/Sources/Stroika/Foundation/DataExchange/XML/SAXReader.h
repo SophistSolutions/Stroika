@@ -45,6 +45,7 @@ namespace   Stroika {
                  * Parse will throw an exception if it encouters any errors parsing.
                  */
                 void    SAXParse (const Streams::InputStream<Memory::Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
+                void    SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
                 //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
                 //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
