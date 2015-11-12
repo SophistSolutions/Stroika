@@ -331,10 +331,10 @@ namespace   Stroika {
                 public:
                     const   ObjectReaderRegistry&   GetObjectReaderRegistry () const;
 
-
-
                 public:
                     nonvirtual  void    Push (const shared_ptr<IElementConsumer>& elt);
+
+                public:
                     nonvirtual  void    Pop ();
 
                 public:
