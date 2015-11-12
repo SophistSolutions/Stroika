@@ -210,8 +210,7 @@ namespace   {
 
             {
                 vector<Appointment_>       calendar;
-                ObjectReaderRegistry::Context tmp { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) };
-                ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { move (ObjectReaderRegistry::Context { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Appointment_>>> (&calendar, Name { L"Appointment" })) }) };
                 XML::SAXParse (mkdata_ (), ctx);
 
                 VerifyTestResult (calendar.size () == 2);
@@ -295,8 +294,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
-            ObjectReaderRegistry::Context tmp { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2"))) };
-            ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+            ObjectReaderRegistry::IConsumerDelegateToContext ctx { move (ObjectReaderRegistry::Context { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2"))) }) };
             XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (people.size () == 2);
@@ -384,8 +382,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<ObjectContent> objsContent;
-            ObjectReaderRegistry::Context tmp { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> ( make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse"))) };
-            ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
+            ObjectReaderRegistry::IConsumerDelegateToContext ctx { move (ObjectReaderRegistry::Context { mapper, make_shared<ObjectReaderRegistry::ReadDownToReader> ( make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<ObjectContent>>> (&objsContent, Name (L"returnval")), Name (L"RetrievePropertiesResponse"))) }) };
             XML::SAXParse (mkdata_ (), ctx);
 
             VerifyTestResult (objsContent.size () == 2);
@@ -433,14 +430,8 @@ namespace {
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_ p;
-            ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
-#if 1
-            ObjectReaderRegistry::IConsumerDelegateToContext tmp (ctx);
+            ObjectReaderRegistry::IConsumerDelegateToContext tmp (ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) });
             XML::SAXParse (mkdata_ (), tmp);
-#else
-            // find way to make this work
-            XML::SAXParse (mkdata_ (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
-#endif
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
         }
@@ -455,14 +446,8 @@ namespace {
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             Person_ p;
-#if 1
-            ObjectReaderRegistry::Context ctx {  mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
-            ObjectReaderRegistry::IConsumerDelegateToContext tmp (ctx);
+            ObjectReaderRegistry::IConsumerDelegateToContext tmp (move (ObjectReaderRegistry::Context {  mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }));
             XML::SAXParse (mkdata_ (), tmp);
-#else
-            // find way to make this work
-            XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext { ObjectReaderRegistry::Context { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) }});
-#endif
             VerifyTestResult (p.firstName == L"Jim");
             VerifyTestResult (p.lastName == L"Smith");
         }

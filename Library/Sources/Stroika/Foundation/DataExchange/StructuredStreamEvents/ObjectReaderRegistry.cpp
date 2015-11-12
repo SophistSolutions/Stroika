@@ -163,42 +163,42 @@ String ObjectReaderRegistry::Context::TraceLeader_ () const
  ************ ObjectReaderRegistry::IConsumerDelegateToContext ******************
  ********************************************************************************
  */
-ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context& r)
-    : fContext_ (r)
+ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
+    : fContext (move (r))
 {
 }
 
 void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
-    AssertNotNull (fContext_.GetTop ());
+    AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-    if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+    if (fContext.fTraceThisReader) {
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    shared_ptr<IElementConsumer> eltToPush = fContext_.GetTop ()->HandleChildStart (fContext_, name);
+    shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (fContext, name);
     AssertNotNull (eltToPush);
-    fContext_.Push (eltToPush);
+    fContext.Push (eltToPush);
 }
 void    ObjectReaderRegistry::IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
 {
-    AssertNotNull (fContext_.GetTop ());
+    AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-    if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext_.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
+    if (fContext.fTraceThisReader) {
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::EndElement ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    fContext_.Pop ();
+    fContext.Pop ();
 }
 void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (const String& text)
 {
-    AssertNotNull (fContext_.GetTop ());
+    AssertNotNull (fContext.GetTop ());
 #if     qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
-    if (fContext_.fTraceThisReader) {
-        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext_.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
+    if (fContext.fTraceThisReader) {
+        DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
     }
 #endif
-    fContext_.GetTop ()->HandleTextInside (fContext_, text);
+    fContext.GetTop ()->HandleTextInside (fContext, text);
 }
 
 

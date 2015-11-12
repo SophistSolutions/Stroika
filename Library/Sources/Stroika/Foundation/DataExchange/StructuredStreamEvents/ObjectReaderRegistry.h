@@ -357,15 +357,17 @@ namespace   Stroika {
                 class   ObjectReaderRegistry::IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
                 public:
                     IConsumerDelegateToContext () = delete;
-                    IConsumerDelegateToContext (Context& r);
+                    IConsumerDelegateToContext (Context&& r);
                     IConsumerDelegateToContext (const IConsumerDelegateToContext& r) = default;
                     IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
-                private:
-                    Context&    fContext_;
+
                 public:
                     virtual void    StartElement (const Name& name) override;
                     virtual void    EndElement (const Name& name) override;
                     virtual void    TextInsideElement (const String& text) override;
+
+                public:
+                    Context     fContext;
                 };
 
 
