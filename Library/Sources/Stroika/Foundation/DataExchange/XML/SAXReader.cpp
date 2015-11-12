@@ -615,7 +615,7 @@ namespace   {
 }
 #endif
 
-void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progres)
+void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
 #if     qHasFeature_Xerces
     SAX2PrintHandlers_  handler (callback);
@@ -630,9 +630,9 @@ void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEve
 #endif
 }
 
-void    XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progres)
+void    XML::SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress)
 {
-    SAXParse (in.As<Streams::InputStream<Byte>> (), callback, progres);
+    SAXParse (in.As<Streams::InputStream<Byte>> (), callback, progress);
 }
 
 #if 0
