@@ -435,7 +435,6 @@ namespace {
         void    DoTests ()
         {
             DoTest1 ();
-            DoTest2 ();
         }
 
     }
