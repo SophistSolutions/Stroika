@@ -841,7 +841,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM:
-            DbgTrace (L"Due to signal (%d), calling sigHandlerThread2Abort_ (%s).Abort", signum, FormatThreadID (sigHandlerThread2Abort_.GetID ()).c_str ());
+            DbgTrace (L"Due to signal (%d), calling sigHandlerThread2Abort_ (%s).Abort", signum, Execution::FormatThreadID (sigHandlerThread2Abort_.GetID ()).c_str ());
             sigHandlerThread2Abort_.Abort ();
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
