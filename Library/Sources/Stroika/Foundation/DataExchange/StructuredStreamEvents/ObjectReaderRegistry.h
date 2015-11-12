@@ -84,35 +84,33 @@ namespace   Stroika {
 
 
                 /**
-
-                &&&&&& TODO - @todo - rewrite all these docs
-                *
-                 *      The basic idea of the ObjectReader is to make it easier to write C++ code
+                 *
+                 *      The basic idea of the ObjectReaderRegistry is to make it easier to write C++ code
                  *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
                  *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
-                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
+                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficient.
                  *  For one thing - there is no need to have the entire source in memory at a time, and there
                  *  is no need to ever construct intermediary DOM nodes.
                  *
                  *      We need good docs - on how to use this - but for the time being, just look at the
                  *  example usage in the regression test.
-
-                   *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
+                 *
+                 *    Look back to DataExchange::ObjectVariantmapper, but for now - KISS
                  *
                  *  Example1:
-                       struct  Person_ {
-                            String                      firstName;
-                            String                      lastName;
-                        };
-                        ObjectReaderRegistry mapper;
-                        mapper.AddCommonType<String> ();
-                        mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                            { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-                            { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
-                        });
-                        Person_ p;
-                        ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
-                        XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
+                 *      struct  Person_ {
+                 *          String      firstName;
+                 *          String      lastName;
+                 *      };
+                 *      ObjectReaderRegistry mapper;
+                 *      mapper.AddCommonType<String> ();
+                 *      mapper.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                 *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                 *      });
+                 *     Person_ p;
+                 *     ObjectReaderRegistry::Context ctx { mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)) };
+                 *     XML::SAXParse (mkdata_ ().As<Streams::InputStream<Byte>> (), ObjectReaderRegistry::IConsumerDelegateToContext (ctx));
 
 
                  * Example 2:
