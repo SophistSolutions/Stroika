@@ -358,6 +358,8 @@ namespace   Stroika {
                 public:
                     IConsumerDelegateToContext () = delete;
                     IConsumerDelegateToContext (Context&& r);
+                    IConsumerDelegateToContext (const ObjectReaderRegistry& objectReaderRegistry);
+                    IConsumerDelegateToContext (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop);
                     IConsumerDelegateToContext (const IConsumerDelegateToContext& r) = default;
                     IConsumerDelegateToContext& operator= (const IConsumerDelegateToContext&) = delete;
 

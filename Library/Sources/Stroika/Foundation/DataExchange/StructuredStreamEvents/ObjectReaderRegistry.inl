@@ -76,6 +76,25 @@ namespace   Stroika {
 
                 /*
                   ********************************************************************************
+                  ************* ObjectReaderRegistry::IConsumerDelegateToContext *****************
+                  ********************************************************************************
+                  */
+                inline  ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
+                    : fContext (move (r))
+                {
+                }
+                inline  ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (const ObjectReaderRegistry& objectReaderRegistry)
+                    : fContext (objectReaderRegistry)
+                {
+                }
+                inline  ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop)
+                    : fContext (objectReaderRegistry, initialTop)
+                {
+                }
+
+
+                /*
+                  ********************************************************************************
                   ************************************ ClassReader *******************************
                   ********************************************************************************
                   */

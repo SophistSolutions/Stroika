@@ -163,11 +163,6 @@ String ObjectReaderRegistry::Context::TraceLeader_ () const
  ************ ObjectReaderRegistry::IConsumerDelegateToContext ******************
  ********************************************************************************
  */
-ObjectReaderRegistry::IConsumerDelegateToContext::IConsumerDelegateToContext (Context&& r)
-    : fContext (move (r))
-{
-}
-
 void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
