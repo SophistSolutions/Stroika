@@ -216,7 +216,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     ObjectReaderRegistry::IConsumerDelegateToContext ctx { tmp };
     XML::SAXParse (in, ctx);
 }
-
+#if 0
 void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Byte>& in)
 {
     // @todo see https://stroika.atlassian.net/browse/STK-284
@@ -234,6 +234,7 @@ void    StructuredStreamEvents::Run (const ObjectReaderRegistry& objectReaderReg
     }
 #endif
 }
+#endif
 #endif
 
 

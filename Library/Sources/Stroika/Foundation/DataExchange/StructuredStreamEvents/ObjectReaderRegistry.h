@@ -261,8 +261,7 @@ namespace   Stroika {
 
                 // puts docEltsBuilder on stack and then keeps reading from sax til done. Asserts buildStack is EMPTY at end of this call (and docEltsBuilder should ahve received
                 // a HandleChildStar  method call (exactly once).
-                nonvirtual  void    _DeprecatedFunction_ (Run, "De") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
-                nonvirtual  void    _DeprecatedFunction_ (Run, "X") (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const String& docEltUri, const String& docEltLocalName, const Streams::InputStream<Memory::Byte>& in);
+                nonvirtual  void    Run (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<ObjectReaderRegistry::IElementConsumer>& docEltBuilder, const Streams::InputStream<Memory::Byte>& in);
 #endif
 
                 /**
