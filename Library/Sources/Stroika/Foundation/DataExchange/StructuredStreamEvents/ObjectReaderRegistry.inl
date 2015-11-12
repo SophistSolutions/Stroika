@@ -27,6 +27,11 @@ namespace   Stroika {
                     : fObjectReaderRegistry_ (objectReaderRegistry)
                 {
                 }
+                inline   ObjectReaderRegistry::Context::Context (Context&& from)
+                    : fObjectReaderRegistry_ (from.fObjectReaderRegistry_)
+                    , fStack_ (move (from.fStack_))
+                {
+                }
                 inline  void    ObjectReaderRegistry::Context::Push (const shared_ptr<IElementConsumer>& elt)
                 {
                     RequireNotNull (elt);

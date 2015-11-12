@@ -325,6 +325,7 @@ namespace   Stroika {
                     Context (const ObjectReaderRegistry& objectReaderRegistry);
                     Context (const ObjectReaderRegistry& objectReaderRegistry, const shared_ptr<IElementConsumer>& initialTop);
                     Context (const Context&) = delete;
+                    Context (Context&& from);
                     Context& operator= (const Context&) = delete;
 
                 public:
