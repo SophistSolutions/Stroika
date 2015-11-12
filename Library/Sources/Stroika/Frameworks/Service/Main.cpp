@@ -641,7 +641,7 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
              (fAppRep_ == nullptr and fAppRep_ != appRep)
             );
     if (fAppRep_ != nullptr) {
-        // CLEAR SIGNAL HANDLER
+        // @todo CLEAR SIGNAL HANDLER
     }
     fAppRep_ = appRep;
     sCurrApp_ = appRep;
@@ -841,16 +841,15 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM:
-            DbgTrace ("setting fStopping_ to true");
+            DbgTrace (L"Due to signal (%d), calling sigHandlerThread2Abort_ (%s).Abort", signum, FormatThreadID (sigHandlerThread2Abort_.GetID ()).c_str ());
             sigHandlerThread2Abort_.Abort ();
-//            fStopping_ = true;
             break;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-        case    kSIG_ReReadConfiguration:
-#else
+#if     qCompilerAndStdLib_constexpr_Buggy
         case    SIGHUP:
+#else
+        case    kSIG_ReReadConfiguration:
 #endif
-            Assert (sCurrApp_.get () != nullptr);
+            AssertNotNull (sCurrApp_);
             sCurrApp_->OnReReadConfigurationRequest ();
             break;
     }
