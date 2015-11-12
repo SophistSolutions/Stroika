@@ -269,6 +269,16 @@ namespace   Stroika {
                     return cvtFactory_<Memory::Optional<T>> ( [] (Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OptionalTypesReader_<T>> (o); });
                 }
                 template    <typename T>
+                static  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const vector<T>*)
+                {
+                    return cvtFactory_<vector<T>> ( [] (vector<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<vector<T>>> (o); });
+                }
+                template    <typename T>
+                static  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Sequence<T>*)
+                {
+                    return cvtFactory_<Sequence<T>> ( [] (Sequence<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<ListOfObjectReader<Sequence<T>>> (o); });
+                }
+                template    <typename T>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader ()
                 {
                     const T*  n = nullptr;    // arg unused, just for overloading
