@@ -384,7 +384,7 @@ namespace   Stroika {
 
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
-                    Optional<Name>                  fTagToHandOff_;
+                    Memory::Optional<Name>          fTagToHandOff_;
                 };
 
 
@@ -441,6 +441,8 @@ namespace   Stroika {
 
 
                 /**
+                 *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
+                 *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
                 template    <typename CONTAINER_OF_T>
                 class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
@@ -448,17 +450,18 @@ namespace   Stroika {
                     using   ElementType = typename CONTAINER_OF_T::value_type;
 
                 public:
+                    ListOfObjectReader (CONTAINER_OF_T* v);
                     ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            Deactivating (Context& r) override;
 
                 private:
-                    bool            fReadingAT_;
-                    ElementType     fCurTReading_;
-                    Name            fMemberElementName_;
-                    CONTAINER_OF_T* fValuePtr_;
-                    bool            fThrowOnUnrecongizedelts_ { false };
+                    bool                    fReadingAT_;
+                    ElementType             fCurTReading_;
+                    Memory::Optional<Name>  fMemberElementName_;
+                    CONTAINER_OF_T*         fValuePtr_;
+                    bool                    fThrowOnUnrecongizedelts_ { false };
                 };
 
 

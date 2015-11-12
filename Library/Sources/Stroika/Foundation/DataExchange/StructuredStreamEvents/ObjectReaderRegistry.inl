@@ -134,6 +134,13 @@ namespace   Stroika {
                   ********************************************************************************
                   */
                 template    <typename CONTAINER_OF_T>
+                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
+                    : IElementConsumer ()
+                    , fReadingAT_ (false)
+                    , fValuePtr_ (v)
+                {
+                }
+                template    <typename CONTAINER_OF_T>
                 ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
                     : IElementConsumer ()
                     , fReadingAT_ (false)
@@ -144,7 +151,7 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    if (name == fMemberElementName_) {
+                    if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
                         if (fReadingAT_) {
                             this->fValuePtr_->push_back (fCurTReading_);
                             fReadingAT_ = false;
