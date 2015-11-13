@@ -3,6 +3,8 @@
  */
 #include    "../../../StroikaPreComp.h"
 
+#include    <csignal>
+
 #if     qHasFeature_LibCurl
 #include    <curl/curl.h>
 #endif
