@@ -64,7 +64,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zconf.h
 endif
 
-.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
+.NOTPARALLEL:
 
 
 

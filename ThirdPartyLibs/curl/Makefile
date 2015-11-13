@@ -68,7 +68,7 @@ $(ZIPPEDFILE):
 	@echo -n "      ..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
-.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
+.NOTPARALLEL:
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
 	@$(MAKE) --no-print-directory doCreate

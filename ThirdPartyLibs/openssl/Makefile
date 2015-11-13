@@ -108,7 +108,7 @@ all:
 	@$(MAKE) --no-print-directory check
 
 
-.NOTPARALLEL:	$(PRODUCED_OUTPUT_ARTIFACTS)
+.NOTPARALLEL:
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
 	@$(MAKE) --no-print-directory doCreate
