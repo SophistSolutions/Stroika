@@ -15,6 +15,7 @@
 #include    <netdb.h>
 #include    <sys/socket.h>
 #include    <sys/ioctl.h>
+#include    <net/if_arp.h>
 #if     qPlatform_Linux
 #include    <linux/types.h>     // needed on RedHat5
 #include    <linux/ethtool.h>
@@ -192,10 +193,12 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
 
-        if (::ioctl (sd, SIOCGIFHWADDR, &ifr) == 0 and ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) {
-            newInterface.fHwardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data) + 6);
+        {
+            ifreq   tmp = ifreqs[i];
+            if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
+                newInterface.fHwardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
+            }
         }
-
 
 #if     qPlatform_AIX
         {
