@@ -30,6 +30,7 @@
 #include    "../../Foundation/Execution/Finally.h"
 #include    "../../Foundation/Execution/Module.h"
 #include    "../../Foundation/Execution/OperationNotSupportedException.h"
+#include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/ProcessRunner.h"
 #include    "../../Foundation/Execution/TimeOutException.h"
 #include    "../../Foundation/Execution/Sleep.h"
@@ -52,6 +53,11 @@ using   Characters::String_Constant;
 using   Execution::Logger;
 
 
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -350,7 +356,7 @@ void    Main::ReReadConfiguration ()
 #elif   qPlatform_POSIX
     pid_t   pid =   GetServicePID ();
     Assert (pid != 0);  // maybe throw if non-zero???
-    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
+    Execution::ThrowErrNoIfNegative (::kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
 #else
     AssertNotImplemented ();
 #endif
@@ -716,7 +722,7 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
     fRunThread_.SetThreadName (L"Service 'Run' thread");
     sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
-    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
+    fRunThread_.WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -755,7 +761,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
         Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
         // Send signal to server to stop
         if (_IsServiceActuallyRunning ()) {
-            Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGTERM));
+            Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
 
             Time::DurationSecondsType   waitFor = 0.001;    // wait just a little at first but then progressively longer (avoid busy wait)
             while (_IsServiceActuallyRunning ()) {
@@ -775,7 +781,7 @@ void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeo
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop");
     // Send signal to server to stop
-    Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
+    Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
     unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
@@ -817,15 +823,20 @@ void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_CleanupDeadService");
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+    ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning");
+#endif
     pid_t   servicePID  =   _GetServicePID ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("servicePID=%d", servicePID);
+#endif
     if (servicePID > 0) {
-        int result  =   ::kill (servicePID, 0);
-        return result == 0;
+        return Execution::IsProcessRunning (servicePID);
     }
     return false;
 }
