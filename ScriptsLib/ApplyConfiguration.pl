@@ -501,7 +501,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 
 	
-	print (OUT "StroikaRoot=$stkRoot\n");
+	print (OUT "StroikaRoot=$stkRoot/\n");
 
 
 	if ($ENABLE_ASSERTIONS) {
