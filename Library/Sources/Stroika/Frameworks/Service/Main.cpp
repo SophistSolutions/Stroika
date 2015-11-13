@@ -713,12 +713,12 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     {
         ofstream    out;
         Streams::iostream::OpenOutputFileStream (&out, _GetPIDFileName ());
-        out << GetCurrentProcessID () << endl;
+        out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
         Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
     }
-    if (_GetServicePID () !=  GetCurrentProcessID ()) {
+    if (_GetServicePID () !=  Execution::GetCurrentProcessID ()) {
         Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
     fRunThread_.WaitForDone ();
