@@ -257,7 +257,8 @@ void    Main::Run (const CommandArgs& args, Streams::OutputStream<Characters::Ch
                 if (not out.empty ()) {
                     out.Write (L"Stopping...");
                 }
-                Stop ();
+                constexpr   Time::DurationSecondsType   kTimeOut_ { 30.0 }; // a vaguely reasonable default - apps can override by handling before calling Run
+                Stop (kTimeOut_);
                 if (not out.empty ()) {
                     out.Write (L"done\n");
                 }
@@ -272,7 +273,8 @@ void    Main::Run (const CommandArgs& args, Streams::OutputStream<Characters::Ch
                 if (not out.empty ()) {
                     out.Write (L"Restarting...");
                 }
-                Restart ();
+                constexpr   Time::DurationSecondsType   kTimeOut_ { 30.0 }; // a vaguely reasonable default - apps can override by handling before calling Run
+                Restart (kTimeOut_);
                 if (not out.empty ()) {
                     out.Write (L"done\n");
                 }
