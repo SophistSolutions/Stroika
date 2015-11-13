@@ -25,6 +25,23 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
+
+		(as 2015-11-13 5pm below)
+
+fixes for MakeBuildRoot and MakeDirectorySymbolicLink code - for sh/bash issue, and UAC on winDoze
+	use stkRoot intead of relativepath, in ApplyConfiguraitons.pl - since we want 
+	Lots of related makefile cleanups
+
+
+ServiceMain cleanup
+	Simplifed UNIX - only know pid# if alive - check if alive correctly (was wrong)
+	threw in vaguely reasonable default timeout for stop/restart - so doesnt hang (30 seconds) Stroika/Frameworks/Service/Main
+
+Libcurl - only init GlobalSSL and also set CURL_GLOBAL_ACK_EINTR set CURLOPT_NOSIGNAL
+
+use ::setsid in Execution::DetachedProcessRunner () to avoid sighup/etc - detach from terminal group
+
+Added optional hardware addres s to Network Interface info returned from GetInterfaces/GetInterfaceByID
 	</ul>
 </td>
 </tr>
