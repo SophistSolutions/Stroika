@@ -46,6 +46,12 @@ namespace   Stroika {
 
             pid_t   GetCurrentProcessID ();
 
+            /**
+             *  Return true, if the pid can be verified to be running, false if verified not running.
+             *  \note   This obviously can be a race as processes can come and go quickly
+             */
+            bool    IsProcessRunning (pid_t pid);
+
 
         }
     }

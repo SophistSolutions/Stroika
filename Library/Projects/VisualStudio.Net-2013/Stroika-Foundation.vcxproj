@@ -760,6 +760,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Process.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />

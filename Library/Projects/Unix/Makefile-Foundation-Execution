@@ -30,6 +30,7 @@ Objs	=	\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
 	$(ObjDir)OperationNotSupportedException.o\
+	$(ObjDir)Process.o\
 	$(ObjDir)ProcessRunner.o\
 	$(ObjDir)ProgressMonitor.o\
 	$(ObjDir)RequiredComponentMissingException.o\
