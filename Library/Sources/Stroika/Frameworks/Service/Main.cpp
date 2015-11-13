@@ -646,6 +646,9 @@ Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 
 void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach");
+#endif
     Execution::Thread::SuppressInterruptionInContext  suppressInterruption;       // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)
@@ -676,10 +679,19 @@ Set<Main::ServiceIntegrationFeatures>   Main::BasicUNIXServiceImpl::_GetSupporte
 
 Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_GetState");
+    DbgTrace ("(timeout = %f)", timeout);
+#endif
     // @todo - maybe not qutie right - but a good approx ... review...
     if (_GetServicePID () > 0) {
-        return State::eRunning;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("State::eRunning");
+#endif        return State::eRunning;
     }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("State::eStopped");
+#endif        return State::eRunning;
     return State::eStopped;
 }
 
