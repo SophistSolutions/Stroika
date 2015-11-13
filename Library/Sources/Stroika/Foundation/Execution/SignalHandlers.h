@@ -251,6 +251,8 @@ namespace   Stroika {
                  *
                  *  These  signals - by default (without any coding) - will generally (depends on OS, and environment) terminate the
                  *  process.
+                 *
+                 *  \note   These are currently (mostly) unused? Not sure why we have this?
                  */
                 static  Containers::Set<SignalID>    GetStandardTerminationSignals ();
 
