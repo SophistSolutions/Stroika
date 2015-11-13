@@ -728,11 +728,6 @@ namespace   Stroika {
                 // a previous run of the service, but its actually dead
                 virtual     void            _CleanupDeadService ();
 
-            protected:
-                // Checks if the service process is actually running - not just if it is supposed to be. This can be used to
-                // wait for a service to startup, or to shut down
-                virtual     bool    _IsServiceActuallyRunning ();
-
             private:
                 nonvirtual  void    SetupSignalHanlders_ ();
 
