@@ -6,13 +6,19 @@
 #include    <iostream>
 
 #include    "Stroika/Foundation/Characters/String_Constant.h"
+#include    "Stroika/Foundation/Debug/Fatal.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
+#endif
 #include    "Stroika/Frameworks/Service/Main.h"
+
 
 
 /**
@@ -43,6 +49,7 @@ using   namespace Stroika::Frameworks::Service;
 
 using   Containers::Sequence;
 using   Characters::String_Constant;
+using   Execution::SignalHandlerRegistry;
 using   Execution::Thread;
 
 
@@ -62,15 +69,6 @@ using   Execution::Thread;
 #define     qUseLogger 1
 #endif
 
-/*
- *  Most likely would want todo this. It has nothing todo with the service framework, but often desirable
- *  in service apps.
- */
-#ifndef     qRegisterFatalErrorHandlers
-#define     qRegisterFatalErrorHandlers 1
-#endif
-
-
 
 
 
@@ -80,21 +78,12 @@ using   Execution::Logger;
 #endif
 
 
-#if     qRegisterFatalErrorHandlers
-#include    "Stroika/Foundation/Debug/Fatal.h"
-#if     qPlatform_Windows
-#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
-#include    "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
-#endif
-#endif
 
 
 
 
 
 
-
-#if     qRegisterFatalErrorHandlers
 namespace   {
     void    _FatalErorrHandler_ (const Characters::SDKChar* msg)
     {
@@ -104,10 +93,15 @@ namespace   {
 #endif
         _exit (1);
     }
-}
+    void    _FatalSignalHandler_ (Execution::SignalID signal)
+    {
+        DbgTrace (L"FAILED SIGNAL: %s", Execution::SignalToName (signal).c_str ());
+#if     qUseLogger
+        Logger::Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
 #endif
-
-
+        exit (EXIT_FAILURE);
+    }
+}
 
 
 
@@ -227,18 +221,32 @@ namespace {
 
 
 
-int main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
-    Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
+    /*
+     *  This allows for safe signals to be managed in a threadsafe way
+     */
+    SignalHandlerRegistry::SafeSignalsManager    safeSignals;
+
     /*
      *  Setup basic (optional) error handling.
      */
-#if     qRegisterFatalErrorHandlers
 #if qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
+
+    /*
+     *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
+     */
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (_FatalSignalHandler_);
+
+    /*
+     *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
+     */
+#if     qPlatform_POSIX
+    SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
     /*
