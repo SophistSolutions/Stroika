@@ -39,7 +39,14 @@ namespace   {
     struct  ModuleInit_ {
         ModuleInit_ ()
         {
-            ::curl_global_init (CURL_GLOBAL_ALL);
+            /*
+             *  @todo review CURL_GLOBAL_SSL
+             *
+             *   @see http://curl.haxx.se/libcurl/c/curl_global_init.html
+             *  not 100% sure what flags to send
+             *  CURL_GLOBAL_SSL needed for now, but could interfere with other openssl uses
+             */
+            Verify (::curl_global_init (CURL_GLOBAL_SSL | CURL_GLOBAL_ACK_EINTR) == 0);
         }
         ~ModuleInit_ ()
         {
