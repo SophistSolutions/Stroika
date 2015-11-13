@@ -366,6 +366,23 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_VERBOSE, 1));
 #endif
 
+        /*
+         *  We may want this to be optional? Or use ares, for resolution (may want that anyhow).
+         *  But for now, this is most likely to avoid untoward interactions with other libraries (guess)
+         *      --LGP 2015-11-12
+         */
+        LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_NOSIGNAL , 1));
+
+#if     qDebug && qPlatform_POSIX
+        {
+            struct sigaction oldact;
+            (void)::sigaction (SIGPIPE, NULL, &oldact);
+            if (oldact.sa_handler == SIG_DFL) {
+                DbgTrace (L"Warning: no override of SIGPIPE. This is a risk factor with curl. Often just ignore");
+            }
+        }
+#endif
+
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
         LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
