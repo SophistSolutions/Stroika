@@ -4,11 +4,10 @@ include	../Library/SharedMakeVariables.mk
 
 
 
-RelPathToStroikaDevRoot	=	../../../
-SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SystemPerformanceClient/
+SrcDir				=	$(StroikaRoot)Samples/SystemPerformanceClient/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_SystemPerformanceClient
+TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SystemPerformanceClient
 
 
 VPATH	=			$(SrcDir)/Sources/

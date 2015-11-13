@@ -4,15 +4,13 @@
 # One would mostly want to edit this file if there was some flag one wanted to add to CFLAGS for example, that wasn't arleady controlled
 # by a value in Configuration.mk
 #
-# NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list, or (all of them should) override RelPathToStroikaDevRoot)
+# NB: Invididual makefiles will OFTEN override these values - adding INCLUDES ot the list
 
 
 
-
-ifndef RelPathToStroikaDevRoot
-	RelPathToStroikaDevRoot		=	_NO_DEFAULT_
+ifndef StroikaRoot
+	$error("StroikaRoot must be defined and included before this file (should be done automatically in Configuration.mk)")
 endif
-
 
 ifndef ObjDir
 	ObjDir		=	./
@@ -20,7 +18,7 @@ endif
 
 
 ifndef StroikaPlatformTargetBuildDir
-	StroikaPlatformTargetBuildDir		=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/
+	StroikaPlatformTargetBuildDir		=	$(StroikaRoot)Builds/DefaultConfiguration/
 endif
 
 ifndef StroikaLibDir
@@ -37,8 +35,8 @@ ifndef Includes
 	Includes	=	
 endif
 
-Includes	+=	-I$(RelPathToStroikaDevRoot)/Library/Sources/
-Includes	+=	-I$(RelPathToStroikaDevRoot)/IntermediateFiles/DefaultConfiguration/
+Includes	+=	-I$(StroikaRoot)/Library/Sources/
+Includes	+=	-I$(StroikaRoot)/IntermediateFiles/DefaultConfiguration/
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
@@ -239,5 +237,5 @@ endif
 
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/HTMLViewCompiler"
+	HTMLViewCompiler	=	"$(StroikaRoot)Builds/DefaultConfiguration/HTMLViewCompiler"
 endif

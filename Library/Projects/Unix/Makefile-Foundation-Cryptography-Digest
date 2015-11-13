@@ -3,8 +3,7 @@ include	../../../SharedMakeVariables.mk
 include	../../../SharedBuildRules.mk
 
 
-RelPathToStroikaDevRoot		=	../../../../../../
-SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/
+SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Cryptography/Digest/
 
 .PHONY:			Algorithm
 

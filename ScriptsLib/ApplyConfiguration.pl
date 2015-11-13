@@ -500,6 +500,9 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "\n");
 
+	
+	print (OUT "StroikaRoot=$stkRoot\n");
+
 
 	if ($ENABLE_ASSERTIONS) {
 		print (OUT "qFeatureFlag_EnableAssertions=1\n");

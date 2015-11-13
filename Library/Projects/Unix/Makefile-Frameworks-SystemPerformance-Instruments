@@ -2,8 +2,7 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../../
-SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Instruments/
+SrcDir						=       $(StroikaRoot)Library/Sources/Stroika/Frameworks/SystemPerformance/Instruments/
 
 vpath %cpp $(SrcDir)
 

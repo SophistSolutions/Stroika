@@ -3,8 +3,7 @@ include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
 
-RelPathToStroikaDevRoot		=	../../../../../
-SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/
+SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/IO/
 
 SubDirs	=	\
 	FileSystem	\

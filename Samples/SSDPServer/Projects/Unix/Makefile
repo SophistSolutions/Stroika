@@ -4,11 +4,10 @@ include	../Library/SharedMakeVariables.mk
 
 
 
-RelPathToStroikaDevRoot	=	../../../
-SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SSDPServer/
+SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_SSDPServer
+TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SSDPServer
 
 
 VPATH	=			$(SrcDir)/Sources/

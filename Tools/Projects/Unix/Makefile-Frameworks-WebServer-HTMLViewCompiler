@@ -2,12 +2,11 @@ include	../../../../Library/Configuration.mk
 include	../../../../Library/SharedBuildRules.mk
 include	../../../../Library/SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../../
-SrcDir						=       $(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
+SrcDir						=       $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/
 
 VPATH = $(SrcDir)
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/HTMLViewCompiler
+TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/HTMLViewCompiler
 
 
 Objs	=	\

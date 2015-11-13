@@ -2,8 +2,7 @@ include ../../Configuration.mk
 include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../
-SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Linguistics/
+SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Linguistics/
 
 
 vpath %cpp $(SrcDir)

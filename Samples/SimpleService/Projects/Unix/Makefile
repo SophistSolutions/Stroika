@@ -4,11 +4,10 @@ include	../Library/SharedMakeVariables.mk
 
 
 
-RelPathToStroikaDevRoot	=	../../../
-SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SimpleService/
+SrcDir				=	$(StroikaRoot)Samples/SimpleService/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_SimpleService
+TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SimpleService
 
 
 VPATH	=			$(SrcDir)/Sources/

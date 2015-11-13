@@ -2,8 +2,7 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot	=	../../../../../../
-SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Characters/Concrete
+SrcDir					=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Characters/Concrete
 
 SubDirs	=	\
 	Private \
