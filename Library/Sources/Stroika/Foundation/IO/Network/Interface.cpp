@@ -193,12 +193,14 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
 
+#if		qPlatform_Linux
         {
             ifreq   tmp = ifreqs[i];
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
                 newInterface.fHwardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
         }
+#endif
 
 #if     qPlatform_AIX
         {
