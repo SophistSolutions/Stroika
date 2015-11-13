@@ -11,7 +11,7 @@
 
 
 %.o : %.cpp
-	@echo "      Compiling $(subst ../,, $<)..."
+	@echo "      Compiling $(subst $(StroikaRoot),$$StroikaRoot, $<)..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    echo "         $(CPlusPlus) $(CFLAGS) -c $< -o $@";\
 	fi
@@ -19,7 +19,7 @@
 
 
 %.i : %.swsp
-	@echo "Compiling $<"
+	@echo "Compiling $(subst $(StroikaRoot),$$StroikaRoot, $<)"
 	@$(HTMLViewCompiler) $< $@
 
 

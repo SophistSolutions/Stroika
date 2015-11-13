@@ -39,7 +39,7 @@ $(ALL_OBJS):
 
 $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@echo "   Creating $(subst ../,, $@)..."
+	@echo "   Creating $(subst $(StroikaRoot),$$StroikaRoot, $@)..."
 	@rm -f $(StroikaFrameworksLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)";\
