@@ -247,7 +247,8 @@ void    Main::Run (const CommandArgs& args, Streams::OutputStream<Characters::Ch
                 if (not out.empty ()) {
                     out.Write (L"Starting...");
                 }
-                Start ();
+                constexpr   Time::DurationSecondsType   kTimeOut_ { 30.0 }; // a vaguely reasonable default - apps can override by handling before calling Run
+                Start (kTimeOut_);
                 if (not out.empty ()) {
                     out.Write (L"done\n");
                 }
