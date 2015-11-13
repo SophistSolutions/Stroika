@@ -724,11 +724,6 @@ namespace   Stroika {
                 virtual String              _GetPIDFileName () const;
 
             protected:
-                // Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that
-                // need to be cleaned up via _CleanupDeadService ()
-                virtual     bool            _IsServiceFailed ();
-
-            protected:
                 // Called internally when - for example - asked to start and we find there are already lock files etc from
                 // a previous run of the service, but its actually dead
                 virtual     void            _CleanupDeadService ();

@@ -676,7 +676,7 @@ Set<Main::ServiceIntegrationFeatures>   Main::BasicUNIXServiceImpl::_GetSupporte
 Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 {
     // @todo - maybe not qutie right - but a good approx ... review...
-    if (_GetServicePID () != 0) {
+    if (_GetServicePID () > 0) {
         return State::eRunning;
     }
     return State::eStopped;
@@ -694,7 +694,7 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
 
 void    Main::BasicUNIXServiceImpl::_RunAsService ()
 {
-    if (_IsServiceActuallyRunning ()) {
+    if (_GetServicePID () > 0) {
         Execution::DoThrow (Execution::StringException (String_Constant { L"Service Already Running" }));
     }
 
@@ -707,7 +707,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
     Execution::Finally cleanup ([this] () {
-        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+        (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     });
     {
         ofstream    out (_GetPIDFileName ().AsSDKString ().c_str ());
@@ -735,20 +735,14 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
 
-    // Check not already runnig, (someday) and then for and exec the
-
-    if (_IsServiceFailed ()) {
-        _CleanupDeadService ();
-    }
-
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
-    if (_GetServicePID ()  != 0) {
+    if (_GetServicePID () > 0) {
         Execution::DoThrow (Execution::StringException (String_Constant { L"Cannot Start service because its already running" }));
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String_Constant { L"--" } + String (CommandNames::kRunAsService))}));
 
-    while (not _IsServiceActuallyRunning ()) {
+    while (_GetServicePID () <= 0) {
         Execution::Sleep (0.5);
         Execution::ThrowTimeoutExceptionAfter (timeoutAt);
     }
@@ -756,6 +750,10 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
 void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Stop");
+    DbgTrace ("(timeout=%f)", timeout);
+#endif
     bool kInProc_ = false;
     if (kInProc_) {
         /// kill running....
@@ -763,20 +761,27 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
     else {
         Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
         // Send signal to server to stop
-        if (_IsServiceActuallyRunning ()) {
+        if (_GetServicePID () > 0) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("Service running - so sending SIGTERM signal");
+#endif
             Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGTERM));
 
             Time::DurationSecondsType   waitFor = 0.001;    // wait just a little at first but then progressively longer (avoid busy wait)
-            while (_IsServiceActuallyRunning ()) {
+            while (_GetServicePID () > 0) {
                 Execution::Sleep (waitFor);
                 if (waitFor < timeout and waitFor < 5) {
                     waitFor *= 2;
                 }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("still waiting for timeout/completion");
+#endif
                 Execution::ThrowTimeoutExceptionAfter (timeoutAt);
             }
         }
         // in case not cleanly stopped before
-        (void)unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+        // @todo RETHINK - not really necessary and a possible race (if lots of starts/stops done)
+        (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     }
 }
 
@@ -784,9 +789,12 @@ void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeo
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop");
     // Send signal to server to stop
-    Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
+    pid_t   svcPID = _GetServicePID ();
+    if (svcPID > 0) {
+        Execution::ThrowErrNoIfNegative (::kill (_GetServicePID (), SIGKILL));
+    }
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+    (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
 
 pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
@@ -795,7 +803,9 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
     if (in) {
         pid_t   n = 0;
         in >> n;
-        return n;
+        if (Execution::IsProcessRunning (n)) {
+            return n;
+        }
     }
     return 0;
 }
@@ -812,36 +822,11 @@ String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
     return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_->GetServiceDescription ().fRegistrationName + String_Constant  { L".pid" };
 }
 
-bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
-{
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_IsServiceFailed");
-    pid_t   servicePID  =   _GetServicePID ();
-    if (servicePID > 0) {
-        return not _IsServiceActuallyRunning ();
-    }
-    return false;
-}
-
 void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_CleanupDeadService");
     // REALY should WAIT for server to stop and only do this it fails -
-    ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
-}
-
-bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
-{
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning");
-#endif
-    pid_t   servicePID  =   _GetServicePID ();
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("servicePID=%d", servicePID);
-#endif
-    if (servicePID > 0) {
-        return Execution::IsProcessRunning (servicePID);
-    }
-    return false;
+    (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
 
 void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
