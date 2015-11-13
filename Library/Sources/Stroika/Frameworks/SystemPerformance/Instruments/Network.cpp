@@ -763,6 +763,7 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fFriendlyName), String_Constant (L"Friendly-Name") },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fDescription), String_Constant (L"Description"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fType), String_Constant (L"Interface-Type"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fHwardwareAddress), String_Constant (L"Hardware-Address"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fStatus), String_Constant (L"Interface-Status"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fTransmitSpeedBaud), String_Constant (L"Transmit-Speed-Baud"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Interface, fReceiveLinkSpeedBaud), String_Constant (L"Receive-Link-Speed-Baud"), StructureFieldInfo::NullFieldHandling::eOmit },

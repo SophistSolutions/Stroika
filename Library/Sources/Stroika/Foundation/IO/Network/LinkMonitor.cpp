@@ -212,7 +212,7 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
 {
     auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
         char     buf[100] {};
-        (void)snprintf (buf, sizeof (buf), "%02x-%02x-%02x-%02x-%02x-%02x",
+        (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
                         macaddrBytes[0], macaddrBytes[1],
                         macaddrBytes[2], macaddrBytes[3],
                         macaddrBytes[4], macaddrBytes[5]
