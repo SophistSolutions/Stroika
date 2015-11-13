@@ -912,7 +912,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();
-    pid_t   pid =   Execution::ThrowErrNoIfNegative (fork ());
+    pid_t   pid =   Execution::ThrowErrNoIfNegative (::fork ());
     if (pid == 0) {
         /*
          * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
@@ -923,9 +923,9 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
             ::close (i);
         }
         int id = ::open ("/dev/null", O_RDWR);
-        dup2 (id, 0);
-        dup2 (id, 1);
-        dup2 (id, 2);
+        (void)::dup2 (id, 0);
+        (void)::dup2 (id, 1);
+        (void)::dup2 (id, 2);
 
         // must map args to SDKString, and then right lifetime c-string pointers
         vector<SDKString> tmpTStrArgs;
