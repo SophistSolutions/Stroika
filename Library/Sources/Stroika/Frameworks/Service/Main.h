@@ -29,6 +29,9 @@
  *
  * TODO:
  *
+ *      @todo   Do a better job handling default/reasonable timeout time for service to start/stop/restart.
+ *              Hacked something mostly for UNIX.
+ *
  *      @todo   Window service not fully working - see why when you start/stop we dont see
  *              Logger::Log (Logger::Priority::eNotice, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
