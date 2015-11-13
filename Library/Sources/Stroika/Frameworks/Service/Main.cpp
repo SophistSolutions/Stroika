@@ -37,6 +37,7 @@
 #include    "../../Foundation/Execution/SignalHandlers.h"
 #include    "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
+#include    "../../Foundation/Streams/iostream/FStreamSupport.h"
 
 #include    "Main.h"
 
@@ -710,8 +711,15 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     });
     {
-        ofstream    out (_GetPIDFileName ().AsSDKString ().c_str ());
-        out << getpid () << endl;
+        ofstream    out;
+        Streams::iostream::OpenOutputFileStream (&out, _GetPIDFileName ());
+        out << GetCurrentProcessID () << endl;
+    }
+    if (_GetServicePID () <= 0) {
+        Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
+    }
+    if (_GetServicePID () !=  GetCurrentProcessID ()) {
+        Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
     fRunThread_.WaitForDone ();
 }
