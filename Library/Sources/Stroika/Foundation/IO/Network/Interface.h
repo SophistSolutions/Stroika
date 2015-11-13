@@ -107,6 +107,11 @@ namespace   Stroika {
                     Memory::Optional<Type>                      fType;
 
                     /**
+                     *  This - if present - is typically an ethernet macaddr (6 bytes in hex separated by :)
+                     */
+                    Memory::Optional<String>                    fHwardwareAddress;
+
+                    /**
                      *  bits per second
                      */
                     Memory::Optional<uint64_t>    fTransmitSpeedBaud;

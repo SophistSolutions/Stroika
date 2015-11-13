@@ -111,6 +111,19 @@ static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i 
 
 
 
+namespace {
+    auto     PrintMacAddr_ (const uint8_t* macaddrBytes, const uint8_t* macaddrBytesEnd) -> String {
+        Require (macaddrBytesEnd - macaddrBytesEnd == 6);
+        char     buf[100] {};
+        (void)snprintf (buf, sizeof (buf), "%02x-%02x-%02x-%02x-%02x-%02x",
+                        macaddrBytes[0], macaddrBytes[1],
+                        macaddrBytes[2], macaddrBytes[3],
+                        macaddrBytes[4], macaddrBytes[5]
+                       );
+        return String::FromAscii (buf);
+    };
+}
+
 /*
  ********************************************************************************
  ************************** Network::GetInterfaces ******************************
@@ -176,6 +189,11 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
             // NYI
             newInterface.fType = Interface::Type::eWiredEthernet;    // WAY - not the right way to tell!
         }
+
+        if (::ioctl (sd, SIOCGIFHWADDR, &ifr) == 0 and ifr.ifr_hwaddr.sa_family != ARPHRD_ETHER) {
+            newInterface.fHwardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data) + 6);
+        }
+
 
 #if     qPlatform_AIX
         {
@@ -304,8 +322,12 @@ Again:
                 if (sa.IsInternetAddress ()) {
                     newInterface.fBindings.Add (sa.GetInternetAddress ());
                 }
-
             }
+
+            if (currAddresses->PhysicalAddressLength == 6) {
+                newInterface.fHwardwareAddress = PrintMacAddr_ (currAddresses->PhysicalAddress, currAddresses->PhysicalAddress + 6);
+            }
+
 #if     (NTDDI_VERSION >= NTDDI_WIN6)
             newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
             newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
