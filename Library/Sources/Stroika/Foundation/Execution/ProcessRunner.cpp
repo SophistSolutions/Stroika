@@ -927,6 +927,10 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         (void)::dup2 (id, 1);
         (void)::dup2 (id, 2);
 
+        // Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
+        // @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+        (void)::setsid ();
+
         // must map args to SDKString, and then right lifetime c-string pointers
         vector<SDKString> tmpTStrArgs;
         tmpTStrArgs.reserve (args.size ());
