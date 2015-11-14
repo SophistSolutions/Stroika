@@ -687,7 +687,8 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
     if (_GetServicePID () > 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("State::eRunning");
-#endif        return State::eRunning;
+#endif
+        return State::eRunning;
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("State::eStopped");
