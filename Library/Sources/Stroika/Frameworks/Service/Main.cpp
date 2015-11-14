@@ -691,7 +691,7 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("State::eStopped");
-#endif        return State::eRunning;
+#endif
     return State::eStopped;
 }
 
