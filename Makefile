@@ -191,4 +191,4 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 endif
 
 default-configuration:
-	@sh configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
+	@./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
