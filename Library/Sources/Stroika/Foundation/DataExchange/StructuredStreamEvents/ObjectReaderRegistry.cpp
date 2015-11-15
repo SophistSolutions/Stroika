@@ -151,7 +151,7 @@ ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReader
 String ObjectReaderRegistry::Context::TraceLeader_ () const
 {
     static  const   String_Constant     kOneTabLevel_ { L"    " };
-    return kOneTabLevel_.Repeat (fStack_.size ());
+    return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
 }
 #endif
 
