@@ -266,34 +266,44 @@ namespace {
                 // Due to apparent races gathering these stats, they may be out of sync. So split the difference (no other obvious way
                 // to reconcile them)
                 int64_t overage = result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value ();
-                overage -= totalRAM_;
+                overage -= totalRAM_;       // note: overrage can be > 0 or < 0
                 DbgTrace ("Adjusting reported RAM values for overrage %lld", static_cast<long long int> (overage));
-                if (result.fPhysicalMemory.fFree.Value () > overage / 3) {
-                    result.fPhysicalMemory.fFree -= overage / 3;
-                    overage -= overage / 3;
+                {
+                    int64_t distributeThisMuchToFree = overage / 3;
+                    if (static_cast<int64_t> (result.fPhysicalMemory.fFree.Value ()) > distributeThisMuchToFree) {
+                        result.fPhysicalMemory.fFree -= distributeThisMuchToFree;
+                        overage -= distributeThisMuchToFree;
+                    }
+                    else {
+                        overage -= result.fPhysicalMemory.fFree.Value ();
+                        result.fPhysicalMemory.fFree = static_cast<uint64_t> (0);
+                    }
                 }
-                else {
-                    overage -= result.fPhysicalMemory.fFree.Value ();
-                    result.fPhysicalMemory.fFree = static_cast<uint64_t> (0);
+                {
+                    int64_t distributeThisMuchToFree = overage / 2;
+                    if (static_cast<int64_t> (result.fPhysicalMemory.fActive.Value ()) > distributeThisMuchToFree) {
+                        result.fPhysicalMemory.fActive -= distributeThisMuchToFree;
+                        overage -= distributeThisMuchToFree;
+                    }
+                    else {
+                        overage -= result.fPhysicalMemory.fActive.Value ();
+                        result.fPhysicalMemory.fActive = static_cast<uint64_t> (0);
+                    }
                 }
-                if (result.fPhysicalMemory.fActive.Value () > overage / 2) {
-                    result.fPhysicalMemory.fActive -= overage / 2;
-                    overage -= overage / 2;
+                {
+                    int64_t distributeThisMuchToFree = overage;
+                    if (static_cast<int64_t> (result.fPhysicalMemory.fInactive.Value ()) > distributeThisMuchToFree) {
+                        result.fPhysicalMemory.fInactive -= distributeThisMuchToFree;
+                        overage -= distributeThisMuchToFree;
+                    }
+                    else {
+                        overage -= result.fPhysicalMemory.fInactive.Value ();
+                        result.fPhysicalMemory.fInactive = static_cast<uint64_t> (0);
+                    }
                 }
-                else {
-                    overage -= result.fPhysicalMemory.fActive.Value ();
-                    result.fPhysicalMemory.fActive = static_cast<uint64_t> (0);
-                }
-                if (result.fPhysicalMemory.fInactive.Value () > overage) {
-                    result.fPhysicalMemory.fActive -= overage;
-                    overage -= overage;
-                }
-                else {
-                    overage -= result.fPhysicalMemory.fInactive.Value ();
-                    result.fPhysicalMemory.fInactive = static_cast<uint64_t> (0);
-                }
+                Assert (overage == 0);
             }
-            Assert (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            Assert (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == totalRAM_);
 
             /*
              *  This is our best estimate of what is available. On LINUX, we can also add in 'SReclaimable' - kernel RAM
