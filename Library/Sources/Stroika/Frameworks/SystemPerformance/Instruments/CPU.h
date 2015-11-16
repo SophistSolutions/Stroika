@@ -20,6 +20,10 @@
  *  TODO:
  *      @todo   Windows fRunQLength value is a point-in-time snapshot, and it SHOULD be (if we can find out how)
  *              an average over the measurement interval.
+ *
+ *      @todo   Consider making fTotalProcessCPUUsage and fTotalCPUUsage from Info struct - 0..N where N is numebr of CPUs.
+ *              Reason is just for consistency sake with data returned in Process  module. OR - make the inverse
+ *              change there? But it would be better if these were consistent.
  */
 
 
