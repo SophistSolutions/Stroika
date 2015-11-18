@@ -1752,6 +1752,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2663,6 +2666,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
