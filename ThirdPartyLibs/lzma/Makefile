@@ -120,7 +120,7 @@ doCreate:	$(ZIPEDFILE)
 
 doBuilds:
 	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
-	@make doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
+	@$(MAKE) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
