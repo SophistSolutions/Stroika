@@ -76,6 +76,32 @@ void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r)
 }
 
 template <>
+void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating (Context& r)
+{
+    *fValue_ = Characters::String2Int<char> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating (Context& r)
+{
+    //@ todo fix
+    *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating (Context& r)
+{
+    *fValue_ = Characters::String2Int<short> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating (Context& r)
+{
+    //@ todo fix
+    *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
+}
+
+template <>
 void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r)
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
@@ -85,7 +111,34 @@ template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r)
 {
     //@ todo fix
-    *fValue_ = Characters::String2Int<int> (fBuf_.str ());
+    *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
+}
+
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating (Context& r)
+{
+    *fValue_ = Characters::String2Int<long int> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating (Context& r)
+{
+    //@ todo fix
+    *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating (Context& r)
+{
+    *fValue_ = Characters::String2Int<long long int> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating (Context& r)
+{
+    //@ todo fix
+    *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
 }
 
 template <>
@@ -104,6 +157,12 @@ template <>
 void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r)
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
+}
+
+template <>
+void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating (Context& r)
+{
+    (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
 }
 
 template <>
