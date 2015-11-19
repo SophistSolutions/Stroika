@@ -457,15 +457,33 @@ namespace   Stroika {
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r);
                 template <>
+                void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating (Context& r);
+                template <>
                 void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r);
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r);
 

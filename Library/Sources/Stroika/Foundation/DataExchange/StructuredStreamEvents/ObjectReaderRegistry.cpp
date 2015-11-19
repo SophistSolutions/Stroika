@@ -114,7 +114,6 @@ void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context&
     *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
 }
 
-
 template <>
 void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating (Context& r)
 {
