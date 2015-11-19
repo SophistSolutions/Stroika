@@ -217,6 +217,12 @@ namespace   Stroika {
                 }
                 inline shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (type_index ti, void* destinationObject) const
                 {
+#if     qDebug
+                    if (not fFactories_.ContainsKey (ti)) {
+                        Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::MakeContextReader");
+                        DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", ti.name ());
+                    }
+#endif
                     ReaderFromVoidStarFactory  factory = *fFactories_.Lookup (ti); // must be found or caller/assert error
                     return factory (destinationObject);
                 }
@@ -266,6 +272,26 @@ namespace   Stroika {
                     return MakeCommonReader_SIMPLEREADER_<String> ();
                 }
                 template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const char*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<char> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned char*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<unsigned char> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const short*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<short> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned short*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<unsigned short> ();
+                }
+                template <>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const int*)
                 {
                     return MakeCommonReader_SIMPLEREADER_<int> ();
@@ -274,6 +300,26 @@ namespace   Stroika {
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned int*)
                 {
                     return MakeCommonReader_SIMPLEREADER_<unsigned int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<long int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<unsigned long int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long long int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<long long int> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long long int*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<unsigned long long int> ();
                 }
                 template <>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const bool*)
@@ -289,6 +335,11 @@ namespace   Stroika {
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const double*)
                 {
                     return MakeCommonReader_SIMPLEREADER_<double> ();
+                }
+                template <>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long double*)
+                {
+                    return MakeCommonReader_SIMPLEREADER_<long double> ();
                 }
                 template <>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::DateTime*)
