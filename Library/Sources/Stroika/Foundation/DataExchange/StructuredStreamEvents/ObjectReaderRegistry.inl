@@ -263,88 +263,21 @@ namespace   Stroika {
                     return [tf] (void* data) { return tf (reinterpret_cast<T*> (data)); };
                 }
                 template    <typename T>
-                inline  auto   ObjectReaderRegistry::MakeCommonReader_SIMPLEREADER_ () -> ReaderFromVoidStarFactory {
+                auto   ObjectReaderRegistry::MakeCommonReader_SimpleReader_ () -> ReaderFromVoidStarFactory {
                     return cvtFactory_<T> ( [] (T * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
                 }
-                template <>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*)
                 {
-                    return MakeCommonReader_SIMPLEREADER_<String> ();
+                    return MakeCommonReader_SimpleReader_<String> ();
                 }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const char*)
+                template    <typename T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const T*, typename std::enable_if<std::is_pod<T>::value >::type*)
                 {
-                    return MakeCommonReader_SIMPLEREADER_<char> ();
+                    return MakeCommonReader_SimpleReader_<T> ();
                 }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned char*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<unsigned char> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const short*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<short> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned short*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<unsigned short> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<unsigned int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<long int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<unsigned long int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long long int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<long long int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long long int*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<unsigned long long int> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const bool*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<bool> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const float*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<float> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const double*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<double> ();
-                }
-                template <>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long double*)
-                {
-                    return MakeCommonReader_SIMPLEREADER_<long double> ();
-                }
-                template <>
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::DateTime*)
                 {
-                    return MakeCommonReader_SIMPLEREADER_<Time::DateTime> ();
+                    return MakeCommonReader_SimpleReader_<Time::DateTime> ();
                 }
                 template    <typename T, typename TRAITS>
                 inline   ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
@@ -404,8 +337,13 @@ namespace   Stroika {
                 template    <typename   T>
                 void   ObjectReaderRegistry::SimpleReader_<T>::Deactivating (Context& r)
                 {
-                    AssertNotReached ();   // redo with static asserts, but issues on some compilers - anyhow - SB template specialzied away
-                    // *value = CONVERTFROM (fBuf_.str ());
+#if 0
+#if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+                    RequireNotReached ();
+#else
+                    static_assert (false, "Only specifically specialized variants are supported");
+#endif
+#endif
                 }
 
 

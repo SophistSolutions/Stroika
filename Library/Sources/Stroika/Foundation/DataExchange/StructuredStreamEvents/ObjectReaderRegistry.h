@@ -24,6 +24,7 @@
 #include    "../../Memory/Common.h"
 #include    "../../Memory/Optional.h"
 #include    "../../Streams/InputStream.h"
+#include    "../../Time/DateTime.h"
 #include    "../../Traversal/Range.h"
 
 #include    "../StructFieldMetaInfo.h"
@@ -248,20 +249,22 @@ namespace   Stroika {
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf );
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory   MakeCommonReader_SIMPLEREADER_ ();
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_SimpleReader_ ();
                 private:
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const String*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Time::DateTime*);
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const T*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const T*, typename std::enable_if<std::is_pod<T>::value >::type* = 0);
                     template    <typename T, typename TRAITS>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const vector<T>*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const vector<T>*);
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const vector<T>*, const Name& name);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const vector<T>*, const Name& name);
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Sequence<T>*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*);
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory  MakeCommonReader_ (const Sequence<T>*, const Name& name);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Sequence<T>*, const Name& name);
 
                 private:
                     Mapping<type_index, ReaderFromVoidStarFactory> fFactories_;
@@ -437,6 +440,9 @@ namespace   Stroika {
                 /**
                  *  [private]
                  *  SimpleReader_<> is not implemented for all types - just for the with Deactivating specialized below;
+                 *
+                 *  The class (template) generically accumulates the text from inside the element, but then the Deactivating () override must
+                 *  be specialized for each class to 'convert' from the accumulated string to the fValue.
                  */
                 template    <typename   T>
                 class   ObjectReaderRegistry::SimpleReader_ : public IElementConsumer {
@@ -486,40 +492,6 @@ namespace   Stroika {
                 void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating (Context& r);
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r);
-
-
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const char*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned char*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const short*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned short*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long long int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const unsigned long long int*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const bool*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const float*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const double*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const long double*);
-                template <>
-                ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::DateTime*);
 
 
                 /**
