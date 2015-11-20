@@ -163,9 +163,9 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                  ******************************* ListOfObjectReader *****************************
-                  ********************************************************************************
-                  */
+                 ******************************* ListOfObjectReader *****************************
+                 ********************************************************************************
+                 */
                 template    <typename CONTAINER_OF_T>
                 ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
                     : fValuePtr_ (v)
@@ -261,6 +261,11 @@ namespace   Stroika {
                 template    <typename CLASS>
                 void    ObjectReaderRegistry::AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo)
                 {
+#if     qDebug
+                    for (auto kv : fieldInfo) {
+                        Require (fFactories_.ContainsKey (kv.fValue.fTypeInfo));
+                    }
+#endif
                     Add<CLASS> (MakeClassReader<CLASS> (fieldInfo));
                 }
                 template    <typename CLASS>

@@ -41,6 +41,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
+ *              the type T is already in the registry (like with AddClass). To debug!
+ *
  *      @todo   https://stroika.atlassian.net/browse/STK-408 - cleanup template specializations
  *
  *      @todo   Review names: I dont think we use the term reader and readerfactory totally uniformly, and
@@ -210,6 +214,10 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  \req    AddClass<> requires that each field data type already be pre-loaded into the
+                     *          ObjectReaderRegistry. To avoid this requirement, you an use MakeClassReader
+                     *          directly, but if this type is absent when you call AddClass<> - its most likely
+                     *          a bug.
                      */
                     template    <typename CLASS>
                     nonvirtual  void    AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
