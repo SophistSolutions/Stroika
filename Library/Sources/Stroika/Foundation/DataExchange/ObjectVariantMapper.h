@@ -37,6 +37,9 @@
  *
  *  TODO:
  *
+ *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
+ *              the type T is already in the registry (like with AddClass). To debug!
+ *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
@@ -276,6 +279,11 @@ namespace   Stroika {
                  *  Adds the given class (defined in explicit template argument) with the given list of field.
                  *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
                  *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
+                 *
+                 *  \req    AddClass<> requires that each field data type already be pre-loaded into the
+                 *          ObjectReaderRegistry. To avoid this requirement, you an use MakeClassReader
+                 *          directly, but if this type is absent when you call AddClass<> - its most likely
+                 *          a bug.
                  */
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const Sequence<StructFieldInfo>& fieldDescriptions);

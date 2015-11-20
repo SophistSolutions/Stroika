@@ -79,6 +79,11 @@ namespace   Stroika {
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions)
             {
+#if     qDebug
+                for (auto f : fieldInfo) {
+                    Require (fTypeMappingRegistry_.fSerializers.ContainsKey (f.fFieldMetaInfo.fTypeInfo));
+                }
+#endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
@@ -94,6 +99,11 @@ namespace   Stroika {
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
             {
+#if     qDebug
+                for (auto f : fieldInfo) {
+                    Require (fTypeMappingRegistry_.fSerializers.ContainsKey (f.fFieldMetaInfo.fTypeInfo));
+                }
+#endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
             }
             template    <typename CLASS>
