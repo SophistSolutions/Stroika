@@ -239,9 +239,10 @@ namespace   {
             Thread  thread1 (bind (&FRED1::DoIt, &updaterValue));
             thread1.Start ();
 
-            // At this point the thread SHOULD block and wait 30 seconds
+            // At this point the thread SHOULD block and wait 60.0 seconds
             {
-                const   Time::DurationSecondsType   kMargingOfError  =   .5;
+                const   Time::DurationSecondsType   kMargingOfErrorLo_  =   .5;
+                const   Time::DurationSecondsType   kMargingOfErrorHi_  =   1;      // if sys busy, thread could be put to sleep almost any amount of time
                 const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
                 Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
                 Time::DurationSecondsType   caughtExceptAt  =   0;
@@ -253,7 +254,7 @@ namespace   {
                     caughtExceptAt =  Time::GetTickCount ();
                 }
                 Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
-                VerifyTestResult (expectedEndAt - kMargingOfError <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfError);
+                VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
             }
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
