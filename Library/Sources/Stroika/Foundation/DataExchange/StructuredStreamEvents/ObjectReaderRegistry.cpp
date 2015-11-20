@@ -49,12 +49,12 @@ using   Time::TimeOfDay;
  ***************** ObjectReaderRegistry::IElementConsumer ***********************
  ********************************************************************************
  */
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IElementConsumer::HandleChildStart (Context& r, const Name& name)
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IElementConsumer::HandleChildStart (const Name& name)
 {
     return nullptr;
 }
 
-void    ObjectReaderRegistry::IElementConsumer::HandleTextInside (Context& r, const String& text)
+void    ObjectReaderRegistry::IElementConsumer::HandleTextInside (const String& text)
 {
 }
 
@@ -62,7 +62,7 @@ void    ObjectReaderRegistry::IElementConsumer::Activated (Context& r)
 {
 }
 
-void    ObjectReaderRegistry::IElementConsumer::Deactivating (Context& r)
+void    ObjectReaderRegistry::IElementConsumer::Deactivating ()
 {
 }
 
@@ -73,102 +73,102 @@ void    ObjectReaderRegistry::IElementConsumer::Deactivating (Context& r)
  ********************************************************************************
  */
 template <>
-void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating ()
 {
     *fValue_ = fBuf_.str ();
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<char> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ()
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<short> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ()
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ()
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ()
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ()
 {
     *fValue_ = Characters::String2Int<long long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
     //@ todo fix
     *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating ()
 {
     *fValue_ = (fBuf_.str ().ToLowerCase () == L"true");
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<float> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<double> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ()
 {
     (*fValue_) = Characters::String2Float<long double> (fBuf_.str ());
 }
 
 template <>
-void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r)
+void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ()
 {
     // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
@@ -185,7 +185,7 @@ void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Contex
  ******************** ObjectReaderRegistry::IgnoreNodeReader ********************
  ********************************************************************************
  */
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IgnoreNodeReader::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
 }
@@ -232,7 +232,7 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::StartElement (const St
         DbgTrace (L"%sCalling IConsumerDelegateToContext::HandleChildStart ('%s')...", fContext.TraceLeader_ ().c_str (), name.fLocalName.c_str ());
     }
 #endif
-    shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (fContext, name);
+    shared_ptr<IElementConsumer> eltToPush = fContext.GetTop ()->HandleChildStart (name);
     AssertNotNull (eltToPush);
     fContext.Push (eltToPush);
 }
@@ -254,7 +254,7 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
         DbgTrace (L"%sCalling IConsumerDelegateToContext::TextInsideElement ('%s')...", fContext.TraceLeader_ ().c_str (), text.LimitLength (50).c_str ());
     }
 #endif
-    fContext.GetTop ()->HandleTextInside (fContext, text);
+    fContext.GetTop ()->HandleTextInside (text);
 }
 
 
@@ -277,7 +277,7 @@ ObjectReaderRegistry::ReadDownToReader::ReadDownToReader (const shared_ptr<IElem
     RequireNotNull (theUseReader);
 }
 
-shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (Context& r, const Name& name)
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::ReadDownToReader::HandleChildStart (const Name& name)
 {
     if (fTagToHandOff_.IsMissing () or * fTagToHandOff_ == name) {
         return fReader2Delegate2_;

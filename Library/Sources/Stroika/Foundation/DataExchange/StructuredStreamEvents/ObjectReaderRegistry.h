@@ -288,25 +288,25 @@ namespace   Stroika {
 
                 public:
                     /**
-                     */
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name);
-
-                public:
-                    /**
-                     */
-                    virtual void    HandleTextInside (Context& r, const String& text);
-
-                public:
-                    /**
                      *  pushed onto context stack
                      */
                     virtual void    Activated (Context& r);
 
                 public:
                     /**
+                     */
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name);
+
+                public:
+                    /**
+                     */
+                    virtual void    HandleTextInside (const String& text);
+
+                public:
+                    /**
                      * About to pop from ontext stack
                      */
-                    virtual void    Deactivating (Context& r);
+                    virtual void    Deactivating ();
                 };
 
 
@@ -395,7 +395,7 @@ namespace   Stroika {
                 public:
                     IgnoreNodeReader () = default;
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
                 };
 
 
@@ -405,15 +405,17 @@ namespace   Stroika {
                 class   ObjectReaderRegistry::ClassReader : public IElementConsumer {
                 public:
                     ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp);
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
-                    virtual void                            HandleTextInside (Context& r, const String& text) override;
-                    virtual void                            Deactivating (Context& r) override;
+                    virtual void                            Activated (Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
                 private:
-                    T*                                      fValuePtr_;
+                    Context*                                fActiveContext_             {};
+                    T*                                      fValuePtr_                  {};
                     Mapping<Name, StructFieldMetaInfo>      fFieldNameToTypeMap_;
                     Memory::Optional<StructFieldMetaInfo>   fValueFieldMetaInfo_;
                     shared_ptr<IElementConsumer>            fValueFieldConsumer_;
-                    bool                                    fThrowOnUnrecongizedelts_ { false };       // else ignore
+                    bool                                    fThrowOnUnrecongizedelts_   { false };       // else ignore
                 };
 
 
@@ -429,7 +431,7 @@ namespace   Stroika {
                     ReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
 
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
 
                 private:
                     shared_ptr<IElementConsumer>    fReader2Delegate2_;
@@ -454,44 +456,44 @@ namespace   Stroika {
                     T*                          fValue_ {};
 
                 public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
-                    virtual void                            HandleTextInside (Context& r, const String& text) override;
-                    virtual void                            Deactivating (Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
                 };
 
 
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<String>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<bool>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<float>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<double>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ();
                 template <>
-                void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating (Context& r);
+                void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ();
 
 
                 /**
@@ -507,15 +509,18 @@ namespace   Stroika {
                     ListOfObjectReader (CONTAINER_OF_T* v);
                     ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
-                    virtual void                            Deactivating (Context& r) override;
+                public:
+                    virtual void                            Activated (Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            Deactivating () override;
 
                 private:
-                    bool                    fReadingAT_;
+                    Context*                fActiveContext_             {};
+                    bool                    fReadingAT_                 { false };
                     ElementType             fCurTReading_;
                     Memory::Optional<Name>  fMemberElementName_;
                     CONTAINER_OF_T*         fValuePtr_;
-                    bool                    fThrowOnUnrecongizedelts_ { false };
+                    bool                    fThrowOnUnrecongizedelts_   { false };
                 };
 
 
@@ -534,16 +539,16 @@ namespace   Stroika {
                 public:
                     OptionalTypesReader_ (Memory::Optional<T>* intoVal);
 
+                public:
+                    virtual void                            Activated (Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void                            HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
+
                 private:
                     Memory::Optional<T>*            fValue_         {};
                     T                               fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
-
-                public:
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
-                    virtual void                            HandleTextInside (Context& r, const String& text) override;
-                    virtual void                            Activated (Context& r) override;
-                    virtual void                            Deactivating (Context& r) override;
                 };
 
 
