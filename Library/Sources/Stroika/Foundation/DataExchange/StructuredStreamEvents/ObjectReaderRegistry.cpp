@@ -38,30 +38,33 @@ using   Time::TimeOfDay;
 
 
 
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
 
-#if 0
 /*
  ********************************************************************************
- ********************* DataExchange::ObjectReaderRegistry ***********************
+ ***************** ObjectReaderRegistry::IElementConsumer ***********************
  ********************************************************************************
  */
-ObjectReaderRegistry::IConsumerDelegateToContext    ObjectReaderRegistry::MakeDelegator (const shared_ptr<ObjectReaderRegistry::IElementConsumer>& topLevelElementBuilder) const
+shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::IElementConsumer::HandleChildStart (Context& r, const Name& name)
 {
-    return move (ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { *this, make_shared<ObjectReaderRegistry::ReadDownToReader> (topLevelElementBuilder) })));
+    return nullptr;
 }
 
-ObjectReaderRegistry::IConsumerDelegateToContext    ObjectReaderRegistry::MakeDelegator (const shared_ptr<ObjectReaderRegistry::IElementConsumer>& firstElementNamedBuilder, const Name& name) const
+void    ObjectReaderRegistry::IElementConsumer::HandleTextInside (Context& r, const String& text)
 {
-    return move (ObjectReaderRegistry::IConsumerDelegateToContext (move (ObjectReaderRegistry::Context { *this, make_shared<ObjectReaderRegistry::ReadDownToReader> (firstElementNamedBuilder, name) })));
 }
 
-#endif
+void    ObjectReaderRegistry::IElementConsumer::Activated (Context& r)
+{
+}
+
+void    ObjectReaderRegistry::IElementConsumer::Deactivating (Context& r)
+{
+}
 
 
 /*

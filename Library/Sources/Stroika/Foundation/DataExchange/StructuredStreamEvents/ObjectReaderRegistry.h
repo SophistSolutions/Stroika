@@ -289,24 +289,24 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name)  { return nullptr; };
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name);
 
                 public:
                     /**
                      */
-                    virtual void    HandleTextInside (Context& r, const String& text) {};
+                    virtual void    HandleTextInside (Context& r, const String& text);
 
                 public:
                     /**
                      *  pushed onto context stack
                      */
-                    virtual void    Activated (Context& r) {};
+                    virtual void    Activated (Context& r);
 
                 public:
                     /**
                      * About to pop from ontext stack
                      */
-                    virtual void    Deactivating (Context& r) {};
+                    virtual void    Deactivating (Context& r);
                 };
 
 

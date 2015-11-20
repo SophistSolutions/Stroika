@@ -20,7 +20,7 @@ namespace   Stroika {
 
                 /*
                   ********************************************************************************
-                  ****************** ObjectReaderRegistry::Context *******************************
+                  ******************** ObjectReaderRegistry::Context *****************************
                   ********************************************************************************
                   */
                 inline   ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
@@ -346,7 +346,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******* ObjectReaderRegistry::OptionalTypesReader_<T, ACTUAL_READER> ***********
+                 ************* ObjectReaderRegistry::OptionalTypesReader_<T> ********************
                  ********************************************************************************
                  */
                 template    <typename   T>
