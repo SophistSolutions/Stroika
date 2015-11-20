@@ -80,8 +80,8 @@ namespace   Stroika {
             inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions)
             {
 #if     qDebug
-                for (auto f : fieldInfo) {
-                    Require (fTypeMappingRegistry_.fSerializers.ContainsKey (f.fFieldMetaInfo.fTypeInfo));
+                for (auto f : fieldDescriptions) {
+                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                 }
 #endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
@@ -100,8 +100,8 @@ namespace   Stroika {
             inline  void    ObjectVariantMapper::AddClass (const Sequence<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
             {
 #if     qDebug
-                for (auto f : fieldInfo) {
-                    Require (fTypeMappingRegistry_.fSerializers.ContainsKey (f.fFieldMetaInfo.fTypeInfo));
+                for (auto f : fieldDescriptions) {
+                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                 }
 #endif
                 Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
