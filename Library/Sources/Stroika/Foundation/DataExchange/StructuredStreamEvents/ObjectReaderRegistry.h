@@ -450,8 +450,8 @@ namespace   Stroika {
                     SimpleReader_ (T* intoVal);
 
                 private:
-                    Characters::StringBuilder   fBuf_;
-                    T*                          fValue_;
+                    Characters::StringBuilder   fBuf_   {};
+                    T*                          fValue_ {};
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
@@ -535,13 +535,14 @@ namespace   Stroika {
                     OptionalTypesReader_ (Memory::Optional<T>* intoVal);
 
                 private:
-                    Memory::Optional<T>*    fValue_;
-                    T                       fProxyValue_;
-                    SimpleReader_<T>        fActualReader_;  // this is why its crucial this partial specialization is only used on optional of types a real reader is available for
+                    Memory::Optional<T>*            fValue_         {};
+                    T                               fProxyValue_    {};
+                    shared_ptr<IElementConsumer>    fActualReader_  {};
 
                 public:
                     virtual shared_ptr<IElementConsumer>    HandleChildStart (Context& r, const Name& name) override;
                     virtual void                            HandleTextInside (Context& r, const String& text) override;
+                    virtual void                            Activated (Context& r) override;
                     virtual void                            Deactivating (Context& r) override;
                 };
 

@@ -320,8 +320,7 @@ namespace   Stroika {
                  */
                 template    <typename   T>
                 ObjectReaderRegistry::SimpleReader_<T>::SimpleReader_ (T* intoVal)
-                    : fBuf_ ()
-                    , fValue_ (intoVal)
+                    : fValue_ (intoVal)
                 {
                 }
                 template    <typename   T>
@@ -337,12 +336,10 @@ namespace   Stroika {
                 template    <typename   T>
                 void   ObjectReaderRegistry::SimpleReader_<T>::Deactivating (Context& r)
                 {
-#if 0
 #if     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
                     RequireNotReached ();
 #else
                     static_assert (false, "Only specifically specialized variants are supported");
-#endif
 #endif
                 }
 
@@ -355,24 +352,32 @@ namespace   Stroika {
                 template    <typename   T>
                 inline  ObjectReaderRegistry::OptionalTypesReader_<T>::OptionalTypesReader_ (Memory::Optional<T>* intoVal)
                     : fValue_ (intoVal)
-                    , fProxyValue_ ()
-                    , fActualReader_ (&fProxyValue_)
                 {
                 }
                 template    <typename   T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleChildStart (Context& r, const StructuredStreamEvents::Name& name)
                 {
-                    return fActualReader_.HandleChildStart (r, name);
+                    AssertNotNull (fActualReader_);
+                    return fActualReader_->HandleChildStart (r, name);
                 }
                 template    <typename   T>
                 void    ObjectReaderRegistry::OptionalTypesReader_<T>::HandleTextInside (Context& r, const String& text)
                 {
-                    fActualReader_.HandleTextInside (r, text);
+                    AssertNotNull (fActualReader_);
+                    fActualReader_->HandleTextInside (r, text);
+                }
+                template    <typename   T>
+                void    ObjectReaderRegistry::OptionalTypesReader_<T>::Activated (Context& r)
+                {
+                    Assert (fActualReader_ == nullptr);
+                    fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+                    fActualReader_->Activated (r);
                 }
                 template    <typename   T>
                 void    ObjectReaderRegistry::OptionalTypesReader_<T>::Deactivating (Context& r)
                 {
-                    fActualReader_.Deactivating (r);
+                    AssertNotNull (fActualReader_);
+                    fActualReader_->Deactivating (r);
                     *fValue_ = fProxyValue_;
                 }
 
