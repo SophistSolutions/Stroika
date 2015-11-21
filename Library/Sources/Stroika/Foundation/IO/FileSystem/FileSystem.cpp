@@ -13,6 +13,7 @@
 #if     qPlatform_Linux
 #include    <linux/limits.h>
 #endif
+#include    "../../Characters/Format.h"
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Containers/Set.h"
 #if     qPlatform_Windows
@@ -397,7 +398,7 @@ void        IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
         Execution::ThrowErrNoIfNegative (::unlink (fileName.AsNarrowSDKString ().c_str ()));
 #endif
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
 }
 
 void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
@@ -414,7 +415,55 @@ void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
             }
         }
     }
-    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
+}
+
+void        IO::FileSystem::FileSystem::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
+{
+    bool    triedRMRF { false };
+Again:
+    try {
+#if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
+        int r = ::_wrmdir (directory.c_str ());
+#else
+        int r = ::rmdir (fileName.AsNarrowSDKString ().c_str ());
+#endif
+        if (r < 0) {
+            if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
+                // @todo - HORRIBLE HACK - but I hope adequate
+                (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
+                triedRMRF = true;
+                goto Again;
+            }
+            errno_ErrorException::DoThrow (errno);
+        }
+    }
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
+}
+
+void        IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
+{
+    bool    triedRMRF { false };
+Again:
+    try {
+#if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
+        int r = ::_wrmdir (directory.c_str ());
+#else
+        int r = ::rmdir (fileName.AsNarrowSDKString ().c_str ());
+#endif
+        if (r < 0) {
+            if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
+                // @todo - HORRIBLE HACK - but I hope adequate
+                (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
+                triedRMRF = true;
+                goto Again;
+            }
+            if (errno != ENOENT) {
+                errno_ErrorException::DoThrow (errno);
+            }
+        }
+    }
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
 }
 
 String  IO::FileSystem::FileSystem::GetCurrentDirectory () const

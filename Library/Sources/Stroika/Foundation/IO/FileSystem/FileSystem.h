@@ -163,6 +163,26 @@ namespace   Stroika {
 
                 public:
                     /**
+                     */
+                    enum    RemoveDirectoryPolicy {
+                        eFailIfNotEmpty,
+                        eRemoveAnyContainedFiles,
+                    };
+
+                public:
+                    /**
+                     *  @see RemoveDirectoryIf
+                     */
+                    nonvirtual  void        RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+
+                public:
+                    /**
+                     *  @see RemoveDirectory
+                     */
+                    nonvirtual  void        RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
+
+                public:
+                    /**
                      *  Wrapper on platform GetCurrentDirectory () or getcwd()
                      */
                     nonvirtual  String  GetCurrentDirectory () const;
