@@ -1,11 +1,7 @@
 CONFIGURATION 			?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
-ifeq (,$(findstring CYGWIN,$(shell uname)))
-ALL_CONFIGURATIONS		=	$(CONFIGURATION)
-else
-ALL_CONFIGURATIONS		=	Debug-U-32 Debug-U-64 Release-DbgMemLeaks-U-32 Release-Logging-U-32 Release-Logging-U-64 Release-U-32 Release-U-64
-endif
+ALL_CONFIGURATIONS		=	$(shell ScriptsLib/GetConfigurations.sh)
 
 .NOTPARALLEL: run-tests check apply-configurations third-party-libs
 .PHONY:	tests documentation all check clobber libraries
@@ -164,8 +160,15 @@ endif
 
 
 apply-configurations-if-needed:
-	@test -e ConfigurationFiles/DefaultConfiguration.xml || $(MAKE) default-configuration --no-print-directory
-	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || $(MAKE) apply-configurations --no-print-directory
+	@#if no configurations, create default
+ifeq ($(ALL_CONFIGURATIONS),)
+	@$(MAKE) default-configuration --no-print-directory
+endif
+	@for i in $(ALL_CONFIGURATIONS) ; do\
+		if [ ! -e IntermediateFiles/$$i ] ; then\
+			$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
+		fi;\
+	done
 
 apply-configurations:
 	@for i in $(ALL_CONFIGURATIONS);\
@@ -192,3 +195,11 @@ endif
 
 default-configuration:
 	@./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
+	@if [ `uname -o` == Cygwin ] ; then\
+		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-DbgMemLeaks-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+	fi
