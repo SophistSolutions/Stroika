@@ -1755,6 +1755,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2669,6 +2672,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
 </Project>
