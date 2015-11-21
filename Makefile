@@ -1,8 +1,6 @@
 CONFIGURATION 			?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
-ALL_CONFIGURATIONS		=	$(shell ScriptsLib/GetConfigurations.sh)
-
 .NOTPARALLEL: run-tests check apply-configurations third-party-libs
 .PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
@@ -158,21 +156,21 @@ endif
 
 
 
+	
 
 apply-configurations-if-needed:
 	@#if no configurations, create default
-ifeq ($(ALL_CONFIGURATIONS),)
+ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
 	@$(MAKE) default-configuration --no-print-directory
 endif
-	@for i in $(ALL_CONFIGURATIONS) ; do\
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		if [ ! -e IntermediateFiles/$$i ] ; then\
 			$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
 		fi;\
 	done
 
 apply-configurations:
-	@for i in $(ALL_CONFIGURATIONS);\
-	do\
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
 	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
@@ -194,6 +192,7 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 endif
 
 default-configuration:
+	@echo Making default configurations...
 	@./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
 	@if [ `uname -o` == Cygwin ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
