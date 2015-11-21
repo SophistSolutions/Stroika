@@ -19,10 +19,10 @@ namespace   Stroika {
 
 
                 /*
-                  ********************************************************************************
-                  ******************** ObjectReaderRegistry::Context *****************************
-                  ********************************************************************************
-                  */
+                 ********************************************************************************
+                 ********************** ObjectReaderRegistry::Context ***************************
+                 ********************************************************************************
+                 */
                 inline   ObjectReaderRegistry::Context::Context (const ObjectReaderRegistry& objectReaderRegistry)
                     : fObjectReaderRegistry_ (objectReaderRegistry)
                 {
@@ -102,6 +102,7 @@ namespace   Stroika {
                 ObjectReaderRegistry::ClassReader<T>::ClassReader (const Mapping<Name, StructFieldMetaInfo>& maps, T* vp)
                     : fValuePtr_ (vp)
                 {
+                    RequireNotNull (vp);
                     for (Common::KeyValuePair<Name, StructFieldMetaInfo> i : maps) {
                         if (i.fKey.fType == Name::eValue) {
                             fValueFieldMetaInfo_ = i.fValue;
@@ -170,12 +171,14 @@ namespace   Stroika {
                 ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
                     : fValuePtr_ (v)
                 {
+                    RequireNotNull (v);
                 }
                 template    <typename CONTAINER_OF_T>
                 ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
                     : fMemberElementName_  (memberElementName)
                     , fValuePtr_ (v)
                 {
+                    RequireNotNull (v);
                 }
                 template    <typename CONTAINER_OF_T>
                 void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::Activated (Context& r)
@@ -241,7 +244,7 @@ namespace   Stroika {
                     return factory (destinationObject);
                 }
                 template    <typename T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
+                inline  shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::MakeContextReader (T* destinationObject) const
                 {
                     return MakeContextReader (typeid (T), destinationObject);
                 }
@@ -263,7 +266,11 @@ namespace   Stroika {
                 {
 #if     qDebug
                     for (auto kv : fieldInfo) {
-                        Require (fFactories_.ContainsKey (kv.fValue.fTypeInfo));
+                        if (not fFactories_.ContainsKey (kv.fValue.fTypeInfo)) {
+                            Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::AddClass");
+                            DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", kv.fValue.fTypeInfo.name ());
+                            RequireNotReached ();
+                        }
                     }
 #endif
                     Add<CLASS> (MakeClassReader<CLASS> (fieldInfo));
@@ -332,15 +339,17 @@ namespace   Stroika {
                     DISABLE_COMPILER_MSC_WARNING_END (6011)
                 }
 
+
                 /*
                  ********************************************************************************
                  ******************* ObjectReaderRegistry::SimpleReader_ ************************
                  ********************************************************************************
                  */
                 template    <typename   T>
-                ObjectReaderRegistry::SimpleReader_<T>::SimpleReader_ (T* intoVal)
+                inline  ObjectReaderRegistry::SimpleReader_<T>::SimpleReader_ (T* intoVal)
                     : fValue_ (intoVal)
                 {
+                    RequireNotNull (intoVal);
                 }
                 template    <typename   T>
                 shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::SimpleReader_<T>::HandleChildStart (const StructuredStreamEvents::Name& name)
@@ -372,6 +381,7 @@ namespace   Stroika {
                 inline  ObjectReaderRegistry::OptionalTypesReader_<T>::OptionalTypesReader_ (Memory::Optional<T>* intoVal)
                     : fValue_ (intoVal)
                 {
+                    RequireNotNull (intoVal);
                 }
                 template    <typename   T>
                 void    ObjectReaderRegistry::OptionalTypesReader_<T>::Activated (Context& r)

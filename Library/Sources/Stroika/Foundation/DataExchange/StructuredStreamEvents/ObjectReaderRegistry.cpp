@@ -8,7 +8,6 @@
 #include    "../../Characters/Format.h"
 #include    "../../Characters/String2Int.h"
 #include    "../../Characters/String_Constant.h"
-#include    "../../Containers/MultiSet.h"
 #include    "../../Debug/Trace.h"
 #include    "../../Time/Date.h"
 #include    "../../Time/DateRange.h"
@@ -18,7 +17,6 @@
 #include    "../../Time/DurationRange.h"
 
 #include    "../BadFormatException.h"
-#include    "../XML/SAXReader.h"
 
 #include    "ObjectReaderRegistry.h"
 
@@ -87,7 +85,6 @@ void   ObjectReaderRegistry::SimpleReader_<char>::Deactivating ()
 template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned char>::Deactivating ()
 {
-    //@ todo fix
     *fValue_ = Characters::String2Int<unsigned char> (fBuf_.str ());
 }
 
@@ -100,7 +97,6 @@ void   ObjectReaderRegistry::SimpleReader_<short>::Deactivating ()
 template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned short>::Deactivating ()
 {
-    //@ todo fix
     *fValue_ = Characters::String2Int<unsigned short> (fBuf_.str ());
 }
 
@@ -113,7 +109,6 @@ void   ObjectReaderRegistry::SimpleReader_<int>::Deactivating ()
 template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned int>::Deactivating ()
 {
-    //@ todo fix
     *fValue_ = Characters::String2Int<unsigned int> (fBuf_.str ());
 }
 
@@ -126,7 +121,6 @@ void   ObjectReaderRegistry::SimpleReader_<long int>::Deactivating ()
 template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned long int>::Deactivating ()
 {
-    //@ todo fix
     *fValue_ = Characters::String2Int<unsigned long int> (fBuf_.str ());
 }
 
@@ -139,7 +133,6 @@ void   ObjectReaderRegistry::SimpleReader_<long long int>::Deactivating ()
 template <>
 void   ObjectReaderRegistry::SimpleReader_<unsigned long long int>::Deactivating ()
 {
-    //@ todo fix
     *fValue_ = Characters::String2Int<unsigned long long int> (fBuf_.str ());
 }
 
@@ -175,11 +168,6 @@ void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ()
 }
 
 
-
-
-
-
-
 /*
  ********************************************************************************
  ******************** ObjectReaderRegistry::IgnoreNodeReader ********************
@@ -189,12 +177,6 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Igno
 {
     return shared_from_this ();
 }
-
-
-
-
-
-
 
 
 /*
@@ -215,8 +197,6 @@ String ObjectReaderRegistry::Context::TraceLeader_ () const
     return kOneTabLevel_.Repeat (static_cast<unsigned int> (fStack_.size ()));
 }
 #endif
-
-
 
 
 /*
@@ -258,7 +238,6 @@ void    ObjectReaderRegistry::IConsumerDelegateToContext::TextInsideElement (con
 }
 
 
-
 /*
  ********************************************************************************
  ****************** ObjectReaderRegistry::ReadDownToReader **********************
@@ -288,10 +267,6 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Read
 }
 
 
-
-
-
-
 /*
  ********************************************************************************
  ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
@@ -301,10 +276,3 @@ void    _NoReturn_  StructuredStreamEvents::ThrowUnRecognizedStartElt (const Str
 {
     Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }
-
-
-
-
-
-
-
