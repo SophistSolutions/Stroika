@@ -729,6 +729,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Process.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1722,6 +1725,18 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2624,6 +2639,18 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl">
+      <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl">
+      <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Lockable.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
