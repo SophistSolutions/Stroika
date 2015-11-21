@@ -426,7 +426,7 @@ Again:
 #if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
         int r = ::_wrmdir (directory.c_str ());
 #else
-        int r = ::rmdir (fileName.AsNarrowSDKString ().c_str ());
+        int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
@@ -449,7 +449,7 @@ Again:
 #if     qPlatform_Windows && qTargetPlatformSDKUseswchar_t
         int r = ::_wrmdir (directory.c_str ());
 #else
-        int r = ::rmdir (fileName.AsNarrowSDKString ().c_str ());
+        int r = ::rmdir (directory.AsNarrowSDKString ().c_str ());
 #endif
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
