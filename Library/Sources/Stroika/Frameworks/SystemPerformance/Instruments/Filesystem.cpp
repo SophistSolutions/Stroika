@@ -1352,7 +1352,7 @@ namespace {
                 DWORD dwBytesReturned {};
                 BOOL bResult = ::DeviceIoControl (hHandle, IOCTL_DISK_GET_LENGTH_INFO, NULL, 0, &li, sizeof(li), &dwBytesReturned, NULL);
                 ::CloseHandle (hHandle);
-                PhysicalDriveInfo_  di { GetPhysNameForDriveNumber_ (i), li.Length.QuadPart };
+                PhysicalDriveInfo_  di { GetPhysNameForDriveNumber_ (i), static_cast<uint64_t> (li.Length.QuadPart) };
                 x.Add (di);
             }
             return x;

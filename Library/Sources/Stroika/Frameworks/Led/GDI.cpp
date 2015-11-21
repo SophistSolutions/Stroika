@@ -3337,7 +3337,7 @@ wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
             LONG nChars  =  fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, NEltsOf (curIMEString));
 
             nChars /= sizeof (wchar_t);     // why???? LGP 991214
-            if (nChars >= 0 and nChars < NEltsOf (curIMEString)) {
+            if (nChars >= 0 and static_cast<size_t> (nChars) < NEltsOf (curIMEString)) {
                 curIMEString[nChars] = '\0';
             }
             else {

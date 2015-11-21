@@ -2924,7 +2924,7 @@ public:
                 Execution::DoThrow (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
             }
             else if (err > 0) {
-                Assert (err <= NEltsOf(buf));
+                Assert (static_cast<size_t> (err) <= NEltsOf(buf));
                 tmpBuf.Write (buf, buf + err);
             }
         }
