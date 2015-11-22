@@ -4,7 +4,7 @@ if ($BLD_TRG eq '') {
 }
 
 require "../../../../ScriptsLib/ConfigurationReader.pl";
-require "../../../../Library/Projects/" . GetProjectPlatformSubdir () . "/SetupBuildCommonVars.pl";
+require "../../../../Library/Projects/" . GetProjectPlatformSubdir ("DefaultConfiguration") . "/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 

@@ -151,7 +151,6 @@ sub     GetGCCVersion_
 	return trim (`$x --version | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
 }
 
-
 sub     GetClangVersion_
 {
     my $x = shift(@_);

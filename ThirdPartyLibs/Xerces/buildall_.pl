@@ -13,8 +13,8 @@ if ($BLD_TRG eq '') {
 require "../../ScriptsLib/ConfigurationReader.pl";
 
 
-
-my $projectPlatformSubdir = GetProjectPlatformSubdir();
+my $activeConfig = "DefaultConfiguration";
+my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
 print ($projectPlatformSubdir);
 
@@ -56,7 +56,8 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	system ("make --directory CURRENT --no-print-directory -s all");
 }
 else {
-	my $myPlatformSubDir =	GetProjectPlatformSubdir ();
+    my $activeConfig = "DefaultConfiguration";
+	my $myPlatformSubDir =	GetProjectPlatformSubdir ($activeConfig);
 	print ("Target Platform subdir: $myPlatformSubDir\n");
 	my $myBinOutDir = '';
 	if ($myPlatformSubDir eq 'VisualStudio.Net-2013') {

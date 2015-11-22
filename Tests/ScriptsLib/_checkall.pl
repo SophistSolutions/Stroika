@@ -4,7 +4,7 @@ require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
 print ("Checking Tests...\n");
-my $checkallDir = "Projects/" . GetProjectPlatformSubdir ();
+my $checkallDir = "Projects/" . GetProjectPlatformSubdir ("DefaultConfiguration");
 
 use Cwd;
 use Cwd 'abs_path';

@@ -14,9 +14,4 @@ require "$thisScriptDir/ConfigurationReader.pl";
 
 my $configuratioName=$ARGV[0];
 my $envVarName=$ARGV[1];
-if ($envVarName eq "DefaultConfiguration") {
-	print "DefaultConfiguration";
-}
-else {
-	print GetConfigurationParameter($envVarName);
-}
+print GetConfigurationParameter($configuratioName, $envVarName);

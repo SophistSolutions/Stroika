@@ -6,7 +6,7 @@
 require "../../../ScriptsLib/ConfigurationReader.pl";
 
 
-my $projectPlatformSubdir = GetProjectPlatformSubdir ();
+my $projectPlatformSubdir = GetProjectPlatformSubdir ("DefaultConfiguration");
 
 #CRUDDY IMPL - but avoid runnign 64 bit binaries on 32-bit OS
 sub bitter {

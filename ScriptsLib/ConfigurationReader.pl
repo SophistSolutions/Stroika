@@ -62,9 +62,7 @@ sub	ReadValue_ {
 }
 
 sub	ReadConfigFile_ {
-
 	my $myDirName	=	GetThisScriptDir ();
-
 
 	open (FILE, "$masterXMLConfigFile") or $fileErr = "Unable to open $masterXMLConfigFile";
 	if ($fileErr ne '') {
@@ -191,32 +189,36 @@ sub	ReadConfigFile_ {
 
 ### PUBLIC APIS
 sub	GetProjectPlatformSubdir {
-	if ($fileErr ne "") {
-		print ("Cannot GetProjectPlatformSubdir: $fileErr");
-		exit (1);
-	}
-	if ($configuration{'ProjectPlatformSubdir'} eq "") {
-		die ("GetProjectPlatformSubdir () EMPTY\n");
-	}
-	return $configuration{'ProjectPlatformSubdir'};
+    my $configName =  $_[0];
+	return GetConfigurationParameter($configName, 'ProjectPlatformSubdir');
 }
 
 sub	GetProjectPlatformSubdirIfAny {
-	if ($fileErr ne "") {
-		return "";
-	}
-	if ($configuration{'ProjectPlatformSubdir'} eq "") {
-		return "";
-	}
-	return $configuration{'ProjectPlatformSubdir'};
+    my $configName =  $_[0];
+	return GetConfigurationParameter($configName, 'ProjectPlatformSubdir');
 }
 
+my $lastReadConfig	=	null;
+
 sub	GetConfigurationParameter {
+    my $configName =  $_[0];
 	if ($fileErr ne "") {
 		print ("Cannot GetConfigurationParameter: $fileErr");
 		exit (1);
 	}
-	my $paramName = shift;
+
+	if ($lastReadConfig ne $configName) {
+		@useExtraCDefines = ();
+		@useExtraMakeDefines = ();
+		%configuration = ();
+
+		$masterXMLConfigFile	=	"$configurationFiles/$configName.xml";
+
+		ReadConfigFile_ ();
+		$lastReadConfig = $configName;
+	}
+
+	my $paramName = $_[1];
 	
 	# crazy hack cuz storing arrays into a hash screws them up in perl. What a terrible
 	# language  choice!
@@ -230,33 +232,4 @@ sub	GetConfigurationParameter {
 	return $configuration{$paramName};
 }
 
-
-###tmphack - later enum configs and make above stuff 
-sub	GetConfigurations {
-	@names = ("DefaultConfiguration");
-	return @names;
-}
-
-### we probably will run makefiles with 'all configs' or specific config. We 
-### may set that current config into an environent var. But for now - just
-### return magic value - config NAME
-sub	GetActiveConfigurationName {
-	return "DefaultConfiguration";
-}
-
-
-
-
-###PRIVATE
-sub Prepare_ () {
-	if ($#configuration < 0) {
-		ReadConfigFile_ ();
-	}
-	#comment in to see values
-	#print "CONFIGURE-ProjectPlatformSubdir: ", GetProjectPlatformSubdir(), "\n";
-	return 1;
-}
-
-
-
-Prepare_ ();
+1

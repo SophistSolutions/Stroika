@@ -104,33 +104,34 @@ sub	ConfigParam2BoolInt
 
 sub	ReadConfiguration_
 {
-	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter("ProjectPlatformSubdir");
-	$COMPILER_DRIVER_C = GetConfigurationParameter("CompilerDriver-C");
-	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter("CompilerDriver-C++");
-	$AR = GetConfigurationParameter("AR");
-	$RANLIB = GetConfigurationParameter("RANLIB");
-	$EXTRA_COMPILER_ARGS = GetConfigurationParameter("EXTRA_COMPILER_ARGS");
-	$EXTRA_LINKER_ARGS = GetConfigurationParameter("EXTRA_LINKER_ARGS");
+	my $activeConfiguraiton = "DefaultConfiguration";
+	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguraiton, "ProjectPlatformSubdir");
+	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguraiton, "CompilerDriver-C");
+	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguraiton, "CompilerDriver-C++");
+	$AR = GetConfigurationParameter($activeConfiguraiton, "AR");
+	$RANLIB = GetConfigurationParameter($activeConfiguraiton, "RANLIB");
+	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguraiton, "EXTRA_COMPILER_ARGS");
+	$EXTRA_LINKER_ARGS = GetConfigurationParameter($activeConfiguraiton, "EXTRA_LINKER_ARGS");
 
-	$FEATUREFLAG_LIBCURL = GetConfigurationParameter("qFeatureFlag_LibCurl");
-	$FEATUREFLAG_OpenSSL = GetConfigurationParameter("qFeatureFlag_OpenSSL");
-	$FEATUREFLAG_WinHTTP = GetConfigurationParameter("qFeatureFlag_WinHTTP");
-	$FEATUREFLAG_ATLMFC = GetConfigurationParameter("qFeatureFlag_ATLMFC");
-	$FEATUREFLAG_XERCES = GetConfigurationParameter("qFeatureFlag_Xerces");
-	$FEATUREFLAG_ZLib = GetConfigurationParameter("qFeatureFlag_ZLib");
-	$FEATUREFLAG_LZMA = GetConfigurationParameter("qFeatureFlag_LZMA");
-	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
-	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_GLIBCXX_DEBUG"));
-	$CPPSTD_VERSION_FLAG = GetConfigurationParameter("CPPSTD_VERSION_FLAG");
-	$CWARNING_FLAGS = GetConfigurationParameter("CWARNING_FLAGS");
+	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_LibCurl");
+	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_OpenSSL");
+	$FEATUREFLAG_WinHTTP = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_WinHTTP");
+	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_ATLMFC");
+	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_Xerces");
+	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_ZLib");
+	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_LZMA");
+	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_ASSERTIONS"));
+	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_GLIBCXX_DEBUG"));
+	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguraiton, "CPPSTD_VERSION_FLAG");
+	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguraiton, "CWARNING_FLAGS");
 	
-	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_TRACE2FILE"));
-	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbolsInExecutables"));
-	$COPTIMIZE_FLAGS = GetConfigurationParameter("OptimizerFlag");
+	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_TRACE2FILE"));
+	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "IncludeDebugSymbolsInExecutables"));
+	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguraiton, "OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
 	}
-	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter("STATIC_LINK_GCCRUNTIME"));
+	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "STATIC_LINK_GCCRUNTIME"));
 
 
 	foreach $cdef (GetConfigurationParameter("ExtraCDefines")) {

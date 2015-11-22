@@ -10,8 +10,8 @@ sub signal_handler {
     die "Caught a signal $!";
 }
 
-my $activeConfig = GetActiveConfigurationName ();
-my $projectPlatformSubdir = GetProjectPlatformSubdir();
+my $activeConfig = "DefaultConfiguration";
+my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
@@ -24,7 +24,6 @@ $level=0;
 print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...\n");
 
 my $useBld = lc ($BLD_TRG);
-
 
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	if ($useBld eq "build") {

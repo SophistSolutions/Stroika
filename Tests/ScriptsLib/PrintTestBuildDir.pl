@@ -12,6 +12,6 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require "$thisScriptDir/../../ScriptsLib/ConfigurationReader.pl";
 require "$thisScriptDir/TestsList.pl";
-my $runAllDir   = "Projects/" . GetProjectPlatformSubdir ();
+my $runAllDir   = "Projects/" . GetProjectPlatformSubdir ("DefaultConfiguration");
 
 print "$runAllDir"
