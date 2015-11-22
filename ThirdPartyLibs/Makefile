@@ -1,4 +1,4 @@
-CONFIGURATION 			?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
+CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
