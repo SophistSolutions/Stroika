@@ -177,19 +177,11 @@ apply-configurations:
 
 apply-configuration:
 	@echo "Applying configuration $(CONFIGURATION)..."
-ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@#tmphack
-	@mkdir -p IntermediateFiles/DefaultConfiguration
-endif
-	@#todo - must enahnce ApplyConfiguration to support configuration arg
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
-	@perl ScriptsLib/ApplyConfiguration.pl
+	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
 	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Configuration.h\""
-ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@cp IntermediateFiles/DefaultConfiguration/Stroika-Current-Configuration.h IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Configuration.h
-endif
 
 default-configuration:
 	@echo Making default configurations...

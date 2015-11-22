@@ -18,7 +18,8 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 
 my $intermediateFiles	=	"IntermediateFiles/";
-my $currentConfiguration	=	"DefaultConfiguration";
+my $currentConfiguration	=	$ARGV[0];
+
 
 my $PROJECTPLATFORMSUBDIR='';
 
