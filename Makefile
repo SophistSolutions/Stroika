@@ -186,7 +186,7 @@ apply-configuration:
 default-configuration:
 	@echo Making default configurations...
 	@./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
-	@if [ `uname -o` == Cygwin ] ; then\
+	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-DbgMemLeaks-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
