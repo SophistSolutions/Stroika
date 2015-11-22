@@ -18,7 +18,7 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 
 
 my $intermediateFiles	=	"IntermediateFiles/";
-my $currentConfiguration	=	$ARGV[0];
+my $activeConfiguration	=	$ARGV[0];
 
 
 my $PROJECTPLATFORMSUBDIR='';
@@ -104,44 +104,41 @@ sub	ConfigParam2BoolInt
 
 sub	ReadConfiguration_
 {
-	my $activeConfiguraiton = "DefaultConfiguration";
-	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguraiton, "ProjectPlatformSubdir");
-	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguraiton, "CompilerDriver-C");
-	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguraiton, "CompilerDriver-C++");
-	$AR = GetConfigurationParameter($activeConfiguraiton, "AR");
-	$RANLIB = GetConfigurationParameter($activeConfiguraiton, "RANLIB");
-	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguraiton, "EXTRA_COMPILER_ARGS");
-	$EXTRA_LINKER_ARGS = GetConfigurationParameter($activeConfiguraiton, "EXTRA_LINKER_ARGS");
+	$PROJECTPLATFORMSUBDIR = GetConfigurationParameter($activeConfiguration, "ProjectPlatformSubdir");
+	$COMPILER_DRIVER_C = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C");
+	$COMPILER_DRIVER_CPlusPlus = GetConfigurationParameter($activeConfiguration, "CompilerDriver-C++");
+	$AR = GetConfigurationParameter($activeConfiguration, "AR");
+	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
+	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
+	$EXTRA_LINKER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_LINKER_ARGS");
 
-	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_LibCurl");
-	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_OpenSSL");
-	$FEATUREFLAG_WinHTTP = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_WinHTTP");
-	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_ATLMFC");
-	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_Xerces");
-	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_ZLib");
-	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguraiton, "qFeatureFlag_LZMA");
-	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_ASSERTIONS"));
-	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_GLIBCXX_DEBUG"));
-	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguraiton, "CPPSTD_VERSION_FLAG");
-	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguraiton, "CWARNING_FLAGS");
-	
-	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "ENABLE_TRACE2FILE"));
-	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "IncludeDebugSymbolsInExecutables"));
-	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguraiton, "OptimizerFlag");
+	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LibCurl");
+	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_OpenSSL");
+	$FEATUREFLAG_WinHTTP = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_WinHTTP");
+	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ATLMFC");
+	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_Xerces");
+	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
+	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
+	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_ASSERTIONS"));
+	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
+	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguration, "CPPSTD_VERSION_FLAG");
+	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
+
+	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
+	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables"));
+	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
 	}
-	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguraiton, "STATIC_LINK_GCCRUNTIME"));
+	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "STATIC_LINK_GCCRUNTIME"));
 
-
-	foreach $cdef (GetConfigurationParameter("ExtraCDefines")) {
+	foreach $cdef (GetConfigurationParameter($activeConfiguration, "ExtraCDefines")) {
 		$useExtraCDefines[@useExtraCDefines] = $cdef;
 	}
 
-	foreach $mdef (GetConfigurationParameter("ExtraMakeDefines")) {
+	foreach $mdef (GetConfigurationParameter($activeConfiguration, "ExtraMakeDefines")) {
 		push (@useExtraMakeDefines, $mdef);
 	}
-
 
 	#print "PROJECTPLATFORMSUBDIR = $PROJECTPLATFORMSUBDIR\n";
 }
@@ -164,8 +161,8 @@ mkdir ($intermediateFiles);
 #
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
-my $configFileCName		=	"$intermediateFiles$currentConfiguration/Stroika-Current-Configuration.h";
-my $configFileMakeName	=	"$intermediateFiles$currentConfiguration/Library/Configuration.mk";
+my $configFileCName		=	"$intermediateFiles$activeConfiguration/Stroika-Current-Configuration.h";
+my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Library/Configuration.mk";
 
 
 my $stkRoot	=	trim(`realpath .`);
@@ -176,41 +173,41 @@ sub mkDirWithLinks
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
+	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
+	system ("ln $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks3
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
-	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
+	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 
 
 sub MakeUnixDirs {
 	if ($forceRecreate) {
-		system ("rm -rf $intermediateFiles/$currentConfiguration");
+		system ("rm -rf $intermediateFiles/$activeConfiguration");
 	}
-	unless (-e "$intermediateFiles/$currentConfiguration") {
-		mkdir "$intermediateFiles$currentConfiguration";
-		mkdir "$intermediateFiles$currentConfiguration/Library";
-		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation";
-		mkdir "$intermediateFiles$currentConfiguration/Library/Frameworks";
+	unless (-e "$intermediateFiles/$activeConfiguration") {
+		mkdir "$intermediateFiles$activeConfiguration";
+		mkdir "$intermediateFiles$activeConfiguration/Library";
+		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
+		mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
 
-		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Foundation $intermediateFiles/$currentConfiguration/Library/Foundation/Makefile");
-		#system ("cp Library/Projects/Unix/Configuration-Default.mk $intermediateFiles$currentConfiguration/Library/Configuration.mk");
-		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$currentConfiguration/Library/SharedBuildRules.mk");
-		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$currentConfiguration/Library/SharedMakeVariables.mk");
+		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Foundation $intermediateFiles/$activeConfiguration/Library/Foundation/Makefile");
+		#system ("cp Library/Projects/Unix/Configuration-Default.mk $intermediateFiles$activeConfiguration/Library/Configuration.mk");
+		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
+		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
 
 		mkDirWithLinks("Foundation/Cache", "Makefile-Foundation-Cache");
 		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
@@ -239,7 +236,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/DataExchange/XML", "Makefile-Foundation-DataExchange-XML");
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
-		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation/Execution/Platform";
+		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation/Execution/Platform";
 		mkDirWithLinks3("Foundation/Execution/Platform/AIX", "Makefile-Foundation-Execution-Platform-AIX");
 		mkDirWithLinks3("Foundation/Execution/Platform/POSIX", "Makefile-Foundation-Execution-Platform-POSIX");
 		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
@@ -255,7 +252,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 		mkDirWithLinks("Foundation/Traversal", "Makefile-Foundation-Traversal");
 
-		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Frameworks $intermediateFiles$currentConfiguration/Library/Frameworks/Makefile");
+		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Frameworks $intermediateFiles$activeConfiguration/Library/Frameworks/Makefile");
 
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
 		mkDirWithLinks("Frameworks/UPnP", "Makefile-Frameworks-UPnP");
@@ -267,35 +264,35 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Frameworks/SystemPerformance/Support", "Makefile-Frameworks-SystemPerformance-Support");
 		mkDirWithLinks("Frameworks/WebServer", "Makefile-Frameworks-WebServer");
 
-		mkdir "$intermediateFiles$currentConfiguration/Tools";
-		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/";
-		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer";
-		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks $intermediateFiles$currentConfiguration/Tools/Frameworks/Makefile");
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/Makefile");
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Tools";
+		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/";
+		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer";
+		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
+		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks $intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
+		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer $intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
+		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_ArchiveUtility";
-		system ("ln -s $stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_ArchiveUtility/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
+		system ("ln -s $stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPClient";
-		system ("ln -s $stkRoot/Samples/SSDPClient/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPClient";
+		system ("ln -s $stkRoot/Samples/SSDPClient/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SSDPClient/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPServer";
-		system ("ln -s $stkRoot/Samples/SSDPServer/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPServer/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPServer";
+		system ("ln -s $stkRoot/Samples/SSDPServer/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SSDPServer/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_SystemPerformanceClient";
-		system ("ln -s $stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SystemPerformanceClient/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient";
+		system ("ln -s $stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_WebServer";
-		system ("ln -s $stkRoot/Samples/WebServer/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_WebServer/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_WebServer";
+		system ("ln -s $stkRoot/Samples/WebServer/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_WebServer/Makefile");
 
-		mkdir "$intermediateFiles$currentConfiguration/Samples_SimpleService";
-		system ("ln -s $stkRoot/Samples/SimpleService/Projects/Unix/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
+		mkdir "$intermediateFiles$activeConfiguration/Samples_SimpleService";
+		system ("ln -s $stkRoot/Samples/SimpleService/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
 
 		foreach $tst (GetAllTests ()) {
-			mkdir "$intermediateFiles$currentConfiguration/Test$tst";
-			system ("ln -s $stkRoot/Tests/Projects/Unix/$tst/Makefile $intermediateFiles$currentConfiguration/Test$tst/Makefile");
+			mkdir "$intermediateFiles$activeConfiguration/Test$tst";
+			system ("ln -s $stkRoot/Tests/Projects/Unix/$tst/Makefile $intermediateFiles$activeConfiguration/Test$tst/Makefile");
 		}
 	}
 }
@@ -482,8 +479,8 @@ sub WriteStroikaConfigCHeader
 sub WriteStroikaConfigMakeHeader
 {
 	mkdir ("$intermediateFiles");
-	mkdir ("$intermediateFiles$currentConfiguration");
-	mkdir ("$intermediateFiles$currentConfiguration/Library");
+	mkdir ("$intermediateFiles$activeConfiguration");
+	mkdir ("$intermediateFiles$activeConfiguration/Library");
 	
 	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");

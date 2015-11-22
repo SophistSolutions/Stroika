@@ -64,6 +64,7 @@ sub	ReadValue_ {
 sub	ReadConfigFile_ {
 	my $myDirName	=	GetThisScriptDir ();
 
+	#print ("ENTERING ReadConfigFile_ ($masterXMLConfigFile)\n");
 	open (FILE, "$masterXMLConfigFile") or $fileErr = "Unable to open $masterXMLConfigFile";
 	if ($fileErr ne '') {
 		return;
@@ -202,6 +203,8 @@ my $lastReadConfig	=	null;
 
 sub	GetConfigurationParameter {
     my $configName =  $_[0];
+	#print ("ENTERING GetConfigurationParameter (configName = $configName)\n");
+
 	if ($fileErr ne "") {
 		print ("Cannot GetConfigurationParameter: $fileErr");
 		exit (1);
@@ -228,6 +231,8 @@ sub	GetConfigurationParameter {
 	if ($paramName eq "ExtraMakeDefines") {
 		return @useExtraMakeDefines;
 	}
+
+	#print ("RETURNING paramname=$paramName: $configuration{$paramName}\n");
 	
 	return $configuration{$paramName};
 }

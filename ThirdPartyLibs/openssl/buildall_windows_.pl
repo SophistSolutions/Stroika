@@ -12,7 +12,7 @@ require ("../../ScriptsLib/StringUtils.pl");
 #print "PATH=";
 #print (" $ENV{'PATH'};");
 
-my $projectPlatformSubdir = GetProjectPlatformSubdir();
+my $projectPlatformSubdir = GetProjectPlatformSubdir("DefaultConfiguration");
 
 
 if (index($projectPlatformSubdir, "VisualStudio") != -1) {
