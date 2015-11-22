@@ -200,5 +200,6 @@ default-configuration:
 		./configure Release-DbgMemLeaks-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-Logging-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-Logging-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
 	fi
