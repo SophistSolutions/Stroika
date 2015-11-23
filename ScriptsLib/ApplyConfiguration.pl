@@ -501,6 +501,7 @@ sub WriteStroikaConfigMakeHeader
 
 	
 	print (OUT "StroikaRoot=$stkRoot/\n");
+	print (OUT "CONFIGURATION=$activeConfiguration/\n");
 
 
 	if ($ENABLE_ASSERTIONS) {

@@ -18,7 +18,7 @@ endif
 
 
 ifndef StroikaPlatformTargetBuildDir
-	StroikaPlatformTargetBuildDir		=	$(StroikaRoot)Builds/DefaultConfiguration/
+	StroikaPlatformTargetBuildDir		=	$(StroikaRoot)Builds/$(CONFIGURATION)/
 endif
 
 ifndef StroikaLibDir
@@ -36,7 +36,7 @@ ifndef Includes
 endif
 
 Includes	+=	-I$(StroikaRoot)/Library/Sources/
-Includes	+=	-I$(StroikaRoot)/IntermediateFiles/DefaultConfiguration/
+Includes	+=	-I$(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
@@ -229,13 +229,10 @@ ifndef AR
 	AR	= ar
 endif
 
-
 ifndef RANLIB
 	RANLIB	= ranlib
 endif
 
-
-
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	=	"$(StroikaRoot)Builds/DefaultConfiguration/HTMLViewCompiler"
+	HTMLViewCompiler	=	"$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler"
 endif
