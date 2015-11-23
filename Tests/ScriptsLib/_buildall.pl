@@ -21,7 +21,7 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 
 my $level = $ENV{'MAKELEVEL'} - 1;
 $level=0;
-print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...\n");
+print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$CONFIGURATION} Tests...\n");
 
 my $useBld = lc ($BLD_TRG);
 
