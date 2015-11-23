@@ -10,7 +10,7 @@ sub signal_handler {
     die "Caught a signal $!";
 }
 
-my $activeConfig = "DefaultConfiguration";
+my $activeConfig = $ENV{'CONFIGURATION'};
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
 my $BLD_TRG = $ARGV[0];

@@ -44,31 +44,25 @@ my @kConfigurations = (
 					);
 
 
-print("   Building Stroika-Foundation...\n");
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$useBld");
+sub getCFGStr
+{
+	foreach (@kConfigurations) {
+		my $curConfig	=	$_;
+		if (index($curConfig, $ENV{'CONFIGURATION'}) != -1) {
+			return $curConfig;
+		}
+	}
+	die ("unrecognized config");
 }
 
+my $curConfig	=	getCFGStr ();
+
+print("   Building Stroika-Foundation...\n");
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$useBld");
 
 print("   Building Stroika-Frameworks...\n");
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebService.vcxproj /p:$curConfig /target:$useBld");
-}
-foreach (@kConfigurations) {
-	my $curConfig	=	$_;
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");
-}
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebService.vcxproj /p:$curConfig /target:$useBld");
+RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks.vcxproj /p:$curConfig /target:$useBld");

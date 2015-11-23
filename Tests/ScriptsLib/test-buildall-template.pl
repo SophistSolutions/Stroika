@@ -14,6 +14,32 @@ if (lc ($useBld) eq "clobber") {
 }
 
 
+
+my @kConfigurations = (
+					"Configuration=Debug-U-32,Platform=Win32",
+					"Configuration=Debug-U-64,Platform=x64",
+					"Configuration=Release-U-32,Platform=Win32",
+					"Configuration=Release-U-64,Platform=x64",
+					"Configuration=Release-Logging-U-32,Platform=Win32",
+					"Configuration=Release-Logging-U-64,Platform=x64",
+					"Configuration=Release-DbgMemLeaks-U-32,Platform=Win32"
+					);
+
+
+sub getCFGStr
+{
+	foreach (@kConfigurations) {
+		my $curConfig	=	$_;
+		if (index($curConfig, $ENV{'CONFIGURATION'}) != -1) {
+			return $curConfig;
+		}
+	}
+	die ("unrecognized config");
+}
+
+my $curConfig	=	getCFGStr ();
+
+
 use IPC::Open3;
 use Symbol qw(gensym);
 use IO::File;
@@ -33,15 +59,7 @@ sub RunAndPrint
 sub	DoRunBuilds {
 	my $solutionName = $_[0];
 	
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Debug-U-32,Platform=Win32 /target:$useBld");
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Debug-U-64,Platform=x64 /target:$useBld");
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-U-32,Platform=Win32 /target:$useBld");
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-U-64,Platform=x64 /target:$useBld");
-	
-	#RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-Logging-U-32,Platform=Win32 /target:$useBld");
-	#RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-Logging-U-64,Platform=x64 /target:$useBld");
-	
-	#RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-DbgMemLeaks-U-32,Platform=Win32 /target:$useBld");
+	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:$curConfig /target:$useBld");
 }
 
 1

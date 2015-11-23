@@ -70,7 +70,7 @@ project-files:
 
 tests:
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
-	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
+	@MAKEFLAGS= CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl build
 
 run-tests:
 ifeq ($(CONFIGURATION),)
