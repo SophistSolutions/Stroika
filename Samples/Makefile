@@ -69,7 +69,7 @@ samples:
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl);\
     	done	
-	@echo "Building Stroika Samples {$(CONFIGURATION)}...done"
+	@echo "Building Stroika {$(CONFIGURATION)} Samples...done"
 
 skel-usage_:
 	@echo "\tUsage: make skel SKEL_SRCPROJDIR=XX SKEL_TRGPROJDIR=XX SKEL_TRGPROJName=XX SKEL_PATH2Stroika=XX"
