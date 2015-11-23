@@ -1,3 +1,7 @@
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
@@ -60,7 +64,7 @@ clobber:	clean
 	@#done	
 
 samples:
-	@echo "Building Stroika Samples {$(CONFIGURATION)}..."
+	@echo "Building Stroika {$(CONFIGURATION)} Samples..."
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl);\

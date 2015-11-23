@@ -1,3 +1,7 @@
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .PHONY:	tests all check clobber
@@ -78,7 +82,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests {$(CONFIGURATION)}..."
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Stroka {$(CONFIGURATION)} Running Tests..."
 	@for i in $(TESTS);\
 	do\
 	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\

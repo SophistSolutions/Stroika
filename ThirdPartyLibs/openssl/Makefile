@@ -196,7 +196,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
-	@./buildall_windows_.pl > BUILD.OUT 2>&1;
+	@CONFIGURATION=$(CONFIGURAITON) ./buildall_windows_.pl > BUILD.OUT 2>&1;
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
