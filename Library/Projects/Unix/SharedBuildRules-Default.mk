@@ -36,5 +36,5 @@ list-objs::
 
 
 # default build rule - map (windowsish) top-level build arg to unixish name 'all'
-Build:	all
+#Build:	all
 
