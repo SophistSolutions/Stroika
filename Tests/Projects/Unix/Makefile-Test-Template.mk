@@ -11,7 +11,7 @@ endif
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Test$(TEST_NUM)
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)
 
 
 VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
