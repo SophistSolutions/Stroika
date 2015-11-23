@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 INDENT_LEVEL=0
@@ -12,7 +11,6 @@ else
 	@cd Projects/$(ProjectPlatformSubdir) && perl buildall.pl Build
 endif
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Building Stroika Library...done"
-
 
 check:
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo -n "Checking Stroika Library..."

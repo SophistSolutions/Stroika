@@ -1,6 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ScriptsLib/GetDefaultConfiguration.pl)
-ProjectPlatformSubdir	=	$(shell perl ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-
 .NOTPARALLEL: run-tests check apply-configurations third-party-libs
 .PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
@@ -32,24 +29,21 @@ help:
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
-	@$(MAKE) --no-print-directory check
-
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 check:
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
-	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
-	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) check
-	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
-	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= check
-
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 
 clean:
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Samples --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKEFLAGS= clean
-
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Tools --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 
 clobber:
 	@echo "Stroika Clobber..."
@@ -63,7 +57,13 @@ documentation:
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
-	@$(MAKE) --directory Library --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$$i;\
+	done
+else
+	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION)
+endif
 
 
 third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
