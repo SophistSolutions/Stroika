@@ -15,7 +15,6 @@ BASENAME=openssl-$(VERSION)
 TRGDIR=CURRENT
 EXTRACTED_DIRNAME=$(BASENAME)
 
-CONFIGURATION			?=   $(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
@@ -47,10 +46,10 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libcrypto.a				\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libssl.a					\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/bin/openssl					\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/openssl/aes.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libcrypto.a				\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libssl.a					\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/bin/openssl					\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/openssl/aes.h
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\

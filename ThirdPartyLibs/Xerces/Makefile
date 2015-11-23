@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .DEFAULT_GOAL := all
@@ -23,8 +22,8 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libxerces-c.a				\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/xercesc/dom/DOM.hpp
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libxerces-c.a				\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/xercesc/dom/DOM.hpp
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/xerces-c_static_3D.lib					\
@@ -111,8 +110,8 @@ else
 endif
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
 else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/

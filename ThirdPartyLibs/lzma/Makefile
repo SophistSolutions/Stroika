@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
@@ -46,10 +45,10 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/lzma.a				\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/7z.h		\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/7zCrc.h		\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/7zTypes.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/lzma.a				\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7z.h		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7zCrc.h		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7zTypes.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/lzma.lib						\
@@ -125,9 +124,9 @@ doBuilds:
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	$(MAKE) --directory CURRENT ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" LIBS="$(LIBS)"
-	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
-	mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/lzma/
-	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/
+	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/
 else
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \

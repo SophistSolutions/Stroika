@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
@@ -36,9 +35,9 @@ BUILDS_ROOT=../../Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libz.a			\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/zlib.h		\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/zconf.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libz.a			\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/zlib.h		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/zconf.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/zlib.lib					\
@@ -119,8 +118,8 @@ doBuilds:
 	@make doBuildInternal_ > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
 else
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/

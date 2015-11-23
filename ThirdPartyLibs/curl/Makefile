@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
@@ -7,7 +6,7 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 
 DoCreateSymLink=0
 
--include $(shell pwd)/../../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
+-include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 
 VERSION=7_45_0
@@ -48,8 +47,8 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/libcurl.a				\
-	$(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/curl/curl.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libcurl.a				\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/curl/curl.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/curl/curl.h
@@ -82,7 +81,7 @@ doCreate:	$(ZIPPEDFILE)
 	@mv $(EXTRACTED_DIRNAME) CURRENT
 
 
-#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/DefaultConfiguration/ThirdPartyLibs/include/openssl/)
+#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyLibs/include/openssl/)
 #didn't work (failed to find crypto lib)
 PKG_CONFIG=
 ifeq ($(qFeatureFlag_OpenSSL), use)
@@ -156,9 +155,9 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)DefaultConfiguration/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@echo "      ....Building libcurl CURRENT into $(BUILDS_DIR)..."
