@@ -6,7 +6,7 @@ SrcDir						=       $(StroikaRoot)Tools/Sources/Stroika/Frameworks/WebServer/HTM
 
 VPATH = $(SrcDir)
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/HTMLViewCompiler
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/HTMLViewCompiler
 
 
 Objs	=	\
