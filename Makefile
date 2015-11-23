@@ -31,24 +31,42 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries t
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 check:
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+	done
+else
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+endif
 
 clean:
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+	done
+else
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Tools --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+endif
 
 clobber:
 	@echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$$i;\
+	done
+else
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber  CONFIGURATION=$(CONFIGURATION)
+endif
 
 documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all
