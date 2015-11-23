@@ -1,4 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
