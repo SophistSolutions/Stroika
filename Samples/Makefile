@@ -1,15 +1,5 @@
--include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
-
-CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
+-include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifeq (Unix,$(ProjectPlatformSubdir))
-CONFIGRUATIONS=		DefaultConfiguration
-else
-CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
-endif
-
 
 
 .PHONY:	samples all check clobber skel
@@ -70,12 +60,12 @@ clobber:	clean
 	@#done	
 
 samples:
-	@echo "Building Stroika Samples..."
+	@echo "Building Stroika Samples {$(CONFIGURATION)}..."
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl);\
     	done	
-	@echo "Building Stroika Samples...done"
+	@echo "Building Stroika Samples {$(CONFIGURATION)}...done"
 
 skel-usage_:
 	@echo "\tUsage: make skel SKEL_SRCPROJDIR=XX SKEL_TRGPROJDIR=XX SKEL_TRGPROJName=XX SKEL_PATH2Stroika=XX"
@@ -125,4 +115,3 @@ skel:
 	rm $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/VisualStudio.Net-2013/$(SKEL_TRGPROJName).sln.tmp
 	@sed s/TEMPLATE/$(SKEL_TRGPROJName)/g < Skel/Projects/VisualStudio.Net-2013/TEMPLATE.vcxproj > $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/VisualStudio.Net-2013/$(SKEL_TRGPROJName).vcxproj
 	@sed s/TEMPLATE/$(SKEL_TRGPROJName)/g < Skel/Projects/VisualStudio.Net-2013/TEMPLATE.vcxproj.filters > $(SKEL_TRGPROJDIR)/$(SKEL_TRGPROJName)/Projects/VisualStudio.Net-2013/$(SKEL_TRGPROJName).vcxproj.filters
-
