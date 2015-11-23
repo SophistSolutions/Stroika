@@ -74,7 +74,7 @@ check:
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/Xerces - [Succeeded]";
+	@echo "   Stroika/ThirdPartyLibs/Xerces -  [Succeeded]";
 
 
 clobber:

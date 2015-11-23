@@ -9,7 +9,7 @@ endif
 
 
 all:
-	@echo "Building Stroika ThirdPartyLibs {$(CONFIGURATION)}..."
+	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
@@ -25,7 +25,7 @@ endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
-	@echo "Building Stroika ThirdPartyLibs {$(CONFIGURATION)}...done"
+	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs...done"
 
 clean:
 	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
@@ -35,7 +35,7 @@ clean:
 	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 
 check:
-	@echo "Checking Stroika ThirdPartyLibs {$(CONFIGURATION)}..."
+	@echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
@@ -53,7 +53,7 @@ ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 endif
 
 clobber:
-	@echo -n "Stroika ThirdPartyLibs {$(CONFIGURATION)} clobber..."
+	@echo -n "Stroika {$(CONFIGURATION)} ThirdPartyLibs clobber..."
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory openssl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)

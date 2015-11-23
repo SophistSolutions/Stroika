@@ -259,7 +259,7 @@ check:
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/lzma - [Succeeded]";
+	@echo "   Stroika/ThirdPartyLibs/lzma -    [Succeeded]";
 
 clean:
 	@rm -rf CURRENT
