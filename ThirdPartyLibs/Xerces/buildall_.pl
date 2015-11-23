@@ -56,8 +56,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	system ("make --directory CURRENT --no-print-directory -s all");
 }
 else {
-    my $activeConfig = "DefaultConfiguration";
-	my $myPlatformSubDir =	GetProjectPlatformSubdir ($activeConfig);
+	my $myPlatformSubDir =	GetProjectPlatformSubdir ("Debug-U-32");
 	print ("Target Platform subdir: $myPlatformSubDir\n");
 	my $myBinOutDir = '';
 	if ($myPlatformSubDir eq 'VisualStudio.Net-2013') {

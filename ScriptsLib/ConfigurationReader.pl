@@ -7,7 +7,7 @@
 
 my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
 my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
-my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
+my $masterXMLConfigFile	=	"";
 
 require (GetThisScriptDir () + "StringUtils.pl");
 

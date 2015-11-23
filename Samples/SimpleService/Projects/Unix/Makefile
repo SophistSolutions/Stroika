@@ -7,7 +7,7 @@ include	../Library/SharedMakeVariables.mk
 SrcDir				=	$(StroikaRoot)Samples/SimpleService/
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SimpleService
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SimpleService
 
 
 VPATH	=			$(SrcDir)/Sources/
