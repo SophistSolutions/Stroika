@@ -1,3 +1,7 @@
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 .PHONY:	all clean clobber check

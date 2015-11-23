@@ -222,7 +222,7 @@ apply-configuration:
 
 default-configuration:
 	@echo Making default configurations...
-	@./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS)
+	@### @todo - try and get rid of DefaultConfiguration from windows but still needed
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
@@ -231,4 +231,7 @@ default-configuration:
 		./configure Release-Logging-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
+	else\
+		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
 	fi

@@ -1,3 +1,7 @@
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 

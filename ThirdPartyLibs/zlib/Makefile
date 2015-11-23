@@ -1,5 +1,8 @@
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .PHONY:	all
 .DEFAULT_GOAL := all

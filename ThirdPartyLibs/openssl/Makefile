@@ -2,6 +2,10 @@
 # ROUGH DRAFT - STARTING TO MOVE AWAY FROM OLD PERL STUFF
 #
 
+ifeq ($(CONFIGURATION),)
+$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 
@@ -18,8 +22,6 @@ EXTRACTED_DIRNAME=$(BASENAME)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
-
-
 
 
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
