@@ -12,13 +12,7 @@ SubDirs=				\
 
 
 
-
-all:	$(SubDirs)
+all clean clobber:	$(SubDirs)
 	@for SUBPROJ in $(SubDirs) ; do \
-		($(MAKE) --directory $$SUBPROJ --no-print-directory all);\
-    	done	
-
-
-Build:	all
-
-
+		($(MAKE) --directory $$SUBPROJ --no-print-directory $@);\
+    done	
