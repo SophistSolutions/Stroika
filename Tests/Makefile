@@ -75,7 +75,7 @@ tests:
 run-tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) run-tests CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests {$(CONFIGURATION)}..."
