@@ -27,7 +27,6 @@ help:
 	@echo "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@echo "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
-
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
@@ -51,10 +50,8 @@ clobber:
 	@rm -rf Builds/*
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber
 
-
 documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all
-
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
 ifeq ($(CONFIGURATION),)
@@ -65,10 +62,14 @@ else
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 
-
 third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory CONFIGURATION=$(CONFIGURATION) all
-
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$$i;\
+	done
+else
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$(CONFIGURATION)
+endif
 
 project-files:	project-files-visual-studio project-files-qt-creator
 
@@ -97,7 +98,13 @@ else
 endif
 
 tests:	tools libraries
-	@$(MAKE) --directory Tests --no-print-directory CONFIGURATION=$(CONFIGURATION) tests
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$$i;\
+	done
+else
+	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION)
+endif
 
 samples:	tools libraries
 ifeq ($(CONFIGURATION),)
