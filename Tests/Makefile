@@ -1,12 +1,4 @@
-CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifeq (Unix,$(ProjectPlatformSubdir))
-CONFIGRUATIONS=		DefaultConfiguration
-else
-CONFIGRUATIONS=		Debug-U-32 Release-U-32 Debug-U-64 Release-U-64
-endif
 
 .PHONY:	tests all check clobber
 
@@ -18,10 +10,10 @@ INDENT_LEVEL=	0
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 BASEEXEPATTERN=Test$$i
-EXEPATTERN=../Builds/$$ci/Test$$i
+EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i
 else
 BASEEXEPATTERN=Test$$i.exe
-EXEPATTERN=../Builds/$$ci/Test$$i/Test$$i.exe
+EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
 endif
 
 
@@ -81,12 +73,15 @@ tests:
 	@MAKEFLAGS= perl ScriptsLib/_buildall.pl build
 
 run-tests:
-	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests..."
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) run-tests CONFIGURATION=$$i;\
+	done
+else
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests {$(CONFIGURATION)}..."
 	@for i in $(TESTS);\
 	do\
 	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
-		for ci in $(CONFIGRUATIONS);\
-		do\
 		$(RUNTEST_REMOTECOPYSETUP);\
 	        TIMESTAMP=`date +%s`;\
 	        EXERESULT=`$(RUNTEST_EXE_RUN)`;\
@@ -100,8 +95,8 @@ run-tests:
 	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
 	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
-		done;\
 	done
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests...done"
+endif
 
 
