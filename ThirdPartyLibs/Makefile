@@ -1,5 +1,3 @@
-CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
-
 -include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 .PHONY:	all clean clobber check
@@ -7,54 +5,54 @@ CONFIGURATION 			?=	$(shell perl ../ScriptsLib/GetDefaultConfiguration.pl)
 
 
 all:
-	@echo "Building Stroika ThirdPartyLibs..."
+	@echo "Building Stroika ThirdPartyLibs {$(CONFIGURATION)}..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
-	@$(MAKE) --directory zlib --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
-	@$(MAKE) --directory openssl --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory openssl --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
-	@$(MAKE) --directory curl --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory curl --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_LZMA), 1)
-	@$(MAKE) --directory lzma --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory lzma --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
-	@$(MAKE) --directory Xerces --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
-	@echo "Building Stroika ThirdPartyLibs...done"
+	@echo "Building Stroika ThirdPartyLibs {$(CONFIGURATION)}...done"
 
 clean:
-	@$(MAKE) --directory zlib --no-print-directory CONFIGURATION=$(CONFIGURATION) clean
-	@$(MAKE) --directory openssl --no-print-directory CONFIGURATION=$(CONFIGURATION) clean
-	@$(MAKE) --directory curl --no-print-directory CONFIGURATION=$(CONFIGURATION) clean
-	@$(MAKE) --directory lzma --no-print-directory CONFIGURATION=$(CONFIGURATION) clean
-	@$(MAKE) --directory Xerces --no-print-directory CONFIGURATION=$(CONFIGURATION) clean
+	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 
 check:
-	@echo "Checking Stroika ThirdPartyLibs..."
+	@echo "Checking Stroika ThirdPartyLibs {$(CONFIGURATION)}..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
-	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
-	@$(MAKE) --directory openssl --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --directory openssl --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
-	@$(MAKE) --directory curl $(MAKEFLAGS) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --directory curl $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_LZMA), 1)
-	@$(MAKE) --directory lzma --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --directory lzma --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
-	@$(MAKE) --directory Xerces --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 
 clobber:
-	@echo -n "Stroika ThirdPartyLibs clobber..."
-	@$(MAKE) --directory zlib --no-print-directory CONFIGURATION=$(CONFIGURATION) clobber
-	@$(MAKE) --directory openssl --no-print-directory CONFIGURATION=$(CONFIGURATION) clobber
-	@$(MAKE) --directory curl --no-print-directory CONFIGURATION=$(CONFIGURATION) clobber
-	@$(MAKE) --directory lzma --no-print-directory CONFIGURATION=$(CONFIGURATION) clobber
-	@$(MAKE) --directory Xerces --no-print-directory CONFIGURATION=$(CONFIGURATION) clobber
+	@echo -n "Stroika ThirdPartyLibs {$(CONFIGURATION)} clobber..."
+	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@echo "   ...done"
