@@ -141,6 +141,8 @@ namespace   Stroika {
                     class   ClassReader;
                     template    <typename   T>
                     class   ListOfObjectReader;
+                    template    <typename   T>
+                    class   RepeatedElementReader;
 
                 public:
                     /**
@@ -529,6 +531,31 @@ namespace   Stroika {
                     Memory::Optional<Name>  fMemberElementName_;
                     CONTAINER_OF_T*         fValuePtr_;
                     bool                    fThrowOnUnrecongizedelts_   { false };
+                };
+
+
+                /**
+                 *  This is kind of like optional, but its for sequence elements - elements that are repeated inline.
+                 *
+                 *  @todo DOC BETTER - AND INCLUDE EXAMPLE.
+                 */
+                template    <typename CONTAINER_OF_T>
+                class   ObjectReaderRegistry::RepeatedElementReader : IElementConsumer {
+                public:
+                    using   ElementType = typename CONTAINER_OF_T::value_type;
+
+                public:
+                    RepeatedElementReader (CONTAINER_OF_T* v);
+
+                public:
+                    virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
+                    virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override;
+                    virtual void    HandleTextInside (const String& text) override;
+                    virtual void                            Deactivating () override;
+                private:
+                    ElementType                     fProxyValue_    {};
+                    shared_ptr<IElementConsumer>    fActualReader_  {};
+                    Sequence<ElementType>*          fValuePtr_;
                 };
 
 
