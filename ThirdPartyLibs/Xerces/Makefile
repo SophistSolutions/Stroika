@@ -110,7 +110,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory -s all 2>&1 >> BUILD.OUT
 else
-	@./buildall_.pl build > BUILD.OUT 2>&1
+	@CONFIGURATION=$(CONFIGURAITON) ./buildall_.pl build > BUILD.OUT 2>&1
 endif
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
