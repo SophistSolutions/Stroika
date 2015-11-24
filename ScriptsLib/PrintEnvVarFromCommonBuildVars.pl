@@ -12,15 +12,11 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
-#tmphack!!! 
-$activeConfig = "DefaultConfiguration";
-#$activeConfig = $ENV{'CONFIGURATION'};
-#$activeConfig = $ARGV[0];
+$activeConfig = $ARGV[0];
 my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
 if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
 }
-
 
 my $envVarName=$ARGV[1];
 print "$ENV{$envVarName}"
