@@ -1,4 +1,4 @@
-.NOTPARALLEL: run-tests check apply-configurations third-party-libs
+.NOTPARALLEL:
 .PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
 .FORCE:	apply-configurations
@@ -28,7 +28,7 @@ help:
 	@echo "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 
 check:
 ifeq ($(CONFIGURATION),)
@@ -65,7 +65,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$$i;\
 	done
 else
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber  CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 endif
 
 documentation:
@@ -112,7 +112,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@$(MAKE) --directory Tools --no-print-directory CONFIGURATION=$(CONFIGURATION) all
+	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 
 tests:	tools libraries
@@ -202,13 +202,13 @@ ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
 endif
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		if [ ! -e IntermediateFiles/$$i ] ; then\
-			$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
+			$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
 		fi;\
 	done
 
 apply-configurations:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory CONFIGURATION=$$i apply-configuration;\
+		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
 	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
