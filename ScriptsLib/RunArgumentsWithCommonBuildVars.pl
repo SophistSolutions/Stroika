@@ -10,7 +10,25 @@ sub	GetThisScriptDir {
 }
 my	$thisScriptDir	=	GetThisScriptDir ();
 
-require "$thisScriptDir/BuildUtils.pl";
+my $activeConfig = $ARGV[0];
+my $cmd = $ARGV[1];
 
+require "$thisScriptDir/ConfigurationReader.pl";
 
-RunAndPrint (join(' ',@ARGV));
+my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
+if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
+	require "$useProjectDir/SetupBuildCommonVars.pl";
+}
+
+sub RunAndPrint
+{
+	my $cmd2Run = $_[0];
+	print ("      $cmd2Run...\n");
+	my $result = system ($cmd2Run);
+	if ($result != 0) {
+		print "Run result = $result\r\n";
+	}
+}
+
+#RunAndPrint (join(' ',@ARGV));
+RunAndPrint ($cmd);
