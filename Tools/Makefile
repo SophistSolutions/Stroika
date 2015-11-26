@@ -25,16 +25,15 @@ all:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
 else
-	@cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
+	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
 
 check:
 	@echo "Checking Tools..."
-	@cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
+	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
 
 clean:
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clean
 
 clobber:
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clobber
-
