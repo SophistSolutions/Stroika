@@ -10,6 +10,10 @@ sub signal_handler {
     die "Caught a signal $!";
 }
 
+# this causes confusion with make -j
+delete $ENV{'MAKEFLAGS'};
+
+
 my $activeConfig = $ENV{'CONFIGURATION'};
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 

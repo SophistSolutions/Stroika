@@ -257,4 +257,7 @@ default-configuration:
 		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
 		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
+		#./configure Debug --assertions enable --GLIBCXX_DEBUG enable --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
+		#./configure Release --assertions disable --GLIBCXX_DEBUG enable --cpp-optimize-flag -03 $(DEFAULT_CONFIGURATION_ARGS);\
 	fi
+	
