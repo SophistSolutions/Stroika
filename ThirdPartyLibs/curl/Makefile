@@ -184,7 +184,7 @@ check:
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/curl - [Succeeded]";
+	@echo "   Stroika/ThirdPartyLibs/curl -    [Succeeded]";
 
 clean:
 	@rm -rf CURRENT
