@@ -13,7 +13,7 @@ if ($BLD_TRG eq '') {
 require "../../ScriptsLib/ConfigurationReader.pl";
 
 
-my $activeConfig = "DefaultConfiguration";
+my $activeConfig = $ENV{'CONFIGURATION'};;
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
 print ($projectPlatformSubdir);

@@ -1,10 +1,16 @@
+require "../../../../ScriptsLib/ConfigurationReader.pl";
+
 sub	DoCheckBuilds {
 	my $testNumber = $_[0];
 	
-	CheckFileExists ("../../../../Builds/Debug-U-32/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Release-U-32/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Debug-U-64/Test$testNumber/Test$testNumber.exe");
-	CheckFileExists ("../../../../Builds/Release-U-64/Test$testNumber/Test$testNumber.exe");
+	my $activeConfig = $ENV{'CONFIGURATION'};
+	my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
+	if (index($projectPlatformSubdir, "VisualStudio") != -1) {
+		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber/Test$testNumber.exe");
+	}
+	else {
+		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber/Test$testNumber");
+	}
 	
 	print "[SUCCEEDED]\r\n";
 	

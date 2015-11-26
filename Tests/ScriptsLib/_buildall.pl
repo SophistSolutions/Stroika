@@ -51,7 +51,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ("   Test $tst: $tstName; $useBld...\n");
-		$exit_status = system ("cd Test$tst; make -s $useBld\n");
+		$exit_status = system ("cd Test$tst; make -s $useBld CONFIGURATION=$activeConfig\n");
 		if ($exit_status != 0) {
 			die("Stopping build: failed");
 		}

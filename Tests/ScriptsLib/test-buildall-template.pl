@@ -3,8 +3,10 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
+my $activeConfig = $ENV{'CONFIGURATION'};
+
 require "../../../../ScriptsLib/ConfigurationReader.pl";
-require "../../../../Library/Projects/" . GetProjectPlatformSubdir ("DefaultConfiguration") . "/SetupBuildCommonVars.pl";
+require "../../../../Library/Projects/" . GetProjectPlatformSubdir ($activeConfig) . "/SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
 

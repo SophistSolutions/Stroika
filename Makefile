@@ -27,8 +27,10 @@ help:
 	@echo "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@echo "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
+
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
 	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
+
 
 check:
 ifeq ($(CONFIGURATION),)
@@ -43,6 +45,7 @@ else
 	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 endif
 
+
 clean:
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
@@ -56,6 +59,7 @@ else
 	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 endif
 
+
 clobber:
 	@echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
@@ -68,8 +72,10 @@ else
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 endif
 
+
 documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all
+
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
 ifeq ($(CONFIGURATION),)
@@ -80,6 +86,7 @@ else
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 
+
 third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
@@ -89,22 +96,28 @@ else
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 
+
 project-files:	project-files-visual-studio project-files-qt-creator
+
 
 project-files-visual-studio:
 	@$(MAKE) --directory Tests --no-print-directory MAKEFLAGS= project-files
 
+
 project-files-qt-creator:	project-files-qt-creator-load
+
 
 project-files-qt-creator-load:
 	@echo -n "Loading qt-creator project files..."
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
 	@echo "done"
 
+
 project-files-qt-creator-save:
 	@echo -n "Saving qt-creator project files..."
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
 	@echo "done"
+
 
 tools:	libraries
 ifeq ($(CONFIGURATION),)
@@ -115,6 +128,7 @@ else
 	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 
+
 tests:	tools libraries
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
@@ -123,6 +137,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION)
 endif
+
 
 samples:	tools libraries
 ifeq ($(CONFIGURATION),)
@@ -133,6 +148,7 @@ else
 	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION)
 endif
 
+
 run-tests:	tests
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
@@ -141,6 +157,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 endif
+
 
 ASTYLE_ARGS=
 ASTYLE_ARGS+=	--style=stroustrup
@@ -212,11 +229,13 @@ endif
 		fi;\
 	done
 
+
 apply-configurations:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
 	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
+
 
 apply-configuration:
 	@echo "Applying configuration $(CONFIGURATION)..."
@@ -224,11 +243,10 @@ apply-configuration:
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
 	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
-	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Configuration.h\""
+
 
 default-configuration:
 	@echo Making default configurations...
-	@### @todo - try and get rid of DefaultConfiguration from windows but still needed
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
@@ -237,7 +255,6 @@ default-configuration:
 		./configure Release-Logging-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
 		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
 	fi

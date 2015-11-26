@@ -1,7 +1,3 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .PHONY:	tests all check clobber
@@ -57,24 +53,53 @@ help:
 
 all:		tests 
 
+
 check:
-	@perl ScriptsLib/_checkall.pl
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+	done
+else
+	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_checkall.pl
+endif
+
 
 clean:
-	@perl ScriptsLib/_buildall.pl clean
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+	done
+else
+	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl clean
+endif
+
 
 clobber:
-	@perl ScriptsLib/_buildall.pl clobber
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
+	done
+else
+	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl clobber
+endif
+
 
 project-files:
 	@echo "Building VisualStudio.Net-2013 project files..."
-	@(cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl)
+	@cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl
 	@echo "Building VisualStudio.Net-2015 project files..."
-	@(cd Projects/VisualStudio.Net-2015 && perl BuildProjectsFiles.pl)
+	@cd Projects/VisualStudio.Net-2015 && perl BuildProjectsFiles.pl
+
 
 tests:
-	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
-	@MAKEFLAGS= CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl build
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory tests CONFIGURATION=$$i;\
+	done
+else
+	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl build
+endif
+
 
 run-tests:
 ifeq ($(CONFIGURATION),)
@@ -85,7 +110,7 @@ else
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Stroka {$(CONFIGURATION)} Running Tests..."
 	@for i in $(TESTS);\
 	do\
-	     TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
+		TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 		$(RUNTEST_REMOTECOPYSETUP);\
 	        TIMESTAMP=`date +%s`;\
 	        EXERESULT=`$(RUNTEST_EXE_RUN)`;\
@@ -102,5 +127,3 @@ else
 	done
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests...done"
 endif
-
-

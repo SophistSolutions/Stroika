@@ -7,7 +7,7 @@ include	../Library/SharedMakeVariables.mk
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_WebServer
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_WebServer
 
 
 VPATH	=			$(SrcDir)/Sources/

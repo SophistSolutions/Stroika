@@ -3,8 +3,10 @@
 require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
+my $activeConfig = $ENV{'CONFIGURATION'};
+
 print ("Checking Tests...\n");
-my $checkallDir = "Projects/" . GetProjectPlatformSubdir ("DefaultConfiguration");
+my $checkallDir = "Projects/" . GetProjectPlatformSubdir ($activeConfig);
 
 use Cwd;
 use Cwd 'abs_path';
@@ -13,6 +15,6 @@ chdir ($checkallDir);
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ("   Test $tst: $tstName:  ");
-		system ("cd $tst; perl checkall.pl");
+		system ("CONFIGURATION=$activeConfig cd $tst; perl checkall.pl");
 	}
 chdir ($savedDir);

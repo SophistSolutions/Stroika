@@ -3,7 +3,7 @@
 require "../../ScriptsLib/ConfigurationReader.pl";
 require "../../ScriptsLib/BuildUtils.pl";
 
-my $activeConfig = "DefaultConfiguration";
+my $activeConfig = $ENV{'CONFIGURATION'};;
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
@@ -17,6 +17,10 @@ my @kConfigurations = (
 					);
 
 
+# these environment flags appear to confuse nmake
+delete $ENV{'MAKEFLAGS'};
+
+
 print("   Building Samples/ArchiveUtility...\n");
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd;
@@ -25,7 +29,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 
 	chdir ("../../IntermediateFiles/$activeConfig");
 	if ($useBld eq "rebuild") {
-		print ("Samples_ArchiveUtility; clobber...\n");
+		print ("Samples/ArchiveUtility; clobber...\n");
 		system ("cd Samples_ArchiveUtility; make -s clobber");
 		$useBld = "all";
 	}

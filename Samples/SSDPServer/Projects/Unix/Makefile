@@ -7,7 +7,7 @@ include	../Library/SharedMakeVariables.mk
 SrcDir				=	$(StroikaRoot)Samples/SSDPServer/
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SSDPServer
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SSDPServer
 
 
 VPATH	=			$(SrcDir)/Sources/

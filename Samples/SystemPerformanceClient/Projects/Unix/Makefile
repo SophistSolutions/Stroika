@@ -7,7 +7,7 @@ include	../Library/SharedMakeVariables.mk
 SrcDir				=	$(StroikaRoot)Samples/SystemPerformanceClient/
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/DefaultConfiguration/Samples_SystemPerformanceClient
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SystemPerformanceClient
 
 
 VPATH	=			$(SrcDir)/Sources/

@@ -3,7 +3,8 @@
 require "../../ScriptsLib/ConfigurationReader.pl";
 require "../../ScriptsLib/BuildUtils.pl";
 
-my $projectPlatformSubdir = GetProjectPlatformSubdir ("DefaultConfiguration");
+my $activeConfig = $ENV{'CONFIGURATION'};
+my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 

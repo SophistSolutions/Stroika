@@ -67,7 +67,7 @@ samples:
 	@echo "Building Stroika {$(CONFIGURATION)} Samples..."
 	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(MAKEFLAGS= CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl);\
+		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl);\
     	done	
 	@echo "Building Stroika {$(CONFIGURATION)} Samples...done"
 

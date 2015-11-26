@@ -13,8 +13,8 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 require "$thisScriptDir/ConfigurationReader.pl";
 
 #tmphack!!! 
-$activeConfig = "DefaultConfiguration";
-#$activeConfig = $ENV{'CONFIGURATION'};
+#$activeConfig = "DefaultConfiguration";
+$activeConfig = $ENV{'CONFIGURATION'};
 my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
 if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";

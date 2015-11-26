@@ -6,6 +6,8 @@ require "../../../ScriptsLib/TestsList.pl";
 
 require "../../../ScriptsLib/ConfigurationReader.pl";
 
+my $activeConfig = $ENV{'CONFIGURATION'};
+
 sub DoRun {
 	my $testNumber = $_[0];
 	my $testName = GetTestName ($testNumber);
@@ -18,7 +20,7 @@ sub DoRun {
 	}
 	
 	if (index($projectPlatformSubdir, "VisualStudio") == -1) {
-		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/DefaultConfiguration/", "Test$testNumber");
+		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/$activeConfig/", "Test$testNumber");
 	}
 	else {
 		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/", "Test$testNumber/Test$testNumber.exe");
