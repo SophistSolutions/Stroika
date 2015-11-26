@@ -5,8 +5,7 @@
 
 require "../../../ScriptsLib/ConfigurationReader.pl";
 
-
-my $projectPlatformSubdir = GetProjectPlatformSubdir ("DefaultConfiguration");
+my $activeConfig = $ENV{'CONFIGURATION'};
 
 #CRUDDY IMPL - but avoid runnign 64 bit binaries on 32-bit OS
 sub bitter {
@@ -36,26 +35,8 @@ sub DoRunSimpleTestArgv
 	local $dirPrefix = $_[2];
 	local $suffixFromTrgDir = $_[3];
 
-	if ($dbgOrRel eq "") {
-		$dbgOrRel = 'All';
-	}
-
 	local $outDir = PrepareOutputDir();
-if (index($projectPlatformSubdir, "VisualStudio") == -1) {
-#TMPHACK...til we move stuff and get right targets list
-$dbgOrRel = '';
-}
-	if ($dbgOrRel eq 'All') {
-		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-		DoRunSimpleTest ('Release-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-		if (bitter() eq 64) {
-			DoRunSimpleTest ('Debug-U-64', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-			DoRunSimpleTest ('Release-U-64', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-		}
-	}
-	else {
-		DoRunSimpleTest ($dbgOrRel, $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-	}
+	DoRunSimpleTest ($dbgOrRel, $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 }
 
 sub DoRunSimpleTest

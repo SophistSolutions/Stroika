@@ -20,10 +20,10 @@ sub DoRun {
 	}
 	
 	if (index($projectPlatformSubdir, "VisualStudio") == -1) {
-		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/$activeConfig/", "Test$testNumber");
+		DoRunSimpleTestArgv ($activeConfig, "[$testNumber] $testName", "../../../../Builds/$activeConfig/", "Test$testNumber");
 	}
 	else {
-		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/", "Test$testNumber/Test$testNumber.exe");
+		DoRunSimpleTestArgv ($activeConfig, "[$testNumber] $testName", "../../../../Builds/", "Test$testNumber/Test$testNumber.exe");
 	}
 	
 	if ($progress) {

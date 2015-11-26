@@ -1,21 +1,9 @@
 #!/usr/bin/perl
-#EVENTUALYL fix to do  stuff like this
-#CheckFileExists ("../../../Builds/Windows/Lib/Debug-A-32/Stroika-Foundation.lib");
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-A-32/Stroika-Foundation.lib");
 
-#CheckFileExists ("../../../Builds/Windows/Lib/Debug-U-32/Stroika-Foundation.lib");
-#CheckFileExists ("../../../Builds/Windows/Lib/Debug-U-64/Stroika-Foundation.lib");
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-U-32/Stroika-Foundation.lib");
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-U-64/Stroika-Foundation.lib");
+my $activeConfig = $ENV{'CONFIGURATION'};
 
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-Logging-U-32/Stroika-Foundation.lib");
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-Logging-U-64/Stroika-Foundation.lib");
-
-#CheckFileExists ("../../../Builds/Windows/Lib/Release-DbgMemLeaks-U-32/Stroika-Foundation.lib");
-
-
-CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Foundation.a");
-CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Frameworks.a");
+CheckFileExists ("../../../Builds/$activeConfig/Stroika-Foundation.a");
+CheckFileExists ("../../../Builds/$activeConfig/Stroika-Frameworks.a");
 
 
 print "      [SUCCEEDED]\r\n";

@@ -25,5 +25,5 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo -n "Checking Stroika {$(CONFIGURATION)} Library..."
-	@cd Projects/$(ProjectPlatformSubdir) && perl checkall.pl
+	@CONFIGURATION=$(CONFIGURATION) cd Projects/$(ProjectPlatformSubdir) && perl checkall.pl
 endif

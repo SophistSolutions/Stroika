@@ -2,7 +2,6 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 
 .PHONY:	tests all check clobber
 
-TEST_BUILD_DIR=	$(shell perl ScriptsLib/PrintTestBuildDir.pl)
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
 INDENT_LEVEL=	0
