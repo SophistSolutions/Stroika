@@ -130,7 +130,7 @@ doCreate:	$(ZIPEDFILE)
 
 doBuilds:
 	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
-	@$(MAKE) CONFIGURATION=$(CONFIGURATION) > CURRENT/BUILD.OUT 2>&1
+	@$(MAKE) CONFIGURATION=$(CONFIGURATION) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
 
 doBuildInternal_:
