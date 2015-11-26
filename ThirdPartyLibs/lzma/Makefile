@@ -8,6 +8,9 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 
+.NOTPARALLEL:
+
+
 DoCreateSymLink=0
 
 
@@ -53,7 +56,8 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7z.h		\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7zCrc.h		\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/lzma/7zTypes.h
-else
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/lzma.lib						\
 	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/lzma/7z.h					\
@@ -84,6 +88,9 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/lzma/7zCrc.h		\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/lzma/7zTypes.h
 endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 
 
 
@@ -94,17 +101,14 @@ BUILDS_DIR=	CURRENT/Builds/
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
-	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory check
-
-
-.NOTPARALLEL:
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@$(MAKE) --no-print-directory check_prerequisites_
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check_prerequisites_
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
 
 $(ZIPEDFILE):
@@ -116,15 +120,18 @@ check_prerequisites_:
 	@echo "      ...checking tools..."
 	@type 7za > /dev/null || echo "......Missing 7za"
 
+
 doCreate:	$(ZIPEDFILE)
 	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@cp Subdir-Makefile CURRENT/Makefile
 
+
 doBuilds:
 	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
-	@$(MAKE) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
+	@$(MAKE) CONFIGURATION=$(CONFIGURATION) > CURRENT/BUILD.OUT 2>&1
+
 
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -252,6 +259,7 @@ endif
 ORIGS:	$(ZIPEDFILE)
 	@7z x -oORIGS $(ZIPEDFILE) > /dev/null;
 
+
 check:
 	@echo -n "      ...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
@@ -262,8 +270,10 @@ check:
 	done
 	@echo "   Stroika/ThirdPartyLibs/lzma -    [Succeeded]";
 
+
 clean:
 	@rm -rf CURRENT
+
 
 clobber:	clean
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
