@@ -9,7 +9,7 @@ sub	DoCheckBuilds {
 		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber/Test$testNumber.exe");
 	}
 	else {
-		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber/Test$testNumber");
+		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber");
 	}
 	
 	print "[SUCCEEDED]\r\n";
