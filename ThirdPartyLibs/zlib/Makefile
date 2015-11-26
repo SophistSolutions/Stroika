@@ -76,13 +76,13 @@ BUILDS_DIR=	CURRENT/Builds/
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
-	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
 
 $(ZIPEDFILE):
@@ -113,8 +113,8 @@ doCreate:	$(ZIPEDFILE)
 	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
-	@$(MAKE) --no-print-directory doPatch
-	@$(MAKE) --no-print-directory doConfigure
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatch
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doConfigure
 
 doBuilds:
 	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ..."
