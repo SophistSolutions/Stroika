@@ -50,7 +50,7 @@ help:
 all:		samples 
 
 check:
-	echo "Checking Stroika {$(CONFIGURATION)} Samples...";
+	@echo "Checking Stroika {$(CONFIGURATION)} Samples...";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		echo -n "   Checking $$SUBPROJ... ";\
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall.pl);\
