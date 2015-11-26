@@ -98,22 +98,24 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/openssl.pdb					\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/openssl/aes.h
 endif
-
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 
 # COULD make this conditional
 STRIP_ANNOYING_MESSAGES=		1
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
-	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 .NOTPARALLEL:
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
+	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
 clean:
 	@rm -rf $(TRGDIR)
@@ -180,7 +182,7 @@ doCreate:	$(ZIPEDFILE)
 	@rm -rf $(TRGDIR)
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR);
-	@$(MAKE) --no-print-directory doPatch
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatch
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -196,7 +198,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ...";
-	@CONFIGURATION=$(CONFIGURAITON) ./buildall_windows_.pl > BUILD.OUT 2>&1;
+	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > BUILD.OUT 2>&1;
 endif
 	@echo "      ...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
