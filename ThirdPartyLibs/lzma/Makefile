@@ -118,6 +118,7 @@ check_prerequisites_:
 
 doCreate:	$(ZIPEDFILE)
 	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
+	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@cp Subdir-Makefile CURRENT/Makefile
 
