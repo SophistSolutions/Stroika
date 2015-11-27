@@ -9,13 +9,6 @@ my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
-my @kConfigurations = (
-					"Configuration=Debug-U-32,Platform=Win32",
-					"Configuration=Debug-U-64,Platform=x64",
-					"Configuration=Release-U-32,Platform=Win32",
-					"Configuration=Release-U-64,Platform=x64",
-					);
-
 
 print("   Building Samples/WebServer...\n");
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
@@ -34,9 +27,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	chdir ($savedDir);
 }
 else {
-	foreach (@kConfigurations) {
-		my $curConfig	=	$_;
-		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs WebServer.vcxproj /p:$curConfig /target:$useBld");
-	}
+	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+	my $extraArgs = GetMSBuildArgs();
+	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs WebServer.vcxproj /p:$curConfig /target:$useBld");
 }

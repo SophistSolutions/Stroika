@@ -39,7 +39,8 @@ sub getCFGStr
 	die ("unrecognized config");
 }
 
-my $curConfig	=	getCFGStr ();
+#my $curConfig	=	getCFGStr ();
+my $curConfig	=	`../../../../ScriptsLib/GetVisualStudioConfigLine.pl $ENV{'CONFIGURATION'}`;
 
 
 use IPC::Open3;

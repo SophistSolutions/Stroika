@@ -1,9 +1,7 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-
--include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+ifneq ($(CONFIGURATION),)
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+qFeatureFlag_ATLMFC		=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ATLMFC)
+endif
 
 
 .PHONY:	samples all check clobber skel
@@ -12,7 +10,7 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 SUBPROJECTS=
 
 SUBPROJECTS+=	ArchiveUtility
-ifeq ($(qFeatureFlag_ATLMFC), 'use-system')
+ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	ActiveLedIt
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
@@ -44,10 +42,11 @@ help:
 	@echo "    clobber:"
 	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    samples:"
-	@echo "    skel:				-	INCOMPLETE-PRELIM - BUT IDEA IS MAKE CLONE OF SAMPLE TO NEW PROJECT"
+	@echo "    skel:                   -    INCOMPLETE-PRELIM - BUT IDEA IS MAKE CLONE OF SAMPLE TO NEW PROJECT"
 
 
 all:		samples 
+
 
 check:
 	@echo "Checking Stroika {$(CONFIGURATION)} Samples...";
@@ -56,10 +55,18 @@ check:
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall.pl);\
 	done	
 
+
 clean:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+	done
+else
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(MAKEFLAGS= CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl clean);\
+		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl clean);\
 	done	
+endif
+
 
 clobber:	clean
 	@#skip cuz submnakefiles dont work
@@ -67,18 +74,26 @@ clobber:	clean
 	@#	(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl clobber);
 	@#done	
 
+
 samples:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory samples CONFIGURATION=$$i;\
+	done
+else
 	@echo "Building Stroika {$(CONFIGURATION)} Samples..."
-	@#NOTE - MAKEFLAGS trick to avoid warning about -j builds til we get rid of perl stuff
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl);\
-    	done	
+    done	
 	@echo "Building Stroika {$(CONFIGURATION)} Samples...done"
+endif
+
 
 skel-usage_:
 	@echo "\tUsage: make skel SKEL_SRCPROJDIR=XX SKEL_TRGPROJDIR=XX SKEL_TRGPROJName=XX SKEL_PATH2Stroika=XX"
 	@echo "\t\tSKEL_SRCPROJDIR is the sample you wisht to clone"
 	@echo "\t\tEG: make skel SKEL_SRCPROJDIR=WebServer SKEL_TRGPROJDIR=./SAMPLEOUT SKEL_TRGPROJName=CLONED_WS SKEL_PATH2Stroika=..\/..\/..\/..\/.."
+
 
 skel:
 	@if [ "$(SKEL_SRCPROJDIR)" = "" ]; then\
