@@ -3,6 +3,9 @@
 require "../../ScriptsLib/ConfigurationReader.pl";
 require "../../ScriptsLib/BuildUtils.pl";
 
+# these environment flags appear to confuse nmake
+delete $ENV{'MAKEFLAGS'};
+
 my $activeConfig = $ENV{'CONFIGURATION'};
 my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
