@@ -105,7 +105,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKELEVEL) + 1))`;\
 	for i in $(TESTS);\
 	do\
@@ -124,5 +124,4 @@ else
 			fi;\
 	        echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 	done
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests...done"
 endif

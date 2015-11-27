@@ -25,7 +25,7 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 
 my $level = $ENV{'MAKELEVEL'};
 $level = $level - 1;
-print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests...\n");
+print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests:\n");
 
 
 my $subLevel = $level + 1;
@@ -73,4 +73,3 @@ else {
 		}
 	chdir ($savedDir);
 }
-print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests...done\n");
