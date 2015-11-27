@@ -39,7 +39,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo -n "Checking Stroika Tools for $(CONFIGURATION)"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo -n "Checking Stroika {$(CONFIGURATION)} Tools:"
 	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
 endif
 

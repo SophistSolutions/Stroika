@@ -4,7 +4,6 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
-INDENT_LEVEL=	0
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -106,7 +105,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Stroka {$(CONFIGURATION)} Running Tests..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests..."
 	@for i in $(TESTS);\
 	do\
 		TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
@@ -124,5 +123,5 @@ else
 			fi;\
 	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 	done
-	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Running Tests...done"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests...done"
 endif

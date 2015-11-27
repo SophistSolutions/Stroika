@@ -10,5 +10,5 @@ all:
 	@if which doxygen 2>&1 > /dev/null; then\
 		cd Doxygen && perl ./RunDoxygen.pl;\
 	else\
-	    echo "   Skipping build of documentation since Doxygen not installed";\
+	    ../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Skipping build of documentation since Doxygen not installed";\
 	fi
