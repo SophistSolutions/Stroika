@@ -21,12 +21,9 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	my $savedDir = abs_path (getcwd ());
 
 	chdir ("../../IntermediateFiles/$activeConfig");
-	if ($useBld eq "rebuild") {
-		print ("Samples/ArchiveUtility; clobber...\n");
-		system ("cd Samples_ArchiveUtility; make -s clobber");
+	if ($useBld eq "Build") {
 		$useBld = "all";
 	}
-	
 	system ("cd Samples_ArchiveUtility; make -s $useBld");
 	chdir ($savedDir);
 }

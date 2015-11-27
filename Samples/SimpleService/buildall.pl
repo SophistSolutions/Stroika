@@ -15,14 +15,10 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
-
 	chdir ("../../IntermediateFiles/$activeConfig/");
-	if ($useBld eq "rebuild") {
-		print ("Samples_SimpleService; clobber...\n");
-		system ("cd Samples_SimpleService; make -s clobber");
+	if ($useBld eq "Build") {
 		$useBld = "all";
 	}
-	
 	system ("cd Samples_SimpleService; make -s $useBld");
 	chdir ($savedDir);
 }
