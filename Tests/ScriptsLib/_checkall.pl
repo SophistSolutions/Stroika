@@ -5,10 +5,11 @@ require ("ScriptsLib/TestsList.pl");
 
 my $activeConfig = $ENV{'CONFIGURATION'};
 my $level = $ENV{'MAKELEVEL'};
+$level = $level - 1;
 my $subLevel = $level + 1;
 
 my $subLevelStr = `../ScriptsLib/PrintLevelLeader.sh $subLevel`;
-print (`../ScriptsLib/PrintLevelLeader.sh $level` . "Checking Tests...\n");
+print (`../ScriptsLib/PrintLevelLeader.sh $level` . "Checking Stroika {$activeConfig} Tests:\n");
 my $checkallDir = "Projects/" . GetProjectPlatformSubdir ($activeConfig);
 
 use Cwd;
