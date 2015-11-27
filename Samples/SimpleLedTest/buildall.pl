@@ -10,7 +10,9 @@ my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 print("   Building Samples/SimpleLedTest...\n");
 if (index($projectPlatformSubdir, "VisualStudio") != -1) {
-	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
-	my $extraArgs = GetMSBuildArgs();
-	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleLedTest.vcxproj /p:$curConfig /target:$useBld");
+	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
+		my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+		my $extraArgs = GetMSBuildArgs();
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleLedTest.vcxproj /p:$curConfig /target:$useBld");
+	}
 }

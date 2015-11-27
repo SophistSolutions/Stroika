@@ -28,7 +28,9 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	chdir ($savedDir);
 }
 else {
-	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
-	my $extraArgs = GetMSBuildArgs();
-	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SystemPerformanceClient.vcxproj /p:$curConfig /target:$useBld");
+	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64") {
+		my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+		my $extraArgs = GetMSBuildArgs();
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SystemPerformanceClient.vcxproj /p:$curConfig /target:$useBld");
+	}
 }
