@@ -2,12 +2,9 @@
 # ROUGH DRAFT - STARTING TO MOVE AWAY FROM OLD PERL STUFF
 #
 
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
+.NOTPARALLEL:
 
 #VERSION=1.0.1o
 VERSION=1.0.2d
@@ -16,7 +13,6 @@ VERSION=1.0.2d
 BAD_TARFILE_BUG_WORKAROUND_=i
 
 BASENAME=openssl-$(VERSION)
-TRGDIR=CURRENT
 EXTRACTED_DIRNAME=$(BASENAME)
 
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
@@ -98,32 +94,50 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/openssl.pdb					\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/openssl/aes.h
 endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-$(error This makefile requires a recognized ProjectPlatformSubdir)
-endif
 
 # COULD make this conditional
 STRIP_ANNOYING_MESSAGES=		1
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
-.NOTPARALLEL:
-
 $(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
+
 clean:
-	@rm -rf $(TRGDIR)
+	@rm -rf CURRENT
+
 
 clobber:	clean
-	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT $(PRODUCED_OUTPUT_ARTIFACTS)
+	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/{libcrypto,libssl}* $(BUILDS_ROOT)*/ThirdPartyLibs/include/openssl $(BUILDS_ROOT)*/ThirdPartyLibs/bin/openssl
+else
+	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+endif
+
 
 check:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@echo -n "      ...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
@@ -177,12 +191,14 @@ endif
 endif
 	@echo "done"
 
+
 doCreate:	$(ZIPEDFILE)
-	@echo "      ...Extract $(ZIPEDFILE) to $(TRGDIR)..."
-	@rm -rf $(TRGDIR)
+	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
+	@rm -rf CURRENT
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) $(TRGDIR);
+	@mv $(EXTRACTED_DIRNAME) CURRENT;
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatch
+
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))

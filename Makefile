@@ -64,13 +64,8 @@ clobber:
 	@echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
-ifeq ($(CONFIGURATION),)
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$$i;\
-	done
-else
+	@#OK if no configuration or given configuration (handled in submake file)
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-endif
 
 
 documentation:

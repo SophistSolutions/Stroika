@@ -1,12 +1,13 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+ifneq ($(CONFIGURATION),)
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
+.NOTPARALLEL:
+
 
 DoCreateSymLink=0
 
@@ -64,19 +65,23 @@ endif
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/libcurl $(VERSION)..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory check
+
 
 $(ZIPPEDFILE):
 	@echo -n "      ..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
-.NOTPARALLEL:
-
 $(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@$(MAKE) --no-print-directory doCreate
 	@$(MAKE) --no-print-directory doBuilds
-
 
 
 doCreate:	$(ZIPPEDFILE)
@@ -147,6 +152,9 @@ endif
 
 
 doBuilds:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@echo "      ...Building libcurl CURRENT..."
 	@echo "         ...into $(BUILDS_DIR)..."
@@ -172,12 +180,17 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@todo - INCOMPLETE WINDOZE BUILD
 endif
 
+
 check_prerequisites_:
 	@type automake > /dev/null || echo "......Missing automake"
 	@type libtool > /dev/null || echo "......Missing libtool"
 
+
 check:
 	@echo -n "      ...Checking..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "      FAILED: missing $$i";\
@@ -186,9 +199,15 @@ check:
 	done
 	@echo "   Stroika/ThirdPartyLibs/curl -    [Succeeded]";
 
+
 clean:
 	@rm -rf CURRENT
 
+
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/{libcurl}* $(BUILDS_ROOT)*/ThirdPartyLibs/include/curl
+else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+endif

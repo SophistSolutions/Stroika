@@ -1,8 +1,7 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+ifneq ($(CONFIGURATION),)
+	ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .DEFAULT_GOAL := all
 .PHONY:	all clean clobber check doBuild doCreate doPatch
@@ -46,19 +45,28 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/xerces-c_static_3.lib		\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/xercesc/dom/DOM.hpp
 endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-$(error This makefile requires a recognized ProjectPlatformSubdir)
-endif
 
 
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/xerces $(VERSION)..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
@@ -67,8 +75,22 @@ clean:
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
 
 
+clobber:	clean
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/*xerces* $(BUILDS_ROOT)*/ThirdPartyLibs/include/*xerces*
+else
+	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+endif
+
+
 check:
 	@echo -n "      ...Checking..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "   FAILED: missing $$i";\
@@ -76,10 +98,6 @@ check:
 		fi;\
 	done
 	@echo "   Stroika/ThirdPartyLibs/Xerces -  [Succeeded]";
-
-
-clobber:
-	@rm -rf $(EXTRACTED_DIRNAME) CURRENT $(BUILDS_ROOT)*/ThirdPartyLibs/*xerces* $(PRODUCED_OUTPUT_ARTIFACTS)
 
 
 $(ZIPPEDFILE):

@@ -1,8 +1,7 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+ifneq ($(CONFIGURATION),)
+ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
-ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 
 .DEFAULT_GOAL := all
@@ -88,9 +87,6 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/lzma/7zCrc.h		\
 	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/lzma/7zTypes.h
 endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-$(error This makefile requires a recognized ProjectPlatformSubdir)
-endif
 
 
 
@@ -101,11 +97,23 @@ BUILDS_DIR=	CURRENT/Builds/
 
 all:
 	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check_prerequisites_
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
@@ -130,6 +138,12 @@ doCreate:	$(ZIPEDFILE)
 
 doBuilds:
 	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
 	@$(MAKE) CONFIGURATION=$(CONFIGURATION) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
 
@@ -276,4 +290,8 @@ clean:
 
 
 clobber:	clean
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/{lzma}* $(BUILDS_ROOT)*/ThirdPartyLibs/include/lzma
+else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+endif

@@ -1,14 +1,18 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+ifneq ($(CONFIGURATION),)
+-include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
--include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 .PHONY:	all clean clobber check
 .NOTPARALLEL:
 
 
 all:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
+	done
+else
 	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION)
@@ -26,15 +30,15 @@ ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
 	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs...done"
+endif
 
-clean:
-	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory openssl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory curl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 
 check:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+	done
+else
 	@echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
@@ -51,9 +55,25 @@ endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
+endif
+
+
+clean:
+	@#ok to call with NO CONFIG (does all)
+	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+
 
 clobber:
+ifeq ($(CONFIGURATION),)
+	@echo -n "Stroika ThirdPartyLibs clobber..."
+else
 	@echo -n "Stroika {$(CONFIGURATION)} ThirdPartyLibs clobber..."
+endif
+	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory openssl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)

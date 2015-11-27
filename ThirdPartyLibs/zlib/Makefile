@@ -1,7 +1,3 @@
-ifeq ($(CONFIGURATION),)
-$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 
 .PHONY:	all
@@ -75,12 +71,18 @@ BUILDS_DIR=	CURRENT/Builds/
 
 
 all:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo "   Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
@@ -91,6 +93,9 @@ $(ZIPEDFILE):
 
 
 doPatch:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo -n "      ...Patching"
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@rm -f PATCHING.OUT
@@ -102,6 +107,9 @@ endif
 	@echo "   ...done"
 
 doConfigure:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo -n "      ...Configuring redirecting messages to CONFIGURE.OUT..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@(CC="$(CC)" cd CURRENT && ./configure) > CONFIGURE.OUT 2>&1
@@ -110,6 +118,9 @@ endif
 
 
 doCreate:	$(ZIPEDFILE)
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
@@ -117,6 +128,9 @@ doCreate:	$(ZIPEDFILE)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doConfigure
 
 doBuilds:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo "      ...Buidling, and redirecting messages to BUILD.OUT ..."
 	@make doBuildInternal_ > BUILD.OUT 2>&1
 	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
@@ -142,6 +156,9 @@ endif
 
 	
 doBuildInternal_:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -174,6 +191,9 @@ ORIGS:	$(ZIPEDFILE)
 	@unix2dos ORIGS/win32/Makefile.msc
 
 check:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
 	@echo -n "      ...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
@@ -188,4 +208,8 @@ clean:
 
 clobber:	clean
 	@rm -f BUILD.OUT PATCHING.OUT
+ifeq ($(CONFIGURATION),)
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/libz.a $(BUILDS_ROOT)*/ThirdPartyLibs/include/{zlib,zconf}.h
+else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+endif
