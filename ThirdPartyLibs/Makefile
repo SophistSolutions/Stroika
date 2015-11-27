@@ -42,13 +42,13 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyLibs:"
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
-	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory zlib --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
-	@$(MAKE) --directory curl $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif
 ifeq ($(qBuildThirdPartyProducts_LZMA), 1)
 	@$(MAKE) --directory lzma --no-print-directory check CONFIGURATION=$(CONFIGURATION)
