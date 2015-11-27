@@ -3,8 +3,9 @@
 require "../Scripts/checkallHelpers.pl";
 
 my $activeConfig = $ENV{'CONFIGURATION'};
+my $projectPlatformSubdir = `../../ScriptsLib/PrintConfigurationVariable.pl $activeConfig ProjectPlatformSubdir`;
 
-if ("$^O" eq "linux") {
+if ($projectPlatformSubdir eq "Unix") {
 	# nothing to check - not supported on Linux
 }
 else {
