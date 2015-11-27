@@ -88,7 +88,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
     done
 else
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory ../IntermediateFiles/$activeConfig/Samples_$$SUBPROJ --silent all;\
+		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent all;\
     done
 endif
 	@echo "Building Stroika {$(CONFIGURATION)} Samples...done"
