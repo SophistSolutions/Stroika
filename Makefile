@@ -37,7 +37,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking Stroika {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking Stroika {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyLibs --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
 	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
@@ -196,7 +196,7 @@ IntermediateFiles/TOOLS_CHECKED:
 check-tools:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking for installed tools..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking for installed tools..."
 	@echo -n "   ..." && sh -c "type sed"
 	@echo -n "   ..." && sh -c "type wget"
 	@echo -n "   ..." && sh -c "type perl"
@@ -206,7 +206,7 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@echo -n "   ..." && sh -c "type dos2unix"
 	@echo -n "   ..." && sh -c "type unix2dos"
 endif
-	@echo "   All Required Tools Present"
+	@echo "All Required Tools Present"
 
 
 
@@ -233,7 +233,7 @@ apply-configurations:
 
 
 apply-configuration:
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Applying configuration $(CONFIGURATION)..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Applying configuration $(CONFIGURATION)..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
 	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
@@ -241,7 +241,7 @@ apply-configuration:
 
 
 default-configuration:
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo Making default configurations...
+	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo Making default configurations...
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
