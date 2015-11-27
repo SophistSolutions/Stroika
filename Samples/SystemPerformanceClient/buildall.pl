@@ -11,10 +11,11 @@ my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
+my $level = $ENV{'MAKELEVEL'};
 
 
 
-print("   Building Samples/SystemPerformanceClient...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SystemPerformanceClient...\n");
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd;
 	use Cwd 'abs_path';

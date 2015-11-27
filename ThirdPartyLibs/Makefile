@@ -6,6 +6,8 @@ endif
 .PHONY:	all clean clobber check
 .NOTPARALLEL:
 
+INDENT_LEVEL?=$(MAKELEVEL)
+
 
 all:
 ifeq ($(CONFIGURATION),)
@@ -13,7 +15,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
@@ -29,7 +31,7 @@ endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION)
 endif
-	@echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs...done"
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} ThirdPartyLibs...done"
 endif
 
 
@@ -39,7 +41,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
+	@../ScriptsLib/PrintLevelLeader.sh $(INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyLibs..."
 ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
 	@$(MAKE) --directory zlib $(MAKEFLAGS) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
 endif

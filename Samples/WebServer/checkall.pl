@@ -13,7 +13,7 @@ else {
 	}
 	else {
 		print "[SKIPPED]\r\n";
-		return;
+		exit(0);
 	}
 }
 print "[SUCCEEDED]\r\n";

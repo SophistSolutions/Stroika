@@ -93,7 +93,7 @@ project-files:
 tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory tests CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES);\
 	done
 else
 	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl build

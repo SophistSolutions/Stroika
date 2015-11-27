@@ -23,9 +23,13 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 }
 
 
-my $level = $ENV{'MAKELEVEL'} - 1;
-$level=0;
+my $level = $ENV{'MAKELEVEL'};
+$level = $level - 1;
 print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests...\n");
+
+
+my $subLevel = $level + 1;
+my $subLevelLeader = `../ScriptsLib/PrintLevelLeader.sh $subLevel`;
 
 my $useBld = lc ($BLD_TRG);
 
@@ -42,16 +46,6 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	chdir ($savedDir);
 
 	chdir ("../IntermediateFiles/$activeConfig/");
-	if ($useBld eq "rebuild") {
-		foreach $tst (GetAllTests ()) {
-			my $tstName = GetTestName ($tst);
-			print ("   Test $tst: $tstName; clobber...\n");
-			if ($exit_status != 0) {
-				die("Stopping build: failed");
-			}
-		}
-		$useBld = "all";
-	}
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ("   Test $tst: $tstName; $useBld...\n");
@@ -71,7 +65,7 @@ else {
 		system ("perl BuildProjectsFiles.pl");
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);
-			print ("   $BLD_TRG Test $tst: $tstName ...\n");
+			print ("$subLevelLeader$BLD_TRG Test $tst: $tstName ...\n");
 			$exit_status = system ("cd $tst; perl buildall.pl $BLD_TRG");
 			if ($exit_status != 0) {
 				die("Stopping build: failed");
@@ -79,4 +73,4 @@ else {
 		}
 	chdir ($savedDir);
 }
-print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Tests...done\n");
+print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests...done\n");

@@ -96,7 +96,7 @@ BUILDS_DIR=	CURRENT/Builds/
 
 
 all:
-	@echo "   Building Stroika/ThirdPartyLibs/lzma $(VERSION)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/lzma $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif

@@ -12,9 +12,9 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
-#tmphack!!! 
-#$activeConfig = "DefaultConfiguration";
 $activeConfig = $ENV{'CONFIGURATION'};
+my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
+
 my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
 if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
@@ -26,7 +26,9 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 sub	RunAndStopOnFailure
 {
 	my $cmd2Run = $_[0];
-	print ("      $cmd2Run...\n");
+	if ($ECHO_BUILD_LINES == 1) {
+		print ("      $cmd2Run...\n");
+	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		die ("Run result = $result\r\n");
@@ -57,7 +59,9 @@ sub	NormalizeBuildArg {
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("      $cmd2Run...\n");
+	if ($ECHO_BUILD_LINES == 1) {
+		print ("      $cmd2Run...\n");
+	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		print "Run result = $result\r\n";

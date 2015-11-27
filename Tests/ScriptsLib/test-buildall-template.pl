@@ -4,6 +4,8 @@ if ($BLD_TRG eq '') {
 }
 
 my $activeConfig = $ENV{'CONFIGURATION'};
+my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
+
 
 require "../../../../ScriptsLib/ConfigurationReader.pl";
 require "../../../../Library/Projects/" . GetProjectPlatformSubdir ($activeConfig) . "/SetupBuildCommonVars.pl";
@@ -27,7 +29,9 @@ local *CATCHERR = IO::File->new_tmpfile;
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("      $cmd2Run...\n");
+	if ($ECHO_BUILD_LINES == 1) {
+		print ("      $cmd2Run...\n");
+	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		die ("Run result - FAILED - = $result\r\n");

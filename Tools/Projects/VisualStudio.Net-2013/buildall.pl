@@ -6,6 +6,9 @@ if ($BLD_TRG eq '') {
 }
 
 my $activeConfig = $ENV{'CONFIGURATION'};
+my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
+my $level = $ENV{'MAKELEVEL'};
+
 
 require "../../../Library/Projects/VisualStudio.Net-2013/SetupBuildCommonVars.pl";
 
@@ -27,7 +30,9 @@ local *CATCHERR = IO::File->new_tmpfile;
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("      $cmd2Run...\n");
+	if ($ECHO_BUILD_LINES == 1) {
+		print ("      $cmd2Run...\n");
+	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		print "Run result = $result\r\n";
@@ -36,7 +41,7 @@ sub RunAndPrint
 
 
 
-print("   Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler...\n");
+print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . "Building StroikaTools-Frameworks-WebServer-HTMLViewCompiler:\n");
 my $curConfig	=	`../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:$curConfig /target:$useBld");
 

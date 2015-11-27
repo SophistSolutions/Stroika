@@ -64,7 +64,7 @@ endif
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@echo "   Building Stroika/ThirdPartyLibs/libcurl $(VERSION)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/libcurl $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -75,6 +75,7 @@ endif
 $(ZIPPEDFILE):
 	@echo -n "      ..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
+
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)

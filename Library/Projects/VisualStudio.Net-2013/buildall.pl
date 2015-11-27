@@ -5,9 +5,16 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
+my $activeConfig = $ENV{'CONFIGURATION'};
+my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
+my $curConfig   =       `../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+
 require "SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
+
+my $level = $ENV{'MAKELEVEL'};
+
 
 
 my $useBld =	$BLD_TRG;
@@ -25,7 +32,9 @@ local *CATCHERR = IO::File->new_tmpfile;
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
-	print ("      $cmd2Run...\n");
+	if ($ECHO_BUILD_LINES == 1) {
+		print ("      $cmd2Run...\n");
+	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
 		die ("Run result = $result\r\n");
@@ -33,34 +42,10 @@ sub RunAndPrint
 }
 
 
-my @kConfigurations = (
-					"Configuration=Debug-U-32,Platform=Win32",
-					"Configuration=Debug-U-64,Platform=x64",
-					"Configuration=Release-U-32,Platform=Win32",
-					"Configuration=Release-U-64,Platform=x64",
-					"Configuration=Release-Logging-U-32,Platform=Win32",
-					"Configuration=Release-Logging-U-64,Platform=x64",
-					"Configuration=Release-DbgMemLeaks-U-32,Platform=Win32"
-					);
-
-
-sub getCFGStr
-{
-	foreach (@kConfigurations) {
-		my $curConfig	=	$_;
-		if (index($curConfig, $ENV{'CONFIGURATION'}) != -1) {
-			return $curConfig;
-		}
-	}
-	die ("unrecognized config");
-}
-
-my $curConfig	=	getCFGStr ();
-
-print("   Building Stroika-Foundation...\n");
+print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika-Foundation:\n");
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Foundation.vcxproj /p:$curConfig /target:$useBld");
 
-print("   Building Stroika-Frameworks...\n");
+print(`../../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika-Frameworks:\n");
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Led.vcxproj /p:$curConfig /target:$useBld");
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-Service.vcxproj /p:$curConfig /target:$useBld");
 RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS Stroika-Frameworks-WebServer.vcxproj /p:$curConfig /target:$useBld");

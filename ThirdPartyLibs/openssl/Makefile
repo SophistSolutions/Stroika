@@ -99,7 +99,7 @@ endif
 STRIP_ANNOYING_MESSAGES=		1
 
 all:
-	@echo "   Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/OpenSSL $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif

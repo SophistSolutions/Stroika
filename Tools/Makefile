@@ -1,7 +1,5 @@
 ifneq ($(CONFIGURATION),)
 	ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-
-###	-include ../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 endif
 
 
@@ -25,11 +23,13 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
 else
-	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
+	@ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools...done"
 endif
 
 
@@ -39,7 +39,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@echo -n "Checking Stroika Tools for $(CONFIGURATION)"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo -n "Checking Stroika Tools for $(CONFIGURATION)"
 	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
 endif
 

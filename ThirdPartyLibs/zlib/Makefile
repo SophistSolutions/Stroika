@@ -74,7 +74,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@echo "   Building Stroika/ThirdPartyLibs/zlib $(VERSION)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/zlib $(VERSION):"
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
 

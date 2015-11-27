@@ -6,6 +6,7 @@ require "../../ScriptsLib/BuildUtils.pl";
 my $activeConfig = $ENV{'CONFIGURATION'};;
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
+my $level = $ENV{'MAKELEVEL'};
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
@@ -14,7 +15,7 @@ my $useBld = NormalizeBuildArg ($ARGV[0]);
 delete $ENV{'MAKEFLAGS'};
 
 
-print("   Building Samples/ArchiveUtility...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/ArchiveUtility...\n");
 if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	use Cwd;
 	use Cwd 'abs_path';
