@@ -106,7 +106,8 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests..."
-	@for i in $(TESTS);\
+	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKELEVEL) + 1))`;\
+	for i in $(TESTS);\
 	do\
 		TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 		$(RUNTEST_REMOTECOPYSETUP);\
@@ -121,7 +122,7 @@ else
 			if [ "$$DIFFTIME" -lt "10" ]; then\
 	            DIFFTIME=$$DIFFTIME" ";\
 			fi;\
-	        echo "   [$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
+	        echo "$$PREFIX[$$EXERESULT]  ($$DIFFTIME seconds)  [$$i]  $$TESTNAME  ($(RUNTEST_EXE_RUN_PRINTLINE))";\
 	done
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests...done"
 endif
