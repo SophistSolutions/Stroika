@@ -61,7 +61,7 @@ endif
 
 
 clobber:
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Stroika Clobber..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
 	@#OK if no configuration or given configuration (handled in submake file)
