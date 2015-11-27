@@ -82,9 +82,15 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@echo "Building Stroika {$(CONFIGURATION)} Samples..."
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl);\
-    done	
+    done
+else
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		$(MAKE) --directory ../IntermediateFiles/$activeConfig/Samples_$$SUBPROJ --silent all;\
+    done
+endif
 	@echo "Building Stroika {$(CONFIGURATION)} Samples...done"
 endif
 
