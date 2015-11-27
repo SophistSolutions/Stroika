@@ -5,8 +5,6 @@ my $activeConfig = $ENV{'CONFIGURATION'};
 CheckFileExists ("../../../Builds/$activeConfig/HTMLViewCompiler.exe");
 
 
-
-
 print "      [SUCCEEDED]\r\n";
 
 

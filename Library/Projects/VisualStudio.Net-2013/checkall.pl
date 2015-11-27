@@ -1,12 +1,11 @@
-CheckFileExists ("../../../Builds/Debug-U-32/Library/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Debug-U-64/Library/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Release-U-32/Library/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Release-U-64/Library/Stroika-Foundation.lib");
+my $activeConfig = $ENV{'CONFIGURATION'};
 
-CheckFileExists ("../../../Builds/Release-Logging-U-32/Library/Stroika-Foundation.lib");
-CheckFileExists ("../../../Builds/Release-Logging-U-64/Library/Stroika-Foundation.lib");
-
-CheckFileExists ("../../../Builds/Release-DbgMemLeaks-U-32/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Foundation.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Frameworks-Led.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Frameworks-Service.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Frameworks-SystemPerformance.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Frameworks-UPnP.lib");
+CheckFileExists ("../../../Builds/$activeConfig/Library/Stroika-Frameworks-WebServer.lib");
 
 
 print "      [SUCCEEDED]\r\n";
