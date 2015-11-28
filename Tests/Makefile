@@ -4,6 +4,8 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -58,7 +60,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_checkall.pl
+	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_checkall.pl
 endif
 
 
@@ -95,7 +97,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES);\
 	done
 else
-	@CONFIGURATION=$(CONFIGURATION) perl ScriptsLib/_buildall.pl build
+	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_buildall.pl build
 endif
 
 
@@ -105,8 +107,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
-	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKELEVEL) + 1))`;\
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
+	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
 	for i in $(TESTS);\
 	do\
 		TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\

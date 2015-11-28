@@ -10,7 +10,7 @@ my $activeConfig = $ENV{'CONFIGURATION'};
 my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SimpleLedTest...\n");
 if (index($projectPlatformSubdir, "VisualStudio") != -1) {

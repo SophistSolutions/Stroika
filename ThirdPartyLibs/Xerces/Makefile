@@ -15,6 +15,8 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
 
 FETCHURLS=
 FETCHURLS+=http://mirror.sdunix.com/apache//xerces/c/3/sources/$(BASENAME).tar.gz
@@ -49,7 +51,7 @@ endif
 
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/xerces $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/xerces $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -84,7 +86,7 @@ endif
 
 
 check:
-	@echo -n "      ...Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "...Checking..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -97,16 +99,16 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/Xerces -  [Succeeded]";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Stroika/ThirdPartyLibs/Xerces -  [Succeeded]";
 
 
 $(ZIPPEDFILE):
-	@echo -n "      ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 doCreate:	$(ZIPPEDFILE)
-	@echo "      ...Creating CURRENT...";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Creating CURRENT...";
 	@rm -rf CURRENT;
 	@tar xf $(ZIPPEDFILE) --no-same-owner;
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
@@ -114,7 +116,7 @@ doCreate:	$(ZIPPEDFILE)
 
 
 doPatching_:
-	@echo "      ...Patching Xerces...";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Patching Xerces...";
 	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
 ifeq (AIX,$(shell uname))
@@ -123,14 +125,14 @@ endif
 
 
 doBuilds:
-	@echo "      ...Compiling REDIRECT to BUILD.OUT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Compiling REDIRECT to BUILD.OUT..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) all 2>&1 >> BUILD.OUT
 else
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_.pl build > BUILD.OUT 2>&1
 endif
-	@echo "      ...Copying builds to ... $(BUILDS_ROOT)"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/

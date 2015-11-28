@@ -10,6 +10,10 @@ endif
 .NOTPARALLEL:
 
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
+
+
 DoCreateSymLink=0
 
 
@@ -96,7 +100,7 @@ BUILDS_DIR=	CURRENT/Builds/
 
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/lzma $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/lzma $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -120,24 +124,24 @@ endif
 
 
 $(ZIPEDFILE):
-	@echo -n "      ..." 
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "..." 
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 check_prerequisites_:
-	@echo "      ...checking tools..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...checking tools..."
 	@type 7za > /dev/null || echo "......Missing 7za"
 
 
 doCreate:	$(ZIPEDFILE)
-	@echo "      ...Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@cp Subdir-Makefile CURRENT/Makefile
 
 
 doBuilds:
-	@echo "      ...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -275,14 +279,14 @@ ORIGS:	$(ZIPEDFILE)
 
 
 check:
-	@echo -n "      ...Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "...Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "   FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/lzma -    [Succeeded]";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Stroika/ThirdPartyLibs/lzma -    [Succeeded]";
 
 
 clean:

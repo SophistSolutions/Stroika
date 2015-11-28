@@ -8,13 +8,11 @@ if ($BLD_TRG eq '') {
 my $activeConfig = $ENV{'CONFIGURATION'};
 my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
 my $curConfig   =       `../../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+my $level = $ENV{'MAKE_INDENT_LEVEL'} + 1;
 
 require "SetupBuildCommonVars.pl";
 
 my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
-
-my $level = $ENV{'MAKELEVEL'};
-
 
 
 my $useBld =	$BLD_TRG;

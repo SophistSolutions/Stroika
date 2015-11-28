@@ -23,8 +23,8 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 }
 
 
-my $level = $ENV{'MAKELEVEL'};
-$level = $level - 1;
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
+$level = $level;
 print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests:\n");
 
 

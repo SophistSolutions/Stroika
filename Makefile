@@ -3,6 +3,10 @@
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
+
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
+
 help:
 	@echo "Help for making Stroika:"
 	@echo "Targets:"
@@ -28,21 +32,21 @@ help:
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
-	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking Stroika {$(CONFIGURATION)}:"
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Tests --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)}:"
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
 endif
 
 
@@ -52,43 +56,43 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Tools --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Tests --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
-	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Tools --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
+	@$(MAKE) --directory Samples --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) MAKEFLAGS=
 endif
 
 
 clobber:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Stroika Clobber..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
 	@#OK if no configuration or given configuration (handled in submake file)
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
 documentation:
-	@$(MAKE) --directory Documentation --no-print-directory all
+	@$(MAKE) --directory Documentation --no-print-directory all MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$$i;\
+		$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
 third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$$i;\
+		$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ThirdPartyLibs --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
@@ -117,40 +121,40 @@ project-files-qt-creator-save:
 tools:	libraries
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$$i;\
+		$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
 tests:	tools libraries
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$$i;\
+		$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
 samples:	tools libraries
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Samples --no-print-directory all CONFIGURATION=$$i;\
+		$(MAKE) --directory Samples --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
 run-tests:	tests
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$$i;\
+		$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=
+	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKEFLAGS=  MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
@@ -188,7 +192,7 @@ format-code:
 # just fail later
 # but dont check if already checked
 IntermediateFiles/TOOLS_CHECKED:
-	@$(MAKE) check-tools --no-print-directory
+	@$(MAKE) check-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/TOOLS_CHECKED
 
@@ -196,7 +200,7 @@ IntermediateFiles/TOOLS_CHECKED:
 check-tools:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking for installed tools..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking for installed tools..."
 	@echo -n "   ..." && sh -c "type sed"
 	@echo -n "   ..." && sh -c "type wget"
 	@echo -n "   ..." && sh -c "type perl"
@@ -216,24 +220,24 @@ endif
 apply-configurations-if-needed:
 	@#if no configurations, create default
 ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
-	@$(MAKE) default-configuration --no-print-directory
+	@$(MAKE) default-configuration --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		if [ ! -e IntermediateFiles/$$i ] ; then\
-			$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
+			$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 		fi;\
 	done
 
 
 apply-configurations:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 
 apply-configuration:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Applying configuration $(CONFIGURATION)..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Applying configuration $(CONFIGURATION)..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
 	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
@@ -241,7 +245,7 @@ apply-configuration:
 
 
 default-configuration:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo Making default configurations...
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo Making default configurations...
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\

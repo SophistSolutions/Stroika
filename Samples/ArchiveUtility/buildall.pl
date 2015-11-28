@@ -6,7 +6,7 @@ require "../../ScriptsLib/BuildUtils.pl";
 my $activeConfig = $ENV{'CONFIGURATION'};;
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 

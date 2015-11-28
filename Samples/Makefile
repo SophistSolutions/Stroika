@@ -6,6 +6,8 @@ endif
 
 .PHONY:	samples all check clobber skel
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
 
 SUBPROJECTS=
 
@@ -49,9 +51,9 @@ all:		samples
 
 
 check:
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Checking Stroika {$(CONFIGURATION)} Samples:";
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)} Samples:";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		../ScriptsLib/PrintLevelLeader.sh $$(($(MAKELEVEL))) && echo -n "   Checking $$SUBPROJ... ";\
+		../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && echo -n "Checking $$SUBPROJ... ";\
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall.pl);\
 	done	
 
@@ -81,10 +83,10 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory samples CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples:"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples:"
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) cd $$SUBPROJ && perl buildall.pl);\
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall.pl);\
     done
 else
 	@for SUBPROJ in $(SUBPROJECTS) ; do \

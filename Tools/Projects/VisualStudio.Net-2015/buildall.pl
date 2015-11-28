@@ -7,7 +7,7 @@ if ($BLD_TRG eq '') {
 
 my $activeConfig = $ENV{'CONFIGURATION'};
 my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 
 require "../../../Library/Projects/VisualStudio.Net-2015/SetupBuildCommonVars.pl";

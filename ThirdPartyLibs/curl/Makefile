@@ -8,6 +8,9 @@ endif
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 .NOTPARALLEL:
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
+
 
 DoCreateSymLink=0
 
@@ -64,7 +67,7 @@ endif
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika/ThirdPartyLibs/libcurl $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/libcurl $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -73,7 +76,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@echo -n "      ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "..."
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
@@ -86,7 +89,7 @@ endif
 
 
 doCreate:	$(ZIPPEDFILE)
-	@echo "      ...Creating CURRENT...";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Creating CURRENT...";
 	@tar xf $(ZIPPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
 
@@ -157,23 +160,23 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@echo "      ...Building libcurl CURRENT..."
-	@echo "         ...into $(BUILDS_DIR)..."
-	@echo "         ...checking tools..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...Building libcurl CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...checking tools..."
 	@$(MAKE) --no-print-directory check_prerequisites_
-	@echo "         ...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
-	@echo "         ...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."
 	@echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
 	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
-	@echo "         ...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "      ....Building libcurl CURRENT into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "....Building libcurl CURRENT into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -188,17 +191,17 @@ check_prerequisites_:
 
 
 check:
-	@echo -n "      ...Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "...Checking..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
-			echo "      FAILED: missing $$i";\
+			../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/curl -    [Succeeded]";
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Stroika/ThirdPartyLibs/curl -    [Succeeded]";
 
 
 clean:

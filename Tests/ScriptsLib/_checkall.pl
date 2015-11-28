@@ -4,8 +4,8 @@ require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
 my $activeConfig = $ENV{'CONFIGURATION'};
-my $level = $ENV{'MAKELEVEL'};
-$level = $level - 1;
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
+$level = $level;
 my $subLevel = $level + 1;
 
 my $subLevelStr = `../ScriptsLib/PrintLevelLeader.sh $subLevel`;

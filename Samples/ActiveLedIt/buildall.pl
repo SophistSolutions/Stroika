@@ -10,7 +10,7 @@ my $activeConfig = $ENV{'CONFIGURATION'};
 my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 # these environment flags appear to confuse nmake
 delete $ENV{'MAKEFLAGS'};

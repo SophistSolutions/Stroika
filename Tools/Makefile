@@ -3,6 +3,8 @@ ifneq ($(CONFIGURATION),)
 endif
 
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
 .PHONY:	samples all check clobber skel
 
 
@@ -23,11 +25,11 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools:"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools:"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
 else
-	@ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
+	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
 endif
 
@@ -38,8 +40,8 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo -n "Checking Stroika {$(CONFIGURATION)} Tools:"
-	@CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "Checking Stroika {$(CONFIGURATION)} Tools:"
+	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
 endif
 
 

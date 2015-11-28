@@ -21,7 +21,7 @@ if ("$^O" eq "linux") {
 #	$doxygen =$doxygenFile;
 #	$latexMake = "make.bat";
 #}
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 my $doxyArgs = "Stroika-Library.cfg";
 
@@ -31,7 +31,7 @@ $doxyArgs = $doxyArgs . ">doxygen.stdout 2>doxygen.stderr";
 #	$runFile = $i;
 #}
 
-print (`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Doxygen...");
+print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Doxygen...");
 system ("rm -rf Output");
 system ("rm -rf IntermediateFiles");
 system ("$doxygen $doxyArgs");

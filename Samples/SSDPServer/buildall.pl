@@ -11,7 +11,7 @@ my $projectPlatformSubdir = GetProjectPlatformSubdir ($activeConfig);
 my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 
 my $useBld = NormalizeBuildArg ($ARGV[0]);
-my $level = $ENV{'MAKELEVEL'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SSDPServer...\n");
