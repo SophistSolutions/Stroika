@@ -176,7 +176,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		exit 1;\
 	 fi
 endif
-	@echo "   Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
+	@echo "Stroika/ThirdPartyLibs/OpenSSL - [Succeeded]";
 
 $(ZIPEDFILE):
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "..."

@@ -203,7 +203,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "   Stroika/ThirdPartyLibs/zlib -    [Succeeded]";
+	@echo "Stroika/ThirdPartyLibs/zlib -    [Succeeded]";
 
 clean:
 	@rm -rf CURRENT
