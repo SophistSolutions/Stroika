@@ -81,7 +81,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory samples CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples:"
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) cd $$SUBPROJ && perl buildall.pl);\
@@ -91,7 +91,6 @@ else
 		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent all;\
     done
 endif
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples...done"
 endif
 
 

@@ -23,13 +23,12 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools:"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
 else
 	@ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) CONFIGURATION=$(CONFIGURATION) cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKELEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools...done"
 endif
 
 
