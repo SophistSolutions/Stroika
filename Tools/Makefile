@@ -27,9 +27,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} Tools:"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all
+	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
+	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
 endif
 endif
 
@@ -37,7 +37,7 @@ endif
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "Checking Stroika {$(CONFIGURATION)} Tools:"
