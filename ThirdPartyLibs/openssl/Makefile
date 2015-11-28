@@ -105,8 +105,8 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
@@ -199,7 +199,7 @@ doCreate:	$(ZIPEDFILE)
 	@rm -rf CURRENT
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatch
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doPatch
 
 
 doBuilds:

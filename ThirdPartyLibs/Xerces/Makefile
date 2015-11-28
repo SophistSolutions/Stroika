@@ -58,8 +58,8 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
@@ -69,8 +69,8 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds
 
 
 clean:
@@ -112,7 +112,7 @@ doCreate:	$(ZIPPEDFILE)
 	@rm -rf CURRENT;
 	@tar xf $(ZIPPEDFILE) --no-same-owner;
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatching_
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doPatching_
 
 
 doPatching_:
@@ -128,7 +128,7 @@ doBuilds:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Compiling REDIRECT to BUILD.OUT..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
-	@$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) all 2>&1 >> BUILD.OUT
+	@$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  all 2>&1 >> BUILD.OUT
 else
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_.pl build > BUILD.OUT 2>&1
 endif

@@ -107,8 +107,8 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
@@ -118,9 +118,9 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check_prerequisites_
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doCreate
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doBuilds
 
 
 $(ZIPEDFILE):
@@ -148,7 +148,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) CONFIGURATION=$(CONFIGURATION) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
+	@$(MAKE) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
 
 doBuildInternal_:

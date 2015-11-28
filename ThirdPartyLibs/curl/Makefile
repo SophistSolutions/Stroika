@@ -71,8 +71,8 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  check
 
 
 $(ZIPPEDFILE):
@@ -84,8 +84,8 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory doCreate
-	@$(MAKE) --no-print-directory doBuilds
+	@$(MAKE) --no-print-directory doCreate CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
+	@$(MAKE) --no-print-directory doBuilds CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 
 
 doCreate:	$(ZIPPEDFILE)
@@ -163,7 +163,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Building libcurl CURRENT..."
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...into $(BUILDS_DIR)..."
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...checking tools..."
-	@$(MAKE) --no-print-directory check_prerequisites_
+	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."

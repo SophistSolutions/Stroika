@@ -77,16 +77,16 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/zlib $(VERSION):"
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) check
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds
 
 
 $(ZIPEDFILE):
@@ -126,8 +126,8 @@ endif
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Extract $(ZIPEDFILE) to CURRENT..."
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doPatch
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doConfigure
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doPatch
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doConfigure
 
 doBuilds:
 ifeq ($(CONFIGURATION),)
