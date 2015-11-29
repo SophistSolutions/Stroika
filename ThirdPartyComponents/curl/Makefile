@@ -55,11 +55,11 @@ BUILDS_DIR=	$(shell pwd)/Builds/
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libcurl.a				\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/curl/curl.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libcurl.a				\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/curl/curl.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/curl/curl.h
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/curl/curl.h
 endif
 
 
@@ -67,7 +67,7 @@ endif
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/libcurl $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/libcurl $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -94,12 +94,12 @@ doCreate:	$(ZIPPEDFILE)
 	@mv $(EXTRACTED_DIRNAME) CURRENT
 
 
-#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyLibs/include/openssl/)
+#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
 #didn't work (failed to find crypto lib)
 PKG_CONFIG=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
-PKG_CONFIG=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyLibs/lib/pkgconfig
+PKG_CONFIG=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 endif
 endif
 
@@ -171,9 +171,9 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "....Building libcurl CURRENT into $(BUILDS_DIR)..."
@@ -201,7 +201,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "Stroika/ThirdPartyLibs/curl -    [Succeeded]";
+	@echo "Stroika/ThirdPartyComponents/curl -    [Succeeded]";
 
 
 clean:
@@ -211,7 +211,7 @@ clean:
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/{libcurl}* $(BUILDS_ROOT)*/ThirdPartyLibs/include/curl
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{libcurl}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/curl
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif

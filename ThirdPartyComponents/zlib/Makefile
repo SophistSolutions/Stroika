@@ -36,32 +36,32 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/libz.a			\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/zlib.h		\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/zconf.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libz.a			\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/zlib.h		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/zconf.h
 else
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/zlib.lib					\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/zconf.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/zlib.lib				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/zlib.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/zconf.h				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/zlib.lib		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/zlib.h		\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/zconf.h	\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/zlib.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/zconf.h		\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/zlib.lib					\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/zlib.h				\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/zconf.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib/zlib.lib				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/zlib.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/zconf.h				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/zlib.lib			\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zlib.h		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/zconf.h
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/zlib.h				\
+	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/zconf.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/zlib.lib				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/zlib.h				\
+	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/zconf.h				\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/zlib.lib		\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/zlib.h		\
+	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/zconf.h	\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/zconf.h		\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/zlib.lib					\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/zlib.h				\
+	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/zconf.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/zlib.lib				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/zlib.h				\
+	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/zconf.h				\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/zlib.lib			\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/zlib.h		\
+	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/zconf.h
 endif
 
 .NOTPARALLEL:
@@ -76,7 +76,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyLibs/zlib $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/zlib $(VERSION):"
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check
 
@@ -137,23 +137,23 @@ endif
 	@make doBuildInternal_ > BUILD.OUT 2>&1
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
 else
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Debug64/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyLibs/include/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyLibs/include/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp CURRENT/Builds/Debug32/zlib.lib $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include && cp  CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp CURRENT/Builds/Release32/zlib.lib $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp CURRENT/Builds/Debug64/zlib.lib $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp CURRENT/Builds/Release64/zlib.lib $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
 endif
 
 	
@@ -203,7 +203,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "Stroika/ThirdPartyLibs/zlib -    [Succeeded]";
+	@echo "Stroika/ThirdPartyComponents/zlib -    [Succeeded]";
 
 clean:
 	@rm -rf CURRENT
@@ -211,7 +211,7 @@ clean:
 clobber:	clean
 	@rm -f BUILD.OUT PATCHING.OUT
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyLibs/lib/libz.a $(BUILDS_ROOT)*/ThirdPartyLibs/include/{zlib,zconf}.h
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libz.a $(BUILDS_ROOT)*/ThirdPartyComponents/include/{zlib,zconf}.h
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
