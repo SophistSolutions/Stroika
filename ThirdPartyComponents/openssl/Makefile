@@ -19,7 +19,6 @@ EXTRACTED_DIRNAME=$(BASENAME)
 
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 CrossCompiling			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling)
-
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
 
 
@@ -50,15 +49,15 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libcrypto.a				\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libssl.a					\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libssl.a				\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/openssl
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libeay32.lib						\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ssleay32.lib						\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lib.pdb							\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.exe							\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libeay32.lib			\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ssleay32.lib			\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lib.pdb					\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.exe					\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.pdb
 endif
 
@@ -78,9 +77,6 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
-endif
 	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
 
@@ -90,7 +86,6 @@ clean:
 
 
 clobber:	clean
-	@rm -f BUILD.OUT INSTALL.OUT CONFIG.OUT
 ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{libcrypto,libssl}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/openssl $(BUILDS_ROOT)*/ThirdPartyComponents/bin/openssl
 else
@@ -105,7 +100,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "...Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			echo "      FAILED: missing $$i";\
@@ -124,26 +119,44 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (U-32,$(findstring U-32, $(CONFIGURATION)))
-	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
+ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
+	@X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	 if [ $$X2 -gt 50 ]; then\
 		echo "  Test DIFFS";\
-		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
+		echo "    should be less than 50 to be safe.";\
 		echo "      diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
 endif
+ifeq (Release,$(findstring Release, $(CONFIGURATION)))
+	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	 if [ $$X1 -gt 50 ]; then\
+		echo "  Test DIFFS";\
+		echo "    should be less than 50 to be safe.";\
+		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
+		exit 1;\
+	 fi
+endif
+endif
 ifeq (U-64,$(findstring U-64, $(CONFIGURATION)))
-	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
+ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
+	@X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	 if [ $$X2 -gt 50 ]; then\
 		echo "  Test DIFFS";\
 		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
 		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
+endif
+ifeq (Release,$(findstring Release, $(CONFIGURATION)))
+	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
+	 if [ $$X1 -gt 50 ]; then\
+		echo "  Test DIFFS";\
+		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
+		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
+		exit 1;\
+	 fi
+endif
 endif
 endif
 endif
@@ -156,7 +169,7 @@ $(ZIPEDFILE):
 
 
 doPatch:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "...Patching OpenSSL..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Patching OpenSSL..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@echo -n .
@@ -167,32 +180,37 @@ endif
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Extracting $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
+	@echo "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Creating CURRENT/CONFIG.OUT - new configuration"
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Creating CURRENT/CONFIG.OUT - new configuration"
 	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CONFIG.OUT 2>&1
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Buidling, and redirecting messages to BUILD.OUT ...";
-	@$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";
-	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
+	@echo "done"
+	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Installing (to CURRENT/Builds), and redirecting messages to CURRENT/INSTALL.OUT ...";
+	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
+	@echo "done"
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n"Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
+	@echo "done"
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Buidling, and redirecting messages to BUILD.OUT ...";
-	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > BUILD.OUT 2>&1;
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
+	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > CURRENT/BUILD.OUT 2>&1;
+	@echo "done"
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Copying builds to $(BUILDS_ROOT)..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
@@ -229,6 +247,7 @@ ifeq ($(CONFIGURATION),Release-Logging-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release64/libeay32.* CURRENT/Builds/Release64/ssleay32.* CURRENT/Builds/Release64/lib.pdb $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
 endif
+	@echo "done"
 endif
 
 

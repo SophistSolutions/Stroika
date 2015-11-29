@@ -22,9 +22,9 @@ require "$thisScriptDir/../../ScriptsLib/ConfigurationReader.pl";
 
 $activeConfig = $ENV{'CONFIGURATION'};
 my $useProjectDir= "$thisScriptDir/../../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
-if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
+#if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
-}
+#}
 
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
@@ -60,9 +60,10 @@ sub	CopyBuilds2Out
 	system ("cp CURRENT/$bldOutDir/openssl.* CURRENT/Builds/$trgDir/");
 }
 
+system ("rm -rf CURRENT/Builds");
 
 #REM - only reconfigure if we just did the extract
-if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Release-Logging-U-32" || $activeConfig eq "Release-DbgMemLeaks-U-32") {
+if (index ($activeConfig, "U-32") != -1) {
 	chdir ("CURRENT");
 		print ("\n ...Configuring openssl 32-bit...\n");
 		RunAndStopOnFailure ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
@@ -76,35 +77,48 @@ if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeC
 		system ("rm -f NUL");
 		system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
 	
-		print (" ...Make Release...\n");
-		#nb: lose -s to see each compile line
-		#RunAndStopOnFailure ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS= 2>&1) > NT.MAK.BUILD-Output.txt");
-		open(my $fh, '>', 'doRun32NDB.bat');
-		print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
-		print $fh "echo nmake /NOLOGO /S /f ms\\nt.mak MAKEFLAGS=\n";
-		print $fh "echo PATH=%PATH%\n";
-		print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
-		close $fh;
-		RunAndStopOnFailure ("(cmd /c doRun32NDB.bat) 2>&1 > NT32.MAK.BUILD-Output.txt");
+		if (index ($activeConfig, "Release") != -1) {
+			print (" ...Make Release...\n");
+			#nb: lose -s to see each compile line
+			#RunAndStopOnFailure ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS= 2>&1) > NT.MAK.BUILD-Output.txt");
+			open(my $fh, '>', 'doRun32NDB.bat');
+			print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
+			print $fh "echo nmake /NOLOGO /S /f ms\\nt.mak MAKEFLAGS=\n";
+			print $fh "echo PATH=%PATH%\n";
+			print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun32NDB.bat) 2>&1 > NT32.MAK.BUILD-Output.txt");
+		}
 	
-		print (" ...Make Debug...\n");
-		#nb: lose -s to see each compile line
-		open(my $fh, '>', 'doRun32Dbg.bat');
-		print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
-		print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
-		close $fh;
-		RunAndStopOnFailure ("(cmd /c doRun32Dbg.bat 2>&1) > NT32-DBG.MAK.BUILD-Output.txt");
+		if (index ($activeConfig , "Debug") != -1) {
+			print (" ...Make Debug...\n");
+			#nb: lose -s to see each compile line
+			open(my $fh, '>', 'doRun32Dbg.bat');
+			print $fh GetString2InsertIntoBatchFileToInit32BitCompiles();
+			print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun32Dbg.bat 2>&1) > NT32-DBG.MAK.BUILD-Output.txt");
+		}
 	
-		print (" ...Running openssl tests (output TEST32-OUT.txt, TEST32-DBG-OUT.txt)...");
-		system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST32-OUT.txt");
-		system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST32-DBG-OUT.txt");
+		if (index ($activeConfig, "Release") != -1) {
+			print (" ...Running openssl tests (output TEST32-OUT.txt)...");
+			system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST32-OUT.txt");
+		}
+		if (index ($activeConfig, "Debug") != -1) {
+			print (" ...Running openssl tests (output TEST32-DBG-OUT.txt)...");
+			system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST32-DBG-OUT.txt");
+		}
 		print ("done\n");
 	chdir ("..");
-	CopyBuilds2Out ("Release32", "out32", "tmp32");
-	CopyBuilds2Out ("Debug32", "out32.dbg", "tmp32.dbg");
+	if (index ($activeConfig, "Release") != -1) {
+		CopyBuilds2Out ("Release32", "out32", "tmp32");
+	}
+	if (index ($activeConfig, "Debug") != -1) {
+		CopyBuilds2Out ("Debug32", "out32.dbg", "tmp32.dbg");
+	}
 }
 
-if ($activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64") {
+if (index ($activeConfig, "U-64") != -1) {
 	chdir ("CURRENT");
 		print ("\n ...Configuring openssl 64-bit...\n");
 
@@ -136,26 +150,38 @@ if ($activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeC
 		system ("rm -f NUL");
 		system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
 	
-		print (" ...Make Release64...\n");
-		open(my $fh, '>', 'doRun64NDB.bat');
-		print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
-		print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
-		close $fh;
-		RunAndStopOnFailure ("(cmd /c doRun64NDB.bat 2>&1) > NT64.MAK.BUILD-Output.txt");
+		if (index ($activeConfig, "Release") != -1) {
+			print (" ...Make Release64...\n");
+			open(my $fh, '>', 'doRun64NDB.bat');
+			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
+			print $fh "nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun64NDB.bat 2>&1) > NT64.MAK.BUILD-Output.txt");
+		}
 	
-		print (" ...Make Debug64...\n");
-		open(my $fh, '>', 'doRun64Dbg.bat');
-		print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
-		print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
-		close $fh;
-		RunAndStopOnFailure ("(cmd /c doRun64Dbg.bat 2>&1) > NT64-DBG.MAK.BUILD-Output.txt");
+		if (index ($activeConfig, "Debug") != -1) {
+			print (" ...Make Debug64...\n");
+			open(my $fh, '>', 'doRun64Dbg.bat');
+			print $fh GetString2InsertIntoBatchFileToInit64BitCompiles();
+			print $fh "nmake /NOLOGO /f ms/nt-DBG.mak MAKEFLAGS=\n";
+			close $fh;
+			RunAndStopOnFailure ("(cmd /c doRun64Dbg.bat 2>&1) > NT64-DBG.MAK.BUILD-Output.txt");
+		}
 
 		print (" ...Running openssl tests (output TEST64-OUT.txt, TEST64-DBG-OUT.txt)...");
-		system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST64-OUT.txt");
-		system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST64-DBG-OUT.txt");
+		if (index ($activeConfig, "Release") != -1) {
+			system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST64-OUT.txt");
+		}
+		if (index ($activeConfig, "Debug") != -1) {
+			system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST64-DBG-OUT.txt");
+		}
 		print ("done\n");
 	chdir ("..");
 	
-	CopyBuilds2Out ("Release64", "out32", "tmp32");
-	CopyBuilds2Out ("Debug64", "out32.dbg", "tmp32.dbg");
+	if (index ($activeConfig, "Release") != -1) {
+		CopyBuilds2Out ("Release64", "out32", "tmp32");
+	}
+	if (index ($activeConfig, "Debug") != -1) {
+		CopyBuilds2Out ("Debug64", "out32.dbg", "tmp32.dbg");
+	}
 }
