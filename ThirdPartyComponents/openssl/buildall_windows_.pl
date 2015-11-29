@@ -107,6 +107,22 @@ if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeC
 if ($activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64") {
 	chdir ("CURRENT");
 		print ("\n ...Configuring openssl 64-bit...\n");
+
+		###tmphack to test workaround bug with this 64-bit make code. Probably most of this is not needed, but
+		###not sure what is!!!
+		###	-- LGP 2015-11-29
+		RunAndStopOnFailure ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
+		#RunAndStopOnFailure ("perl Configure VC-WIN32 --prefix=c:/some/openssl/dir");
+		## BASED ON ms\do_ms.bat
+		system ("perl util/mkfiles.pl >MINFO");
+		system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
+		system ("perl util/mk1mf.pl debug no-asm VC-WIN32 >ms/nt-DBG.mak");
+		system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
+		system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
+		system ("rm -f NUL");
+		system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
+
+
 		RunAndStopOnFailure ("perl Configure no-asm VC-WIN64A");
 			
 		open(my $fh, '>', 'doRun64Configure.bat');

@@ -45,21 +45,21 @@ CONFIG_ARGS+=	-DPURIFY
 endif
 endif
 
-ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/openssl/aes.h
+ifeq (Unix,$(ProjectPlatformSubdir))
+PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libcrypto.a				\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libssl.a					\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/openssl					\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/openssl/aes.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/openssl
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PRODUCED_OUTPUT_ARTIFACTS=	\
+PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libeay32.lib						\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ssleay32.lib						\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lib.pdb							\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.exe							\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.pdb							\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/openssl/aes.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.pdb
 endif
 
 # COULD make this conditional
@@ -70,7 +70,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  check
 
 
@@ -149,13 +149,14 @@ endif
 endif
 	@echo "Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
+
 $(ZIPEDFILE):
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "..."
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 doPatch:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "...Patching OpenSSL...   "
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "...Patching OpenSSL..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@echo -n .
@@ -234,4 +235,3 @@ endif
 ORIG:	$(ZIPEDFILE)
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) ORIGS
-

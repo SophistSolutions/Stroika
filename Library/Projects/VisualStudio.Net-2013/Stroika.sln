@@ -150,6 +150,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyComponents", "Thi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3C96C-D218-4BE1-99E9-96B9290537AE}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\buildall_windows_.pl = ..\..\..\ThirdPartyComponents\openssl\buildall_windows_.pl
 		..\..\..\ThirdPartyComponents\openssl\Makefile = ..\..\..\ThirdPartyComponents\openssl\Makefile
 		..\..\..\ThirdPartyComponents\openssl\ReadMe.txt = ..\..\..\ThirdPartyComponents\openssl\ReadMe.txt
 		..\..\..\ThirdPartyComponents\openssl\REFERENCE_OUTPUT.txt = ..\..\..\ThirdPartyComponents\openssl\REFERENCE_OUTPUT.txt
@@ -163,6 +164,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{8857755D-8E18-476D-BEB5-5C3B5ED79FB2}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\Xerces\buildall_windows_.pl = ..\..\..\ThirdPartyComponents\Xerces\buildall_windows_.pl
 		..\..\..\ThirdPartyComponents\Xerces\Makefile = ..\..\..\ThirdPartyComponents\Xerces\Makefile
 		..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt = ..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt
 	EndProjectSection
