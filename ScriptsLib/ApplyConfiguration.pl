@@ -538,34 +538,34 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "#Third Party Product Libs to Build:\n");
 
 	if (($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_BuildOnly)) {
-            print (OUT "qBuildThirdPartyProducts_libcurl=1\n");
+            print (OUT "qBuildThirdPartyComponents_libcurl=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
+		print (OUT "qBuildThirdPartyComponents_libcurl=0\n");
 	}	
 	if (($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyProducts_OpenSSL=1\n");
+		print (OUT "qBuildThirdPartyComponents_OpenSSL=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_OpenSSL=0\n");
+		print (OUT "qBuildThirdPartyComponents_OpenSSL=0\n");
 	}	
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyProducts_Xerces=1\n");
+		print (OUT "qBuildThirdPartyComponents_Xerces=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_Xerces=0\n");
+		print (OUT "qBuildThirdPartyComponents_Xerces=0\n");
 	}	
 	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyProducts_ZLib=1\n");
+		print (OUT "qBuildThirdPartyComponents_ZLib=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_ZLib=0\n");
+		print (OUT "qBuildThirdPartyComponents_ZLib=0\n");
 	}	
 	if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_BuildOnly)) {
-		print (OUT "qBuildThirdPartyProducts_LZMA=1\n");
+		print (OUT "qBuildThirdPartyComponents_LZMA=1\n");
 	}	
 	else {
-		print (OUT "qBuildThirdPartyProducts_LZMA=0\n");
+		print (OUT "qBuildThirdPartyComponents_LZMA=0\n");
 	}	
 
 

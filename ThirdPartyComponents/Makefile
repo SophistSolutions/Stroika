@@ -16,19 +16,19 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
-ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
+ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
+ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
+ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
 	@$(MAKE) --directory curl --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_LZMA), 1)
+ifeq ($(qBuildThirdPartyComponents_LZMA), 1)
 	@$(MAKE) --directory lzma --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
+ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
@@ -41,19 +41,19 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
-ifeq ($(qBuildThirdPartyProducts_ZLib), 1)
+ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
+ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_libcurl), 1)
+ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
 	@$(MAKE) --directory curl --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_LZMA), 1)
+ifeq ($(qBuildThirdPartyComponents_LZMA), 1)
 	@$(MAKE) --directory lzma --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
+ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
