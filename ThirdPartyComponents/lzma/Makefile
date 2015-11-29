@@ -54,7 +54,7 @@ BUILDS_ROOT=../../Builds/
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7z.h		\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7z.h			\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zCrc.h		\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zTypes.h
 
@@ -79,9 +79,6 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
-endif
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check
 
@@ -89,9 +86,6 @@ endif
 $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doCreate
@@ -119,9 +113,6 @@ doBuilds:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
-ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
-	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
 	@$(MAKE) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 
@@ -156,8 +147,8 @@ ifeq ($(CONFIGURATION),Debug-U-32)
 	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
 endif
-ifeq (U-32,$(findstring U-32,$(ProjectPlatformSubdir)))
-ifeq (Release,$(findstring Release,$(ProjectPlatformSubdir)))
+ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
+ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
@@ -231,8 +222,8 @@ ifeq ($(CONFIGURATION),Debug-U-64)
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/
 endif
 
-ifeq (U-64,$(findstring U-64,$(ProjectPlatformSubdir)))
-ifeq (Release,$(findstring Release,$(ProjectPlatformSubdir)))
+ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
+ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
