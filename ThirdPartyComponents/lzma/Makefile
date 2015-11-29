@@ -53,43 +53,18 @@ endif
 BUILDS_ROOT=../../Builds/
 
 
-ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lzma.a				\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7z.h		\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zCrc.h		\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/7zTypes.h
+
+ifeq (Unix,$(ProjectPlatformSubdir))
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lzma.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/lzma.lib						\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/7z.h					\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/7zCrc.h				\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/7zTypes.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/lzma.lib						\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma/7z.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma/7zCrc.h				\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma/7zTypes.h			\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/lzma.lib			\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma/7z.h	\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma/7zCrc.h	\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma/7zTypes.h\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/lzma.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma/7z.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma/7zCrc.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma/7zTypes.h	\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/lzma.lib						\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma/7z.h					\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma/7zCrc.h				\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma/7zTypes.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/lzma.lib						\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma/7z.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma/7zCrc.h				\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma/7zTypes.h			\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/lzma.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma/7z.h		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma/7zCrc.h		\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma/7zTypes.h
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lzma.lib
 endif
 
 
@@ -158,6 +133,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 else
+ifeq ($(CONFIGURATION),Debug-U-32)
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		CC="$(WIN_CC32)" \
@@ -179,6 +155,9 @@ else
 	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
+endif
+ifeq (U-32,$(findstring U-32,$(ProjectPlatformSubdir)))
+ifeq (Release,$(findstring Release,$(ProjectPlatformSubdir)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
@@ -203,15 +182,25 @@ else
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
+ifeq ($(CONFIGURATION),Release-U-32)
 	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/
+endif
+ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
 	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-32)
 	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/
+endif
+endif
+endif
+
+ifeq ($(CONFIGURATION),Debug-U-64)
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
@@ -240,6 +229,10 @@ else
 	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/
+endif
+
+ifeq (U-64,$(findstring U-64,$(ProjectPlatformSubdir)))
+ifeq (Release,$(findstring Release,$(ProjectPlatformSubdir)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
 		EXESUFFIX=.exe \
@@ -265,12 +258,19 @@ else
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
+
+ifeq ($(CONFIGURATION),Release-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma/
 	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/
+endif
+endif
+endif
 endif
 
 
