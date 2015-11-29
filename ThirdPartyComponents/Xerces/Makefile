@@ -91,7 +91,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "Stroika/ThirdPartyComponents/Xerces -  [Succeeded]";
+	@echo " Stroika/ThirdPartyComponents/Xerces -  [Succeeded]";
 
 
 $(ZIPPEDFILE):
