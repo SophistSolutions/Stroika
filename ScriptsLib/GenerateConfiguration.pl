@@ -85,6 +85,7 @@ my $AR = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_LINKER_ARGS = "";
+my $CrossCompiling = "false";
 
 
 
@@ -102,7 +103,7 @@ sub	DoHelp_
         print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
-        print("	    --OpenSSL-ExtraArgs { purify? }			        /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
+        print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
         print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
@@ -120,6 +121,7 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                     /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+        print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
 		
 	exit ($x);
 }
@@ -527,6 +529,14 @@ sub	ParseCommandLine_Remaining_
 			$EXTRA_COMPILER_ARGS .= " -flto";
 			$EXTRA_LINKER_ARGS .= " -flto";
 		}
+		elsif ((lc ($var) eq "-cross-compiling") or (lc ($var) eq "--cross-compiling")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --cross-compiling");
+			}
+			$CrossCompiling = $var;
+		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
 			$EXTRA_LINKER_ARGS .= " -pg";
@@ -681,6 +691,7 @@ sub	WriteConfigFile_
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
 	print (OUT "    <EXTRA_LINKER_ARGS>$EXTRA_LINKER_ARGS</EXTRA_LINKER_ARGS>\n");
 
+	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");

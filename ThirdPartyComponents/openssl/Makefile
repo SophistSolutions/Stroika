@@ -18,6 +18,7 @@ BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
 
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+CrossCompiling			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling)
 
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
 
@@ -147,6 +148,7 @@ endif
 			exit 1;\
 		fi;\
 	done
+ifeq (false,$(CrossCompiling))
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 2236 ]; then\
@@ -175,6 +177,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
+endif
 endif
 	@echo "Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
@@ -210,9 +213,11 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory CURRENT --no-print-directory all > BUILD.OUT 2>&1;
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Installing (to CURRENT/Builds), and redirecting messages to INSTALL.OUT ...";
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > INSTALL.OUT 2>&1;
+ifeq (false,$(CrossCompiling))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
+endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Buidling, and redirecting messages to BUILD.OUT ...";
