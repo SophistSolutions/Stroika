@@ -200,7 +200,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 	@echo "done"
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n"Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
 	@echo "done"
