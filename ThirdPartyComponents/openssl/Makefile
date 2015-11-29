@@ -160,7 +160,7 @@ endif
 endif
 endif
 endif
-	@echo "Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
+	@echo " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
 
 $(ZIPEDFILE):
@@ -210,7 +210,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > CURRENT/BUILD.OUT 2>&1;
 	@echo "done"
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Copying builds to $(BUILDS_ROOT)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
