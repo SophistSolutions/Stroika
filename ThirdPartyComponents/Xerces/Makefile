@@ -125,7 +125,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  all 2>&1 >> BUILD.OUT
 else
-	@CONFIGURATION=$(CONFIGURATION) ./buildall_.pl build > BUILD.OUT 2>&1
+	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl build > BUILD.OUT 2>&1
 endif
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Copying builds to ... $(BUILDS_ROOT)"
 ifeq (Unix,$(ProjectPlatformSubdir))
