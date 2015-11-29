@@ -16,8 +16,6 @@ require "../../ScriptsLib/ConfigurationReader.pl";
 my $activeConfig = $ENV{'CONFIGURATION'};;
 my $projectPlatformSubdir = GetProjectPlatformSubdir($activeConfig);
 
-print ($projectPlatformSubdir);
-
 
 
 sub RunAndPrint
@@ -29,8 +27,6 @@ sub RunAndPrint
 		print "Run result = $result\r\n";
 	}
 }
-
-
 
 sub BuildVCDotNet
 {
@@ -59,23 +55,12 @@ sub BuildVCDotNet
 
 
 print ("Building Xerces...\n");
-if (index($projectPlatformSubdir, "VisualStudio") == -1) {
-	system ("cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl");
-	system ("make --directory CURRENT --no-print-directory -s all");
+my $myPlatformSubDir =	GetProjectPlatformSubdir ($activeConfig);
+my $myBinOutDir = '';
+if ($myPlatformSubDir eq 'VisualStudio.Net-2013') {
+	$myBinOutDir = 'VC12';
 }
-else {
-	my $myPlatformSubDir =	GetProjectPlatformSubdir ("Debug-U-32");
-	print ("Target Platform subdir: $myPlatformSubDir\n");
-	my $myBinOutDir = '';
-	if ($myPlatformSubDir eq 'VisualStudio.Net-2013') {
-		$myBinOutDir = 'VC12';
-	}
-	if ($myPlatformSubDir eq 'VisualStudio.Net-2015') {
-		$myBinOutDir = 'VC14';
-	}
-	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
+if ($myPlatformSubDir eq 'VisualStudio.Net-2015') {
+	$myBinOutDir = 'VC14';
 }
-
-
-DONE:
-
+BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
