@@ -54,48 +54,12 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/libeay32.lib						\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/ssleay32.lib						\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/lib.pdb							\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/openssl.exe							\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/openssl.pdb							\
-	$(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/openssl/aes.h					\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/libeay32.lib						\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/ssleay32.lib						\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/lib.pdb							\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/openssl.exe							\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/openssl.pdb							\
-	$(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/openssl/aes.h					\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/libeay32.lib			\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/ssleay32.lib			\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/lib.pdb				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/openssl.exe				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/openssl.pdb				\
-	$(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/openssl/aes.h		\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/libeay32.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/ssleay32.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/lib.pdb					\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/openssl.exe					\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/openssl.pdb					\
-	$(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/openssl/aes.h			\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/libeay32.lib						\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/ssleay32.lib						\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/lib.pdb							\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/openssl.exe							\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/openssl.pdb							\
-	$(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/openssl/aes.h					\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/libeay32.lib						\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/ssleay32.lib						\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/lib.pdb							\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/openssl.exe							\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/openssl.pdb							\
-	$(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/openssl/aes.h					\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/libeay32.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/ssleay32.lib				\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/lib.pdb					\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/openssl.exe					\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/openssl.pdb					\
-	$(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/openssl/aes.h
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libeay32.lib						\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/ssleay32.lib						\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lib.pdb							\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.exe							\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/openssl.pdb							\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/openssl/aes.h
 endif
 
 # COULD make this conditional
@@ -159,6 +123,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	 fi
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (U-32,$(findstring U-32, $(CONFIGURATION)))
 	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
@@ -168,6 +133,8 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
+endif
+ifeq (U-64,$(findstring U-64, $(CONFIGURATION)))
 	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
 	 if [ $$X1 -gt 50 ] || [ $$X2 -gt 50 ]; then\
@@ -177,6 +144,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
 		exit 1;\
 	 fi
+endif
 endif
 endif
 	@echo "Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
@@ -225,27 +193,41 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 endif
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* CURRENT/Builds/Debug32/lib.pdb $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Release-U-32)
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
 	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-32)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Debug-U-64)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents && cp CURRENT/Builds/Debug64/openssl.* $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Debug64/libeay32.* CURRENT/Builds/Debug64/ssleay32.* CURRENT/Builds/Debug64/lib.pdb $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Release-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents && cp CURRENT/Builds/Release64/openssl.* $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release64/libeay32.* CURRENT/Builds/Release64/ssleay32.* CURRENT/Builds/Release64/lib.pdb $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents && cp CURRENT/Builds/Release64/openssl.* $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release64/libeay32.* CURRENT/Builds/Release64/ssleay32.* CURRENT/Builds/Release64/lib.pdb $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/include/openssl $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
+endif
 endif
 
 

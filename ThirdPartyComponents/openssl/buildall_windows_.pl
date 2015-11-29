@@ -62,10 +62,7 @@ sub	CopyBuilds2Out
 
 
 #REM - only reconfigure if we just did the extract
-if ((-e 'CURRENT/Builds/Debug32') && (-e 'CURRENT/Builds/Release32')) {
-	print (" ...Skipping 32-bit build (already built)\n");
-}
-else {
+if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Release-Logging-U-32" || $activeConfig eq "Release-DbgMemLeaks-U-32") {
 	chdir ("CURRENT");
 		print ("\n ...Configuring openssl 32-bit...\n");
 		RunAndStopOnFailure ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
@@ -107,11 +104,7 @@ else {
 	CopyBuilds2Out ("Debug32", "out32.dbg", "tmp32.dbg");
 }
 
-
-if ((-e 'CURRENT/Builds/Debug64') && (-e 'CURRENT/Builds/Release64')) {
-	print (" ...Skipping 64-bit build (already built)\n");
-}
-else {
+if ($activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64") {
 	chdir ("CURRENT");
 		print ("\n ...Configuring openssl 64-bit...\n");
 		RunAndStopOnFailure ("perl Configure no-asm VC-WIN64A");
