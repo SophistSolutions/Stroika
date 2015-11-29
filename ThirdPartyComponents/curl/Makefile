@@ -89,9 +89,11 @@ endif
 
 
 doCreate:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Creating CURRENT...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Creating CURRENT...";
+	@rm -rf CURRENT
 	@tar xf $(ZIPPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
+	@echo "done"
 
 
 #note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
@@ -160,23 +162,23 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...Building libcurl CURRENT..."
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...into $(BUILDS_DIR)..."
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...checking tools..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "Building libcurl CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "checking tools..."
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "see $(shell pwd)/CURRENT/BUILD-CONF-TOOLS.OUT for details..."
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "see $(shell pwd)/CURRENT/CONFIGURE.OUT for details..."
 	@echo "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
 	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "...see $(shell pwd)/CURRENT/MAKE.OUT for details..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "see $(shell pwd)/CURRENT/MAKE.OUT for details..."
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "....Building libcurl CURRENT into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo ".Building libcurl CURRENT into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -191,7 +193,7 @@ check_prerequisites_:
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "...Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "Checking..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -201,7 +203,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@echo "Stroika/ThirdPartyComponents/curl -    [Succeeded]";
+	@echo " Stroika/ThirdPartyComponents/curl -    [Succeeded]";
 
 
 clean:
