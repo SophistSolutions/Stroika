@@ -191,7 +191,7 @@ doCreate:	$(ZIPEDFILE)
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Creating CURRENT/CONFIG.OUT - new configuration..."
-	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CONFIG.OUT 2>&1
+	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
 	@echo "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
