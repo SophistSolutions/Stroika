@@ -245,11 +245,11 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
-	if ($ApplyDebugFlags) {
+	if ($ApplyDebugFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 1;
 		}
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
 				$ENABLE_GLIBCXX_DEBUG = 1;
 			}
@@ -258,11 +258,11 @@ sub	SetDefaultForCompilerDriver_
 			$ENABLE_TRACE2FILE = 1;
 		}
 	}
-	else if ($ApplyReleaseFlags) {
+	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 0;
 		}
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($COPTIMIZE_FLAGS eq "") {
 				$COPTIMIZE_FLAGS = "-O3";
 			}
@@ -390,6 +390,12 @@ sub	ParseCommandLine_CompilerDriver_
 			$COMPILER_DRIVER = $var;
 			$COMPILER_DRIVER_C = "";		#reset so computed later
 			$COMPILER_DRIVER_CPlusPlus = "";
+		}
+		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+			$ApplyDebugFlags = true;
+		}
+		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			$ApplyReleaseFlags = true;
 		}
 	}
 }
@@ -572,15 +578,15 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CrossCompiling = $var;
 		}
-		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
-			$ApplyDebugFlags = true;
-		}
-		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
-			$ApplyReleaseFlags = true;
-		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
 			$EXTRA_LINKER_ARGS .= " -pg";
+		}
+		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+			#HANDLED EARLIER
+		}
+		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			#HANDLED EARLIER
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ (0);
