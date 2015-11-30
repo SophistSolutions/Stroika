@@ -122,6 +122,8 @@ sub	DoHelp_
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto {ARG}                                     /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
         print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
+        print("	    --apply-default-debug-flags                     /*  */\n");
+        print("	    --apply-default-release-flags                   /*  */\n");
 		
 	exit ($x);
 }
