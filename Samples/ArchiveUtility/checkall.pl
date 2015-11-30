@@ -9,6 +9,12 @@ if ($projectPlatformSubdir eq "Unix") {
 	# nothing to check - not supported on Linux
 }
 else {
-	CheckFileExists ("../../Builds/$activeConfig/Samples-ArchiveUtility/ArchiveUtility.exe");
+	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64" || $activeConfig eq "Release-DbgMemLeaks-U-32") {
+		CheckFileExists ("../../Builds/$activeConfig/Samples-ArchiveUtility/ArchiveUtility.exe");
+	}
+	else {
+		print "[SKIPPED]\r\n";
+		exit(0);
+	}
 }
 print "[SUCCEEDED]\r\n";
