@@ -19,7 +19,7 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a116">v2.0a116x</a><br/>2015-11-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a116">v2.0a116</a><br/>2015-11-29</td>
 <td>
 	<ul>
 		<li>Huge changes to build system - lots of progress on build system refactoring:
@@ -35,11 +35,10 @@ History
 		</li>
 		<li>Renamed ThirdPartyLibs to ThirdPartyComponents</li>
 		<li>
-			DataExcchange:
+			DataExchange:
 			<ul>
 				<li>pass attribute namespace uri through Xerces SAX parser</li>
 				<li>new ObjectReaderRegistry::RepeatedElementReader</li>
-				<li>fixed FileSystem::RemoveFile/FileSystem::RemoveFileIf to set eWrite acces mode on exception; and implemnted draft of FileSytem::RemoveDirectory/RemoveDirectoryIf (incliing removepolicy to optioanlly delete subdris)</li>
 				<li>StructuredStreamEvents/ObjectReaderRegistry: lose Context& param from Deactivate etc. Make sure
 					we always call Activate() in the right cases (classreader/listreader). And save context as needed
 					for later use.
@@ -52,8 +51,8 @@ History
 		</li>
 		<li>new utility Execution::WhenTimeExceeded and TimingTrace supported</li>
 		<li>fixed signed/unsinged comparison bug with AIX Frameworks/SystemPerformance/Instruments/Memory code to fixup inconsistnet memory stats</li>
+		<li>fixed FileSystem::RemoveFile/FileSystem::RemoveFileIf to set eWrite acces mode on exception; and implemnted draft of FileSytem::RemoveDirectory/RemoveDirectoryIf (incliing removepolicy to optioanlly delete subdris)</li>
 		<li>https://stroika.atlassian.net/browse/STK-96 use Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER to map exceptions to use filename</li>
-
 		<li>fixes for MakeBuildRoot and MakeDirectorySymbolicLink code - for sh/bash issue, and UAC on winDoze
 			use stkRoot intead of relativepath, in ApplyConfiguraitons.pl - since we want 
 			Lots of related makefile cleanups
@@ -65,6 +64,7 @@ History
 		<li>Libcurl - only init GlobalSSL and also set CURL_GLOBAL_ACK_EINTR set CURLOPT_NOSIGNAL</li>
 		<li>use ::setsid in Execution::DetachedProcessRunner () to avoid sighup/etc - detach from terminal group</li>
 		<li>Added optional hardware address to Network Interface info returned from GetInterfaces/GetInterfaceByID</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
