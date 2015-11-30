@@ -18,16 +18,13 @@ History
 
   
 
-
-
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a116">v2.0a116x</a><br/>2015-11-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
-
 		<li>Huge changes to build system - lots of progress on build system refactoring:
 			<ul>
+				<li>KEY is that you can create multiple configurations and build each independently. Default now at top level is to iterate over them and build each</li>
 				<li>ScriptsLib/GetConfigurations.sh</li>
 				<li>Lose ScriptsLib/GetDefaultConfiguration.pl</li>
 				<li>fixed ScriptsLib/PrintEnvVarFromCommonBuildVars.pl to take CONFIGURATION arg and no longer depend on BuildUtils</li>
@@ -36,48 +33,38 @@ History
 				<li> new configure --apply-default-debug-flags --apply-default-release-flags options; used by default in makefile; and on unix - default to Debug and Release configs</li>
 			</ul>
 		</li>
-
 		<li>Renamed ThirdPartyLibs to ThirdPartyComponents</li>
-
-		<li> pass attribute namespace uri through Xerces SAX parser</li>
-		<li> new ObjectReaderRegistry::RepeatedElementReader</li>
-
-		<li>fixed FileSystem::RemoveFile/FileSystem::RemoveFileIf to set eWrite acces mode on exception; and implemnted draft of FileSytem::RemoveDirectory/RemoveDirectoryIf (incliing removepolicy to optioanlly delete subdris)</li>
-
-
 		<li>
-		StructuredStreamEvents/ObjectReaderRegistry: lose Context& param from Deactivate etc. Make sure
-    we always call Activate() in the right cases (classreader/listreader). And save context as needed
-    for later use.
-    API CHANGE - NOT BACKWARD COMPAT.
-	</li>
-
-		<li>ObjectReaderRegistry: print better dbgtrace saying failure to lookup particular type; and add MakeCommonReader_ overloads for several more (most?) builtin POD types.
-		AND AddClass<> check for ObjectReaderRegistery and ObjectVariantMapper 
+			DataExcchange:
+			<ul>
+				<li>pass attribute namespace uri through Xerces SAX parser</li>
+				<li>new ObjectReaderRegistry::RepeatedElementReader</li>
+				<li>fixed FileSystem::RemoveFile/FileSystem::RemoveFileIf to set eWrite acces mode on exception; and implemnted draft of FileSytem::RemoveDirectory/RemoveDirectoryIf (incliing removepolicy to optioanlly delete subdris)</li>
+				<li>StructuredStreamEvents/ObjectReaderRegistry: lose Context& param from Deactivate etc. Make sure
+					we always call Activate() in the right cases (classreader/listreader). And save context as needed
+					for later use.
+					API CHANGE - NOT BACKWARD COMPAT.
+					</li>
+				<li>ObjectReaderRegistry: print better dbgtrace saying failure to lookup particular type; and add MakeCommonReader_ overloads for several more (most?) builtin POD types.
+				AND AddClass<> check for ObjectReaderRegistery and ObjectVariantMapper 
+				</li>
+			</ul>
 		</li>
-
 		<li>new utility Execution::WhenTimeExceeded and TimingTrace supported</li>
-
 		<li>fixed signed/unsinged comparison bug with AIX Frameworks/SystemPerformance/Instruments/Memory code to fixup inconsistnet memory stats</li>
-		
-
 		<li>https://stroika.atlassian.net/browse/STK-96 use Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER to map exceptions to use filename</li>
 
-
-fixes for MakeBuildRoot and MakeDirectorySymbolicLink code - for sh/bash issue, and UAC on winDoze
-	use stkRoot intead of relativepath, in ApplyConfiguraitons.pl - since we want 
-	Lots of related makefile cleanups
-
-
-ServiceMain cleanup
-	Simplifed UNIX - only know pid# if alive - check if alive correctly (was wrong)
-	threw in vaguely reasonable default timeout for stop/restart - so doesnt hang (30 seconds) Stroika/Frameworks/Service/Main
-
-Libcurl - only init GlobalSSL and also set CURL_GLOBAL_ACK_EINTR set CURLOPT_NOSIGNAL
-
-use ::setsid in Execution::DetachedProcessRunner () to avoid sighup/etc - detach from terminal group
-
-Added optional hardware address to Network Interface info returned from GetInterfaces/GetInterfaceByID
+		<li>fixes for MakeBuildRoot and MakeDirectorySymbolicLink code - for sh/bash issue, and UAC on winDoze
+			use stkRoot intead of relativepath, in ApplyConfiguraitons.pl - since we want 
+			Lots of related makefile cleanups
+		</li>
+		<li>ServiceMain cleanup: 
+			Simplifed UNIX - only know pid# if alive - check if alive correctly (was wrong)
+			threw in vaguely reasonable default timeout for stop/restart - so doesnt hang (30 seconds) Stroika/Frameworks/Service/Main
+		</li>
+		<li>Libcurl - only init GlobalSSL and also set CURL_GLOBAL_ACK_EINTR set CURLOPT_NOSIGNAL</li>
+		<li>use ::setsid in Execution::DetachedProcessRunner () to avoid sighup/etc - detach from terminal group</li>
+		<li>Added optional hardware address to Network Interface info returned from GetInterfaces/GetInterfaceByID</li>
 	</ul>
 </td>
 </tr>
