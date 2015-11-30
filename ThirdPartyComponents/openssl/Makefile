@@ -107,59 +107,6 @@ endif
 			exit 1;\
 		fi;\
 	done
-ifeq (false,$(CrossCompiling))
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@X1=`diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 2236 ]; then\
-		echo "  Test DIFFS";\
-		echo "    Diff should be less than 2236 to be safe.";\
-		echo "      diff -b CURRENT/TEST-OUT.txt REFERENCE_UNIX_OUTPUT.txt | wc -l: $$X1";\
-		exit 1;\
-	 fi
-endif
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (U-32,$(findstring U-32, $(CONFIGURATION)))
-ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
-	@X2=`diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X2 -gt 50 ]; then\
-		echo "  Test DIFFS";\
-		echo "    should be less than 50 to be safe.";\
-		echo "      diff -b CURRENT/TEST32-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
-		exit 1;\
-	 fi
-endif
-ifeq (Release,$(findstring Release, $(CONFIGURATION)))
-	@X1=`diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 50 ]; then\
-		echo "  Test DIFFS";\
-		echo "    should be less than 50 to be safe.";\
-		echo "      diff -b CURRENT/TEST32-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
-		exit 1;\
-	 fi
-endif
-endif
-ifeq (U-64,$(findstring U-64, $(CONFIGURATION)))
-ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
-	@X2=`diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X2 -gt 50 ]; then\
-		echo "  Test DIFFS";\
-		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST64-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X2";\
-		exit 1;\
-	 fi
-endif
-ifeq (Release,$(findstring Release, $(CONFIGURATION)))
-	@X1=`diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;\
-	 if [ $$X1 -gt 50 ]; then\
-		echo "  Test DIFFS";\
-		echo "    2 lines coming next - each should be less than 50/50 to be safe.";\
-		echo "      diff -b CURRENT/TEST64-OUT.txt REFERENCE_OUTPUT.txt | wc -l: $$X1";\
-		exit 1;\
-	 fi
-endif
-endif
-endif
-endif
 	@echo " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
 

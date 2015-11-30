@@ -103,10 +103,16 @@ if (index ($activeConfig, "U-32") != -1) {
 		if (index ($activeConfig, "Release") != -1) {
 			print (" ...Running openssl tests (output TEST32-OUT.txt)...");
 			system ("((nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=)  2>&1) > TEST32-OUT.txt");
+			if (index (`grep "passed all tests" TEST32-OUT.txt`, 'passed all tests') == -1) {
+				die ("tests failed");
+			}
 		}
 		if (index ($activeConfig, "Debug") != -1) {
 			print (" ...Running openssl tests (output TEST32-DBG-OUT.txt)...");
 			system ("((nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS=) 2>&1) > TEST32-DBG-OUT.txt");
+			if (index (`grep "passed all tests" TEST32-DBG-OUT.txt`, 'passed all tests') == -1) {
+				die ("tests failed");
+			}
 		}
 		print ("done\n");
 	chdir ("..");
