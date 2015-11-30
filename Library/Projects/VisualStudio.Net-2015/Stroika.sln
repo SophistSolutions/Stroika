@@ -149,8 +149,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\ThirdPartyComponents\openssl\Makefile = ..\..\..\ThirdPartyComponents\openssl\Makefile
 		..\..\..\ThirdPartyComponents\openssl\ReadMe.txt = ..\..\..\ThirdPartyComponents\openssl\ReadMe.txt
-		..\..\..\ThirdPartyComponents\openssl\REFERENCE_OUTPUT.txt = ..\..\..\ThirdPartyComponents\openssl\REFERENCE_OUTPUT.txt
-		..\..\..\ThirdPartyComponents\openssl\REFERENCE_UNIX_OUTPUT.txt = ..\..\..\ThirdPartyComponents\openssl\REFERENCE_UNIX_OUTPUT.txt
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6D62-4C7F-9477-C38D6BE9FE14}"
