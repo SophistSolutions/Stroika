@@ -12,7 +12,7 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require "$thisScriptDir/ConfigurationReader.pl";
 
-my $configuratioName=$ARGV[0];
+my $configurationName=$ARGV[0];
 
 my @kConfigurations = (
 					"Configuration=Debug-U-32,Platform=Win32",
@@ -25,15 +25,15 @@ my @kConfigurations = (
 					);
 
 
-sub getCFGStr
+sub getCFGStr_
 {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
-		if (index($curConfig, $ENV{'CONFIGURATION'}) != -1) {
+		if (index($curConfig, $configurationName) != -1) {
 			return $curConfig;
 		}
 	}
 	die ("unrecognized config");
 }
 
-print (getCFGStr ($configuratioName));
+print (getCFGStr_ ($configuratioName));
