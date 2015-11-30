@@ -15,6 +15,14 @@ History
   </thead>
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a117">v2.0a117x</a><br/>2015-10-?????</td>
+<td>
+	<ul>
+		<li>TODO - testing notes </li>
+	</ul>
+</td>
+</tr>
 
 
   
