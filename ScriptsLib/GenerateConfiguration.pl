@@ -245,36 +245,6 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
-	if ($ApplyDebugFlags == true) {
-		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_ASSERTIONS = 1;
-		}
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
-				$ENABLE_GLIBCXX_DEBUG = 1;
-			}
-		}
-		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_TRACE2FILE = 1;
-		}
-	}
-	elsif ($ApplyReleaseFlags == true) {
-		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_ASSERTIONS = 0;
-		}
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
-			if ($COPTIMIZE_FLAGS eq "") {
-				$COPTIMIZE_FLAGS = "-O3";
-			}
-			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
-				$ENABLE_GLIBCXX_DEBUG = 0;
-			}
-		}
-		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
-			$ENABLE_TRACE2FILE = 0;
-		}
-	}
-
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '4.9') {
@@ -336,6 +306,37 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 	}
+
+	if ($ApplyDebugFlags == true) {
+		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_ASSERTIONS = 1;
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+		}
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 1;
+		}
+	}
+	elsif ($ApplyReleaseFlags == true) {
+		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_ASSERTIONS = 0;
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($COPTIMIZE_FLAGS eq "") {
+				$COPTIMIZE_FLAGS = "-O3";
+			}
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 0;
+			}
+		}
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 0;
+		}
+	}
+
 	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
