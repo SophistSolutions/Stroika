@@ -50,7 +50,7 @@ function doOneTest
 		fi
 	fi
 
-	((./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo && echo "   fail" && exit 77;)
+	((rm -rf ConfigurationFiles; ./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo && echo "   fail" && exit 77;)
 
 	echo -n "."
 	make clobber 2>&1 >> $OUT_FILE_NAME
