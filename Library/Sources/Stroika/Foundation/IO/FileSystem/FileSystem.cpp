@@ -431,7 +431,9 @@ Again:
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
                 // @todo - HORRIBLE HACK - but I hope adequate
+                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"");
                 (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
+                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"");
                 triedRMRF = true;
                 goto Again;
             }
@@ -454,7 +456,9 @@ Again:
         if (r < 0) {
             if (not triedRMRF and policy == RemoveDirectoryPolicy::eRemoveAnyContainedFiles and errno == ENOTEMPTY) {
                 // @todo - HORRIBLE HACK - but I hope adequate
+                DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"");
                 (void)::system (Characters::Format (L"rm -rf %s/*", directory.c_str ()).AsNarrowSDKString ().c_str ());
+                DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"");
                 triedRMRF = true;
                 goto Again;
             }
