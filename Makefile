@@ -247,16 +247,16 @@ apply-configuration:
 default-configuration:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo Making default configurations...
 	@if [ `uname -o` = "Cygwin" ] ; then\
-		./configure Debug-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Debug-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-DbgMemLeaks-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-32 $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-64 $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-32 --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-64 --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
-		./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
-		#./configure Debug --assertions enable --GLIBCXX_DEBUG enable --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		#./configure Release --assertions disable --GLIBCXX_DEBUG enable --cpp-optimize-flag -03 $(DEFAULT_CONFIGURATION_ARGS);\
+		#./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	fi
 	

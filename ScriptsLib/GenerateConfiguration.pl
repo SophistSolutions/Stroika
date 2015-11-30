@@ -42,6 +42,9 @@ my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 
+my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
+my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
+
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';
@@ -242,6 +245,36 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
+	if ($ApplyDebugFlags) {
+		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_ASSERTIONS = 1;
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+		}
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 1;
+		}
+	}
+	else if ($ApplyReleaseFlags) {
+		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_ASSERTIONS = 0;
+		}
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ($COPTIMIZE_FLAGS eq "") {
+				$COPTIMIZE_FLAGS = "-O3";
+			}
+			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
+				$ENABLE_GLIBCXX_DEBUG = 0;
+			}
+		}
+		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
+			$ENABLE_TRACE2FILE = 0;
+		}
+	}
+
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '4.9') {
@@ -538,6 +571,12 @@ sub	ParseCommandLine_Remaining_
 				die ("Invalid argument to --cross-compiling");
 			}
 			$CrossCompiling = $var;
+		}
+		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
+			$ApplyDebugFlags = true;
+		}
+		elsif ((lc ($var) eq "-apply-default-release-flags") or (lc ($var) eq "--apply-default-release-flags")) {
+			$ApplyReleaseFlags = true;
 		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
