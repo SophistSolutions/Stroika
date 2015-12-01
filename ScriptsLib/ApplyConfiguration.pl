@@ -433,7 +433,7 @@ sub WriteStroikaConfigCHeader
 
 
 
-	print (OUT "//--enable-trace2file or --disable-trace2file\n");
+	print (OUT "// --trace2file enable or  --trace2file disable\n");
 	if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 		print (OUT "// UNSET so defaulting\n");
 	}
