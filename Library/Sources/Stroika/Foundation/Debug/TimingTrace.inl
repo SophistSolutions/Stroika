@@ -25,6 +25,10 @@ namespace   Stroika {
                 : WhenTimeExceeded ([] (Time::DurationSecondsType timeTaken) { DbgTrace("(timeTaken=%f seconds)", timeTaken); })
             {
             }
+            inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan, const Characters::String& label)
+                : WhenTimeExceeded ([label] (Time::DurationSecondsType timeTaken) { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
+            {
+            }
 
 
         }

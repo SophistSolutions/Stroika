@@ -15,6 +15,7 @@
 #include    "../../../Cache/CallerStalenessCache.h"
 #include    "../../../Cache/LRUCache.h"
 #include    "../../../Characters/String_Constant.h"
+#include    "../../../Debug/TimingTrace.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../ErrNoException.h"
 
@@ -30,6 +31,15 @@ using   Characters::String_Constant;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_TIMING_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 
 namespace {
@@ -40,11 +50,11 @@ namespace {
          *      so that this code remains low level, and doesnt invoke any tracelog code, which would result in a deadlock/loop....
          *
          */
-        FILE*   p = popen (cmdLine.c_str (), "r");
+        FILE*   p = ::popen (cmdLine.c_str (), "r");
         string  accum;
         if (p != nullptr) {
             char    buf[10 * 1024];
-            while (fgets (buf, NEltsOf (buf), p) != nullptr) {
+            while (::fgets (buf, NEltsOf (buf), p) != nullptr) {
                 accum += buf;
                 size_t i = accum.rfind ('\n');
                 if (i != -1) {
@@ -52,7 +62,7 @@ namespace {
                 }
                 break;  // minor speed hack since we always use with just one line
             }
-            int result  =   pclose (p);
+            int result  =   ::pclose (p);
             // cannot report to avoid TRACE ;-(
         }
         return accum;
@@ -130,7 +140,7 @@ namespace {
         if (majorDev != -1 and minorDev != -1) {
             // ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev
             char buf[1024];
-            snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
+            (void)::snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
             SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
             int     beforeFSName     =  devfsline.rfind (' ');
             if (beforeFSName != string::npos) {
@@ -140,7 +150,7 @@ namespace {
         string  fsName;
         if (not fsBlockName.empty ()) {
             char buf[1024];
-            snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());    // not - unreliable - could match multiple...
+            (void)::snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());    // not - unreliable - could match multiple...
             SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
             int     beforeFSName     =  devfsline.rfind (' ');
             if (beforeFSName != string::npos) {
@@ -269,10 +279,16 @@ namespace {
  */
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID)
 {
+#if     USE_TIMING_TRACE_IN_THIS_MODULE_
+    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHintT/1" };
+#endif
     return AIX_GET_EXE_PATH_ (processID, nullptr);
 }
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
 {
+#if     USE_TIMING_TRACE_IN_THIS_MODULE_
+    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHintT/2" };
+#endif
     String tmp { String::FromSDKString (associationHint) };
     return AIX_GET_EXE_PATH_ (processID, &tmp);
 }
@@ -288,9 +304,15 @@ SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, cons
  */
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID)
 {
+#if     USE_TIMING_TRACE_IN_THIS_MODULE_
+    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHint/1" };
+#endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, nullptr));
 }
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID, const String& associationHint)
 {
+#if     USE_TIMING_TRACE_IN_THIS_MODULE_
+    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHint/2" };
+#endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, &associationHint));
 }

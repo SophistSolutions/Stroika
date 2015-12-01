@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/String.h"
 #include    "../Execution/WhenTimeExceeded.h"
 
 
@@ -26,6 +27,7 @@ namespace   Stroika {
             class TimingTrace : private Execution::WhenTimeExceeded {
             public:
                 TimingTrace (Time::DurationSecondsType warnIfLongerThan);
+                TimingTrace (Time::DurationSecondsType warnIfLongerThan, const Characters::String& label);
             };
 
 
