@@ -14,7 +14,7 @@ SubDirs=				\
 
 all:	$(SubDirs)
 	@for SUBPROJ in $(SubDirs) ; do \
-		($(MAKE) --directory $$SUBPROJ --no-print-directory $@);\
+		($(MAKE) --directory $$SUBPROJ --no-print-directory --silent$@);\
     done	
 
 clean clobber::	$(SubDirs)
