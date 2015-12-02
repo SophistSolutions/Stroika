@@ -31,7 +31,7 @@ help:
 	@$(ECHO) "    third-party-libs:"
 	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
-	@$(ECHO) "    default-configuration:       -    Creates the default configuration in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
+	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
 	@$(ECHO) "    check-tools:                 -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
@@ -226,7 +226,7 @@ endif
 apply-configurations-if-needed:
 	@#if no configurations, create default
 ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
-	@$(MAKE) default-configuration --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) default-configurations --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		if [ ! -e IntermediateFiles/$$i ] ; then\
@@ -249,7 +249,7 @@ apply-configuration:
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 
 
-default-configuration:
+default-configurations:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making default configurations...
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
