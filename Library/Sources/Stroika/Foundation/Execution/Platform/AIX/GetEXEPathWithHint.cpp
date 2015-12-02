@@ -280,14 +280,14 @@ namespace {
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHintT/1" };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/1", 0.1 };
 #endif
     return AIX_GET_EXE_PATH_ (processID, nullptr);
 }
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHintT/2" };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/2", 0.1 };
 #endif
     String tmp { String::FromSDKString (associationHint) };
     return AIX_GET_EXE_PATH_ (processID, &tmp);
@@ -305,14 +305,14 @@ SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, cons
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHint/1" };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/1", 0.1 };
 #endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, nullptr));
 }
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID, const String& associationHint)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { 0.1, L"Platform::AIX::GetEXEPathWithHint/2" };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/2", 0.1 };
 #endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, &associationHint));
 }

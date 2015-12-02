@@ -23,11 +23,42 @@ namespace   Stroika {
 
 
             /**
-             */
+              *  Simple utility to print debug trace timing values for procedures (or contexts).
+              *
+              *  \par Example Usage
+              *      \code
+              *      {
+              *          TimingTrace ttrc;
+              *          do_some_call();
+              *      }
+              *      \endcode
+              *      \code
+              *      OUTPUT IN TRACELOG:
+              *          (timeTaken=3.4 seconds)
+              *      \endcode
+              *
+              *  \par Example Usage
+              *      \code
+              *      {
+              *          TraceContextBumper ctx ("do_some_call");
+              *          TimingTrace         ttrc;
+              *          do_some_call();
+              *      }
+              *      \endcode
+              *      \code
+              *      OUTPUT IN TRACELOG:
+              *          <do_some_call>
+              *              (timeTaken=3.4 seconds)
+              *          </do_some_call>
+              *      \endcode
+              */
             class TimingTrace : private Execution::WhenTimeExceeded {
             public:
+                TimingTrace () = delete;
                 TimingTrace (Time::DurationSecondsType warnIfLongerThan);
-                TimingTrace (Time::DurationSecondsType warnIfLongerThan, const Characters::String& label);
+                TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan);
+                TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan);
+                TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan);
             };
 
 

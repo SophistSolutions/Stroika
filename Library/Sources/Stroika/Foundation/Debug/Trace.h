@@ -205,55 +205,6 @@ namespace   Stroika {
 #endif
 
 
-            /**
-             *  Simple utility to print debug trace timing values for procedures (or contexts).
-             *
-             *  \par Example Usage
-             *      \code
-             *      {
-             *          TimingTrace ttrc;
-             *          do_some_call();
-             *      }
-             *      \endcode
-             *      \code
-             *      OUTPUT IN TRACELOG:
-             *          (timeTaken=3.4 seconds)
-             *      \endcode
-             *
-             *  \par Example Usage
-             *      \code
-             *      {
-             *          TraceContextBumper ctx ("do_some_call");
-             *          TimingTrace         ttrc;
-             *          do_some_call();
-             *      }
-             *      \endcode
-             *      \code
-             *      OUTPUT IN TRACELOG:
-             *          <do_some_call>
-             *              (timeTaken=3.4 seconds)
-             *          </do_some_call>
-             *      \endcode
-             */
-            struct  TimingTrace {
-            public:
-                /**
-                 */
-                TimingTrace (const TimingTrace&) = delete;
-                TimingTrace (Time::DurationSecondsType warnIfLongerThan = 0);
-                TimingTrace (const SDKChar* msg, Time::DurationSecondsType warnIfLongerThan = 0);
-
-            public:
-                /**
-                 */
-                ~TimingTrace ();
-
-            private:
-                Time::DurationSecondsType fStartedAt_;
-                Time::DurationSecondsType fMinTime2Report_;
-            };
-
-
         }
     }
 }
