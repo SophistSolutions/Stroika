@@ -16,7 +16,7 @@ help:
 	@$(ECHO) "    check:                       -    Checks everything was built properly"
 	@$(ECHO) "    clean:"
 	@$(ECHO) "    clobber:"
-	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
+	@$(ECHO) "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-components)"
 	@$(ECHO) "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
 	@$(ECHO) "    project-files-visual-studio: -    Builds project files for visual studio.net"
 	@$(ECHO) "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
@@ -24,7 +24,7 @@ help:
 	@$(ECHO) "    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
 	@$(ECHO) "    samples:"
 	@$(ECHO) "    documentation:"
-	@$(ECHO) "    third-party-libs:"
+	@$(ECHO) "    third-party-components:"
 	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
 	@$(ECHO) "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs) - not neeeded - automatic"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
@@ -89,22 +89,26 @@ documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
-libraries:	IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_ third-party-libs
+libraries:	IntermediateFiles/TOOLS_CHECKED  third-party-components
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) -no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
-third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_
+
+third-party-components:	IntermediateFiles/TOOLS_CHECKED
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory third-party-libs CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
