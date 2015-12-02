@@ -31,7 +31,7 @@ $doxyArgs = $doxyArgs . ">doxygen.stdout 2>doxygen.stderr";
 #	$runFile = $i;
 #}
 
-print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Doxygen ({Stroika-Root}/Builds/Stroika-Doxygen-Help.tar.gz)...");
+print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Doxygen (\$\$StroikaRoot/Builds/Stroika-Doxygen-Help.tar.gz)...");
 system ("rm -rf Output");
 system ("rm -rf IntermediateFiles");
 system ("$doxygen $doxyArgs");
