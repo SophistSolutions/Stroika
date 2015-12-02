@@ -6,12 +6,8 @@
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
-#todo find better automatic way to fix/detect - pref one-liner or find way to #include script
-ifeq ($(shell uname -s),AIX)
-ECHO?=	/opt/freeware/bin/echo
-else
-ECHO?=	echo
-endif
+ECHO?=	$(shell ScriptsLib/GetDefaultShellVariable.sh ECHO)
+
 
 help:
 	@$(ECHO) "Help for making Stroika:"
@@ -45,6 +41,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(MAKE) --no-print-directory libraries CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --no-print-directory tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --no-print-directory samples CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --no-print-directory tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --no-print-directory documentation CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)

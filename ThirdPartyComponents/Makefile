@@ -7,6 +7,7 @@ endif
 .NOTPARALLEL:
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 all:
@@ -15,7 +16,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -40,7 +41,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -70,9 +71,9 @@ clean:
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@echo -n "Stroika ThirdPartyComponents clobber..."
+	@$(ECHO) -n "Stroika ThirdPartyComponents clobber..."
 else
-	@echo -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clobber..."
+	@$(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clobber..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
@@ -80,4 +81,4 @@ endif
 	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory lzma --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory Xerces --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@echo "   ...done"
+	@$(ECHO) "   ...done"
