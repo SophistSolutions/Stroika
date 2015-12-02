@@ -22,11 +22,11 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan)
-                : WhenTimeExceeded ([] (Time::DurationSecondsType timeTaken) { DbgTrace("(timeTaken=%f seconds)", timeTaken); })
+                : WhenTimeExceeded ([] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace("(timeTaken=%f seconds)", timeTaken); })
             {
             }
             inline TimingTrace::TimingTrace (Time::DurationSecondsType warnIfLongerThan, const Characters::String& label)
-                : WhenTimeExceeded ([label] (Time::DurationSecondsType timeTaken) { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
+                : WhenTimeExceeded ([label] (Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
             {
             }
 
