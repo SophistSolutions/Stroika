@@ -767,7 +767,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\01\Test.cpp">
+    <ClCompile Include="..\..\..\NNN\Test.cpp">
     </ClCompile>
     <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
     </ClCompile>
