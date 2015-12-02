@@ -22,6 +22,8 @@ namespace   Stroika {
 
 
             /**
+             *  \note callIfTakesLongerThan is compared <=, so you can pass in zero to always trigger.
+             *
              *  \par Example Usage
              *      \code
              *      WhenTimeExceeded    whenTimeExceeded (1.0, [] (DurationSecondsType timeTaken) { Logger::LogMessage (Logger::eWarning, "Took along time  to do 'x'"); });

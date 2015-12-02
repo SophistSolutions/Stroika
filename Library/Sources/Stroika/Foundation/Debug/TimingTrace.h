@@ -54,11 +54,10 @@ namespace   Stroika {
               */
             class TimingTrace : private Execution::WhenTimeExceeded {
             public:
-                TimingTrace () = delete;
-                TimingTrace (Time::DurationSecondsType warnIfLongerThan);
-                TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan);
-                TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan);
-                TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan);
+                TimingTrace (Time::DurationSecondsType warnIfLongerThan = 0.0);
+                TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
+                TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
+                TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan = 0.0);
             };
 
 
