@@ -1,5 +1,5 @@
 .NOTPARALLEL:
-.PHONY:	tests documentation all check clobber libraries
+.PHONY:	tests documentation all check clobber libraries apply-configurations-if-needed
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
@@ -30,7 +30,7 @@ help:
 	@$(ECHO) "    documentation:"
 	@$(ECHO) "    third-party-libs:"
 	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
-	@$(ECHO) "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
+	@$(ECHO) "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs) - not neeeded - automatic"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
 	@$(ECHO) "    check-tools:                 -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
@@ -224,15 +224,18 @@ endif
 	
 
 apply-configurations-if-needed:
-	@#if no configurations, create default
+	@#if no configurations, create default, and apply any needed configurations to continue
 ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
 	@$(MAKE) default-configurations --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-endif
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		if [ ! -e IntermediateFiles/$$i ] ; then\
 			$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 		fi;\
 	done
+else
+	$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
+endif
+
 
 
 apply-configurations:
@@ -241,12 +244,18 @@ apply-configurations:
 	done
 
 
+
+IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION:	ConfigurationFiles/$(CONFIGURATION).xml
+	$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	
+
 apply-configuration:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration $(CONFIGURATION)..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
 	@$(ECHO) "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
+	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
 
 default-configurations:
