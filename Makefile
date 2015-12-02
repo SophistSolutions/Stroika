@@ -6,29 +6,35 @@
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
+#todo find better automatic way to fix/detect - pref one-liner or find way to #include script
+ifeq ($(shell uname -s),AIX)
+ECHO?=	/opt/freeware/bin/echo
+else
+ECHO?=	echo
+endif
 
 help:
-	@echo "Help for making Stroika:"
-	@echo "Targets:"
-	@echo "    all:                         -    Builds everything"
-	@echo "    check:                       -    Checks everything was built properly"
-	@echo "    clean:"
-	@echo "    clobber:"
-	@echo "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
-	@echo "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
-	@echo "    project-files-visual-studio: -    Builds project files for visual studio.net"
-	@echo "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
-	@echo "    tests:"
-	@echo "    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
-	@echo "    samples:"
-	@echo "    documentation:"
-	@echo "    third-party-libs:"
-	@echo "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
-	@echo "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
-	@echo "    default-configuration:       -    Creates the default configuration in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
-	@echo "    check-tools:                 -    Check the tools needed to build Stroika are installed."
-	@echo "Special Variables:               -    Extra params you can pass to the make line that may help..."
-	@echo "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
+	@$ECHO "Help for making Stroika:"
+	@$ECHO "Targets:"
+	@$ECHO "    all:                         -    Builds everything"
+	@$ECHO "    check:                       -    Checks everything was built properly"
+	@$ECHO "    clean:"
+	@$ECHO "    clobber:"
+	@$ECHO "    libraries:                   -    Builds Stroika foundation & frameworks, and any things it depends on (like third-party-libs)"
+	@$ECHO "    project-files:               -    Alias for project-files-visual-studio project-files-qt-creator"
+	@$ECHO "    project-files-visual-studio: -    Builds project files for visual studio.net"
+	@$ECHO "    project-files-qt-creator(*): -    Builds project project-files-qt-creator (also project-files-qt-creator-load project-files-qt-creator-save)"
+	@$ECHO "    tests:"
+	@$ECHO "    format-code:                 -    Run astyle on source code, and update it to conform to Stroika code formatting standards"
+	@$ECHO "    samples:"
+	@$ECHO "    documentation:"
+	@$ECHO "    third-party-libs:"
+	@$ECHO "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$ECHO "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs)"
+	@$ECHO "    default-configuration:       -    Creates the default configuration in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
+	@$ECHO "    check-tools:                 -    Check the tools needed to build Stroika are installed."
+	@$ECHO "Special Variables:               -    Extra params you can pass to the make line that may help..."
+	@$ECHO "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
 
 all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
@@ -41,7 +47,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $ECHO "Checking Stroika {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) MAKEFLAGS=
 	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) MAKEFLAGS=
 	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) MAKEFLAGS=
@@ -65,7 +71,7 @@ endif
 
 
 clobber:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Stroika Clobber..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $ECHO "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
 	@#OK if no configuration or given configuration (handled in submake file)
@@ -107,15 +113,15 @@ project-files-qt-creator:	project-files-qt-creator-load
 
 
 project-files-qt-creator-load:
-	@echo -n "Loading qt-creator project files..."
+	@$ECHO -n "Loading qt-creator project files..."
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
-	@echo "done"
+	@$ECHO "done"
 
 
 project-files-qt-creator-save:
-	@echo -n "Saving qt-creator project files..."
+	@$ECHO -n "Saving qt-creator project files..."
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
-	@echo "done"
+	@$ECHO "done"
 
 
 tools:	libraries
@@ -181,7 +187,7 @@ ASTYLE_ARGS+=	--mode=c
 ASTYLE_ARGS+=	--suffix=none
 
 format-code:
-	@echo Running Astyle...
+	@$ECHO Running Astyle...
 	@for i in Library Samples Tests Tools;\
 	do\
 		astyle $(ASTYLE_ARGS) --recursive "$$i/*.h" "$$i/*.cpp" "$$i/*.inl" --formatted || true;\
@@ -200,17 +206,17 @@ IntermediateFiles/TOOLS_CHECKED:
 check-tools:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking for installed tools..."
-	@echo -n "   ..." && sh -c "type sed"
-	@echo -n "   ..." && sh -c "type wget"
-	@echo -n "   ..." && sh -c "type perl"
-	@echo -n "   ..." && sh -c "type tar"
-	@echo -n "   ..." && sh -c "type patch"
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $ECHO "Checking for installed tools..."
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type sed"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type wget"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type perl"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type tar"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type patch"
 ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@echo -n "   ..." && sh -c "type dos2unix"
-	@echo -n "   ..." && sh -c "type unix2dos"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type dos2unix"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "type unix2dos"
 endif
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo "All Required Tools Present"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $ECHO "All Required Tools Present"
 
 
 
@@ -237,15 +243,15 @@ apply-configurations:
 
 
 apply-configuration:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Applying configuration $(CONFIGURATION)..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $ECHO "Applying configuration $(CONFIGURATION)..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
-	@echo "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
+	@$ECHO "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 
 
 default-configuration:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo Making default configurations...
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $ECHO Making default configurations...
 	@if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
