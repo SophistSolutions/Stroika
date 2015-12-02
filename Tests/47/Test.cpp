@@ -33,6 +33,7 @@
 #include    "Stroika/Foundation/DataExchange/XML/Writer.h"
 #include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Debug/TimingTrace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Math/Common.h"
