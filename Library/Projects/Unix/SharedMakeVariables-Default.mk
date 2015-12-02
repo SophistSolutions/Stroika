@@ -30,13 +30,15 @@ ifndef StroikaLinkerArgs
 	StroikaLinkerArgs	= 
 endif
 
+ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+
 
 ifndef Includes
 	Includes	=	
 endif
 
-Includes	+=	-I$(StroikaRoot)/Library/Sources/
-Includes	+=	-I$(StroikaRoot)/IntermediateFiles/$(CONFIGURATION)/
+Includes	+=	-I$(StroikaRoot)Library/Sources/
+Includes	+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/
 
 
 ifeq ($(qFeatureFlag_Xerces), 'use')
