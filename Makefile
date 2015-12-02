@@ -1,5 +1,5 @@
 .NOTPARALLEL:
-.PHONY:	tests documentation all check clobber libraries apply-configurations-if-needed
+.PHONY:	tests documentation all check clobber libraries apply-configuration-if-needed_
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
@@ -37,7 +37,7 @@ help:
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
 
-all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools samples tests documentation
+all:		IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_ libraries tools samples tests documentation
 	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
@@ -82,20 +82,20 @@ documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
-libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
+libraries:	IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_ third-party-libs
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) -no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 endif
 
 
-third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
+third-party-libs:	IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory third-party-libs CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
@@ -223,17 +223,13 @@ endif
 
 	
 
-apply-configurations-if-needed:
+apply-configuration-if-needed_:
 	@#if no configurations, create default, and apply any needed configurations to continue
 ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
 	@$(MAKE) default-configurations --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		if [ ! -e IntermediateFiles/$$i ] ; then\
-			$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
-		fi;\
-	done
+	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
 else
-	$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
+	@$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
 endif
 
 
@@ -246,10 +242,13 @@ apply-configurations:
 
 
 IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION:	ConfigurationFiles/$(CONFIGURATION).xml
-	$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	
 
 apply-configuration:
+ifeq ($(CONFIGURATION),)
+	$(error Cannot call apply-configuration without a configuration argument)
+endif
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration $(CONFIGURATION)..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
