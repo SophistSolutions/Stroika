@@ -239,7 +239,6 @@ apply-configurations:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory apply-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
-	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 
 apply-configuration:
