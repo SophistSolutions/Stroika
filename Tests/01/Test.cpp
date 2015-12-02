@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Debug/TimingTrace.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
 #include    "Stroika/Foundation/Cache/LRUCache.h"
