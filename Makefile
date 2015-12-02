@@ -138,7 +138,7 @@ project-files-qt-creator-save:
 tools:	assure-default-configurations-exist_
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) tools --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
@@ -151,7 +151,7 @@ endif
 tests:	assure-default-configurations-exist_
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) tests --no-print-directory tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) tests --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
@@ -164,7 +164,7 @@ endif
 samples:	assure-default-configurations-exist_
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) samples --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
