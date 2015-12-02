@@ -1,5 +1,5 @@
 .NOTPARALLEL:
-.PHONY:	tests documentation all check clobber libraries apply-configuration-if-needed_
+.PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
