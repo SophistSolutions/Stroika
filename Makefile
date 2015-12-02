@@ -37,8 +37,18 @@ help:
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 
 
-all:		IntermediateFiles/TOOLS_CHECKED apply-configuration-if-needed_ libraries tools samples tests documentation
+all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+	done
+else
+	@$(MAKE) --no-print-directory libraries CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --no-print-directory tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --no-print-directory tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) --no-print-directory documentation CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@$(MAKE) --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+endif
 
 
 check:
@@ -223,14 +233,14 @@ endif
 
 	
 
-apply-configuration-if-needed_:
-	@#if no configurations, create default, and apply any needed configurations to continue
+assure-default-configurations-exist_:
 ifeq ($(shell ScriptsLib/GetConfigurations.sh),)
 	@$(MAKE) default-configurations --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-	@$(MAKE) --no-print-directory apply-configuration-if-needed_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
-else
-	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
 endif
+
+
+apply-configuration-if-needed_:	assure-default-configurations-exist_
+	@$(MAKE) --no-print-directory --silent IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);
 
 
 
