@@ -356,8 +356,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{D8E09219-F8BE-460F-A1D2-793147E12FE4}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\ThirdPartyComponents\Xerces\.gitignore = ..\..\..\ThirdPartyComponents\Xerces\.gitignore
-		..\..\..\ThirdPartyComponents\Xerces\BUILD.OUT = ..\..\..\ThirdPartyComponents\Xerces\BUILD.OUT
-		..\..\..\ThirdPartyComponents\Xerces\buildall_.pl = ..\..\..\ThirdPartyComponents\Xerces\buildall_.pl
+		..\..\..\ThirdPartyComponents\Xerces\buildall_windows_.pl = ..\..\..\ThirdPartyComponents\Xerces\buildall_windows_.pl
 		..\..\..\ThirdPartyComponents\Xerces\Makefile = ..\..\..\ThirdPartyComponents\Xerces\Makefile
 		..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt = ..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt
 	EndProjectSection
