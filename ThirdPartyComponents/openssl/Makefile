@@ -9,7 +9,7 @@
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 #VERSION=1.0.1o
-VERSION=1.0.2d
+VERSION=1.0.2e
 
 #appears needed for 1.0.2d
 BAD_TARFILE_BUG_WORKAROUND_=i
@@ -26,6 +26,7 @@ ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
+FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
 
 
 .PHONY:	doCreate doBuild
