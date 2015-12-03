@@ -775,7 +775,7 @@ sub	WriteConfigFile_
 mkdir ($configurationFiles);
 
 {
-	my $masterXMLConfigFile	=	"$configurationFiles/$configurationName.xml";
+	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
 	print("   Writing \"$masterXMLConfigFile\"...\n");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");

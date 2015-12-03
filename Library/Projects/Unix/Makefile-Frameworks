@@ -32,7 +32,7 @@ $(ALL_OBJS):
 $(ALL_OBJS):
 	@if [ $(ALL_OBJS_DONE_HACK) -eq 0 ]; then\
 	    $(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika Frameworks Objs...";\
-	    (for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all; done;);\
+	    (for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); done;);\
 	fi
 	@$(eval ALL_OBJS_DONE_HACK := 1)
 

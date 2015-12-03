@@ -15,7 +15,8 @@ use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
 
 
-
+my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
+$MAKE_INDENT_LEVEL = $MAKE_INDENT_LEVEL + 1;
 
 my $intermediateFiles	=	"IntermediateFiles/";
 my $activeConfiguration	=	$ARGV[0];
@@ -657,12 +658,12 @@ unless (-e $intermediateFiles) {
 }
 
 unless (-e $configFileCName) {
-	print("   ...Writing \"$configFileCName\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileCName\"...\n");
 	WriteStroikaConfigCHeader ();
 }
 
 
 unless (-e $configFileMakeName) {
-	print("   ...Writing \"$configFileMakeName\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\"...\n");
 	WriteStroikaConfigMakeHeader ();
 }

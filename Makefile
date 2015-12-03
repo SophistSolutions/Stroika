@@ -269,10 +269,10 @@ apply-configuration:
 ifeq ($(CONFIGURATION),)
 	$(error Cannot call apply-configuration without a configuration argument)
 endif
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration $(CONFIGURATION)..."
+	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration {$(CONFIGURATION)}..."
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
-	@$(ECHO) "   ...Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
