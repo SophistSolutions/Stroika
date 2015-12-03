@@ -29,11 +29,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebServe
 		{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B} = {5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Makefiles", "Makefiles", "{BDB956CB-14E0-4DE1-A36E-C852F928E761}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\Makefile = ..\..\..\Makefile
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebService", "Stroika-Frameworks-WebService.vcxproj", "{9454F6D7-68B9-4C91-92D1-99958EC9EA42}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-UPnP", "Stroika-Frameworks-UPnP.vcxproj", "{3ADD4C32-1D77-47A2-9F23-83908A2446F6}"
@@ -139,35 +134,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312A
 		..\Unix\SharedMakeVariables-Default.mk = ..\Unix\SharedMakeVariables-Default.mk
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyComponents", "ThirdPartyComponents", "{3636D094-1CF9-41A9-A469-746D5B9B2E82}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\Makefile = ..\..\..\ThirdPartyComponents\Makefile
-		..\..\..\ThirdPartyComponents\TODO.md = ..\..\..\ThirdPartyComponents\TODO.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3C96C-D218-4BE1-99E9-96B9290537AE}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\openssl\Makefile = ..\..\..\ThirdPartyComponents\openssl\Makefile
-		..\..\..\ThirdPartyComponents\openssl\ReadMe.txt = ..\..\..\ThirdPartyComponents\openssl\ReadMe.txt
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6D62-4C7F-9477-C38D6BE9FE14}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\zlib\Makefile = ..\..\..\ThirdPartyComponents\zlib\Makefile
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{8857755D-8E18-476D-BEB5-5C3B5ED79FB2}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\Xerces\Makefile = ..\..\..\ThirdPartyComponents\Xerces\Makefile
-		..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt = ..\..\..\ThirdPartyComponents\Xerces\ReadMe.txt
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-SystemPerformance", "Stroika-Frameworks-SystemPerformance.vcxproj", "{A6C00B9D-8B7F-4C43-A043-1127387E712D}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "curl", "curl", "{A60110B0-721D-48EE-81A9-9FFB510B4A07}"
-	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\curl\Makefile = ..\..\..\ThirdPartyComponents\curl\Makefile
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", "{7398AECD-738D-4BD8-B2E4-7B8DB9382F72}"
 	ProjectSection(SolutionItems) = preProject
@@ -212,8 +179,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{D21F
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyComponents", "ThirdPartyComponents", "{A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\Makefile = ..\..\..\ThirdPartyComponents\Makefile
+		..\..\..\ThirdPartyComponents\TODO.md = ..\..\..\ThirdPartyComponents\TODO.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "curl", "curl", "{E5F55F38-317D-46EE-BFE6-36B5E40C762A}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\curl\Makefile = ..\..\..\ThirdPartyComponents\curl\Makefile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{5D81A192-B3FC-497C-91DD-CE0346B6C742}"
 	ProjectSection(SolutionItems) = preProject
@@ -642,8 +616,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{91DCD5
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lzma", "lzma", "{1B514C20-0A4B-40FA-937D-2F11449E1E3D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\lzma\Makefile = ..\..\..\ThirdPartyComponents\lzma\Makefile
+		..\..\..\ThirdPartyComponents\lzma\Subdir-Makefile = ..\..\..\ThirdPartyComponents\lzma\Subdir-Makefile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "openssl", "openssl", "{F46DA874-1AA5-4D7A-A5A8-022D562727B6}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\Makefile = ..\..\..\ThirdPartyComponents\openssl\Makefile
+		..\..\..\ThirdPartyComponents\openssl\ReadMe.txt = ..\..\..\ThirdPartyComponents\openssl\ReadMe.txt
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{B79422CE-425A-4687-9459-A65B084D2792}"
 	ProjectSection(SolutionItems) = preProject
@@ -1064,6 +1046,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{8EC23C
 		..\..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\validators\common\SimpleContentModel.hpp = ..\..\..\ThirdPartyComponents\Xerces\CURRENT\src\xercesc\validators\common\SimpleContentModel.hpp
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{707DC8D1-0256-474B-9DEA-BD9D715457A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -1370,13 +1354,11 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{312AE444-7947-4826-8B1C-19691D0568CD} = {BDB956CB-14E0-4DE1-A36E-C852F928E761}
-		{3636D094-1CF9-41A9-A469-746D5B9B2E82} = {BDB956CB-14E0-4DE1-A36E-C852F928E761}
-		{0AB3C96C-D218-4BE1-99E9-96B9290537AE} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
-		{76839A1E-6D62-4C7F-9477-C38D6BE9FE14} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
-		{8857755D-8E18-476D-BEB5-5C3B5ED79FB2} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
-		{A60110B0-721D-48EE-81A9-9FFB510B4A07} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
-		{D21F3707-4413-4F9F-AB52-4E1CB6483829} = {0AB3C96C-D218-4BE1-99E9-96B9290537AE}
+		{312AE444-7947-4826-8B1C-19691D0568CD} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
+		{7398AECD-738D-4BD8-B2E4-7B8DB9382F72} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
+		{15FFD4B0-34FC-4F9D-A32D-16D3927ADF06} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
+		{D21F3707-4413-4F9F-AB52-4E1CB6483829} = {F46DA874-1AA5-4D7A-A5A8-022D562727B6}
+		{A9C08FB8-1E7E-47BA-9487-7F980FD92B7E} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
 		{E5F55F38-317D-46EE-BFE6-36B5E40C762A} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 		{5D81A192-B3FC-497C-91DD-CE0346B6C742} = {E5F55F38-317D-46EE-BFE6-36B5E40C762A}
 		{C3548E84-465C-4937-801D-0FD1D90B6F28} = {5D81A192-B3FC-497C-91DD-CE0346B6C742}
@@ -1404,5 +1386,6 @@ Global
 		{EFF8AAB2-CA24-41AC-9FB5-5BEF495567C5} = {6E9BAFBE-CF88-458E-98BC-8CF1A01D8FE4}
 		{79E00D11-75D8-40D0-9F99-6769CA750135} = {6E9BAFBE-CF88-458E-98BC-8CF1A01D8FE4}
 		{8EC23CA8-29CC-4330-B3C5-08676275B11A} = {EFF8AAB2-CA24-41AC-9FB5-5BEF495567C5}
+		{707DC8D1-0256-474B-9DEA-BD9D715457A4} = {1B514C20-0A4B-40FA-937D-2F11449E1E3D}
 	EndGlobalSection
 EndGlobal
