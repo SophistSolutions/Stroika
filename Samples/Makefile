@@ -65,7 +65,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl buildall.pl clean);\
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall.pl clean);\
 	done	
 endif
 
@@ -80,7 +80,7 @@ clobber:	clean
 samples:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory samples CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory samples CONFIGURATION=$(CONFIGURATION); MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples:"

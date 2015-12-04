@@ -14,6 +14,7 @@ require "$thisScriptDir/ConfigurationReader.pl";
 
 $activeConfig = $ENV{'CONFIGURATION'};
 my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
+my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
 if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
@@ -27,7 +28,7 @@ sub	RunAndStopOnFailure
 {
 	my $cmd2Run = $_[0];
 	if ($ECHO_BUILD_LINES == 1) {
-		print ("      $cmd2Run...\n");
+		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "$cmd2Run...\n");
 	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
@@ -60,7 +61,7 @@ sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
 	if ($ECHO_BUILD_LINES == 1) {
-		print ("      $cmd2Run...\n");
+		print (`../../ScriptsLib/PrintLevelLeader.sh $level` . "cmd2Run...\n");
 	}
 	my $result = system ($cmd2Run);
 	if ($result != 0) {
