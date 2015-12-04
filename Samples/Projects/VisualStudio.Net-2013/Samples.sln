@@ -38,6 +38,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stroika", "Stroika", "{60B10CF8-17F2-4135-A577-21B7BD811DD6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{0D9311A4-3664-4903-A8CA-66B67CEC1727}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Makefile = ..\..\Makefile
+		..\..\ReadMe.md = ..\..\ReadMe.md
+		..\..\ToDo.md = ..\..\ToDo.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AcvtiveLedIt", "AcvtiveLedIt", "{69148F2F-A902-4C92-B39B-F78D19B3E81F}"
 EndProject
