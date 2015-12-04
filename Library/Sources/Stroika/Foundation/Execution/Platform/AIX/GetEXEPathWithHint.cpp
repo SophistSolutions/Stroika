@@ -243,13 +243,13 @@ namespace {
                 if (::stat (o->c_str (), &hintStats) == 0) {
                     if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"CacheHit for hint %s (maps to %s)", hint->c_str (), String::FromSDKString (*o).c_str ());
+                        DbgTrace (L"CacheHit for hint '%s' (maps to '%s')", hint->c_str (), String::FromSDKString (*o).c_str ());
 #endif
                         return *o;
                     }
                 }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"CacheMiss for hint %s", hint->c_str ());
+                DbgTrace (L"CacheMiss for hint '%s'", hint->c_str ());
 #endif
             }
         }
@@ -260,7 +260,7 @@ namespace {
         }
         if (hint != nullptr and not exeName.empty ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Priming cache for hint %s (maps to %s)", hint->c_str (), exeName.c_str ());
+            DbgTrace ("Priming cache for hint '%s' (maps to '%s')", hint->c_str (), exeName.c_str ());
 #endif
             sHintCache_->Add (*hint, exeName);
         }
