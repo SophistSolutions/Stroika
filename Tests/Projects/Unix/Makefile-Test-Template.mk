@@ -11,6 +11,8 @@ endif
 SrcDir				=	$(StroikaRoot)Tests/$(TEST_NUM)/
 Includes				+=	-I.
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)
 
 

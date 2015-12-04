@@ -23,13 +23,14 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 }
 
 
+my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
-$level = $level;
 print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests:\n");
-
 
 my $subLevel = $level + 1;
 my $subLevelLeader = `../ScriptsLib/PrintLevelLeader.sh $subLevel`;
+
+my $subSubLevel = $subLevel + 1;
 
 my $useBld = lc ($BLD_TRG);
 
@@ -48,8 +49,8 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	chdir ("../IntermediateFiles/$activeConfig/");
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
-		print ("   Test $tst: $tstName; $useBld...\n");
-		$exit_status = system ("cd Test$tst; make -s $useBld CONFIGURATION=$activeConfig\n");
+		print ($subLevelLeader . "Test $tst: $tstName; $useBld...\n");
+		$exit_status = system ("cd Test$tst; make -s $useBld CONFIGURATION=$activeConfig ECHO_BUILD_LINES=$ECHO_BUILD_LINES MAKE_INDENT_LEVEL=$subSubLevel\n");
 		if ($exit_status != 0) {
 			die("Stopping build: failed");
 		}
