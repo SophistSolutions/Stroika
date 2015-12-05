@@ -15,7 +15,9 @@ my $configurationFiles	=	"ConfigurationFiles/";
 my $configurationName	=	undef;
 
 my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
-
+if (!defined $MAKE_INDENT_LEVEL) {
+	$MAKE_INDENT_LEVEL = 0;
+}
 
 
 
