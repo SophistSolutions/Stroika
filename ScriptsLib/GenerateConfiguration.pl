@@ -14,6 +14,7 @@ my $configurationFiles	=	"ConfigurationFiles/";
 
 my $configurationName	=	undef;
 
+my $MAKE_INDENT_LEVEL = $ENV{'MAKE_INDENT_LEVEL'};
 
 
 
@@ -163,7 +164,6 @@ sub     GetClangVersion_
     my $x = shift(@_);
 	return trim (`$x --version | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
 }
-
 
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
@@ -776,7 +776,7 @@ mkdir ($configurationFiles);
 
 {
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
-	print("   Writing \"$masterXMLConfigFile\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\"...\n");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
 }
