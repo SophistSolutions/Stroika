@@ -5,7 +5,6 @@
 *.wxi text eol=crlf diff
 *.wxs text eol=crlf diff
 *.rtf binary
-*.hphr text eol=crlf diff
 *.xsd text eol=crlf diff
 *.wsdl text eol=crlf diff
 README text diff
