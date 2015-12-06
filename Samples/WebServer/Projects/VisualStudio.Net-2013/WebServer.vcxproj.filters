@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{20bea0ed-4400-4db8-aaae-ad582c16c59b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects\Unix">
+      <UniqueIdentifier>{355e64b2-cd2b-4383-928d-718f48249b89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\WebServer.cpp">
@@ -23,5 +29,8 @@
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\Unix\Makefile">
+      <Filter>Projects\Unix</Filter>
+    </None>
   </ItemGroup>
 </Project>

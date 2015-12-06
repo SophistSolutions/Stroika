@@ -80,25 +80,25 @@ doPatch:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching..."
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@dos2unix -q CURRENT/win32/Makefile.msc > CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> CURRENT/PATCHING.OUT
 	@unix2dos -q CURRENT/win32/Makefile.msc >> CURRENT/PATCHING.OUT
-endif
 	@$(ECHO) "done"
+endif
 
 
 doConfigure:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
 	@(CC="$(CC)" cd CURRENT && ./configure) > CURRENT/CONFIGURE.OUT 2>&1
-endif
 	@$(ECHO) "done"
+endif
 
 
 doCreate:	$(ZIPEDFILE)
