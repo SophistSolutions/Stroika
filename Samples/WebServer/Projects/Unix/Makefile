@@ -3,6 +3,9 @@ include	../Library/SharedBuildRules.mk
 include	../Library/SharedMakeVariables.mk
 
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+ECHO_BUILD_LINES?=0
 
 SrcDir				=	$(StroikaRoot)Samples/WebServer/
 Includes				+=	-I.
@@ -23,7 +26,7 @@ all:
 
 
 $(TARGETEXE):	$(Objs)
-	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 	    echo "         $(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)";\
 	fi
