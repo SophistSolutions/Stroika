@@ -19,9 +19,7 @@ my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/ActiveLedIt...\n");
-if (index($projectPlatformSubdir, "VisualStudio") != -1) {
-	my $extraArgs = GetMSBuildArgs();
-	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs ActiveLedIt.vcxproj /p:$curConfig /target:$useBld");
-	}
+my $extraArgs = GetMSBuildArgs();
+if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
+	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs ActiveLedIt.vcxproj /p:$curConfig /target:$useBld");
 }

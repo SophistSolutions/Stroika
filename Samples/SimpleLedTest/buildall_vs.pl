@@ -13,10 +13,8 @@ my $useProjectDir= "Projects/" . $projectPlatformSubdir;
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SimpleLedTest...\n");
-if (index($projectPlatformSubdir, "VisualStudio") != -1) {
-	if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
-		my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
-		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleLedTest.vcxproj /p:$curConfig /target:$useBld");
-	}
+if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
+	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
+	my $extraArgs = GetMSBuildArgs();
+	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleLedTest.vcxproj /p:$curConfig /target:$useBld");
 }
