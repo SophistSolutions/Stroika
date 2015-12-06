@@ -8,6 +8,7 @@ StroikaRoot=$(shell realpath ../)
 .PHONY:	samples all check clobber skel
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO=echo
 
 
 SUBPROJECTS=
@@ -81,7 +82,7 @@ clobber:	clean
 samples:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory samples CONFIGURATION=$(CONFIGURATION); MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
 	done
 else
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Samples:"
