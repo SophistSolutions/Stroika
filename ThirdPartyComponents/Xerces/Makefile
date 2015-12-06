@@ -4,7 +4,7 @@ endif
 
 
 .DEFAULT_GOAL := all
-.PHONY:	all clean clobber check doBuild doCreate doPatch
+.PHONY:	all clean clobber check doBuilds_ doCreate_ doPatching_
 
 .NOTPARALLEL:
 
@@ -62,8 +62,8 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate_
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds_
 
 
 clean:
@@ -100,7 +100,7 @@ $(ZIPPEDFILE):
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
-doCreate:	$(ZIPPEDFILE)
+doCreate_:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
 	@rm -rf CURRENT;
 	@tar xf $(ZIPPEDFILE) --no-same-owner;
@@ -119,7 +119,7 @@ endif
 	@$(ECHO) "done"
 
 
-doBuilds:
+doBuilds_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl 2>&1 > BUILD.OUT
