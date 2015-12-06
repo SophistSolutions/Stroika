@@ -14,9 +14,11 @@ ECHO_BUILD_LINES?=0
 
 SUBPROJECTS=
 
-SUBPROJECTS+=	ArchiveUtility
 ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	ActiveLedIt
+endif
+SUBPROJECTS+=	ArchiveUtility
+ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
