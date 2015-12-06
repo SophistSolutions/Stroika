@@ -7,13 +7,15 @@
 .NOTPARALLEL:
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 #VERSION=1.0.1o
-#E FAILS TEST - sent bug report to 'openssl-dev@openssl.org' - VERSION=1.0.2e
 VERSION=1.0.2e
 
 #appears needed for 1.0.2d
+ifeq ($(VERSION),1.0.2d)
 BAD_TARFILE_BUG_WORKAROUND_=i
+endif
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
@@ -69,7 +71,7 @@ endif
 STRIP_ANNOYING_MESSAGES=		1
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -104,65 +106,65 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
-			echo "      FAILED: missing $$i";\
+			$(ECHO) "      FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
-	@echo " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 doPatch:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Patching OpenSSL..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
-	@echo -n .
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Patching OpenSSL..."
+	@$(ECHO) -n .
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
+	@$(ECHO) "done"
 endif
 endif
-	@echo "done"
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Extracting $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extracting $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
-	@echo "done"
+	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 
 
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Creating CURRENT/CONFIG.OUT - new configuration..."
-	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; echo "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
-	@echo "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT/CONFIG.OUT - new configuration..."
+	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; $(ECHO) "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
+	@$(ECHO) "done"
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
-	@echo "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Installing (to CURRENT/Builds), and redirecting messages to CURRENT/INSTALL.OUT ...";
+	@$(ECHO) "done"
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Installing (to CURRENT/Builds), and redirecting messages to CURRENT/INSTALL.OUT ...";
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
-	@echo "done"
+	@$(ECHO) "done"
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
-	@echo "done"
+	@$(ECHO) "done"
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > CURRENT/BUILD.OUT 2>&1;
-	@echo "done"
+	@$(ECHO) "done"
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
@@ -200,7 +202,7 @@ ifeq ($(CONFIGURATION),Release-Logging-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release64/Includes/openssl $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
 endif
 endif
-	@echo "done"
+	@$(ECHO) "done"
 
 
 ORIG:	$(ZIPEDFILE)

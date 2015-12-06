@@ -5,7 +5,6 @@
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-
 ECHO?=	$(shell ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
