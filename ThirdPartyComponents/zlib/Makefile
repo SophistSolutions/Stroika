@@ -32,6 +32,7 @@ endif
 BUILDS_ROOT=../../Builds/
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -57,7 +58,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/zlib $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/zlib $(VERSION):"
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -71,7 +72,7 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "..." 
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
@@ -79,14 +80,14 @@ doPatch:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Patching..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching..."
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@dos2unix -q CURRENT/win32/Makefile.msc > CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> CURRENT/PATCHING.OUT
 	@unix2dos -q CURRENT/win32/Makefile.msc >> CURRENT/PATCHING.OUT
 endif
-	@echo "done"
+	@$(ECHO) "done"
 
 
 doConfigure:
@@ -97,18 +98,18 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@(CC="$(CC)" cd CURRENT && ./configure) > CURRENT/CONFIGURE.OUT 2>&1
 endif
-	@echo "done"
+	@$(ECHO) "done"
 
 
 doCreate:	$(ZIPEDFILE)
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
-	@echo "done"
+	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doConfigure
 
@@ -117,10 +118,10 @@ doBuilds:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)..."
 	@make doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
-	@echo "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Copying builds to $(BUILDS_ROOT) ..."
+	@$(ECHO) "done"
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
@@ -154,7 +155,7 @@ ifeq ($(CONFIGURATION),Release-Logging-U-64)
 	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
 endif
 endif
-	@echo "done"
+	@$(ECHO) "done"
 
 	
 doBuildInternal_:
@@ -206,14 +207,14 @@ check:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
-			echo "   FAILED: missing $$i";\
+			$(ECHO) "   FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
-	@echo " Stroika/ThirdPartyComponents/zlib -    [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/zlib -    [Succeeded]";
 
 
 clean:

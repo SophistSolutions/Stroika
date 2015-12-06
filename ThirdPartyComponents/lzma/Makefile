@@ -11,6 +11,7 @@ endif
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 
@@ -93,29 +94,29 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "..." 
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 check_prerequisites_:
-	@type 7za > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking tools......Missing 7za")
+	@type 7za > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking tools......Missing 7za")
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@cp Subdir-Makefile CURRENT/Makefile
-	@echo "done"
+	@$(ECHO) "done"
 
 
 doBuilds:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
-	@echo "done"
+	@$(ECHO) "done"
 
 
 doBuildInternal_:
@@ -271,14 +272,14 @@ ORIGS:	$(ZIPEDFILE)
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo -n "Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
-			echo "   FAILED: missing $$i";\
+			$(ECHO) "   FAILED: missing $$i";\
 			exit 1;\
 		fi;\
 	done
-	@echo " Stroika/ThirdPartyComponents/lzma -    [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/lzma -    [Succeeded]";
 
 
 clean:
