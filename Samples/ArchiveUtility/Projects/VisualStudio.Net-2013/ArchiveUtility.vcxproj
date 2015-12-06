@@ -674,6 +674,14 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\Unix\Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\ReadMe.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

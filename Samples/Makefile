@@ -20,7 +20,7 @@ SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
 # SOMEDAY SOON GET THIS FROM .PL FILE!!!
-ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
 SUBPROJECTS+=	SSDPClient
@@ -53,11 +53,19 @@ all:		samples
 
 
 check:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+	done
+else
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)} Samples:";
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) -n "Checking $$SUBPROJ... ";\
-		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall.pl);\
-	done	
+		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall_vs.pl);\
+	done
+endif
+endif
 
 
 clean:
@@ -88,7 +96,7 @@ else
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Samples:"
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall.pl);\
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall_vs.pl);\
     done
 else
 	@for SUBPROJ in $(SUBPROJECTS) ; do \

@@ -19,4 +19,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+  </ItemGroup>
 </Project>

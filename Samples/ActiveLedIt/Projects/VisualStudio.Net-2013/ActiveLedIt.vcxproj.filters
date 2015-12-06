@@ -136,17 +136,17 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\ActiveLedItTemplate.inf" />
-    <None Include="..\..\buildall.pl" />
     <None Include="..\..\BuildCAB.bat">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\checkall.pl" />
     <None Include="..\..\Demo ReadMe.rtf">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\ReadMe.rtf">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">

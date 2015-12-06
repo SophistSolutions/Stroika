@@ -26,8 +26,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\buildall.pl" />
-    <None Include="..\..\checkall.pl" />
     <None Include="..\Unix\Makefile">
       <Filter>Projects\Unix</Filter>
     </None>

@@ -13,10 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{211cf89a-fce3-4813-9403-31e595238ddc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects\Unix">
+      <UniqueIdentifier>{77208781-9e40-4e6e-b643-54056e5736d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\SSDPServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Unix\Makefile">
+      <Filter>Projects\Unix</Filter>
+    </None>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\ReadMe.txt" />
   </ItemGroup>
 </Project>

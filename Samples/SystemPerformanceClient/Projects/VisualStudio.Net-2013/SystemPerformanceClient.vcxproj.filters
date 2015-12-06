@@ -26,11 +26,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\buildall.pl" />
-    <None Include="..\..\checkall.pl" />
     <None Include="..\Unix\Makefile">
       <Filter>Projects\Unix</Filter>
     </None>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\ReadMe.txt" />
