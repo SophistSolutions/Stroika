@@ -8,7 +8,7 @@ StroikaRoot=$(shell realpath ../)
 .PHONY:	samples all check clobber skel
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO=echo
+ECHO?=$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
 SUBPROJECTS=
