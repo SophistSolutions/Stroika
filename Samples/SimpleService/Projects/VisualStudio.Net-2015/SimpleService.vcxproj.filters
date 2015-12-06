@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{ac8f3ba5-301b-485e-acad-ed42b0062d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects\Unix">
+      <UniqueIdentifier>{80c60779-35da-43f4-9560-b6571478ce22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\SimpleService.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\Unix\Makefile">
+      <Filter>Projects\Unix</Filter>
+    </None>
   </ItemGroup>
 </Project>

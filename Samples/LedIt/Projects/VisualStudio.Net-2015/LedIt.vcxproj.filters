@@ -12,6 +12,12 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{1e4f585e-8d64-405d-aeff-db9e565a1b9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{8f4bfa2e-eb15-4804-8159-ce74f8c73ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects\Unix">
+      <UniqueIdentifier>{131d13be-c19b-4e6a-b3eb-5a52a7be4f32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\LedIt.r">
@@ -88,6 +94,15 @@
     </None>
     <None Include="..\..\Sources\Toolbar.bmp">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\ReadMe.md" />
+    <None Include="..\Unix\Makefile">
+      <Filter>Projects\Unix</Filter>
+    </None>
+    <None Include="..\Unix\UNIXInstall.sh">
+      <Filter>Projects\Unix</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Sources\AboutBoxImage.bmp" />
     <None Include="..\..\Sources\AboutBoxImage.vsd" />
     <None Include="..\..\Sources\AboutBoxImage.xpm" />
@@ -39,6 +42,8 @@
     <None Include="..\..\Sources\UnknownEmbeddingIcon.bmp" />
     <None Include="..\..\Sources\UnsupportedPictFormat.bmp" />
     <None Include="..\..\Sources\URLEmbeddingIcon.bmp" />
+    <None Include="..\Unix\Makefile" />
+    <None Include="..\Unix\UNIXInstall.sh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ColorMenu.cpp" />

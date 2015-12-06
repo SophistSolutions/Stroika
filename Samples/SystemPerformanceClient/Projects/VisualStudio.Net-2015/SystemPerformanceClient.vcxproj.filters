@@ -13,10 +13,26 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{529af716-6450-43dd-a795-31c3e3956f18}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects\Unix">
+      <UniqueIdentifier>{ff364b8f-6b4b-48cb-bcc1-c89a78c3f0b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\SystemPerformanceClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\buildall_vs.pl" />
+    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\Unix\Makefile">
+      <Filter>Projects\Unix</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\ReadMe.txt" />
   </ItemGroup>
 </Project>
