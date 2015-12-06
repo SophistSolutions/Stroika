@@ -2,8 +2,10 @@ ifneq ($(CONFIGURATION),)
 	ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
+StroikaRoot=$(shell realpath ../)
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 .PHONY:	samples all check clobber skel
 

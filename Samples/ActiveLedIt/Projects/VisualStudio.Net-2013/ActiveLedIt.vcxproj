@@ -168,6 +168,14 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="..\..\ActiveLedIt Source ReadMe.rtf" />
+    <None Include="..\..\ActiveLedItReference.rtf" />
+    <None Include="..\..\ActiveLedItTemplate.inf" />
+    <None Include="..\..\buildall.pl" />
+    <None Include="..\..\BuildCAB.bat" />
+    <None Include="..\..\checkall.pl" />
+    <None Include="..\..\Demo ReadMe.rtf" />
+    <None Include="..\..\ReadMe.rtf" />
     <None Include="..\..\Sources\AboutBoxImage.bmp" />
     <None Include="..\..\Sources\AboutBoxImage.vsd" />
     <None Include="..\..\Sources\AboutBoxImage_Demo.bmp" />
