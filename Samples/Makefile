@@ -74,9 +74,16 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall.pl clean);\
-	done	
+	done
+endif
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@for SUBPROJ in $(SUBPROJECTS) ; do \
+		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION);\
+    done
+endif
 endif
 
 

@@ -17,7 +17,9 @@ Objs	=	\
 	$(ObjDir)SSDPServer.o\
 
 
-all:	$(TARGETEXE)
+all:
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Samples/SSDPServer:"
+	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 
 
 $(TARGETEXE):	$(Objs)
