@@ -51,9 +51,9 @@ all:		samples
 
 
 check:
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Checking Stroika {$(CONFIGURATION)} Samples:";
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)} Samples:";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && echo -n "Checking $$SUBPROJ... ";\
+		$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) -n "Checking $$SUBPROJ... ";\
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall.pl);\
 	done	
 
@@ -83,7 +83,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory samples CONFIGURATION=$(CONFIGURATION); MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika {$(CONFIGURATION)} Samples:"
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Samples:"
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall.pl);\
