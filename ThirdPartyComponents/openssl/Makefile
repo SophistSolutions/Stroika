@@ -10,7 +10,7 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
 #VERSION=1.0.1o
 #E FAILS TEST - sent bug report to 'openssl-dev@openssl.org' - VERSION=1.0.2e
-VERSION=1.0.2d
+VERSION=1.0.2e
 
 #appears needed for 1.0.2d
 BAD_TARFILE_BUG_WORKAROUND_=i
@@ -125,12 +125,6 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@echo -n .
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
-endif
-endif
-ifeq (Unix,$(findstring Unix,$(ProjectPlatformSubdir)))
-ifeq ($(VERSION),1.0.2e)
-	@#somehow this got left out of 1.0.2e release??? BUt still depended on...
-	@cp Patches/pod2mantest CURRENT/util/
 endif
 endif
 	@echo "done"
