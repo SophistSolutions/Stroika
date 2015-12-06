@@ -94,7 +94,7 @@ doConfigure:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@(CC="$(CC)" cd CURRENT && ./configure) > CURRENT/CONFIGURE.OUT 2>&1
 endif
