@@ -255,6 +255,7 @@
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
+// still broken in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy   0
@@ -319,6 +320,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
+// still broken in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
@@ -397,7 +399,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broekn in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_constexpr_arrays_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
+// Fixed in _MS_VS_2k15_Update1_FULLVER_
+#define qCompilerAndStdLib_constexpr_arrays_Buggy      (_MSC_FULL_VER < _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_arrays_Buggy      qCompilerAndStdLib_constexpr_Buggy
 #endif
@@ -474,7 +477,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
-// still borkne in _MS_VS_2k15_Update1_FULLVER_
+// still broken in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      qCompilerAndStdLib_constexpr_Buggy
@@ -542,6 +545,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       1
 #elif   defined (_MSC_VER)
+// still broken with _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       0
@@ -572,6 +576,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // this is still broken even if you say -std=+14 in gcc51
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
 #elif   defined (_MSC_VER)
+// Still broken in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    qCompilerAndStdLib_constexpr_Buggy
@@ -590,6 +595,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RTM_FULLVER_
+// Fixed in _MS_VS_2k15_RTM_FULLVER_
 // Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_shared_mutex_module_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #else
@@ -739,6 +745,7 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
+// Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
