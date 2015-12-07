@@ -2,6 +2,10 @@ include	../Library/Configuration.mk
 include	../Library/SharedBuildRules.mk
 include	../Library/SharedMakeVariables.mk
 
+MAKE_INDENT_LEVEL?=$(MAKELEVEL)
+ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
+ECHO_BUILD_LINES?=0
+
 
 ifndef TEST_NUM
 	TEST_NUM		=	_UNDEFINED_FIX_INCLUDER_OF_TEMPLATE_TO_SPECIFY_THIS_
@@ -29,8 +33,8 @@ all:	$(TARGETEXE)
 
 
 $(TARGETEXE):	$(Objs)
-	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    echo "         $(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)";\
+	    $(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)";\
 	fi
 	@$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
