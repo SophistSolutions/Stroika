@@ -16,10 +16,28 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a117">v2.0a117x</a><br/>2015-10-?????</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a117">v2.0a117</a><br/>2015-12-06</td>
 <td>
 	<ul>
-		<li>TODO - testing notes </li>
+		<li>Got Xerces working on AIX</li>
+		<li>Serveral fixes to Debug::TimingTrace, including allow default warnIfLongerThan</li>
+		<li>updated _MS_VS_2k15_Update1_FULLVER_ for actual update 1 release</li>
+		<li>Improved WGet, and ftp mirrors list for openssl, and change to 1.0.2e</li>
+		<li>
+			<ul>
+				<li>Tons more make system cleanups - mostly cosmetic</li>
+				<li>renamed default-configuration target to default-confiogurations</li>
+				<li>apply conifgurations - so can be done per config</li>
+				<li>top level makefile cleanups for applying one config at a time</li>
+				<li>Many fixes to support ECHO env variable, so make looks much better under AIX</li>
+				<li>build stroika docs to Builds folder and only once</li>
+				<li>fixed serious regression in Test projectfile templates - always doing test 1 instead of NNN</li>
+				<li>new ../ScriptsLib/GetDefaultShellVariable.sh helper</li>
+				<li>https://stroika.atlassian.net/browse/STK-417 - ScriptsLib/MakeDirectorySymbolicLink.sh on windows broken</li>
+				<li>renamed buildall / checkall scripts in samples to _vs - since they are visual studio specific and got rid of BuildUtils.pl</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
