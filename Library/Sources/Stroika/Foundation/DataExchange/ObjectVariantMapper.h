@@ -268,7 +268,7 @@ namespace   Stroika {
             public:
                 struct  StructFieldInfo;
 
-           public:
+            public:
                 /**
                  *  Adds the given class (defined in explicit template argument) with the given list of field.
                  *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
