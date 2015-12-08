@@ -15,6 +15,21 @@ History
   </thead>
 
 
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a118">v2.0a118x</a><br/>2015-12-??</td>
+<td>
+	<ul>
+		<li>TODOO</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a117">v2.0a117</a><br/>2015-12-06</td>
 <td>
