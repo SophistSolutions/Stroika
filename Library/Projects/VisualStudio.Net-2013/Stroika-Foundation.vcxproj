@@ -995,7 +995,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
@@ -1005,7 +1004,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
@@ -1154,7 +1152,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
@@ -1162,7 +1159,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.h" />

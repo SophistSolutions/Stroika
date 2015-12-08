@@ -1269,9 +1269,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h">
       <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
@@ -1444,9 +1441,6 @@
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h">
@@ -1707,9 +1701,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -1720,9 +1711,6 @@
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\AIX\GetEXEPathWithHint.h">

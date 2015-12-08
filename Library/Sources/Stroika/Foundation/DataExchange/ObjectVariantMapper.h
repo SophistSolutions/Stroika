@@ -268,13 +268,7 @@ namespace   Stroika {
             public:
                 struct  StructFieldInfo;
 
-
-            private://private so name matches and easy to find/fix when building with new code...
-                //DEPRECATED...
-                using StructureFieldInfo = StructFieldInfo;
-                // typedef StructFieldInfo  [[deprecated("DEPRECATED IN V2.0a115 use StructFieldInfo")]] StructureFieldInfo;
-
-            public:
+           public:
                 /**
                  *  Adds the given class (defined in explicit template argument) with the given list of field.
                  *  Also, optionally provide a 'readPreflight' function to be applied to the read-in VariantValue object before
@@ -474,31 +468,6 @@ namespace   Stroika {
 
                 StructFieldInfo (const StructFieldMetaInfo& fieldMetaInfo, const String& serializedFieldName, NullFieldHandling nullFields = NullFieldHandling::eInclude, ArrayElementHandling arrayHandling = ArrayElementHandling::eExact);
             };
-
-
-
-#if 0
-            /**
-             *  DEPRECATED in v2.0a115
-             *      PLEASE REPLACE ObjectVariantMapper_StructureFieldInfo_Construction_Helper(A,B,C)
-             *  with:
-             *      ObjectVariantMapper::StructureFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (A,B), C }
-             */
-#define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
-    DataExchange::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
-#endif
-
-
-#if 0
-            /**
-             *  DEPRECATED in v2.0a115
-             *      PLEASE REPLACE Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey
-             *  with:
-             *      Stroika_Foundation_DataExchange_StructFieldMetaInfo
-             */
-#define     Stroika_Foundation_DataExchange_ObjectVariantMapper_FieldInfoKey(CLASS,MEMBER)\
-    Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS,MEMBER)
-#endif
 
 
             template    <>

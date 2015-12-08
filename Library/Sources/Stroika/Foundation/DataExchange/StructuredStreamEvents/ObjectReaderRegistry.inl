@@ -168,13 +168,13 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename CONTAINER_OF_T>
-                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
+                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
                     : fValuePtr_ (v)
                 {
                     RequireNotNull (v);
                 }
                 template    <typename CONTAINER_OF_T>
-                ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
+                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
                     : fMemberElementName_  (memberElementName)
                     , fValuePtr_ (v)
                 {
@@ -224,7 +224,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename CONTAINER_OF_T>
-                ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::RepeatedElementReader (CONTAINER_OF_T* pv)
+                inline  ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::RepeatedElementReader (CONTAINER_OF_T* pv)
                     : fValuePtr_ (pv)
                 {
                 }
