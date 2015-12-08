@@ -237,13 +237,13 @@ shared_ptr<TextWriter::_IRep> TextWriter::mk_ (const OutputStream<Byte>& src, Fo
     switch (format) {
         case Format::eUTF8WithBOM:
         case Format::eUTF8WithoutBOM:
-            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_UTF8_Rep_ (src, withBOM) : new UnSeekable_UTF8_Rep_ (src, withBOM));
+            return newOneSeekable ? make_shared<Seekable_UTF8_Rep_> (src, withBOM) : make_shared<UnSeekable_UTF8_Rep_> (src, withBOM);
         case Format::eWCharTWithBOM:
         case Format::eWCharTWithoutBOM:
-            return shared_ptr<_IRep> (newOneSeekable ? new Seekable_WCharT_Rep_ (src, withBOM) : new UnSeekable_WCharT_Rep_ (src, withBOM));
+            return newOneSeekable ? make_shared<Seekable_WCharT_Rep_> (src, withBOM) : make_shared<UnSeekable_WCharT_Rep_> (src, withBOM);
         default:
             RequireNotReached();
-            return shared_ptr<_IRep> ();
+            return nullptr;
     }
 }
 
