@@ -170,6 +170,7 @@ endif
 LibObjs=	\
 		$(C_OBJS)\
 		C_FileIO.$(OBJSUFFIX) \
+		System.$(OBJSUFFIX) \
 		Bench.$(OBJSUFFIX) \
 		BenchCon.$(OBJSUFFIX) \
 		ConsoleClose.$(OBJSUFFIX) \
