@@ -1437,9 +1437,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -1736,6 +1733,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
       <Filter>Sources\Execution</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h">
+      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2651,6 +2651,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
+      <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -946,7 +946,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Float.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String_Constant.h" />
@@ -1094,6 +1093,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h" />
@@ -1448,6 +1448,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl" />
