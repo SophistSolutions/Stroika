@@ -18,10 +18,13 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a118">v2.0a118x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a118">v2.0a118</a><br/>2015-12-08</td>
 <td>
 	<ul>
-		<li>TODOO</li>
+		<li>docs and fix SERIOUS bug with FileOutputStream: it was not properly handling APPEND/TRUNC flag - essentially adding random flag isntead of correct one</li>
+		<li>Use lzma SDK 15.12</li>
+		<li>Lose some deprecated APIs (e.g. TakeNBitsFrom, DataExchange/Writer, DataExchange/Reader)</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, and valgrind;</li>
 	</ul>
 </td>
 </tr>
