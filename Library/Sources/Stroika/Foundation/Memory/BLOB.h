@@ -161,8 +161,8 @@ namespace   Stroika {
                 /*
                  *  \brief  Create a BLOB from the given data - without copying the data (dangerous), and never deletes
                  *
-                 *  AttachApplicationLifetime () causes 'move semantics' on the pointer - where
-                 *  the BLOB takes over ownership of the pointer, and will never delete the data.
+                 *  AttachApplicationLifetime () may save and use pointer indefinitely, but will never modify what it
+                 *  points to nor delete it. The caller \em must do likewise.
                  *
                  *  \req (start == nullptr and end == nullptr) or (start != nullptr and end != nullptr)
                  *  \req (start <= end)
