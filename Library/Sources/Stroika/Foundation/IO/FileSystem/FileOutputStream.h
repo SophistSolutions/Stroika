@@ -86,10 +86,16 @@ namespace   Stroika {
                     };
 
                 public:
+                    /**
+                     *  Default is eStartFromStart (truncation), not eAppend
+                     */
                     FileOutputStream (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     FileOutputStream (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
 
                 public:
+                    /**
+                     *  Default is eStartFromStart (truncation), not eAppend
+                     */
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, FlushFlag flushFlag = eToOperatingSystem);
                     static  OutputStream<Memory::Byte>   mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = eToOperatingSystem);
 

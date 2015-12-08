@@ -55,7 +55,7 @@ public:
         try {
 #if     qPlatform_Windows
             int appendFlag2Or = appendFlag == eStartFromStart ? _O_TRUNC : _O_APPEND;
-            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_BINARY | appendFlag2Or, _SH_DENYNO, _S_IREAD | _S_IWRITE);
             if (e != 0) {
                 Execution::errno_ErrorException::DoThrow (e);
             }
@@ -63,7 +63,7 @@ public:
 #else
             int appendFlag2Or = appendFlag == eStartFromStart ? O_TRUNC : O_APPEND;
             const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
-            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag, kCreateMode_));
+            Execution::ThrowErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | appendFlag2Or, kCreateMode_));
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eWrite);
