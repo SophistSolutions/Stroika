@@ -41,14 +41,9 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  ********************************************************************************
- *********************** FileSystem::FileOutputStream **********************
+ ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-
-
-
-
-
 class   FileOutputStream::Rep_ : public OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ () = delete;

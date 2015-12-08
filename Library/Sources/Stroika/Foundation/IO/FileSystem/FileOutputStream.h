@@ -54,6 +54,12 @@ namespace   Stroika {
                  *      String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
                  *      JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::mk (fileName));
                  *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      TextWriter tw { IO::FileSystem::FileOutputStream::mk (L"/tmp/fred.txt") };
+                 *      tw.PrintF (L"Hello %s\n", L"World");
+                 *      \endcode
                  */
                 class   FileOutputStream : public Streams::OutputStream<Memory::Byte> {
                 private:
