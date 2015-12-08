@@ -16,8 +16,9 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-
-VERSION=7_46_0
+#https://stroika.atlassian.net/browse/STK-419
+#VERSION=7_46_0
+VERSION=7_45_0
 BASENAME=curl-curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
