@@ -165,7 +165,7 @@ namespace   Stroika {
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value >::type >
                 explicit KeyedCollection (const CONTAINER_OF_T& src, KeyExtractorFunctionType keyExtractor);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                explicit KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
+                KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
 
             protected:
                 explicit KeyedCollection (const _SharedPtrIRep& src);

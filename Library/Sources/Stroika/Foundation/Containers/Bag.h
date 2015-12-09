@@ -90,7 +90,7 @@ namespace   Stroika {
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Bag (const _SharedPtrIRep& rep);
