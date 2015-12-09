@@ -20,6 +20,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Better document/enforce limits on range of values for version#. Note - we have some extra bits because
+ *              verStage only requires 3 (so 8+8+3+8_1 used, leaving 4).
+ *
  *      @todo   RETHINK MAPPING TO FULL_VERSION_NUMBER type? VersionStage only needs 3 bits (??)
  *              But maybe useful compat with windows format?
  *
@@ -33,6 +36,8 @@ namespace   Stroika {
         namespace   Configuration {
 
 
+            /**
+             */
             enum    class   VersionStage {
                 Dev = kStroika_Version_Stage_Dev,
                 Alpha = kStroika_Version_Stage_Alpha,
@@ -45,6 +50,18 @@ namespace   Stroika {
 
 
             /**
+             *  In Stroika, we represent a version# as (higher sort order priority first):
+             *      MAJOR (uint8_t)
+             *      MINOR (uint8_t)
+             *      VersionStage
+             *      VERSION-SubStage (uint8_t)
+             *      finalBuild(bool)
+             *
+             *  We provide support to automatically map this notion to a 32-bit version# which microsoft uses.
+             *  Note - this mapping is not totally 1-1, and doesnt correspond to any documented version# strategy defined
+             *  by MSFT (as near as I can tell they have none - its just 4 bytes for them).
+             *
+             *  @see Stroika_Make_FULL_VERSION for the mapping
              */
             struct  Version {
             public:
