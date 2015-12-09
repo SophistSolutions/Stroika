@@ -118,11 +118,12 @@ namespace {
     auto     PrintMacAddr_ (const uint8_t* macaddrBytes, const uint8_t* macaddrBytesEnd) -> String {
         Require (macaddrBytesEnd - macaddrBytes == 6);
         char     buf[100] {};
-        (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
-                        macaddrBytes[0], macaddrBytes[1],
-                        macaddrBytes[2], macaddrBytes[3],
-                        macaddrBytes[4], macaddrBytes[5]
-                       );
+        (void)::snprintf (buf, sizeof (buf),
+                          "%02x:%02x:%02x:%02x:%02x:%02x",
+                          macaddrBytes[0], macaddrBytes[1],
+                          macaddrBytes[2], macaddrBytes[3],
+                          macaddrBytes[4], macaddrBytes[5]
+                         );
         return String::FromAscii (buf);
     };
 }
@@ -197,7 +198,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         {
             ifreq   tmp = ifreqs[i];
             if (::ioctl (sd, SIOCGIFHWADDR, &tmp) == 0 and tmp.ifr_hwaddr.sa_family == ARPHRD_ETHER) {
-                newInterface.fHwardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
+                newInterface.fHardwareAddress = PrintMacAddr_ (reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data), reinterpret_cast<const uint8_t*> (tmp.ifr_hwaddr.sa_data) + 6);
             }
         }
 #endif
@@ -330,9 +331,8 @@ Again:
                     newInterface.fBindings.Add (sa.GetInternetAddress ());
                 }
             }
-
             if (currAddresses->PhysicalAddressLength == 6) {
-                newInterface.fHwardwareAddress = PrintMacAddr_ (currAddresses->PhysicalAddress, currAddresses->PhysicalAddress + 6);
+                newInterface.fHardwareAddress = PrintMacAddr_ (currAddresses->PhysicalAddress, currAddresses->PhysicalAddress + 6);
             }
 
 #if     (NTDDI_VERSION >= NTDDI_WIN6)
