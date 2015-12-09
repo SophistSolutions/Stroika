@@ -180,7 +180,7 @@ namespace   Stroika {
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
 #else
                 // try to get this working
-				// https://stroika.atlassian.net/browse/STK-420
+                // https://stroika.atlassian.net/browse/STK-420
                 template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (is_convertible<begin_result<CONTAINER_OF_PAIR_KEY_T>, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or is_convertible<begin_result<CONTAINER_OF_PAIR_KEY_T>, pair<KEY_TYPE, VALUE_TYPE>>::value) and !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
 #endif
