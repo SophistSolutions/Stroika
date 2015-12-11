@@ -475,6 +475,16 @@ String Date::Format (PrintFormat pf) const
 
 String Date::Format (const locale& l) const
 {
+    return Format (l, String_Constant { L"%x" });    // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
+}
+
+String Date::Format (const String& formatPattern) const
+{
+    return Format (locale (), formatPattern);
+}
+
+String Date::Format (const locale& l, const String& formatPattern) const
+{
     if (empty ()) {
         return String ();
     }
@@ -487,14 +497,13 @@ String Date::Format (const locale& l) const
 #if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
     const time_put<char>& tmput = use_facet <time_put<char>> (l);
     ostringstream oss;
-    const char kPattern[] = "%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::strlen (kPattern));
+    string  pattern = formatPattern.AsNarrowSDKString ();
+    tmput.put (oss, oss, ' ', &when, pattern.c_str (), pattern.c_str () + pattern.length ());
     return String::FromNarrowString (oss.str (), l);
 #else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     wostringstream oss;
-    const wchar_t kPattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
 #endif
 }

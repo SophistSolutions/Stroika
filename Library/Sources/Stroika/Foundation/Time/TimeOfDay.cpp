@@ -454,32 +454,37 @@ String TimeOfDay::Format (PrintFormat pf) const
 
 String TimeOfDay::Format (const locale& l) const
 {
+    return Format (l, String_Constant { L"%X" });   // %X locale dependent
+}
+
+String TimeOfDay::Format (const String& formatPattern) const
+{
+    return Format (locale (), formatPattern);
+}
+
+String  TimeOfDay::Format (const locale& l, const String& formatPattern) const
+{
     if (empty ()) {
         return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     // http://en.cppreference.com/w/cpp/locale/time_put/put
-#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
-    const time_put<char>& tmput = use_facet <time_put<char>> (l);
     tm  when {};
     when.tm_hour = GetHours ();
     when.tm_min = GetMinutes ();
     when.tm_sec = GetSeconds ();
+#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
+    const time_put<char>& tmput = use_facet <time_put<char>> (l);
+    string  pattern = formatPattern.AsNarrowSDKString ();
     ostringstream oss;
     //oss.imbue (l);        // not sure if/why needed/not/needed
-    const char kPattern[] = "%X";      // %X locale dependent
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::strlen (kPattern));
+    tmput.put (oss, oss, ' ', &when, pattern.c_str (), pattern.c_str () + pattern.length ());
     return String::FromNarrowString (oss.str (), l);
 #else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
-    tm  when {};
-    when.tm_hour = GetHours ();
-    when.tm_min = GetMinutes ();
-    when.tm_sec = GetSeconds ();
     wostringstream oss;
     //oss.imbue (l);        // not sure if/why needed/not/needed
-    const wchar_t kPattern[] = L"%X";      // %X locale dependent
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
 #endif
 }

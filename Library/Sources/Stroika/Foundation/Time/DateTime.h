@@ -324,9 +324,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  For formatPattern, see http://en.cppreference.com/w/cpp/locale/time_put/put
+                 *  If only formatPattern specified, and no locale, use default (global) locale.
                  */
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
                 nonvirtual  String Format (const locale& l) const;
+                nonvirtual  String Format (const locale& l, const String& formatPattern) const;
+                nonvirtual  String Format (const String& formatPattern) const;
 
 #if     qPlatform_Windows
                 nonvirtual  String Format (LCID lcid) const;

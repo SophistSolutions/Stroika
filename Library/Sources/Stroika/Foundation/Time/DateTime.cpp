@@ -484,6 +484,18 @@ String DateTime::Format (const locale& l) const
         // otherwise we get a 'datetime' of 'XXX ' - with a space at the end
         return GetDate ().Format (l);
     }
+    // Read docs - not sure how to use this to get the local-appropriate format
+    // %X MAYBE just what we want  - locale DEPENDENT!!!
+    return Format (l, String_Constant { L"%x %X" });
+}
+
+String DateTime::Format (const String& formatPattern) const
+{
+    return Format (locale (), formatPattern);
+}
+
+String DateTime::Format (const locale& l, const String& formatPattern) const
+{
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     tm when =   As<struct tm> ();
@@ -491,7 +503,7 @@ String DateTime::Format (const locale& l) const
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
     constexpr wchar_t kPattern_[] = L"%x %X";
-    tmput.put (oss, oss, ' ', &when, std::begin (kPattern_), std::begin (kPattern_) + ::wcslen (kPattern_));
+    tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
 }
 
