@@ -117,6 +117,10 @@ namespace   Stroika {
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
                 : fRep_ { move ((std::begin (data) == std::end (data)) ? move <_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))) } {
             }
+            inline  BLOB::BLOB (const initializer_list<Byte>& bytes)
+                : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
+            {
+            }
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
                 : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
             {

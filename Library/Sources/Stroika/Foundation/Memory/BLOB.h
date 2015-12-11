@@ -104,6 +104,7 @@ namespace   Stroika {
                 BLOB (const Byte* start, const Byte* end);
                 BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
                 BLOB (const initializer_list<BLOB>& list2Concatenate);
+                BLOB (const initializer_list<Byte>& bytes);
 
             protected:
                 struct  _IRep;

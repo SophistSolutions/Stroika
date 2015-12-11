@@ -318,9 +318,13 @@ namespace {
     void    Test_8_BLOB_ ()
     {
         {
-            vector<Byte> b = {1, 2, 3, 4, 5 };
+            vector<Byte> b = { 1, 2, 3, 4, 5 };
             Memory::BLOB bl = b;
             VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+        }
+        {
+            Memory::BLOB bl { 1, 2, 3, 4, 5 };
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == (vector<Byte> {1, 2, 3, 4, 5 }));
         }
     }
 }
