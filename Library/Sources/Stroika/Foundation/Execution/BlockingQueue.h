@@ -119,8 +119,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  If the Q is empty, return an empty Optional<T>, and otherwise the same as Remove(0). Not blocking,
-                 *  and will not timeout.
+                 *  Like RemoveHead() except that on timeout, returns empty Optional<T> instead
+                 *  of throwing.
+                 *
+                 *  If there is an entry at the head of the Q, return it immediately. Wait up til
+                 *  'timeout' seconds for an entry to appear. Return 'issing' value if none appears.
                  *
                  *  Analagous to the java BlockingQueue<T>::poll() method.
                  */

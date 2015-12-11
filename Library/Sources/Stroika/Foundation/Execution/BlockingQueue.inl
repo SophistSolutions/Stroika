@@ -49,13 +49,20 @@ namespace   Stroika {
                     if (tmp.IsPresent ()) {
                         return *tmp;
                     }
-                    fDataAvailable_.Wait (waitTil - Time::GetTickCount ());
+                    fDataAvailable_.WaitUntil (waitTil);
                 }
             }
             template    <typename T>
             inline  Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
-                return fQueue_->RemoveHeadIf ();
+                Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
+                while (true) {
+                    Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ();
+                    if (tmp.IsPresent ()) {
+                        return *tmp;
+                    }
+                    (void)fDataAvailable_.WaitUntilQuietly (waitTil);
+                }
             }
             template    <typename T>
             inline  Memory::Optional<T> BlockingQueue<T>::PeekHead () const
