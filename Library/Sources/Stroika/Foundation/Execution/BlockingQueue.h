@@ -125,7 +125,9 @@ namespace   Stroika {
                  *  If there is an entry at the head of the Q, return it immediately. Wait up til
                  *  'timeout' seconds for an entry to appear. Return 'issing' value if none appears.
                  *
-                 *  Analagous to the java BlockingQueue<T>::poll() method.
+                 *  If timeout == 0 (the default) this amounts to peeking, and never waits.
+                 *
+                 *  Analagous to the java BlockingQueue<T>::poll () method.
                  */
                 nonvirtual  Memory::Optional<T>     RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
 
