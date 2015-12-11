@@ -526,7 +526,7 @@ String Date::Format (LCID lcid) const
     }
 }
 
-String Date::Format (const String& format, LCID lcid) const
+String Date::Format (LCID lcid, const String& format) const
 {
     if (empty ()) {
         return String ();

@@ -359,7 +359,7 @@ namespace   Stroika {
                 nonvirtual  String  Format (const String& formatPattern) const;
 #if     qPlatform_Windows
                 nonvirtual  String  Format (LCID lcid) const;
-                nonvirtual  String  Format (const String& format, LCID lcid = LOCALE_USER_DEFAULT) const;              // See GetDateFormat () format args
+                nonvirtual  String  Format (LCID lcid, const String& format) const;              // See GetDateFormat () format args
 #endif
 
 #if     qPlatform_Windows
