@@ -57,11 +57,12 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ();
-                    if (tmp.IsPresent ()) {
-                        return *tmp;
+                    if (Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ()) {
+                        return tmp;
                     }
-                    (void)fDataAvailable_.WaitUntilQuietly (waitTil);
+                    if (not fDataAvailable_.WaitUntilQuietly (waitTil)) {
+                        return Memory::Optional<T> ();      // on timeout, return 'missing'
+                    }
                 }
             }
             template    <typename T>
