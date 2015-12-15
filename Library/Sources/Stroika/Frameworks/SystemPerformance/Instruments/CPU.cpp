@@ -11,6 +11,7 @@
 
 #include    "../../../Foundation/Characters/FloatConversion.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
+#include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/ErrNoException.h"
@@ -563,6 +564,11 @@ namespace {
 #if     qUseWMICollectionSupport_
             fSystemWMICollector_.Collect ();
             fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
+            if (result.fRunQLength) {
+                // RunQLenth counts running threads, but kProcessorQueueLength_ does not
+                static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
+                result.fRunQLength += result.fTotalProcessCPUUsage * kCPUCoreCount_;
+            }
 #endif
             NoteCompletedCapture_ ();
             return result;

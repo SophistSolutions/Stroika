@@ -79,6 +79,12 @@ namespace   Stroika {
                          *
                          *  This is essentially the same as the UNIX 'load average' concept, except that the time frame
                          *  is not 1/5/15 minutes, but the time frame over which you've sampled.
+                         *
+                         *  \note   This is not scaled to the number of CPUs, so a load average of 4 on a 4 CPU system is like
+                         *          a load average of 1 on a 1 CPU system.
+                         *
+                         *  \note   This is very simalar to Windows System \ Processor Queue Length, except that that doesnt take
+                         *          into account running threads, and fRunQLength does.
                          */
                         Optional<double>    fRunQLength {};
                     };
