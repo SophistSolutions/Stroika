@@ -24,6 +24,14 @@
  *      @todo   Consider making fTotalProcessCPUUsage and fTotalCPUUsage from Info struct - 0..N where N is numebr of CPUs.
  *              Reason is just for consistency sake with data returned in Process  module. OR - make the inverse
  *              change there? But it would be better if these were consistent.
+ *
+ *      @todo   GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () is cached on Linux, but CAN change while running (crazy - right?)
+ *              But so rare and so costly to recompute. Find a way to compromise.
+ *              MAYBE the issue is differnt - hot plug cpu - CPU online/offline. Maybe total cannot change, but just number
+ *              online?
+ *
+ *              @see /sys/devices/system/cpu/online
+ *              @see https://www.kernel.org/doc/Documentation/cpu-hotplug.txt
  */
 
 
@@ -71,20 +79,27 @@ namespace   Stroika {
                         double  fTotalCPUUsage {};
 
                         /**
-                         *  This is the average number of threads waiting in the run-q (status runnable). If the system is not busy, it
-                         *  should be zero. When more than 4 or 5 (depends alot on system) - performance maybe degraded.
+                         *  This is the average number of threads waiting in the run-q (status runnable) / number of logical cores.
+                         *  If the system is not busy, it should be zero. When more than 4 or 5 (depends alot on system) - performance maybe degraded.
                          *
-                         *  \note   On some systems, load average includes threads in disk wait. We try to avoid that, but depend
+                         *  \note   On some systems, this may included threads in disk wait. We try to avoid that, but depend
                          *          on low level data, and may not be able to avoid it.
                          *
                          *  This is essentially the same as the UNIX 'load average' concept, except that the time frame
-                         *  is not 1/5/15 minutes, but the time frame over which you've sampled.
+                         *  is not 1/5/15 minutes, but the time frame over which you've sampled, and that we normalize the result
+                         *  to be if we had a single CPU core.
                          *
-                         *  \note   This is not scaled to the number of CPUs, so a load average of 4 on a 4 CPU system is like
-                         *          a load average of 1 on a 1 CPU system.
+                         *  \note   This is scaled to the number of CPUs, so a load average of 4 on a 4 CPU system is like
+                         *          would produce a 'RunQLength' of 1.
                          *
-                         *  \note   This is very simalar to Windows System \ Processor Queue Length, except that that doesnt take
+                         *  \note   This is very similar to Windows System \ Processor Queue Length, except that that doesnt take
                          *          into account running threads, and fRunQLength does.
+                         *
+                         *  \note   We chose to define this differntly than 'windows Processor Queue Length' and UNIX 'loadave' so that
+                         *          o   Same def on UNIX/Windows
+                         *          o   Largely independent measure of CPU load regardless of how many logical cores machine has
+                         *              (0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and
+                         *              each core with a Q length of 1).
                          */
                         Optional<double>    fRunQLength {};
                     };

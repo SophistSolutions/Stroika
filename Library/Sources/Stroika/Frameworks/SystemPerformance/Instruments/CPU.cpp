@@ -257,7 +257,6 @@ namespace {
 #endif
                     runQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
                 }
-
                 result = CPUUsageTimes_ {
                     static_cast<double> (pcpuNumerator) / static_cast<double> (total),
                     1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total),
@@ -291,6 +290,11 @@ namespace {
             result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
             result.fTotalCPUUsage = tmp.fTotalCPUUsage;
             result.fRunQLength = tmp.fRunQLength;
+            if (result.fRunQLength) {
+                // RunQLength normalized so 1 is all available cores
+                static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
+                result.fRunQLength /= kCPUCoreCount_;
+            }
 #if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             result.fLoadAverage = tmp.fLoadAverage;
 #endif
@@ -477,6 +481,8 @@ namespace {
                 if (lr == 3) {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
                     result.fRunQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
+                    static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
+                    result.fRunQLength /= kCPUCoreCount_;   // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
@@ -565,9 +571,7 @@ namespace {
             fSystemWMICollector_.Collect ();
             fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
-                // RunQLenth counts running threads, but kProcessorQueueLength_ does not
-                static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
-                result.fRunQLength += result.fTotalProcessCPUUsage * kCPUCoreCount_;
+                result.fRunQLength += result.fTotalProcessCPUUsage; // both normalized so '1' means all logical cores
             }
 #endif
             NoteCompletedCapture_ ();
