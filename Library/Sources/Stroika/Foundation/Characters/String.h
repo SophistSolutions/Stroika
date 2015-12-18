@@ -565,7 +565,7 @@ namespace   Stroika {
                  *  Produce a substring of this string, starting at 'from', and up to 'to' (or end of string
                  *  for one-arg overload).
                  *
-                 *  *NB* This function treats the second argument differntly than String::substr () -
+                 *  *NB* This function treats the second argument differently than String::substr () -
                  *  which respects the STL basic_string API. This function treats the second argument
                  *  as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
                  *  very common cases of substr(N) - because second argument is defaulted, and,

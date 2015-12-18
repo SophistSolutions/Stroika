@@ -95,7 +95,7 @@ namespace   Stroika {
                          *  \note   This is very similar to Windows System \ Processor Queue Length, except that that doesnt take
                          *          into account running threads, and fRunQLength does.
                          *
-                         *  \note   We chose to define this differntly than 'windows Processor Queue Length' and UNIX 'loadave' so that
+                         *  \note   We chose to define this differently than 'windows Processor Queue Length' and UNIX 'loadave' so that
                          *          o   Same def on UNIX/Windows
                          *          o   Largely independent measure of CPU load regardless of how many logical cores machine has
                          *              (0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and
