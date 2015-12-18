@@ -276,9 +276,8 @@ sub	SetDefaultForCompilerDriver_
 			}
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '5.3') {
 				#This is broken in gcc 5.2
-				$CWARNING_FLAGS = $CWARNING_FLAGS . "-Wno-odr"
+				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . "-Wno-odr"
 			}
-
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG;
