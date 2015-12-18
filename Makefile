@@ -31,6 +31,7 @@ help:
 	@$(ECHO) "    check-tools:                 -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
+	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
 
 
 all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
