@@ -99,7 +99,7 @@ $(ZIPEDFILE):
 
 
 check_prerequisites_:
-	@(type 7za > /dev/null) || (../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools...Missing 7za") && exit 1;
+	@{ type 7za > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools...Missing 7za" && exit 1; }
 
 
 doCreate:	$(ZIPEDFILE)
