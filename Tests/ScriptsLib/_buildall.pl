@@ -50,7 +50,7 @@ if (index($projectPlatformSubdir, "VisualStudio") == -1) {
 	foreach $tst (GetAllTests ()) {
 		my $tstName = GetTestName ($tst);
 		print ($subLevelLeader . "Test $tst: $tstName; $useBld...\n");
-		$exit_status = system ("cd Test$tst; make -s $useBld CONFIGURATION=$activeConfig ECHO_BUILD_LINES=$ECHO_BUILD_LINES MAKE_INDENT_LEVEL=$subSubLevel\n");
+		$exit_status = system ("cd Test$tst && make -s $useBld CONFIGURATION=$activeConfig ECHO_BUILD_LINES=$ECHO_BUILD_LINES MAKE_INDENT_LEVEL=$subSubLevel\n");
 		if ($exit_status != 0) {
 			die("Stopping build: failed");
 		}

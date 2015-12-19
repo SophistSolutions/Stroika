@@ -54,7 +54,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clean
+	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clean 2> /dev/null || true
 else
 	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl clean
 endif
@@ -68,7 +68,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clobber
+	@$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clobber 2> /dev/null || true
 else
 	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl clobber
 endif
