@@ -59,7 +59,7 @@ delete $ENV{'MAKEFLAGS'};
 
 my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 
-print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/ActiveLedIt...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/ActiveLedIt...\n");
 my $extraArgs = GetMSBuildArgs();
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32") {
 	RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs ActiveLedIt.vcxproj /p:$curConfig /target:$useBld");

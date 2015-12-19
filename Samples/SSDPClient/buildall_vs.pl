@@ -57,7 +57,7 @@ my $useBld = NormalizeBuildArg ($ARGV[0]);
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 
-print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SSDPClient...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/SSDPClient...\n");
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64") {
 	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 	my $extraArgs = GetMSBuildArgs();

@@ -56,7 +56,7 @@ my $level = $ENV{'MAKE_INDENT_LEVEL'};
 
 
 
-print(`../../ScriptsLib/PrintLevelLeader.sh $level` . "Building Samples/SystemPerformanceClient...\n");
+print(`../../ScriptsLib/PrintLevelLeader.sh $level` . $useBld . "ing Samples/SystemPerformanceClient...\n");
 if ($activeConfig eq "Debug-U-32" || $activeConfig eq "Release-U-32" || $activeConfig eq "Debug-U-64" || $activeConfig eq "Release-U-64" || $activeConfig eq "Release-Logging-U-64") {
 	my $curConfig	=	`../../ScriptsLib/GetVisualStudioConfigLine.pl $activeConfig`;
 	my $extraArgs = GetMSBuildArgs();

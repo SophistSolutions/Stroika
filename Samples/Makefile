@@ -79,7 +79,7 @@ ifeq ($(CONFIGURATION),)
 else
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall.pl clean);\
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clean);\
 	done
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -93,7 +93,7 @@ endif
 clobber:	clean
 	@#skip cuz submnakefiles dont work
 	@#for SUBPROJ in $(SUBPROJECTS) ; do 
-	@#	(MAKEFLAGS= && cd $$SUBPROJ && perl buildall.pl clobber);
+	@#	(MAKEFLAGS= && cd $$SUBPROJ && perl buildall_vs.pl Clobber);
 	@#done	
 
 
