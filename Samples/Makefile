@@ -84,7 +84,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION);\
+		$(MAKE) --directory ../IntermediateFiles/$(CONFIGURATION)/Samples_$$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
 endif
 endif
