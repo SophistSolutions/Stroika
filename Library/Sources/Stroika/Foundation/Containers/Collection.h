@@ -132,7 +132,7 @@ namespace   Stroika {
 #if 1
                 // try to get this working
                 // https://stroika.atlassian.net/browse/STK-420
-                template < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and is_convertible<typename begin_result<CONTAINER_OF_T>::value_type, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
+                template < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_T>::value_type, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
                 Collection (const CONTAINER_OF_T& src);
 #else
                 template < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
