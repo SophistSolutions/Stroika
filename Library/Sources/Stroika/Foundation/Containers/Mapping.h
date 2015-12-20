@@ -172,18 +172,8 @@ namespace   Stroika {
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                Mapping (const map<KEY_TYPE, VALUE_TYPE>& src);
-                template    <typename TRAITS2>
-                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
-#if 1
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
-                explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
-#else
-                // try to get this working
-                // https://stroika.atlassian.net/browse/STK-420
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (is_convertible<begin_result<CONTAINER_OF_PAIR_KEY_T>, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or is_convertible<begin_result<CONTAINER_OF_PAIR_KEY_T>, pair<KEY_TYPE, VALUE_TYPE>>::value) and !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>::value_type, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
-#endif
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
