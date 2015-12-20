@@ -47,14 +47,6 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const vector<T>& src)
-                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
-            {
-                _AssertRepValidType ();
-                AppendAll (src);
-                _AssertRepValidType ();
-            }
-            template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
