@@ -22,7 +22,9 @@ History
 	<ul>
 		<li>TODO</li>
 		<li>NOTE - dnagerous not backward compat - change on Date::Format (String format,LCID OPT PARAM) -> Date::Format (LCID,String) - so
-		ew Date::Format(String) we effectively re-interpet as meaning STDC++ API for format strings instead of Windows LCID (in both case curent localeish)</li>
+			ew Date::Format(String) we effectively re-interpet as meaning STDC++ API for format strings instead of Windows LCID (in both case curent localeish)
+		</li>
+		<li>https://stroika.atlassian.net/browse/STK-420</li>
 	</ul>
 </td>
 </tr>
