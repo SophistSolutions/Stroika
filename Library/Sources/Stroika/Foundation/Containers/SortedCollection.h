@@ -21,14 +21,9 @@
  *
  *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
- *
  *      @todo   Support Iterable<>::Where overload?
  *
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
- *
- *      @todo   Fixup constructors (templated by value and iterator ctors)
  *
  *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.
  *
@@ -132,6 +127,7 @@ namespace   Stroika {
                  */
                 SortedCollection ();
                 SortedCollection (const SortedCollection<T, TRAITS>& src);
+                SortedCollection (SortedCollection<T, TRAITS>&& src);
                 SortedCollection (const std::initializer_list<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_T>::value_type, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value >::type >
                 SortedCollection (const CONTAINER_OF_T& src);
