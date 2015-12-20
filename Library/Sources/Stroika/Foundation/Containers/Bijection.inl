@@ -189,12 +189,12 @@ namespace   Stroika {
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (DomainType key) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (ArgByValueType<DomainType> key) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (RangeType v) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (ArgByValueType<RangeType> v) const
             {
                 // REIMPLEMENT USING InverseLookup()!!! @todo
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
@@ -206,12 +206,12 @@ namespace   Stroika {
                 return false;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (DomainType key, RangeType newElt)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (key, newElt);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (pair<DomainType, RangeType> p)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (const pair<DomainType, RangeType>& p)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (p.first, p.second);
             }

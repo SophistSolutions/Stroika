@@ -177,7 +177,7 @@ namespace   Stroika {
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
                 Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-				template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
                 Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -313,13 +313,13 @@ namespace   Stroika {
                 /**
                  *  Synonym for (Lookup (v).IsPresent ()) or Preimage ().Contains (v)
                  */
-                nonvirtual  bool    ContainsDomainElement (DomainType key) const;
+                nonvirtual  bool    ContainsDomainElement (ArgByValueType<DomainType> key) const;
 
             public:
                 /**
                  *  Synonym for (InverseLookup (v).IsPresent ()) or Image ().Contains (v)
                  */
-                nonvirtual  bool    ContainsRangeElement (RangeType v) const;
+                nonvirtual  bool    ContainsRangeElement (ArgByValueType<RangeType> v) const;
 
             public:
                 /**
@@ -328,9 +328,9 @@ namespace   Stroika {
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
-                nonvirtual  void    Add (DomainType key, RangeType newElt);
-                nonvirtual  void    Add (pair<DomainType, RangeType> p);
-                template    < typename KEYVALUEPAIR, typename ENABLE_IF_TEST = typename enable_if < !is_convertible<const KEYVALUEPAIR&, pair<DomainType, RangeType>>::value, void >::type >
+                nonvirtual  void    Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
+                nonvirtual  void    Add (const pair<DomainType, RangeType>& p);
+                template    < typename KEYVALUEPAIR, typename ENABLE_IF_TEST = typename enable_if < !is_convertible<KEYVALUEPAIR, pair<DomainType, RangeType>>::value >::type >
                 nonvirtual  void    Add (KEYVALUEPAIR p);
 
             public:
