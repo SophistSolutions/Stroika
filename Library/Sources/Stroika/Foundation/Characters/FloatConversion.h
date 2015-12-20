@@ -49,7 +49,7 @@ namespace   Stroika {
              *  Precision (here) is defined to be the number of significant digits (including before and after decimal point).
              *
              *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
-             *  by deafult.
+             *  by default.
              *
              *  Float2String () maps NAN valeus to the string "NAN", and negative infinite values to "-INF", and positive infinite
              *  values to "INF".
