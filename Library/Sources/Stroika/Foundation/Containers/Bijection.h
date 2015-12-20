@@ -9,6 +9,7 @@
 #include    <utility>
 
 #include    "../Common/Compare.h"
+#include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Execution/Synchronized.h"
@@ -177,7 +178,8 @@ namespace   Stroika {
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
                 Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
+                //template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value or std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, Common:KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
                 Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
