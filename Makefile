@@ -313,5 +313,5 @@ regression-test-configurations:
 		./configure clang++-3.5-debug --compiler-driver clang++-3.5 --assertions enable --trace2file enable;\
 		./configure clang++-3.6-debug --compiler-driver clang++-3.6 --assertions enable --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
-		./configure DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC--openssl use --openssl-extraargs purify --block-allocation disable;\
+		./configure DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable;\
 	fi
