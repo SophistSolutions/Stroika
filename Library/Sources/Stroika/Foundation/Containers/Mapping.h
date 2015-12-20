@@ -171,7 +171,7 @@ namespace   Stroika {
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>::value_type, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
