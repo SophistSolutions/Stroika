@@ -293,6 +293,7 @@ default-configurations:
 
 regression-test-configurations:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making regression-test configurations...
+	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable;\
