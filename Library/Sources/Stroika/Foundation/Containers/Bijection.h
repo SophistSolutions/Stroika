@@ -263,10 +263,10 @@ namespace   Stroika {
                  *  @see   InverseLookup ()
                  *  @see   InverseLookupValue ()
                  */
-                nonvirtual  Memory::Optional<RangeType> Lookup (DomainType key) const;
-                nonvirtual  bool                        Lookup (DomainType key, Memory::Optional<RangeType>* item) const;
-                nonvirtual  bool                        Lookup (DomainType key, RangeType* item) const;
-                nonvirtual  bool                        Lookup (DomainType key, nullptr_t) const;
+                nonvirtual  Memory::Optional<RangeType> Lookup (ArgByValueType<DomainType> key) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<DomainType> key, RangeType* item) const;
+                nonvirtual  bool                        Lookup (ArgByValueType<DomainType> key, nullptr_t) const;
 
             public:
                 /**
@@ -276,7 +276,7 @@ namespace   Stroika {
                  *  @see   InverseLookup ()
                  *  @see   InverseLookupValue ()
                  */
-                nonvirtual  RangeType   LookupValue (DomainType key, RangeType defaultValue = RangeType ()) const;
+                nonvirtual  RangeType   LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue = RangeType ()) const;
 
             public:
                 /**
@@ -294,10 +294,10 @@ namespace   Stroika {
                  *  @see   LookupValue ()
                  *  @see   InverseLookupValue ()
                  */
-                nonvirtual  Memory::Optional<DomainType>    InverseLookup (RangeType key) const;
-                nonvirtual  bool                            InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const;
-                nonvirtual  bool                            InverseLookup (RangeType key, DomainType* item) const;
-                nonvirtual  bool                            InverseLookup (RangeType key, nullptr_t) const;
+                nonvirtual  Memory::Optional<DomainType>    InverseLookup (ArgByValueType<RangeType> key) const;
+                nonvirtual  bool                            InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const;
+                nonvirtual  bool                            InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const;
+                nonvirtual  bool                            InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const;
 
             public:
                 /**
@@ -307,7 +307,7 @@ namespace   Stroika {
                  *  @see   LookupValue ()
                  *  @see   InverseLookup ()
                  */
-                nonvirtual  DomainType   InverseLookupValue (RangeType key, DomainType defaultValue = DomainType ()) const;
+                nonvirtual  DomainType   InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue = DomainType ()) const;
 
             public:
                 /**
@@ -350,13 +350,13 @@ namespace   Stroika {
                 /**
                  *  This removes any mapping from 'd' to anything. It is not an error if 'd' isn not already in the domain.
                  */
-                nonvirtual  void    RemoveDomainElement (DomainType d);
+                nonvirtual  void    RemoveDomainElement (ArgByValueType<DomainType> d);
 
             public:
                 /**
                  *  This removes any mapping from anything to 'r'. It is not an error if 'r' isn not already in the range.
                  */
-                nonvirtual  void    RemoveRangeElement (RangeType r);
+                nonvirtual  void    RemoveRangeElement (ArgByValueType<RangeType> r);
 
             public:
                 /**

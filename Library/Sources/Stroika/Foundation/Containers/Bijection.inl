@@ -111,7 +111,7 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Image ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, RangeType* item) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, RangeType* item) const
             {
                 if (item == nullptr) {
                     return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
@@ -126,12 +126,12 @@ namespace   Stroika {
                 }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, Memory::Optional<RangeType>* item) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key) const
+            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key) const
             {
                 Memory::Optional<RANGE_TYPE>   r;
                 bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
@@ -139,18 +139,18 @@ namespace   Stroika {
                 return r;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, nullptr_t) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (ArgByValueType<DomainType> key, nullptr_t) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (DomainType key, RangeType defaultValue) const
+            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue) const
             {
                 Memory::Optional<RANGE_TYPE>   r    =   Lookup (key);
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, DomainType* item) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const
             {
                 if (item == nullptr) {
                     return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, nullptr);
@@ -165,12 +165,12 @@ namespace   Stroika {
                 }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, item);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Memory::Optional<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key) const
+            inline  Memory::Optional<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key) const
             {
                 Memory::Optional<DOMAIN_TYPE>   r;
                 bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, &r);
@@ -178,12 +178,12 @@ namespace   Stroika {
                 return r;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, nullptr_t) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().InverseLookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  DOMAIN_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (RangeType key, DomainType defaultValue) const
+            inline  DOMAIN_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue) const
             {
                 Memory::Optional<DOMAIN_TYPE>   r    =   InverseLookup (key);
                 return r.IsPresent () ? *r : defaultValue;
@@ -241,12 +241,12 @@ namespace   Stroika {
                 AddAll (std::begin (items), std::end (items));
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveDomainElement (DomainType d)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveDomainElement (ArgByValueType<DomainType> d)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveDomainElement (d);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveRangeElement (RangeType r)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveRangeElement (ArgByValueType<RangeType> r)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().RemoveRangeElement (r);
             }
