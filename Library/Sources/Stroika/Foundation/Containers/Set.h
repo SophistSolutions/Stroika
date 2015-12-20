@@ -6,8 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <set>
-
 #include    "../Configuration/Common.h"
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
@@ -149,9 +147,8 @@ namespace   Stroika {
                 Set (const Set<T, TRAITS>& src);
                 Set (Set<T, TRAITS>&& src);
                 Set (const initializer_list<T>& src);
-                Set (const set<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set<T, TRAITS> *>::value >::type >
-                explicit Set (const CONTAINER_OF_T& src);
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_T>::value_type, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T, TRAITS>*>::value >::type >
+                Set (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

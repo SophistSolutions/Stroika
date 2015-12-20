@@ -21,8 +21,7 @@
  *
  *
  *  TODO:
- *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
- *              concepts and that it USES that for the appropriate overloaded constructors.
+ *      @todo   Add MOVE CTOR
  *
  *      @todo   Add AddAll()  for now - that creates a temporary stack to revserse. But then use
  *              enable_if - to check if you can create reverse iterator, and then use that to go backwards?
@@ -93,13 +92,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naieve interpreation of above
+                 *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
                 Stack (const Stack<T>& src);
-                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
-                explicit Stack (const CONTAINER_OF_T& src);
+                template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value and std::is_convertible<typename Configuration::begin_result<CONTAINER_OF_T>::value_type, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
+                Stack (const CONTAINER_OF_T& src);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

@@ -6,8 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <map>
-
 #include    "../Common/Compare.h"
 #include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Common.h"
@@ -166,7 +164,8 @@ namespace   Stroika {
                  *  This constructor creates a concrete mapping object, either empty, or initialized with any argument
                  *  values.
                  *
-                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
+                 *  The underlying data structure (and performance characteristcs) of the Mapping is
+                 *  defined by @see Concrete::Mapping_Factory<>
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
