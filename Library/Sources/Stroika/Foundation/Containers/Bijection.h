@@ -183,7 +183,8 @@ namespace   Stroika {
                 // @see https://stroika.atlassian.net/browse/STK-422
                 // TRY to get this working, but some ambiguity - maybe with pair/KeyValuePair - when converting from map<int,int> to Bijection<size_t,size_t>
                 //
-                //template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and (std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value or std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, Common:KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
+                // TRY
+                template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<DOMAIN_TYPE, RANGE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
 #else
                 template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value >::type >
 #endif
