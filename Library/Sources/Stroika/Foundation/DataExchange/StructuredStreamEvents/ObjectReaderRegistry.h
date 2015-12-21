@@ -238,8 +238,8 @@ namespace   Stroika {
                      *  But the APIs in the ObjectReaderRegistry require factories, and this utility function constructs
                      *  a factory from the given READER class template parameter.
                      */
-                    template    <typename T, typename READER>
-                    static  auto    ConvertReaderToFactory () -> ObjectReaderRegistry::ReaderFromVoidStarFactory;
+                    template    <typename T, typename READER, typename... ARGS>
+                    static  auto    ConvertReaderToFactory (ARGS&& ... args) -> ObjectReaderRegistry::ReaderFromVoidStarFactory;
 
                 public:
                     /**
