@@ -120,15 +120,21 @@ namespace   Stroika {
             /**
              *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absense) for vs2k13
              */
+            namespace Private_ {
+                template    <
+                    typename ITERABLE_OF_T,
+                    typename T,
+                    typename ITER_RESULT_TYPE = begin_result<ITERABLE_OF_T>,
+                    typename T2 = typename enable_if <
+                        has_beginend<ITERABLE_OF_T>::value and
+                        std::is_convertible<typename std::iterator_traits<ITER_RESULT_TYPE>::value_type, T>::value
+                        >::type
+                    >
+                struct  IsIterableOfT_ : substitution_succeeded <T2> {
+                };
+            }
             template    <typename ITERABLE_OF_T, typename T>
-            struct  IsIterableOfT :
-                    substitution_succeeded <
-                    typename enable_if <
-                    has_beginend<ITERABLE_OF_T>::value and
-                    std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value
-                            >::type
-                            > {
-            };
+            using  IsIterableOfT = Private_::IsIterableOfT_ <ITERABLE_OF_T, T>;
 
 
             /**
