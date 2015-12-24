@@ -918,6 +918,8 @@ namespace   Stroika {
              *          only passes in to pass class appropraitely typed objects, and just use that type in
              *          your _SafeReadRepAccessor<> use, you should be safe.
              *
+             *  @see _SafeReadWriteRepAccessor
+             *
              *  <<<DOCS_OBSOLETE_AS_OF_2015-12-24>>>
              *      EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
              *
@@ -932,9 +934,6 @@ namespace   Stroika {
             template    <typename T>
             template    <typename REP_SUB_TYPE>
             class   Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock>  {
-            private:
-                const REP_SUB_TYPE*     fConstRef_;
-
             public:
                 _SafeReadRepAccessor () = delete;
                 _SafeReadRepAccessor (const _SafeReadRepAccessor&) = default;
@@ -946,27 +945,31 @@ namespace   Stroika {
 
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+
+            private:
+                const REP_SUB_TYPE*     fConstRef_;
             };
 
 
-
             /**
-             * &&& MOPVE HERE FOR NOW - BUT HTEN REDO BASE _SafeReadRepAccessor
+             *  _SafeReadWriteRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+             *  'this' object, and captures a writable to the internal 'REP'.
+             *
+             *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedLock,
+             *  so that IF this object is accessed illegally by other threads while in use (this use), it will
+             *  be caught.
+             *
+             *  @see _SafeReadRepAccessor
+             *
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
-            class   Iterable<T>::_SafeReadWriteRepAccessor  {
-            private:
-                Iterable<T>*        fIterableEnvelope_;
-                REP_SUB_TYPE&       fRef_;
-
+            class   Iterable<T>::_SafeReadWriteRepAccessor  : private lock_guard<const Debug::AssertExternallySynchronizedLock> {
             public:
                 _SafeReadWriteRepAccessor () = delete;
-                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = delete;
+                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = default;
+                _SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from);
                 _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
-
-            public:
-                ~_SafeReadWriteRepAccessor ();
 
             public:
                 nonvirtual  _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
@@ -979,10 +982,11 @@ namespace   Stroika {
 
             public:
                 nonvirtual  void    _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
+
+            private:
+                Iterable<T>*    fIterableEnvelope_;
+                REP_SUB_TYPE*   fRepReference_;
             };
-
-
-
 
 
             /**
