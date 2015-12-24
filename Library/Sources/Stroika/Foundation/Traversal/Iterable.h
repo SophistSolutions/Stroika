@@ -265,7 +265,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Iterable : public IterableBase, private Debug::AssertExternallySynchronizedLock {
+            class   Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
             public:
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
