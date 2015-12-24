@@ -902,6 +902,14 @@ namespace   Stroika {
              *  so that IF this object is accessed illegally by other threads while in use (this use), it will
              *  be caught.
              *
+             *  \note   _SafeReadRepAccessor also provides type safety, in that you template in the subtype
+             *          of the REP object, and we store a single pointer, but cast to the appropriate subtype.
+             *
+             *          This supports type safe useage because in DEBUG builds we check (AssertMember)
+             *          the dynamic type, and if you strucutre your code to assure a given type (say Collection<T>)
+             *          only passes in to pass class appropraitely typed objects, and just use that type in
+             *          your _SafeReadRepAccessor<> use, you should be safe.
+             *
              *  <<<DOCS_OBSOLETE_AS_OF_2015-12-24>>>
              *      EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
              *
