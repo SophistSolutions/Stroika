@@ -56,23 +56,34 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *************** Iterable<T>::_SafeReadRepAccessor ******************************
+             ******************* Iterable<T>::_SafeReadRepAccessor **************************
              ********************************************************************************
              */
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
-                : fConstRef_ (*static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
+                : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
+                , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
             {
                 RequireNotNull (it);
-                EnsureMember (&fConstRef_, REP_SUB_TYPE);
+                EnsureMember (fConstRef_, REP_SUB_TYPE);
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& from)
+                : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
+                , fConstRef_ (from.fConstRef_)
+            {
+                RequireNotNull (fConstRef_);
+                EnsureMember (fConstRef_, REP_SUB_TYPE);
+                from.fConstRef_ = nullptrl
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
             inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
             {
-                EnsureMember (&fConstRef_, REP_SUB_TYPE);
-                return fConstRef_;
+                EnsureMember (fConstRef_, REP_SUB_TYPE);
+                return *fConstRef_;
             }
 
 

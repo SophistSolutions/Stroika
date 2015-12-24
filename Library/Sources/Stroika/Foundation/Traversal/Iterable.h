@@ -880,9 +880,6 @@ namespace   Stroika {
                 nonvirtual  _ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
 
             protected:
-                /**
-                 *  EXPERIMENTAL -- LGP 2014-02-21
-                 */
                 template <typename REP_SUB_TYPE = _IRep>
                 class   _SafeReadRepAccessor;
 
@@ -895,24 +892,34 @@ namespace   Stroika {
 
 
             /**
-             *  EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
-             *
              *  _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
-             *  'this' object, and makes a copy incrementing the reference count, and the caller accesses the
-             *  rep through the copied/bumped reference.
+             *  'this' object, and captures a const reference to the internal 'REP'.
              *
-             *  This assures that if another thread assigns to *this, that has no corruption effect on this
-             *  operation/method running on the prior '*this' object.
+             *  For DEBUGGING (catching races) purposes, it also locks the Debug::AssertExternallySynchronizedLock,
+             *  so that IF this object is accessed illegally by other threads while in use (this use), it will
+             *  be caught.
+             *
+             *  <<<DOCS_OBSOLETE_AS_OF_2015-12-24>>>
+             *      EXPERIMENTAL -- LGP 2014-02-21 - 2.0a22
+             *
+             *      _SafeReadRepAccessor is used by Iterable<> subclasses to assure threadsafety. It takes the
+             *      'this' object, and makes a copy incrementing the reference count, and the caller accesses the
+             *      rep through the copied/bumped reference.
+             *
+             *      This assures that if another thread assigns to *this, that has no corruption effect on this
+             *      operation/method running on the prior '*this' object.
+             *  <<</DOCS_OBSOLETE_AS_OF_2015-12-24>>>
              */
             template    <typename T>
             template    <typename REP_SUB_TYPE>
-            class   Iterable<T>::_SafeReadRepAccessor  {
+            class   Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock>  {
             private:
-                const REP_SUB_TYPE& fConstRef_;
+                const REP_SUB_TYPE*     fConstRef_;
 
             public:
                 _SafeReadRepAccessor () = delete;
                 _SafeReadRepAccessor (const _SafeReadRepAccessor&) = default;
+                _SafeReadRepAccessor (_SafeReadRepAccessor&& from);
                 _SafeReadRepAccessor (const Iterable<T>* it);
 
             public:
