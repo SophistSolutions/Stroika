@@ -64,10 +64,15 @@ namespace   Stroika {
              *  \par Example Usage
              *      \code
              *      struct foo : private Debug::AssertExternallySynchronizedLock {
-             *          inline  void    DoStuffOnData ()
+             *          inline  void    DoReadWriteStuffOnData ()
              *          {
              *              lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-             *              // now do what you usually do for DOStuffOnData...
+             *              // now do what you usually do for to modify locked data...
+             *          }
+             *          inline  void    DoReadOnlyStuffOnData ()
+             *          {
+             *              shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+             *              // now do what you usually do for DoReadOnlyStuffOnData - reading data only...
              *          }
              *      };
              *      \endcode
