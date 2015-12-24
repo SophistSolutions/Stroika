@@ -415,8 +415,8 @@ String URL::GetFullURL () const
 
     if (not fHost_.empty ()) {
         result += String_Constant (L"//") + fHost_;
-        if (fPort_.IsPresent () and * fPort_ != GetDefaultPortForScheme (fProtocol_)) {
-            result += Format (L":%d", fPort_);
+        if (fPort_.IsPresent () and fPort_ != GetDefaultPortForScheme (fProtocol_)) {
+            result += Format (L":%d", *fPort_);
         }
         result += String_Constant (L"/");
     }
