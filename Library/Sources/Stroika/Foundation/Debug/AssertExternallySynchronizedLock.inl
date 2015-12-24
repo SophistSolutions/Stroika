@@ -22,51 +22,79 @@ namespace   Stroika {
              *************** Debug::AssertExternallySynchronizedLock ************************
              ********************************************************************************
              */
-            inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ()
-#if     qDebug && !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                : fLock_ (ATOMIC_FLAG_INIT)
-#endif
-            {
-#if     qDebug && qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                fLock_.clear (std::memory_order_release);   // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
-#endif
-            }
             inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src)
                 : AssertExternallySynchronizedLock ()
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };
-                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };    // to copy, the src can have shared_locks, but no (write) locks
             }
             inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src)
                 : AssertExternallySynchronizedLock ()
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };
-                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                Require (src.fLocks_ == 0 and src.fSharedLocks_ == 0);  // to move, the src can have no locks of any kind (since we change src)
             }
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
-                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };    // to copy, the src can have shared_locks, but no (write) locks
+                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };  // We must not have any locks going to replace this
                 return *this;
             }
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock && rhs)
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };
-                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };
+                Require (rhs.fLocks_ == 0 and rhs.fSharedLocks_ == 0);  // to move, the rhs can have no locks of any kind (since we change rhs)
                 return *this;
             }
             inline  void    AssertExternallySynchronizedLock::lock () const
             {
 #if     qDebug
-                if (fLock_.test_and_set (std::memory_order_acquire)) {
-                    AssertNotReached ();
+                if (fLocks_++ == 0) {
+                    if (fSharedLocks_ == 0) {
+                        // If first time in, save thread-id
+                        fCurThread_ = this_thread::get_id ();
+                    }
+                    else {
+                        // If first already shared locks - OK - so long as same thread
+                        Require (fCurThread_ == this_thread::get_id ());
+                    }
+                }
+                else {
+                    // If first already locks - OK - so long as same thread
+                    Require (fCurThread_ == this_thread::get_id ());
                 }
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock () const
             {
 #if     qDebug
-                fLock_.clear (std::memory_order_release);
+                Require (fCurThread_ == this_thread::get_id ());
+                Require (fLocks_ > 0);  // else unbalanced
+                --fLocks_;
+#endif
+            }
+            inline  void    AssertExternallySynchronizedLock::lock_shared () const
+            {
+#if     qDebug
+                if (fSharedLocks_++ == 0) {
+                    if (fLocks_ == 0) {
+                        // If first time in, save thread-id
+                        fCurThread_ = this_thread::get_id ();
+                    }
+                    else {
+                        // If first already locks - OK - so long as same thread
+                        Require (fCurThread_ == this_thread::get_id ());
+                    }
+                }
+                else {
+                    // If first already locks - OK - so long as same thread
+                    Require (fCurThread_ == this_thread::get_id ());
+                }
+#endif
+            }
+            inline  void    AssertExternallySynchronizedLock::unlock_shared () const
+            {
+#if     qDebug
+                Require (fCurThread_ == this_thread::get_id ());
+                Require (fSharedLocks_ > 0);  // else unbalanced
+                --fSharedLocks_;
 #endif
             }
 
