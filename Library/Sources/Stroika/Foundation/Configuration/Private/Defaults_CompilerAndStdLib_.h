@@ -1895,6 +1895,30 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
+#if     qCompilerAndStdLib_shared_mutex_module_Buggy
+namespace std {
+    template    <typename MUTEX>
+    class   shared_lock {
+    public:
+        using mutex_type = MUTEX;
+    private:
+        mutex_type& fMutex_;
+    public:
+        explicit shared_lock (mutex_type& m)
+            : fMutex_ (m)
+        {
+            fMutex_.lock_shared ();
+        }
+        ~shared_lock ()
+        {
+            fMutex_.unlock_shared ();
+        }
+    };
+}
+#endif
+
+
+
 
 
 
