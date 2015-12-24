@@ -75,6 +75,7 @@ namespace   Stroika {
                 return *this;
             }
 
+#if 0
 
             /*
              ********************************************************************************
@@ -118,6 +119,7 @@ namespace   Stroika {
             {
                 fIterableEnvelope_->_fRep = sp;
             }
+#endif
 
 
         }

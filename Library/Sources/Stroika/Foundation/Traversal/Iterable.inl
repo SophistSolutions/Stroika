@@ -89,6 +89,44 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             *** Iterable<CONTAINER_OF_T, T>::_SafeReadWriteRepAccessor *****
+             ********************************************************************************
+             */
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
+                : fIterableEnvelope_ (iterableEnvelope)
+                , fRef_ (*static_cast<REP_SUB_TYPE*> (iterableEnvelope->_fRep.get (iterableEnvelope)))
+            {
+                RequireNotNull (iterableEnvelope);
+            }
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::~_SafeReadWriteRepAccessor ()
+            {
+            }
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  const REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
+            {
+                return fRef_;
+            }
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  REP_SUB_TYPE&    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_GetWriteableRep ()
+            {
+                return fRef_;
+            }
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            inline  void    Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp)
+            {
+                fIterableEnvelope_->_fRep = sp;
+            }
+
+
+            /*
+             ********************************************************************************
              ********************************** Iterable<T> *********************************
              ********************************************************************************
              */

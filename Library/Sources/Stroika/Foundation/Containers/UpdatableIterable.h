@@ -144,14 +144,17 @@ namespace   Stroika {
                 nonvirtual  UpdatableIterable<T>&   operator= (const UpdatableIterable<T>& rhs);
                 nonvirtual  UpdatableIterable<T>&   operator= (UpdatableIterable<T> && rhs);
 
+#if 0
             protected:
                 /**
                  *  EXPERIMENTAL -- LGP 2014-03-18
                  */
                 template    <typename REP_SUB_TYPE>
                 class   _SafeReadWriteRepAccessor;
+#endif
             };
 
+#if 0
 
             /**
              *
@@ -187,6 +190,7 @@ namespace   Stroika {
             public:
                 nonvirtual  void    _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
             };
+#endif
 
 
         }

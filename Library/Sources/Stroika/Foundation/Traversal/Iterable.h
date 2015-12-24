@@ -883,8 +883,12 @@ namespace   Stroika {
 #endif
 
             protected:
-                template <typename REP_SUB_TYPE = _IRep>
+                template    <typename REP_SUB_TYPE = _IRep>
                 class   _SafeReadRepAccessor;
+
+            protected:
+                template    <typename REP_SUB_TYPE = _IRep>
+                class   _SafeReadWriteRepAccessor;
 
             protected:
                 /**
@@ -939,6 +943,42 @@ namespace   Stroika {
             public:
                 nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
             };
+
+
+
+            /**
+             * &&& MOPVE HERE FOR NOW - BUT HTEN REDO BASE _SafeReadRepAccessor
+             */
+            template    <typename T>
+            template    <typename REP_SUB_TYPE>
+            class   Iterable<T>::_SafeReadWriteRepAccessor  {
+            private:
+                Iterable<T>*        fIterableEnvelope_;
+                REP_SUB_TYPE&       fRef_;
+
+            public:
+                _SafeReadWriteRepAccessor () = delete;
+                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = delete;
+                _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
+
+            public:
+                ~_SafeReadWriteRepAccessor ();
+
+            public:
+                nonvirtual  _SafeReadWriteRepAccessor& operator= (const _SafeReadWriteRepAccessor&) = delete;
+
+            public:
+                nonvirtual  const REP_SUB_TYPE&    _ConstGetRep () const;
+
+            public:
+                nonvirtual  REP_SUB_TYPE&    _GetWriteableRep ();
+
+            public:
+                nonvirtual  void    _UpdateRep (const typename _SharedByValueRepType::shared_ptr_type& sp);
+            };
+
+
+
 
 
             /**
