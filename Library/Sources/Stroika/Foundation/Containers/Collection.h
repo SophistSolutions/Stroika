@@ -76,9 +76,7 @@ namespace   Stroika {
              *          about ordering.
              *
              *  A Collection<T> is the simplest kind of collection. It allows addition and
-             *  removal of elements, but makes no guarantees about element ordering. Two
-             *  collections are considered equal if they contain the same items, even if iteration
-             *  order is different.
+             *  removal of elements, but makes no guarantees about element ordering.
              *
              *  \em Performance
              *      Collections are typically designed to optimize item addition and iteration.
