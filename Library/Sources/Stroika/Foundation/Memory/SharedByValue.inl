@@ -339,45 +339,6 @@ namespace   Stroika {
             }
 
 
-#if 0
-// OBSOLTING 2015-12-24 - instead use _SafeReadRepAccessor
-            /*
-            ********************************************************************************
-            ***************** SharedByValue<TRAITS>::ReadOnlyReference *********************
-            ********************************************************************************
-            */
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::ReadOnlyReference::ReadOnlyReference (const SharedByValue<TRAITS>& sp)
-                : fSharedPtr_ (shared_impl_copier_type::Load (sp.fSharedImpl_))
-            {
-                RequireNotNull (fSharedPtr_);
-            }
-            template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::ReadOnlyReference::ReadOnlyReference (const ReadOnlyReference&& r)
-                : fSharedPtr_ (move (r.fSharedPtr_))
-            {
-            }
-            template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::ReadOnlyReference& SharedByValue<TRAITS>::ReadOnlyReference::operator= (const ReadOnlyReference && rhs)
-            {
-                fSharedPtr_ = move (rhs.fSharedPtr_);
-                return *this;
-            }
-            template    <typename TRAITS>
-            inline  const typename SharedByValue<TRAITS>::element_type*     SharedByValue<TRAITS>::ReadOnlyReference::cget () const
-            {
-                EnsureNotNull (fSharedPtr_);
-                return fSharedPtr_.get ();
-            }
-            template    <typename TRAITS>
-            const typename SharedByValue<TRAITS>::element_type&     SharedByValue<TRAITS>::ReadOnlyReference::operator* () const
-            {
-                EnsureNotNull (fSharedPtr_);
-                return *fSharedPtr_.get ();
-            }
-#endif
-
-
         }
     }
 }
