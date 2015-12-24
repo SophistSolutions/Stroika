@@ -11,8 +11,6 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /**
@@ -105,9 +103,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
-            class   Queue : public UpdatableIterable<T> {
+            class   Queue : public Iterable<T> {
             private:
-                using   inherited   =   UpdatableIterable<T>;
+                using   inherited   =   Iterable<T>;
 
             public:
                 /**

@@ -15,7 +15,6 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
 
 
 /**
@@ -129,9 +128,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
-            class   MultiSet : public UpdatableIterable<MultiSetEntry<T>> {
+            class   MultiSet : public Iterable<MultiSetEntry<T>> {
             private:
-                using   inherited   =   UpdatableIterable<MultiSetEntry<T>>;
+                using   inherited   =   Iterable<MultiSetEntry<T>>;
 
             public:
                 /**
@@ -343,13 +342,13 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   MultiSet<T, TRAITS>::_IRep
-                : public UpdatableIterable<MultiSetEntry<T>>::_IRep
+                : public Iterable<MultiSetEntry<T>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                         , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
 #endif
             {
             private:
-                using   inherited   =   typename UpdatableIterable<MultiSetEntry<T>>::_IRep;
+                using   inherited   =   typename Iterable<MultiSetEntry<T>>::_IRep;
 
             protected:
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;

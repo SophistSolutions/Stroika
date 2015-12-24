@@ -16,8 +16,6 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /*
@@ -119,9 +117,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
-            class   Bijection : public UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
+            class   Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
             private:
-                using   inherited   =   UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
+                using   inherited   =   Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
 
             protected:
                 class   _IRep;
@@ -465,9 +463,9 @@ namespace   Stroika {
              *  the Bijection<T> container API.
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
+            class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
             private:
-                using   inherited   =   typename UpdatableIterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
+                using   inherited   =   typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
             protected:
                 using   _SharedPtrIRep = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_SharedPtrIRep;

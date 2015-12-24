@@ -16,8 +16,6 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /*
@@ -88,9 +86,9 @@ namespace   Stroika {
              *              Analagous to stl::multimap<>, and often called a MultiMap<>, like MultiSet<>.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   Association : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
+            class   Association : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                using   inherited       =   UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
             protected:
                 class   _IRep;
@@ -362,7 +360,7 @@ namespace   Stroika {
              *  the Association<T> container API.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public UpdatableIterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            class   Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
                 _IRep () = default;
 

@@ -12,8 +12,6 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /**
@@ -103,9 +101,9 @@ namespace   Stroika {
              *          as appropriate.
              */
             template    <typename T>
-            class   Collection : public UpdatableIterable<T> {
+            class   Collection : public Iterable<T> {
             private:
-                using   inherited   =   UpdatableIterable<T>;
+                using   inherited   =   Iterable<T>;
 
             public:
                 /**
@@ -282,9 +280,9 @@ namespace   Stroika {
              *  the Collection<T> container API.
              */
             template    <typename T>
-            class   Collection<T>::_IRep : public UpdatableIterable<T>::_IRep {
+            class   Collection<T>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename UpdatableIterable<T>::_IRep;
+                using   inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;

@@ -16,8 +16,6 @@
 #include    "../Traversal/Iterable.h"
 #include    "../Traversal/RandomAccessIterator.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /*
@@ -197,9 +195,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
-            class   Sequence : public UpdatableIterable<T> {
+            class   Sequence : public Iterable<T> {
             private:
-                using   inherited   =   UpdatableIterable<T>;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;

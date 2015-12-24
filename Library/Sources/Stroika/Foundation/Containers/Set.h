@@ -14,8 +14,6 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /**
@@ -107,9 +105,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
-            class   Set : public UpdatableIterable<T> {
+            class   Set : public Iterable<T> {
             private:
-                using   inherited   =   UpdatableIterable<T>;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;
@@ -358,9 +356,9 @@ namespace   Stroika {
              *  the Set<T, TRAITS> container API.
              */
             template    <typename T, typename TRAITS>
-            class   Set<T, TRAITS>::_IRep : public UpdatableIterable<T>::_IRep {
+            class   Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             private:
-                using   inherited = typename UpdatableIterable<T>::_IRep;
+                using   inherited = typename Iterable<T>::_IRep;
 
             protected:
                 _IRep () = default;

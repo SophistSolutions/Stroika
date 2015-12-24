@@ -10,8 +10,6 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Traversal/Iterable.h"
 
-#include    "UpdatableIterable.h"
-
 
 
 /**
@@ -71,9 +69,9 @@ namespace   Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template    <typename T>
-            class   Stack : public UpdatableIterable<T> {
+            class   Stack : public Iterable<T> {
             private:
-                using   inherited   =   UpdatableIterable<T>;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;
@@ -193,7 +191,7 @@ namespace   Stroika {
              *  the Stack<T> container API.
              */
             template    <typename T>
-            class   Stack<T>::_IRep : public UpdatableIterable<T>::_IRep {
+            class   Stack<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep () = default;
 
