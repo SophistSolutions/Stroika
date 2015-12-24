@@ -84,8 +84,10 @@ namespace   Stroika {
                     }
                 }
                 else {
-                    // If first already locks - OK - so long as same thread
-                    Require (fCurThread_ == this_thread::get_id ());
+                    // if incrementing shared lock count, no problem if other shared locks on differnt threads.
+                    // @todo NOTE - we MISS the case where we are incrementing shared lock (read lock) when another thread has locked!
+                    // cuz we currently only store fCurThread_ in one var for readers and writers. Probs need to separate this!!!
+                    // --LGP 2015-12-24
                 }
 #endif
             }

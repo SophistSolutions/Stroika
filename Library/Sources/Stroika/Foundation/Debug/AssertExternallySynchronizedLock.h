@@ -97,6 +97,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Saves current thread, and increments lock count, and
+                 *      \req    no pre-existing lock or shared locks on other threads
+                 *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  */
@@ -104,26 +107,33 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Just decrement lock count
+                 *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
+                 *
+                 *  \req    still running on the same locking thread and locks not unbalanced
                  */
                 nonvirtual  void    unlock () const;
 
             public:
                 /**
+                 *  Saves current thread, and increments shared count, and
+                 *      \req    no pre-existing locks on other threads
+                 *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
-                 *
-                 *  @todo NYI
                  */
                 nonvirtual  void    lock_shared () const;
 
             public:
                 /**
+                 *  Just decrement shared lock count
+                 *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  *
-                 *  @todo NYI
+                 *  \req    still running on the same locking thread and locks not unbalanced
                  */
                 nonvirtual  void    unlock_shared () const;
 
