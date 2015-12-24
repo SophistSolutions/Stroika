@@ -1488,9 +1488,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionMutex.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
@@ -2432,9 +2429,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\Statistics.inl">
       <Filter>Sources\Math</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\UpdatableIterable.inl">
-      <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionMutex.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
