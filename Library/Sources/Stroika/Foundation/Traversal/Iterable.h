@@ -867,6 +867,8 @@ namespace   Stroika {
                  */
                 using   _SharedByValueRepType =       Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>;
 
+#if 0
+// OBSOLTING 2015-12-24 - instead use _SafeReadRepAccessor
             protected:
                 /**
                  *  EXPERIMENTAL -- LGP 2014-02-21
@@ -878,6 +880,7 @@ namespace   Stroika {
                  *  EXPERIMENTAL -- LGP 2014-02-21
                  */
                 nonvirtual  _ReadOnlyIterableIRepReference   _GetReadOnlyIterableIRepReference () const;
+#endif
 
             protected:
                 template <typename REP_SUB_TYPE = _IRep>

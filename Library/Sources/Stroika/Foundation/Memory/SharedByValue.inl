@@ -339,6 +339,8 @@ namespace   Stroika {
             }
 
 
+#if 0
+// OBSOLTING 2015-12-24 - instead use _SafeReadRepAccessor
             /*
             ********************************************************************************
             ***************** SharedByValue<TRAITS>::ReadOnlyReference *********************
@@ -373,6 +375,7 @@ namespace   Stroika {
                 EnsureNotNull (fSharedPtr_);
                 return *fSharedPtr_.get ();
             }
+#endif
 
 
         }

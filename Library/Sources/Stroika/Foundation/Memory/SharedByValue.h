@@ -303,8 +303,11 @@ namespace   Stroika {
                  */
                 nonvirtual  unsigned int    use_count () const;
 
+#if 0
+// OBSOLTING 2015-12-24 - instead use _SafeReadRepAccessor
             public:
                 struct  ReadOnlyReference;
+#endif
 
             private:
                 element_copier_type     fCopier_;
@@ -324,6 +327,8 @@ namespace   Stroika {
             };
 
 
+#if 0
+// OBSOLTING 2015-12-24 - instead use _SafeReadRepAccessor
             /*
              *  EXPERIMENTAL PROTOTYPE - SO WE CAN HOLD THE REFCOUNT UP  FOR THREADSATY AND ACCESS RO PTR THROUGH THIS
              *      --LGP 2014-02-21
@@ -378,6 +383,7 @@ namespace   Stroika {
             private:
                 shared_ptr_type fSharedPtr_;
             };
+#endif
 
 
         }
