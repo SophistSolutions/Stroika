@@ -7,10 +7,14 @@
 #include    "../StroikaPreComp.h"
 
 #include    <functional>
+#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include    <shared_mutex>
+#endif
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/TypeHints.h"
+#include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Memory/SharedPtr.h"
 
