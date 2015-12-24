@@ -71,6 +71,15 @@ namespace   Stroika {
              *  but the semantics it implements are moderately different than those in std::atomic,
              *  which is really just intended to operate on integers, and integer type things, and not on
              *  objects with methods.
+             *
+             *  \note   LIKE JAVA SYNCHRONIZED
+             *          This is SIMPLE to use like the Java (and .net) synchonized attribute(lock) mechanism.
+             *          But why does it not suffer from the same performance deficiit?
+             *
+             *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
+             *          checking for races (Debug::AssertExternallySynchronizedLock) in most objects, so
+             *          you only use Synchonized<> (or some other more performant mechanism) in the few places
+             *          you need it.
              */
 
 
