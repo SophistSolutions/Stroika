@@ -19,6 +19,7 @@ using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
 using   Characters::String_Constant;
+using   Memory::Optional;
 
 
 
@@ -66,19 +67,17 @@ namespace   {
  ********************* Network::GetDefaultPortForScheme *************************
  ********************************************************************************
  */
-uint16_t     Network::GetDefaultPortForScheme (const String& proto)
+Optional<uint16_t>     Network::GetDefaultPortForScheme (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
-    if (proto == String ())                     {   return 80; }
+    //if (proto == String ())                     {   return 80; }
     if (proto == String_Constant (L"http"))     {   return 80; }
     if (proto == String_Constant (L"https"))    {   return 443; }
     if (proto == String_Constant (L"ldap"))     {   return 389; }
     if (proto == String_Constant (L"ldaps"))    {   return 636; }
     if (proto == String_Constant (L"ftp"))      {   return 21; }
     if (proto == String_Constant (L"ftps"))     {   return 990; }
-
-    AssertNotReached (); // if this ever happens - we probably have some work todo - the above list is inadequate
-    return 80;  // hack...
+    return Optional<uint16_t> {};
 }
 
 
@@ -93,7 +92,7 @@ uint16_t     Network::GetDefaultPortForScheme (const String& proto)
 URL::URL ()
     : fProtocol_ ()
     , fHost_ ()
-    , fPort_ (kDefaultPortSentinal_)
+    , fPort_ ()
     , fRelPath_ ()
     , fQuery_ ()
     , fFragment_ ()
@@ -238,10 +237,10 @@ URL URL::Parse (const String& w, ParseOptions po)
     return result;
 }
 
-URL::URL (const SchemeType& scheme, const String& host, const Memory::Optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
+URL::URL (const SchemeType& scheme, const String& host, const Optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
     : fProtocol_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
-    , fPort_ (portNumber.Value (kDefaultPortSentinal_))
+    , fPort_ (portNumber)
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
@@ -254,7 +253,7 @@ URL::URL (const SchemeType& scheme, const String& host, const Memory::Optional<P
 URL::URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query, const String& fragment)
     : fProtocol_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
-    , fPort_ (kDefaultPortSentinal_)
+    , fPort_ ()
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
@@ -296,7 +295,7 @@ URL URL::ParseHostRelativeURL_ (const String& w)
 URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 {
     URL url;
-    url.fPort_ = kDefaultPortSentinal_;
+    url.fPort_.clear ();
 
     if (w.empty ()) {
         return url;
@@ -416,7 +415,7 @@ String URL::GetFullURL () const
 
     if (not fHost_.empty ()) {
         result += String_Constant (L"//") + fHost_;
-        if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForScheme (fProtocol_)) {
+        if (fPort_.IsPresent () and * fPort_ != GetDefaultPortForScheme (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
         result += String_Constant (L"/");
@@ -455,13 +454,13 @@ void    URL::clear ()
     fRelPath_.clear ();
     fQuery_.clear ();
     fFragment_.clear ();
-    fPort_ = kDefaultPortSentinal_;
+    fPort_.clear ();
     Ensure (empty ());
 }
 
 bool    URL::empty () const
 {
-    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_ == kDefaultPortSentinal_;
+    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_.IsMissing ();
 }
 
 bool    URL::Equals (const URL& rhs) const

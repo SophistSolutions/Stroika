@@ -75,12 +75,13 @@ namespace   Stroika {
 
 
                 using   Characters::String;
+                using   Memory::Optional;
 
 
                 /**
                  *  Probably should define standard protos here - with named constants - like http/ftp/https etc
                  */
-                uint16_t     GetDefaultPortForScheme (const String& proto);
+                Optional<uint16_t>     GetDefaultPortForScheme (const String& proto);
 
 
                 /**
@@ -200,7 +201,7 @@ namespace   Stroika {
                      *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
                      */
                     URL ();
-                    URL (const SchemeType& scheme, const String& host, const Memory::Optional<PortType>& portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    URL (const SchemeType& scheme, const String& host, const Optional<PortType>& portNumber = Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
                     URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
                     URL (const String& urlText, ParseOptions po);
 
@@ -229,7 +230,7 @@ namespace   Stroika {
                     /**
                      *      If port# not specified, returns detault given the protocol.
                      */
-                    nonvirtual  PortType     GetPortValue () const;
+                    nonvirtual  PortType     GetPortValue (PortType defaultValue = 80) const;
 
                 public:
                     /**
@@ -239,13 +240,13 @@ namespace   Stroika {
                      *  @see GetPortValue
                      *  @see SetPortNumber
                      */
-                    nonvirtual  Memory::Optional<PortType>     GetPortNumber () const;
+                    nonvirtual  Optional<PortType>     GetPortNumber () const;
 
                 public:
                     /**
                      *  @see GetPortNumber ();
                      */
-                    nonvirtual  void    SetPortNumber (const Memory::Optional<PortType>& portNum = Memory::Optional<PortType> ());
+                    nonvirtual  void    SetPortNumber (const Optional<PortType>& portNum = Optional<PortType> ());
 
                 public:
                     /**
@@ -353,15 +354,12 @@ namespace   Stroika {
                     nonvirtual  void    SetFragment (const String& frag);
 
                 private:
-                    String      fProtocol_;
-                    String      fHost_;
-                    PortType    fPort_;
-                    String      fRelPath_;
-                    String      fQuery_;
-                    String      fFragment_;
-
-                private:
-                    DEFINE_CONSTEXPR_CONSTANT (PortType, kDefaultPortSentinal_, -1);    // sentinal value a more efficient rep than Optional<>
+                    String              fProtocol_;
+                    String              fHost_;
+                    Optional<PortType>  fPort_;
+                    String              fRelPath_;
+                    String              fQuery_;
+                    String              fFragment_;
                 };
 
 

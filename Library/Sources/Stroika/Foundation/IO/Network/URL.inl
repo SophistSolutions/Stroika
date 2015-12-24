@@ -58,22 +58,22 @@ namespace   Stroika {
                  *************************************** URL ************************************
                  ********************************************************************************
                  */
-                inline  URL::PortType     URL::GetPortValue () const
+                inline  URL::PortType     URL::GetPortValue (PortType defaultValue) const
                 {
-                    if (fPort_ == kDefaultPortSentinal_) {
-                        return GetDefaultPortForScheme (fProtocol_);
+                    if (fPort_) {
+                        return *fPort_;
                     }
                     else {
-                        return fPort_;
+                        return GetDefaultPortForScheme (fProtocol_).Value (defaultValue);
                     }
                 }
                 inline  Memory::Optional<URL::PortType>     URL::GetPortNumber () const
                 {
-                    return fPort_ == kDefaultPortSentinal_ ? Memory::Optional<URL::PortType> () : fPort_;
+                    return fPort_;
                 }
-                inline  void    URL::SetPortNumber (const Memory::Optional<PortType>& portNum)
+                inline  void    URL::SetPortNumber (const Optional<PortType>& portNum)
                 {
-                    fPort_ = portNum.Value (kDefaultPortSentinal_);
+                    fPort_ = portNum;
                 }
                 inline  URL::SchemeType  URL::GetScheme () const
                 {
