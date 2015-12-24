@@ -76,7 +76,7 @@ namespace   Stroika {
             {
                 RequireNotNull (fConstRef_);
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
-                from.fConstRef_ = nullptrl
+                from.fConstRef_ = nullptr;
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
