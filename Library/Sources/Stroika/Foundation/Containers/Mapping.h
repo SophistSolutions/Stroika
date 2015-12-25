@@ -436,7 +436,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<T2>;
+                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**

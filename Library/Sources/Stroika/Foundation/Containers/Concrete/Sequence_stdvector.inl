@@ -350,7 +350,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  size_t  Sequence_stdvector<T>::GetCapacity () const
                 {
-                    using   _SafeReadRepAccessor = typename Iterable<T>::template _SafeReadRepAccessor<Rep_>;
+                    using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
                     _SafeReadRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         return accessor._ConstGetRep ().fData_.capacity ();

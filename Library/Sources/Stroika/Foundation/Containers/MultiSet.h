@@ -319,17 +319,13 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<MultiSetEntry<T>>::template _SafeReadRepAccessor<T2>;
+                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
 
             protected:
                 /**
                  */
                 template    <typename T2>
                 using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
-#if 0
-            protected:
-                nonvirtual  const _IRep&    _ConstGetRep () const;
-#endif
 
             protected:
                 nonvirtual  void    _AssertRepValidType () const;

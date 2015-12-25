@@ -127,6 +127,18 @@ namespace   Stroika {
                 using   KeyWellOrderCompareFunctionType     =   typename TraitsType::KeyWellOrderCompareFunctionType;
 
             protected:
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+
+            protected:
+                /**
+                 */
+                template    <typename T2>
+                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+
+            protected:
                 nonvirtual  void    _AssertRepValidType () const;
             };
 
