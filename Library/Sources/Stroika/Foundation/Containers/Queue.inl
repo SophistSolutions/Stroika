@@ -79,16 +79,11 @@ namespace   Stroika {
             Queue<T>::~Queue ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    // SharingState can be NULL because of MOVE semantics
+                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename T>
-            inline  const typename  Queue<T>::_IRep&    Queue<T>::_ConstGetRep () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
             template    <typename T>
             inline  void    Queue<T>::AddTail (ArgByValueType<T> item)
             {
@@ -160,7 +155,7 @@ namespace   Stroika {
             inline  void    Queue<T>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

@@ -67,7 +67,8 @@ namespace   Stroika {
             Bag<T>::~Bag ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _GetRep ().AssertNoIteratorsReferenceOwner (this);
+                    // SharingState can be NULL because of MOVE semantics
+                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif

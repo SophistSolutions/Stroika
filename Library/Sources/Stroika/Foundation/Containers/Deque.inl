@@ -90,7 +90,7 @@ namespace   Stroika {
             inline  void    Deque<T>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

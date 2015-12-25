@@ -407,16 +407,11 @@ namespace   Stroika {
             MultiSet<T, TRAITS>::~MultiSet ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    // SharingState can be NULL because of MOVE semantics
+                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename T, typename TRAITS>
-            inline  const typename  MultiSet<T, TRAITS>::_IRep&    MultiSet<T, TRAITS>::_ConstGetRep () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
             template    <typename T, typename TRAITS>
             void   MultiSet<T, TRAITS>::RemoveAll (ArgByValueType<T> item)
             {
@@ -553,7 +548,7 @@ namespace   Stroika {
             inline  void    MultiSet<T, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

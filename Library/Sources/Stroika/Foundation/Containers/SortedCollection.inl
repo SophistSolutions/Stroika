@@ -80,7 +80,7 @@ namespace   Stroika {
             inline  void    SortedCollection <T, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

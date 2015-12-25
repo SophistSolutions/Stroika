@@ -91,7 +91,7 @@ namespace   Stroika {
             inline  void    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

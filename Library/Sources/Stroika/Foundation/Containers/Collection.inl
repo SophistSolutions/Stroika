@@ -79,16 +79,11 @@ namespace   Stroika {
             Collection<T>::~Collection ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    // SharingState can be NULL because of MOVE semantics
+                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename T>
-            inline  const typename  Collection<T>::_IRep&    Collection<T>::_ConstGetRep () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
             template    <typename T>
             template    <typename EQUALS_COMPARER>
             bool    Collection<T>::Contains (ArgByValueType<T> item) const
@@ -215,7 +210,7 @@ namespace   Stroika {
             inline  void    Collection<T>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

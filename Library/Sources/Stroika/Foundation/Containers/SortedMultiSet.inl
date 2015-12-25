@@ -75,7 +75,7 @@ namespace   Stroika {
             inline  void    SortedMultiSet <T, TRAITS>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 

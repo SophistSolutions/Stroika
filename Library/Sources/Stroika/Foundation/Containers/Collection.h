@@ -263,9 +263,6 @@ namespace   Stroika {
                 using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
             protected:
-                nonvirtual  const _IRep&    _ConstGetRep () const;
-
-            protected:
                 nonvirtual  void    _AssertRepValidType () const;
             };
 

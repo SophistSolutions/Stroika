@@ -107,16 +107,11 @@ namespace   Stroika {
             Association<KEY_TYPE, VALUE_TYPE, TRAITS>::~Association ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
-                    _ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
+                    // SharingState can be NULL because of MOVE semantics
+                    _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().AssertNoIteratorsReferenceOwner (this);
                 }
             }
 #endif
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  const typename  Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_ConstGetRep () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Iterable<KEY_TYPE>    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::Keys () const
             {
@@ -347,7 +342,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_AssertRepValidType () const
             {
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
             }
 
 

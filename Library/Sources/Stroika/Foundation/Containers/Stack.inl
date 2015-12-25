@@ -66,12 +66,6 @@ namespace   Stroika {
 //                AddAll (start, end);
             }
             template    <typename T>
-            inline  const typename  Stack<T>::_IRep&    Stack<T>::_ConstGetRep () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_ConstGetRep ());
-            }
-            template    <typename T>
             inline  void    Stack<T>::Push (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Push (item);
@@ -104,7 +98,7 @@ namespace   Stroika {
             inline  void    Stack<T>::_AssertRepValidType () const
             {
 #if     qDebug
-                AssertMember (&inherited::_ConstGetRep (), _IRep);
+                _SafeReadRepAccessor<_IRep> { this };
 #endif
             }
 
