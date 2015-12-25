@@ -656,6 +656,15 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 
+#ifndef qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
+
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#else
+#define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      0
+#endif
+
+#endif
 
 
 
