@@ -64,19 +64,41 @@ namespace   Stroika {
             inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
                 , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
+#if		qDebug
+                , fIterableEnvelope_ (it)
+#endif
             {
                 RequireNotNull (it);
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>
-            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& from)
-                : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (from))
-                , fConstRef_ (from.fConstRef_)
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src)
+#if		qDebug
+                : shared_lock<const Debug::AssertExternallySynchronizedLock> (*src.fIterableEnvelope_)
+#else
+                : shared_lock<const Debug::AssertExternallySynchronizedLock> (*(const Iterable<T>*)nullptr)
+#endif
+                , fConstRef_ (src.fConstRef_)
+#if		qDebug
+                , fIterableEnvelope_ (src.fIterableEnvelope_)
+#endif
             {
                 RequireNotNull (fConstRef_);
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
-                from.fConstRef_ = nullptr;
+            }
+            template    <typename T>
+            template <typename REP_SUB_TYPE>
+            inline  Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src)
+                : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
+                , fConstRef_ (src.fConstRef_)
+#if		qDebug
+                , fIterableEnvelope_ (src.fIterableEnvelope_)
+#endif
+            {
+                RequireNotNull (fConstRef_);
+                EnsureMember (fConstRef_, REP_SUB_TYPE);
+                src.fConstRef_ = nullptr;
             }
             template    <typename T>
             template <typename REP_SUB_TYPE>

@@ -921,8 +921,8 @@ namespace   Stroika {
             class   Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock>  {
             public:
                 _SafeReadRepAccessor () = delete;
-                _SafeReadRepAccessor (const _SafeReadRepAccessor&) = default;
-                _SafeReadRepAccessor (_SafeReadRepAccessor&& from);
+                _SafeReadRepAccessor (const _SafeReadRepAccessor& src);
+                _SafeReadRepAccessor (_SafeReadRepAccessor&& src);
                 _SafeReadRepAccessor (const Iterable<T>* it);
 
             public:
@@ -933,6 +933,9 @@ namespace   Stroika {
 
             private:
                 const REP_SUB_TYPE*     fConstRef_;
+#if		qDebug
+                const Iterable<T>*		fIterableEnvelope_;
+#endif
             };
 
 
@@ -952,8 +955,8 @@ namespace   Stroika {
             class   Iterable<T>::_SafeReadWriteRepAccessor  : private lock_guard<const Debug::AssertExternallySynchronizedLock> {
             public:
                 _SafeReadWriteRepAccessor () = delete;
-                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor&) = default;
-                _SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& from);
+                _SafeReadWriteRepAccessor (const _SafeReadWriteRepAccessor& src) = default;
+                _SafeReadWriteRepAccessor (_SafeReadWriteRepAccessor&& src);
                 _SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope);
 
             public:
