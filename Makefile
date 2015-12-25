@@ -315,12 +315,13 @@ regression-test-configurations:
 		./configure DEFAULT_CONFIG;\
 		./configure gcc-5.2.0-release --compiler-driver /home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc --assertions disable --trace2file enable --cpp-optimize-flag -O3;\
 		./configure gcc-5.2.0-debug-c++17 --compiler-driver /home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc --assertions enable --trace2file enable --cppstd-version-flag --std=c++1z;\
-		./configure gcc49-release --compiler-driver g++-4.9 --assertions disable --trace2file enable --cpp-optimize-flag -O3;\
-		./configure gcc49-debug-no-TPP --compiler-driver g++-4.9 --assertions enable --trace2file enable --LibCurl no --OpenSSL no --Xerces no;\
+		./configure gcc-4.9-release --compiler-driver g++-4.9 --assertions disable --trace2file enable --cpp-optimize-flag -O3;\
+		./configure gcc-4.9-debug-no-TPP --compiler-driver g++-4.9 --assertions enable --trace2file enable --LibCurl no --OpenSSL no --Xerces no;\
 		./configure gcc-4.8.4-debug --compiler-driver /home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc --assertions enable --trace2file enable;\
-		./configure gcc48-release --compiler-driver g++-4.8 --assertions disable --trace2file disable --cpp-optimize-flag -O3;\
+		./configure gcc-4.8-release --compiler-driver g++-4.8 --assertions disable --trace2file disable --cpp-optimize-flag -O3;\
 		./configure clang++-3.5-debug --compiler-driver clang++-3.5 --assertions enable --trace2file enable;\
 		./configure clang++-3.6-debug --compiler-driver clang++-3.6 --assertions enable --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
-		./configure DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable;\
+		./configure DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable;\
+		./configure raspberrypi-gcc-4.9 --assertions enable --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-4.9' --cross-compiling true --LibCurl no --OpenSSL no --Xerces no;\
 	fi
