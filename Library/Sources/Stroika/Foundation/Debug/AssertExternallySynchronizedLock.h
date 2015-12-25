@@ -84,7 +84,7 @@ namespace   Stroika {
                 /**
                  *  \note   Copy/Move constructor locks and unlocks quickly to detect if other locks exist while copying.
                  */
-                AssertExternallySynchronizedLock () = default;
+                constexpr AssertExternallySynchronizedLock () = default;
                 AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src);
                 AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src);
 
