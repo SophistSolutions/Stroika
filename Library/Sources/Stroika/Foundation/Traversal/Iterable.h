@@ -933,8 +933,8 @@ namespace   Stroika {
 
             private:
                 const REP_SUB_TYPE*     fConstRef_;
-#if		qDebug
-                const Iterable<T>*		fIterableEnvelope_;
+#if     qDebug
+                const Iterable<T>*      fIterableEnvelope_;
 #endif
             };
 
