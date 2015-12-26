@@ -96,7 +96,8 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
-	@(CC="$(CC)" cd CURRENT && ./configure) > CURRENT/CONFIGURE.OUT 2>&1
+	@echo "export CC=$(CC) cd CURRENT && ./configure" > CURRENT/CONFIGURE.OUT
+	@(export CC="$(CC)"; cd CURRENT && ./configure) >> CURRENT/CONFIGURE.OUT 2>&1
 	@$(ECHO) "done"
 endif
 
