@@ -319,7 +319,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename READER, typename... ARGS>
                 auto    ObjectReaderRegistry::ConvertReaderToFactory (ARGS&& ... args) -> ReaderFromVoidStarFactory {
-#if		qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
+#if     qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
                     ObjectReaderRegistry::ReaderFromTStarFactory<T>   tmpFactory      { [] (T * o) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<READER> (o); } };
 #else
                     ObjectReaderRegistry::ReaderFromTStarFactory<T>   tmpFactory      { [args...] (T * o) -> shared_ptr<ObjectReaderRegistry::IElementConsumer> { return make_shared<READER> (o, forward<ARGS> (args)...); } };

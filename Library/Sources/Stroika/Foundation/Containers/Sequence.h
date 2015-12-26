@@ -19,8 +19,6 @@
 
 
 /*
- *
- *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *
@@ -203,10 +201,7 @@ namespace   Stroika {
                 class   _IRep;
 
             protected:
-                using   _SequenceSharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
-
-            protected:
-                using   _SharedPtrIRep  =   _SequenceSharedPtrIRep;
+                using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
                 /**
