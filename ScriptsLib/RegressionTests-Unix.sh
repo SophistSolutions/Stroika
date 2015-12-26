@@ -77,24 +77,41 @@ function doOneTest
 
 
 
-doOneTest "DEFAULT_CONFIG" "" "" ""
-doOneTest "gcc-5.2.0-release" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
-doOneTest "gcc-5.2.0-debug-c++17" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1z" ""
-doOneTest "gcc49-release" "g++-4.9" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
-doOneTest "gcc49-debug-no-TPP" "g++-4.9" "" "--assertions enable --trace2file enable --LibCurl no --OpenSSL no --Xerces no" ""
-doOneTest "gcc-4.8.4-debug" "/home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable" ""
-doOneTest "gcc48-release" "g++-4.8" "" "--assertions disable --trace2file disable --cpp-optimize-flag -O3" ""
-doOneTest "clang++-3.5-debug" "clang++-3.5" "" "--assertions enable --trace2file enable" "" 
-doOneTest "clang++-3.6-debug" "clang++-3.6" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1y" ""
-#TESTING if -L needed
-#doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
-doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
+if false ; then
+	doOneTest "DEFAULT_CONFIG" "" "" ""
+	doOneTest "gcc-5.2.0-release" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
+	doOneTest "gcc-5.2.0-debug-c++17" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1z" ""
+	doOneTest "gcc49-release" "g++-4.9" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
+	doOneTest "gcc49-debug-no-TPP" "g++-4.9" "" "--assertions enable --trace2file enable --LibCurl no --OpenSSL no --Xerces no" ""
+	doOneTest "gcc-4.8.4-debug" "/home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable" ""
+	doOneTest "gcc48-release" "g++-4.8" "" "--assertions disable --trace2file disable --cpp-optimize-flag -O3" ""
+	doOneTest "clang++-3.5-debug" "clang++-3.5" "" "--assertions enable --trace2file enable" "" 
+	doOneTest "clang++-3.6-debug" "clang++-3.6" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1y" ""
+	#TESTING if -L needed
+	#doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
+	doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
+	#disable blockalloc, and valgrind, so we test with minimal valgrind suppressions
+	doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify --block-allocation disable" "VALGRIND=1"
+	#test with usual set of valgrind suppressions
+	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_WITH_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
+	#slow, and largely useless test...
+	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "" "" "VALGRIND=1"
+fi
 
-#disable blockalloc, and valgrind, so we test with minimal valgrind suppressions
-doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify --block-allocation disable" "VALGRIND=1"
 
-#test with usual set of valgrind suppressions
-VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_WITH_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
+if true ; then
+	echo "Resetting all configurations to standard regression test set"
+	make regression-test-configurations
 
-#slow, and largely useless test...
-#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "" "" "VALGRIND=1"
+	make clobber
+	make all
+	make run-tests
+
+	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi
+
+	#test with usual set of valgrind suppressions
+	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests
+
+	#slow, and largely useless test...
+	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG_WITH_VALGRIND VALGRIND=1 run-tests
+fi
