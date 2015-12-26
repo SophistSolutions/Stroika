@@ -325,5 +325,5 @@ regression-test-configurations:
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
 		./configure DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable;\
 		#temporarily disable a few unsupproted cross-compile libs\
-		./configure raspberrypi-gcc-4.9 --assertions enable --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-4.9' --cross-compiling true --LibCurl no --OpenSSL no --Xerces no --lzma no;\
+		./configure raspberrypi-gcc-4.9 --assertions enable --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-4.9' --cross-compiling true --LibCurl no --OpenSSL no --Xerces no;\
 	fi
