@@ -63,6 +63,7 @@ History
 		<li>fixed BlockingQueue<T>::RemoveHeadIfPossible () and clarifed docs. Now waits timeout period</li>
 		<li>Documentation (esp build process/configuration) improvements</li>
 		<li>fixed make run-tests script so if CrossCompiling (and note REMOTE= specified) we dont run the tests directly</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, cross-compile-raspberry-pi, and valgrind;</li>
 	</ul>
 </td>
 </tr>
