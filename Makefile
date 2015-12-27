@@ -54,7 +54,7 @@ check: assure-default-configurations-exist_
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Check {$$i}:";\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL==$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)}:"
