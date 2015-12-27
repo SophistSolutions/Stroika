@@ -17,14 +17,37 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a119">v2.0a119x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a119">v2.0a119</a><br/>2015-12-27</td>
 <td>
 	<ul>
-		<li>TODO</li>
-		<li>NOTE - dnagerous not backward compat - change on Date::Format (String format,LCID OPT PARAM) -> Date::Format (LCID,String) - so
+		<li>Supported Rasberry PI cross-compile builds (added to regression test)</li>
+		<li>NOTE - dangerous not backward compat - change on Date::Format (String format,LCID OPT PARAM) -> Date::Format (LCID,String) - so
 			ew Date::Format(String) we effectively re-interpet as meaning STDC++ API for format strings instead of Windows LCID (in both case curent localeish)
 		</li>
-		<li>https://stroika.atlassian.net/browse/STK-420</li>
+		<li>quick hack partial shared_lock code - if qCompilerAndStdLib_shared_mutex_module_Buggy</li>
+		<li>Various Containers cleanups - especially surrounding CTOR
+			<ul>
+				<li>lose _SortedSetSharedPtrIRep, _StackSharedPtrIRep, _QueueSharedPtrIRep etc using declarations - just use _SharedPtrIRep</li>
+				<li>lose many contianer :_ConstGetRep () methdos (cuz can uyse _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep () - and use that to cleanup ccontainer ::_AssertRepValidType () calls</li>
+				<li>https://stroika.atlassian.net/browse/STK-420 explicit CTOR(CONTINAER) for some (all) our containers to non-explicit</li>
+				<li>missing move CTORs</li>
+				<li>new Concept utility: Configuration::IsIterableOfT&lt;&gt; used on above CTOR changes</li>
+				<li>Making Iterable inherit from private Debug::AssertExternallySynchronizedLock</li>
+				<li>Iterable<T>::_SafeReadRepAccessor docs revised / semantics revised, and now uses Debug::AssertExternallySynchronizedLock</li>
+				<li>migrating _SafeReadWriteRepAccessor from UpdateIterable to Iterable and make it inherit from Debug::AssertExternallySynchronizedLock, and lose UpdateIterable class</li>
+			</ul>
+		</li>
+		<li>make regression-test-configuraitons</li>
+		<li>Get rid of Iterable<T>::_ReadOnlyIterableIRepReference/Iterable&lt;T&gt;::_GetReadOnlyIterableIRepReference and SharedByValue&lt;TRAITS&gt;::ReadOnlyReference: though this was well done, we never used it, and its onbsoleted by new Synchonized approach</li>
+		<li> https://stroika.atlassian.net/browse/STK-182 make Debug/AssertExternallySynchronizedLock recursive and draft support for shared_lock</li>
+		<li>Network::GetDefaultPortForScheme etc - URL optional use for ports</li>
+		<li>add parameterpack forwarding support to ConvertReaderToFactroy - args passed to new readers; and define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy to deal with gcc 48 bugs</li>
+		<li>Various makefile / build improvements (clobber, etc)</li>
+		<li>Changed meaning of CPU::fRunQLength - now normalized to total cores, document better, and on windows, correct for discrpenecy  with how it provides runQLength (take into account CPU usage)</li>
+		<li>Library/Sources/Stroika/Foundation/Execution/Logger.cpp - logger bookkeeping thread - use RemoveHEadIfPossible instead of RemoveHeadn and ignore expcetion</li>
+		<li>fixed BlockingQueue<T>::RemoveHeadIfPossible () and clarifed docs. Now waits timeout period</li>
+		<li>Documentation (esp build process/configuration) improvements</li>
+		<li>fixed make run-tests script so if CrossCompiling (and note REMOTE= specified) we dont run the tests directly</li>
 	</ul>
 </td>
 </tr>
