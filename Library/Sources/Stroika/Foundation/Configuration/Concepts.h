@@ -143,8 +143,8 @@ namespace   Stroika {
             template    <typename T>
             constexpr bool  Container ()
             {
-                // no where near enough, but a start...
-                return has_beginend<T>::value;
+                // about right?
+                return IsIterableOfT<T>::value;
             }
 
 
