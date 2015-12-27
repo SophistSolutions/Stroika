@@ -73,7 +73,7 @@ my $DEFAULT_CWARNING_FLAGS_CLANG36Plus	= $DEFAULT_CWARNING_FLAGS_CLANG36Plus . '
 my $DEFAULT_CWARNING_FLAGS_CLANG36EXTRA	= '-Wno-future-compat ';
 
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
-my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_OpenSSL = "";
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
@@ -683,7 +683,17 @@ ParseCommandLine_ ();
 
 sub PostProcessOptions_ ()
 {
+	if ($FEATUREFLAG_OpenSSL eq "") {
+		if ($CrossCompiling eq "false") {
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
+		}
+		else {
+			#Dont know how to do this yet...
+			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
+		}
+	}
 }
+
 
 PostProcessOptions_ ();
 
