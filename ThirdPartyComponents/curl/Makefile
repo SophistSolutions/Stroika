@@ -113,8 +113,17 @@ endif
 
 
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+CONFIGURE_ARGS=
+ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling),true)
+CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
+endif
+endif
+
+
 
 LIBCURL_CONFIGURE =
+LIBCURL_CONFIGURE += $(CONFIGURE_ARGS)
 LIBCURL_CONFIGURE += --enable-static
 ifeq ($(qFeatureFlag_OpenSSL), use)
 #finds right one through PKG_CONFIG
@@ -168,7 +177,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Configure (see CURRENT/CONFIGURE.OUT)..."
 	@$(ECHO) "CC=$(CC) $(PKG_CONFIG_CONFIGURE_PREFIX)  ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
-	@cd CURRENT && (CC="$(CC)" $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@cd CURRENT && (export CC="$(CC)"; $(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building (see CURRENT/MAKE.OUT)..."
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
