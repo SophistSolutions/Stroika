@@ -75,6 +75,50 @@ namespace {
 
 
 
+namespace {
+    namespace Test4_MappingCTOROverloads_ {
+        namespace xPrivate_ {
+            struct A;
+            struct B;
+            struct A {
+                A() {}
+                A(const A&) {}
+                A(const B&) {}
+            };
+            struct B {
+                B() {}
+                B(const A&) {}
+                B(const B&) {}
+            };
+        }
+        void DoIt ()
+        {
+            using namespace xPrivate_;
+            Mapping<int, A> from;
+#if 0
+            bool xxx1 = std::is_convertible<const Mapping<int, A>*, const Mapping<int, B>*>::value;
+            bool xxx2 = Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, B>>::value;
+            using Common::KeyValuePair;
+            using KEY_TYPE = int;
+            using VALUE_TYPE = B;
+            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            bool xxxxx1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+            bool xxxxx2 = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value;
+            //bool xxxxx3 = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, VALUE_TYPE>>::value);
+            //bool xxxxx = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value;
+#endif
+            Mapping<int, B> to1;
+            for (auto i : from) {
+                to1.Add (i);
+            }
+            Mapping<int, B> to2 = from;
+        }
+    }
+}
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -127,6 +171,8 @@ namespace   {
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
 
         Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ();
+
+        Test4_MappingCTOROverloads_::DoIt ();
     }
 }
 
