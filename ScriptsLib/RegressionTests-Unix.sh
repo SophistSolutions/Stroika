@@ -100,18 +100,26 @@ fi
 
 
 if true ; then
-	echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT)"
-	make regression-test-configurations 2>&1 | tee REGRESSION-TESTS.OUT
+	STARTAT=`date`;
+	echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT) - started at $STARTAT"
+	rm -f REGRESSION-TESTS.OUT
+	make regression-test-configurations 2>&1 >> REGRESSION-TESTS.OUT
 
-	make clobber 2>&1 | tee REGRESSION-TESTS.OUT
-	make all $PARALELLMAKEFLAG 2>&1 | tee REGRESSION-TESTS.OUT
-	make run-tests 2>&1 | tee REGRESSION-TESTS.OUT
+	make clobber 2>&1 >> REGRESSION-TESTS.OUT
+	echo "Make all..."
+	make all $PARALELLMAKEFLAG 2>&1 >> REGRESSION-TESTS.OUT
 
-	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 | tee REGRESSION-TESTS.OUT
+	echo "Run-Tests ALL..."
+	make run-tests 2>&1 >> REGRESSION-TESTS.OUT
+
+	echo "Run-Tests raspberrypi remote..."
+	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 >> REGRESSION-TESTS.OUT
 
 	#test with usual set of valgrind suppressions
-	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 | tee REGRESSION-TESTS.OUT
+	echo "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
+	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 >> REGRESSION-TESTS.OUT
 
 	#slow, and largely useless test...
 	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG_WITH_VALGRIND VALGRIND=1 run-tests
+	echo "Finished at `date`"
 fi
