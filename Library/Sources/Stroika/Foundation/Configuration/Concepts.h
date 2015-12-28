@@ -143,8 +143,14 @@ namespace   Stroika {
             template    <typename T>
             constexpr bool  Container ()
             {
+#if 1
+               // no where near enough, but a start...
+				// IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesnt compile instead of returning false - we msut use has_beginend
+                return has_beginend<T>::value;
+#else
                 // about right?
                 return IsIterableOfT<T>::value;
+#endif
             }
 
 
