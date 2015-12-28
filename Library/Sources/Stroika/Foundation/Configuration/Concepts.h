@@ -134,17 +134,17 @@ namespace   Stroika {
                 };
                 template    <typename ITERABLE_OF_T, typename T>
                 struct  IsIterableOfT_Impl2_ {
-                    template    <typename X>
-                    static	auto	check (const X& x) ->
+                    template    <typename X, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value>
+                    static  auto    check (const X& x) ->
                     typename std::conditional <
                     has_beginend<ITERABLE_OF_T>::value and
-                    std::is_convertible <typename std::iterator_traits <begin_result<ITERABLE_OF_T>>::value_type, T>::value,
-                        substitution_succeeded <T>,
-                        substitution_failure
-                        >::type
-                        ;
-                    static	substitution_failure	check (...);
-                    using	type = decltype(check (declval<T> ()));
+                    ITER_RESULT_CONVERTIBLE_TO_T,
+                    substitution_succeeded <T>,
+                    substitution_failure
+                    >::type
+                    ;
+                    static  substitution_failure    check (...);
+                    using   type = decltype(check (declval<T> ()));
                 };
             }
             //template    <typename ITERABLE_OF_T, typename T>
