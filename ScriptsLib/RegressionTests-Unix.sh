@@ -100,17 +100,17 @@ fi
 
 
 if true ; then
-	echo "Resetting all configurations to standard regression test set"
-	make regression-test-configurations
+	echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT)"
+	make regression-test-configurations 2>&1 | tee REGRESSION-TESTS.OUT
 
-	make clobber
-	make all
-	make run-tests
+	make clobber 2>&1 | tee REGRESSION-TESTS.OUT
+	make all 2>&1 | tee REGRESSION-TESTS.OUT
+	make run-tests 2>&1 | tee REGRESSION-TESTS.OUT
 
-	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi
+	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 | tee REGRESSION-TESTS.OUT
 
 	#test with usual set of valgrind suppressions
-	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests
+	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 | tee REGRESSION-TESTS.OUT
 
 	#slow, and largely useless test...
 	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG_WITH_VALGRIND VALGRIND=1 run-tests
