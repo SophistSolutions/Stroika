@@ -98,7 +98,18 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
+	(cd Projects/Unix && BuildProjectsFiles.pl);\
+	cd ../IntermediateFiles/$activeConfig/;\
+	for i in $(TESTS); do\
+		tstName=`../../Tests/Scripts/GetTestName.pl ($tst)`;\
+		$(ECHO) "$PREFIX" "Test $$i: $$tstName:";\
+		$(MAKE) --directory Test/$$i -s all CONFIGURATION=$activeConfig ECHO_BUILD_LINES=$ECHO_BUILD_LINES MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+	done
+else
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
+endif
 endif
 
 
