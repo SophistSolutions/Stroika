@@ -126,7 +126,7 @@ namespace {
             using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             bool n1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
-            bool n2 = Configuration::IsIterableOfT2<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+            //bool n2 = Configuration::IsIterableOfT2<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
 
             using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
             using ttt =
