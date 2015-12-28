@@ -90,11 +90,60 @@ namespace {
                 B(const A&) {}
                 B(const B&) {}
             };
+
+            using Common::KeyValuePair;
+            using KEY_TYPE = int;
+            using VALUE_TYPE = B;
+            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+
+            struct aaaaaa {
+//              template    <typename X>
+                using X = T;
+                static auto check(const X& x) ->
+                std::conditional <
+                Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and
+                std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, T>::value,
+                    Configuration::substitution_succeeded <T>,
+                    Configuration::substitution_failure
+                    >::type
+                    ;
+//                  static Configuration::substitution_failure check (...);
+                using type = decltype(check(declval<T>()));
+            };
+
         }
         void DoIt ()
         {
             using namespace xPrivate_;
             Mapping<int, A> from;
+
+
+            using Common::KeyValuePair;
+            using KEY_TYPE = int;
+            using VALUE_TYPE = B;
+            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            bool n1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+            bool n2 = Configuration::IsIterableOfT2<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+
+            using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+            using ttt =
+                std::conditional <
+                Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and
+                std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, T>::value,
+                Configuration::substitution_succeeded <T>,
+                Configuration::substitution_failure
+                >::type;
+            const bool n3 = is_same<ttt, Configuration::substitution_failure>::value;
+
+            using aaaa3 = Configuration::Private_::IsIterableOfT_Impl2_<CONTAINER_OF_PAIR_KEY_T, T>::type;
+            const bool n4 = is_same<aaaa3, Configuration::substitution_failure>::value;
+
+            const bool n5 = is_same<aaaaaa::type, Configuration::substitution_failure>::value;
+
+
 #if 0
             bool xxx1 = std::is_convertible<const Mapping<int, A>*, const Mapping<int, B>*>::value;
             bool xxx2 = Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, B>>::value;

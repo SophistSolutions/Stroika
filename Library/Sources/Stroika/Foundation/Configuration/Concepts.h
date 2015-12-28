@@ -132,31 +132,28 @@ namespace   Stroika {
                     >
                 struct  IsIterableOfT_ : substitution_succeeded <T2> {
                 };
-                template    <
-                    typename ITERABLE_OF_T,
-                    typename T
-                    >
-                struct  T_result_impl_ {
+                template    <typename ITERABLE_OF_T, typename T>
+                struct  IsIterableOfT_Impl2_ {
                     template    <typename X>
-                    static auto check(const X& x) ->
+                    static	auto	check (const X& x) ->
                     typename std::conditional <
                     has_beginend<ITERABLE_OF_T>::value and
-                    std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value,
+                    std::is_convertible <typename std::iterator_traits <typename begin_result<ITERABLE_OF_T>>::value_type, T>::value,
                         substitution_succeeded <T>,
                         substitution_failure
                         >::type
                         ;
-                    static substitution_failure check (...);
-                    using type = decltype(check(declval<T>()));
+                    static	substitution_failure	check (...);
+                    using	type = decltype(check(declval<T>()));
                 };
             }
             //template    <typename ITERABLE_OF_T, typename T>
             //using  IsIterableOfT = Private_::IsIterableOfT_ <ITERABLE_OF_T, T>;
             template    <typename ITERABLE_OF_T, typename T>
-            using  IsIterableOfT2 = std::integral_constant <bool, not std::is_same <typename Private_::T_result_impl_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+            using  IsIterableOfT2 = std::integral_constant <bool, not std::is_same <typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
             template    <typename ITERABLE_OF_T, typename T>
-            using  IsIterableOfT = std::integral_constant <bool, not std::is_same <typename Private_::T_result_impl_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+            using  IsIterableOfT = std::integral_constant <bool, not std::is_same <typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
 
             /**
