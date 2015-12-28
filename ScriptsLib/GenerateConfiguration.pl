@@ -92,7 +92,7 @@ my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_LINKER_ARGS = "";
 my $CrossCompiling = "false";
-
+my $onlyGenerateIfCompilerExists = false;
 
 
 
@@ -130,6 +130,7 @@ sub	DoHelp_
         print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
         print("	    --apply-default-debug-flags                     /*  */\n");
         print("	    --apply-default-release-flags                   /*  */\n");
+        print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
 		
 	exit ($x);
 }
@@ -584,6 +585,9 @@ sub	ParseCommandLine_Remaining_
 			}
 			$CrossCompiling = $var;
 		}
+		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
+			$onlyGenerateIfCompilerExists = true;
+		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
 			$EXTRA_LINKER_ARGS .= " -pg";
@@ -790,10 +794,20 @@ sub	WriteConfigFile_
 
 mkdir ($configurationFiles);
 
-{
+my $generate = true;
+if ($onlyGenerateIfCompilerExists) {
+	if (trim (`./HasCompiler.sh $COMPILER_DRIVER_CPlusPlus`) eq "0") {
+		my $generate = false;
+	}
+}
+
+if ($generate) {
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
 	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\"...\n");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
+}
+else {
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoiked with --only-if-has-compiler\n");
 }
 
