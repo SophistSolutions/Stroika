@@ -104,7 +104,7 @@ if true ; then
 	make regression-test-configurations 2>&1 | tee REGRESSION-TESTS.OUT
 
 	make clobber 2>&1 | tee REGRESSION-TESTS.OUT
-	make all 2>&1 | tee REGRESSION-TESTS.OUT
+	make all $PARALELLMAKEFLAG 2>&1 | tee REGRESSION-TESTS.OUT
 	make run-tests 2>&1 | tee REGRESSION-TESTS.OUT
 
 	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 | tee REGRESSION-TESTS.OUT
