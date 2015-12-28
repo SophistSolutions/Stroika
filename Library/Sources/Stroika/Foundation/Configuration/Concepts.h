@@ -132,9 +132,31 @@ namespace   Stroika {
                     >
                 struct  IsIterableOfT_ : substitution_succeeded <T2> {
                 };
+                template    <
+                    typename ITERABLE_OF_T,
+                    typename T
+                    >
+                struct  T_result_impl_ {
+                    template    <typename X>
+                    static auto check(const X& x) ->
+                    typename std::conditional <
+                    has_beginend<ITERABLE_OF_T>::value and
+                    std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value,
+                        substitution_succeeded <T>,
+                        substitution_failure
+                        >::type
+                        ;
+                    static substitution_failure check (...);
+                    using type = decltype(check(declval<T>()));
+                };
             }
+            //template    <typename ITERABLE_OF_T, typename T>
+            //using  IsIterableOfT = Private_::IsIterableOfT_ <ITERABLE_OF_T, T>;
             template    <typename ITERABLE_OF_T, typename T>
-            using  IsIterableOfT = Private_::IsIterableOfT_ <ITERABLE_OF_T, T>;
+            using  IsIterableOfT2 = std::integral_constant <bool, not std::is_same <typename Private_::T_result_impl_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+
+            template    <typename ITERABLE_OF_T, typename T>
+            using  IsIterableOfT = std::integral_constant <bool, not std::is_same <typename Private_::T_result_impl_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
 
             /**
@@ -144,8 +166,8 @@ namespace   Stroika {
             constexpr bool  Container ()
             {
 #if 1
-               // no where near enough, but a start...
-				// IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesnt compile instead of returning false - we msut use has_beginend
+                // no where near enough, but a start...
+                // IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesnt compile instead of returning false - we msut use has_beginend
                 return has_beginend<T>::value;
 #else
                 // about right?
