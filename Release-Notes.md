@@ -18,10 +18,16 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a120">v2.0a120x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a120">v2.0a120</a><br/>2015-12-28</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Fixed make check</li>
+		<li>Fixed Configuration::IterableOfT</li>
+		<li>Fixed https://stroika.atlassian.net/browse/STK-422 - Bijection CTOR</li>
+		<li>Fixed small CTOR issue with levels of conversion in Mapping CTOR - added regression test to capture</li>
+		<li>Make tests speed improvements (less use of perl so -j works more)</li>
+		<li>configure --only-if-has-compiler support</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, cross-compile-raspberry-pi, and valgrind;</li>
 	</ul>
 </td>
 </tr>
