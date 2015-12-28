@@ -4,6 +4,7 @@ ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl
 
 TESTS=	        $(shell perl ScriptsLib/PrintTestsList.pl)
 
+ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 
@@ -100,12 +101,12 @@ ifeq ($(CONFIGURATION),)
 else
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-	(cd Projects/Unix && BuildProjectsFiles.pl);\
-	cd ../IntermediateFiles/$activeConfig/;\
+	(cd Projects/Unix && ./BuildProjectsFiles.pl);\
+	cd ../IntermediateFiles/$(CONFIGURATION)/;\
 	for i in $(TESTS); do\
-		tstName=`../../Tests/Scripts/GetTestName.pl ($tst)`;\
-		$(ECHO) "$PREFIX" "Test $$i: $$tstName:";\
-		$(MAKE) --directory Test/$$i -s all CONFIGURATION=$activeConfig ECHO_BUILD_LINES=$ECHO_BUILD_LINES MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+		tstName=`../../Tests/ScriptsLib/PrintTestName.pl $$i`;\
+		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
+		$(MAKE) --directory Test$$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2));\
 	done
 else
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
