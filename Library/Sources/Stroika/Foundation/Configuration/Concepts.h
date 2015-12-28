@@ -123,7 +123,7 @@ namespace   Stroika {
             namespace Private_ {
                 template    <typename ITERABLE_OF_T, typename T>
                 struct  IsIterableOfT_Impl2_ {
-                    template    <typename X, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value>
+                    template    <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>::value>
                     static  auto    check (const X& x) ->
                     typename std::conditional <
                     has_beginend<ITERABLE_OF_T>::value and
