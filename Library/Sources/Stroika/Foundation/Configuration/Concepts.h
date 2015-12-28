@@ -118,20 +118,9 @@ namespace   Stroika {
 
 
             /**
-             *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absense) for vs2k13
+             *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absence) for vs2k13
              */
             namespace Private_ {
-                template    <
-                    typename ITERABLE_OF_T,
-                    typename T,
-                    typename ITER_RESULT_TYPE = begin_result<ITERABLE_OF_T>,
-                    typename T2 = typename enable_if <
-                        has_beginend<ITERABLE_OF_T>::value and
-                        std::is_convertible<typename std::iterator_traits<ITER_RESULT_TYPE>::value_type, T>::value
-                        >::type
-                    >
-                struct  IsIterableOfT_ : substitution_succeeded <T2> {
-                };
                 template    <typename ITERABLE_OF_T, typename T>
                 struct  IsIterableOfT_Impl2_ {
                     template    <typename X, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<ITERABLE_OF_T>>::value_type, T>::value>
@@ -147,11 +136,6 @@ namespace   Stroika {
                     using   type = decltype(check (declval<T> ()));
                 };
             }
-            //template    <typename ITERABLE_OF_T, typename T>
-            //using  IsIterableOfT = Private_::IsIterableOfT_ <ITERABLE_OF_T, T>;
-            template    <typename ITERABLE_OF_T, typename T>
-            using  IsIterableOfT2 = std::integral_constant <bool, not std::is_same <typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
-
             template    <typename ITERABLE_OF_T, typename T>
             using  IsIterableOfT = std::integral_constant <bool, not std::is_same <typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
@@ -162,7 +146,7 @@ namespace   Stroika {
             template    <typename T>
             constexpr bool  Container ()
             {
-#if 1
+#if 0
                 // no where near enough, but a start...
                 // IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesnt compile instead of returning false - we msut use has_beginend
                 return has_beginend<T>::value;
