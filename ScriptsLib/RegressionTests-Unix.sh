@@ -10,15 +10,8 @@ PARALELLMAKEFLAG=-j4
 rm -rf $TEST_OUT_DIR
 
 
-function hasCompiler
-{
-	COMPILER_DRIVER="$1"
-	echo "#include <stdio.h>" > /tmp/foo.cpp
-	cd /tmp && ($COMPILER_DRIVER -c /tmp/foo.cpp 2>&1 > /dev/null) || (echo "0" ; return 0)
-	rm /tmp/foo.cpp
-	echo "1"
-}
 
+### STUFF TO STEAL FROM TO MAKE SEPARTE REGOUT FILES
 function doOneTest
 {
 	TESTNAME=$1
@@ -27,36 +20,7 @@ function doOneTest
 	CONFIG_ARGS=$4
 	EXTRA_MAKE_RUNTESTS_ARGS=$5
 
-	mkdir -p $TEST_OUT_DIR
-	OUT_FILE_NAME="$TEST_OUT_DIR/$TESTNAME"
-
-	echo "Running Test $TESTNAME (see $OUT_FILE_NAME)"
-	echo -n "   cfg=($CONFIG_ARGS)..."
-	rm -f $OUT_FILE_NAME
-
-	COMP2TEST=$COMPILER_DRIVER_WITH_EXTRA_ARGS2TEST
-	if [ "$COMP2TEST" == "" ]; then
-		COMP2TEST=$COMPILER_DRIVER
-	fi
-	if [ "$COMP2TEST" != "" ]; then
-		tmp=$(hasCompiler "$COMP2TEST")
-		if [ "$tmp" == "1" ] ; then
-			if [ "$COMPILER_DRIVER" != "" ]; then
-				CONFIG_ARGS=$CONFIG_ARGS" --compiler-driver $COMPILER_DRIVER"
-			fi
-		else
-			echo && echo "   skipping because $COMP2TEST cuz not installed"
-			return 0
-		fi
-	fi
-
-	((rm -rf ConfigurationFiles; ./configure DefaultConfiguration $CONFIG_ARGS 2>&1) >> $OUT_FILE_NAME ) || (echo && echo "   fail" && exit 77;)
-
-	echo -n "."
-	make clobber 2>&1 >> $OUT_FILE_NAME
-	echo -n "."
-	(make all $PARALELLMAKEFLAG >> $OUT_FILE_NAME 2>&1) || (echo 'make all failed' ; exit 1;)
-	echo -n "."
+	####
 	(make run-tests $EXTRA_MAKE_RUNTESTS_ARGS >> $OUT_FILE_NAME 2>&1)  || (echo 'make run-tests failed' ; exit 77;)
 	X1=`cat $OUT_FILE_NAME | grep seconds | grep -F [Succeeded] | wc -l`
 	XF=`cat $OUT_FILE_NAME | grep -F FAILED | wc -l`
@@ -77,49 +41,25 @@ function doOneTest
 
 
 
-if false ; then
-	doOneTest "DEFAULT_CONFIG" "" "" ""
-	doOneTest "gcc-5.2.0-release" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
-	doOneTest "gcc-5.2.0-debug-c++17" "/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1z" ""
-	doOneTest "gcc49-release" "g++-4.9" "" "--assertions disable --trace2file enable --cpp-optimize-flag -O3" ""
-	doOneTest "gcc49-debug-no-TPP" "g++-4.9" "" "--assertions enable --trace2file enable --LibCurl no --OpenSSL no --Xerces no" ""
-	doOneTest "gcc-4.8.4-debug" "/home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc" "" "--assertions enable --trace2file enable" ""
-	doOneTest "gcc48-release" "g++-4.8" "" "--assertions disable --trace2file disable --cpp-optimize-flag -O3" ""
-	doOneTest "clang++-3.5-debug" "clang++-3.5" "" "--assertions enable --trace2file enable" "" 
-	doOneTest "clang++-3.6-debug" "clang++-3.6" "" "--assertions enable --trace2file enable --cppstd-version-flag --std=c++1y" ""
-	#TESTING if -L needed
-	#doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  '-m32 -L/usr/lib32/' --static-link-gccruntime disable" ""
-	doOneTest "gcc-release-32" "" "gcc -m32" "--trace2file enable --assertions enable --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable" ""
-	#disable blockalloc, and valgrind, so we test with minimal valgrind suppressions
-	doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_NO_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify --block-allocation disable" "VALGRIND=1"
-	#test with usual set of valgrind suppressions
-	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp BlockAllocation-Valgrind.supp"  doOneTest "DEFAULT_CONFIG_WITH_VALGRIND_PURIFY_WITH_BLOCK_ALLOC" "" "" "--openssl use --openssl-extraargs purify" "VALGRIND=1"
-	#slow, and largely useless test...
-	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" doOneTest "DEFAULT_CONFIG_WITH_VALGRIND" "" "" "" "VALGRIND=1"
-fi
+STARTAT=`date`;
+echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT) - started at $STARTAT"
+rm -f REGRESSION-TESTS.OUT
+make regression-test-configurations 2>&1 >> REGRESSION-TESTS.OUT
 
+make clobber 2>&1 >> REGRESSION-TESTS.OUT
+echo "Make all..."
+make all $PARALELLMAKEFLAG 2>&1 >> REGRESSION-TESTS.OUT
 
-if true ; then
-	STARTAT=`date`;
-	echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT) - started at $STARTAT"
-	rm -f REGRESSION-TESTS.OUT
-	make regression-test-configurations 2>&1 >> REGRESSION-TESTS.OUT
+echo "Run-Tests ALL..."
+make run-tests 2>&1 >> REGRESSION-TESTS.OUT
 
-	make clobber 2>&1 >> REGRESSION-TESTS.OUT
-	echo "Make all..."
-	make all $PARALELLMAKEFLAG 2>&1 >> REGRESSION-TESTS.OUT
+echo "Run-Tests raspberrypi remote..."
+make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 >> REGRESSION-TESTS.OUT
 
-	echo "Run-Tests ALL..."
-	make run-tests 2>&1 >> REGRESSION-TESTS.OUT
+#test with usual set of valgrind suppressions
+echo "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
+VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 >> REGRESSION-TESTS.OUT
 
-	echo "Run-Tests raspberrypi remote..."
-	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 >> REGRESSION-TESTS.OUT
-
-	#test with usual set of valgrind suppressions
-	echo "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
-	VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 >> REGRESSION-TESTS.OUT
-
-	#slow, and largely useless test...
-	#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG_WITH_VALGRIND VALGRIND=1 run-tests
-	echo "Finished at `date`"
-fi
+#slow, and largely useless test...
+#VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG_WITH_VALGRIND VALGRIND=1 run-tests
+echo "Finished at `date`"
