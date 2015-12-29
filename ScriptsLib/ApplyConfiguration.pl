@@ -185,13 +185,26 @@ my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Library/Configu
 my $stkRoot	=	trim(`realpath .`);
 
 
+sub mkSymLink
+{
+	local $from = $_[0];
+	local $to = $_[1];
+	if ("$^O" eq "cygwin") {
+		# sometimes doesn't work on cygwin (JohnB's machine), but not needed anyhow... @todo find a way to make this work!!!
+	}
+	else {
+		system ("ln -s $from $to");
+	}
+}
+
+
 sub mkDirWithLinks
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
+	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
@@ -199,7 +212,7 @@ sub mkDirWithLinks2
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	system ("ln $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
+	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks3
 {
@@ -207,7 +220,7 @@ sub mkDirWithLinks3
 	local $makefileName = $_[1];
 
 	mkdir "$intermediateFiles/$activeConfiguration/Library/$relPath";
-	system ("ln -s $stkRoot/Library/Projects/Unix/$makefileName $intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
+	mkSymLink ("$stkRoot/Library/Projects/Unix/$makefileName", "$intermediateFiles$activeConfiguration/Library/$relPath/Makefile");
 }
 
 
@@ -221,7 +234,7 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$activeConfiguration/Library/Foundation";
 		mkdir "$intermediateFiles$activeConfiguration/Library/Frameworks";
 
-		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Foundation $intermediateFiles/$activeConfiguration/Library/Foundation/Makefile");
+		mkSymLink ("$stkRoot/Library/Projects/Unix/Makefile-Foundation", "$intermediateFiles/$activeConfiguration/Library/Foundation/Makefile");
 		#system ("cp Library/Projects/Unix/Configuration-Default.mk $intermediateFiles$activeConfiguration/Library/Configuration.mk");
 		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
 		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
@@ -269,7 +282,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 		mkDirWithLinks("Foundation/Traversal", "Makefile-Foundation-Traversal");
 
-		system ("ln -s $stkRoot/Library/Projects/Unix/Makefile-Frameworks $intermediateFiles$activeConfiguration/Library/Frameworks/Makefile");
+		mkSymLink ("$stkRoot/Library/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Library/Frameworks/Makefile");
 
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
 		mkDirWithLinks("Frameworks/UPnP", "Makefile-Frameworks-UPnP");
@@ -285,31 +298,31 @@ sub MakeUnixDirs {
 		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/";
 		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer";
 		mkdir "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks $intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer $intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
-		system ("ln -s $stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
+		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Tools/Frameworks/Makefile");
+		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer",  "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/Makefile");
+		mkSymLink ("$stkRoot/Tools/Projects/Unix/Makefile-Frameworks-WebServer-HTMLViewCompiler", "$intermediateFiles$activeConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility";
-		system ("ln -s $stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
+		mkSymLink ("$stkRoot/Samples/ArchiveUtility/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_ArchiveUtility/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPClient";
-		system ("ln -s $stkRoot/Samples/SSDPClient/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SSDPClient/Makefile");
+		mkSymLink ("$stkRoot/Samples/SSDPClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPClient/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_SSDPServer";
-		system ("ln -s $stkRoot/Samples/SSDPServer/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SSDPServer/Makefile");
+		mkSymLink ("$stkRoot/Samples/SSDPServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SSDPServer/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient";
-		system ("ln -s $stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient/Makefile");
+		mkSymLink ("$stkRoot/Samples/SystemPerformanceClient/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SystemPerformanceClient/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_WebServer";
-		system ("ln -s $stkRoot/Samples/WebServer/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_WebServer/Makefile");
+		mkSymLink ("$stkRoot/Samples/WebServer/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_WebServer/Makefile");
 
 		mkdir "$intermediateFiles$activeConfiguration/Samples_SimpleService";
-		system ("ln -s $stkRoot/Samples/SimpleService/Projects/Unix/Makefile $intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
+		mkSymLink ("$stkRoot/Samples/SimpleService/Projects/Unix/Makefile", "$intermediateFiles$activeConfiguration/Samples_SimpleService/Makefile");
 
 		foreach $tst (GetAllTests ()) {
 			mkdir "$intermediateFiles$activeConfiguration/Test$tst";
-			system ("ln -s $stkRoot/Tests/Projects/Unix/$tst/Makefile $intermediateFiles$activeConfiguration/Test$tst/Makefile");
+			mkSymLink ("$stkRoot/Tests/Projects/Unix/$tst/Makefile", "$intermediateFiles$activeConfiguration/Test$tst/Makefile");
 		}
 	}
 }
