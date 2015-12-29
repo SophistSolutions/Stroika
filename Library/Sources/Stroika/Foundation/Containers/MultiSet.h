@@ -24,7 +24,7 @@
  *
  *  TODO:
  *
- *      @todo   Replace MultiSetEntry with KeyValiuePair<T,count>
+ *      @todo   https://stroika.atlassian.net/browse/STK-428 - lose operator== on MultiSetEntry
  *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
@@ -43,7 +43,7 @@
  *              MultiSet<T>!!!!
  *
  *      @todo   Fix MultiSet<> CTOR overload taking pointers (sb iterators) - overload so both cases -
- *              Iterator<T> and Iterator<MultisetEntry<T>>.
+ *              Iterator<T> and Iterator<MultisetEntry<T>>. Ise enableOf(isconvertible....)
  *
  *      @todo   Consider rewriting all MultiSet<> concrete types using Mapping<T,counttype> concrete impl?
  *              Might not work easily but document why... (Add () semantics - but maybe).
