@@ -253,6 +253,7 @@ namespace {
         struct  Person_ {
             String firstName;
             String lastName;
+            bool operator == (const Person_& rhs) const { return firstName == rhs.firstName and lastName == rhs.lastName; }
         };
         Memory::BLOB    mkdata_ ()
         {
@@ -292,14 +293,34 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             vector<Person_> people;
-            ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ReadDownToReader> (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2"))) };
-            XML::SAXParse (mkdata_ (), ctx);
+            {
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (make_shared<ObjectReaderRegistry::ListOfObjectReader<vector<Person_>>> (&people, Name (L"WithWhom")), Name (L"envelope2")) };
+                XML::SAXParse (mkdata_ (), ctx);
 
-            VerifyTestResult (people.size () == 2);
-            VerifyTestResult (people[0].firstName == L"Jim");
-            VerifyTestResult (people[0].lastName == L"Smith");
-            VerifyTestResult (people[1].firstName == L"Fred");
-            VerifyTestResult (people[1].lastName == L"Down");
+                VerifyTestResult (people.size () == 2);
+                VerifyTestResult (people[0].firstName == L"Jim");
+                VerifyTestResult (people[0].lastName == L"Smith");
+                VerifyTestResult (people[1].firstName == L"Fred");
+                VerifyTestResult (people[1].lastName == L"Down");
+            }
+
+            vector<Person_> people2;    // add the vector type to the registry instead of explicitly constructing the right reader
+            {
+                ObjectReaderRegistry newRegistry = registry;
+                newRegistry.AddCommonType<vector<Person_>> (Name (L"WithWhom"));
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, newRegistry.mkReadDownToReader (newRegistry.MakeContextReader (&people2), Name (L"envelope2")) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (people2 == people);
+            }
+
+            Sequence<Person_> people3;  // use sequence instead of vector
+            {
+                ObjectReaderRegistry newRegistry = registry;
+                newRegistry.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { newRegistry, newRegistry.mkReadDownToReader (newRegistry.MakeContextReader (&people3), Name (L"envelope2")) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (people3.As<vector<Person_>> () == people);
+            }
         }
     }
 

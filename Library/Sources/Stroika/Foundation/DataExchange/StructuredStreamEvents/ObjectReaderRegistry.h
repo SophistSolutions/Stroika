@@ -120,7 +120,18 @@ namespace   Stroika {
                  *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
                  *      });
                  *      Person_ p;
-                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmp (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx1 (mapper, mapper.mkReadDownToReader (mapper.MakeContextReader (&p)));
+                 *      XML::SAXParse (mkdata_ (), tmpCtx1);
+                 *      \endcode
+                 *
+                 *  \par Example Usage2
+                 *      @see T3_SAXObjectReader_ReadDown2Sample_ in RegressionTest 'Foundation::DataExchangeFormat::XML::SaxParser'
+                 *
+                 *      \code
+                 *      .. start with the types and mapper from Example 1, and add
+                 *      Sequence<Person_> people;
+                 *      mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext tmpCtx2 { mapper, mapper.mkReadDownToReader (newRegistry.MakeContextReader (&people)) };
                  *      XML::SAXParse (mkdata_ (), tmp);
                  *      \endcode
                  */
