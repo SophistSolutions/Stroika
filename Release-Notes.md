@@ -17,13 +17,17 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a121">v2.0a121x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a121">v2.0a121</a><br/>2015-12-29</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Minor docs changes</li>
+		<li>Fixed scripting issue that was causing problems (ln -s cygwin) on JohnB's computer</li>
+		<li>Quick emergency release - little tested - cuz little changed</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 
