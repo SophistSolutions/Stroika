@@ -42,7 +42,7 @@ namespace   Stroika {
              *  @todo - make this constexpr
              */
             template    <typename T>
-            T   EndianConverter (T value, Endian from, Endian to = GetEndianness ());
+            T   EndianConverter (T value, Endian from, Endian to);
             template    <>
             uint16_t    EndianConverter (uint16_t value, Endian from, Endian to);
             template    <>
