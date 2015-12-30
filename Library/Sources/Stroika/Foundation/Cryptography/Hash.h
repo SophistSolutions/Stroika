@@ -16,9 +16,6 @@
 /*
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
- *  TODO:
- *      @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26 -- AIX
- *
  */
 
 
@@ -32,12 +29,14 @@ namespace   Stroika {
              *  series of bits which as closely as practical uniquely bijectively maps between
              *  the series of input bytes and the series of output bits.
              *
-             *  The main difference between a Digest and a Hash, more a focus on how its used. A Hash
+             *  The main difference between a Digest and a Hash, is more a focus on how its used. A Hash
              *  is typically required to be more quick, and often works on a variety of input types (int, string
              *  etc), and maps to often smaller sequences of bits (say 32-bit number).
              *
+             *  A hash makes NO EFFORT to rem
+             *
              *  So this class uses the Digist mechanism to allow users to easily map differnt types to
-             *  a sequence of 'bytes' in normalized form, and hten allows them to be digested, and then the digest
+             *  a sequence of 'bytes' in normalized form, and then allows them to be digested, and then the digest
              *  mapped to a (typically) small number (32-bit integer for example).
              *
              *
@@ -50,9 +49,11 @@ namespace   Stroika {
              *  This Adpater takes care of the general part of mapping the inputs and outputs to/from
              *  common forms, and then makes generic the actual hash computing algorithm.
              *
-             *  \note Endianness - the digest algorithms logically return an array of bytes, so if (typical case
+             *  \note   Endianness - the digest algorithms logically returns an array of bytes, so in a typical use case
              *          HASH_RETURN_TYPE is a numeric type like uin32_t, then the hash numerical value will depend on
              *          integer endianness of the machine.
+             *
+             *          Use the digest directly if you need a portable, externalizable digest value.
              *
              *  \par Example Usage
              *      \code

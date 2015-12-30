@@ -71,6 +71,22 @@ namespace   Stroika {
                 }
             }
 
+            namespace Private_ {
+                template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                inline  HASH_RETURN_TYPE  Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>::type* = nullptr)
+                {
+                    // Just pass in pointers directly, and dont make a BLOB memory object (speed hack)
+                    // note - no need to optimize mkReturnType_ is already optimizable way for common case of arithmetic types
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash) + sizeof (data2Hash)));
+                }
+                template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
+                HASH_RETURN_TYPE  Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<not is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>::type* = nullptr)
+                {
+                    Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash);
+                    return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));
+                }
+            }
+
 
             /*
              ********************************************************************************
@@ -78,10 +94,9 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
-            HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash)
+            inline  HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash)
             {
-                Memory::BLOB    blob = Private_::SerializeForHash_ (data2Hash);
-                return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));
+                return Private_::Hash_SimpleHash_<DIGESTER, TYPE_TO_COMPUTE_HASH_OF, HASH_RETURN_TYPE> (data2Hash);
             }
             template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
             HASH_RETURN_TYPE  Hash (TYPE_TO_COMPUTE_HASH_OF data2Hash, const Memory::BLOB& salt)
