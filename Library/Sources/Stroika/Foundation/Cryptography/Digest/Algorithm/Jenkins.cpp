@@ -16,7 +16,7 @@ namespace {
     /*
      *  Implementation based on text from http://en.wikipedia.org/wiki/Jenkins_hash_function on 2013-05-30
      */
-    void    DoMore_(uint32_t* hash2Update, const Byte* from, const Byte* to)
+    inline  void    DoMore_(uint32_t* hash2Update, const Byte* from, const Byte* to)
     {
         RequireNotNull (hash2Update);
         uint32_t    hash    =   (*hash2Update);
@@ -27,7 +27,7 @@ namespace {
         }
         (*hash2Update) = hash;
     }
-    void    DoEnd_(uint32_t* hash2Update)
+    inline  void    DoEnd_(uint32_t* hash2Update)
     {
         RequireNotNull (hash2Update);
         uint32_t    hash    =   (*hash2Update);
