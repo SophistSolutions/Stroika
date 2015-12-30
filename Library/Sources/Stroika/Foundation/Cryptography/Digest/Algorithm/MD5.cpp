@@ -157,7 +157,7 @@ namespace   {
         (a) += (b); \
     }
 
-    void MD5Init_ (MD5_CTX* mdContext)
+    inline  void    MD5Init_ (MD5_CTX* mdContext)
     {
         mdContext->i[0] = mdContext->i[1] = (UINT4)0;
 
@@ -169,7 +169,7 @@ namespace   {
         mdContext->buf[3] = (UINT4)0x10325476;
     }
 
-    void MD5Update_ (MD5_CTX* mdContext, const unsigned char* inBuf, unsigned int inLen)
+    void    MD5Update_ (MD5_CTX* mdContext, const unsigned char* inBuf, unsigned int inLen)
     {
         UINT4 in[16];
         int mdi;
@@ -201,7 +201,7 @@ namespace   {
         }
     }
 
-    void MD5Final_ (MD5_CTX* mdContext)
+    void    MD5Final_ (MD5_CTX* mdContext)
     {
         UINT4 in[16];
         int mdi;
