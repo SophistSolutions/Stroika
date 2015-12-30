@@ -20,10 +20,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a122">v2.0a122x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a122">v2.0a122</a><br/>2015-12-30</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Minor tweaks to Cryptography / Digest code.</li>
+		<li>Untested release.</li>
 	</ul>
 </td>
 </tr>
