@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
 //  Foundation::Cryptography
 #include    "Stroika/Foundation/StroikaPreComp.h"

@@ -336,7 +336,7 @@ sub WriteStroikaConfigCHeader
 	#open(OUT,">$configFileCName");
 	open(OUT,">:crlf", "$configFileCName");
 	print (OUT "/*\n");
-	print (OUT " * Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved\n");
+	print (OUT " * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved\n");
 	print (OUT " */\n");
 	print (OUT "#ifndef	_Stroika_Foundation_Configuration_StroikaCurrentConfiguration_h_\n");
 	print (OUT "#define	_Stroika_Foundation_Configuration_StroikaCurrentConfiguration_h_	1\n");
@@ -514,7 +514,7 @@ sub WriteStroikaConfigMakeHeader
 	
 	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");
-	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2015.  All rights reserved\n");
+	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved\n");
 	print (OUT "#\n");
 	print (OUT "\n");
 	print (OUT "\n");
