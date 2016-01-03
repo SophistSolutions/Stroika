@@ -41,19 +41,6 @@ using   Stroika::Foundation::Time::Duration;
  */
 
 
-/*
- * TODO:
- *      @todo   POSIX/C++ code below on wait is a bit of a KLUGE. Unclear if it was a red-herring or
- *              something like that needed. Review once threading stuff stable.
- *                  -- LGP 2011-10-27
- *              NB: its been working and stable for quite a while. It could use cleanup/docs (working on that).
- *              and the timeout part maybe wrong (esp with signals). But it appears to mostly be
- *              correct.
- */
-
-
-
-
 
 /*
  ********************************************************************************
