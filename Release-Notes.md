@@ -21,10 +21,10 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a122">v2.0a123x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a122">v2.0a123</a><br/>2015-12-??</td>
 <td>
 	<ul>
-		<li>TODO.</li>
+		<li>Just updated copyrights for 2016.</li>
 	</ul>
 </td>
 </tr>
