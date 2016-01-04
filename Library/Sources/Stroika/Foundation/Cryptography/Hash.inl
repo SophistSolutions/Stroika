@@ -75,6 +75,7 @@ namespace   Stroika {
                 template    <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
                 inline  HASH_RETURN_TYPE  Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>::type* = nullptr)
                 {
+                    using   Memory::Byte;
                     // Just pass in pointers directly, and dont make a BLOB memory object (speed hack)
                     // note - no need to optimize mkReturnType_ is already optimizable way for common case of arithmetic types
                     return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash) + sizeof (data2Hash)));
