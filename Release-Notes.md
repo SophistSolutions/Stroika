@@ -21,10 +21,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a124">v2.0a124x</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a124">v2.0a124</a><br/>2016-01-04</td>
 <td>
 	<ul>
-		<li>Just updated copyrights for 2016.</li>
+		<li>Consolidate and test minor tweaks.</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc49(32-bit x compile - but limited - no tpp libs), gcc52, pcc-AIX/gcc49, clang++3.5, clang++3.6, cross-compile-raspberry-pi, and valgrind;</li>
 	</ul>
 </td>
 </tr>
