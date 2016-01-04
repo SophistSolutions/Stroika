@@ -21,13 +21,28 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a122">v2.0a123</a><br/>2015-12-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a124">v2.0a124x</a><br/>2015-12-??</td>
 <td>
 	<ul>
 		<li>Just updated copyrights for 2016.</li>
 	</ul>
 </td>
 </tr>
+
+
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a123">v2.0a123</a><br/>2016-01-03</td>
+<td>
+	<ul>
+		<li>Just updated copyrights for 2016.</li>
+	</ul>
+</td>
+</tr>
+
+
 
 
 
