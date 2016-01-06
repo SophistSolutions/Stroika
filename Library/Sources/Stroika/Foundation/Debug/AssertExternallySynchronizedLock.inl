@@ -30,42 +30,41 @@ namespace   Stroika {
             inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src)
                 : AssertExternallySynchronizedLock ()
             {
-                Require (src.fLocks_ == 0 and src.fSharedLocks_ == 0);  // to move, the src can have no locks of any kind (since we change src)
+                Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ());  // to move, the src can have no locks of any kind (since we change src)
             }
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };    // to copy, the src can have shared_locks, but no (write) locks
-                lock_guard<const AssertExternallySynchronizedLock> critSec2 { *this };  // We must not have any locks going to replace this
+                Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ());        // We must not have any locks going to replace this
                 return *this;
             }
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock && rhs)
             {
-                Require (rhs.fLocks_ == 0 and rhs.fSharedLocks_ == 0);  // to move, the rhs can have no locks of any kind (since we change rhs)
+                Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ());    // to move, the rhs can have no locks of any kind (since we change rhs)
+                Require (fLocks_ == 0 and fSharedLockThreads_.empty ());            // ditto for thing being assigned to
                 return *this;
             }
             inline  void    AssertExternallySynchronizedLock::lock () const
             {
 #if     qDebug
                 if (fLocks_++ == 0) {
-                    if (fSharedLocks_ == 0) {
-                        // If first time in, save thread-id
-                        fCurThread_ = this_thread::get_id ();
-                    }
-                    else {
+                    // If first time in, save thread-id
+                    fCurLockThread_ = this_thread::get_id ();
+                    if (not fSharedLockThreads_.empty ()) {
                         // If first already shared locks - OK - so long as same thread
-                        Require (fCurThread_ == this_thread::get_id ());
+                        Require (fSharedLockThreads_.count (fCurLockThread_) == fSharedLockThreads_.size ());
                     }
                 }
                 else {
-                    // If first already locks - OK - so long as same thread
-                    Require (fCurThread_ == this_thread::get_id ());
+                    // If first already locked - OK - so long as same thread
+                    Require (fCurLockThread_ == this_thread::get_id ());
                 }
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock () const
             {
 #if     qDebug
-                Require (fCurThread_ == this_thread::get_id ());
+                Require (fCurLockThread_ == this_thread::get_id ());
                 Require (fLocks_ > 0);  // else unbalanced
                 --fLocks_;
 #endif
@@ -73,30 +72,21 @@ namespace   Stroika {
             inline  void    AssertExternallySynchronizedLock::lock_shared () const
             {
 #if     qDebug
-                if (fSharedLocks_++ == 0) {
-                    if (fLocks_ == 0) {
-                        // If first time in, save thread-id
-                        fCurThread_ = this_thread::get_id ();
-                    }
-                    else {
-                        // If first already locks - OK - so long as same thread
-                        Require (fCurThread_ == this_thread::get_id ());
-                    }
+                // OK to shared lock from various threads
+                // But if already locked, NOT OK (would have blocked in real impl) - if you try to shared lock from another thread while locked
+                if (fLocks_ != 0) {
+                    // If first already locks - OK - so long as same thread
+                    Require (fCurLockThread_ == this_thread::get_id ());
                 }
-                else {
-                    // if incrementing shared lock count, no problem if other shared locks on differnt threads.
-                    // @todo NOTE - we MISS the case where we are incrementing shared lock (read lock) when another thread has locked!
-                    // cuz we currently only store fCurThread_ in one var for readers and writers. Probs need to separate this!!!
-                    // --LGP 2015-12-24
-                }
+
+                fSharedLockThreads_.insert (this_thread::get_id ());
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock_shared () const
             {
 #if     qDebug
-                Require (fCurThread_ == this_thread::get_id ());
-                Require (fSharedLocks_ > 0);  // else unbalanced
-                --fSharedLocks_;
+                Require (fSharedLockThreads_.find (this_thread::get_id ()) != fSharedLockThreads_.end ());  // else unbalanced
+                fSharedLockThreads_.erase (fSharedLockThreads_.find (this_thread::get_id ()));
 #endif
             }
 

@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <atomic>
+#include    <set>
 #include    <thread>
 
 #include    "../Configuration/Common.h"
@@ -21,13 +22,8 @@
  *
  *  TODO:
  *
- *      @todo   We should add a RECURSIVE AssertExternallySynchronizedLock (or CTOR flag??). So we can check diff
- *              threads but allow recursive code.
- *
- *      @todo   Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
- *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
- *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
- *              Optioanl<> use without synchronized, if all readers, but as soon as a writer gets into the party – assert out!
+ *      @todo   Shared Lock and Lock code now uncertain, and probably still a bit buggy, but closer to right semantics...
+ *              Review/test...
  */
 
 
@@ -51,6 +47,9 @@ namespace   Stroika {
              *  In debug builds, it enforces this fact through assertions.
              *
              *  \note   This doesn't gaurnatee catching all races, but it catches many incorrect thread usage cases
+             *
+             *  \note   This may 'catch' a race by having its internal data structures (multiset) corrupted. Interpret
+             *          corrupt multiset as a likely race indicator
              *
              *  Use this as a BASECLASS instead of directly aggregating, due to C++'s queer
              *  rules about sizeof() and members (all at least sizeof byte), but that does not apply
@@ -82,7 +81,8 @@ namespace   Stroika {
             class   AssertExternallySynchronizedLock {
             public:
                 /**
-                 *  \note   Copy/Move constructor locks and unlocks quickly to detect if other locks exist while copying.
+                 *  \note   Copy/Move constructor checks for existing locks while copying.
+                 *          Must be able to readlock source on copy, and have zero existing locks on target or move.
                  */
 #if     !qDebug
                 constexpr
@@ -93,7 +93,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \note   operator= locks and unlocks quickly to detect if other locks exist while copying.
+                 *  \note   operator= checks for existing locks while copying.
+                 *          Must be able to readlock source on copy, and have zero existing locks on target or move.
                  */
                 nonvirtual  AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock && rhs);
                 nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
@@ -143,8 +144,8 @@ namespace   Stroika {
 #if     qDebug
             private:
                 mutable atomic_uint_fast32_t    fLocks_ { 0 };
-                mutable atomic_uint_fast32_t    fSharedLocks_ { 0 };
-                mutable thread::id              fCurThread_;
+                mutable thread::id              fCurLockThread_;
+                mutable multiset<thread::id>    fSharedLockThreads_;
 #endif
             };
 
