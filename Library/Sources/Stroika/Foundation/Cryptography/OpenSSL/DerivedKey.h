@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/BLOB.h"
 #include    "../../Memory/Common.h"
@@ -33,6 +34,7 @@ namespace   Stroika {
             namespace OpenSSL {
 
 
+                using   Characters::String;
                 using   Memory::BLOB;
                 using   Memory::Byte;
                 using   Memory::Optional;
@@ -55,14 +57,15 @@ namespace   Stroika {
                      * nrounds is the number of times the we hash the material. More rounds are more secure but
                      * slower.
                      *
-                     *  For the string and wstring overloads, we treat the strings as an array of bytes (len*sizeofchar or len*sizeof(wchar_t)) long.
+                     *  For the string overload, we treat the strings as an array of bytes (len bytes) long.
+                     *  For the String overload, we convert to UTF8 and treat as string (so L"fred" and "fred" produce the same thing).
                      */
                     DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                     DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const wstring& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
+                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
                 };
 #endif
 

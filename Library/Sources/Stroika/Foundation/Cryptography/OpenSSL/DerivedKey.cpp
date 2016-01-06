@@ -48,11 +48,9 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* ciphe
 {
     Require (nRounds >= 1);
     RequireNotNull (cipherAlgorithm);
-
     SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
     SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
-
-    int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, passwd.second - passwd.first, nRounds, useKey.begin (), useIV.begin ());
+    int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, static_cast<int> (passwd.second - passwd.first), nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         Cryptography::OpenSSL::Exception::DoThrowLastError ();
     }
@@ -98,8 +96,8 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherA
 {
 }
 
-DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const wstring& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-    : DerivedKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str () + passwd.length ())), salt, nRounds)
+DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
+    : DerivedKey (digestAlgorithm, cipherAlgorithm, passwd.AsUTF8 (), salt, nRounds)
 {
 }
 #endif
