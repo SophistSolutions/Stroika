@@ -22,8 +22,8 @@
  *
  *  TODO:
  *
- *      @todo   Shared Lock and Lock code now uncertain, and probably still a bit buggy, but closer to right semantics...
- *              Review/test...
+ *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= shoulkd allow for this to be locked
+ *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
  */
 
 
@@ -36,13 +36,17 @@ namespace   Stroika {
             /**
              *  \brief      NOT a real lock - just a debugging infrastructure support tool so in debug builds we assure used threadsafe
              *
-             * This class is used as a 'no op' in production builds, as a 'locker' for a class that needs
+             *  This class is a 'no op' in production builds, as a 'locker' for a class that needs
              *  no thread locking because its externally synchronized.
              *
              *  This 'lock tester' is recursive (a recursive-mutex).
              *
              *  Externally synchronized means that some external applicaiton control guarantees the seciton of code (or data)
              *  is only accessed by a single thread.
+             *
+             *  This can be used to guarantee the same level of thread safety as provided in the std c++ libraries:
+             *      Allow multiple readers (shared locks) from multiple threads, but if any thread has
+             *      a lock (writer), then no other threads my read or write lock (in any order).
              *
              *  In debug builds, it enforces this fact through assertions.
              *
@@ -122,7 +126,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Saves current thread, and increments shared count, and
+                 *  Saves current thread (multiset), and increments shared count, and
                  *      \req    no pre-existing locks on other threads
                  *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
@@ -132,7 +136,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Just decrement shared lock count
+                 *  Just decrement shared lock count (remove this thread from shared lock multiset)
                  *
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
