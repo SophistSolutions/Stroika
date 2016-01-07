@@ -411,6 +411,27 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+ *  http://stackoverflow.com/questions/8102125/is-local-static-variable-initialization-thread-safe-in-c11
+*/
+#ifndef qCompilerAndStdLib_static_initialization_threadsafety_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_RTM_FULLVER_
+// still broekn in _MS_VS_2k15_Update1_FULLVER_
+// Fixed in _MS_VS_2k15_Update1_FULLVER_
+#define qCompilerAndStdLib_static_initialization_threadsafety_Buggy      (_MSC_FULL_VER < _MS_VS_2k15_Update1_FULLVER_)
+#else
+#define qCompilerAndStdLib_static_initialization_threadsafety_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
+
+/*
 >c:\sandbox\stroikadev\tests\35\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
 */
 #ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
