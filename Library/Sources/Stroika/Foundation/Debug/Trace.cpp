@@ -391,7 +391,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t buff
     {
         char    buf[1024];
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        string  threadIDStr =   WideStringToNarrowSDKString (FormatThreadID (threadID));
+        string  threadIDStr =   FormatThreadID (threadID).AsNarrowSDKString ();
         if (sMainThread_ == threadID) {
             Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {

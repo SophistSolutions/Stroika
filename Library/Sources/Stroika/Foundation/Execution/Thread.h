@@ -63,6 +63,7 @@
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
  */
+namespace   Stroika {  namespace   Foundation {  namespace   Characters { class String; } } }
 
 
 
@@ -436,7 +437,7 @@ namespace   Stroika {
                  *
                  *  These names should not be counted on for program logic.
                  */
-                nonvirtual  wstring GetThreadName () const;
+                nonvirtual  Characters::String GetThreadName () const;
 
             public:
                 /**
@@ -444,7 +445,7 @@ namespace   Stroika {
                  *
                  *  @see GetThreadName ();
                  */
-                nonvirtual  void    SetThreadName (const wstring& threadName);
+                nonvirtual  void    SetThreadName (const Characters::String& threadName);
 
             public:
                 nonvirtual  bool    operator< (const Thread& rhs) const;
@@ -505,7 +506,7 @@ namespace   Stroika {
             /**
              *  Represent the thread ID for display - typically as an integer
              */
-            wstring     FormatThreadID (Thread::IDType threadID);
+            Characters::String     FormatThreadID (Thread::IDType threadID);
 
 
             /**

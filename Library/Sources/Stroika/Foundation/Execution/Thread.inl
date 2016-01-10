@@ -173,11 +173,6 @@ namespace   Stroika {
                 }
                 return GetStatus_ ();
             }
-            inline  wstring Thread::GetThreadName () const
-            {
-                Require (GetStatus () != Status::eNull);
-                return fRep_->fThreadName_;
-            }
             inline  void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
             {
                 WaitForDoneUntil (timeout + Time::GetTickCount ());

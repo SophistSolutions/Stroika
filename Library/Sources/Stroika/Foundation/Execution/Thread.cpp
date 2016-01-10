@@ -14,6 +14,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Realtime.h"
 
@@ -660,13 +661,19 @@ void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 }
 #endif
 
-void    Thread::SetThreadName (const wstring& threadName)
+String Thread::GetThreadName () const
+{
+    Require (GetStatus () != Status::eNull);
+    return fRep_->fThreadName_;
+}
+
+void    Thread::SetThreadName (const String& threadName)
 {
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
         TraceContextBumper  ctx ("Execution::Thread::SetThreadName");
         DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
-        fRep_->fThreadName_ = threadName;
+        fRep_->fThreadName_ = threadName.As<wstring> ();
 #if     qSupportSetThreadNameDebuggerCall
 #if     qPlatform_Windows
         if (::IsDebuggerPresent ()) {
@@ -677,7 +684,7 @@ void    Thread::SetThreadName (const wstring& threadName)
                 DWORD dwThreadID;   // thread ID (-1=caller thread)
                 DWORD dwFlags;      // reserved for future use, must be zero
             };
-            string  useThreadName   =   WideStringToNarrowSDKString (threadName);
+            string  useThreadName   =   threadName.AsNarrowSDKString ();
             THREADNAME_INFO info;
             {
                 info.dwType = 0x1000;
@@ -873,7 +880,7 @@ Thread::Status  Thread::GetStatus_ () const noexcept
  **************************** Execution::FormatThreadID *************************
  ********************************************************************************
  */
-wstring Execution::FormatThreadID (Thread::IDType threadID)
+String Execution::FormatThreadID (Thread::IDType threadID)
 {
     /*
      *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
@@ -895,7 +902,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
     if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
         uint64_t   threadIDInt =   0;
         out >> threadIDInt;
-        return Characters::CString::Format (L"0x%016llx", threadIDInt);
+        return Characters::Format (L"0x%016llx", threadIDInt);
     }
     else {
         uint32_t    threadIDInt =   0;
