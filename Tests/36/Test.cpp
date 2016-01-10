@@ -471,6 +471,34 @@ namespace {
 
 
 
+
+namespace {
+    namespace   Test8_AssertExternallySynchonized_ {
+        namespace Private_ {
+            void    TestBasics_ ()
+            {
+                struct A {
+                    int x;
+                };
+                struct APrime : Debug::AssertExternallySynchronizedLock {
+                    int x;
+                };
+#if !qDebug
+                VerifyTestResult (sizeof (A) == sizeof (APrime));
+#endif
+            }
+        }
+        void    DoIt ()
+        {
+            Private_::TestBasics_ ();
+        }
+    }
+}
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -481,6 +509,7 @@ namespace   {
         Test5_SetSpecificSyncMethods::DoIt ();
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_nuSynchonized_::DoIt ();
+        Test8_AssertExternallySynchonized_::DoIt ();
     }
 }
 
