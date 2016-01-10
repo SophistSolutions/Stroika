@@ -91,7 +91,7 @@ public:
                 ParsePacketAndNotifyCallbacks_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (std::begin (buf), std::begin (buf) + nBytesRead)));
             }
             catch (const Execution::Thread::AbortException&) {
-                Execution::DoReThrow ();
+                Execution::ReThrow ();
             }
             catch (...) {
                 // ignore errors - and keep on trucking

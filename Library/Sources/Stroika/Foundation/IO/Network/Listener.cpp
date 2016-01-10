@@ -38,7 +38,7 @@ struct  Listener::Rep_ {
                     fNewConnectionAcceptor (s);
                 }
                 catch (const Execution::Thread::AbortException&) {
-                    Execution::DoReThrow ();
+                    Execution::ReThrow ();
                 }
                 catch (...) {
                     // unclear what todo with expcetions here

@@ -250,7 +250,7 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     }
     catch (...) {
         //???
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 
@@ -798,7 +798,7 @@ void    Thread::ThrowIfDoneWithException ()
 {
     if (fRep_) {
         if (fRep_->fStatus_ == Status::eCompleted and fRep_->fSavedException_) {
-            DoReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
+            ReThrow (fRep_->fSavedException_, L"Rethrowing exception across threads");
         }
     }
 }

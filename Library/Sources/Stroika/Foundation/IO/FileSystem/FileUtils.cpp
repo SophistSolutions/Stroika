@@ -69,19 +69,19 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileBusyException (USEFILENAME));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
     catch (const FileAccessException& e) {  \
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
     catch (const FileFormatException& e) {  \
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileFormatException (USEFILENAME));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
      
 
@@ -404,7 +404,7 @@ vector<String> IO::FileSystem::FindFiles (const String& path, const String& file
         }
         catch (...) {
             ::FindClose (hFind);
-            Execution::DoReThrow ();
+            Execution::ReThrow ();
         }
         ::FindClose (hFind);
     }
@@ -494,7 +494,7 @@ void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool igno
                         catch (...) {
                             DbgTrace ("Exception %s calling RemoveDirectory on file '%s'", ignoreErrors ? L"(ignored)" : L"", (dir2Use + fileName).c_str ());
                             if (!ignoreErrors) {
-                                Execution::DoReThrow ();
+                                Execution::ReThrow ();
                             }
                         }
                     }
@@ -506,7 +506,7 @@ void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool igno
                     catch (...) {
                         DbgTrace (SDKSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors ? SDKSTR ("(ignored)") : SDKSTR (""), (dir2Use + fileName).c_str ());
                         if (!ignoreErrors) {
-                            Execution::DoReThrow ();
+                            Execution::ReThrow ();
                         }
                     }
                 }
@@ -515,7 +515,7 @@ void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool igno
         }
         catch (...) {
             ::FindClose (hFind);
-            Execution::DoReThrow ();
+            Execution::ReThrow ();
         }
         ::FindClose (hFind);
     }

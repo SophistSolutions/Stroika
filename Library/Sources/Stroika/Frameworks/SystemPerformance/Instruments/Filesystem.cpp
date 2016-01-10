@@ -994,7 +994,7 @@ namespace {
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
-                Execution::DoReThrow (runException);
+                Execution::ReThrow (runException);
             }
             return result;
         }
@@ -1047,7 +1047,7 @@ namespace {
             }
             // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
-                Execution::DoReThrow (runException);
+                Execution::ReThrow (runException);
             }
             return result;
         }

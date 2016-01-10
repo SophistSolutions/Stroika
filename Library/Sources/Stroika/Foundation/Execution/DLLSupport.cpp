@@ -62,7 +62,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPat
                 return;
             }
         }
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 

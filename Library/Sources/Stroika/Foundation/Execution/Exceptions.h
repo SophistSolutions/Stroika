@@ -59,12 +59,20 @@ namespace   Stroika {
             /**
              *  Just a regular C++ rethrow, but with a DbgTrace message...
              */
-            void    _NoReturn_  DoReThrow ();
-            void    _NoReturn_  DoReThrow (const exception_ptr& e);
-            void    _NoReturn_  DoReThrow (const char* traceMsg);
-            void    _NoReturn_  DoReThrow (const exception_ptr& e, const char* traceMsg);
-            void    _NoReturn_  DoReThrow (const wchar_t* traceMsg);
-            void    _NoReturn_  DoReThrow (const exception_ptr& e, const wchar_t* traceMsg);
+            void    _NoReturn_  ReThrow ();
+            void    _NoReturn_  ReThrow (const exception_ptr& e);
+            void    _NoReturn_  ReThrow (const char* traceMsg);
+            void    _NoReturn_  ReThrow (const exception_ptr& e, const char* traceMsg);
+            void    _NoReturn_  ReThrow (const wchar_t* traceMsg);
+            void    _NoReturn_  ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
+
+//_DeprecatedFunction_ (inline bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow () { ReThrow (); }, "Instead use ReThrow()");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e) { ReThrow (e); }, "Instead use ReThrow ()");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const char* traceMsg) { ReThrow (traceMsg); }, "Instead use ReThrow ()");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e, const char* traceMsg) { ReThrow (e, traceMsg); }, "Instead use ReThrow ()");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const wchar_t* traceMsg) { ReThrow (traceMsg); }, "Instead use ReThrow ()");
+            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e, const wchar_t* traceMsg) { ReThrow (e, traceMsg); }, "Instead use ReThrow ()");
 
 
             /**
@@ -83,7 +91,7 @@ namespace   Stroika {
 
             /**
              */
-#define IgnoreExceptionsExceptThreadAbortForCall(theCode)        try {theCode;} catch (const Stroika::Foundation::Execution::Thread::AbortException&) { Execution::DoReThrow (); } catch (...) {}
+#define IgnoreExceptionsExceptThreadAbortForCall(theCode)        try {theCode;} catch (const Stroika::Foundation::Execution::Thread::AbortException&) { Execution::ReThrow (); } catch (...) {}
 
 
         }

@@ -171,7 +171,7 @@ Again:
                     goto Again;
                 }
                 else {
-                    Execution::DoReThrow ();
+                    Execution::ReThrow ();
                 }
             }
         }
@@ -187,7 +187,7 @@ Again:
                 ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
             }
             catch (const Execution::Thread::AbortException&) {
-                Execution::DoReThrow ();
+                Execution::ReThrow ();
             }
             catch (...) {
                 // ignore errors - and keep on trucking

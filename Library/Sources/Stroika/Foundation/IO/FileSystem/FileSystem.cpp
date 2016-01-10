@@ -210,7 +210,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
             if (psl != nullptr) {
                 psl->Release ();
             }
-            Execution::DoReThrow ();
+            Execution::ReThrow ();
         }
         if (ppf != nullptr) {
             ppf->Release ();

@@ -263,7 +263,7 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
     }
     catch (...) {
         fBaseAllocator_.Deallocate (memptr);
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 

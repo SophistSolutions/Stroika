@@ -400,7 +400,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
                                     mapper.ToObjectMapper (i.fFieldMetaInfo.fTypeInfo) (mapper, VariantValue (v), intoObjOfTypeT + i.fFieldMetaInfo.fOffset);
                                 }
                                 catch (...) {
-                                    Execution::DoReThrow (savedException);
+                                    Execution::ReThrow (savedException);
                                 }
                             }
                         }

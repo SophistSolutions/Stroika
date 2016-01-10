@@ -39,34 +39,34 @@ namespace   Stroika {
 
 
 
-            inline  void    _NoReturn_  DoReThrow ()
+            inline  void    _NoReturn_  ReThrow ()
             {
-                DbgTrace ("DoReThrow");
+                DbgTrace ("ReThrow");
                 throw;
             }
-            inline  void    _NoReturn_  DoReThrow (const exception_ptr& e)
+            inline  void    _NoReturn_  ReThrow (const exception_ptr& e)
             {
-                DbgTrace ("DoReThrow");
+                DbgTrace ("ReThrow");
                 rethrow_exception (e);
             }
-            inline  void    _NoReturn_  DoReThrow (const char* traceMsg)
+            inline  void    _NoReturn_  ReThrow (const char* traceMsg)
             {
-                DbgTrace ("DoReThrow: %s", traceMsg);
+                DbgTrace ("ReThrow: %s", traceMsg);
                 throw;
             }
-            inline  void    _NoReturn_  DoReThrow (const exception_ptr& e, const char* traceMsg)
+            inline  void    _NoReturn_  ReThrow (const exception_ptr& e, const char* traceMsg)
             {
-                DbgTrace ("DoReThrow: %s", traceMsg);
+                DbgTrace ("ReThrow: %s", traceMsg);
                 rethrow_exception (e);
             }
-            inline  void    _NoReturn_  DoReThrow (const wchar_t* traceMsg)
+            inline  void    _NoReturn_  ReThrow (const wchar_t* traceMsg)
             {
-                DbgTrace (L"DoReThrow: %s", traceMsg);
+                DbgTrace (L"ReThrow: %s", traceMsg);
                 throw;
             }
-            inline  void    _NoReturn_  DoReThrow (const exception_ptr& e, const wchar_t* traceMsg)
+            inline  void    _NoReturn_  ReThrow (const exception_ptr& e, const wchar_t* traceMsg)
             {
-                DbgTrace (L"DoReThrow: %s", traceMsg);
+                DbgTrace (L"ReThrow: %s", traceMsg);
                 rethrow_exception (e);
             }
 

@@ -103,7 +103,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
                 DbgTrace (L"Ignoring inability to send SSDP notify packets: %s (try again later)", String::FromSDKString (e.LookupMessage ()).c_str ());
             }
             catch (const Execution::Thread::AbortException&) {
-                Execution::DoReThrow ();
+                Execution::ReThrow ();
             }
             catch (...) {
                 DbgTrace (L"Ignoring inability to send SSDP notify packets (try again later)");

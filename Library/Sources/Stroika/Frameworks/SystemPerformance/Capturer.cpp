@@ -115,7 +115,7 @@ void    Capturer::Runner_ ()
                     UpdateMeasurementSet_ (measurements);
                 }
                 catch (const Execution::Thread::AbortException&) {
-                    Execution::DoReThrow ();
+                    Execution::ReThrow ();
                 }
                 catch (...) {
                     DbgTrace ("Eating exception in Capturer runner");

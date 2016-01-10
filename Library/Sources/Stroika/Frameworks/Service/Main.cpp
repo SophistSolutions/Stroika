@@ -443,7 +443,7 @@ void    Main::LoggerServiceWrapper::_Install ()
     catch (...) {
         // @todo - capture useful message
         Logger::Log (Logger::Priority::eCriticalError, L"Failed to install - aborting...");
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 
@@ -456,7 +456,7 @@ void    Main::LoggerServiceWrapper::_UnInstall ()
     catch (...) {
         // @todo - capture useful message
         Logger::Log (Logger::Priority::eCriticalError, L"Failed to uninstall - aborting...");
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 
@@ -468,7 +468,7 @@ void    Main::LoggerServiceWrapper::_RunAsService ()
     }
     catch (...) {
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
     Logger::Log (Logger::Priority::eNotice, L"Service stopped normally");
 }
@@ -481,7 +481,7 @@ void    Main::LoggerServiceWrapper::_RunDirectly ()
     }
     catch (...) {
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service directly - aborting...");
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
     Logger::Log (Logger::Priority::eNotice, L"Service stopped normally");
 }

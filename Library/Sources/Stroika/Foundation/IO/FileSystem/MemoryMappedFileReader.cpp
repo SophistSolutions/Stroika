@@ -87,7 +87,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
         if (fFileHandle_ != INVALID_HANDLE_VALUE) {
             ::CloseHandle (fFileHandle_);
         }
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 #else
     AssertNotImplemented ();

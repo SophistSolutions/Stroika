@@ -136,7 +136,7 @@ namespace   {
                 if (fToken_ != INVALID_HANDLE_VALUE) {
                     ::CloseHandle (fToken_);                    // no nee dto clear fToken_ cuz never fully constructed
                 }
-                Execution::DoReThrow ();
+                Execution::ReThrow ();
             }
         }
         SetPrivilegeInContext (LPCTSTR privilege, IgnoreError)

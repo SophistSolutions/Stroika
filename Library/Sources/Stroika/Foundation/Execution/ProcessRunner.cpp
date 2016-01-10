@@ -731,7 +731,7 @@ DoneWithProcess:
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
             }
-            Execution::DoReThrow ();
+            Execution::ReThrow ();
         }
 
         // now write the temps to the stream
@@ -785,7 +785,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
     catch (...) {
         SetStdIn (oldStdIn);
         SetStdOut (oldStdOut);
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 }
 

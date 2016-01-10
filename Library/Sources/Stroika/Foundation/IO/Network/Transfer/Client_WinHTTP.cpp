@@ -301,7 +301,7 @@ RetryWithNoCERTCheck:
             sslExceptionProblem = true;
             goto RetryWithNoCERTCheck;
         }
-        Execution::DoReThrow ();
+        Execution::ReThrow ();
     }
 
     //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.4f);

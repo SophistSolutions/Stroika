@@ -80,7 +80,7 @@ void    ThroughTmpFileWriter::Commit ()
             ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
         }
         else {
-            Execution::DoReThrow ();
+            Execution::ReThrow ();
         }
     }
 #elif   qPlatform_POSIX

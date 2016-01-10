@@ -68,19 +68,19 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileBusyException (USEFILENAME));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
     catch (const FileAccessException& e) {  \
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
     catch (const FileFormatException& e) {  \
         if (e.GetFileName ().empty ()) {\
             Execution::DoThrow (FileFormatException (USEFILENAME));\
         }\
-        Execution::DoReThrow ();\
+        Execution::ReThrow ();\
     }\
      
 
