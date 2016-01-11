@@ -106,7 +106,7 @@ namespace   Stroika {
                         }
                     };
                     MyIterable_ (const function<Memory::Optional<T>()>& getNext)
-                        : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (getNext)))
+                        : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (getNext))
                     {
                     }
                 };

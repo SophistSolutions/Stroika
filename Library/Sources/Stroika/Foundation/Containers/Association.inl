@@ -389,7 +389,7 @@ namespace   Stroika {
                         }
                     };
                     MyIterable_ (const MyAssociation_& map)
-                        : Iterable<KEY_TYPE> (typename Iterable<KEY_TYPE>::_SharedPtrIRep (new MyIterableRep_ (map)))
+                        : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (map))
                     {
                     }
                 };

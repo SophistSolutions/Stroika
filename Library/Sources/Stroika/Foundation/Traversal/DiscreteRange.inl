@@ -150,11 +150,11 @@ namespace   Stroika {
                     }
                 };
                 MyIterable_ ()
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyRep_ ()))
+                    : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyRep_> ())
                 {
                 }
                 MyIterable_ (T start, T end)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyRep_ (start, end)))
+                    : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyRep_> (start, end))
                 {
                 }
             };
