@@ -108,7 +108,7 @@ namespace   Stroika {
                     virtual _SharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const
                     {
                         // DiscreteRange doesnt track specific 'envelope' owner
-                        return Iterable<T>::MakeSharedPtr<MyRep_> (*this);
+                        return Iterable<T>::template MakeSharedPtr<MyRep_> (*this);
                     }
                     virtual Iterator<T>         MakeIterator (IteratorOwnerID suggestedOwner) const
                     {
@@ -240,7 +240,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Iterator<T> DiscreteRange<T, TRAITS>::begin () const
             {
-                return this->empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (typename Iterator<T>::MakeSharedPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
+                return this->empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (Iterator<T>::template MakeSharedPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
             }
             template    <typename T, typename TRAITS>
             inline  Iterator<T> DiscreteRange<T, TRAITS>::end () const
