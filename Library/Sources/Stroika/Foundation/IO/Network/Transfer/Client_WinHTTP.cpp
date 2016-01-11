@@ -476,7 +476,7 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
         fSessionHandle_.reset ();
     }
     if (fSessionHandle_.get () == nullptr) {
-        fSessionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0)));
+        fSessionHandle_ = make_shared<AutoWinHINTERNET> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
         if (not fOptions_.fSupportSessionCookies) {
             DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
@@ -489,7 +489,7 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_.get ());
     if (fConnectionHandle_.get () == nullptr) {
-        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0)));
+        fConnectionHandle_ = make_shared<AutoWinHINTERNET> (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0));
     }
 }
 #endif

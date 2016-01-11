@@ -487,7 +487,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 
     Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
-    fRep_  = shared_ptr<_Rep> (new REALSOCKET_::Rep_ (sd));
+    fRep_  = make_shared<REALSOCKET_::Rep_> (sd);
 }
 #endif
 

@@ -48,7 +48,7 @@ namespace   {
         {
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return Traversal::Iterable<Character>::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -74,7 +74,7 @@ public:
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
-        return _SharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return Traversal::Iterable<Character>::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override
     {
