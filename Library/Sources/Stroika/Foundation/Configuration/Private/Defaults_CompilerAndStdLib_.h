@@ -1869,6 +1869,13 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define _DeprecatedFunction_(func,MESSAGE) [[deprecated(MESSAGE)]] func
 #endif
 #endif
+#if     !defined (_DeprecatedFunction2_)
+#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
+#define _DeprecatedFunction2_(func,MESSAGE) __declspec(deprecated) func
+#else
+#define _DeprecatedFunction2_(func,MESSAGE) [[deprecated(MESSAGE)]] func
+#endif
+#endif
 
 
 
