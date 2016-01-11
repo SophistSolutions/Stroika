@@ -123,15 +123,9 @@ namespace   Stroika {
              *  Keeps track of all items - indexed by Key - but throws away items which are any more
              *  stale than given by the TIMEOUT
              *
-             *  <TEMPORARILY>
-             *      The only constraint on KEY is that it must have an operator== and operator<, and the only constraint on
-             *      both KEY and VALUE is that they must be copyable objects.
-             *  </TEMPORARILY>
-             *
              *  \note   Note - this class doesn't employ a thread to throw away old items, so if you count on that
              *          happening (e.g. because the VALUE object DTOR has a side-effect like closing a file), then
              *          you may call DoBookkeeping () peridocially.
-             *
              *
              *  \par Example Usage
              *      Use TimedCache to avoid needlessly redundant lookups
@@ -139,54 +133,81 @@ namespace   Stroika {
              *      Assume 'LookupDiskStats_' returns DiskSpaceUsageType, but its expensive, and the results change only slowly...
              *
              *      \code
-             *      Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { false, 5.0 };
+             *      Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { 5.0 };
              *
-             *      Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
+             *      DiskSpaceUsageType LookupDiskStats (String diskName)
              *      {
-             *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.AccessElement (diskName);
+             *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
              *          if (o.IsMissing ()) {
              *              o = LookupDiskStats_ ();
              *              if (o) {
              *                  sDiskUsageCache_.Add (diskName, *o);
              *              }
              *          }
-             *          return o;
+             *          return o.Value ();
              *      }
              *      \endcode
              *
+             *  or better yet:
+             *      \code
+             *      DiskSpaceUsageType LookupDiskStats2 (String diskName)
+             *      {
+             *          return sDiskUsageCache_.Lookup (diskName,
+             *              [] (String diskName) -> DiskSpaceUsageType {
+             *                  return LookupDiskStats_ (diskName);
+             *              }
+             *          );
+             *      }
+             *      \endcode
              *
-             *  EXAMPLE
+             *  \note   Only calls to @Add cause the time (used for throwing away old items) to be updated,
+             *          unless you specify kTrackReadAccess in the TRAITS object. In that case, Lookup OR
+             *          Add () causes the last-accessed time to be updated.
              *
-
-             &&& not sure we want this example
-                    struct  ScanFolderKey_ {
-                        String                Volume;
-                        String                      Folder;
-                        bool operator== (const ScanFolderKey_& rhs) const { return Volume == rhs.Volume and Folder == rhs.Folder; }
-                        bool operator< (const ScanFolderKey_& rhs) const { if (Volume == rhs.Volume) { return  Folder < rhs.Folder;  } else return Volume < rhs.Volume; }
-                    };
-                    static  constexpr   DurationSecondsType kAgeForScanPersistence_ { 5 * 60.0 };
-
-                    struct FolderDetails_ {
-                        int size;       // ...info to cache about a folder
-                    };
-                    mutable Synchronized<Cache::TimedCache<ScanFolderKey_, FolderDetails_>>   fScanFolderCache_ { true, kAgeForScanPersistence_ };
-
-                    FolderDetails_ AccessFolder_ (const String& volume, const String& folder) const
-                    {
-                        auto lockedCache = fScanFolderCache_.GetReference ();
-                        if (Optional<FolderDetails_> o  = lockedCache->AccessElement (ScanFolderKey_ { volume, folder })) {
-                            return *o;
-                        }
-                        else {
-                            FolderDetails_  constructed_details {}; // fill in details
-                            lockedCache->Add (ScanFolderKey_ { volume, folder }, constructed_details);
-                            return move (constructed_details);
-                        }
-                    }
-
-
-             *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
+             *          For most use cases (when caching something) - the default behavior of only updating
+             *          the last-access time on Add makes sense. But for the case where this class is used
+             *          to OWN an object (see shared_ptr example below) - then specifying kTrackReadAccess
+             *          true can be helpful.
+             *
+             *
+             *  \par Example Usage
+             *      To use TimedCache<> to 'own' a set of objects (say a set caches where we are the only
+             *      possible updater) - you can make the 'VALUE' type a shared_ptr<X>, and specify
+             *      kTrackReadAccess = true through the TRAITS object.
+             *
+             *      In this example, there is a set of files on disk in a folder, which is complex to analyze
+             *      but once analyzed, lots of calls come in at once to read (and maybe update) the set of files
+             *      and once nobody has asked for a while, we throw that cache away, and rebuild it as needed.
+             *
+             *      \code
+             *      using   ScanFolderKey_      =   String;
+             *      static  constexpr   DurationSecondsType kAgeForScanPersistenceCache_ { 5 * 60.0 };
+             *      struct FolderDetails_ {
+             *          int size;       // ...info to cache about a folder
+             *      };
+             *      Synchonized<Cache::TimedCache<
+             *          ScanFolderKey_,
+             *          shared_ptr<FolderDetails_>,
+             *          TimedCachedSupport::DefaultTraits<ScanFolderKey_,shared_ptr<FolderDetails_>,Common::ComparerWithWellOrder<ScanFolderKey_>,true>
+             *          >
+             *          >
+             *          sCachedScanFoldersDetails_ {kAgeForScanPersistenceCache_ };
+             *
+             *      shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder) const
+             *      {
+             *           auto lockedCache = sCachedScanFoldersDetails_.GetReference ();
+             *           if (Optional<FolderDetails_> o  = lockedCache->Lookup (folder)) {
+             *                  return *o;
+             *           }
+             *           else {
+             *              FolderDetails_  fd = make_shared<Folder_Details_> ();   // and fill in default values looking at disk
+             *              lockedCache->Add (folder, fd);
+             *              return move (fd);
+             *          }
+             *      }
+             *      \endcode
+             *
+             *  @todo   ANOTHER EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
              *  \note   This cache will keep using more and more memory until the cached items become
              *          out of date. For a cache that limits the max number of entries, use the @see LRUCache.
