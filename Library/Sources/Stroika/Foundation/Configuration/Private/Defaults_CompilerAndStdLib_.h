@@ -536,6 +536,25 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
+
+#if   defined (__GNUC__)
+#define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#else
+#define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      0
+#endif
+
+#endif
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
 @DESCRIPTION:

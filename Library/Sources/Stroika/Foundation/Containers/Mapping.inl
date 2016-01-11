@@ -404,8 +404,12 @@ namespace   Stroika {
                             return Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
                         }
                     };
-                    MyIterable_ (const MyMapping_& map)
-                        : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (map))
+                    MyIterable_ (const MyMapping_& m)
+#if     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
+                        : Iterable<KEY_TYPE> (typename Iterable<KEY_TYPE>::_SharedPtrIRep (new MyIterableRep_ (m)))
+#else
+                        : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (m))
+#endif
                     {
                     }
                 };
@@ -453,8 +457,12 @@ namespace   Stroika {
                             return Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
                         }
                     };
-                    MyIterable_ (const MyMapping_& map)
-                        : Iterable<VALUE_TYPE> (Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (map))
+                    MyIterable_ (const MyMapping_& m)
+#if     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
+                        : Iterable<VALUE_TYPE> (typename Iterable<VALUE_TYPE>::_SharedPtrIRep (new MyIterableRep_ (m)))
+#else
+                        : Iterable<VALUE_TYPE> (Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (m))
+#endif
                     {
                     }
                 };
