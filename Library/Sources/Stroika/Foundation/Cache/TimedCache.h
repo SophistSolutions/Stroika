@@ -28,6 +28,9 @@
  *
  *      @todo   Add compare template param so can check key by non-standard compare
  *
+ *      @todo   fNextAutoclearAt is HORRIBLE mechnism to figure out if we need to walk list and
+ *              clear. Use a time value (max age), and time last checked or something like that).
+ *
  *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
  *              Basically - KEY=RESULT? And then the arg to add/lookup dont take key? Maybe key is void?
  *
@@ -38,17 +41,16 @@
  *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
- *      @todo   Add regression test for this class
- *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we dont ahve problem with
  *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
  *              we dont force having operator< for BTREE map).
  *
- *      @todo   Move accessFreshensDate into DefaultTraits
- *
  *      @todo   add bool option to TRAITS for 'accessDoesBookkeeping' - if false, then this ASSUMES/REQUIRES
  *              caller respponsability to arragen for periodic call of bookkeeping task.
+ *
+ *              Maybe have ENUM for bookkeeping strategy - caller repsonsabilty, on access, or threaded, wtih
+ *              on access what we do now (and probably the default since seems lowest overhead).
  *
  *  Implementation Note:
  *
@@ -96,7 +98,7 @@ namespace   Stroika {
                 /**
                  * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
                  */
-                template    <typename   KEY, typename VALUE>
+                template    <typename   KEY, typename VALUE, bool TRACK_READ_ACCESS = false>
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
                     using   ResultType  =   VALUE;
@@ -106,6 +108,7 @@ namespace   Stroika {
 #else
                     using   StatsType   =   Stats_Null;
 #endif
+                    DEFINE_CONSTEXPR_CONSTANT(bool, kTrackReadAccess, TRACK_READ_ACCESS)
                 };
 
 
@@ -189,13 +192,21 @@ namespace   Stroika {
             template    <typename   KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
             class   TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
             public:
-                TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
+                using   TraitsType  =   TRAITS;
+
+            public:
+                /**
+                 */
+                TimedCache (Time::DurationSecondsType timeoutInSeconds);
+                TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);   /// DEPRECATED
                 TimedCache (const TimedCache&) = default;
 
             public:
                 nonvirtual  TimedCache& operator= (const TimedCache&) = default;
 
             public:
+                /**
+                 */
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);
 
             public:
@@ -243,7 +254,6 @@ namespace   Stroika {
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
 
             private:
-                bool                        fAccessFreshensDate_;
                 Time::DurationSecondsType   fTimeout_;
                 Time::DurationSecondsType   fNextAutoClearAt_;
 
@@ -258,7 +268,7 @@ namespace   Stroika {
                         , fLastAccessedAt (Time::GetTickCount ())
                     {
                     }
-                    VALUE                      fResult;
+                    VALUE                       fResult;
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
                 map<KEY, MyResult_>   fMap_;

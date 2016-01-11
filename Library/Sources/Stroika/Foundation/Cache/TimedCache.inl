@@ -63,15 +63,23 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************ TimedCache<KEY,VALUE,TRAITS> *************************
+             ************************* TimedCache<KEY,VALUE,TRAITS> *************************
              ********************************************************************************
              */
             template    <typename   KEY, typename VALUE, typename TRAITS>
-            TimedCache<KEY, VALUE, TRAITS>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
-                : fAccessFreshensDate_ (accessFreshensDate)
-                , fTimeout_ (timeoutInSeconds)
+            TimedCache<KEY, VALUE, TRAITS>::TimedCache (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+                : fTimeout_ (timeoutInSeconds)
                 , fNextAutoClearAt_ (Time::GetTickCount () + timeoutInSeconds)
             {
+                Require (fTimeout_ > 0.0f);
+            }
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            TimedCache<KEY, VALUE, TRAITS>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+                : fTimeout_ (timeoutInSeconds)
+                , fNextAutoClearAt_ (Time::GetTickCount () + timeoutInSeconds)
+            {
+                Require (TraitsType::kTrackReadAccess == accessFreshensDate);   // "THIS API DEPRECATED";
+                AssertNotReached ();    // use just timeout CTOR
                 Require (fTimeout_ > 0.0f);
             }
             template    <typename   KEY, typename VALUE, typename TRAITS>
@@ -96,7 +104,7 @@ namespace   Stroika {
                     return Memory::Optional<VALUE> ();
                 }
                 else {
-                    if (fAccessFreshensDate_) {
+                    if (TraitsType::kTrackReadAccess) {
                         i->second.fLastAccessedAt = Time::GetTickCount ();
                     }
                     this->IncrementHits ();
@@ -123,7 +131,7 @@ namespace   Stroika {
                     return Memory::Optional<VALUE> ();
                 }
                 else {
-                    if (fAccessFreshensDate_) {
+                    if (TraitsType::kTrackReadAccess) {
                         i->second.fLastAccessedAt = Time::GetTickCount ();
                     }
                     this->IncrementHits ();

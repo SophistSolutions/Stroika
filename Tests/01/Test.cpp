@@ -151,11 +151,11 @@ namespace {
             Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { false, 5.0 };
             Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
             {
-                Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.AccessElement (diskName);
+                Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
                 if (o.IsMissing ()) {
                     o = LookupDiskStats_ (diskName);
                     if (o) {
-                        sDiskUsageCache_.AddElement (diskName, *o);
+                        sDiskUsageCache_.Add (diskName, *o);
                     }
                 }
                 return o;
