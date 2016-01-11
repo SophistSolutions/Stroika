@@ -26,8 +26,6 @@
  *
  * TODO:
  *
- *      @todo   Add compare template param so can check key by non-standard compare
- *
  *      @todo   fNextAutoclearAt is HORRIBLE mechnism to figure out if we need to walk list and
  *              clear. Use a time value (max age), and time last checked or something like that).
  *
@@ -38,6 +36,8 @@
  *
  *              THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
  *              arg?
+ *
+ *      @todo   Improve Regression Tests And Docs (quite weak)
  *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
@@ -98,7 +98,7 @@ namespace   Stroika {
                 /**
                  * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
                  */
-                template    <typename   KEY, typename VALUE, bool TRACK_READ_ACCESS = false>
+                template    <typename   KEY, typename VALUE, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY>, bool TRACK_READ_ACCESS = false>
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
                     using   ResultType  =   VALUE;
@@ -109,6 +109,10 @@ namespace   Stroika {
                     using   StatsType   =   Stats_Null;
 #endif
                     DEFINE_CONSTEXPR_CONSTANT(bool, kTrackReadAccess, TRACK_READ_ACCESS)
+
+                    /**
+                     */
+                    using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
                 };
 
 
@@ -281,7 +285,7 @@ namespace   Stroika {
                     VALUE                       fResult;
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
-                map<KEY, MyResult_>   fMap_;
+                map<KEY, MyResult_, Containers::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>   fMap_;
             };
 
 
