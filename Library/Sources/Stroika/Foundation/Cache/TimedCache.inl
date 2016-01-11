@@ -99,7 +99,7 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
-                typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
+                typename MyMapType_::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
                     this->IncrementMisses ();
                     return Memory::Optional<VALUE> ();
@@ -126,7 +126,7 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
-                typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
+                typename MyMapType_::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
                     this->IncrementMisses ();
                     return Memory::Optional<VALUE> ();
@@ -166,9 +166,9 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
-                typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
+                typename MyMapType_::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
-                    fMap_.insert (typename map<KEY, MyResult_>::value_type (key, MyResult_ (result)));
+                    fMap_.insert (typename MyMapType_::value_type (key, MyResult_ (result)));
                 }
                 else {
                     i->second = MyResult_ (result);  // overwrite if its already there
@@ -199,7 +199,7 @@ namespace   Stroika {
                 Stroika::Foundation::Time::DurationSecondsType  now =   Time::GetTickCount ();
                 fNextAutoClearAt_ = now + fTimeout_ / 2.0f; // somewhat arbitrary how far into the future we do this...
                 Stroika::Foundation::Time::DurationSecondsType  lastAccessThreshold =   now - fTimeout_;
-                for (typename map<KEY, MyResult_>::iterator i = fMap_.begin (); i != fMap_.end (); ) {
+                for (typename MyMapType_::iterator i = fMap_.begin (); i != fMap_.end (); ) {
                     if (i->second.fLastAccessedAt < lastAccessThreshold) {
                         i = fMap_.erase (i);
                     }

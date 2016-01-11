@@ -140,9 +140,7 @@ namespace   Stroika {
              *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
              *          if (o.IsMissing ()) {
              *              o = LookupDiskStats_ ();
-             *              if (o) {
-             *                  sDiskUsageCache_.Add (diskName, *o);
-             *              }
+             *              sDiskUsageCache_.Add (diskName, *o);
              *          }
              *          return o.Value ();
              *      }
@@ -157,6 +155,14 @@ namespace   Stroika {
              *                  return LookupDiskStats_ (diskName);
              *              }
              *          );
+             *      }
+             *      \endcode
+             *
+             *  or still better (if no context needed for lookup function):
+             *      \code
+             *      DiskSpaceUsageType LookupDiskStats3 (String diskName)
+             *      {
+             *          return sDiskUsageCache_.Lookup (diskName, LookupDiskStats_);
              *      }
              *      \endcode
              *
@@ -258,6 +264,8 @@ namespace   Stroika {
                  *  but just see if a value is present.
                  *
                  *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
+                 *
+                 *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
                  */
                 nonvirtual  Memory::Optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
                 nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE()>& cacheFiller);
@@ -265,6 +273,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Updates/adds the given value associated with key, and updates the last-access date to now.
                  */
                 nonvirtual  void    Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
 
@@ -306,7 +315,9 @@ namespace   Stroika {
                     VALUE                       fResult;
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
-                map<KEY, MyResult_, Containers::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>   fMap_;
+            private:
+                using   MyMapType_ = map<KEY, MyResult_, Containers::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>;
+                MyMapType_   fMap_;
             };
 
 
