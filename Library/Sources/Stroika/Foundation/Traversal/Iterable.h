@@ -265,7 +265,7 @@ namespace   Stroika {
              *          o   Last() - same as First ()
              *          o   ToList/ToArray, no need because we have As<>, plus no List/Array classes (exactly).
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *
              */
             template    <typename T>

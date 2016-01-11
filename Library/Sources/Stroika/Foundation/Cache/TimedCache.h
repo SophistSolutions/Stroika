@@ -126,7 +126,7 @@ namespace   Stroika {
              *
              *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *
              *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
              *

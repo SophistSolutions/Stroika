@@ -133,6 +133,9 @@ namespace   Stroika {
              *      \code
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
              *      \encode
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
+             *
              */
             template    <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
             class   LRUCache : private Debug::AssertExternallySynchronizedLock {

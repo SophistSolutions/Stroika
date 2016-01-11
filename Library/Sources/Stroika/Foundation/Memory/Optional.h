@@ -226,7 +226,7 @@ namespace   Stroika {
              *      -   Plus, one must carefully check each use of a variable of type T, being converted
              *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
              *          of internal pointers.
              *
