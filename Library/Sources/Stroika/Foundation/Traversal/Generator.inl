@@ -106,7 +106,11 @@ namespace   Stroika {
                         }
                     };
                     MyIterable_ (const function<Memory::Optional<T>()>& getNext)
+#if     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
+                        : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (getNext)))
+#else
                         : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (getNext))
+#endif
                     {
                     }
                 };
