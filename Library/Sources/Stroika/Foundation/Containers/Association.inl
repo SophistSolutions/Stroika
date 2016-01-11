@@ -385,7 +385,7 @@ namespace   Stroika {
                         virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - ignore forIterableEnvelope
-                            return _SharedPtrIRep (new MyIterableRep_ (*this));
+                            return Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
                         }
                     };
                     MyIterable_ (const MyAssociation_& map)

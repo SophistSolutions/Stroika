@@ -122,9 +122,6 @@ namespace   Stroika {
             struct  MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
                 using   MyIteratorRep_  =   typename ElementsIteratorHelper_::Rep;
                 using   MyDataBLOB_     =   ElementsIteratorHelperContext_;
-#if     qTemplateAccessCheckConfusionProtectedNeststingBug && 0
-                using   IterableOfTSharedPtrIRep        =   typename Iterable<T>::_SharedPtrIRep;
-#endif
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
                     using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
@@ -146,11 +143,7 @@ namespace   Stroika {
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-#if     qTemplateAccessCheckConfusionProtectedNeststingBug && 0
-                        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
-#else
                         return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
-#endif
                     }
                 };
                 _ElementsIterableHelper (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& iterateOverMultiSet)
@@ -225,9 +218,6 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct  MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
-#if     qTemplateAccessCheckConfusionProtectedNeststingBug && 0
-                using   IterableOfTSharedPtrIRep    =   typename Iterable<T>::_SharedPtrIRep;
-#endif
                 using   MyIteratorRep_              =   typename UniqueElementsIteratorHelper_::Rep;
                 using   MyDataBLOB_                 =   UniqueElementsIteratorHelperContext_;
                 struct  MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
@@ -247,11 +237,7 @@ namespace   Stroika {
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
-#if     qTemplateAccessCheckConfusionProtectedNeststingBug && 0
-                        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
-#else
                         return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
-#endif
                     }
                 };
                 _UniqueElementsHelper (const typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep& tally)

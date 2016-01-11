@@ -1297,42 +1297,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 
 // @todo - investigate this better
 /*
-    virtual typename Iterable<T>::_SharedPtrIRep Clone (IteratorOwnerID forIterableEnvelope) const override
-    {
-#if     qTemplateAccessCheckConfusionProtectedNeststingBug
-        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
-#else
-        return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
-#endif
-    }
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\multiset.inl(152): error C2248: 'Stroika::Foundation::Traversal::Iterable<T>::_SharedPtrIRep' : cannot access protected typedef declared in class 'Stroika::Foundation::Traversal::Iterable<T>'
-1>          with
-1>          [
-1>              T=size_t
-1>          ]
-1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(226) : see declaration of 'Stroika::Foundation::Traversal::Iterable<T>::_SharedPtrIRep'
-1>          with
-1>          [
-1>              T=size_t
-1>          ]
-1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\multiset.inl(148) : while compiling class template member function 'Stroika::Foundation::Memory::SharedPtr<Stroika::Foundation::Traversal::Iterable<T>::_IRep> Stroika::Foundation::Containers::MultiSet<T,Stroika::Foundation::Containers::MultiSet_DefaultTraits<T,Stroika::Foundation::Common::ComparerWithEquals<T>>>::_IRep::_ElementsIterableHelper::MyIterableRep_::Clone(Stroika::Foundation::Traversal::IteratorOwnerID) const'
-*/
-#ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qTemplateAccessCheckConfusionProtectedNeststingBug   0
-#endif
-
-#endif
-
-
-
-
-// @todo - investigate this better
-/*
 
 // NO LONGER CRASHES as of _MS_VS_2k13_Update2_FULLVER_ - investigate error message. Could be my bug?
 // -- LGP 2014-05-25

@@ -128,11 +128,6 @@ namespace   Stroika {
              */
             struct  IterableBase {
             public:
-                /**
-                 *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
-                 *      Experimental, so dont use directly (yet) - til stablized.
-                 *          -- LGP 2014-02-23
-                 */
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template    <typename SHARED_T>
                 using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;

@@ -60,7 +60,7 @@ namespace   Stroika {
                     }
                     virtual typename Iterator<T>::SharedIRepPtr    Clone () const override
                     {
-                        return typename Iterator<T>::SharedIRepPtr (new GenItWrapper_ (*this));
+                        return typename Iterator<T>::MakeSharedPtr<GenItWrapper_> (*this);
                     }
                     virtual IteratorOwnerID GetOwner () const override
                     {
@@ -79,7 +79,7 @@ namespace   Stroika {
             template    <typename T>
             Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T>()>& getNext)
             {
-                return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Private_::GenItWrapper_<T> (getNext)));
+                return Iterator<T> (Iterator<T>::template MakeSharedPtr<Private_::GenItWrapper_<T>> (getNext));
             }
 
 
@@ -102,7 +102,7 @@ namespace   Stroika {
                         virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                         {
                             // For now - generators have no owner, so we ignore forIterableEnvelope
-                            return _SharedPtrIRep (new MyIterableRep_ (*this));
+                            return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
                         }
                     };
                     MyIterable_ (const function<Memory::Optional<T>()>& getNext)

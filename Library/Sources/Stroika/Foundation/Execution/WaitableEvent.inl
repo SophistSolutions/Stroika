@@ -139,7 +139,7 @@ namespace   Stroika {
                  *
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
-                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
+                shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
@@ -200,7 +200,7 @@ namespace   Stroika {
                  *
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
-                shared_ptr<WE_> we  =   shared_ptr<WE_> (new WE_ (eAutoReset));
+                shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 Execution::Finally cleanup ([we, waitableEventsStart, waitableEventsEnd] () {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
