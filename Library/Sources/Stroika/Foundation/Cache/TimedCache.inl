@@ -63,19 +63,19 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************ TimedCache<KEY,RESULT,TRAITS> *************************
+             ************************ TimedCache<KEY,VALUE,TRAITS> *************************
              ********************************************************************************
              */
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            TimedCache<KEY, RESULT, TRAITS>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            TimedCache<KEY, VALUE, TRAITS>::TimedCache (bool accessFreshensDate, Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
                 : fAccessFreshensDate_ (accessFreshensDate)
                 , fTimeout_ (timeoutInSeconds)
                 , fNextAutoClearAt_ (Time::GetTickCount () + timeoutInSeconds)
             {
                 Require (fTimeout_ > 0.0f);
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            void    TimedCache<KEY, RESULT, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            void    TimedCache<KEY, VALUE, TRAITS>::SetTimeout (Stroika::Foundation::Time::DurationSecondsType timeoutInSeconds)
             {
                 Require (timeoutInSeconds > 0.0f);
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
@@ -85,35 +85,75 @@ namespace   Stroika {
                     ClearIfNeeded_ ();
                 }
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            Memory::Optional<RESULT>    TimedCache<KEY, RESULT, TRAITS>::AccessElement (typename Configuration::ArgByValueType<KEY> key)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            Memory::Optional<VALUE>    TimedCache<KEY, VALUE, TRAITS>::AccessElement (typename Configuration::ArgByValueType<KEY> key)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
                     this->IncrementMisses ();
-                    return Memory::Optional<RESULT> ();
+                    return Memory::Optional<VALUE> ();
                 }
                 else {
                     if (fAccessFreshensDate_) {
                         i->second.fLastAccessedAt = Time::GetTickCount ();
                     }
                     this->IncrementHits ();
-                    return Memory::Optional<RESULT> (i->second.fResult);
+                    return Memory::Optional<VALUE> (i->second.fResult);
                 }
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            inline  bool    TimedCache<KEY, RESULT, TRAITS>::AccessElement (typename Configuration::ArgByValueType<KEY> key, RESULT* result)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            inline  bool    TimedCache<KEY, VALUE, TRAITS>::AccessElement (typename Configuration::ArgByValueType<KEY> key, VALUE* result)
             {
-                Memory::Optional<RESULT>    r = AccessElement (key);
+                Memory::Optional<VALUE>    r = AccessElement (key);
                 if (r.IsPresent () and result != nullptr) {
                     *result = *r;
                 }
                 return r.IsPresent ();
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            void    TimedCache<KEY, RESULT, TRAITS>::AddElement (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<RESULT> result)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            inline  Memory::Optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                ClearIfNeeded_ ();
+                typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
+                if (i == fMap_.end ()) {
+                    this->IncrementMisses ();
+                    return Memory::Optional<VALUE> ();
+                }
+                else {
+                    if (fAccessFreshensDate_) {
+                        i->second.fLastAccessedAt = Time::GetTickCount ();
+                    }
+                    this->IncrementHits ();
+                    return Memory::Optional<VALUE> (i->second.fResult);
+                }
+            }
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            VALUE       TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE()>& cacheFiller)
+            {
+                if (Memory::Optional<VALUE> o = Lookup (key)) {
+                    return *o;
+                }
+                else {
+                    VALUE   v   =   cacheFiller (key);
+                    Add (key, v);
+                    return move (v);
+                }
+            }
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            inline  VALUE   TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue)
+            {
+                if (Memory::Optional<VALUE>  o = Lookup (key)) {
+                    return *o;
+                }
+                else {
+                    return defaultValue;
+                }
+            }
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            void    TimedCache<KEY, VALUE, TRAITS>::Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearIfNeeded_ ();
@@ -125,27 +165,27 @@ namespace   Stroika {
                     i->second = MyResult_ (result);  // overwrite if its already there
                 }
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            void    TimedCache<KEY, RESULT, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            void    TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 fMap_.erase (key);
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            inline  void    TimedCache<KEY, RESULT, TRAITS>::DoBookkeeping ()
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            inline  void    TimedCache<KEY, VALUE, TRAITS>::DoBookkeeping ()
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 ClearOld_ ();
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            inline  void    TimedCache<KEY, RESULT, TRAITS>::ClearIfNeeded_ ()
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            inline  void    TimedCache<KEY, VALUE, TRAITS>::ClearIfNeeded_ ()
             {
                 if (fNextAutoClearAt_ < Time::GetTickCount ()) {
                     ClearOld_ ();
                 }
             }
-            template    <typename   KEY, typename RESULT, typename TRAITS>
-            void    TimedCache<KEY, RESULT, TRAITS>::ClearOld_ ()
+            template    <typename   KEY, typename VALUE, typename TRAITS>
+            void    TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
             {
                 Stroika::Foundation::Time::DurationSecondsType  now =   Time::GetTickCount ();
                 fNextAutoClearAt_ = now + fTimeout_ / 2.0f; // somewhat arbitrary how far into the future we do this...

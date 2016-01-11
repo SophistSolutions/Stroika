@@ -96,10 +96,10 @@ namespace   Stroika {
                 /**
                  * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
                  */
-                template    <typename   KEY, typename RESULT>
+                template    <typename   KEY, typename VALUE>
                 struct  DefaultTraits {
                     using   KeyType     =   KEY;
-                    using   ResultType  =   RESULT;
+                    using   ResultType  =   VALUE;
 
 #if     qDebug
                     using   StatsType   =   Stats_Basic;
@@ -113,17 +113,72 @@ namespace   Stroika {
 
 
             /**
-             *
              *  Keeps track of all items - indexed by Key - but throws away items which are any more
              *  stale than given by the TIMEOUT
              *
-             *  The only constraint on KEY is that it must have an operator== and operator<, and the only constraint on
-             *  both KEY and RESULT is that they must be copyable objects.
+             *  <TEMPORARILY>
+             *      The only constraint on KEY is that it must have an operator== and operator<, and the only constraint on
+             *      both KEY and VALUE is that they must be copyable objects.
+             *  </TEMPORARILY>
              *
-             *  Note - this class doesn't employ a thread to throw away old items, so if you count on that
-             *  happening (e.g. because the RESULT object DTOR has a side-effect like closing a file), then
-             *  you may call DoBookkeeping () peridocially.
+             *  \note   Note - this class doesn't employ a thread to throw away old items, so if you count on that
+             *          happening (e.g. because the VALUE object DTOR has a side-effect like closing a file), then
+             *          you may call DoBookkeeping () peridocially.
              *
+             *
+             *  \par Example Usage
+             *      Use TimedCache to avoid needlessly redundant lookups
+             *
+             *      Assume 'LookupDiskStats_' returns DiskSpaceUsageType, but its expensive, and the results change only slowly...
+             *
+             *      \code
+             *      Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { false, 5.0 };
+             *
+             *      Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
+             *      {
+             *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.AccessElement (diskName);
+             *          if (o.IsMissing ()) {
+             *              o = LookupDiskStats_ ();
+             *              if (o) {
+             *                  sDiskUsageCache_.Add (diskName, *o);
+             *              }
+             *          }
+             *          return o;
+             *      }
+             *      \endcode
+             *
+             *
+             *  EXAMPLE
+             *
+
+             &&& not sure we want this example
+                    struct  ScanFolderKey_ {
+                        String                Volume;
+                        String                      Folder;
+                        bool operator== (const ScanFolderKey_& rhs) const { return Volume == rhs.Volume and Folder == rhs.Folder; }
+                        bool operator< (const ScanFolderKey_& rhs) const { if (Volume == rhs.Volume) { return  Folder < rhs.Folder;  } else return Volume < rhs.Volume; }
+                    };
+                    static  constexpr   DurationSecondsType kAgeForScanPersistence_ { 5 * 60.0 };
+
+                    struct FolderDetails_ {
+                        int size;       // ...info to cache about a folder
+                    };
+                    mutable Synchronized<Cache::TimedCache<ScanFolderKey_, FolderDetails_>>   fScanFolderCache_ { true, kAgeForScanPersistence_ };
+
+                    FolderDetails_ AccessFolder_ (const String& volume, const String& folder) const
+                    {
+                        auto lockedCache = fScanFolderCache_.GetReference ();
+                        if (Optional<FolderDetails_> o  = lockedCache->AccessElement (ScanFolderKey_ { volume, folder })) {
+                            return *o;
+                        }
+                        else {
+                            FolderDetails_  constructed_details {}; // fill in details
+                            lockedCache->Add (ScanFolderKey_ { volume, folder }, constructed_details);
+                            return move (constructed_details);
+                        }
+                    }
+
+
              *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
@@ -131,14 +186,14 @@ namespace   Stroika {
              *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
              *
              */
-            template    <typename   KEY, typename RESULT, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, RESULT>>
+            template    <typename   KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
             class   TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
             public:
                 TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
-                TimedCache (const TimedCache&) = delete;
+                TimedCache (const TimedCache&) = default;
 
             public:
-                nonvirtual  TimedCache& operator= (const TimedCache&) = delete;
+                nonvirtual  TimedCache& operator= (const TimedCache&) = default;
 
             public:
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);
@@ -147,16 +202,44 @@ namespace   Stroika {
                 /**
                  *  Lookup the given value and return it if its in the Cache.
                  */
-                nonvirtual  Memory::Optional<RESULT>    AccessElement (typename Configuration::ArgByValueType<KEY> key);
-                nonvirtual  bool                        AccessElement (typename Configuration::ArgByValueType<KEY> key, RESULT* result);
+                nonvirtual  Memory::Optional<VALUE>     _DeprecatedFunction2_ (AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  bool                        _DeprecatedFunction2_ (AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key, VALUE* result);
 
             public:
-                nonvirtual  void    AddElement (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<RESULT> result);
+                /**
+                 *  Usually one will use this as
+                 *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+                 *
+                 *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
+                 *  but just see if a value is present.
+                 *
+                 *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
+                 */
+                nonvirtual  Memory::Optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE()>& cacheFiller);
+                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue);
 
             public:
+                /**
+                 */
+                nonvirtual  void    Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
+
+            public:
+                /**
+                 */
+                nonvirtual  void    _DeprecatedFunction2_ (AddElement, "Add") (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
+                {
+                    Add (key, result);
+                }
+
+            public:
+                /**
+                 */
                 nonvirtual  void    Remove (typename Configuration::ArgByValueType<KEY> key);
 
             public:
+                /**
+                 */
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
 
             private:
@@ -170,12 +253,12 @@ namespace   Stroika {
 
             private:
                 struct  MyResult_ {
-                    MyResult_ (const RESULT& r)
+                    MyResult_ (const VALUE& r)
                         : fResult (r)
                         , fLastAccessedAt (Time::GetTickCount ())
                     {
                     }
-                    RESULT                      fResult;
+                    VALUE                      fResult;
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
                 map<KEY, MyResult_>   fMap_;

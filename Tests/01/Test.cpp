@@ -4,11 +4,11 @@
 //  TEST    Foundation::Caching
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Cache/LRUCache.h"
+#include    "Stroika/Foundation/Cache/TimedCache.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/TimingTrace.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-
-#include    "Stroika/Foundation/Cache/LRUCache.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -131,12 +131,56 @@ namespace {
 
 
 
+
+
+
+
+
+namespace {
+    namespace   Test4_TimedCache_ {
+        // FROM Example Usage in TimedCache<>
+        namespace Private_ {
+            using   Characters::String;
+            using   Memory::Optional;
+
+            struct DiskSpaceUsageType {
+                int size;
+            };
+            auto LookupDiskStats_ (const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType { 33 }; };
+
+            Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { false, 5.0 };
+            Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
+            {
+                Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.AccessElement (diskName);
+                if (o.IsMissing ()) {
+                    o = LookupDiskStats_ (diskName);
+                    if (o) {
+                        sDiskUsageCache_.AddElement (diskName, *o);
+                    }
+                }
+                return o;
+            }
+        }
+        void    DoIt ()
+        {
+            VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
+            VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Simple_::DoIt ();
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
         Test3_LRUCache_Elements::DoIt ();
+        Test4_TimedCache_::DoIt ();
     }
 }
 
