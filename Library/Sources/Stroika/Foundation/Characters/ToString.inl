@@ -76,6 +76,12 @@ namespace   Stroika {
                  *      same alignment requirements.
                  */
                 template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, bool>::value>::type* = 0)
+                {
+                    return t ? String_Constant { L"true" } :
+                           String_Constant { L"false" };
+                }
+                template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, signed char>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
