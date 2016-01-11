@@ -184,10 +184,18 @@ namespace   Stroika {
 
              *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
+             *  \note   This cache will keep using more and more memory until the cached items become
+             *          out of date. For a cache that limits the max number of entries, use the @see LRUCache.
+             *
+             *  \note   This cache assumes one timeout for all items. To have timeouts vary by item,
+             *          @see CallerStatenessCache.
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *
              *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
              *
+             *  @see CallerStatenessCache
+             *  @see LRUCache
              */
             template    <typename   KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
             class   TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
@@ -250,6 +258,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  May be called occasionally to free resources used by cached items that are out of date.
+                 *  Not necessary to call, as done internally during access.
                  */
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
 

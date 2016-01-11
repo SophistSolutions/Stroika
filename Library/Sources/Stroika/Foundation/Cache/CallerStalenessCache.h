@@ -60,6 +60,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *
+             *  @see TimedCache
              */
             template    <typename   KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
             class   CallerStalenessCache {

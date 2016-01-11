@@ -148,7 +148,7 @@ namespace {
             };
             auto LookupDiskStats_ (const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType { 33 }; };
 
-            Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { false, 5.0 };
+            Cache::TimedCache<String, DiskSpaceUsageType>   sDiskUsageCache_ { 5.0 };
             Optional<DiskSpaceUsageType> LookupDiskStats (String diskName)
             {
                 Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
