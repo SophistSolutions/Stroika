@@ -237,7 +237,7 @@ namespace   Stroika {
                 /**
                  */
                 TimedCache (Time::DurationSecondsType timeoutInSeconds);
-                TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);   /// DEPRECATED
+                _DeprecatedFunction2_ (TimedCache, "USE TRAITS FOR FLAG IF NOT FALSE") (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);   /// DEPRECATED
                 TimedCache (const TimedCache&) = default;
 
             public:
@@ -252,8 +252,8 @@ namespace   Stroika {
                 /**
                  *  Lookup the given value and return it if its in the Cache.
                  */
-                nonvirtual  Memory::Optional<VALUE>     _DeprecatedFunction2_ (AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key);
-                nonvirtual  bool                        _DeprecatedFunction2_ (AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key, VALUE* result);
+                nonvirtual  _DeprecatedFunction2_ (Memory::Optional<VALUE> AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  _DeprecatedFunction2_ (bool AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key, VALUE* result);
 
             public:
                 /**
@@ -280,7 +280,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    _DeprecatedFunction2_ (AddElement, "Add") (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
+                nonvirtual  _DeprecatedFunction2_ (void AddElement, "Add") (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
                 {
                     Add (key, result);
                 }
