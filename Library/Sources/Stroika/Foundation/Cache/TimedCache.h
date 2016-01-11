@@ -197,7 +197,8 @@ namespace   Stroika {
              *          TimedCachedSupport::DefaultTraits<ScanFolderKey_,shared_ptr<FolderDetails_>,Common::ComparerWithWellOrder<ScanFolderKey_>,true>
              *          >
              *          >
-             *          sCachedScanFoldersDetails_ {kAgeForScanPersistenceCache_ };
+             *          sCachedScanFoldersDetails_ {kAgeForScanPersistenceCache_ }
+             *          ;
              *
              *      shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder) const
              *      {
