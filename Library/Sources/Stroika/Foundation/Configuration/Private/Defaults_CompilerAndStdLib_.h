@@ -1857,7 +1857,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define _DeprecatedFunction2_(func,MESSAGE) __declspec(deprecated) func
 #elif   __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
 #define _DeprecatedFunction2_(func,MESSAGE) [[deprecated(MESSAGE)]] func
-#endif
 #else
 #define _DeprecatedFunction2_(func,MESSAGE) func
 #endif
