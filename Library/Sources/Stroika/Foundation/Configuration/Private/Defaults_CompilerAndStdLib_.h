@@ -1855,7 +1855,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #if     !defined (_DeprecatedFunction2_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
 #define _DeprecatedFunction2_(func,MESSAGE) __declspec(deprecated) func
-#else
+#elif   __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
 #define _DeprecatedFunction2_(func,MESSAGE) [[deprecated(MESSAGE)]] func
 #endif
 #endif
