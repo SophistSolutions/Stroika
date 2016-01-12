@@ -9,6 +9,7 @@
 #include    "../Configuration/Concepts.h"
 #include    "FloatConversion.h"
 #include    "StringBuilder.h"
+#include    "String_Constant.h"
 
 /*
  ********************************************************************************
