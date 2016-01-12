@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <atomic>
+#include    <mutex>
 #include    <set>
 #include    <thread>
 
