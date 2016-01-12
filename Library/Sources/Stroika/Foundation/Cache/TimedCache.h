@@ -11,6 +11,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/TypeHints.h"
+#include    "../Containers/STL/Compare.h"           //TMPHACK til we move STL::less
 #include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
