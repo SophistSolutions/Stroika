@@ -44,21 +44,21 @@ function doOneTest
 STARTAT=`date`;
 echo "Resetting all configurations to standard regression test set (output to REGRESSION-TESTS.OUT) - started at $STARTAT"
 rm -f REGRESSION-TESTS.OUT
-make regression-test-configurations 2>&1 >> REGRESSION-TESTS.OUT
+make regression-test-configurations >>REGRESSION-TESTS.OUT 2>&1
 
-make clobber 2>&1 >> REGRESSION-TESTS.OUT
+make clobber >>REGRESSION-TESTS.OUT 2>&1
 echo "Make all..."
-make all $PARALELLMAKEFLAG 2>&1 >> REGRESSION-TESTS.OUT
+make all $PARALELLMAKEFLAG >>REGRESSION-TESTS.OUT 2>&1
 
 echo "Run-Tests ALL..."
-make run-tests 2>&1 >> REGRESSION-TESTS.OUT
+make run-tests >>REGRESSION-TESTS.OUT 2>&1
 
 echo "Run-Tests raspberrypi remote..."
-make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi 2>&1 >> REGRESSION-TESTS.OUT
+make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi >>REGRESSION-TESTS.OUT 2>&1 
 
 #test with usual set of valgrind suppressions
 echo "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
-VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests 2>&1 >> REGRESSION-TESTS.OUT
+VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests >>REGRESSION-TESTS.OUT 2>&1 
 
 #slow, and largely useless test...
 #VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=DEFAULT_CONFIG VALGRIND=1 run-tests
