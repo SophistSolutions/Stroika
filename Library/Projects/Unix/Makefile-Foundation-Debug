@@ -6,8 +6,10 @@ SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Debug/
 
 vpath %cpp $(SrcDir)
 
+
 Objs	=	\
 	$(ObjDir)Assertions.o\
+	$(ObjDir)AssertExternallySynchronizedLock.o\
 	$(ObjDir)Debugger.o\
 	$(ObjDir)Fatal.o\
 	$(ObjDir)Trace.o\

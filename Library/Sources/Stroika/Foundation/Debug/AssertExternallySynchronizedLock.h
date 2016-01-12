@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   Redo multiset impl so can be used LOCK-FREE - at least 99% of the time.... Locks affect timing, and can hide thread
+ *              bugs.
  *
  *      @todo   Reconsider if AssertExternallySynchronizedLock::operator= shoulkd allow for this to be locked
  *              by the current thread. Safe to do later as that would be weakening the current check/requirement.
@@ -149,6 +151,7 @@ namespace   Stroika {
             private:
                 mutable atomic_uint_fast32_t        fLocks_ { 0 };
                 mutable std::thread::id             fCurLockThread_;
+                static  mutex                       sSharedLockThreadsMutex_;
                 mutable multiset<std::thread::id>   fSharedLockThreads_;
 #endif
             };
