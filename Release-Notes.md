@@ -23,7 +23,16 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a125">v2.0a125x</a><br/>2016-01-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+<!-- up to date as of 2016-01-12 - 630 pm -->
+		<li>Define define qCompilerAndStdLib_static_initialization_threadsafety_Buggy</li>
+		<li>Substantial fixes to Debug/AssertExternallySynchronized - needed because of recent shared_lock support (multiset)</li>
+		<li>renmaed Execution::DoReThrow -> ReThrow() - and deprecated old name</li>
+		<li>several cleanups of TimedCache code - including deprecations, and docs, regression tests, TRAITS COMPARE and DO_DIRTY_ON_READ flag support.</li>
+		<li>cleanup MakeSharedPtr / new code for a few more places - Iterable</li>
+		<li>qTemplateAccessCheckConfusionProtectedNeststingBug</li>
+		<li>fixed Xerces makefile for AIX, and use explicit std:: before thread to avoid issues on AIX</li>
+		<li>Further ToString support (bool/datetime etc)</li>
+		<li>fix redirection in ScriptsLib/RegressionTests-Unix.sh</li>
 	</ul>
 </td>
 </tr>
