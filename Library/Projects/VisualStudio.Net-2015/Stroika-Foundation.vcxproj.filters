@@ -732,6 +732,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Process.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2648,6 +2651,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
       <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\ReadMe.md">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
 </Project>

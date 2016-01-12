@@ -623,6 +623,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchange-Zip-Reader.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchange-Zip-Reader.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
@@ -1300,6 +1301,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.md" />
