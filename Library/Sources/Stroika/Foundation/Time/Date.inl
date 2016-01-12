@@ -71,6 +71,10 @@ namespace   Stroika {
                     return l < r ? -1 : 1;
                 }
             }
+            inline  String  Date::ToString () const
+            {
+                return Format ();
+            }
 #if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             constexpr   Date    Date::kMin      { Date::JulianRepType (kMinJulianRep) };
             constexpr   Date    Date::kMax      { Date::JulianRepType (UINT_MAX - 1) };

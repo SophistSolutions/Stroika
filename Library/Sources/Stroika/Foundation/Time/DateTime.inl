@@ -97,6 +97,10 @@ namespace   Stroika {
             {
                 return fTimezone_;
             }
+            inline  String  DateTime::ToString () const
+            {
+                return Format ();
+            }
 
 
             /*

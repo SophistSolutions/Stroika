@@ -371,6 +371,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Characters::ToString ()
+                 */
+                nonvirtual  String  ToString () const;
+
+            public:
+                /**
                  * Returns a new Date object based on this Date, with 'dayCount' days added.
                  *
                  *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)

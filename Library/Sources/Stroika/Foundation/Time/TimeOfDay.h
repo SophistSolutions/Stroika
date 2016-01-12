@@ -251,6 +251,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Characters::ToString ()
+                 */
+                nonvirtual  String  ToString () const;
+
+            public:
+                /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
                  *  this comparison function - see the notes about 'empty' in the class description.
                  */

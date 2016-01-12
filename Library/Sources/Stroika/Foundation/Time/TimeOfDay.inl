@@ -73,6 +73,10 @@ namespace   Stroika {
                 Ensure (0 <= n and n <= 59);
                 return n;
             }
+            inline  String  TimeOfDay::ToString () const
+            {
+                return Format ();
+            }
             inline  int TimeOfDay::Compare (const TimeOfDay& rhs) const
             {
                 if (empty ()) {

@@ -338,6 +338,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Characters::ToString ()
+                 */
+                nonvirtual  String  ToString () const;
+
+            public:
+                /**
                  *  Returns number of days since this point - relative to NOW. Never less than zero.
                  */
                 nonvirtual  Date::JulianRepType DaysSince () const;
