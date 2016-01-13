@@ -62,12 +62,20 @@ namespace   Stroika {
             }
 
             template    <typename T>
-            T*  SharedStaticData<T>::Get ()
+            T&  SharedStaticData<T>::Get ()
             {
                 // no need to lock since no way to destroy value while 'this' object still exists
                 Ensure (sCountUses_ >= 1);
                 EnsureNotNull (sOnceObj_);
-                return sOnceObj_;
+                return *sOnceObj_;
+            }
+            template    <typename T>
+            const T&  SharedStaticData<T>::Get () const
+            {
+                // no need to lock since no way to destroy value while 'this' object still exists
+                Ensure (sCountUses_ >= 1);
+                EnsureNotNull (sOnceObj_);
+                return *sOnceObj_;
             }
 
 

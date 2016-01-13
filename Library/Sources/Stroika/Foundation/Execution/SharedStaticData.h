@@ -70,6 +70,9 @@ namespace   Stroika {
              *  thread is shutdown. If these objects are all created after main, this assures the thread startup/cleanup
              *  is all done after the start of main and before it completes.
              *
+             *  \note   Since this object is in its 'default initialized' state with all zeros, it is safe to use before
+             *          the start of main (), and doesnt require the complicated inter-depependency managment of the
+             *          @ModuleInit code.
              */
             template <typename T>
             class   SharedStaticData {
@@ -85,14 +88,14 @@ namespace   Stroika {
             public:
                 SharedStaticData& operator= (const SharedStaticData&) = delete;
 
-
             public:
                 /**
                  *  Return value gauranteed lifetime at least as long as 'this' object.
                  *
-                 *  Note - though THIS is fully threadsafe, use of the pointer T* is only as threadsafe as T itself.
+                 *  Note - though THIS is fully threadsafe, use of the reference T& is only as threadsafe as T itself.
                  */
-                nonvirtual  T*  Get ();
+                nonvirtual  T&  Get ();
+                nonvirtual  const T&  Get () const;
 
             private:
                 static  SpinLock        sMutex_;    // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time
