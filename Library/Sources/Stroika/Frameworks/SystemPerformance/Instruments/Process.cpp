@@ -1908,13 +1908,13 @@ namespace {
             if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
                 TCHAR moduleFullPath[MAX_PATH];
                 moduleFullPath[0] = '\0';
-                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, NEltsOf(moduleFullPath)) != 0) {
+                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
                     *processEXEPath =  String::FromSDKString (moduleFullPath);
                 }
                 if (processName != nullptr) {
                     TCHAR moduleBaseName[MAX_PATH];
                     moduleBaseName[0] = '\0';
-                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, NEltsOf(moduleBaseName)) != 0) {
+                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (NEltsOf (moduleBaseName))) != 0) {
                         *processName =  String::FromSDKString (moduleBaseName);
                     }
                 }

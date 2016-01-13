@@ -1361,7 +1361,7 @@ namespace {
         {
             wchar_t volPathsBuf[10 * 1024] = {0};
             DWORD   retLen  =   0;
-            DWORD   x       =   ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, NEltsOf (volPathsBuf), &retLen);
+            DWORD   x       =   ::GetVolumePathNamesForVolumeNameW (volumeName.c_str (), volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
             if (x == 0 or retLen <= 1) {
                 return Set<String> ();
             }
@@ -1451,11 +1451,11 @@ namespace {
             }
 
             TCHAR   volumeNameBuf[1024];
-            for (HANDLE hVol = FindFirstVolume (volumeNameBuf, NEltsOf(volumeNameBuf)); hVol != INVALID_HANDLE_VALUE; ) {
+            for (HANDLE hVol = FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE; ) {
                 DWORD lpMaximumComponentLength;
                 DWORD dwSysFlags;
                 TCHAR FileSysNameBuf[1024];
-                if (::GetVolumeInformation ( volumeNameBuf, NULL, NEltsOf(volumeNameBuf), NULL, &lpMaximumComponentLength, &dwSysFlags, FileSysNameBuf, NEltsOf(FileSysNameBuf))) {
+                if (::GetVolumeInformation (volumeNameBuf, nullptr, static_cast<DWORD> (NEltsOf (volumeNameBuf)), nullptr, &lpMaximumComponentLength, &dwSysFlags, FileSysNameBuf, static_cast<DWORD> (NEltsOf (FileSysNameBuf)))) {
                     MountedFilesystemInfoType v;
                     v.fFileSystemType = String::FromSDKString (FileSysNameBuf);
                     v.fVolumeID = String::FromSDKString (volumeNameBuf);
@@ -1499,7 +1499,7 @@ namespace {
                         ///
                         TCHAR volPathsBuf[10 * 1024];
                         DWORD retLen = 0;
-                        DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, NEltsOf(volPathsBuf), &retLen);
+                        DWORD x = ::GetVolumePathNamesForVolumeName (volumeNameBuf, volPathsBuf, static_cast<DWORD> (NEltsOf (volPathsBuf)), &retLen);
                         if (x == 0) {
                             DbgTrace (SDKSTR ("Ignoring error getting paths (volume='%s')"), volumeNameBuf);
                         }
@@ -1614,7 +1614,7 @@ namespace {
                 }
 
                 // find next
-                if (not ::FindNextVolume (hVol, volumeNameBuf, NEltsOf(volumeNameBuf))) {
+                if (not ::FindNextVolume (hVol, volumeNameBuf, static_cast<DWORD> (NEltsOf(volumeNameBuf)))) {
                     ::FindVolumeClose (hVol);
                     hVol = INVALID_HANDLE_VALUE;
                 }
