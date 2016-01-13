@@ -13,6 +13,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Debug/Assertions.h"
+#include    "../Execution/SharedStaticData.h"
 
 
 
@@ -150,10 +151,10 @@ namespace   Stroika {
 
 #if     qDebug
             private:
-                mutable atomic_uint_fast32_t        fLocks_ { 0 };
-                mutable std::thread::id             fCurLockThread_;
-                static  mutex                       sSharedLockThreadsMutex_;
-                mutable multiset<std::thread::id>   fSharedLockThreads_;
+                mutable atomic_uint_fast32_t                fLocks_ { 0 };
+                mutable std::thread::id                     fCurLockThread_;
+                mutable multiset<std::thread::id>           fSharedLockThreads_;
+                mutable Execution::SharedStaticData<mutex>  fSharedLockThreadsMutex_;
 #endif
             };
 

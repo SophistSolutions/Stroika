@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
@@ -30,7 +31,7 @@ namespace   Stroika {
                 : AssertExternallySynchronizedLock ()
             {
 #if     qDebug
-                lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
+                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                 Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ());  // to move, the src can have no locks of any kind (since we change src)
 #endif
             }
@@ -38,7 +39,7 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec1 { rhs };    // to copy, the src can have shared_locks, but no (write) locks
 #if     qDebug
-                lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
+                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                 Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ());        // We must not have any locks going to replace this
 #endif
                 return *this;
@@ -46,7 +47,7 @@ namespace   Stroika {
             inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock && rhs)
             {
 #if     qDebug
-                lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
+                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                 Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ());    // to move, the rhs can have no locks of any kind (since we change rhs)
                 Require (fLocks_ == 0 and fSharedLockThreads_.empty ());            // ditto for thing being assigned to
 #endif
@@ -58,9 +59,7 @@ namespace   Stroika {
                 if (fLocks_++ == 0) {
                     // If first time in, save thread-id
                     fCurLockThread_ = this_thread::get_id ();
-#if     qDebug
-                    lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
-#endif
+                    lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                     if (not fSharedLockThreads_.empty ()) {
                         // If first already shared locks - OK - so long as same thread
                         Require (fSharedLockThreads_.count (fCurLockThread_) == fSharedLockThreads_.size ());
@@ -89,14 +88,14 @@ namespace   Stroika {
                     // If first already locks - OK - so long as same thread
                     Require (fCurLockThread_ == this_thread::get_id ());
                 }
-                lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
+                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                 fSharedLockThreads_.insert (this_thread::get_id ());
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock_shared () const
             {
 #if     qDebug
-                lock_guard<mutex> slProtect { sSharedLockThreadsMutex_ };
+                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
                 Require (fSharedLockThreads_.find (this_thread::get_id ()) != fSharedLockThreads_.end ());  // else unbalanced
                 fSharedLockThreads_.erase (fSharedLockThreads_.find (this_thread::get_id ()));
 #endif

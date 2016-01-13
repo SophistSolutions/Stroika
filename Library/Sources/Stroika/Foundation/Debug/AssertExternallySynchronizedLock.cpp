@@ -11,12 +11,3 @@ using   namespace   Stroika::Foundation::Debug;
 
 
 
-
-/*
- ********************************************************************************
- ****************** AssertExternallySynchronizedLock ****************************
- ********************************************************************************
- */
-#if     qDebug
-mutex       AssertExternallySynchronizedLock::sSharedLockThreadsMutex_;
-#endif
