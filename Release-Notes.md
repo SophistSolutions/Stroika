@@ -20,19 +20,20 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a125">v2.0a125x</a><br/>2016-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a125">v2.0a125</a><br/>2016-01-13</td>
 <td>
 	<ul>
-<!-- up to date as of 2016-01-12 - 630 pm -->
-		<li>Define define qCompilerAndStdLib_static_initialization_threadsafety_Buggy</li>
 		<li>Substantial fixes to Debug/AssertExternallySynchronized - needed because of recent shared_lock support (multiset)</li>
 		<li>renmaed Execution::DoReThrow -> ReThrow() - and deprecated old name</li>
 		<li>several cleanups of TimedCache code - including deprecations, and docs, regression tests, TRAITS COMPARE and DO_DIRTY_ON_READ flag support.</li>
 		<li>cleanup MakeSharedPtr / new code for a few more places - Iterable</li>
-		<li>qTemplateAccessCheckConfusionProtectedNeststingBug</li>
 		<li>fixed Xerces makefile for AIX, and use explicit std:: before thread to avoid issues on AIX</li>
 		<li>Further ToString support (bool/datetime etc)</li>
-		<li>fix redirection in ScriptsLib/RegressionTests-Unix.sh</li>
+		<li>fix redirection in ScriptsLib/RegressionTests-Unix.sh and other output cleaning</li>
+		<li>Define define qCompilerAndStdLib_static_initialization_threadsafety_Buggy</li>
+		<li>qTemplateAccessCheckConfusionProtectedNeststingBug</li>
+		<li>PerformanceDump-v2.0a125-linux-gcc-5.2.0-x64.txt and PerformanceDump-v2.0a125-x86-ReleaseU.txt added</li>
+		<li>Tested (passed regtests) on vc++2k13, vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug), gcc48, gcc49, gcc52, ppc-AIX/gcc49, clang++3.5, clang++3.6, cross-compile-raspberry-pi, and valgrind;</li>
 	</ul>
 </td>
 </tr>
