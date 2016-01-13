@@ -8,4 +8,4 @@ StroikaDevRoot.*
 *.sdf
 *.opensdf
 *.suo
-RegressionTests-Output/
+REGRESSION-TESTS.OUT
