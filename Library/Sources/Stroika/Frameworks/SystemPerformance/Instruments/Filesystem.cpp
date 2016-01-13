@@ -1451,7 +1451,7 @@ namespace {
             }
 
             TCHAR   volumeNameBuf[1024];
-            for (HANDLE hVol = FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE; ) {
+            for (HANDLE hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE; ) {
                 DWORD lpMaximumComponentLength;
                 DWORD dwSysFlags;
                 TCHAR FileSysNameBuf[1024];
@@ -1520,7 +1520,7 @@ namespace {
                                     ULARGE_INTEGER freeBytesAvailable {};
                                     ULARGE_INTEGER totalNumberOfBytes {};
                                     ULARGE_INTEGER totalNumberOfFreeBytes {};
-                                    DWORD xxx = GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                                    DWORD xxx = ::GetDiskFreeSpaceEx (mountedOnName.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
                                     v.fSizeInBytes = totalNumberOfBytes.QuadPart;
                                     v.fUsedSizeInBytes = *v.fSizeInBytes  - freeBytesAvailable.QuadPart;
                                     v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
