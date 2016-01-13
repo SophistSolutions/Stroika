@@ -318,6 +318,6 @@ regression-test-configurations:
 		./configure clang++-3.6-debug --compiler-driver clang++-3.6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
-		./configure DefaultConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable;\
+		./configure ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC --openssl use --openssl-extraargs purify --block-allocation disable --apply-default-release-flags;\
 		./configure raspberrypi-gcc-4.9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-4.9' --cross-compiling true;\
 	fi
