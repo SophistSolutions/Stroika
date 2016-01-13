@@ -68,6 +68,15 @@ VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrin
 
 
 X1=`cat $TEST_OUT_FILE | grep seconds | grep -i -F [Succeeded] | wc -l`
+if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
+	if [ $X1 -lt 564 ]; then
+		echo "        ***    $X1 tests succeeded and expected 564";
+	fi
+else
+	if [ $X1 -lt 611 ]; then
+		echo "        ***    $X1 tests succeeded and expected 611";
+	fi
+fi
 XF=`cat $TEST_OUT_FILE | grep -i -F FAILED | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i -F "core dump" | wc -l`
 
