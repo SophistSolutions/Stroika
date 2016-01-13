@@ -26,6 +26,7 @@ help:
 	@$(ECHO) "    documentation:"
 	@$(ECHO) "    third-party-components:"
 	@$(ECHO) "    run-tests:                   -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$(ECHO) "                                      OR VALGRIND_SUPPRESSIONS=\"OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp\" make VALGRIND=1 run-tests"
 	@$(ECHO) "    apply-configurations:        -    Create implied files / links for any configurations in the Configurations folder (forces a rebuild of configs) - not neeeded - automatic"
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS=--help])"
 	@$(ECHO) "    check-tools:                 -    Check the tools needed to build Stroika are installed."
