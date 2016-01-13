@@ -51,7 +51,13 @@ echo "Run-Tests ALL..."
 make run-tests >>$TEST_OUT_FILE 2>&1
 
 echo "Run-Tests raspberrypi remote..."
-make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi >>$TEST_OUT_FILE 2>&1 
+ARMTESTMACHINEAVAIL=`(ping www.sophists.codm 2>/dev/null 1>/dev/null); echo $?`
+if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
+	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=lewis@raspberrypi >>$TEST_OUT_FILE 2>&1
+else
+	echo "...skipped raspberrypi tests cuz machine not available"
+fi
+
 
 #test with usual set of valgrind suppressions
 echo "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
