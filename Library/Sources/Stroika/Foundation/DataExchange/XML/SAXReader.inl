@@ -42,5 +42,4 @@ namespace   Stroika {
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::XML::SAXReader_ModuleInit_>   _Stroika_Foundation_DataExchange_XML_SAXReader_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
-
 #endif  /*_Stroika_Foundation_DataExchange_XML_SAXReader_inl_*/
