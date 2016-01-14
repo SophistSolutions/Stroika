@@ -2931,32 +2931,88 @@
 {
    <insert_a_suppression_name_here>
    Memcheck:Cond
-   fun:memcpy@GLIBC_2.2.5
-   fun:_ZNSt11__copy_moveILb1ELb1ESt26random_access_iterator_tagE8__copy_mIhEEPT_PKS3_S6_S4_
-   fun:_ZSt13__copy_move_aILb1EPhS0_ET1_T0_S2_S1_
-   fun:_ZSt14__copy_move_a2ILb1EPhS0_ET1_T0_S2_S1_
-   fun:_ZSt4copyISt13move_iteratorIPhES1_ET0_T_S4_S3_
-   fun:_ZNSt20__uninitialized_copyILb1EE13__uninit_copyISt13move_iteratorIPhES3_EET0_T_S6_S5_
-   fun:_ZSt18uninitialized_copyISt13move_iteratorIPhES1_ET0_T_S4_S3_
-   fun:_ZSt22__uninitialized_copy_aISt13move_iteratorIPhES1_hET0_T_S4_S3_RSaIT1_E
-   fun:_ZSt34__uninitialized_move_if_noexcept_aIPhS0_SaIhEET0_T_S3_S2_RT1_
-   fun:_ZNSt6vectorIhSaIhEE15_M_range_insertIPKhEEvN9__gnu_cxx17__normal_iteratorIPhS1_EET_S9_St20forward_iterator_tag
-   fun:_ZNSt6vectorIhSaIhEE18_M_insert_dispatchIPKhEEvN9__gnu_cxx17__normal_iteratorIPhS1_EET_S9_St12__false_type
+   ...
    fun:_ZNSt6vectorIhSaIhEE6insertIPKhvEEN9__gnu_cxx17__normal_iteratorIPhS1_EENS6_IS4_S1_EET_SA_
+}
+
+
+
+
+
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:Curl_client_chop_write
+}
+
+
+#{
+#   <insert_a_suppression_name_here>
+#   Memcheck:Cond
+#   ...
+#   fun:_ZN7Stroika10Foundation10Containers7MappingINS0_10Characters6StringES4_NS1_21Mapping_DefaultTraitsIS4_S4_NS0_6Common18ComparerWithEqualsIS4_EEEEE3AddERKS4_SC_
+#}
+
+
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation2IO7Network8Transfer18Connection_LibCurl4Rep_27ResponseHeaderWriteHandler_EPKhm
+}
+
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Containers7MappingINS0_10Characters6StringES4_NS1_21Mapping_DefaultTraitsIS4_S4_NS0_6Common18ComparerWithEqualsIS4_EEEEE3AddERKS4_SC_
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Cond
-   fun:memcpy@GLIBC_2.2.5
-   fun:_ZNSt11__copy_moveILb1ELb1ESt26random_access_iterator_tagE8__copy_mIhEEPT_PKS3_S6_S4_
-   fun:_ZSt13__copy_move_aILb1EPhS0_ET1_T0_S2_S1_
-   fun:_ZSt14__copy_move_a2ILb1EPhS0_ET1_T0_S2_S1_
-   fun:_ZSt4copyISt13move_iteratorIPhES1_ET0_T_S4_S3_
-   fun:_ZNSt20__uninitialized_copyILb1EE13__uninit_copyISt13move_iteratorIPhES3_EET0_T_S6_S5_
-   fun:_ZSt18uninitialized_copyISt13move_iteratorIPhES1_ET0_T_S4_S3_
-   fun:_ZSt22__uninitialized_copy_aISt13move_iteratorIPhES1_hET0_T_S4_S3_RSaIT1_E
-   fun:_ZSt34__uninitialized_move_if_noexcept_aIPhS0_SaIhEET0_T_S3_S2_RT1_
-   fun:_ZNSt6vectorIhSaIhEE15_M_range_insertIPKhEEvN9__gnu_cxx17__normal_iteratorIPhS1_EET_S9_St20forward_iterator_tag
-   fun:_ZNSt6vectorIhSaIhEE18_M_insert_dispatchIPKhEEvN9__gnu_cxx17__normal_iteratorIPhS1_EET_S9_St12__false_type
-   fun:_ZNSt6vectorIhSaIhEE6insertIPKhvEEN9__gnu_cxx17__normal_iteratorIPhS1_EENS6_IS4_S1_EET_SA_
+   ...
+   fun:_ZNSt7__debug6vectorIhSaIhEE6insertIPKhvEEN11__gnu_debug14_Safe_iteratorIN9__gnu_cxx17__normal_iteratorIPhNSt9__cxx19986vectorIhS1_EEEES2_EENS7_INS9_IS5_SD_EES2_EET_SI_
 }
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   fun:memcpy@GLIBC_2.2.5
+   ...
+   fun:_ZNSt7__debug6vectorIhSaIhEE6insertIPKhvEEN11__gnu_debug14_Safe_iteratorIN9__gnu_cxx17__normal_iteratorIPhNSt9__cxx19986vectorIhS1_EEEES2_EENS7_INS9_IS5_SD_EES2_EET_SI_
+}
+
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Containers8Concrete14Mapping_stdmapINS0_10Characters6StringES5_NS2_28Mapping_stdmap_DefaultTraitsIS5_S5_NS0_6Common18ComparerWithEqualsIS5_EENS7_21ComparerWithWellOrderIS5_EEEEE4Rep_3AddERKS5_SG_
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:memcpy@GLIBC_2.2.5
+   ...
+   fun:_ZNSt9__cxx19986vectorIhSaIhEE6insertIPKhvEEN9__gnu_cxx17__normal_iteratorIPhS2_EENS7_IS5_S2_EET_SB_
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   ...
+   fun:_ZNSt9__cxx19986vectorIhSaIhEE6insertIPKhvEEN9__gnu_cxx17__normal_iteratorIPhS2_EENS7_IS5_S2_EET_SB_
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Value8
+   ...
+   fun:curl_easy_perform
+}
+
