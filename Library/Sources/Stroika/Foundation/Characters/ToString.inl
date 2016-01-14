@@ -38,7 +38,7 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not is_convertible<T, String>::value>::type* = 0)
+                inline  String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
@@ -121,35 +121,35 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned char>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned short>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned int>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ud", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%x", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%uld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%lx", t);
                     return buf;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, unsigned long long>::value>::type* = 0)
                 {
                     wchar_t buf[1024];
-                    (void)::swprintf (buf, NEltsOf (buf), L"0x%ulld", t);
+                    (void)::swprintf (buf, NEltsOf (buf), L"0x%llx", t);
                     return buf;
                 }
 
