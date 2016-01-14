@@ -8,9 +8,6 @@ PARALELLMAKEFLAG=-j3
 
 PREFIX_OUT_LABEL=")))-"
 
-NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
-NUM_REGTESTS=47
-NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
 
 STARTAT=`date`;
@@ -18,6 +15,14 @@ rm -f $TEST_OUT_FILE
 echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
 echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
 make regression-test-configurations >>$TEST_OUT_FILE 2>&1
+
+NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
+NUM_REGTESTS=47
+NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
+
+echo "Building configurations ($NUM_CONFIGURATIONS): `sh ScriptsLib/GetConfigurations.sh`"
+echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS): `sh ScriptsLib/GetConfigurations.sh`" >>$TEST_OUT_FILE 2>&1
+
 
 make clobber >>$TEST_OUT_FILE 2>&1
 echo -n "Make all..."
