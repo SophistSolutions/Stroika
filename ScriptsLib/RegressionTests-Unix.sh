@@ -8,7 +8,7 @@ PARALELLMAKEFLAG=-j3
 
 PREFIX_OUT_LABEL=")))-"
 
-NUM_CONFIGURATIONS=`sh ScriptsLib\GetConfigurations.sh | wc -w`
+NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
 NUM_REGTESTS=47
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
