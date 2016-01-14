@@ -1389,6 +1389,7 @@ namespace {
     void    Test48_ToString_ ()
     {
         VerifyTestResult (ToString (3) == L"3");
+        VerifyTestResult (ToString (3u) == L"0x3");
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
         VerifyTestResult (ToString (L"abc") == L"abc");
         VerifyTestResult (ToString (String (L"abc")) == L"abc");
@@ -1397,7 +1398,7 @@ namespace {
             const   Byte    kSample_[] = { 0x34, 0x55, 0x1f };
             Memory::BLOB b { begin (kSample_), end (kSample_) };
             VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
-            //@todo must fix overloads & template magic so this works! //VerifyTestResult (ToString (b) == L"[2 bytes: 34551f]");
+            VerifyTestResult (Characters::ToString (b) == L"[3 bytes: 34551f]");
         }
     }
 }
