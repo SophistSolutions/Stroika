@@ -492,7 +492,17 @@ bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWrite
 void    Emitter::DoEmit_ (const char* p)
 {
 #if     qPlatform_Windows
-    ::OutputDebugStringA (p);
+    constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
+    if (::strlen (p) < kMaxLen_) {
+        ::OutputDebugStringA (p);
+    }
+    else {
+        char    buf[1024];  // @todo if/when we always support constexpr can use that here!
+        memcpy (buf, p, sizeof (buf));
+        buf[NEltsOf(buf) - 1] = 0;
+        ::OutputDebugStringA (buf);
+        ::OutputDebugStringA ("...");
+    }
 #endif
 #if     qTraceToFile
     Emit2File_ (p);
@@ -502,7 +512,17 @@ void    Emitter::DoEmit_ (const char* p)
 void    Emitter::DoEmit_ (const wchar_t* p)
 {
 #if     qPlatform_Windows
-    ::OutputDebugStringW (p);
+    constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
+    if (::wcslen (p) < kMaxLen_) {
+        ::OutputDebugStringW (p);
+    }
+    else {
+        wchar_t buf[1024];  // @todo if/when we always support constexpr can use that here!
+        memcpy (buf, p, sizeof (buf));
+        buf[NEltsOf(buf) - 1] = 0;
+        ::OutputDebugStringW (buf);
+        ::OutputDebugStringW (L"...");
+    }
 #endif
 #if     qTraceToFile
     Emit2File_ (p);
