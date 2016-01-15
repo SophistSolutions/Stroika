@@ -51,7 +51,7 @@ namespace   Stroika {
                 /**
                  * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
                  */
-                template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally <T>>
+                template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally <T>>
                 struct   LinkedList_DefaultTraits {
                     using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
                 };

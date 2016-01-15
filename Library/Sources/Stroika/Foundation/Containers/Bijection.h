@@ -63,7 +63,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER = Common::DefaultEqualsComparer<DOMAIN_TYPE>, typename RANGE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<RANGE_TYPE>>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER = Common::DefaultEqualsComparer<DOMAIN_TYPE>, typename RANGE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<RANGE_TYPE>>
             struct   Bijection_DefaultTraits {
                 /**
                  */

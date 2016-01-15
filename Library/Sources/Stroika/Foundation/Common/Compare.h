@@ -192,6 +192,18 @@ namespace   Stroika {
 
 
             /**
+             *  DefaultEqualsComparerOptionally will procduce an Equals() if possible, but will still compile otherwise. Its just
+             *  that attempts to call its Equals() method will fail.
+             *
+             *      @todo improve this so it has an Equals () method with a static_assert, so we get a clearer message when used.
+             *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
+             */
+            template    <typename T>
+            struct  DefaultEqualsComparerOptionally : conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or (Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value), DefaultEqualsComparer<T>, shared_ptr<int>>::type {
+                    };
+
+
+            /**
              *  \par Example Usage
              *      \code
              *        return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
