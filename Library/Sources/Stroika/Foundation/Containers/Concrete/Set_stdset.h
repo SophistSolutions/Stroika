@@ -29,7 +29,7 @@ namespace   Stroika {
                 /**
                  *  Set_stdset requires its own traits (besides Set_DefaultTraits) because of the neeed for a compare function for std::set<>
                  */
-                template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+                template    <typename T, typename EQUALS_COMPARER = typename Set_DefaultTraits<T>::EqualsCompareFunctionType, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
                 struct   Set_stdset_DefaultTraits : Set_DefaultTraits <T, EQUALS_COMPARER> {
                     /**
                      */
