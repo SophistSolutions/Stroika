@@ -42,7 +42,7 @@ namespace   {
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (ElementType v1, ElementType v2)
+            static  constexpr   bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
