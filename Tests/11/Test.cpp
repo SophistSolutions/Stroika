@@ -47,15 +47,15 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWithoutComparisonOperators_BAGTRAITS =   Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
+        using   SimpleClassWOCOMPARE_BIJECTION_TRAITS =   Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();
-        RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
+        RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWOCOMPARE_BIJECTION_TRAITS>> ();
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
         RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
-        RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
+        RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWOCOMPARE_BIJECTION_TRAITS>> ();
     }
 
 }
