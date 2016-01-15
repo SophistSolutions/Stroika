@@ -35,7 +35,7 @@
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
- *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
+ *      @todo   ContainsValue() needs to be redone as template method  template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
  *              like Equals()
  *
  *      @todo   Support more backends
@@ -66,7 +66,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
             struct   Mapping_DefaultTraits {
                 /**
                  */
@@ -379,7 +379,7 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
+                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:

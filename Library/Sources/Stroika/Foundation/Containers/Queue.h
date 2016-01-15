@@ -229,7 +229,7 @@ namespace   Stroika {
                  *
                  *  Computational Complexity: O(N)
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Equals (const Queue<T>& rhs) const;
 
             protected:
@@ -288,7 +288,7 @@ namespace   Stroika {
             /**
              *      Syntactic sugar for Equals()
              *
-             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template    <typename T>
@@ -297,7 +297,7 @@ namespace   Stroika {
             /**
              *      Syntactic sugar for not Equals()
              *
-             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template    <typename T>

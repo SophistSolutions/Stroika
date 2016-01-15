@@ -149,7 +149,7 @@ namespace   Stroika {
                  *  If == is predefined, you can just call Equals() - but if its not, or if you wish
                  *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Equals (const Stack<T>& rhs) const;
 
             public:
@@ -206,7 +206,7 @@ namespace   Stroika {
             /**
              *      Syntactic sugar for Equals()
              *
-             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template    <typename T>
@@ -215,7 +215,7 @@ namespace   Stroika {
             /**
              *      Syntactic sugar for not Equals()
              *
-             *  \note   This function uses Common::ComparerWithEquals<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template    <typename T>

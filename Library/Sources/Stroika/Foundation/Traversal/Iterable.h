@@ -411,7 +411,7 @@ namespace   Stroika {
                  *      This algorithm is O(N).
                  *
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Contains (ArgByValueType<T> element) const;
 
             public:
@@ -424,7 +424,7 @@ namespace   Stroika {
                  *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
                  *
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
@@ -434,10 +434,10 @@ namespace   Stroika {
                  *  and the two Iterables<> be SetEquals().
                  *
                  *  \em Performance:
-                 *      This algorithm is N^^3
+                 *      This algorithm is O(N^^3)
                  *
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
@@ -448,7 +448,7 @@ namespace   Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N)
                  */
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:

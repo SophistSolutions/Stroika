@@ -257,7 +257,7 @@ namespace   Stroika {
                  *              return EQUALS_COMPARERE::Equals (i, item);
                  *          });
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Contains (T item) const;
 
             public:
@@ -286,7 +286,7 @@ namespace   Stroika {
                  *  If == is predefined, you can just call Equals() - but if its not, or if you wish
                  *  to compare with an alternative comparer, just pass it as a template parameter.
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
 
             public:
@@ -324,9 +324,9 @@ namespace   Stroika {
                  *  but still must be a template method because non-template methods
                  *  cannot be overloaded with template members.
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  size_t  IndexOf (ArgByValueType<T> i) const;
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
                 template    <typename IGNORED = void>
                 nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;

@@ -18,6 +18,8 @@
 /**
  * TODO:
  *
+ *      @todo   REPLACE Has_Operator_LessThan with Common::Concepts::has_lt
+ *
  *      @todo   REPLACE
  *                  Has_Operator_LessThan<T>::value
  *              with:
@@ -172,6 +174,20 @@ namespace   Stroika {
                 {
                     return fEq (v1, v2);
                 }
+            };
+
+
+            /**
+             *  DefaultEqualsComparer will procduce an Equals() method from a variety of sources automatically:
+             *      o   operator==
+             *      o   operator< (!(a<b or b<a)
+             *
+             *  and SOON
+             *      existing Equals() function(global?/method of T?)
+             *      existing Compares() function(global?/method of T?)
+             */
+            template    <typename T, typename SFINAE = typename conditional<Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value, ComparerWithEquals<T>, ComparerWithWellOrder<T>>::type>
+            struct  DefaultEqualsComparer :  SFINAE {
             };
 
 

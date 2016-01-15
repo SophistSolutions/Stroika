@@ -60,7 +60,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
             struct   Association_DefaultTraits {
                 /**
                  */
@@ -302,7 +302,7 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template    <typename VALUE_EQUALS_COMPARER = Common::ComparerWithEquals<VALUE_TYPE>>
+                template    <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
                 nonvirtual  bool    Equals (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:

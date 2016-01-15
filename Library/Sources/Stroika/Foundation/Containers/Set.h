@@ -62,7 +62,7 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+            template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
             struct   Set_DefaultTraits {
                 /**
                  */

@@ -151,7 +151,7 @@ namespace   Stroika {
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  bool    Contains (ArgByValueType<T> item) const;
 
             public:
@@ -194,7 +194,7 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  void    Remove (ArgByValueType<T> item);
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
@@ -207,9 +207,9 @@ namespace   Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual  void    RemoveAll ();
-                template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
 
             public:
@@ -230,7 +230,7 @@ namespace   Stroika {
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                template    <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
                 nonvirtual  void    erase (ArgByValueType<T> item);
                 nonvirtual  void    erase (const Iterator<T>& i);
 
