@@ -214,8 +214,11 @@ namespace   Stroika {
              *      \endcode
              */
             template    <typename INTEGERLIKETYPE>
-            int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)
+            constexpr	int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)
             {
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+				return (lhs < rhs)? -1 : ((lhs == rhs)? 0: 1);
+#else
                 //using ST = typename make_signed<INTEGERLIKETYPE>::type;   // could do this and then diff
                 //return static_cast<ST> (lhs) - static_cast<ST> (rhs);
                 if (lhs < rhs) {
@@ -227,10 +230,11 @@ namespace   Stroika {
                 else {
                     return 1;
                 }
+#endif
             }
             // @todo more specializations
             template    <>
-            inline  int CompareNormalizer (int lhs, int rhs)
+            inline  constexpr	int CompareNormalizer (int lhs, int rhs)
             {
                 return lhs - rhs;
             }
