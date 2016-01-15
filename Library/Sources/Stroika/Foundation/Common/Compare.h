@@ -145,7 +145,7 @@ namespace   Stroika {
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                static  constexpr   int Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static  constexpr   int     Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
                 static  constexpr   bool    Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
                 {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
