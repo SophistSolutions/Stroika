@@ -367,74 +367,74 @@ namespace   Stroika {
                  *
                  *  Note - this returns a copy (by value) of this Bijections data.
                  */
-                template    <typename   TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE>>
-                nonvirtual  TARGET_CONTAINER    Inverse () const;
+                template    <typename   TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE, Bijection_DefaultTraits<RANGE_TYPE, DOMAIN_TYPE, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>>>
+                             nonvirtual  TARGET_CONTAINER    Inverse () const;
 
-            public:
-                /**
-                 *  This function should work for any container which accepts
-                 *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
-                 *
-                 *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
-                 *  of CONTAINER_OF_Key_T.
-                 *
-                 *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
-                 *  vector<pair<DomainType,RangeType>>, etc...
-                 *
-                 *  This works for:
-                 *      o   Mapping<DOMAIN_TYPE, RANGE_TYPE>
-                 *      o   map<DOMAIN_TYPE, RANGE_TYPE>
-                 *      o   vector<pair<DOMAIN_TYPE, RANGE_TYPE>>
-                 *      o   Sequence<pair<DOMAIN_TYPE, RANGE_TYPE>>
-                 */
-                template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
-                nonvirtual  CONTAINER_PAIR_RANGE_DOMAIN As () const;
+                         public:
+                             /**
+                              *  This function should work for any container which accepts
+                              *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
+                              *
+                              *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
+                              *  of CONTAINER_OF_Key_T.
+                              *
+                              *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
+                              *  vector<pair<DomainType,RangeType>>, etc...
+                              *
+                              *  This works for:
+                              *      o   Mapping<DOMAIN_TYPE, RANGE_TYPE>
+                              *      o   map<DOMAIN_TYPE, RANGE_TYPE>
+                              *      o   vector<pair<DOMAIN_TYPE, RANGE_TYPE>>
+                              *      o   Sequence<pair<DOMAIN_TYPE, RANGE_TYPE>>
+                              */
+                             template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
+                             nonvirtual  CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
-            public:
-                /**
-                 *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
-                 *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
-                 *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-                 *  vers linkedlist).
-                 *
-                 *  Equals is commutative().
-                 *
-                 *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-                 */
-                nonvirtual  bool    Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
+                         public:
+                             /**
+                              *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
+                              *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
+                              *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+                              *  vers linkedlist).
+                              *
+                              *  Equals is commutative().
+                              *
+                              *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+                              */
+                             nonvirtual  bool    Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
-            public:
-                /**
-                 * \brief STL-ish alias for RemoveAll ().
-                 */
-                nonvirtual  void    clear ();
+                         public:
+                             /**
+                              * \brief STL-ish alias for RemoveAll ().
+                              */
+                             nonvirtual  void    clear ();
 
-            public:
-                /**
-                 */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                         public:
+                             /**
+                              */
+                             template    <typename CONTAINER_OF_PAIR_KEY_T>
+                             nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            public:
-                /**
-                 */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                         public:
+                             /**
+                              */
+                             template    <typename CONTAINER_OF_PAIR_KEY_T>
+                             nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            protected:
-                /**
-                 */
-                template    <typename T2>
-                using   _SafeReadRepAccessor = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template _SafeReadRepAccessor<T2>;
+                         protected:
+                             /**
+                              */
+                             template    <typename T2>
+                             using   _SafeReadRepAccessor = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template _SafeReadRepAccessor<T2>;
 
-            protected:
-                /**
-                 */
-                template    <typename T2>
-                using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+                         protected:
+                             /**
+                              */
+                             template    <typename T2>
+                             using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
-            protected:
-                nonvirtual  void    _AssertRepValidType () const;
+                         protected:
+                             nonvirtual  void    _AssertRepValidType () const;
             };
 
 
@@ -448,20 +448,20 @@ namespace   Stroika {
              *  the Bijection<T> container API.
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
-            private:
+class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
+                private:
                 using   inherited   =   typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
-            protected:
+                protected:
                 using   _SharedPtrIRep = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_SharedPtrIRep;
 
-            protected:
+                protected:
                 _IRep () = default;
 
-            public:
+                public:
                 virtual ~_IRep () = default;
 
-            public:
+                public:
                 virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                                      =   0;
                 virtual bool                    Equals (const _IRep& rhs) const                                                             =   0;
                 virtual  Iterable<DomainType>   Preimage () const                                                                           =   0;
@@ -486,9 +486,9 @@ namespace   Stroika {
                  *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
-            protected:
+                protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
-            };
+                                                                      };
 
 
             /**
