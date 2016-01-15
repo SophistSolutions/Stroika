@@ -145,11 +145,11 @@ namespace   Stroika {
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                static  constexpr	int Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static  constexpr   int Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
                 static  constexpr   bool    Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
                 {
-#if		qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-					return not (v1 < v2 or v2 < v1);
+#if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                    return not (v1 < v2 or v2 < v1);
 #else
                     bool    result { not (v1 < v2 or v2 < v1) };
                     //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
@@ -204,7 +204,7 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  DefaultEqualsComparerOptionally : conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or (Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value), DefaultEqualsComparer<T>, shared_ptr<int>>::type {
-            };
+                    };
 
 
             /**
