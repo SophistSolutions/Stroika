@@ -39,10 +39,8 @@ namespace   Stroika {
             }
 #endif
 
-
-
             template <typename T>
-            inline  bool    ComparerWithEqualsOptionally<T>::Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
+            inline  constexpr   bool    ComparerWithEqualsOptionally<T>::Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
             {
                 return v1 == v2;
             }
