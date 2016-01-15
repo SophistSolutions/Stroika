@@ -117,6 +117,8 @@ namespace   Stroika {
 
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
+             *
+             *  \note   Generally use DefaultEqualsComparer<> instead of this, as it automatically selects the right way to compare.
              */
             template <typename T>
             struct  ComparerWithEquals : ComparerWithEqualsOptionally<T> {
@@ -189,19 +191,24 @@ namespace   Stroika {
              *  and SOON
              *      existing Equals() function(global?/method of T?)
              *      existing Compares() function(global?/method of T?)
+             *      maybe also other variants like operator!=, etc.
              *
              *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
              */
-            template    <typename T, typename SFINAE = typename conditional<
-                             Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value,
-                             ComparerWithEquals<T>,
-                             typename conditional<
-                                 Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value,
-                                 ComparerWithWellOrder<T>,
-                                 shared_ptr<int>
-                                 >::type
-                             >::type
-                         >
+            template    < typename T, typename SFINAE = typename conditional <
+#if     qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy
+                              (Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or is_enum<T>::value,
+#else
+                              (Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value),
+#endif
+                              ComparerWithEquals<T>,
+                              typename conditional <
+                                  Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value,
+                                  ComparerWithWellOrder<T>,
+                                  shared_ptr<int>
+                                  >::type
+                              >::type
+                          >
             struct  DefaultEqualsComparer :  SFINAE {
             };
 

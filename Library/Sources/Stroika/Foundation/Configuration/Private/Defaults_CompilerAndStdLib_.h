@@ -829,6 +829,9 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 
 
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
@@ -1130,6 +1133,32 @@ Compiling regtests for Median/OrderBy...
 #endif
 
 
+
+
+
+
+/*
+ *EXAMPLE:
+48>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\bijection_linkedlist.inl(213): error C2039: 'Equals' : is not a member of 'Stroika::Foundation::Common::DefaultEqualsComparer<`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType,_Ty2>'
+48>          with
+48>          [
+48>              _Ty2=std::shared_ptr<int>
+48>          ]
+48>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\bijection_linkedlist.inl(210) : while compiling class template member function 'bool Stroika::Foundation::Containers::Concrete::Bijection_LinkedList<DOMAIN_TYPE,RANGE_TYPE,TRAITS>::Rep_::Lookup(`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType,Stroika::Foundation::Memory::Optional<Stroika::Foundation::Characters::String,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<T>> *) const'
+48>          with
+48>          [
+48>              DOMAIN_TYPE=`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType
+48>  ,            RANGE_TYPE=Stroika::Foundation::Characters::String
+*/
+#ifndef qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
+#else
+#define qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy        0
+#endif
+
+#endif
 
 
 
