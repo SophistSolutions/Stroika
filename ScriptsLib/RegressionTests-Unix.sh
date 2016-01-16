@@ -105,8 +105,8 @@ echo "   $XF items failed"
 echo "   $XF items failed">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps"
 echo "   $XC core dumps">>$TEST_OUT_FILE 2>&1
-echo "   $VOL valgrind output lines (apx $$(($VOL / 27)) errors"
-echo "   $VOL valgrind output lines (apx $$(($VOL / 27)) errors" >>$TEST_OUT_FILE 2>&1
+echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors"
+echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors" >>$TEST_OUT_FILE 2>&1
 
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
