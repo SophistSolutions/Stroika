@@ -41,9 +41,9 @@ namespace {
             Memory::Optional<MultiSetOfElementType> last;
             for (MultiSetEntry<MultiSetOfElementType> i : t) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fItem) <= 0);
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fValue) <= 0);
                 }
-                last = i.fItem;
+                last = i.fValue;
             }
         };
         CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);

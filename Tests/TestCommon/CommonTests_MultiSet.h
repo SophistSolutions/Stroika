@@ -85,7 +85,7 @@ namespace CommonTests {
                     }
                     VerifyTestResult (s.GetLength () == kTestSize);
                     for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                        s.Remove (it2.Current ().fItem);
+                        s.Remove (it2.Current ().fValue);
                     }
                     VerifyTestResult (s.GetLength () == 0);
                 }
@@ -181,7 +181,7 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= s.GetLength (); i++) {
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        if (EqualsCompareFunctionType::Equals (it.Current ().fItem, i)) {
+                        if (EqualsCompareFunctionType::Equals (it.Current ().fValue, i)) {
                             break;
                         }
                     }

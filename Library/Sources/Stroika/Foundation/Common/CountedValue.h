@@ -48,13 +48,13 @@ namespace   Stroika {
             public:
                 /**
                  */
-                CountedValue (typename Configuration::ArgByValueType<ValueType> value, typename Configuration::ArgByValueType<CounterType> count = 1);
+                CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
                 template    <
                     typename VALUE2_TYPE,
                     typename COUNTER2_TYPE,
                     typename ENABLE_IF_TEST = typename enable_if < is_convertible<VALUE2_TYPE, VALUE_TYPE>::value && is_convertible<COUNTER2_TYPE, COUNTER_TYPE>::value >::type
                     >
-                CountedValue (typename Configuration::ArgByValueType<pair<VALUE2_TYPE, COUNTER2_TYPE>> src);
+                CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
                 template    <
                     typename VALUE2_TYPE,
                     typename COUNTER2_TYPE,
@@ -70,7 +70,7 @@ namespace   Stroika {
                 /**
                  * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
                  */
-                nonvirtual  bool    Equals (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs) const;
+                nonvirtual  bool    Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
             };
 
 

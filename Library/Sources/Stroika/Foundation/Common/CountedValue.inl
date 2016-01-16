@@ -23,14 +23,14 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
-            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<ValueType> value, typename Configuration::ArgByValueType<CounterType> count)
+            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count)
                 : fValue (value)
                 , fCount (count)
             {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
             template    <typename VALUE2_TYPE, typename COUNTER2_TYPE, typename ENABLE_IF_TEST>
-            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<pair<VALUE2_TYPE, COUNTER2_TYPE>> src)
+            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src)
                 : fValue (src.first)
                 , fCount (src.second)
             {
@@ -43,7 +43,7 @@ namespace   Stroika {
             {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
-            inline  bool    CountedValue<VALUE_TYPE, COUNTER_TYPE>::Equals (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs) const
+            inline  bool    CountedValue<VALUE_TYPE, COUNTER_TYPE>::Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const
             {
                 return fValue == rhs.fValue and fCount == rhs.fCount;
             }

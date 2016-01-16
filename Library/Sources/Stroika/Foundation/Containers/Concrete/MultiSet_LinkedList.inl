@@ -187,7 +187,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         MultiSetEntry<T>   c = item;
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
                             }
@@ -213,7 +213,7 @@ namespace   Stroika {
                         MultiSetEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
                                     return;
@@ -232,7 +232,7 @@ namespace   Stroika {
                         MultiSetEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
                                     }
@@ -287,7 +287,7 @@ namespace   Stroika {
                     MultiSetEntry<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
                                 Ensure (c.fCount != 0);
                                 return c.fCount;
                             }

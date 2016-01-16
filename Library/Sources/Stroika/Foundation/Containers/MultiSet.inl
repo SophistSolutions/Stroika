@@ -57,7 +57,7 @@ namespace   Stroika {
                         , fContext (context)
                     {
                         if (not fContext.fMultiSetIterator.Done ()) {
-                            fContext.fSaved2Return = fContext.fMultiSetIterator->fItem;
+                            fContext.fSaved2Return = fContext.fMultiSetIterator->fValue;
                             if (fContext.fSaved2Return.IsPresent ()) {
                                 fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
                             }
@@ -82,7 +82,7 @@ namespace   Stroika {
                                 result->clear ();
                             }
                             else {
-                                *result = fContext.fMultiSetIterator->fItem;
+                                *result = fContext.fMultiSetIterator->fValue;
                             }
                             if (advance) {
                                 fContext.fSaved2Return = *result;
@@ -188,7 +188,7 @@ namespace   Stroika {
                             result->clear ();
                         }
                         else {
-                            *result = fContext.fMultiSetIterator->fItem;
+                            *result = fContext.fMultiSetIterator->fValue;
                         }
                     }
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override
@@ -246,7 +246,7 @@ namespace   Stroika {
                 }
             };
 
-
+#if 0
             /*
              ********************************************************************************
              ****************************** MultiSetEntry<T> ********************************
@@ -280,6 +280,7 @@ namespace   Stroika {
             {
                 return not (operator== (rhs));
             }
+#endif
 
 
             /*
@@ -297,7 +298,7 @@ namespace   Stroika {
                     return false;
                 }
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    if (i->fCount != rhs.OccurrencesOf (i->fItem)) {
+                    if (i->fCount != rhs.OccurrencesOf (i->fValue)) {
                         return false;
                     }
                 }
@@ -467,7 +468,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    MultiSet<T, TRAITS>::Add (const MultiSetEntry<T>& item)
             {
-                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item.fItem, item.fCount);
+                _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item.fValue, item.fCount);
             }
             template    <typename T, typename TRAITS>
             void   MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
@@ -526,7 +527,7 @@ namespace   Stroika {
             MultiSet<T, TRAITS>&  MultiSet<T, TRAITS>::operator+= (const MultiSet<T, TRAITS>& t)
             {
                 for (auto i = t.begin (); i != t.end (); ++i) {
-                    Add (i->fItem, i->fCount);
+                    Add (i->fValue, i->fCount);
                 }
                 return *this;
             }

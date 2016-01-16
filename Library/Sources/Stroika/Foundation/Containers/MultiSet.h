@@ -91,6 +91,10 @@ namespace   Stroika {
             };
 
 
+#if 1
+            template    <typename T>
+            using   MultiSetEntry = Common::CountedValue<T, size_t>;
+#else
             template    <typename T>
             class   MultiSetEntry {
             public:
@@ -106,6 +110,7 @@ namespace   Stroika {
                 T       fItem;
                 size_t  fCount;
             };
+#endif
 
 
             /**
