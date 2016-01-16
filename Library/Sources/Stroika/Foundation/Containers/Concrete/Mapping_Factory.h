@@ -69,8 +69,7 @@ namespace   Stroika {
                 private:
                     template    <typename CHECK_KEY>
                     static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, Containers::Mapping_DefaultTraits<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
-                    template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if < !(Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, Containers::Mapping_DefaultTraits<CHECK_KEY, VALUE_TYPE>>::value) >::type* = 0);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
                 };
 
 
