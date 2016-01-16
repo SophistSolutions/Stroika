@@ -97,6 +97,7 @@ fi
 
 XF=`cat $TEST_OUT_FILE | grep -i -F FAILED | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i -F "core dump" | wc -l`
+VOL=`grep == $TEST_OUT_FILE | wc -l`
 
 echo "   $X1 items succeeded"
 echo "   $X1 items succeeded">>$TEST_OUT_FILE 2>&1
@@ -104,6 +105,8 @@ echo "   $XF items failed"
 echo "   $XF items failed">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps"
 echo "   $XC core dumps">>$TEST_OUT_FILE 2>&1
+echo "   $VOL valgrind output lines (apx $$(($VOL / 27)) errors"
+echo "   $VOL valgrind output lines (apx $$(($VOL / 27)) errors" >>$TEST_OUT_FILE 2>&1
 
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
