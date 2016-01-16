@@ -90,7 +90,7 @@ namespace   {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
-        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   SortedMapping_DefaultTraits <
+        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   DefaultTraits::SortedMapping <
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,

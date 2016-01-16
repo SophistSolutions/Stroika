@@ -9,6 +9,7 @@
 #include    "../Configuration/Concepts.h"
 
 #include    "Mapping.h"
+#include    "DefaultTraits/SortedMapping.h"
 
 
 
@@ -30,20 +31,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = typename DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-            struct   SortedMapping_DefaultTraits : DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> {
-                /**
-                 */
-                using   KeyWellOrderCompareFunctionType     =   KEY_WELL_ORDER_COMPARER;
-
-                /**
-                 */
-                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
-            };
-
-
-            /**
              *      A SortedMapping is a Mapping<Key,T> which remains sorted (iterator) by the Key.
              *
              *  Note - this class might have been called "Dictionary".
@@ -60,7 +47,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, VALUE_TYPE>>
             class   SortedMapping : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
             private:
                 using   inherited   =   Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;

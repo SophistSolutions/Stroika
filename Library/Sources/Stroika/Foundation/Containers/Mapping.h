@@ -65,9 +65,9 @@ namespace   Stroika {
             using   Common::KeyValuePair;
 
 
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
+            //template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
             //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
-            using   Mapping_DefaultTraits = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
+            //using   Mapping_DefaultTraits = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
 
 
             /**

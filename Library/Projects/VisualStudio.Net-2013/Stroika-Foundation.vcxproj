@@ -1086,6 +1086,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.h" />

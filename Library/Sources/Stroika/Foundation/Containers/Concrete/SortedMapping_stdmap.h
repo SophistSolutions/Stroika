@@ -37,7 +37,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, VALUE_TYPE>>
                 class   SortedMapping_stdmap : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
                 private:
                     using   inherited   =     SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>;

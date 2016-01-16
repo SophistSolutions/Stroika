@@ -63,26 +63,9 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+            //template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
             //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
-            using   Set_DefaultTraits = DefaultTraits::Set<T, EQUALS_COMPARER>;
-
-#if 0
-            template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-            struct   Set_DefaultTraits {
-                /**
-                 */
-                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-
-                /**
-                 *  Define typedef for this Set traits object (so other traits can generically allow recovery of the
-                 *  underlying Set's TRAITS objects.
-                 */
-                using   SetTraitsType               =   Set_DefaultTraits<T, EQUALS_COMPARER>;
-            };
-#endif
+            //using   Set_DefaultTraits = DefaultTraits::Set<T, EQUALS_COMPARER>;
 
 
             /**
