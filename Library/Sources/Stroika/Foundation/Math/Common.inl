@@ -260,7 +260,7 @@ namespace   Stroika {
             template    <typename   T>
             inline  T   AtMost (T initialValue, T upperBound)
             {
-                return min (initialValue, lowerBound);
+                return min (initialValue, upperBound);
             }
 
 
