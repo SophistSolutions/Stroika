@@ -36,13 +36,13 @@ namespace   Stroika {
             template    <typename VALUE_TYPE, typename COUNTER_TYPE = unsigned int>
             struct  CountedValue {
             public:
-				/**
-				 */
+                /**
+                 */
                 using   ValueType       =   VALUE_TYPE;
 
-			public:
-				/**
-				 */
+            public:
+                /**
+                 */
                 using   CounterType     =   COUNTER_TYPE;
 
             public:

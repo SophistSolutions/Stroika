@@ -17,7 +17,7 @@ namespace   Stroika {
         namespace   Common {
 
 
-			/*
+            /*
              ********************************************************************************
              *************** Common::CountedValue<VALUE_TYPE, COUNTER_TYPE> *****************
              ********************************************************************************
@@ -25,21 +25,21 @@ namespace   Stroika {
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
             inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<ValueType> value, typename Configuration::ArgByValueType<CounterType> count)
                 : fValue (value)
-				, fCount (count)
+                , fCount (count)
             {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
             template    <typename VALUE2_TYPE, typename COUNTER2_TYPE, typename ENABLE_IF_TEST>
             inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<pair<VALUE2_TYPE, COUNTER2_TYPE>> src)
                 : fValue (src.first)
-				, fCount (src.second)
+                , fCount (src.second)
             {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
             template    <typename VALUE2_TYPE, typename COUNTER2_TYPE, typename ENABLE_IF_TEST>
             inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src)
                 : fValue (src.fValue)
-				, fCount (src.fCount)
+                , fCount (src.fCount)
             {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
@@ -55,12 +55,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
-            inline	bool    operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
+            inline  bool    operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
             {
                 return lhs.Equals (rhs);
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
-            inline	bool    operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
+            inline  bool    operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs)
             {
                 return not lhs.Equals (rhs);
             }
