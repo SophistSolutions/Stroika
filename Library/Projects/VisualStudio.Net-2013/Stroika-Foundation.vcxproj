@@ -1087,6 +1087,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\MultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h" />

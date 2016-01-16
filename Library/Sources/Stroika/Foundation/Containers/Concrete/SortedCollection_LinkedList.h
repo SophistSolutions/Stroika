@@ -40,7 +40,7 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS = SortedCollection_DefaultTraits<T>>
+                template    <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
                 class  SortedCollection_LinkedList : public SortedCollection<T, TRAITS> {
                 private:
                     using   inherited   =     SortedCollection<T, TRAITS>;

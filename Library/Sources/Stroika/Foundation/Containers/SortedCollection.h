@@ -9,6 +9,7 @@
 #include    "../Configuration/Concepts.h"
 
 #include    "Collection.h"
+#include    "DefaultTraits/SortedCollection.h"
 
 
 
@@ -42,30 +43,6 @@ namespace   Stroika {
 
 
             /**
-             *  Traits to define the well-ordering of elements of the SortedCollection.
-             *
-             *  Note - that a well-ordering also imputes a notion of equality (not (a<b or b < a)), so we define
-             *  that as well.
-             *
-             */
-            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedCollection_DefaultTraits {
-
-                /**
-                */
-                using   EqualsCompareFunctionType       =   WELL_ORDER_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-
-                /**
-                 */
-                using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-            };
-
-
-            /**
              *  \brief  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
              *
              *  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
@@ -88,7 +65,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T, typename TRAITS = SortedCollection_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
             class   SortedCollection : public Collection<T> {
             private:
                 using   inherited   =   Collection<T>;

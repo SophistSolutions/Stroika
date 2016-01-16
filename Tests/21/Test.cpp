@@ -65,7 +65,7 @@ namespace   {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
-        using   SimpleClassWithoutComparisonOperators_CollectionTRAITS  =   SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>;
+        using   SimpleClassWithoutComparisonOperators_CollectionTRAITS  =   DefaultTraits::SortedCollection<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>;
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<SimpleClass>> ();
