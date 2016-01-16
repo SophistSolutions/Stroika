@@ -239,7 +239,6 @@ namespace   Stroika {
                 /**
                  */
                 TimedCache (Time::DurationSecondsType timeoutInSeconds);
-                _Deprecated_ (TimedCache, "USE TRAITS FOR FLAG IF NOT FALSE") (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);   /// DEPRECATED
                 TimedCache (const TimedCache&) = default;
 
             public:
@@ -249,13 +248,6 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);
-
-            public:
-                /**
-                 *  Lookup the given value and return it if its in the Cache.
-                 */
-                nonvirtual  _Deprecated_ (Memory::Optional<VALUE> AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key);
-                nonvirtual  _Deprecated_ (bool AccessElement, "Use Lookup") (typename Configuration::ArgByValueType<KEY> key, VALUE* result);
 
             public:
                 /**
@@ -282,15 +274,13 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  _Deprecated_ (void AddElement, "Add") (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result)
-                {
-                    Add (key, result);
-                }
+                nonvirtual  void    Remove (typename Configuration::ArgByValueType<KEY> key);
 
             public:
                 /**
+                 *  Remove everything from the cache
                  */
-                nonvirtual  void    Remove (typename Configuration::ArgByValueType<KEY> key);
+                nonvirtual  void    clear ();
 
             public:
                 /**
