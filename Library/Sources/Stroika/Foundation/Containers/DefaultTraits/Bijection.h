@@ -26,6 +26,14 @@ namespace   Stroika {
 
 
                 /**
+                 */
+                enum Bijection_InjectivityViolationPolicy {
+                    eAssertionError,
+                    eThrowException,
+                };
+
+
+                /**
                  *  Default Bijection<> Traits
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER = Common::DefaultEqualsComparer<DOMAIN_TYPE>, typename RANGE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<RANGE_TYPE>>

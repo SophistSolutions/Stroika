@@ -29,7 +29,7 @@ namespace   Stroika {
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value)
                 : fKey (key)
                 , fValue (value)
             {
@@ -61,12 +61,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            bool    operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
+            inline  bool    operator== (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
             {
                 return lhs.Equals (rhs);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            bool    operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
+            inline  bool    operator!= (const KeyValuePair<KEY_TYPE, VALUE_TYPE>& lhs, const KeyValuePair<KEY_TYPE, VALUE_TYPE>& rhs)
             {
                 return not lhs.Equals (rhs);
             }

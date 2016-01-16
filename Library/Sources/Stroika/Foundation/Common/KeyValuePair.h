@@ -42,7 +42,7 @@ namespace   Stroika {
 
             public:
                 KeyValuePair ();
-                KeyValuePair (const KeyType& key, const ValueType& value);
+                KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value);
                 template    <
                     typename KEY2_TYPE,
                     typename VALUE2_TYPE,

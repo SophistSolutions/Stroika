@@ -54,14 +54,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            enum Bijection_InjectivityViolationPolicy {
-                eAssertionError,
-                eThrowException,
-            };
-
-
-            /**
              * \brief   Bijection which allows for the bijective (1-1) association of two elements.
              *
              *  Bijection which allows for the bijective (1-1) association of two elements. This means that one element
