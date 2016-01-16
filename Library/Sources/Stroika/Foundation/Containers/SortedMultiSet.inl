@@ -55,7 +55,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<MultiSetEntry<T>>& src)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
                 : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

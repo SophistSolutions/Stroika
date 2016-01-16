@@ -33,7 +33,7 @@ namespace   Stroika {
                     using   inherited   =   typename MultiSet<T, TRAITS>::_IRep;
 
                 public:
-                    using   _IterableSharedPtrIRep = typename Iterable<MultiSetEntry<T>>::_SharedPtrIRep;
+                    using   _IterableSharedPtrIRep = typename Iterable<CountedValue<T>>::_SharedPtrIRep;
                     using   _SharedPtrIRep = typename inherited::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
@@ -54,9 +54,9 @@ namespace   Stroika {
                     virtual _IterableSharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual size_t                              GetLength () const override;
                     virtual bool                                IsEmpty () const override;
-                    virtual Iterator<MultiSetEntry<T>>          MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<CountedValue<T>>          MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<MultiSetEntry<T>>          FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<CountedValue<T>>          FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
@@ -65,8 +65,8 @@ namespace   Stroika {
                     virtual bool                                Contains (ArgByValueType<T> item) const override;
                     virtual void                                Add (ArgByValueType<T> item, size_t count) override;
                     virtual void                                Remove (ArgByValueType<T> item, size_t count) override;
-                    virtual void                                Remove (const Iterator<MultiSetEntry<T>>& i) override;
-                    virtual void                                UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount) override;
+                    virtual void                                Remove (const Iterator<CountedValue<T>>& i) override;
+                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount) override;
                     virtual size_t                              OccurrencesOf (ArgByValueType<T> item) const override;
                     virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
@@ -75,9 +75,9 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::LinkedList<MultiSetEntry<T>>;
-                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<MultiSetEntry<T>, Private::ContainerRepLockDataSupport_>;
-                    using   IteratorRep_                        =   typename Private::IteratorImplHelper_<MultiSetEntry<T>, DataStructureImplType_>;
+                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::LinkedList<CountedValue<T>>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<CountedValue<T>, Private::ContainerRepLockDataSupport_>;
+                    using   IteratorRep_                        =   typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_      fData_;
@@ -113,19 +113,19 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<MultiSetEntry<T>> MultiSet_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
+                Iterator<CountedValue<T>> MultiSet_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
-                    typename Iterator<MultiSetEntry<T>>::SharedIRepPtr tmpRep;
+                    typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-                        tmpRep = Iterator<MultiSetEntry<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
+                        tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
 #else
-                        tmpRep = Iterator<MultiSetEntry<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
 #endif
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    return Iterator<MultiSetEntry<T>> (tmpRep);
+                    return Iterator<CountedValue<T>> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
                 void      MultiSet_LinkedList<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
@@ -138,9 +138,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<MultiSetEntry<T>>     MultiSet_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<CountedValue<T>>     MultiSet_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
-                    using   RESULT_TYPE     =   Iterator<MultiSetEntry<T>>;
+                    using   RESULT_TYPE     =   Iterator<CountedValue<T>>;
                     using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                     SHARED_REP_TYPE resultRep;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -150,9 +150,9 @@ namespace   Stroika {
                         }
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-                        resultRep = Iterator<MultiSetEntry<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
+                        resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
 #else
-                        resultRep = Iterator<MultiSetEntry<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
 #endif
                         resultRep->fIterator.SetCurrentLink (iLink);
                     }
@@ -166,14 +166,14 @@ namespace   Stroika {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
                     else {
-                        return Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> ();
+                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
                     }
                 }
                 template    <typename T, typename TRAITS>
@@ -185,7 +185,7 @@ namespace   Stroika {
                 bool   MultiSet_LinkedList<T, TRAITS>::Rep_::Contains (ArgByValueType<T> item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        MultiSetEntry<T>   c = item;
+                        CountedValue<T>   c = item;
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
                                 Assert (c.fCount != 0);
@@ -201,7 +201,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<MultiSetEntry<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -210,7 +210,7 @@ namespace   Stroika {
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
-                        MultiSetEntry<T>   current (item);
+                        CountedValue<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
@@ -219,7 +219,7 @@ namespace   Stroika {
                                     return;
                                 }
                             }
-                            fData_.Prepend (MultiSetEntry<T> (item, count));
+                            fData_.Prepend (CountedValue<T> (item, count));
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
@@ -229,7 +229,7 @@ namespace   Stroika {
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
-                        MultiSetEntry<T>   current (item);
+                        CountedValue<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
@@ -253,9 +253,9 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<MultiSetEntry<T>>& i)
+                void    MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<CountedValue<T>>& i)
                 {
-                    const typename Iterator<MultiSetEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -264,9 +264,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::UpdateCount (const Iterator<MultiSetEntry<T>>& i, size_t newCount)
+                void    MultiSet_LinkedList<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount)
                 {
-                    const typename Iterator<MultiSetEntry<T>>::IRep&    ir  =   i.GetRep ();
+                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -274,7 +274,7 @@ namespace   Stroika {
                             fData_.RemoveAt (mir.fIterator);
                         }
                         else {
-                            MultiSetEntry<T>   c   =   mir.fIterator.Current ();
+                            CountedValue<T>   c   =   mir.fIterator.Current ();
                             c.fCount = newCount;
                             fData_.SetAt (mir.fIterator, c);
                         }
@@ -284,7 +284,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 size_t MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const
                 {
-                    MultiSetEntry<T>   c = item;
+                    CountedValue<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
@@ -360,7 +360,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<MultiSetEntry<T>>& src)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

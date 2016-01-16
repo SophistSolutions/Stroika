@@ -38,11 +38,11 @@ namespace   Stroika {
              *          releative cost of main memory access versus stack).
              */
 #if     qCompilerAndStdLib_is_trivially_copyable_Buggy
-            template    <typename   T>
-            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2 * sizeof(void*)) and std::is_trivial<T>::value, T, const T& >::type;
+            template    <typename   T, typename CHECK_T = T>
+            using   ArgByValueType = typename std::conditional < (sizeof(CHECK_T) <= 2 * sizeof(void*)) and std::is_trivial<CHECK_T>::value, CHECK_T, const CHECK_T& >::type;
 #else
-            template    <typename   T>
-            using   ArgByValueType = typename std::conditional < (sizeof(T) <= 2 * sizeof(void*)) and std::is_trivially_copyable<T>::value, T, const T& >::type;
+            template    <typename   T, typename CHECK_T = T>
+            using   ArgByValueType = typename std::conditional < (sizeof(CHECK_T) <= 2 * sizeof(void*)) and std::is_trivially_copyable<CHECK_T>::value, CHECK_T, const CHECK_T& >::type;
 #endif
 
 

@@ -45,7 +45,7 @@ namespace   Stroika {
                     MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
                     MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
                     MultiSet_LinkedList (const initializer_list<T>& src);
-                    MultiSet_LinkedList (const initializer_list<MultiSetEntry<T>>& src);
+                    MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src);
                     MultiSet_LinkedList (const T* start, const T* end);
 
                 public:

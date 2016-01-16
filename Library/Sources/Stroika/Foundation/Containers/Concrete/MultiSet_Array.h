@@ -46,10 +46,10 @@ namespace   Stroika {
                     MultiSet_Array ();
                     MultiSet_Array (const MultiSet<T, TRAITS>& src);
                     MultiSet_Array (const std::initializer_list<T>& s);
-                    MultiSet_Array (const std::initializer_list<MultiSetEntry<T>>& s);
+                    MultiSet_Array (const std::initializer_list<CountedValue<T>>& s);
                     MultiSet_Array (const MultiSet_Array<T, TRAITS>& src);
                     MultiSet_Array (const T* start, const T* end);
-                    MultiSet_Array (const MultiSetEntry<T>* start, const MultiSetEntry<T>* end);
+                    MultiSet_Array (const CountedValue<T>* start, const CountedValue<T>* end);
 
                 public:
                     nonvirtual  MultiSet_Array<T, TRAITS>& operator= (const MultiSet_Array<T, TRAITS>& rhs);

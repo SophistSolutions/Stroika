@@ -29,7 +29,7 @@ namespace CommonTests {
                 VerifyTestResult (s.GetLength () == 0);
                 applyToContainer (s);
 
-                for (MultiSetEntry<T> i : s) {
+                for (CountedValue<T> i : s) {
                     VerifyTestResult (false);
                 }
                 IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
@@ -52,7 +52,7 @@ namespace CommonTests {
                     VerifyTestResult (s.GetLength () == kTestSize);
 
                     {
-                        for (MultiSetEntry<T> it : s) {
+                        for (CountedValue<T> it : s) {
                             for (size_t i = 1; i <= kTestSize; i++) {
                                 VerifyTestResult (s.Contains (i));
                                 VerifyTestResult (s.GetLength () == kTestSize - i + 1);

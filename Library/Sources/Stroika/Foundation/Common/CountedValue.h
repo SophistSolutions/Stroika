@@ -52,13 +52,13 @@ namespace   Stroika {
                 template    <
                     typename VALUE2_TYPE,
                     typename COUNTER2_TYPE,
-                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<VALUE2_TYPE, VALUE_TYPE>::value && is_convertible<COUNTER2_TYPE, COUNTER_TYPE>::value >::type
+                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<VALUE2_TYPE, VALUE_TYPE>::value and is_convertible<COUNTER2_TYPE, COUNTER_TYPE>::value >::type
                     >
                 CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
                 template    <
                     typename VALUE2_TYPE,
                     typename COUNTER2_TYPE,
-                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<VALUE2_TYPE, VALUE_TYPE>::value && is_convertible<COUNTER2_TYPE, COUNTER_TYPE>::value >::type
+                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<VALUE2_TYPE, VALUE_TYPE>::value and is_convertible<COUNTER2_TYPE, COUNTER_TYPE>::value >::type
                     >
                 CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
 

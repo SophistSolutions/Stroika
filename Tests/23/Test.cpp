@@ -39,7 +39,7 @@ namespace {
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & t) {
             // verify in sorted order
             Memory::Optional<MultiSetOfElementType> last;
-            for (MultiSetEntry<MultiSetOfElementType> i : t) {
+            for (CountedValue<MultiSetOfElementType> i : t) {
                 if (last.IsPresent ()) {
                     VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fValue) <= 0);
                 }

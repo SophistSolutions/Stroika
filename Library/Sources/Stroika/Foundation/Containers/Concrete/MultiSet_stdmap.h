@@ -67,7 +67,7 @@ namespace   Stroika {
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
                     MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src);
                     MultiSet_stdmap (const initializer_list<T>& src);
-                    MultiSet_stdmap (const initializer_list<MultiSetEntry<T>>& src);
+                    MultiSet_stdmap (const initializer_list<CountedValue<T>>& src);
                     MultiSet_stdmap (const T* start, const T* end);
 
                 public:
