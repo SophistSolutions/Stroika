@@ -48,7 +48,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                CountedValue (typename Configuration::ArgByValueType<ValueType> value, typename Configuration::ArgByValueType<CounterType> count);
+                CountedValue (typename Configuration::ArgByValueType<ValueType> value, typename Configuration::ArgByValueType<CounterType> count = 1);
                 template    <
                     typename VALUE2_TYPE,
                     typename COUNTER2_TYPE,
