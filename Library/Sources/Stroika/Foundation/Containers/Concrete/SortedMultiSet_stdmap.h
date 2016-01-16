@@ -36,7 +36,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = SortedMultiSet_DefaultTraits<T>>
+                template    <typename T, typename TRAITS = DefaultTraits::SortedMultiSet<T>>
                 class   SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
                 private:
                     using   inherited   =   SortedMultiSet<T, TRAITS>;

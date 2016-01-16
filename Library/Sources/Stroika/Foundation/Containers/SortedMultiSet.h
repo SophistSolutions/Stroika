@@ -9,6 +9,7 @@
 #include    "../Configuration/Concepts.h"
 
 #include    "MultiSet.h"
+#include    "DefaultTraits/SortedMultiSet.h"
 
 
 
@@ -32,18 +33,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedMultiSet_DefaultTraits : MultiSet_DefaultTraits <T, WELL_ORDER_COMPARER> {
-                /**
-                 */
-                using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-            };
-
-
-            /**
              *      A SortedMultiSet is a MultiSet<T, TRAITS> which remains sorted (iterator).
              *
              *  \note   \em Iterators
@@ -58,7 +47,7 @@ namespace   Stroika {
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
              */
-            template    <typename T, typename TRAITS = SortedMultiSet_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = DefaultTraits::SortedMultiSet<T>>
             class   SortedMultiSet : public MultiSet<T, typename TRAITS::MultisetTraitsType> {
             private:
                 using   inherited   =   MultiSet<T, typename TRAITS::MultisetTraitsType>;

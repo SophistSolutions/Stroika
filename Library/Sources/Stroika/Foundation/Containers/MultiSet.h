@@ -15,7 +15,7 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
-
+#include    "DefaultTraits/MultiSet.h"
 
 
 /**
@@ -76,20 +76,6 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-            struct   MultiSet_DefaultTraits {
-                /**
-                 */
-                using   EqualsCompareFunctionType   =   EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-
-                /**
-                 *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
-                 *  underlying Mapping's TRAITS objects.
-                 */
-                using   MultisetTraitsType               =    MultiSet_DefaultTraits<T, EQUALS_COMPARER>;
-            };
 
 
             using   Common::CountedValue;
@@ -115,7 +101,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            template    <typename T, typename TRAITS = MultiSet_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
             class   MultiSet : public Iterable<CountedValue<T>> {
             private:
                 using   inherited   =   Iterable<CountedValue<T>>;

@@ -53,7 +53,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWithoutComparisonOperators_MultiSetTRAITS    =   MultiSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
+        using   SimpleClassWithoutComparisonOperators_MultiSetTRAITS    =   DefaultTraits::MultiSet<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
 
         DoTestForConcreteContainer_<MultiSet<size_t>> ();
         DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();

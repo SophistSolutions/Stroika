@@ -29,10 +29,10 @@ namespace   Stroika {
 
 
                 /**
-                 *  MultiSet_stdmap requires its own traits (besides MultiSet_DefaultTraits) because of the neeed for a compare function for std::map<>
+                 *  MultiSet_stdmap requires its own traits (besides DefaultTraits::MultiSet) because of the neeed for a compare function for std::map<>
                  */
                 template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-                struct   MultiSet_stdmap_DefaultTraits : MultiSet_DefaultTraits <T, WELL_ORDER_COMPARER> {
+                struct   MultiSet_stdmap_DefaultTraits : DefaultTraits::MultiSet <T, WELL_ORDER_COMPARER> {
                     /**
                      */
                     using   WellOrderCompareFunctionType    =   WELL_ORDER_COMPARER;

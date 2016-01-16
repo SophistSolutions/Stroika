@@ -66,7 +66,7 @@ namespace   {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
-        using   SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS  =   SortedMultiSet_DefaultTraits <
+        using   SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS  =   DefaultTraits::SortedMultiSet <
                 SimpleClassWithoutComparisonOperators,
                 MySimpleClassWithoutComparisonOperators_ComparerWithComparer_
                 >;
