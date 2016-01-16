@@ -1085,6 +1085,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\DoublyLinkedList.h" />
@@ -1447,7 +1448,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\DoublyLinkedList.inl" />

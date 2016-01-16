@@ -7,12 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Common/Compare.h"
-#include    "../../Common/KeyValuePair.h"
-#include    "../../Configuration/Common.h"
 #include    "../../Configuration/Concepts.h"
-#include    "../../Execution/Synchronized.h"
-#include    "../../Memory/Optional.h"
-#include    "../../Traversal/Iterable.h"
 
 
 
@@ -30,14 +25,8 @@ namespace   Stroika {
             namespace   DefaultTraits {
 
 
-                using   Configuration::ArgByValueType;
-                using   Traversal::Iterable;
-                using   Traversal::Iterator;
-
-                using   Common::KeyValuePair;
-
-
                 /**
+                 *  Default Mapping<> Traits
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
                 struct   Mapping {
@@ -53,7 +42,6 @@ namespace   Stroika {
                      */
                     using   MappingTraitsType               =    Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
                 };
-
 
 
             }

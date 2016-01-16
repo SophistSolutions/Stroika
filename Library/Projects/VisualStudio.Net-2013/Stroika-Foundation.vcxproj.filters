@@ -1749,6 +1749,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2666,9 +2669,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.inl">
-      <Filter>Sources\Containers\DefaultTraits</Filter>
     </None>
   </ItemGroup>
 </Project>

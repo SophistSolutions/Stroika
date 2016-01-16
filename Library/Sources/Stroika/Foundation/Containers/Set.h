@@ -13,6 +13,7 @@
 #include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
+#include    "DefaultTraits/Set.h"
 
 
 
@@ -63,6 +64,11 @@ namespace   Stroika {
 
 
             template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+            //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
+            using   Set_DefaultTraits = DefaultTraits::Set<T, EQUALS_COMPARER>;
+
+#if 0
+            template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
             struct   Set_DefaultTraits {
                 /**
                  */
@@ -76,6 +82,7 @@ namespace   Stroika {
                  */
                 using   SetTraitsType               =   Set_DefaultTraits<T, EQUALS_COMPARER>;
             };
+#endif
 
 
             /**
@@ -104,7 +111,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
             class   Set : public Iterable<T> {
             private:
                 using   inherited   =   Iterable<T>;

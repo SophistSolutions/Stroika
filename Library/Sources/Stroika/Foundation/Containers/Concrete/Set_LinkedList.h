@@ -35,7 +35,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
+                template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
                 class   Set_LinkedList : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
                     using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;

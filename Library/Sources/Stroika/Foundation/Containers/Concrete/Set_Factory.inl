@@ -58,7 +58,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, Set_DefaultTraits<CHECK_T>>::value>::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
                 {
                     return Set_stdset<T> ();    // OK to omit TRIATS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }

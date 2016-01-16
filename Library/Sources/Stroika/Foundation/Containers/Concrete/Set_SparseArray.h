@@ -39,7 +39,7 @@ namespace   Stroika {
 
                 /**
                  */
-                template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
+                template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
                 class   Set_SparseArray : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
                     using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;

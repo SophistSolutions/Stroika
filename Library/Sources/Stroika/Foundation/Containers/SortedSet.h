@@ -41,8 +41,8 @@ namespace   Stroika {
             /**
              *  \req    DEFAULT IMPLEMENTATION (with no args) - RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              */
-            template    <typename T, typename EQUALS_COMPARER = typename Set_DefaultTraits<T>::EqualsCompareFunctionType, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedSet_DefaultTraits : Set_DefaultTraits <T, EQUALS_COMPARER> {
+            template    <typename T, typename EQUALS_COMPARER = typename DefaultTraits::Set<T>::EqualsCompareFunctionType, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+            struct   SortedSet_DefaultTraits : DefaultTraits::Set <T, EQUALS_COMPARER> {
                 /**
                  */
                 using       WellOrderCompareFunctionType        =   WELL_ORDER_COMPARER;
