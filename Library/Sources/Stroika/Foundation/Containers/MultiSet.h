@@ -72,13 +72,9 @@ namespace   Stroika {
 
 
             using   Configuration::ArgByValueType;
+            using   Common::CountedValue;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
-
-
-
-
-            using   Common::CountedValue;
 
 
             /**
@@ -143,6 +139,8 @@ namespace   Stroika {
                 using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
+                /**
+                 */
                 MultiSet ();
                 MultiSet (const MultiSet<T, TRAITS>& src);
                 MultiSet (const initializer_list<T>& src);
