@@ -24,9 +24,12 @@ NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
 NUM_REGTESTS=47
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
-echo "Building configurations ($NUM_CONFIGURATIONS): `sh ScriptsLib/GetConfigurations.sh`"
-echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS): `sh ScriptsLib/GetConfigurations.sh`" >>$TEST_OUT_FILE 2>&1
-
+echo "Building configurations ($NUM_CONFIGURATIONS):"
+echo "$PREFIX_OUT_LABEL" "Building configurations ($NUM_CONFIGURATIONS):" >>$TEST_OUT_FILE 2>&1
+for i in `ScriptsLib/GetConfigurations.sh`; do
+	echo "   $i";
+	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
+done
 
 make clobber >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
@@ -99,14 +102,14 @@ XF=`cat $TEST_OUT_FILE | grep -i -F FAILED | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i -F "core dump" | wc -l`
 VOL=`grep == $TEST_OUT_FILE | wc -l`
 
-echo "   $X1 items succeeded"
-echo "   $X1 items succeeded">>$TEST_OUT_FILE 2>&1
-echo "   $XF items failed"
-echo "   $XF items failed">>$TEST_OUT_FILE 2>&1
-echo "   $XC core dumps"
-echo "   $XC core dumps">>$TEST_OUT_FILE 2>&1
-echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors"
-echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors" >>$TEST_OUT_FILE 2>&1
+echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
+echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+echo "   $XF items failed (expected 0)"
+echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XC core dumps (expected 0)"
+echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
+echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
 
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
