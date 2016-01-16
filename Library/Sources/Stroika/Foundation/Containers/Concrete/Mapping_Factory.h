@@ -31,8 +31,6 @@ namespace   Stroika {
 
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class   Mapping;
-            //template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
-            //struct   Mapping_DefaultTraits;
 
 
             namespace   Concrete {

@@ -175,6 +175,9 @@
     <Filter Include="Sources\DataExchange\StructuredStreamEvents">
       <UniqueIdentifier>{ac7f56d4-834e-427d-aeeb-905a248ca848}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\DefaultTraits">
+      <UniqueIdentifier>{b257c588-e7c9-4c87-937d-029145d508d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1743,6 +1746,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2660,6 +2666,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.inl">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
     </None>
   </ItemGroup>
 </Project>

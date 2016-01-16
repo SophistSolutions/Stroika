@@ -31,8 +31,8 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = typename Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-            struct   SortedMapping_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> {
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = typename DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
+            struct   SortedMapping_DefaultTraits : DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> {
                 /**
                  */
                 using   KeyWellOrderCompareFunctionType     =   KEY_WELL_ORDER_COMPARER;

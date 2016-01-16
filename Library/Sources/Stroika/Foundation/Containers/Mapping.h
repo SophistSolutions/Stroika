@@ -13,6 +13,7 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
+#include    "DefaultTraits/Mapping.h"
 
 
 
@@ -67,19 +68,8 @@ namespace   Stroika {
             /**
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
-            struct   Mapping_DefaultTraits {
-                /**
-                 */
-                using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
-
-                /**
-                 *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
-                 *  underlying Mapping's TRAITS objects.
-                 */
-                using   MappingTraitsType               =    Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
-            };
+            //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
+            using   Mapping_DefaultTraits = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
 
 
             /**
@@ -117,7 +107,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
                 using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;

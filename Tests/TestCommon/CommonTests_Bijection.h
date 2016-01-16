@@ -132,7 +132,7 @@ namespace CommonTests {
                     }
 #endif
                     {
-                        using   MAPPING_TRAITS  =   Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType>;
+                        using   MAPPING_TRAITS  =   DefaultTraits::Mapping<DomainType, RangeType, DomainEqualsCompareFunctionType>;
                         Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.template As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         VerifyTestResult (m.ContainsKey (3));
@@ -177,7 +177,7 @@ namespace CommonTests {
 #endif
 #if 0
                     {
-                        using   MAPPING_TRAITS      =   typename Mapping_DefaultTraits<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>;
+                        using   MAPPING_TRAITS      =   typename DefaultTraits::Mapping<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>;
                         Mapping<RangeType, DomainType, MAPPING_TRAITS>  m = b.Inverse<Mapping<RangeType, DomainType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         //VerifyTestResult (m.ContainsKey (5));

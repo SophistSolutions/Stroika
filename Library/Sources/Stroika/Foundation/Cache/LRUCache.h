@@ -231,7 +231,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Containers::Mapping<KEY, VALUE, Containers::Mapping_DefaultTraits<KEY, VALUE, KeyEqualsCompareFunctionType>>     Elements () const;
+                nonvirtual  Containers::Mapping<KEY, VALUE, Containers::DefaultTraits::Mapping<KEY, VALUE, KeyEqualsCompareFunctionType>>     Elements () const;
 
             private:
                 struct  KeyValuePair_ {

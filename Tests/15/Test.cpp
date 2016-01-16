@@ -94,7 +94,7 @@ namespace {
             using Common::KeyValuePair;
             using KEY_TYPE = int;
             using VALUE_TYPE = B;
-            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
 
@@ -123,7 +123,7 @@ namespace {
             using Common::KeyValuePair;
             using KEY_TYPE = int;
             using VALUE_TYPE = B;
-            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             bool n1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
             //bool n2 = Configuration::IsIterableOfT2<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
@@ -150,7 +150,7 @@ namespace {
             using Common::KeyValuePair;
             using KEY_TYPE = int;
             using VALUE_TYPE = B;
-            using TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>;
+            using TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             bool xxxxx1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
             bool xxxxx2 = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value;
@@ -179,7 +179,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   Mapping_DefaultTraits <
+        using   SimpleClassWithoutComparisonOperators_MappingTRAITS =   DefaultTraits::Mapping <
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
