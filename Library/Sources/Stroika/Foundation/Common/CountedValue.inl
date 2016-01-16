@@ -30,7 +30,7 @@ namespace   Stroika {
             }
             template    <typename VALUE_TYPE, typename COUNTER_TYPE>
             template    <typename VALUE2_TYPE, typename COUNTER2_TYPE, typename ENABLE_IF_TEST>
-            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (const pair<VALUE2_TYPE, COUNTER2_TYPE>& src)
+            inline  CountedValue<VALUE_TYPE, COUNTER_TYPE>::CountedValue (typename Configuration::ArgByValueType<pair<VALUE2_TYPE, COUNTER2_TYPE>> src)
                 : fValue (src.first)
 				, fCount (src.second)
             {
