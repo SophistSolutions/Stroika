@@ -8,8 +8,6 @@ SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Common/
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Compare.o\
-	$(ObjDir)KeyValuePair.o\
 
 
 all:	$(Objs)

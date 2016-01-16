@@ -9,6 +9,7 @@
 #include    <set>
 
 #include    "../Common/Compare.h"
+#include    "../Common/CountedValue.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Execution/Synchronized.h"
