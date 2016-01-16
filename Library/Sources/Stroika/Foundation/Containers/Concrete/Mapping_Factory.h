@@ -9,6 +9,8 @@
 #include    <atomic>
 #include    <type_traits>
 
+#include    "../DefaultTraits/Mapping.h"
+
 
 /**
  *  \file
@@ -66,7 +68,7 @@ namespace   Stroika {
 
                 private:
                     template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value/* and is_same<TRAITS, typename Mapping<CHECK_KEY, VALUE_TYPE>::TraitsType>::value*/>::type* = 0);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
                     static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
                 };
 

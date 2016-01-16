@@ -58,7 +58,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value/* and is_same<TRAITS, typename Containers::Mapping<CHECK_KEY, VALUE_TYPE>::TraitsType>::value*/>::type*)
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type*)
                 {
                     return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> (); // OK to omit TRIATS (and not manually pass in equals) cuz checked using default traits so no need to specify traits here
                 }
