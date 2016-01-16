@@ -19,6 +19,9 @@
  *              ops like assignment.
  *
  *      @todo   Add Compare/operator< support
+ *
+ *      @todo   Use typename Configuration::ArgByValueType<> more (one missing CTOR and Equals). On VS2k13 generates
+ *              compiler errors I dont understand. Low pri...
  */
 
 
