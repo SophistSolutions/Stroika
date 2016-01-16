@@ -73,7 +73,7 @@ namespace   {
                 return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
             }
         };
-        using   SimpleClassWithoutComparisonOperators_SETTRAITS =   SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_>;
+        using   SimpleClassWithoutComparisonOperators_SETTRAITS =   DefaultTraits::SortedSet<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_>;
 
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<SimpleClass>> ();

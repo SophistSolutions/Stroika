@@ -1752,6 +1752,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

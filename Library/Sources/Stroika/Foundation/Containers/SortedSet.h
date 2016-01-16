@@ -9,6 +9,7 @@
 #include    "../Configuration/Concepts.h"
 
 #include    "Set.h"
+#include    "DefaultTraits/SortedSet.h"
 
 
 
@@ -39,21 +40,6 @@ namespace   Stroika {
 
 
             /**
-             *  \req    DEFAULT IMPLEMENTATION (with no args) - RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
-             */
-            template    <typename T, typename EQUALS_COMPARER = typename DefaultTraits::Set<T>::EqualsCompareFunctionType, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedSet_DefaultTraits : DefaultTraits::Set <T, EQUALS_COMPARER> {
-                /**
-                 */
-                using       WellOrderCompareFunctionType        =   WELL_ORDER_COMPARER;
-
-                /**
-                */
-                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-            };
-
-
-            /**
              *      A SortedSet is a Set<T> which remains sorted (iterator).
              *
              *  \note   \em Iterators
@@ -65,7 +51,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = DefaultTraits::SortedSet<T>>
             class   SortedSet : public Set<T, typename TRAITS::SetTraitsType> {
             private:
                 using   inherited   =   Set<T, typename TRAITS::SetTraitsType>;
