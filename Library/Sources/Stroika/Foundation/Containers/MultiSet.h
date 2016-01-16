@@ -28,6 +28,10 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-428 - See how to map EqualsComparer to CountedValue we use
  *              probably added template param to CountedValue - TRAITS.
  *
+ *              MAYBE add    using   MultisetEntryType                       =       CountedValue<T>; to
+ *              TRAITS object. Then use throughout.... Not sure this is worth parameterizing, but
+ *              COULD help address unifying the EQUALS support!
+ *
  *      @todo   Started using concepts on CTORs, but make sure THIS supports the appropriate new Container
  *              concepts and that it USES that for the appropriate overloaded constructors.
  *
