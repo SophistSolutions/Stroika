@@ -67,9 +67,9 @@ namespace   Stroika {
 
                 private:
                     template    <typename CHECK_T>
-                    static  Set<T, TRAITS>  Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_T>::value>::type* = 0);
+                    static  Set<T, TRAITS>  Default_SFINAE_ (typename enable_if <Configuration::has_lt<CHECK_T>::value>::type* = 0);
                     template    <typename CHECK_T>
-                    static  Set<T, TRAITS>  Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_T>::value >::type* = 0);
+                    static  Set<T, TRAITS>  Default_SFINAE_ (typename enable_if < !Configuration::has_lt<CHECK_T>::value >::type* = 0);
                 };
 
 

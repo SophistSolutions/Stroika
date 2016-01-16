@@ -18,8 +18,6 @@
 /**
  * TODO:
  *
- *      @todo   REPLACE Has_Operator_LessThan with Common::Concepts::has_lt
- *
  *      @todo   REPLACE
  *                  Has_Operator_LessThan<T>::value
  *              with:
@@ -40,6 +38,7 @@ namespace   Stroika {
 
 
             namespace Private_ {
+                // @DEPRECATED!!!!!
                 namespace Has_Operator_LessThan_Helper_ {
                     /*
                      *  This trick is based on code from
@@ -87,8 +86,8 @@ namespace   Stroika {
              *  BUT - CANNOT DO until we have vc++ fixed for constexpr functions
              */
             template    <typename T>
-            struct  Has_Operator_LessThan :
-                    Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
+            struct  _DeprecatedFunction2_(Has_Operator_LessThan, "use has_lt<>") :
+                Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
             };
 
 

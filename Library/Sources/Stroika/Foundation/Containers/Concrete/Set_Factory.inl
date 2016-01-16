@@ -58,13 +58,13 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_T>::value>::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if <Configuration::has_lt<CHECK_T>::value>::type*)
                 {
                     return Set_stdset<T> ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_T>::value >::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if < !Configuration::has_lt<CHECK_T>::value >::type*)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Set<> for large sizes,
