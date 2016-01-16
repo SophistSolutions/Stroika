@@ -1084,6 +1084,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\MultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h" />

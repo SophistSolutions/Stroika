@@ -47,7 +47,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWOCOMPARE_BIJECTION_TRAITS =   Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
+        using   SimpleClassWOCOMPARE_BIJECTION_TRAITS =   DefaultTraits::Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();

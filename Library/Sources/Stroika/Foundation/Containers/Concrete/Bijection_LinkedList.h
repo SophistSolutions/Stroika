@@ -35,7 +35,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>
                 class   Bijection_LinkedList : public Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType> {
                 private:
                     using   inherited   =   Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>;

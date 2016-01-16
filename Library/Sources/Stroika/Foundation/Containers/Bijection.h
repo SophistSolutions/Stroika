@@ -15,7 +15,7 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
-
+#include    "DefaultTraits/Bijection.h"
 
 
 /*
@@ -62,33 +62,6 @@ namespace   Stroika {
 
 
             /**
-             */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER = Common::DefaultEqualsComparer<DOMAIN_TYPE>, typename RANGE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<RANGE_TYPE>>
-            struct   Bijection_DefaultTraits {
-                /**
-                 */
-                using   DomainEqualsCompareFunctionType     =   DOMAIN_EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, DomainEqualsCompareFunctionType);
-
-                /**
-                 * only defined optionally...(see what can call this - gen list here @todo)
-                 */
-                using   RangeEqualsCompareFunctionType      =   RANGE_EQUALS_COMPARER;
-
-                /**
-                 *  Define typedef for this Bijection traits object (so other traits can generically allow recovery of the
-                 *  underlying Bijection's TRAITS objects.
-                 */
-                using   BijectionTraitsType                 =   Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>;
-
-                /**
-                 */
-                DEFINE_CONSTEXPR_CONSTANT(Bijection_InjectivityViolationPolicy, InjectivityViolationPolicy, Bijection_InjectivityViolationPolicy::eAssertionError);
-            };
-
-
-            /**
              * \brief   Bijection which allows for the bijective (1-1) association of two elements.
              *
              *  Bijection which allows for the bijective (1-1) association of two elements. This means that one element
@@ -116,7 +89,7 @@ namespace   Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>
             class   Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
             private:
                 using   inherited   =   Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
@@ -367,69 +340,69 @@ namespace   Stroika {
                  *
                  *  Note - this returns a copy (by value) of this Bijections data.
                  */
-                template    <typename   TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE, Bijection_DefaultTraits<RANGE_TYPE, DOMAIN_TYPE, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>>>
+                template    <typename   TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE, DefaultTraits::Bijection<RANGE_TYPE, DOMAIN_TYPE, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>>>
                              nonvirtual  TARGET_CONTAINER    Inverse () const;
 
                          public:
                              /**
-                              *  This function should work for any container which accepts
-                              *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
-                              *
-                              *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
-                              *  of CONTAINER_OF_Key_T.
-                              *
-                              *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
-                              *  vector<pair<DomainType,RangeType>>, etc...
-                              *
-                              *  This works for:
-                              *      o   Mapping<DOMAIN_TYPE, RANGE_TYPE>
-                              *      o   map<DOMAIN_TYPE, RANGE_TYPE>
-                              *      o   vector<pair<DOMAIN_TYPE, RANGE_TYPE>>
-                              *      o   Sequence<pair<DOMAIN_TYPE, RANGE_TYPE>>
-                              */
+                             *  This function should work for any container which accepts
+                             *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
+                             *
+                             *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
+                             *  of CONTAINER_OF_Key_T.
+                             *
+                             *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
+                             *  vector<pair<DomainType,RangeType>>, etc...
+                             *
+                             *  This works for:
+                             *      o   Mapping<DOMAIN_TYPE, RANGE_TYPE>
+                             *      o   map<DOMAIN_TYPE, RANGE_TYPE>
+                             *      o   vector<pair<DOMAIN_TYPE, RANGE_TYPE>>
+                             *      o   Sequence<pair<DOMAIN_TYPE, RANGE_TYPE>>
+                             */
                              template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
                              nonvirtual  CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
                          public:
                              /**
-                              *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
-                              *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
-                              *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
-                              *  vers linkedlist).
-                              *
-                              *  Equals is commutative().
-                              *
-                              *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
-                              */
+                             *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
+                             *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
+                             *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+                             *  vers linkedlist).
+                             *
+                             *  Equals is commutative().
+                             *
+                             *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+                             */
                              nonvirtual  bool    Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
                          public:
                              /**
-                              * \brief STL-ish alias for RemoveAll ().
-                              */
+                             * \brief STL-ish alias for RemoveAll ().
+                             */
                              nonvirtual  void    clear ();
 
                          public:
                              /**
-                              */
+                             */
                              template    <typename CONTAINER_OF_PAIR_KEY_T>
                              nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
                          public:
                              /**
-                              */
+                             */
                              template    <typename CONTAINER_OF_PAIR_KEY_T>
                              nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
                          protected:
                              /**
-                              */
+                             */
                              template    <typename T2>
                              using   _SafeReadRepAccessor = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template _SafeReadRepAccessor<T2>;
 
                          protected:
                              /**
-                              */
+                             */
                              template    <typename T2>
                              using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
 
