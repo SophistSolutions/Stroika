@@ -1951,8 +1951,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 /*
- *  Wrap this macro around entire declaration, as in:
- *      _DeprecatedFunction_ (inline bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
+ *  USE _Deprecated_ INSTEAD
  */
 #if     !defined (_DeprecatedFunction_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
@@ -1977,8 +1976,24 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 /*
- *  Wrap this macro around entire declaration, as in:
- *       class _DeprecatedClass_ (DirectoryContentsIterator, "DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator")
+ *  This doesnt always work, but works for c++14 or later, and VS
+ *  EXAMPLE:
+ *      struct _Deprecated_(FRED,"FRED NOW DEPRECATED - USE BARNY") { int a; };
+ */
+#if     !defined (_Deprecated_)
+#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
+#define _Deprecated_(funOrClassName,MESSAGE) __declspec(deprecated) func
+#elif   __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
+#define _Deprecated_(funOrClassName,MESSAGE) [[deprecated(MESSAGE)]] func
+#else
+#define _Deprecated_(funOrClassName,MESSAGE) func
+#endif
+#endif
+
+
+
+/*
+ *  USE _Deprecated_ INSTEAD
  */
 #if     !defined (_DeprecatedClass_)
 #if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)

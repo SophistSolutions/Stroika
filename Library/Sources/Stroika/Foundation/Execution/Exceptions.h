@@ -66,15 +66,6 @@ namespace   Stroika {
             void    _NoReturn_  ReThrow (const wchar_t* traceMsg);
             void    _NoReturn_  ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
-#if     !defined (__GNUC__)
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow () { ReThrow (); }, "Instead use ReThrow()");
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e) { ReThrow (e); }, "Instead use ReThrow ()");
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const char* traceMsg) { ReThrow (traceMsg); }, "Instead use ReThrow ()");
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e, const char* traceMsg) { ReThrow (e, traceMsg); }, "Instead use ReThrow ()");
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const wchar_t* traceMsg) { ReThrow (traceMsg); }, "Instead use ReThrow ()");
-            _DeprecatedFunction_ (inline void    _NoReturn_  DoReThrow (const exception_ptr& e, const wchar_t* traceMsg) { ReThrow (e, traceMsg); }, "Instead use ReThrow ()");
-#endif
-
 
             /**
              */
