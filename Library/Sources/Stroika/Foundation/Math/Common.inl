@@ -233,10 +233,34 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T>
-            T   PinInRange (T initialValue, T lowerBound, T upperBound)
+            inline  T   PinInRange (T initialValue, T lowerBound, T upperBound)
             {
                 Require (lowerBound <= upperBound);
                 return  max (lowerBound, min (upperBound, initialValue));
+            }
+
+
+            /*
+             ********************************************************************************
+             ******************************** Math::AtLeast *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            inline  T   AtLeast (T initialValue, T lowerBound)
+            {
+                return max (initialValue, lowerBound);
+            }
+
+
+            /*
+             ********************************************************************************
+             ******************************** Math::AtMost *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            inline  T   AtMost (T initialValue, T upperBound)
+            {
+                return min (initialValue, lowerBound);
             }
 
 

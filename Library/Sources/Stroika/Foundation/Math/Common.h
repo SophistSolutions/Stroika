@@ -102,9 +102,33 @@ namespace   Stroika {
              *  value which equals initialValue, or lowerBound or upperBound to get it into that range.
              *
              *  @see Range<>::Pin ()
+             *  @see AtLeast
+             *  @see AtMost
              */
             template    <typename   T>
             T   PinInRange (T initialValue, T lowerBound, T upperBound);
+
+
+            /**
+             *  Return a value at this at least the given value. This is the same as "max" as it turns out,
+             *  but writing it this way I find more clear
+             *
+             *  @see PinInRange
+             *  @see AtLeast
+             */
+            template    <typename   T>
+            T   AtLeast (T initialValue, T lowerBound);
+
+
+            /**
+             *  Return a value at this at no more than the given value. This is the same as "min" as it turns out,
+             *  but writing it this way I find more clear
+             *
+             *  @see PinInRange
+             *  @see AtLeast
+             */
+            template    <typename   T>
+            T   AtMost (T initialValue, T upperBound);
 
 
             /**
