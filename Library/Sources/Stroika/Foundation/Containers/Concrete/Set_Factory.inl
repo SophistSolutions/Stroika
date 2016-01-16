@@ -54,17 +54,16 @@ namespace   Stroika {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_<T> ();
+                    return Default_SFINAE_ (static_cast<T*> (nullptr));
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, Set_DefaultTraits<CHECK_T>>::value>::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, Set_DefaultTraits<CHECK_T>>::value>::type*)
                 {
-                    return Set_stdset<T> ();    // OK to omit TRIATS (and not manually pass in equals) cuz checked using default traits so no need to specify traits here
+                    return Set_stdset<T> ();    // OK to omit TRIATS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }
                 template    <typename T, typename TRAITS>
-                template    <typename CHECK_T>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if < !(Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, Set_DefaultTraits<CHECK_T>>::value) >::type*)
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Set<> for large sizes,

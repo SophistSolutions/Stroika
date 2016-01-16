@@ -53,18 +53,10 @@ namespace   Stroika {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_<DOMAIN_TYPE> ();
+                    return Default_SFINAE_ (static_cast<DOMAIN_TYPE*> (nullptr));
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                template    <typename CHECK_KEY>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if <Configuration::has_lt<CHECK_KEY>::value>::type*)
-                {
-                    // KISS - we will want to use SFINAE eventually so keep infrastructure in place
-                    return Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
-                }
-                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                template    <typename CHECK_KEY>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if < !Configuration::has_lt<CHECK_KEY>::value >::type*)
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
