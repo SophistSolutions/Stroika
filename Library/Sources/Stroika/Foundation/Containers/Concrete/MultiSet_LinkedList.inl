@@ -67,7 +67,7 @@ namespace   Stroika {
                     virtual void                                Remove (ArgByValueType<T> item, CounterType count) override;
                     virtual void                                Remove (const Iterator<CountedValue<T>>& i) override;
                     virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override;
-                    virtual size_t                              OccurrencesOf (ArgByValueType<T> item) const override;
+                    virtual CounterType                         OccurrencesOf (ArgByValueType<T> item) const override;
                     virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
 #if     qDebug
@@ -282,7 +282,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const
+                auto	MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
                 {
                     CountedValue<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
