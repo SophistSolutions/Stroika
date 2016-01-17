@@ -94,20 +94,25 @@ NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 echo "Regression Tests Summary:"
 echo "$PREFIX_OUT_LABEL" "Regression Tests Summary:" >>$TEST_OUT_FILE 2>&1
-X1=`cat $TEST_OUT_FILE | grep seconds | grep -i -F [Succeeded] | wc -l`
-TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
-if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
-	echo "   ***   $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
-fi
 
-XF=`cat $TEST_OUT_FILE | grep -i -F FAILED | wc -l`
-XC=`cat $TEST_OUT_FILE | grep -i -F "core dump" | wc -l`
+TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
+
+X1=`cat $TEST_OUT_FILE | grep seconds | grep -F "[Succeeded]" | grep -F " seconds)" | wc -l`
+XF=`cat $TEST_OUT_FILE | grep -i FAILED | wc -l`
+XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep == $TEST_OUT_FILE | wc -l`
+XW=`cat $TEST_OUT_FILE | grep -i "warning:" | wc -l`
+
+if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
+	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
+fi
 
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XW items warned (expected 0)"
+echo "   $XW items warned (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps (expected 0)"
 echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
