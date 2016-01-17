@@ -1126,7 +1126,7 @@ Compiling regtests for Median/OrderBy...
  * clang uses the g++ stdlib, and since the bug is in both places, I suspect the issue is with the library, and
  * not the compiler, but its hard to unravel, and I need to get back to other things, so just disable. Now it only
  * affects Bijection<> and when you use it with types that have no operator< and operator== (type needs both to workaround
- * this bug).
+ * this bug) DECLARED - but  not DEFINED.
  *
  EXAMPLE OUTPUT:
  In file included from /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Tests/11/Test.cpp:7:
