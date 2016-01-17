@@ -11,7 +11,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/TypeHints.h"
-#include    "../Containers/STL/Compare.h"           //TMPHACK til we move STL::less
+#include    "../Common/Compare.h"
 #include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
@@ -308,7 +308,7 @@ namespace   Stroika {
                     Time::DurationSecondsType   fLastAccessedAt;
                 };
             private:
-                using   MyMapType_ = map<KEY, MyResult_, Containers::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>;
+                using   MyMapType_ = map<KEY, MyResult_, Common::STL::less <KEY, typename TRAITS::WellOrderCompareFunctionType>>;
                 MyMapType_   fMap_;
             };
 

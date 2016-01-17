@@ -18,16 +18,6 @@ namespace   Stroika {
 
 
                 /**
-                 *  An STL-compatible variant of 'less' which leverages a stroika comparer. This can be used to use
-                 *  Stroika comparares (almost directly) with std STL classes such as map<>, and set<>.
-                 */
-                template<typename T, typename STROIKA_COMPARER>
-                struct less : public binary_function<T, T, bool> {
-                    nonvirtual  bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const;
-                };
-
-
-                /**
                  *  Apply Stroika equals comparer to STL (iterators or containers) and return true iff equal.
                  */
                 template <typename STROIKA_EQUALS_COMPARER, typename ITERATOR_OF_T>

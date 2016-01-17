@@ -13,20 +13,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
             namespace STL {
-
-
-                /*
-                 ********************************************************************************
-                 ********************* STL::less<T, STROIKA_COMPARER> ***************************
-                 ********************************************************************************
-                 */
-                template<class T, typename STROIKA_COMPARER>
-                inline  bool    less<T, STROIKA_COMPARER>::operator()(Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const
-                {
-                    return STROIKA_COMPARER::Compare (_Left, _Right) < 0;
-                }
-
-
                 /*
                  ********************************************************************************
                  ******************************** STL::Equals ***********************************
