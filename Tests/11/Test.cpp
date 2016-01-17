@@ -51,17 +51,11 @@ namespace   {
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();
-#if     !qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
-        // BAD WORKAROUND - but I spent hours and still dont have a fix!
         RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWOCOMPARE_BIJECTION_TRAITS>> ();
-#endif
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
         RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
-#if     !qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
-        // BAD WORKAROUND - but I spent hours and still dont have a fix!
         RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWOCOMPARE_BIJECTION_TRAITS>> ();
-#endif
     }
 
 }

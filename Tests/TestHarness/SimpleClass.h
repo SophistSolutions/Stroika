@@ -52,6 +52,16 @@ namespace   Stroika {
         {
             return SimpleClassWithoutComparisonOperators (fValue + rhs.fValue);
         }
+#if     qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
+        bool operator== (const SimpleClassWithoutComparisonOperators& rhs) const
+        {
+            return fValue == rhs.fValue;
+        }
+        bool operator< (const SimpleClassWithoutComparisonOperators& rhs) const
+        {
+            return fValue < rhs.fValue;
+        }
+#endif
 
     private:
         size_t  fValue;
