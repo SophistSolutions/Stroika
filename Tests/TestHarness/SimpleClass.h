@@ -53,8 +53,16 @@ namespace   Stroika {
             return SimpleClassWithoutComparisonOperators (fValue + rhs.fValue);
         }
 #if     qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
-        bool operator== (const SimpleClassWithoutComparisonOperators& rhs) const;   // NOTE - NEVER DEFINED - NEVER ACTUALLY called
-        bool operator< (const SimpleClassWithoutComparisonOperators& rhs) const;    // NOTE - NEVER DEFINED - NEVER ACTUALLY called
+        bool operator== (const SimpleClassWithoutComparisonOperators& rhs) const
+        {
+            AssertNotReached ();    // NOTE - NEVER DEFINED - NEVER ACTUALLY called, but sometimes linked
+            return false;
+        }
+        bool operator< (const SimpleClassWithoutComparisonOperators& rhs) const
+        {
+            AssertNotReached ();    // NOTE - NEVER DEFINED - NEVER ACTUALLY called, but sometimes linked
+            return false;
+        }
 #endif
 
     private:
