@@ -172,6 +172,9 @@
     <Filter Include="Sources\DataExchange\StructuredStreamEvents">
       <UniqueIdentifier>{5e550cdb-ffe0-4576-8941-d7ec6508fb41}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\DefaultTraits">
+      <UniqueIdentifier>{e9904ae6-d1bc-4fb1-b6f2-a35fc4769b05}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -446,12 +449,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp">
-      <Filter>Sources\Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp">
-      <Filter>Sources\Common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp">
       <Filter>Sources\DataExchange</Filter>
@@ -1737,6 +1734,33 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Mapping.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\MultiSet.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedCollection.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMultiSet.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2654,6 +2678,9 @@
     </None>
     <None Include="..\..\Sources\ReadMe.md">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
 </Project>
