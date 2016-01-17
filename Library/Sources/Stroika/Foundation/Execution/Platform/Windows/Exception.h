@@ -39,7 +39,7 @@ namespace   Stroika {
                     public:
                         // throw Platform::Windows::Exception () - if error is a real error, and map SOME (like #8 to bad_alloc) - but ALWAYS throw
                         // someting, regardless of error#
-                        static  void    DoThrow (DWORD error);
+                        static  void    Throw (DWORD error);
 
                     public:
                         static      SDKString   LookupMessage (DWORD hr);

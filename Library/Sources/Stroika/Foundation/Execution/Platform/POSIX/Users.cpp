@@ -37,10 +37,10 @@ uid_t   Platform::POSIX::UserName2UID (const String& name)
     struct passwd* result   =   nullptr;
     int err = getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf, bufsize, &result);
     if (err < 0) {
-        errno_ErrorException::DoThrow (err);
+        errno_ErrorException::Throw (err);
     }
     if (result == nullptr) {
-        Execution::DoThrow (StringException (String_Constant (L"No such username")));
+        Execution::Throw (StringException (String_Constant (L"No such username")));
     }
     return pwd.pw_uid;
 }
@@ -64,10 +64,10 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid)
     struct passwd*  result   =   nullptr;
     int err = ::getpwuid_r (uid, &pwd, buf, bufsize, &result);
     if (err < 0) {
-        errno_ErrorException::DoThrow (err);
+        errno_ErrorException::Throw (err);
     }
     if (result == nullptr) {
-        Execution::DoThrow (StringException (String_Constant (L"No such username")));
+        Execution::Throw (StringException (String_Constant (L"No such username")));
     }
     return String::FromSDKString (pwd.pw_name);
 }

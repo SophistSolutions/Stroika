@@ -51,8 +51,8 @@ void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
     if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        // only thing DoThrow() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-        DoThrow (TimeOutException ());
+        // only thing Throw() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
+        Throw (TimeOutException ());
 #else
         throw (TimeOutException ());
 #endif
@@ -96,7 +96,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
              *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
              *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
              *
-             *      DoThrow (TimeOutException ());
+             *      Throw (TimeOutException ());
              */
         }
     }

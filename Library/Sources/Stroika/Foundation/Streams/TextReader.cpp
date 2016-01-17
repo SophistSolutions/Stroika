@@ -90,11 +90,11 @@ protected:
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     SeekOffsetType  uOffset =   static_cast<SeekOffsetType> (offset);
                     if (uOffset > (fTmpHackTextRemaining_.size ())) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
                     fOffset_ = static_cast<size_t> (offset);
@@ -104,11 +104,11 @@ protected:
                     Streams::SeekOffsetType         curOffset   =   fOffset_;
                     Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
                     if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                     fOffset_ = static_cast<size_t> (uNewOffset);
@@ -118,11 +118,11 @@ protected:
                     Streams::SeekOffsetType         curOffset   =   fOffset_;
                     Streams::SignedSeekOffsetType   newOffset   =   fTmpHackTextRemaining_.size () + offset;
                     if (newOffset < 0) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
                     if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
                     fOffset_ = static_cast<size_t> (uNewOffset);

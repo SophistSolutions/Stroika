@@ -54,13 +54,13 @@ namespace   Stroika {
                 typename    RANGE_TYPE::ElementType useE    =   Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
                 // Note: these checks MUST use <= and >= and IGNORE openness, because the bounds need not be in the range.
                 if (not (RANGE_TYPE::TraitsType::kLowerBound <= useS)) {
-                    Execution::DoThrow (BadFormatException (String_Constant (L"Value < RangeType lower bounds")));
+                    Execution::Throw (BadFormatException (String_Constant (L"Value < RangeType lower bounds")));
                 }
                 if (not (useS <= useE)) {
-                    Execution::DoThrow (BadFormatException (String_Constant (L"Range start must be less than end")));
+                    Execution::Throw (BadFormatException (String_Constant (L"Range start must be less than end")));
                 }
                 if (not (useE <= RANGE_TYPE::TraitsType::kUpperBound)) {
-                    Execution::DoThrow (BadFormatException (String_Constant (L"Range end must be less than Range traits end")));
+                    Execution::Throw (BadFormatException (String_Constant (L"Range end must be less than Range traits end")));
                 }
                 return RANGE_TYPE (useS, useE);
             }
@@ -78,11 +78,11 @@ namespace   Stroika {
                 typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
                 if (not range.Contains (useVal)) {
                     if (useVal <= range.GetLowerBound ()) {
-                        Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (too low)")));
+                        Execution::Throw (BadFormatException (String_Constant (L"Value out of range (too low)")));
                     }
                     else {
                         Assert (useVal >= range.GetUpperBound ());
-                        Execution::DoThrow (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
+                        Execution::Throw (BadFormatException (String_Constant (L"Value out of range (exceeds max)")));
                     }
                 }
                 return useVal;

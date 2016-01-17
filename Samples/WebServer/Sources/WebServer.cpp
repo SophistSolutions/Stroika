@@ -62,7 +62,7 @@ int main (int argc, const char* argv[])
                     }
                     else if (path == L"SetAppState") {
                         if (conn.GetRequest ().fMethod != L"POST") {
-                            Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
+                            Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
                         }
                         BLOB    setAppState2    =   conn.GetRequest ().GetBody ();
                         String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
@@ -70,7 +70,7 @@ int main (int argc, const char* argv[])
                         conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
                     }
                     else {
-                        Execution::DoThrow (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+                        Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
                     }
                 }
                 catch (const IO::Network::HTTP::Exception& e) {

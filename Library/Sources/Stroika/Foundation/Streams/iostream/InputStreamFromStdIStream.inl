@@ -73,7 +73,7 @@ namespace   Stroika {
 
                         // apparently based on http://www.cplusplus.com/reference/iostream/istream/read/ EOF sets the EOF bit AND the fail bit
                         if (not fOriginalStream_.eof () and fOriginalStream_.fail ()) {
-                            Execution::DoThrow (Execution::StringException (Characters::String_Constant { L"Failed to read from istream" }));
+                            Execution::Throw (Execution::StringException (Characters::String_Constant { L"Failed to read from istream" }));
                         }
                         return n;
                     }

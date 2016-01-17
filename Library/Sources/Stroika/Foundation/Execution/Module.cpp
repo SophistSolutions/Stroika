@@ -107,7 +107,7 @@ SDKString Execution::GetEXEPathT ()
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
-        errno_ErrorException::DoThrow (errno);
+        errno_ErrorException::Throw (errno);
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return SDKString (buf.begin (), buf.begin () + n);
@@ -139,7 +139,7 @@ String Execution::GetEXEPath (pid_t processID)
         buf.GrowToSize (buf.GetSize () * 2);
     }
     if (n < 0) {
-        errno_ErrorException::DoThrow (errno);
+        errno_ErrorException::Throw (errno);
     }
     Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
     return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));

@@ -42,7 +42,7 @@ public:
                 return Manager::_mkAccessor (start, start + ::SizeofResource (fModule_, hres));
             }
         }
-        DoThrow (ResourceNotFoundException ());
+        Throw (ResourceNotFoundException ());
     }
 public:
     DECLARE_USE_BLOCK_ALLOCATION (IRep_);

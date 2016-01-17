@@ -31,7 +31,7 @@ namespace   Stroika {
                 // and we want to throw if told to wait negative time...
                 chrono::duration<double>    d = waitUpTo.As<chrono::duration<double>> ();
                 if (d <= 0 or not m.try_lock_for ()) {
-                    Exeuction::DoThrow (timeoutException);
+                    Exeuction::Throw (timeoutException);
                 }
             }
             template    <typename MUTEX>

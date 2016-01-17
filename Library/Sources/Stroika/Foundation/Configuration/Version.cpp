@@ -34,7 +34,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
     if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
-        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
+        Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage);   // in this form - no encoding of 'final build'
 }
@@ -49,7 +49,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
         long l = wcstol (i, endResult, 10);
         if (l < 0 or l > numeric_limits<uint8_t>::max ())
         {
-            Execution::DoThrow (Execution::StringException (L"Invalid Version String: component out of range"));
+            Execution::Throw (Execution::StringException (L"Invalid Version String: component out of range"));
         }
         return static_cast<uint8_t> (l);
     };
@@ -58,14 +58,14 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     wchar_t*    tokenEnd    =   nullptr;
     major = my_wcstol_ (i, &tokenEnd);  // @todo should validate, but no biggie
     if (i == tokenEnd) {
-        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));
+        Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd + 1;   // end plus '.' separator
 
     minor = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
-        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+        Execution::Throw (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
     }
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     i = tokenEnd;
@@ -106,7 +106,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
     Assert (static_cast<size_t> (i - prettyVersionString.c_str ()) <= prettyVersionString.length ());
     uint8_t verSubStage = my_wcstol_ (i, &tokenEnd);
     if (i == tokenEnd) {
-        Execution::DoThrow (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
+        Execution::Throw (Execution::StringException (L"Invalid Version String"));    // require form 1.0a3, or at least 1.0, but no 1
     }
     i = tokenEnd;
     bool    finalBuild = true;

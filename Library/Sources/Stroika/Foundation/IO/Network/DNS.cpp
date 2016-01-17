@@ -90,7 +90,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
         ::freeaddrinfo (res);
     });
     if (errCode != 0) {
-        DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+        Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 
     AssertNotNull (res);
@@ -152,7 +152,7 @@ Optional<String>   DNS::ReverseLookup (const InternetAddress& address) const
         case EAI_NONAME:
             return Optional<String> ();
         default:
-            DoThrow (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
+            Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }
 }
 

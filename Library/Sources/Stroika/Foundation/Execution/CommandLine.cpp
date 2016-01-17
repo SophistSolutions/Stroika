@@ -173,7 +173,7 @@ Optional<String>    Execution::MatchesCommandLineArgumentWithValue (const Iterab
     if (i != argList.end ()) {
         ++i;
         if (i == argList.end ()) {
-            Execution::DoThrow (InvalidCommandLineArgument ());
+            Execution::Throw (InvalidCommandLineArgument ());
         }
         else {
             return Optional<String> (*i);

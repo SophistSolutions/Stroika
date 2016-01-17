@@ -44,7 +44,7 @@ namespace   Stroika {
                     public:
                         // throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
                         // but MAY map to any other exception type
-                        static  void    DoThrowIfError (CURLcode status);
+                        static  void    ThrowIfError (CURLcode status);
 
                     public:
                         nonvirtual  CURLcode    GetCode () const;

@@ -32,14 +32,14 @@ namespace   Stroika {
             inline  INT_TYPE    ThrowErrNoIfNegative (INT_TYPE returnCode)
             {
                 if (returnCode < 0) {
-                    errno_ErrorException::DoThrow (errno);
+                    errno_ErrorException::Throw (errno);
                 }
                 return returnCode;
             }
             inline  void        ThrowErrNoIfNull (void* returnCode)
             {
                 if (returnCode == nullptr) {
-                    errno_ErrorException::DoThrow (errno);
+                    errno_ErrorException::Throw (errno);
                 }
             }
 
@@ -71,15 +71,15 @@ namespace   Stroika {
 #endif
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const errno_ErrorException& e2Throw)
+            inline  void    _NoReturn_  Throw (const errno_ErrorException& e2Throw)
             {
-                // Go directly through class DoThrow() since that may remap to different kinds of exceptions, and already has trace messages
-                errno_ErrorException::DoThrow (e2Throw);
+                // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
+                errno_ErrorException::Throw (e2Throw);
             }
             inline  void    ThrowIfError_errno_t (errno_t e)
             {
                 if (e != 0) {
-                    errno_ErrorException::DoThrow (e);
+                    errno_ErrorException::Throw (e);
                 }
             }
 

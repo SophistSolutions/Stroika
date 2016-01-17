@@ -67,19 +67,19 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #define     CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME) \
     catch (const FileBusyException& e) {    \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileBusyException (USEFILENAME));\
+            Execution::Throw (FileBusyException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileAccessException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
+            Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileFormatException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileFormatException (USEFILENAME));\
+            Execution::Throw (FileFormatException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\
@@ -175,7 +175,7 @@ void    IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 #elif   qPlatform_POSIX
         ////TODO: Somewhat PRIMITIVE - TMPHACK
         if (filePathName.empty ()) {
-            Execution::DoThrow (StringException (String_Constant (L"bad filename")));
+            Execution::Throw (StringException (String_Constant (L"bad filename")));
         }
         struct  stat    s;
         ThrowErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
@@ -233,7 +233,7 @@ void    IO::FileSystem::CreateDirectory (const String& directoryPath, bool creat
         if (not ::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error != ERROR_ALREADY_EXISTS) {
-                Execution::DoThrow (Execution::Platform::Windows::Exception (error));
+                Execution::Throw (Execution::Platform::Windows::Exception (error));
             }
         }
 #elif   qPlatform_POSIX
@@ -272,7 +272,7 @@ void    IO::FileSystem::CreateDirectory (const String& directoryPath, bool creat
         // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
         if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
             if (errno != 0 and errno != EEXIST) {
-                Execution::DoThrow (errno_ErrorException (errno));
+                Execution::Throw (errno_ErrorException (errno));
             }
         }
 #else
@@ -297,7 +297,7 @@ void    IO::FileSystem::CreateDirectoryForFile (const String& filePath)
 {
     if (filePath.empty ()) {
         // NOT sure this is the best exception to throw here?
-        Execution::DoThrow (IO::FileAccessException ());
+        Execution::Throw (IO::FileAccessException ());
     }
     if (IO::FileSystem::FileSystem::Default ().Access (filePath)) {
         // were done
@@ -475,7 +475,7 @@ void    IO::FileSystem::DeleteAllFilesInDirectory (const String& path, bool igno
 {
 #if     qPlatform_Windows
     if (path.empty ()) {
-        Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_NAME));
+        Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_NAME));
     }
     String dir2Use =   AssureDirectoryPathSlashTerminated (path);
 
@@ -637,7 +637,7 @@ DirectoryContentsIterator::DirectoryContentsIterator (const String& pathExpr)
     memset (&fFindFileData, 0, sizeof (fFindFileData));
     size_t i = fDirectory.rfind ('\\');
     if (i == wstring::npos) {
-        Execution::DoThrow (StringException (L"Cannot find final '\\' in directory path"));
+        Execution::Throw (StringException (L"Cannot find final '\\' in directory path"));
     }
     fDirectory = fDirectory.substr (0, i + 1);
     fHandle = ::FindFirstFile (pathExpr.AsSDKString ().c_str (), &fFindFileData);

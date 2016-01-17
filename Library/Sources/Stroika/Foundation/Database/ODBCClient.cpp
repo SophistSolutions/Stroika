@@ -66,9 +66,9 @@ Database::NoDataException::NoDataException ():
 namespace   {
     void    ThrowIfSQLError (SQLRETURN r, const wstring& message)
     {
-        if ((r != SQL_SUCCESS) &&
-                (r != SQL_SUCCESS_WITH_INFO))
-            Execution::DoThrow (Exception (message));
+        if ((r != SQL_SUCCESS) and (r != SQL_SUCCESS_WITH_INFO)) {
+            Execution::Throw (Exception (message));
+        }
     }
 }
 class   Database::DBConnection::Rep {
@@ -129,7 +129,7 @@ public:
                     else if (errValue == SQL_NO_DATA) {
                         errorString += L"SQL no data";
                     }
-                    Execution::DoThrow (Exception (errorString));
+                    Execution::Throw (Exception (errorString));
                 }
             }
         }

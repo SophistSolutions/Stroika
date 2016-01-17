@@ -69,7 +69,7 @@ namespace {
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::DoThrowLastErrorIfFailed (::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
@@ -83,7 +83,7 @@ namespace {
                 return 0;   // not an error - just zero more bytes
             }
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::DoThrowLastErrorIfFailed (::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen));
             fFinalCalled_ = true;
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
@@ -258,7 +258,7 @@ namespace {
         if (nopad) {
             Verify (::EVP_CIPHER_CTX_set_padding (ctx, 0) == 1);
         }
-        Cryptography::OpenSSL::Exception::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
+        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, cipher, NULL, nullptr, nullptr, enc));
         size_t keyLen = EVP_CIPHER_CTX_key_length (ctx);
         size_t ivLen = EVP_CIPHER_CTX_iv_length (ctx);
 
@@ -276,7 +276,7 @@ namespace {
         memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
         memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
 
-        Cryptography::OpenSSL::Exception::DoThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
+        Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
 }
 

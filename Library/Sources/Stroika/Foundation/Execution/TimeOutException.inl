@@ -31,7 +31,7 @@ namespace   Stroika {
             inline  void    ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
             {
                 if (Time::GetTickCount () > afterTickCount) {
-                    DoThrow (exception2Throw);
+                    Throw (exception2Throw);
                 }
                 CheckForThreadInterruption ();
             }
@@ -51,7 +51,7 @@ namespace   Stroika {
             inline  void    TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
             {
                 if (not m.try_lock_until (afterTickCount)) {
-                    DoThrow (exception2Throw);
+                    Throw (exception2Throw);
                 }
             }
             template    <typename   TIMED_MUTEX>
@@ -71,7 +71,7 @@ namespace   Stroika {
             inline  void    ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw)
             {
                 if (conditionVariableStatus == cv_status::timeout) {
-                    DoThrow (exception2Throw);
+                    Throw (exception2Throw);
                 }
             }
             inline  void    ThrowIfTimeout (cv_status conditionVariableStatus)

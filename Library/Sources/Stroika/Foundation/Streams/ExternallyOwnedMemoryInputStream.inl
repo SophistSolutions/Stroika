@@ -74,10 +74,10 @@ namespace   Stroika {
                     switch (whence) {
                         case    Whence::eFromStart: {
                                 if (offset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (offset > (fEnd_ - fStart_)) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fCursor_ = fStart_ + offset;
                             }
@@ -86,10 +86,10 @@ namespace   Stroika {
                                 Streams::SeekOffsetType         curOffset   =   fCursor_ - fStart_;
                                 Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (newOffset > (fEnd_ - fStart_)) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fCursor_ = fStart_ + newOffset;
                             }
@@ -98,10 +98,10 @@ namespace   Stroika {
                                 Streams::SeekOffsetType         curOffset   =   fCursor_ - fStart_;
                                 Streams::SignedSeekOffsetType   newOffset   =   (fEnd_ - fStart_) + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (newOffset > (fEnd_ - fStart_)) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fCursor_ = fStart_ + newOffset;
                             }

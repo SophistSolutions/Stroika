@@ -120,7 +120,7 @@ namespace {
             return move (Zip::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
         }
 #endif
-        Execution::DoThrow (Execution::StringException (L"Unrecognized format"));
+        Execution::Throw (Execution::StringException (L"Unrecognized format"));
     }
 
 }

@@ -508,7 +508,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
-                DoThrow (StringException (L"sub-process failed"));
+                Throw (StringException (L"sub-process failed"));
             }
         }
 #elif   qPlatform_Windows
@@ -626,7 +626,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                                         err != ERROR_NO_DATA
                                    ) {
                                     DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", err);
-                                    Execution::Platform::Windows::Exception::DoThrow (err);
+                                    Execution::Platform::Windows::Exception::Throw (err);
                                 }
                             }
                             Assert (written <= static_cast<size_t> (e - p));
@@ -647,7 +647,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                                 DbgTrace (_T ("process timed out (writing initial data) - so throwing up!"));
                                 // then we've timed out - kill the process and DONT return the partial result!
                                 (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
-                                Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
+                                Execution::Throw (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
                             }
 #endif
                         }
@@ -843,7 +843,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     {
         Sequence<String> tmp = commandLine.Tokenize (Set<Character> { ' ' });
         if (tmp.size () == 0) {
-            Execution::DoThrow (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
+            Execution::Throw (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
         }
         exe = tmp[0];
         for (auto i = tmp.begin (); i != tmp.end (); ++i) {

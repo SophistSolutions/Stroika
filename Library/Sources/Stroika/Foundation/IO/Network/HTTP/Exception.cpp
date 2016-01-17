@@ -106,18 +106,18 @@ wstring Exception::GetStandardTextForStatus (Status s, bool forceAlwaysFound)
     }
 }
 
-void    Exception::DoThrowIfError (Status status, const wstring& reason)
+void    Exception::ThrowIfError (Status status, const wstring& reason)
 {
     if (IsHTTPStatusOK (status)) {
         // OK - ignore
     }
     else {
         // not sure we should throw on status 100 etc, but not sure what else todo...
-        Execution::DoThrow (Exception (status, reason));
+        Execution::Throw (Exception (status, reason));
     }
 }
 
-void    Exception::DoThrowIfError (const wstring& status, const wstring& reason)
+void    Exception::ThrowIfError (const wstring& status, const wstring& reason)
 {
     // Look for ill-formated, number, but ignore any trailing crap after the first three digits (in case some extension allows 404.3 etc,
     // which I think I've seen someplace)
@@ -127,10 +127,10 @@ void    Exception::DoThrowIfError (const wstring& status, const wstring& reason)
     }
     unsigned int    s   =   String2Int<unsigned int> (ss);
     if (s == 0) {
-        DoThrowIfError (599, L"Status: " + status + L"; " + reason);
+        ThrowIfError (599, L"Status: " + status + L"; " + reason);
     }
     else {
-        DoThrowIfError (s, reason);
+        ThrowIfError (s, reason);
     }
 }
 

@@ -119,7 +119,7 @@ Memory::BLOB InputStream<Byte>::ReadAll () const
     if (this->IsSeekable ()) {
         SeekOffsetType  size = this->GetOffsetToEndOfStream ();
         if (size >= numeric_limits<size_t>::max ()) {
-            Execution::DoThrow<bad_alloc> (bad_alloc ());
+            Execution::Throw (bad_alloc ());
         }
         size_t sb = static_cast<size_t> (size);
         if (sb == 0) {

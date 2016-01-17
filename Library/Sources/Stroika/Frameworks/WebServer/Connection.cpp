@@ -60,18 +60,18 @@ void    Connection::ReadHeaders ()
         String line = inTextStream.ReadLine ();
         Sequence<String>    tokens  { line.Tokenize (Set<Character> { ' ' }) };
         if (tokens.size () < 3) {
-            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
+            Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
         }
         fRequest_.fMethod = tokens[0];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
+            Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using   IO::Network::URL;
         fRequest_.fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
         if (fRequest_.fMethod.empty ()) {
             // should check if GET/PUT/DELETE etc...
-            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
+            Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
         }
     }
     while (true) {
@@ -83,7 +83,7 @@ void    Connection::ReadHeaders ()
         // add subsequent items to the header map
         size_t  i   =   line.find (':');
         if (i == string::npos) {
-            Execution::DoThrow (Execution::StringException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
+            Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
         }
         else {
             String  hdr     =   line.SubString (0, i).Trim ();

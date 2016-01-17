@@ -405,7 +405,7 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsMissing ()) {
-                    Execution::DoThrow (exception2ThrowIfMissing);
+                    Execution::Throw (exception2ThrowIfMissing);
                 }
                 else {
                     return *fStorage_.peek ();

@@ -219,7 +219,7 @@ namespace   Stroika {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
                             DbgTrace ("Bijection ('%s') element with item count (%d) other than 2", typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
+                            Execution::Throw (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
                         }
                         actualInto->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
                     }
@@ -428,7 +428,7 @@ namespace   Stroika {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
                             DbgTrace ("Container with Key/Value pair ('%s') element with item count (%d) other than 2", typeid (ACTUAL_CONTAINER_TYPE).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Container with Key/Value pair element with item count other than 2")));
+                            Execution::Throw (BadFormatException (String_Constant (L"Container with Key/Value pair element with item count other than 2")));
                         }
                         actualInto->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
                     }
@@ -457,7 +457,7 @@ namespace   Stroika {
                     if (s.size () > SZ)
                     {
                         DbgTrace ("Array ('%s') actual size %d out of range", typeid (T[SZ]).name (), static_cast<int> (s.size ()));
-                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Array size out of range")));
+                        Execution::Throw (BadFormatException (String_Constant (L"Array size out of range")));
                     }
                     FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };   // optimization if > 1 array elt, and anti-optimization array.size == 0
                     size_t idx = 0;
@@ -509,7 +509,7 @@ namespace   Stroika {
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND))
                     {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
-                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                        Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
@@ -535,7 +535,7 @@ namespace   Stroika {
                     if (optVal.IsMissing ())
                     {
                         DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), d.As<String> ().AsUTF8 ().c_str ());
-                        Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                        Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
                     * actualInto = *optVal;
                 };
@@ -613,17 +613,17 @@ namespace   Stroika {
                         if (m.size () != 2)
                         {
                             DbgTrace ("Range ('%s') element needs LowerBound and UpperBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
+                            Execution::Throw (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
                         }
                         if (not m.ContainsKey (String_Constant (L"LowerBound")))
                         {
                             DbgTrace ("Range ('%s') needs LowerBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
+                            Execution::Throw (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
                         }
                         if (not m.ContainsKey (String_Constant (L"UpperBound")))
                         {
                             DbgTrace ("Range ('%s') needs UpperBound", typeid (RANGE_TYPE).name ());
-                            Execution::DoThrow<BadFormatException> (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
+                            Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
                         FromVariantMapperType   valueMapper { mapper.ToObjectMapper<ElementType> () };
                         ElementType             from        { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (String_Constant (L"LowerBound"))) };

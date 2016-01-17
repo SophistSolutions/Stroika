@@ -358,7 +358,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
 #endif
 
     if (state & ios::failbit) {
-        Execution::DoThrow (FormatException ());
+        Execution::Throw (FormatException ());
     }
     return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
 }
@@ -384,7 +384,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
             ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
         }
         else {
-            Execution::DoThrow (FormatException ());
+            Execution::Throw (FormatException ());
         }
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)

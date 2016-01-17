@@ -339,7 +339,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
              *  and then check if refcount==1 (so nobody owns this and we're not started yet).
              *      while (not incRefCnt->fOK2StartEvent_.WaitQuietly (5)) {
              *          if (incRefCnt.unique ()) {
-             *               Execution::DoThrow (InterruptException ());
+             *               Execution::Throw (InterruptException ());
              *          }
              *      }
              *
@@ -438,7 +438,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 #else
         Assert (s_Aborting_);
         if (fStatus_ == Status::eAborting and s_InterruptionSuppressDepth_ == 0) {
-            Execution::DoThrow (AbortException ());
+            Execution::Throw (AbortException ());
         }
 #endif
     }
@@ -535,7 +535,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     // inside a call to SleepEx, etc... so not updating variables
     if (rep->fStatus_ == Status::eAborting) {
         if (s_InterruptionSuppressDepth_ == 0) {
-            Execution::DoThrow (AbortException ());
+            Execution::Throw (AbortException ());
         }
         else {
             return; // dont assert out at the end
@@ -822,7 +822,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (timeoutAt < Time::GetTickCount ()) {
-        DoThrow (TimeOutException ());
+        Throw (TimeOutException ());
     }
     bool    doWait  =   false;
     /*
@@ -853,7 +853,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
     while (GetStatus () != Thread::Status::eCompleted) {
         DurationSecondsType     time2Wait   =   timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
-            DoThrow (TimeOutException ());
+            Throw (TimeOutException ());
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, { thread }, time2Wait);
     }
@@ -940,7 +940,7 @@ void    Execution::CheckForThreadInterruption ()
         if (s_Interrupting_) {
             if (s_Aborting_) {
                 Assert (s_Interrupting_);   // if s_Aborting_, then s_Interrupting_ must be true
-                DoThrow (Thread::AbortException ());
+                Throw (Thread::AbortException ());
             }
             else {
                 lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
@@ -949,7 +949,7 @@ void    Execution::CheckForThreadInterruption ()
                     // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
                     s_Interrupting_ = true;
                 }
-                DoThrow (Thread::InterruptException ());
+                Throw (Thread::InterruptException ());
             }
         }
     }

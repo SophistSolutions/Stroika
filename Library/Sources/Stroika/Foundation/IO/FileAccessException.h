@@ -67,7 +67,7 @@ namespace   Stroika {
              */
 #define     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(USEFILENAME,USEACCESSMODE) \
     catch (const Stroika::Foundation::IO::FileAccessException& e) {\
-        Stroika::Foundation::Execution::DoThrow (Stroika::Foundation::IO::FileAccessException ((e.GetFileName ().empty ()? USEFILENAME:e.GetFileName ()), USEACCESSMODE));\
+        Stroika::Foundation::Execution::Throw (Stroika::Foundation::IO::FileAccessException ((e.GetFileName ().empty ()? USEFILENAME:e.GetFileName ()), USEACCESSMODE));\
     }
 
             /**

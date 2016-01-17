@@ -41,7 +41,7 @@ namespace   Stroika {
                     // interface seems to be defined only for char*, not wide strings: may need to map procName as well
                     const char* err = dlerror ();
                     if (err != nullptr) {
-                        Execution::DoThrow (DLLException (err));
+                        Execution::Throw (DLLException (err));
                     }
                 }
                 return addr;

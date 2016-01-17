@@ -51,7 +51,7 @@ namespace {
     {
         {
             try {
-                DoThrow (StringException (L"HiMom"));
+                Throw (StringException (L"HiMom"));
                 VerifyTestResult (false);
             }
             catch (const StringException& e) {
@@ -60,7 +60,7 @@ namespace {
         }
         {
             try {
-                DoThrow (StringException (L"HiMom"));
+                Throw (StringException (L"HiMom"));
                 VerifyTestResult (false);
             }
             catch (const std::exception& e) {

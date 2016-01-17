@@ -41,8 +41,8 @@ namespace   Stroika {
 
                     public:
                         // throw Exception () type iff the status indicates a real HTTP exception code (i.e. ignore 2xx values etc)
-                        static  void    DoThrowIfError (Status status, const wstring& reason = wstring ());
-                        static  void    DoThrowIfError (const wstring& status, const wstring& reason = wstring ());
+                        static  void    ThrowIfError (Status status, const wstring& reason = wstring ());
+                        static  void    ThrowIfError (const wstring& status, const wstring& reason = wstring ());
 
                         static  bool    IsHTTPStatusOK (Status status);
 

@@ -343,7 +343,7 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
     }
     catch (...) {
         // though COULD be time format exception?
-        Execution::DoThrow (Date::FormatException ());
+        Execution::Throw (Date::FormatException ());
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
     SYSTEMTIME  sysTime {};

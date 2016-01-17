@@ -21,7 +21,7 @@ namespace   Stroika {
 
 
             template    <>
-            void    _NoReturn_  DoThrow (const UserCanceledException& e2Throw);
+            void    _NoReturn_  Throw (const UserCanceledException& e2Throw);
 
 
         }

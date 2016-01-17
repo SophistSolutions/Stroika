@@ -68,18 +68,18 @@ SDKString errno_ErrorException::LookupMessage (errno_t e)
     return buf;
 }
 
-void    _NoReturn_  errno_ErrorException::DoThrow (errno_t error)
+void    _NoReturn_  errno_ErrorException::Throw (errno_t error)
 {
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {
         case    ENOMEM: {
-                Execution::DoThrow (bad_alloc (), "errno_ErrorException::DoThrow (ENOMEM) - throwing bad_alloc");
+                Execution::Throw (bad_alloc (), "errno_ErrorException::Throw (ENOMEM) - throwing bad_alloc");
             }
         case ENOENT: {
-                Execution::DoThrow (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
+                Execution::Throw (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
             }
         case EACCES: {
-                Execution::DoThrow (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
+                Execution::Throw (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
             }
             // If I decide to pursue mapping, this maybe a good place to start
             //  http://aplawrence.com/Unixart/errors.html
@@ -89,7 +89,7 @@ void    _NoReturn_  errno_ErrorException::DoThrow (errno_t error)
                 // not sure any point in this unification. Maybe if I added my OWN private 'access denied' exception
                 // the mapping/unification would make sense.
                 //      -- LGP 2009-01-02
-                DbgTrace ("errno_ErrorException::DoThrow (EPERM) - throwing ERROR_ACCESS_DENIED");
+                DbgTrace ("errno_ErrorException::Throw (EPERM) - throwing ERROR_ACCESS_DENIED");
                 throw Win32Exception (ERROR_ACCESS_DENIED);
             }
 #endif

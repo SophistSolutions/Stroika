@@ -111,11 +111,11 @@ namespace   Stroika {
                     switch (whence) {
                         case    Whence::eFromStart: {
                                 if (offset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 SeekOffsetType  uOffset =   static_cast<SeekOffsetType> (offset);
                                 if (uOffset > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
                             }
@@ -124,11 +124,11 @@ namespace   Stroika {
                                 Streams::SeekOffsetType         curOffset   =   fReadCursor_ - fData_.begin ();
                                 Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
                                 if (uNewOffset > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                             }
@@ -137,11 +137,11 @@ namespace   Stroika {
                                 Streams::SeekOffsetType         curOffset   =   fReadCursor_ - fData_.begin ();
                                 Streams::SignedSeekOffsetType   newOffset   =   fData_.size () + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
                                 if (uNewOffset > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                             }
@@ -161,10 +161,10 @@ namespace   Stroika {
                     switch (whence) {
                         case    Whence::eFromStart: {
                                 if (offset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                             }
@@ -173,10 +173,10 @@ namespace   Stroika {
                                 Streams::SeekOffsetType         curOffset   =   fWriteCursor_ - fData_.begin ();
                                 Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (static_cast<size_t> (newOffset) > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                             }
@@ -185,10 +185,10 @@ namespace   Stroika {
                                 Streams::SeekOffsetType     curOffset       =   fWriteCursor_ - fData_.begin ();
                                 Streams::SignedSeekOffsetType newOffset     =   fData_.size () + offset;
                                 if (newOffset < 0) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 if (static_cast<size_t> (newOffset) > fData_.size ()) {
-                                    Execution::DoThrow (std::range_error ("seek"));
+                                    Execution::Throw (std::range_error ("seek"));
                                 }
                                 fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                             }

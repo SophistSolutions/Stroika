@@ -137,7 +137,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
             }
         }
     }
-    Execution::DoThrow (Execution::StringException (Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())));
+    Execution::Throw (Execution::StringException (Characters::Format (L"Locale (%s-%s) not found", iso2LetterLanguageCode.c_str (), iso2LetterTerritoryCode.c_str ())));
 }
 
 

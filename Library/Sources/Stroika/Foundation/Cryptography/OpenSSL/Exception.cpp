@@ -95,16 +95,16 @@ Characters::String  Exception::GetMessage (InternalErrorCodeType errorCode)
     return Characters::String::FromNarrowSDKString (buf);
 }
 
-void    Exception::DoThrowLastErrorIfFailed (int status)
+void    Exception::ThrowLastErrorIfFailed (int status)
 {
     if (status != 1) {
-        DoThrowLastError ();
+        ThrowLastError ();
     }
 }
 
-void    Exception::DoThrowLastError ()
+void    Exception::ThrowLastError ()
 {
-    Execution::DoThrow (Exception (ERR_get_error ()));
+    Execution::Throw (Exception (ERR_get_error ()));
 }
 
 bool    Exception::GetNamesSupported ()

@@ -75,7 +75,7 @@ InternetMediaType   Response::GetContentType () const
 
 void    Response::ThrowIfFailed () const
 {
-    HTTP::Exception::DoThrowIfError (fStatus_);
+    HTTP::Exception::ThrowIfError (fStatus_);
 }
 
 InputStream<Byte>       Response::GetDataBinaryInputStream () const
@@ -164,5 +164,5 @@ Connection  Transfer::CreateConnection (const Connection::Options& options)
 #if     qHasFeature_WinHTTP
     return Connection_WinHTTP (options);
 #endif
-    Execution::DoThrow (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
+    Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
 }

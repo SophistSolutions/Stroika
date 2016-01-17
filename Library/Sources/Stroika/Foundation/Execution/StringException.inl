@@ -44,7 +44,7 @@ namespace   Stroika {
 
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const StringException& e2Throw)
+            inline  void    _NoReturn_  Throw (const StringException& e2Throw)
             {
                 DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<Characters::String> ().LimitLength (25).c_str ());
                 throw e2Throw;

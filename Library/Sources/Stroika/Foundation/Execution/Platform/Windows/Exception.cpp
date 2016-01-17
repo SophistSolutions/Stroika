@@ -129,41 +129,41 @@ Exception::Exception (DWORD error)
     , fError (error)
 {
 }
-void    Execution::Platform::Windows::Exception::DoThrow (DWORD error)
+void    Execution::Platform::Windows::Exception::Throw (DWORD error)
 {
     switch (error) {
         case    ERROR_SUCCESS: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
+                DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
                 throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);   // unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
                 // a bad reason code?
             }
         case    ERROR_NOT_ENOUGH_MEMORY:
         case    ERROR_OUTOFMEMORY: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing bad_alloc", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing bad_alloc", error);
                 throw bad_alloc ();
             }
         case    ERROR_SHARING_VIOLATION: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileBusyException", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileBusyException", error);
                 throw IO::FileBusyException ();
             }
         case    ERROR_ACCESS_DENIED: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
                 throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
             }
         case ERROR_FILE_NOT_FOUND: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
                 throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
             }
         case ERROR_PATH_NOT_FOUND: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing FileAccessException", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
                 throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
             }
         case WAIT_TIMEOUT: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing TimeOutException", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing TimeOutException", error);
                 throw Execution::TimeOutException ();
             }
         default: {
-                DbgTrace ("Platform::Windows::Exception::DoThrow (0x%x) - throwing Platform::Windows::Exception", error);
+                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);
                 throw Platform::Windows::Exception (error);
             }
     }
@@ -195,36 +195,36 @@ void    Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
         DbgTrace ("ThrowIfShellExecError (0x%x) - throwing exception", errCode);
         switch (errCode) {
             case    0:
-                Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);    // The operating system is out of memory or resources.
+                Platform::Windows::Exception::Throw (ERROR_NOT_ENOUGH_MEMORY);    // The operating system is out of memory or resources.
             case    ERROR_FILE_NOT_FOUND:
-                Platform::Windows::Exception::DoThrow (ERROR_FILE_NOT_FOUND);   // The specified file was not found.
+                Platform::Windows::Exception::Throw (ERROR_FILE_NOT_FOUND);   // The specified file was not found.
             case    ERROR_PATH_NOT_FOUND:
-                Platform::Windows::Exception::DoThrow (ERROR_PATH_NOT_FOUND);   //  The specified path was not found.
+                Platform::Windows::Exception::Throw (ERROR_PATH_NOT_FOUND);   //  The specified path was not found.
             case    ERROR_BAD_FORMAT:
-                Platform::Windows::Exception::DoThrow (ERROR_BAD_FORMAT);       //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
+                Platform::Windows::Exception::Throw (ERROR_BAD_FORMAT);       //  The .exe file is invalid (non-Microsoft Win32® .exe or error in .exe image).
             case    SE_ERR_ACCESSDENIED:
                 throw (Platform::Windows::HRESULTErrorException (E_ACCESSDENIED));          //  The operating system denied access to the specified file.
             case    SE_ERR_ASSOCINCOMPLETE:
-                Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);   //  The file name association is incomplete or invalid.
+                Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION);   //  The file name association is incomplete or invalid.
             case    SE_ERR_DDEBUSY:
-                Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);         //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
+                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL);         //  The Dynamic Data Exchange (DDE) transaction could not be completed because other DDE transactions were being processed.
             case    SE_ERR_DDEFAIL:
-                Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);         //  The DDE transaction failed.
+                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL);         //  The DDE transaction failed.
             case    SE_ERR_DDETIMEOUT:
-                Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);         //  The DDE transaction could not be completed because the request timed out.
+                Platform::Windows::Exception::Throw (ERROR_DDE_FAIL);         //  The DDE transaction could not be completed because the request timed out.
             case    SE_ERR_DLLNOTFOUND:
-                Platform::Windows::Exception::DoThrow (ERROR_DLL_NOT_FOUND);        //  The specified dynamic-link library (DLL) was not found.
+                Platform::Windows::Exception::Throw (ERROR_DLL_NOT_FOUND);        //  The specified dynamic-link library (DLL) was not found.
             //case  SE_ERR_FNF:             throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));        //  The specified file was not found.
             case    SE_ERR_NOASSOC:
-                Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);   //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
+                Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION);   //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
             case    SE_ERR_OOM:
-                Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);    //  There was not enough memory to complete the operation.
+                Platform::Windows::Exception::Throw (ERROR_NOT_ENOUGH_MEMORY);    //  There was not enough memory to complete the operation.
             //case  SE_ERR_PNF:             throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));        //  The specified path was not found.
             case    SE_ERR_SHARE:
-                Platform::Windows::Exception::DoThrow (ERROR_INVALID_SHARENAME);    //
+                Platform::Windows::Exception::Throw (ERROR_INVALID_SHARENAME);    //
             default: {
                     // Not sure what error to report here...
-                    Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);
+                    Platform::Windows::Exception::Throw (ERROR_NO_ASSOCIATION);
                 }
         }
     }
@@ -254,7 +254,7 @@ namespace   {
         TraceContextBumper  trcCtx ("invalid_parameter_handler");
         DbgTrace  (L"Func='%s', expr='%s', file='%s'.", function, expression, file);
         Assert (false);
-        Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
+        Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
     }
 }
 void    Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()

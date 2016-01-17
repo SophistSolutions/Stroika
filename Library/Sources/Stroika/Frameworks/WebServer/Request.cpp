@@ -56,7 +56,7 @@ Memory::BLOB    Request::GetBody ()
             Memory::SmallStackBuffer<Memory::Byte>  buf (contentLength);
             size_t  nRead = fInputStream.Read (buf.begin (), buf.end ());
             if (contentLength != nRead) {
-                Execution::DoThrow (Execution::StringException (L"unexpeced wrong number of bytes returned in HTTP body"));
+                Execution::Throw (Execution::StringException (L"unexpeced wrong number of bytes returned in HTTP body"));
             }
             fBody_ = Memory::BLOB (buf.begin (), buf.end ());
         }

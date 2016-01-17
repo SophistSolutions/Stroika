@@ -152,7 +152,7 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
                 break;
             default: {
                     // @todo need better exception
-                    Execution::DoThrow (Execution::StringException (String_Constant (L"Unrecognized address family")));
+                    Execution::Throw (Execution::StringException (String_Constant (L"Unrecognized address family")));
                 }
                 break;
         }

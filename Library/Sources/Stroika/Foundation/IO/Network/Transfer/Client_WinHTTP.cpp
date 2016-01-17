@@ -148,7 +148,7 @@ namespace   {
             return buf.begin ();
         }
         else {
-            Execution::Platform::Windows::Exception::DoThrow (error);
+            Execution::Platform::Windows::Exception::Throw (error);
             return wstring ();
         }
     }
@@ -277,7 +277,7 @@ RetryWithNoCERTCheck:
     try {
         //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
-            DoThrow (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
+            Throw (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
         }
         DISABLE_COMPILER_MSC_WARNING_START(4267)
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
@@ -318,7 +318,7 @@ RetryWithNoCERTCheck:
             }
             if (Time::GetTickCount () > endBy) {
                 DbgTrace (_T ("throwing Timeout"));
-                Execution::DoThrow (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
+                Execution::Throw (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
             }
 
             //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, percentUpTo);
@@ -368,9 +368,9 @@ RetryWithNoCERTCheck:
 #if 0
         if (not HTTP::Exception::IsHTTPStatusOK (status)) {
             if (WINHTTP_ERROR_BASE <= status and status <= WINHTTP_ERROR_BASE) {
-                Execution::DoThrow (Execution::Platform::Windows::HRESULTErrorException (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_INTERNET, status)));
+                Execution::Throw (Execution::Platform::Windows::HRESULTErrorException (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_INTERNET, status)));
             }
-            HTTP::Exception::DoThrowIfError (status, statusText);
+            HTTP::Exception::ThrowIfError (status, statusText);
         }
 #endif
     }

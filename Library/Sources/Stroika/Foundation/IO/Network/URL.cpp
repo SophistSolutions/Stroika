@@ -35,7 +35,7 @@ namespace {
         // use for (Character c : s) {... when that works -- LGP 2013-05-29)
         for (size_t i = 0; i < s.GetLength (); ++i) {
             if (not s[i].IsASCII () or not (s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
-                Execution::DoThrow (Execution::StringException (String_Constant (L"bad character in scheme")));
+                Execution::Throw (Execution::StringException (String_Constant (L"bad character in scheme")));
             }
         }
     }
@@ -128,7 +128,7 @@ URL URL::Parse (const String& w, ParseOptions po)
     bool    flexibleURLParsingMode = (po != URL::eAsFullURL);
 
     if (w.empty ()) {
-        Execution::DoThrow (Execution::StringException (L"Cannot parse empty URL"));
+        Execution::Throw (Execution::StringException (L"Cannot parse empty URL"));
         //return result;
     }
 
@@ -152,7 +152,7 @@ URL URL::Parse (const String& w, ParseOptions po)
             result.fProtocol_ = String_Constant (L"http");
         }
         else {
-            Execution::DoThrow (Execution::StringException (L"URL missing scheme"));
+            Execution::Throw (Execution::StringException (L"URL missing scheme"));
         }
         ValidateScheme_ (result.fProtocol_);
     }

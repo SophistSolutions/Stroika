@@ -132,7 +132,7 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
             c->Close ();//tmphack
             return;
         }
-        Execution::DoThrow (Network::HTTP::Exception (StatusCodes::kNotFound));
+        Execution::Throw (Network::HTTP::Exception (StatusCodes::kNotFound));
     }
     catch (...) {
         c->GetResponse ().End ();

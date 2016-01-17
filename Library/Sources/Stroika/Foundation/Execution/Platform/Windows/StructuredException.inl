@@ -32,7 +32,7 @@ namespace   Stroika {
             }
 
             template    <>
-            inline  void    _NoReturn_  DoThrow (const Platform::Windows::StructuredException& e2Throw)
+            inline  void    _NoReturn_  Throw (const Platform::Windows::StructuredException& e2Throw)
             {
                 DbgTrace ("Throwing Win32StructuredException: fSECode = 0x%x", static_cast<int> (e2Throw));
                 throw e2Throw;

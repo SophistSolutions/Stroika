@@ -39,8 +39,10 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  identical to builtin C++ 'throw' except that it does helpful, type dependent DbgTrace() messages first
+             *
              *  Utility to call a Trace message (hopefully an appropriate one) for an exception being
-             *  thrown... But this function is also specailized to do call D::DoThrow() for several types -
+             *  thrown... But this function is also specailized to do call D::Throw() for several types -
              *  which CAN translate the kind of exception throw. For example, for Platoform:Windows::Execption -
              *  ERROR_OUTOFMEMORY is translated to std::bad_alloc ().
              *
@@ -49,11 +51,11 @@ namespace   Stroika {
              *  so as to get is specialization.
              */
             template    <typename T>
-            void     _NoReturn_ DoThrow (const T& e2Throw);
+            void     _NoReturn_ Throw (const T& e2Throw);
             template    <typename T>
-            void    _NoReturn_  DoThrow (const T& e2Throw, const char* traceMsg);
+            void    _NoReturn_  Throw (const T& e2Throw, const char* traceMsg);
             template    <typename T>
-            void    _NoReturn_  DoThrow (const T& e2Throw, const wchar_t* traceMsg);
+            void    _NoReturn_  Throw (const T& e2Throw, const wchar_t* traceMsg);
 
 
             /**

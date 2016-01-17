@@ -32,19 +32,19 @@ using   namespace   Stroika::Foundation::IO;
 #define     CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME) \
     catch (const FileBusyException& e) {    \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileBusyException (USEFILENAME));\
+            Execution::Throw (FileBusyException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileAccessException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
+            Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileFormatException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileFormatException (USEFILENAME));\
+            Execution::Throw (FileFormatException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\

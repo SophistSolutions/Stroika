@@ -52,7 +52,7 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* ciphe
     SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
     int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, static_cast<int> (passwd.second - passwd.first), nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
-        Cryptography::OpenSSL::Exception::DoThrowLastError ();
+        Cryptography::OpenSSL::Exception::ThrowLastError ();
     }
     fKey = BLOB (useKey.begin (), useKey.end ());
     fIV = BLOB (useIV.begin (), useIV.end ());

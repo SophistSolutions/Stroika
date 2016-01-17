@@ -70,7 +70,7 @@ void*   SimpleAllocator_CallLIBCMallocFree::Allocate (size_t size)
 {
     void*   p   =   malloc (size);
     if (p == nullptr) {
-        Execution::DoThrow (bad_alloc ());
+        Execution::Throw (bad_alloc ());
     }
     return p;
 }

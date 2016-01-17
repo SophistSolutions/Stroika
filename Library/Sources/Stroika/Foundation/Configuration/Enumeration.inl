@@ -201,7 +201,7 @@ namespace   Stroika {
                 RequireNotNull (name);
                 const ENUM_TYPE* tmp = PeekValue (name);
                 if (tmp == nullptr) {
-                    //Execution::DoThrow (notFoundException);
+                    //Execution::Throw (notFoundException);
                     throw (notFoundException);
                 }
                 return *tmp;

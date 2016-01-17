@@ -493,7 +493,7 @@ void    CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharC
 #if     qPlatform_Windows
                 Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, SAFE_WIN_WCHART_CAST_ (outChars), outCharCnt);
 #else
-                Execution::DoThrow (CodePageNotSupportedException (fCodePage));
+                Execution::Throw (CodePageNotSupportedException (fCodePage));
 #endif
             }
             break;
@@ -658,7 +658,7 @@ void    CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCha
 #if     qPlatform_Windows
                 Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, outChars, outCharCnt);
 #else
-                Execution::DoThrow (CodePageNotSupportedException (fCodePage));
+                Execution::Throw (CodePageNotSupportedException (fCodePage));
 #endif
             }
     }

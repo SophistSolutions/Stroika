@@ -21,7 +21,7 @@ namespace   Stroika {
 
 
             template    <>
-            void    _NoReturn_  DoThrow (const SilentException& e2Throw);
+            void    _NoReturn_  Throw (const SilentException& e2Throw);
 
 
         }

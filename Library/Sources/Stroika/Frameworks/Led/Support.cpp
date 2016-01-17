@@ -391,7 +391,7 @@ void    Led::Led_ThrowBadFormatDataException ()
 {
     if (sLedBadFormatDataExceptionCallback == nullptr) {
         // not sure what this should throw by default?
-        Execution::DoThrow (bad_alloc ());
+        Execution::Throw (bad_alloc ());
     }
     else {
         (sLedBadFormatDataExceptionCallback) ();

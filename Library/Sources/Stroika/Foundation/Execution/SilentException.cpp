@@ -14,11 +14,11 @@ using   namespace   Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- ******************************** Execution::DoThrow ****************************
+ ******************************** Execution::Throw ******************************
  ********************************************************************************
  */
 template    <>
-void    _NoReturn_  Execution::DoThrow (const SilentException& e2Throw)
+void    _NoReturn_  Execution::Throw (const SilentException& e2Throw)
 {
     DbgTrace (SDKSTR ("Throwing SilentException"));
     throw e2Throw;

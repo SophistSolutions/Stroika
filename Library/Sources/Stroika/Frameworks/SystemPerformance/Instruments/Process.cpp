@@ -171,7 +171,7 @@ namespace   {
                     Execution::Platform::Windows::ThrowIfFalseGetLastError (::OpenThreadToken (::GetCurrentThread (), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, FALSE, &fToken_));
                 }
                 else {
-                    Execution::Platform::Windows::Exception::DoThrow (::GetLastError ());
+                    Execution::Platform::Windows::Exception::Throw (::GetLastError ());
                 }
             }
         }

@@ -53,15 +53,15 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * DoThrowLastErrorIfFailed throws if status is not = 1
+                     * ThrowLastErrorIfFailed throws if status is not = 1
                      */
-                    static  void    DoThrowLastErrorIfFailed (int status);
+                    static  void    ThrowLastErrorIfFailed (int status);
 
                 public:
                     /**
-                     * DoThrowLastError () throws error in ERR_get_error
+                     * ThrowLastError () throws error in ERR_get_error
                      */
-                    static  void    DoThrowLastError ();
+                    static  void    ThrowLastError ();
 
                 public:
                     /**

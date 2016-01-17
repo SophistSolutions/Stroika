@@ -16,11 +16,11 @@ using   namespace   Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- ******************************** Execution::DoThrow ****************************
+ ******************************** Execution::Throw ******************************
  ********************************************************************************
  */
 template    <>
-void    _NoReturn_  Execution::DoThrow (const UserCanceledException& e2Throw)
+void    _NoReturn_  Execution::Throw (const UserCanceledException& e2Throw)
 {
     DbgTrace (SDKSTR ("Throwing UserCanceledException"));
     throw e2Throw;

@@ -66,19 +66,19 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #define     CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME) \
     catch (const FileBusyException& e) {    \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileBusyException (USEFILENAME));\
+            Execution::Throw (FileBusyException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileAccessException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
+            Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ()));\
         }\
         Execution::ReThrow ();\
     }\
     catch (const FileFormatException& e) {  \
         if (e.GetFileName ().empty ()) {\
-            Execution::DoThrow (FileFormatException (USEFILENAME));\
+            Execution::Throw (FileFormatException (USEFILENAME));\
         }\
         Execution::ReThrow ();\
     }\
@@ -162,7 +162,7 @@ AppTempFileManager::AppTempFileManager ()
             }
             else {
                 DbgTrace ("bad news if we cannot create AppTempFileManager::fTmpDir: %d", error);
-                Execution::DoThrow (Execution::Platform::Windows::Exception (error));
+                Execution::Throw (Execution::Platform::Windows::Exception (error));
             }
         }
         // we succeeded - good! Done...
@@ -216,7 +216,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 #else
     AssertNotImplemented ();
 #endif
-    Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
+    Execution::Throw (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
 String AppTempFileManager::GetTempDir (const String& fileNameBase)
@@ -235,7 +235,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             return s;
         }
     }
-    Execution::DoThrow (StringException (String_Constant (L"Unknown error creating temporary file")), "AppTempFileManager::GetTempDir (): failed to create tempdir");
+    Execution::Throw (StringException (String_Constant (L"Unknown error creating temporary file")), "AppTempFileManager::GetTempDir (): failed to create tempdir");
 }
 
 
@@ -322,7 +322,7 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
             }
         }
     }
-    Execution::DoThrow (StringException (L"Unknown error creating file"));
+    Execution::Throw (StringException (L"Unknown error creating file"));
 #else
     AssertNotImplemented ();
 #endif
@@ -361,7 +361,7 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
 #else
     AssertNotImplemented ();
 #endif
-    Execution::DoThrow (StringException (L"Unknown error creating temporary file"));
+    Execution::Throw (StringException (L"Unknown error creating temporary file"));
 }
 
 #endif

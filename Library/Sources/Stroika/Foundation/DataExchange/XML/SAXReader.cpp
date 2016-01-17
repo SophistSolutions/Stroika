@@ -216,7 +216,7 @@ namespace   {
 #endif
             }
             catch (...) {
-                Execution::DoThrow (OutOfMemoryException ());   // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
+                Execution::Throw (OutOfMemoryException ());   // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
             }
         }
         virtual     void    deallocate (void* p) override
@@ -267,7 +267,7 @@ public:
         , const XMLFileLoc          colNum
     ) override
     {
-        Execution::DoThrow (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
+        Execution::Throw (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
     }
     virtual  void resetErrors () override
     {
@@ -282,12 +282,12 @@ public:
     virtual  void error (const SAXParseException& exc) override
     {
         AssertNotImplemented ();
-        //Execution::DoThrow (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
     virtual  void fatalError (const SAXParseException& exc) override
     {
         AssertNotImplemented ();
-        //Execution::DoThrow (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
 };
 static  MyErrorReproter_ sMyErrorReproter_;
@@ -626,7 +626,7 @@ void    XML::SAXParse (const Streams::InputStream<Byte>& in, StructuredStreamEve
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progress, 0.1f, 0.9f), kBufID));
 #else
-    Execution::DoThrow (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
+    Execution::Throw (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
 }
 

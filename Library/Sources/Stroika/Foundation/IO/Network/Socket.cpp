@@ -533,7 +533,7 @@ namespace Stroika {
             inline  IO::Network::Socket::PlatformNativeHandle    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
             {
                 if (returnCode == kINVALID_NATIVE_HANDLE_) {
-                    Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+                    Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
                 }
                 return returnCode;
             }

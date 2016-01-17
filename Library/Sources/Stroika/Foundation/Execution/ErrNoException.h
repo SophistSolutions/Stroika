@@ -53,7 +53,7 @@ namespace   Stroika {
             public:
                 // throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
                 // as good a fit.
-                static  _NoReturn_  void    DoThrow (errno_t error);
+                static  _NoReturn_  void    Throw (errno_t error);
 
             private:
                 errno_t fError;
@@ -82,11 +82,11 @@ namespace   Stroika {
 #endif
 
 
-            // Just pre-declare DoThrow><> template here so we can specailize
+            // Just pre-declare Throw><> template here so we can specailize
             template    <typename T>
-            void     _NoReturn_ DoThrow (const T& e2Throw);
+            void     _NoReturn_ Throw (const T& e2Throw);
             template    <>
-            void    _NoReturn_  DoThrow (const errno_ErrorException& e2Throw);
+            void    _NoReturn_  Throw (const errno_ErrorException& e2Throw);
 
 
             /*

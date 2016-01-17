@@ -61,7 +61,7 @@ public:
 #if     qPlatform_Windows
             errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
             if (e != 0) {
-                Execution::errno_ErrorException::DoThrow (e);
+                Execution::errno_ErrorException::Throw (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else
@@ -114,7 +114,7 @@ public:
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
-                        Execution::DoThrow (std::range_error ("seek"));
+                        Execution::Throw (std::range_error ("seek"));
                     }
 #if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_SET)));

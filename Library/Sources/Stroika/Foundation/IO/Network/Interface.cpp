@@ -350,7 +350,7 @@ Again:
         DbgTrace ("There are no network adapters with IPv4 enabled on the local system");
     }
     else {
-        Execution::Platform::Windows::Exception::DoThrow (dwRetVal);
+        Execution::Platform::Windows::Exception::Throw (dwRetVal);
     }
 #else
     AssertNotImplemented ();

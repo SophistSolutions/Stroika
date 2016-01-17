@@ -342,7 +342,7 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
     }
 #endif
     if (state & ios::failbit) {
-        Execution::DoThrow (FormatException ());
+        Execution::Throw (FormatException ());
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
 #if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
@@ -369,7 +369,7 @@ Date    Date::Parse (const String& rep, LCID lcid)
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
     }
     catch (...) {
-        Execution::DoThrow (FormatException ());
+        Execution::Throw (FormatException ());
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
     SYSTEMTIME  sysTime {};

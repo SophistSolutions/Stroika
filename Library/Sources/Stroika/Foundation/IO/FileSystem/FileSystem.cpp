@@ -109,7 +109,7 @@ void    IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, Fil
 
     if (not Access (fileFullPath, accessMode)) {
         // FOR NOW - MIMIC OLD CODE - BUT FIX TO CHECK READ AND WRITE (AND BOTH) ACCESS DEPENDING ON ARGS) -- LGP 2009-08-15
-        Execution::DoThrow (FileAccessException (fileFullPath, accessMode));
+        Execution::Throw (FileAccessException (fileFullPath, accessMode));
     }
 }
 
@@ -142,7 +142,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
                 return path2FileOrShortcut;
             }
             else {
-                Execution::errno_ErrorException::DoThrow (e);
+                Execution::errno_ErrorException::Throw (e);
             }
         }
         Assert (n <= buf.GetSize ());   // could leave no room for NUL-byte, but not needed
@@ -234,7 +234,7 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
         //      realpath(path, NULL)
         char*   tmp { ::realpath (path2FileOrShortcut.AsSDKString ().c_str (), nullptr) };
         if (tmp == nullptr) {
-            errno_ErrorException::DoThrow (errno);
+            errno_ErrorException::Throw (errno);
         }
         String  result  { String::FromNarrowSDKString (tmp) };
         free (tmp);
@@ -263,7 +263,7 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
                 sb += c.fServerAndShare->fServer + L"\\" +  c.fServerAndShare->fShare;
             }
             else {
-                Execution::DoThrow (Execution::StringException (L"for absolute path need drive letter or server/share"));
+                Execution::Throw (Execution::StringException (L"for absolute path need drive letter or server/share"));
             }
         }
         else {
@@ -411,7 +411,7 @@ void       IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
 #endif
         if (r < 0) {
             if (errno != ENOENT) {
-                errno_ErrorException::DoThrow (errno);
+                errno_ErrorException::Throw (errno);
             }
         }
     }
@@ -437,7 +437,7 @@ Again:
                 triedRMRF = true;
                 goto Again;
             }
-            errno_ErrorException::DoThrow (errno);
+            errno_ErrorException::Throw (errno);
         }
     }
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(directory, FileAccessMode::eWrite);
@@ -463,7 +463,7 @@ Again:
                 goto Again;
             }
             if (errno != ENOENT) {
-                errno_ErrorException::DoThrow (errno);
+                errno_ErrorException::Throw (errno);
             }
         }
     }

@@ -105,7 +105,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         for (auto i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
                 if (found) {
-                    Execution::DoThrow (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));
+                    Execution::Throw (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));
                 }
                 found = true;
                 fMajorOperation = i.second;
@@ -213,7 +213,7 @@ void    Main::Run (const CommandArgs& args, Streams::OutputStream<Characters::Ch
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (args.fMajorOperation.IsMissing ()) {
-        Execution::DoThrow (Execution::InvalidCommandLineArgument (String_Constant { L"No recognized operation" }));
+        Execution::Throw (Execution::InvalidCommandLineArgument (String_Constant { L"No recognized operation" }));
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
@@ -553,12 +553,12 @@ Main::State             Main::RunTilIdleService::_GetState () const
 
 void    Main::RunTilIdleService::_Install ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (L"Install"));
+    Execution::Throw (Execution::OperationNotSupportedException (L"Install"));
 }
 
 void    Main::RunTilIdleService::_UnInstall ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
+    Execution::Throw (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
 void        Main::RunTilIdleService::_RunAsService ()
@@ -612,7 +612,7 @@ void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType 
 
 pid_t   Main::RunTilIdleService::_GetServicePID () const
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant { L"GetServicePID" }));
+    Execution::Throw (Execution::OperationNotSupportedException (String_Constant { L"GetServicePID" }));
 }
 
 
@@ -698,18 +698,18 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 
 void    Main::BasicUNIXServiceImpl::_Install ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant { L"Install" }));
+    Execution::Throw (Execution::OperationNotSupportedException (String_Constant { L"Install" }));
 }
 
 void    Main::BasicUNIXServiceImpl::_UnInstall ()
 {
-    Execution::DoThrow (Execution::OperationNotSupportedException (String_Constant { L"UnInstall" }));
+    Execution::Throw (Execution::OperationNotSupportedException (String_Constant { L"UnInstall" }));
 }
 
 void    Main::BasicUNIXServiceImpl::_RunAsService ()
 {
     if (_GetServicePID () > 0) {
-        Execution::DoThrow (Execution::StringException (String_Constant { L"Service Already Running" }));
+        Execution::Throw (Execution::StringException (String_Constant { L"Service Already Running" }));
     }
 
     // VERY WEAK IMPL
@@ -729,10 +729,10 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         out << Execution::GetCurrentProcessID () << endl;
     }
     if (_GetServicePID () <= 0) {
-        Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s", _GetPIDFileName ().c_str ())));
     }
     if (_GetServicePID () !=  Execution::GetCurrentProcessID ()) {
-        Execution::DoThrow (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
+        Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
     fRunThread_.WaitForDone ();
 }
@@ -758,7 +758,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
     if (_GetServicePID () > 0) {
-        Execution::DoThrow (Execution::StringException (String_Constant { L"Cannot Start service because its already running" }));
+        Execution::Throw (Execution::StringException (String_Constant { L"Cannot Start service because its already running" }));
     }
 
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String_Constant { L"--" } + String (CommandNames::kRunAsService))}));
@@ -1008,7 +1008,7 @@ void    Main::WindowsService::_UnInstall ()
         if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
-                Execution::Platform::Windows::Exception::DoThrow (e);
+                Execution::Platform::Windows::Exception::Throw (e);
             }
         }
     }
@@ -1097,7 +1097,7 @@ void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
         if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
             DWORD e = ::GetLastError ();
             if (e != ERROR_SERVICE_NOT_ACTIVE) {
-                Execution::Platform::Windows::Exception::DoThrow (e);
+                Execution::Platform::Windows::Exception::Throw (e);
             }
         }
     }
