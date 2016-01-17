@@ -129,6 +129,12 @@ namespace   Stroika {
                  */
                 using   MultiSetOfElementType  =   T;
 
+            public:
+                /**
+                 *      \brief
+                 */
+                using   CounterType  =   typename TraitsType::CounterType;
+
             protected:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -182,7 +188,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    Add (ArgByValueType<T> item);
-                nonvirtual  void    Add (ArgByValueType<T> item, size_t count);
+                nonvirtual  void    Add (ArgByValueType<T> item, CounterType count);
                 nonvirtual  void    Add (const CountedValue<T>& item);
 
             public:
@@ -202,7 +208,7 @@ namespace   Stroika {
                  *  If using the item/count or just item overloads, then MultiSet<> requires that the removed items are present.
                  */
                 nonvirtual  void    Remove (ArgByValueType<T> item);
-                nonvirtual  void    Remove (ArgByValueType<T> item, size_t count);
+                nonvirtual  void    Remove (ArgByValueType<T> item, CounterType count);
                 nonvirtual  void    Remove (const Iterator<CountedValue<T>>& i);
 
             public:
@@ -215,7 +221,7 @@ namespace   Stroika {
                 /**
                  * if newCount == 0, equivalent to Remove(i). Require not i.Done () - so it must point to a given item.
                  */
-                nonvirtual  void    UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount);
+                nonvirtual  void    UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount);
 
             public:
                 /**
@@ -223,14 +229,14 @@ namespace   Stroika {
                  *
                  *  If there are no copies of item in the MultiSet, 0 is returned.
                  */
-                nonvirtual  size_t  OccurrencesOf (ArgByValueType<T> item) const;
+                nonvirtual  CounterType  OccurrencesOf (ArgByValueType<T> item) const;
 
             public:
                 /**
                  *  Returns the sum of all tallys of all contained elements. This is equivalent
                  *  to Elements ().size ().
                  */
-                nonvirtual  size_t  TotalOccurrences () const;
+                nonvirtual  CounterType  TotalOccurrences () const;
 
             public:
                 /**
@@ -319,6 +325,9 @@ namespace   Stroika {
             protected:
                 using   _SharedPtrIRep  =   typename MultiSet<T, TRAITS>::_SharedPtrIRep;
 
+            public:
+                using   CounterType =   typename MultiSet<T, TRAITS>::CounterType;
+
             protected:
                 _IRep () = default;
 
@@ -326,11 +335,11 @@ namespace   Stroika {
                 virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const                  =   0;
                 virtual bool                Equals (const _IRep& rhs) const                                         =   0;
                 virtual bool                Contains (ArgByValueType<T> item) const                                 =   0;
-                virtual void                Add (ArgByValueType<T> item, size_t count)                              =   0;
-                virtual void                Remove (ArgByValueType<T> item, size_t count)                           =   0;
-                virtual void                Remove (const Iterator<CountedValue<T>>& i)                            =   0;
-                virtual void                UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount)      =   0;
-                virtual size_t              OccurrencesOf (ArgByValueType<T> item) const                            =   0;
+                virtual void                Add (ArgByValueType<T> item, CounterType count)                         =   0;
+                virtual void                Remove (ArgByValueType<T> item, CounterType count)                      =   0;
+                virtual void                Remove (const Iterator<CountedValue<T>>& i)                             =   0;
+                virtual void                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)  =   0;
+                virtual CounterType         OccurrencesOf (ArgByValueType<T> item) const                            =   0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T>         Elements (const _SharedPtrIRep& rep) const                              =   0;

@@ -43,6 +43,17 @@ namespace   Stroika {
                      *  underlying Mapping's TRAITS objects.
                      */
                     using   MultisetTraitsType               =    MultiSet<T, EQUALS_COMPARER>;
+
+                    /**
+                     *      \brief
+                     */
+                    using   CountedValueType    =   Common::CountedValue<T>;
+
+                    /**
+                     *      \brief
+                     */
+                    using   CounterType  =   typename CountedValueType::CounterType;
+
                 };
 
             }

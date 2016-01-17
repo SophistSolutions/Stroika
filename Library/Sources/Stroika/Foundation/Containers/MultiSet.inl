@@ -39,8 +39,8 @@ namespace   Stroika {
                     , fSaved2Return (saved2Return)
                 {
                 }
-                typename Iterable<CountedValue<T>>::_SharedPtrIRep fMultiSet;
-                Iterator<CountedValue<T>>                          fMultiSetIterator;
+                typename Iterable<CountedValue<T>>::_SharedPtrIRep  fMultiSet;
+                Iterator<CountedValue<T>>                           fMultiSetIterator;
                 size_t                                              fCountMoreTimesToGoBeforeAdvance;
                 Memory::Optional<T>                                 fSaved2Return;
             };
@@ -369,9 +369,9 @@ namespace   Stroika {
                 Remove (item, OccurrencesOf (item));
             }
             template    <typename T, typename TRAITS>
-            size_t  MultiSet<T, TRAITS>::TotalOccurrences () const
+            auto  MultiSet<T, TRAITS>::TotalOccurrences () const -> CounterType
             {
-                size_t  sum = 0;
+                CounterType  sum = 0;
                 for (CountedValue<T> i : *this) {
                     sum += i.fCount;
                 }
@@ -425,7 +425,7 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Add (ArgByValueType<T> item, CounterType count)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Add (item, count);
             }
@@ -462,7 +462,7 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, 1);
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, size_t count)
+            inline  void    MultiSet<T, TRAITS>::Remove (ArgByValueType<T> item, CounterType count)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (item, count);
             }
@@ -472,12 +472,12 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
-            inline  void    MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount)
+            inline  void    MultiSet<T, TRAITS>::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
             {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
-            inline  size_t  MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const
+            inline  auto  MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().OccurrencesOf (item);
             }

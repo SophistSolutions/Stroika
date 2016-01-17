@@ -67,11 +67,11 @@ namespace   Stroika {
                     virtual _SharedPtrIRep              CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                        Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override;
                     virtual bool                        Contains (ArgByValueType<T> item) const override;
-                    virtual void                        Add (ArgByValueType<T> item, size_t count) override;
-                    virtual void                        Remove (ArgByValueType<T> item, size_t count) override;
+                    virtual void                        Add (ArgByValueType<T> item, CounterType count) override;
+                    virtual void                        Remove (ArgByValueType<T> item, CounterType count) override;
                     virtual void                        Remove (const Iterator<CountedValue<T>>& i) override;
-                    virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount) override;
-                    virtual size_t                      OccurrencesOf (ArgByValueType<T> item) const override;
+                    virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override;
+                    virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override;
                     virtual Iterable<T>                 Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                 UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
 #if     qDebug
@@ -79,8 +79,8 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, size_t, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>, Private::ContainerRepLockDataSupport_>;
-                    using   IteratorRep_            =   Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, size_t>>;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, CounterType, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>, Private::ContainerRepLockDataSupport_>;
+                    using   IteratorRep_            =   Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
                 private:
                     DataStructureImplType_      fData_;
@@ -180,7 +180,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_stdmap<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, size_t count)
+                void    MultiSet_stdmap<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, CounterType count)
                 {
                     if (count == 0) {
                         return;
@@ -188,7 +188,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
-                            fData_.insert (typename map<T, size_t>::value_type (item, count));
+                            fData_.insert (typename map<T, CounterType>::value_type (item, count));
                         }
                         else {
                             i->second += count;
@@ -198,7 +198,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_stdmap<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, size_t count)
+                void    MultiSet_stdmap<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, CounterType count)
                 {
                     if (count == 0) {
                         return;
@@ -228,7 +228,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_stdmap<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount)
+                void    MultiSet_stdmap<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
                 {
                     const typename Iterator<CountedValue<T>>::IRep&    ir = i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -245,9 +245,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t  MultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const
+                auto  MultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
                 {
-                    CountedValue<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {

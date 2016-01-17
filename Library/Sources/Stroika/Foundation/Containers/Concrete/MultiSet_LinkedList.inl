@@ -54,19 +54,19 @@ namespace   Stroika {
                     virtual _IterableSharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
                     virtual size_t                              GetLength () const override;
                     virtual bool                                IsEmpty () const override;
-                    virtual Iterator<CountedValue<T>>          MakeIterator (IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<CountedValue<T>>           MakeIterator (IteratorOwnerID suggestedOwner) const override;
                     virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<CountedValue<T>>          FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual Iterator<CountedValue<T>>           FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep                      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
                     virtual bool                                Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override;
                     virtual bool                                Contains (ArgByValueType<T> item) const override;
-                    virtual void                                Add (ArgByValueType<T> item, size_t count) override;
-                    virtual void                                Remove (ArgByValueType<T> item, size_t count) override;
+                    virtual void                                Add (ArgByValueType<T> item, CounterType count) override;
+                    virtual void                                Remove (ArgByValueType<T> item, CounterType count) override;
                     virtual void                                Remove (const Iterator<CountedValue<T>>& i) override;
-                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount) override;
+                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override;
                     virtual size_t                              OccurrencesOf (ArgByValueType<T> item) const override;
                     virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
                     virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
@@ -206,7 +206,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, size_t count)
+                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, CounterType count)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
@@ -225,7 +225,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T, typename TRAITS>
-                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, size_t count)
+                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, CounterType count)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
@@ -264,7 +264,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, size_t newCount)
+                void    MultiSet_LinkedList<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
                 {
                     const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
