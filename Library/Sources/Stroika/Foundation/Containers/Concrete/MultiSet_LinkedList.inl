@@ -282,7 +282,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                auto	MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
+                auto    MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
                 {
                     CountedValue<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {

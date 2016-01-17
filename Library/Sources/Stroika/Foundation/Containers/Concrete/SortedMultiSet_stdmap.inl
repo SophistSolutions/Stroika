@@ -42,6 +42,7 @@ namespace   Stroika {
                     using   _MultisetSharedPtrIRep = typename MultiSetType::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   CounterType = typename inherited::CounterType;
 
                 public:
                     Rep_ () = default;
