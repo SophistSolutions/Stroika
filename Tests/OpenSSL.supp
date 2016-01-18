@@ -3038,3 +3038,10 @@
    fun:_ZN7Stroika10Foundation10Containers7MappingINS0_10Characters6StringES4_NS1_21Mapping_DefaultTraitsIS4_S4_NS0_6Common21DefaultEqualsComparerIS4_NS6_18ComparerWithEqualsIS4_EEEEEEE3AddERKS4_SE_
 }
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   ...
+   fun:_ZN7Stroika10Foundation10Containers7MappingINS0_10Characters6StringES4_NS1_13DefaultTraits7MappingIS4_S4_NS0_6Common21DefaultEqualsComparerIS4_NS7_18ComparerWithEqualsIS4_EEEEEEE3AddERKS4_SF_
+}
+
