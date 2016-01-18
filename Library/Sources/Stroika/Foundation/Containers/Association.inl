@@ -10,8 +10,8 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
-#include    "../Concrete/Association_Factory.h"
 #include    "../Traversal/Generator.h"
+#include    "Factory/Association_Factory.h"
 
 
 namespace   Stroika {
