@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
 
-#include    "SortedMapping_stdmap.h"
+#include    "../Concrete/SortedMapping_stdmap.h"
 
 namespace   Stroika {
     namespace   Foundation {

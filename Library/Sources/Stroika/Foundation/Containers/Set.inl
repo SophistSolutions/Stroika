@@ -5,8 +5,7 @@
 #define _Stroika_Foundation_Containers_Set_inl_
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Set_Factory.h"
+#include    "Factory/Set_Factory.h"
 
 
 namespace   Stroika {

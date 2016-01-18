@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_Factory_inl_
 
-#include    "SortedMultiSet_stdmap.h"
+#include    "../Concrete/SortedMultiSet_stdmap.h"
 
 namespace   Stroika {
     namespace   Foundation {

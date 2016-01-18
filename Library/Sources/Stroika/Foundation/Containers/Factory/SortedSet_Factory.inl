@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedSet_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedSet_Factory_inl_
 
-#include    "SortedCollection_LinkedList.h"
+#include    "../Concrete/SortedSet_stdset.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -19,15 +19,22 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
+                // no biggie for now...
+                // -- LGP 2013-07-23
+                template    <typename T, typename TRAITS>
+                class   SortedSet_stdset;
+
+
                 /*
                  ********************************************************************************
-                 **************** SortedCollection_Factory<T, TRAITS> ***************************
+                 ************************ SortedSet_Factory<T, TRAITS> **************************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedCollection<T, TRAITS> (*) ()>     SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedSet<T, TRAITS> (*) ()>     SortedSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::mk ()
+                inline  SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +50,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedCollection_Factory<T, TRAITS>::Register (SortedCollection<T, TRAITS> (*factory) ())
+                void    SortedSet_Factory<T, TRAITS>::Register (SortedSet<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::Default_ ()
+                SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::Default_ ()
                 {
-                    return SortedCollection_LinkedList<T, TRAITS> ();
+                    return SortedSet_stdset<T, TRAITS> ();
                 }
 
 

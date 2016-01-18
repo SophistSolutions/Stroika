@@ -11,7 +11,7 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Bijection_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Bijection_Factory_inl_
 
-#include    "Bijection_LinkedList.h"
+#include    "../Concrete/Bijection_LinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {

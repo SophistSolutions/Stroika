@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_
 
-#include    "Sequence_Array.h"
+#include    "../Concrete/Queue_DoublyLinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **************************** Sequence_Factory<T> *******************************
+                 ******************************* Queue_Factory<T> *******************************
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Sequence<T> (*) ()>  Sequence_Factory<T>::sFactory_ (nullptr);
+                atomic<Queue<T> (*) ()>     Queue_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::mk ()
+                inline  Queue<T>  Queue_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +43,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T>
-                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
+                void    Queue_Factory<T>::Register (Queue<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Sequence<T>  Sequence_Factory<T>::Default_ ()
+                Queue<T>  Queue_Factory<T>::Default_ ()
                 {
-                    return Sequence_Array<T> ();
+                    return Queue_DoublyLinkedList<T> ();
                 }
 
 
@@ -58,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Sequence_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_ */

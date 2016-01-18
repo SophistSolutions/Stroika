@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_
 
-#include    "Deque_DoublyLinkedList.h"
+#include    "../Concrete/Collection_LinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,14 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************* Deque_Factory<T> *******************************
+                 ****************************** Collection_Factory<T> ***************************
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Deque<T> (*) ()>     Deque_Factory<T>::sFactory_ (nullptr);
+                atomic<Collection<T> (*) ()>   Collection_Factory<T>::sFactory_ (nullptr);
+
                 template    <typename T>
-                inline  Deque<T>  Deque_Factory<T>::mk ()
+                inline  Collection<T>  Collection_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +44,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T>
-                void    Deque_Factory<T>::Register (Deque<T> (*factory) ())
+                void    Collection_Factory<T>::Register (Collection<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Deque<T>  Deque_Factory<T>::Default_ ()
+                Collection<T>  Collection_Factory<T>::Default_ ()
                 {
-                    return Deque_DoublyLinkedList<T> ();
+                    return Collection_LinkedList<T> ();
                 }
 
 
@@ -58,4 +59,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Deque_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_Collection_Factory_inl_ */

@@ -11,8 +11,8 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_
 #define _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_
 
-#include    "Set_LinkedList.h"
-#include    "Set_stdset.h"
+#include    "../Concrete/Set_LinkedList.h"
+#include    "../Concrete/Set_stdset.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -60,7 +60,7 @@ namespace   Stroika {
                 template    <typename CHECK_T>
                 inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if <Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
                 {
-                    return Set_stdset<T> ();    // OK to omit TRIATS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    return Set_stdset<T> ();    // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (...)

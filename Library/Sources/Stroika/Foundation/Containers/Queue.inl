@@ -6,8 +6,7 @@
 
 #include    "../Configuration/Concepts.h"
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Queue_Factory.h"
+#include    "Factory/Queue_Factory.h"
 #include    "Private/IterableUtils.h"
 
 

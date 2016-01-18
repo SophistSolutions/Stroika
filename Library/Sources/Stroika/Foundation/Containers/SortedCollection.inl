@@ -5,8 +5,7 @@
 #define _Stroika_Foundation_Containers_SortedCollection_inl_
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/SortedCollection_Factory.h"
+#include    "Factory/SortedCollection_Factory.h"
 
 
 namespace   Stroika {

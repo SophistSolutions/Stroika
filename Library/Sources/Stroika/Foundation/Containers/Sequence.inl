@@ -5,8 +5,7 @@
 #define _Stroika_Foundation_Containers_Sequence_inl_
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Sequence_Factory.h"
+#include    "Factory/Sequence_Factory.h"
 #include    "Private/IterableUtils.h"
 
 

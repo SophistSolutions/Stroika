@@ -12,7 +12,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Bijection_Factory.h"
+#include    "Factory/Bijection_Factory.h"
 
 
 namespace   Stroika {

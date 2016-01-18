@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
 
-#include    "Queue_DoublyLinkedList.h"
+#include    "../Concrete/Stack_LinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************* Queue_Factory<T> *******************************
+                 ********************************** Stack_Factory<T> ****************************
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Queue<T> (*) ()>     Queue_Factory<T>::sFactory_ (nullptr);
+                atomic<Stack<T> (*) ()>     Stack_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Queue<T>  Queue_Factory<T>::mk ()
+                inline  Stack<T>  Stack_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +43,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T>
-                void    Queue_Factory<T>::Register (Queue<T> (*factory) ())
+                void    Stack_Factory<T>::Register (Stack<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Queue<T>  Queue_Factory<T>::Default_ ()
+                Stack<T>  Stack_Factory<T>::Default_ ()
                 {
-                    return Queue_DoublyLinkedList<T> ();
+                    return Stack_LinkedList<T> ();
                 }
 
 
@@ -58,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Queue_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_ */

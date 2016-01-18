@@ -12,9 +12,9 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Traversal/IterableFromIterator.h"
-#include    "MultiSet.h"
+//#include    "MultiSet.h"
+#include    "Factory/MultiSet_Factory.h"
 
-#include    "Concrete/MultiSet_Factory.h"
 
 
 namespace   Stroika {

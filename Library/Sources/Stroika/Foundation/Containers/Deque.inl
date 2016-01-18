@@ -5,8 +5,7 @@
 #define _Stroika_Foundation_Containers_Deque_inl_
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Deque_Factory.h"
+#include    "Factory/Deque_Factory.h"
 
 
 namespace   Stroika {

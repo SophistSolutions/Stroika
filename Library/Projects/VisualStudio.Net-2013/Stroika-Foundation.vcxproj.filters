@@ -178,6 +178,9 @@
     <Filter Include="Sources\Containers\DefaultTraits">
       <UniqueIdentifier>{b257c588-e7c9-4c87-937d-029145d508d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Factory">
+      <UniqueIdentifier>{5ef803bc-e51c-4c0b-a351-a70027d1d3fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1128,83 +1131,20 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
       <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.h">
       <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h">
       <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h">
       <Filter>Sources\Configuration</Filter>
@@ -1254,14 +1194,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h">
       <Filter>Sources\Containers\STL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.h">
       <Filter>Sources\Containers\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h">
       <Filter>Sources\DataExchange\XML</Filter>
@@ -1344,44 +1278,17 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.h">
       <Filter>Sources\Traversal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.h">
       <Filter>Sources\Execution</Filter>
@@ -1400,24 +1307,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h">
       <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.h">
       <Filter>Sources\Execution</Filter>
@@ -1581,12 +1470,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Writer.h">
       <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
@@ -1607,18 +1490,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.h">
       <Filter>Sources\Traversal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h">
       <Filter>Sources\Execution</Filter>
@@ -1775,6 +1646,138 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedAssociation.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Collection_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Deque_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Mapping_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\MultiSet_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Queue_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Sequence_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Set_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedCollection_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedSet_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2040,12 +2043,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md">
       <Filter>Sources\Containers\STL</Filter>
     </None>
@@ -2106,77 +2103,20 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.inl">
       <Filter>Sources\Containers\Private\DataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl">
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.inl">
       <Filter>Sources\Configuration</Filter>
@@ -2235,17 +2175,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl">
       <Filter>Sources\Containers\STL</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.inl">
       <Filter>Sources\Containers\Private</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl">
       <Filter>Sources\DataExchange\XML</Filter>
@@ -2322,35 +2253,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl">
       <Filter>Sources\Traversal</Filter>
@@ -2360,9 +2267,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.inl">
       <Filter>Sources\Execution</Filter>
@@ -2384,24 +2288,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl">
       <Filter>Sources\Execution</Filter>
@@ -2580,18 +2466,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -2693,6 +2567,135 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\MultiSet_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMultiSet_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Collection_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Deque_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Mapping_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\MultiSet_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Queue_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Sequence_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Set_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedCollection_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedSet_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
     </None>
   </ItemGroup>
 </Project>

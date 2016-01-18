@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
 
-#include    "Stack_LinkedList.h"
+#include    "../Concrete/SortedCollection_LinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************** Stack_Factory<T> ****************************
+                 **************** SortedCollection_Factory<T, TRAITS> ***************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                atomic<Stack<T> (*) ()>     Stack_Factory<T>::sFactory_ (nullptr);
-                template    <typename T>
-                inline  Stack<T>  Stack_Factory<T>::mk ()
+                template    <typename T, typename TRAITS>
+                atomic<SortedCollection<T, TRAITS> (*) ()>     SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
+                template    <typename T, typename TRAITS>
+                inline  SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,15 +42,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T>
-                void    Stack_Factory<T>::Register (Stack<T> (*factory) ())
+                template    <typename T, typename TRAITS>
+                void    SortedCollection_Factory<T, TRAITS>::Register (SortedCollection<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T>
-                Stack<T>  Stack_Factory<T>::Default_ ()
+                template    <typename T, typename TRAITS>
+                SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::Default_ ()
                 {
-                    return Stack_LinkedList<T> ();
+                    return SortedCollection_LinkedList<T, TRAITS> ();
                 }
 
 
@@ -58,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Stack_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SortedSet_Factory_inl_ */

@@ -5,8 +5,7 @@
 #define _Stroika_Foundation_Containers_SortedMapping_inl_
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/SortedMapping_Factory.h"
+#include    "Factory/SortedMapping_Factory.h"
 
 
 namespace   Stroika {

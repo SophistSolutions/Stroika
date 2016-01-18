@@ -12,9 +12,8 @@
 #include    <set>
 
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Mapping_Factory.h"
 #include    "../Traversal/Generator.h"
+#include    "Factory/Mapping_Factory.h"
 
 
 namespace   Stroika {
