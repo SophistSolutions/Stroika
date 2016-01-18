@@ -27,10 +27,10 @@ namespace   Stroika {
 
 
                 /**
-                 *  Association_stdmultimap requires its own traits (besides Association_DefaultTraits) because of the neeed for a compare function for std::map<>
+                 *  Association_stdmultimap requires its own traits (besides DefaultTraits::Association) because of the neeed for a compare function for std::map<>
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = typename Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-                struct   Association_stdmultimap_DefaultTraits : Association_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = typename DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
+                struct   Association_stdmultimap_DefaultTraits : DefaultTraits::Association<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> {
                     /**
                      */
                     using   KeyWellOrderCompareFunctionType =   KEY_WELL_ORDER_COMPARER;

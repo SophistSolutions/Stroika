@@ -15,6 +15,7 @@
 #include    "../Execution/Synchronized.h"
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
+#include    "DefaultTraits/Association.h"
 
 
 
@@ -59,33 +60,10 @@ namespace   Stroika {
 
 
             /**
-             */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<VALUE_TYPE>>
-            struct   Association_DefaultTraits {
-                /**
-                 */
-                using   KeyEqualsCompareFunctionType    =   KEY_EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
-
-                /**
-                 * only defined optionally...(see what can call this - gen list here @todo)
-                 */
-                using   ValueEqualsCompareFunctionType  =   VALUE_EQUALS_COMPARER;
-
-                /**
-                 *  Define typedef for this Association traits object (so other traits can generically allow recovery of the
-                 *  underlying Association's TRAITS objects.
-                 */
-                using   AssociationTraitsType               =    Association_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>;
-            };
-
-
-            /**
              *      \note   Alias
              *              Analagous to stl::multimap<>, and often called a MultiMap<>, like MultiSet<>.
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>>
             class   Association : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
                 using   inherited       =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
@@ -399,14 +377,14 @@ namespace   Stroika {
 
 
             /**
-                *      Syntactic sugar on Equals()
-                */
+             *      Syntactic sugar on Equals()
+             */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             bool    operator== (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
             /**
-                *      Syntactic sugar on not Equals()
-                */
+             *      Syntactic sugar on not Equals()
+             */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             bool    operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 

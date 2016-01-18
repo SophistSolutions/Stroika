@@ -66,7 +66,7 @@ namespace   Stroika {
 
                 private:
                     template    <typename CHECK_KEY>
-                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value>::type* = 0);
+                    static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Association<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
                     static  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (...);
                 };
 

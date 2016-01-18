@@ -58,7 +58,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value>::type*)
+                inline  Association<KEY_TYPE, VALUE_TYPE, TRAITS>  Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (CHECK_KEY*, typename enable_if <Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Association<CHECK_KEY, VALUE_TYPE>>::value>::type*)
                 {
                     return Association_stdmultimap<KEY_TYPE, VALUE_TYPE> ();
                 }

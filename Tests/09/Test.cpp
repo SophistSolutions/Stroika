@@ -88,7 +88,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWithoutComparisonOperators_AssociationTRAITS =   Association_DefaultTraits <
+        using   SimpleClassWithoutComparisonOperators_AssociationTRAITS =   DefaultTraits::Association <
                 SimpleClassWithoutComparisonOperators,
                 SimpleClassWithoutComparisonOperators,
                 MySimpleClassWithoutComparisonOperators_ComparerWithEquals_

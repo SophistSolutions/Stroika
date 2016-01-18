@@ -1770,6 +1770,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Association.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedAssociation.h">
+      <Filter>Sources\Containers\DefaultTraits</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

@@ -35,7 +35,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Association_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>>
                 class   Association_LinkedList : public Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType> {
                 private:
                     using   inherited   =     Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>;
