@@ -22,7 +22,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
+                 ********** Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

@@ -10,8 +10,7 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
-
-#include    "Concrete/Association_Factory.h"
+#include    "../Concrete/Association_Factory.h"
 #include    "../Traversal/Generator.h"
 
 
