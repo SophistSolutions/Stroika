@@ -23,7 +23,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ *****************
+                 ********** Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ ***************
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
