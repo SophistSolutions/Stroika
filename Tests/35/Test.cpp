@@ -643,7 +643,7 @@ namespace {
         // EXPERIMENTAL
         WaitableEvent we1 (WaitableEvent::eAutoReset);
         WaitableEvent we2 (WaitableEvent::eAutoReset);
-        static  constexpr   Time::DurationSecondsType   kMaxWaitTime_ { 4.0 };
+        static  constexpr   Time::DurationSecondsType   kMaxWaitTime_ { 5.0 };
         Thread t1 {[&we1] ()
         {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
