@@ -69,6 +69,7 @@ IO::FileSystem::FileSystem  IO::FileSystem::FileSystem::Default ()
 
 bool    IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const
 {
+    // @todo FIX to only do ONE system call, not two!!!
 #if     qPlatform_Windows
     if ((accessMode & FileAccessMode::eRead) == FileAccessMode::eRead) {
         DWORD attribs = ::GetFileAttributesW (fileFullPath.c_str ());
@@ -108,12 +109,11 @@ void    IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, Fil
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
     if (not Access (fileFullPath, accessMode)) {
-        // FOR NOW - MIMIC OLD CODE - BUT FIX TO CHECK READ AND WRITE (AND BOTH) ACCESS DEPENDING ON ARGS) -- LGP 2009-08-15
         Execution::Throw (FileAccessException (fileFullPath, accessMode));
     }
 }
 
-void    IO::FileSystem::FileSystem::CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+void    IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
     if (checkCanRead and checkCanWrite) {
         CheckAccess (fileFullPath, IO::FileAccessMode::eReadWrite);

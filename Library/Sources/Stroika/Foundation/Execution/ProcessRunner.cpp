@@ -855,7 +855,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
-    IO::FileSystem::FileSystem::Default ().CheckFileAccess (executable, true, false);
+    IO::FileSystem::FileSystem::Default ().CheckAccess (executable, true, false);
 
     Sequence<String>    useArgs;
     if (args.empty ()) {

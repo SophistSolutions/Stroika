@@ -55,19 +55,27 @@ namespace   Stroika {
                     /**
                      *  Return true if the given access is allowed (for the current user id).
                      *  This works for a file or directory.
+                     *
+                     *  @see CheckAccess to avoid test, and just throw if missing
                      */
                     nonvirtual  bool    Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
 
                 public:
                     /**
-                     * doesn't actually open the file. It's purely advisory. But its helpful to assure
+                     * Doesn't actually open the file. It's purely advisory. But its helpful to assure
                      * a consistent set of error reporting across different styles of opens. Just call this first,
                      * and it will throw exceptions if the file doesn't exist, or has access privileges issues.
                      *
                      *  This works for a file or directory.
+                     *
+                     *  @see Access to avoid throw
                      */
                     nonvirtual  void    CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
-                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
+                    nonvirtual  void    CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
+                    nonvirtual  void    _Deprecated_ (CheckFileAccess, "USE CheckAccess") (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+                    {
+                        CheckAccess (fileFullPath, checkCanRead, checkCanWrite);
+                    }
 
                 public:
                     /**
