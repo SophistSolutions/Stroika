@@ -22,7 +22,26 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a126">v2.0a126x</a><br/>2016-01-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<!--up to date as of 2016-01-19 9pm -->
+		<li>Many fixes to RegressionTests-Unix.sh</li>
+		<li>Tweaks to OpenSSL.supp</li>
+		<li>Debug/Trace code: fixed dbgstr code for dumping very large lines to windows debugger, and noexcept usage</li>
+		<li>ToString () improvements (fix unsigned)</li>
+		<li>better factor EQUALS_COMPARER for SortedSet_DefaultTraits, SortedMapping_DefaultTraits, Set_stdset_DefaultTraits, Mapping_stdmap_DefaultTraits - depending on their base 'archtype' traits</li>
+		<li>Common::DefaultEqualsComparer and DefaultEqualsComparerOptionally</li>
+		<li>Various cleanups to containers - mostly relating to use of DefaultEqualsComparer</li>
+		<li>qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy and workarounds</li>
+		<li>AtLeast/AtMost</li>
+		<li>deprecated Common::Has_Operator_LessThan in favor of Configuration::has_lt</li>
+		<li>Containers factory fixups to handle TRAITS differ from standard</li>
+		<li>New CountedValue<> and used that in MultiSet<></li>
+		<li>New Containers submodule for DefaultTraits and Factory</li>
+		<li>use improved strategy (...) for Default_SFINAE_ in many cases </li>
+		<li>https://stroika.atlassian.net/browse/STK-431 - moved STL less<> to Common</li>
+		<li>renamed Execution::DoThrow -> Execution::Throw (and a few similar renames)</li>
+		<li>hopefully improved dependencies on rules in top level makefile (so less redundant building when called with no configuraiton argument - SB no diff otherwise)</li>
+		<li>docs cleanups and deprecated FileSystem::CheckFileAccess (use CheckAccess)</li>
+		<li>use noexcept on a few functions: GetTickCount, and Debug:: trace code</li>
 	</ul>
 </td>
 </tr>
