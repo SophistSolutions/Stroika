@@ -235,24 +235,30 @@ SDKString Emitter::GetTraceFileName () const
 
 #if     qTraceToFile
 namespace   {
-    void    Emit2File_ (const char* text)
-    {
+    void    Emit2File_ (const char* text) noexcept {
         RequireNotNull (text);
         RequireNotNull (sTraceFile);
         try {
-            if (sTraceFile->is_open ()) {
+            if (sTraceFile->is_open ())
+            {
                 (*sTraceFile) << text;
                 sTraceFile->flush ();
             }
         }
-        catch (...) {
-            Assert (false);
+        catch (...)
+        {
+            AssertNotReached ();
         }
     }
-    void    Emit2File_ (const wchar_t* text)
-    {
+    void    Emit2File_ (const wchar_t* text) noexcept {
         RequireNotNull (text);
-        Emit2File_ (WideStringToUTF8 (text).c_str ());
+        try {
+            Emit2File_ (WideStringToUTF8 (text).c_str ());
+        }
+        catch (...)
+        {
+            AssertNotReached ();
+        }
     }
 }
 #endif
@@ -299,8 +305,7 @@ Emitter::Emitter ()
              @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
              @'DbgTrace'.</p>
 */
-void    Emitter::EmitTraceMessage (const char* format, ...)
-{
+void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -310,15 +315,15 @@ void    Emitter::EmitTraceMessage (const char* format, ...)
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (...) {
+    catch (...)
+    {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
 
-void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
-{
+void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -328,15 +333,15 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (...) {
+    catch (...)
+    {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...)
-{
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept {
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -346,7 +351,8 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (...) {
+    catch (...)
+    {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
@@ -354,8 +360,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...)
-{
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept {
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -365,7 +370,8 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (...) {
+    catch (...)
+    {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
@@ -489,11 +495,11 @@ bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWrite
     return false;   // assume old behavior for now
 }
 
-void    Emitter::DoEmit_ (const char* p)
-{
+void    Emitter::DoEmit_ (const char* p) noexcept {
 #if     qPlatform_Windows
     constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
-    if (::strlen (p) < kMaxLen_) {
+    if (::strlen (p) < kMaxLen_)
+    {
         ::OutputDebugStringA (p);
     }
     else {
@@ -509,11 +515,11 @@ void    Emitter::DoEmit_ (const char* p)
 #endif
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p)
-{
+void    Emitter::DoEmit_ (const wchar_t* p) noexcept {
 #if     qPlatform_Windows
     constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
-    if (::wcslen (p) < kMaxLen_) {
+    if (::wcslen (p) < kMaxLen_)
+    {
         ::OutputDebugStringW (p);
     }
     else {
@@ -529,22 +535,32 @@ void    Emitter::DoEmit_ (const wchar_t* p)
 #endif
 }
 
-void    Emitter::DoEmit_ (const char* p, const char* e)
-{
-    size_t  len =   e - p;
-    Memory::SmallStackBuffer<char>  buf (len + 1);
-    (void)::memcpy (buf.begin (), p, len);
-    buf.begin () [len] = '\0';
-    DoEmit_ (buf.begin ());
+void    Emitter::DoEmit_ (const char* p, const char* e) noexcept {
+    try {
+        size_t  len =   e - p;
+        Memory::SmallStackBuffer<char>  buf (len + 1);
+        (void)::memcpy (buf.begin (), p, len);
+        buf.begin () [len] = '\0';
+        DoEmit_ (buf.begin ());
+    }
+    catch (...)
+    {
+        AssertNotReached ();
+    }
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e)
-{
-    size_t  len =   e - p;
-    Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
-    (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
-    buf.begin () [len] = '\0';
-    DoEmit_ (buf.begin ());
+void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept {
+    try {
+        size_t  len =   e - p;
+        Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
+        (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
+        buf.begin () [len] = '\0';
+        DoEmit_ (buf.begin ());
+    }
+    catch (...)
+    {
+        AssertNotReached ();
+    }
 }
 
 

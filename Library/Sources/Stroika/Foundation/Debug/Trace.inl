@@ -79,8 +79,7 @@ namespace   {
 }
 
 
-inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get ()
-{
+inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get () noexcept {
     return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fEmitter;
 }
 #endif  /*_Stroika_Foundation_Debug_Trace_inl_*/

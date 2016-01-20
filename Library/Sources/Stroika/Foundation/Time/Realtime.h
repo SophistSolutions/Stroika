@@ -62,7 +62,7 @@ namespace   Stroika {
              *  \note Starts At Zero
              *      To avoid issues with roundoff, we start this at zero when the software first boots.
              */
-            DurationSecondsType GetTickCount ();
+            DurationSecondsType GetTickCount () noexcept;
 
 
             /**

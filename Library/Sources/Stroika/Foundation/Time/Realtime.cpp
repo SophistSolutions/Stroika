@@ -35,8 +35,7 @@ using   namespace   Stroika::Foundation::Time;
  ********************************************************************************
  */
 namespace {
-    inline  DurationSecondsType GetTickCount_ ()
-    {
+    inline  DurationSecondsType GetTickCount_ () noexcept {
 #if     qPlatform_MacOS
         return (DurationSecondsType (::TickCount ()) / 60.0);
 #elif   qPlatform_POSIX
@@ -54,7 +53,8 @@ namespace {
                 return static_cast<DurationSecondsType> (performanceFrequency.QuadPart);
             }
         } ();
-        if (sPerformanceFrequencyBasis_ == 0.0) {
+        if (sPerformanceFrequencyBasis_ == 0.0)
+        {
 #if     (_WIN32_WINNT >= 0x0600)
             return (DurationSecondsType (::GetTickCount64 ()) / 1000.0);
 #else
@@ -71,8 +71,7 @@ namespace {
 #endif
     }
 }
-DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
-{
+DurationSecondsType Stroika::Foundation::Time::GetTickCount () noexcept {
     static  const   DurationSecondsType kFirstTC_   =   GetTickCount_ ();
     return GetTickCount_ () - kFirstTC_;
 }

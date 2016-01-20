@@ -86,7 +86,7 @@ namespace   Stroika {
             private:
                 Emitter ();
             public:
-                static  Emitter&    Get ();
+                static  Emitter&    Get () noexcept;
 
 #if     qTraceToFile
             public:
@@ -94,15 +94,15 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  void    EmitTraceMessage (const char* format, ...);
-                nonvirtual  void    EmitTraceMessage (const wchar_t* format, ...);
+                nonvirtual  void    EmitTraceMessage (const char* format, ...) noexcept;
+                nonvirtual  void    EmitTraceMessage (const wchar_t* format, ...) noexcept;
 
                 // The 'TraceLastBufferedWriteTokenType' overload of EmitTraceMessage allows you to specify a set of (trailing) characters to
                 // be temporarily buffered. These characters are not immediately emitted, and can be cleared via UnputBufferedCharactersForMatchingToken ().
                 // They will eventually be flushed out on the next call to EmitTraceMessage ().
                 using   TraceLastBufferedWriteTokenType     =   int;
-                nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...);
-                nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...);
+                nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept;
+                nonvirtual  TraceLastBufferedWriteTokenType EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept;
 
             public:
                 // if the last write matches the given token (no writes since then) and the timestamp is unchanged, abandon
@@ -132,10 +132,10 @@ namespace   Stroika {
                 nonvirtual  void    FlushBufferedCharacters_ ();
 
             private:
-                nonvirtual  void    DoEmit_ (const char* p);
-                nonvirtual  void    DoEmit_ (const wchar_t* p);
-                nonvirtual  void    DoEmit_ (const char* p, const char* e);
-                nonvirtual  void    DoEmit_ (const wchar_t* p, const wchar_t* e);
+                nonvirtual  void    DoEmit_ (const char* p) noexcept;
+                nonvirtual  void    DoEmit_ (const wchar_t* p) noexcept;
+                nonvirtual  void    DoEmit_ (const char* p, const char* e) noexcept;
+                nonvirtual  void    DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept;
 
             private:
                 friend  struct  Private_::TraceModuleData_;
