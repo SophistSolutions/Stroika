@@ -520,6 +520,7 @@ namespace   Stroika {
         }
     }
 }
+#if 0
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -535,4 +536,5 @@ namespace   Stroika {
         }
     }
 }
+#endif
 #endif /* _Stroika_Foundation_Traversal_Range_inl_ */
