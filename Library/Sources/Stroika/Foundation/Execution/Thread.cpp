@@ -672,7 +672,7 @@ void    Thread::SetThreadName (const String& threadName)
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
         TraceContextBumper  ctx ("Execution::Thread::SetThreadName");
-        DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
+        DbgTrace (L"(thisThreadID=%s, threadName = '%s')", FormatThreadID (GetID ()).c_str (), threadName.c_str ());
         fRep_->fThreadName_ = threadName.As<wstring> ();
 #if     qSupportSetThreadNameDebuggerCall
 #if     qPlatform_Windows
@@ -719,7 +719,7 @@ void    Thread::Start ()
 void    Thread::Abort ()
 {
     Debug::TraceContextBumper ctx ("Thread::Abort");
-    if (fRep_.get () == nullptr) {
+    if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
@@ -740,7 +740,7 @@ void    Thread::Abort ()
 void    Thread::Interrupt ()
 {
     Debug::TraceContextBumper ctx ("Thread::Interrupt");
-    if (fRep_.get () == nullptr) {
+    if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
@@ -755,7 +755,7 @@ void    Thread::Interrupt ()
 
 void    Thread::Abort_Forced_Unsafe ()
 {
-    if (fRep_.get () == nullptr) {
+    if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
@@ -814,7 +814,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
     //DbgTrace ("(timeout = %.2f)", timeout);
-    if (fRep_.get () == nullptr) {
+    if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
     }
@@ -840,7 +840,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 #if     qPlatform_Windows
 void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
-    if (fRep_.get () == nullptr) {
+    if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
     }
@@ -862,8 +862,8 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
 
 Thread::Status  Thread::GetStatus_ () const noexcept
 {
-    Require (fRep_.get () != nullptr);
-    if (fRep_.get () == nullptr) {
+    Require (fRep_ != nullptr);
+    if (fRep_ == nullptr) {
         return Status::eNull;
     }
     return fRep_->fStatus_;
