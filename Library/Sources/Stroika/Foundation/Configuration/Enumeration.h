@@ -252,12 +252,12 @@ namespace   Stroika {
 
 
             /**
-			 *	FIRST DRAFT support for using DefaultNames<> to REGISTER EnumNames - to replace Stroika_Enum_Names mechanism.
+             *  FIRST DRAFT support for using DefaultNames<> to REGISTER EnumNames - to replace Stroika_Enum_Names mechanism.
              */
             template <typename ENUM_TYPE>
             struct   DefaultNames {
                 static  const   EnumNames<ENUM_TYPE>    k;
-                operator EnumNames<ENUM_TYPE> () const { return k };
+                operator EnumNames<ENUM_TYPE> () const { return k; };
             };
 
 
