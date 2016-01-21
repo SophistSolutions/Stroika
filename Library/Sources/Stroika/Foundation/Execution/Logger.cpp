@@ -49,6 +49,7 @@ Logger  Logger::sThe_;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+            template    <>
             const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k {
                 { Logger::Priority::eDebug, L"Debug" },
                 { Logger::Priority::eInfo, L"Info" },

@@ -77,10 +77,12 @@ using   namespace   Stroika::Foundation::IO::Network;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+            template    <>
             const EnumNames<Interface::Status>   DefaultNames<Interface::Status>::k {
                 { Interface::Status::eConnected, L"Connected" },
                 { Interface::Status::eRunning, L"Running" },
             };
+            template    <>
             const EnumNames<Interface::Type>   DefaultNames<Interface::Type>::k {
                 { Interface::Type::eLoopback, L"Loopback" },
                 { Interface::Type::eWiredEthernet, L"WiredEthernet" },

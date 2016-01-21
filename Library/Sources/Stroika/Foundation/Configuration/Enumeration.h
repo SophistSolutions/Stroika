@@ -170,7 +170,9 @@ namespace   Stroika {
             public:
                 /**
                  */
-                EnumNames () = delete;
+                //EnumNames () = delete;
+                EnumNames () = default;//tmphack to test
+
                 constexpr EnumNames (const EnumNames& src) = default;
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr EnumNames (EnumNames&& src) = default;

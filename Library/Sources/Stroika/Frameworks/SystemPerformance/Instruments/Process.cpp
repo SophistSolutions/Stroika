@@ -109,6 +109,7 @@ using   SystemPerformance::Support::WMICollector;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+            template    <>
             const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
                 { ProcessType::RunStatus::eRunning, L"Running" },
                 { ProcessType::RunStatus::eSleeping, L"Sleeping" },
