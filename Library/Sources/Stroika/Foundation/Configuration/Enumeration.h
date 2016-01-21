@@ -260,6 +260,9 @@ namespace   Stroika {
             struct   DefaultNames {
                 static  const   EnumNames<ENUM_TYPE>    k;
                 operator EnumNames<ENUM_TYPE> () const { return k; };
+                nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const { return k.GetName (e); }
+                nonvirtual  const ENUM_TYPE*  PeekValue (const wchar_t* name) const { return k.PeekValue (name); }
+                nonvirtual  const wchar_t*  PeekName (ENUM_TYPE e) const { return k.PeekValue (e); }
             };
 
 
