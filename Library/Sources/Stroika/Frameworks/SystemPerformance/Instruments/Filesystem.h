@@ -321,23 +321,4 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-            template    <>
-            constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k {
-                EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
-                    {
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information" },
-                    }
-                }
-            };
-        }
-    }
-}
 #endif  /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/
