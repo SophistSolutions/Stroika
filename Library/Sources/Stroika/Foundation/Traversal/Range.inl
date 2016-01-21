@@ -524,8 +524,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
             template    <>
-            constexpr   EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k {
-                Configuration::EnumNames<Traversal::Openness>::BasicArrayInitializer {
+            constexpr   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
+                EnumNames<Traversal::Openness>::BasicArrayInitializer {
                     {
                         { Traversal::Openness::eOpen, L"Open" },
                         { Traversal::Openness::eClosed, L"Closed" },

@@ -76,7 +76,7 @@ namespace   Stroika {
         namespace   Configuration {
             template    <>
             constexpr   EnumNames<IO::FileAccessMode>   DefaultNames<IO::FileAccessMode>::k {
-                Configuration::EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
+                EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
                     { IO::FileAccessMode::eNoAccess, L"No-Access" },
                     { IO::FileAccessMode::eRead, L"Read" },
                     { IO::FileAccessMode::eWrite, L"Write" },
