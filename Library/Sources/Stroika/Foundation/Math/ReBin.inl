@@ -145,11 +145,11 @@ namespace   Stroika {
                         using   Memory::Optional;
                         using   BucketIndexType = typename DATA_DESCRIPTOR_TYPE::BucketIndexType;
                         using   XType = typename DATA_DESCRIPTOR_TYPE::XType;
-                        auto myContext = shared_ptr<BucketIndexType> (new BucketIndexType (0));
+                        auto myContext = make_shared<BucketIndexType> (0);
                         auto bucketCount = d.GetBucketCount ();
                         auto getNext = [myContext, bucketCount, d] () -> Optional<Range<XType>> {
                             /*
-                             * Intentionally skip empty range elements, as legal in ReBin () - buy which make
+                             * Intentionally skip empty range elements, as legal in ReBin () - but which make
                              * the set not technically a partition.
                              */
                             Optional<Range<XType>>   result;
