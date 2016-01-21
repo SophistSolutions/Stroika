@@ -106,15 +106,22 @@ using   SystemPerformance::Support::WMICollector;
 
 
 
-const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)
-{
-    { ProcessType::RunStatus::eRunning, L"Running" },
-    { ProcessType::RunStatus::eSleeping, L"Sleeping" },
-    { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-    { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-    { ProcessType::RunStatus::eZombie, L"Zombie" },
-    { ProcessType::RunStatus::eSuspended, L"Suspended" },
-};
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
+                { ProcessType::RunStatus::eRunning, L"Running" },
+                { ProcessType::RunStatus::eSleeping, L"Sleeping" },
+                { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+                { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+                { ProcessType::RunStatus::eZombie, L"Zombie" },
+                { ProcessType::RunStatus::eSuspended, L"Suspended" },
+            };
+        }
+    }
+}
+
+const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)    =   DefaultNames<ProcessType::RunStatus>::k;
 
 
 
@@ -239,7 +246,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (ProcessType::Stroika_Enum_Names(RunStatus)));
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (Configuration::DefaultNames<ProcessType::RunStatus>::k));
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<Optional<pid_t>> ();

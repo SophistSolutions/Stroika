@@ -56,6 +56,8 @@ namespace   Stroika {
             /**
              *  Openness is used to define whether an end of a range is open or closed. Open means
              *  not containing the endpoint, and closed means containing the endpoint.
+             *
+             *  \note   Configuration::DefaultNames<> supported
              */
             enum    class   Openness {
                 eOpen,
@@ -63,6 +65,7 @@ namespace   Stroika {
 
                 Stroika_Define_Enum_Bounds(eOpen, eClosed)
             };
+            // @todo Stroika_Enum_Names(Openness) probably to be obsoleted by Configuration::DefaultNames<>
             constexpr   Configuration::EnumNames<Openness>    Stroika_Enum_Names(Openness)
             {
                 Configuration::EnumNames<Openness>::BasicArrayInitializer {

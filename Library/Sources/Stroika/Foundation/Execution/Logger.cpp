@@ -46,17 +46,25 @@ using   Time::DurationSecondsType;
  */
 Logger  Logger::sThe_;
 
-const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority)
-{
-    { Logger::Priority::eDebug, L"Debug" },
-    { Logger::Priority::eInfo, L"Info" },
-    { Logger::Priority::eNotice, L"Notice" },
-    { Logger::Priority::eWarning, L"Warning" },
-    { Logger::Priority::eError, L"Error" },
-    { Logger::Priority::eCriticalError, L"CriticalError" },
-    { Logger::Priority::eAlertError, L"AlertError" },
-    { Logger::Priority::eEmergency, L"Emergency" },
-};
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k {
+                { Logger::Priority::eDebug, L"Debug" },
+                { Logger::Priority::eInfo, L"Info" },
+                { Logger::Priority::eNotice, L"Notice" },
+                { Logger::Priority::eWarning, L"Warning" },
+                { Logger::Priority::eError, L"Error" },
+                { Logger::Priority::eCriticalError, L"CriticalError" },
+                { Logger::Priority::eAlertError, L"AlertError" },
+                { Logger::Priority::eEmergency, L"Emergency" },
+            };
+        }
+    }
+}
+
+const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = DefaultNames<Logger::Priority>::k;
+
 
 
 
@@ -290,7 +298,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 
 void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
-    DbgTrace (L"SYSLOG: %s: %s", Stroika_Enum_Names(Priority).GetName (logLevel), message.c_str ());
+    DbgTrace (L"SYSLOG: %s: %s", DefaultNames<Logger::Priority> ().GetName (logLevel), message.c_str ());
     int sysLogLevel = LOG_NOTICE;   // doesnt matter cuz assert error if hit
     switch (logLevel) {
         case Priority::eDebug:
@@ -344,7 +352,7 @@ public:
     void    Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_.Write (Characters::Format (L"[%5s][%16s] %s\n", Stroika_Enum_Names(Priority).GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
+        fWriter_.Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
 private:
     TextWriter          fWriter_;

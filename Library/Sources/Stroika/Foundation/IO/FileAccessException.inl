@@ -43,7 +43,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy
                 DbgTrace (L"Throwing FileAccessException: fFileName='%s'; FileAccessMode=%s", e2Throw.GetFileName ().c_str (), IO::Get_FileAccessMode_BWA ().GetName (e2Throw.GetFileAccessMode ()));
 #else
-                DbgTrace (L"Throwing FileAccessException: fFileName='%s'; FileAccessMode=%s", e2Throw.GetFileName ().c_str (), IO::Stroika_Enum_Names(FileAccessMode).GetName (e2Throw.GetFileAccessMode ()));
+                DbgTrace (L"Throwing FileAccessException: fFileName='%s'; FileAccessMode=%s", e2Throw.GetFileName ().c_str (), Configuration::DefaultNames<IO::FileAccessMode>::k.GetName (e2Throw.GetFileAccessMode ()));
 #endif
                 throw e2Throw;
             }

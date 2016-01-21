@@ -109,6 +109,8 @@ namespace   Stroika {
                  *  But the NUMBERS do NOT correspond!
                  *
                  *  Lower numbers are less interesting (debug) and higher numbers more important (higher priority).
+                 *
+                 *  \note   Configuration::DefaultNames<> supported
                  */
                 enum    class  Priority : uint8_t {
                     eDebug              =   0,              // The message is debug info (not a good use of syslog - consider using DbgTrace)
@@ -121,6 +123,8 @@ namespace   Stroika {
                     eEmergency          =   7,              // The message says the system is unusable
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
+
+                // @todo OBSOLETE/DEPRECATE - use Configuration::DefaultNames<>
                 static  const EnumNames<Priority>   Stroika_Enum_Names(Priority);
 
             public:

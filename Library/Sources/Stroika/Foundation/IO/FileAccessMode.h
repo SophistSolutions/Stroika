@@ -18,8 +18,10 @@ namespace   Stroika {
              * First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
              * But this will do for now...
              *      -- LGP 2009-08-15
+             *
+             *  \note   Configuration::DefaultNames<> supported
              */
-            enum    class FileAccessMode : uint8_t {
+            enum    class   FileAccessMode : uint8_t {
                 eNoAccess,
                 eRead   = 0x1,
                 eWrite  = 0x2,
@@ -30,8 +32,11 @@ namespace   Stroika {
                 Stroika_Define_Enum_Bounds(eNoAccess, eReadWrite)
             };
 
+            // @todo NOTE DEPRACATED
+#if 0
 #if     !qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             const Configuration::EnumNames<FileAccessMode>   Stroika_Enum_Names(FileAccessMode);
+#endif
 #endif
 
             FileAccessMode  operator& (FileAccessMode l, FileAccessMode r);

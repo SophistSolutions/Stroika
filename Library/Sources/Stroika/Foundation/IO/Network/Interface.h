@@ -90,6 +90,8 @@ namespace   Stroika {
                     Memory::Optional<String>    fDescription;
 
                     /**
+                     *
+                     *  \note   Configuration::DefaultNames<> supported
                      */
                     enum    class   Type {
                         eLoopback,
@@ -100,6 +102,8 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eLoopback, eOther)
                     };
+
+                    // @todo MARK DEPRECATED = use Configuration::DefaultNames<>
                     static  const Configuration::EnumNames<Type>   Stroika_Enum_Names(Type);
 
                     /**
@@ -127,6 +131,8 @@ namespace   Stroika {
 
                     /**
                      * @todo document these - 'eRunning' == LINUX RUNNING
+                     *
+                     *  \note   Configuration::DefaultNames<> supported
                      */
                     enum    class   Status {
                         eConnected,
@@ -134,6 +140,7 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eConnected, eRunning)
                     };
+                    // @todo MARK DEPRECATED = use Configuration::DefaultNames<>
                     static  const Configuration::EnumNames<Status>   Stroika_Enum_Names(Status);
 
                     /**

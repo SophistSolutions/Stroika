@@ -42,7 +42,10 @@ namespace   Stroika {
 
 
                     /**
-                    */
+                     *  \note   Configuration::DefaultNames<> supported
+                     *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
+                     *          persistence (so be sure to version).
+                     */
                     enum    BlockDeviceKind {
                         /**
                          *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
@@ -84,10 +87,7 @@ namespace   Stroika {
                     };
 
 
-                    /**
-                     *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
-                     *          persistence (so be sure to version).
-                     */
+                    // @todo OBSOLETE - DEPRECATE SOON
                     constexpr   Configuration::EnumNames<BlockDeviceKind>    Stroika_Enum_Names(BlockDeviceKind)
                     {
                         Configuration::EnumNames<BlockDeviceKind>::BasicArrayInitializer {
@@ -321,5 +321,22 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k {
+                EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
+                    {
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk" },
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
+                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information" },
+                    }
+                }
+            };
+        }
+    }
+}
 #endif  /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/

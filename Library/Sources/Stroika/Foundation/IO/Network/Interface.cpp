@@ -74,27 +74,33 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            const EnumNames<Interface::Status>   DefaultNames<Interface::Status>::k {
+                { Interface::Status::eConnected, L"Connected" },
+                { Interface::Status::eRunning, L"Running" },
+            };
+            const EnumNames<Interface::Type>   DefaultNames<Interface::Type>::k {
+                { Interface::Type::eLoopback, L"Loopback" },
+                { Interface::Type::eWiredEthernet, L"WiredEthernet" },
+                { Interface::Type::eWIFI, L"WIFI" },
+                { Interface::Type::eTunnel, L"Tunnel" },
+                { Interface::Type::eOther, L"Other" },
+            };
+        }
+    }
+}
 
 /*
  ********************************************************************************
  **************************** Network::Interface ********************************
  ********************************************************************************
  */
-const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status)
-{
-    { Interface::Status::eConnected, L"Connected" },
-    { Interface::Status::eRunning, L"Running" },
-};
+const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status) = Configuration::DefaultNames<Interface::Status>::k;
 
-const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type)
-{
-    { Interface::Type::eLoopback, L"Loopback" },
-    { Interface::Type::eWiredEthernet, L"WiredEthernet" },
-    { Interface::Type::eWIFI, L"WIFI" },
-    { Interface::Type::eTunnel, L"Tunnel" },
-    { Interface::Type::eOther, L"Other" },
-};
+const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type) = Configuration::DefaultNames<Interface::Type>::k;
+
 
 
 

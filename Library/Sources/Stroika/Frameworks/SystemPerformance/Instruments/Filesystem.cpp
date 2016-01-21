@@ -1777,7 +1777,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<String>> ();
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> (Stroika_Enum_Names(BlockDeviceKind)));
+        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> (Configuration::DefaultNames<BlockDeviceKind>::k));
         mapper.AddCommonType<Optional<BlockDeviceKind>> ();
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<IOStatsType> (initializer_list<StructureFieldInfo> {

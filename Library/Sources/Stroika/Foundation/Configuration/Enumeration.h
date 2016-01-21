@@ -139,6 +139,7 @@ namespace   Stroika {
              *      };
              *      \endcode
              *
+             *  \note   PROBABLY DEPRECATE AND USE Configuration::DefaultNames<ENUMNAME> instead!!!
              */
 #define Stroika_Enum_Names(ENUMNAME)\
     ENUMNAME##_EnumNames
@@ -247,6 +248,16 @@ namespace   Stroika {
 
             private:
                 EnumNamesHolderType_   fEnumNames_;
+            };
+
+
+            /**
+			 *	FIRST DRAFT support for using DefaultNames<> to REGISTER EnumNames - to replace Stroika_Enum_Names mechanism.
+             */
+            template <typename ENUM_TYPE>
+            struct   DefaultNames {
+                static  const   EnumNames<ENUM_TYPE>    k;
+                operator EnumNames<ENUM_TYPE> () const { return k };
             };
 
 
