@@ -77,10 +77,12 @@ namespace   Stroika {
             template    <>
             constexpr   EnumNames<IO::FileAccessMode>   DefaultNames<IO::FileAccessMode>::k {
                 EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
-                    { IO::FileAccessMode::eNoAccess, L"No-Access" },
-                    { IO::FileAccessMode::eRead, L"Read" },
-                    { IO::FileAccessMode::eWrite, L"Write" },
-                    { IO::FileAccessMode::eReadWrite, L"Read-Write" },
+                    {
+                        { IO::FileAccessMode::eNoAccess, L"No-Access" },
+                        { IO::FileAccessMode::eRead, L"Read" },
+                        { IO::FileAccessMode::eWrite, L"Write" },
+                        { IO::FileAccessMode::eReadWrite, L"Read-Write" },
+                    }
                 }
             };
         }
