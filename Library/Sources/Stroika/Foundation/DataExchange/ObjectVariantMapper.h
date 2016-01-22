@@ -368,7 +368,7 @@ namespace   Stroika {
                 template    <typename ENUM_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
                 template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>);
+                static  TypeMappingDetails  MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
 
             public:
                 /**
