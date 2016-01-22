@@ -120,16 +120,6 @@ namespace   Stroika {
 #endif
         }
     }
-#if 0
-    const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
-        EnumNames<Traversal::Openness>::BasicArrayInitializer {
-            {
-                { Openness::eOpen, L"Open" },
-                { Openness::eClosed, L"Closed" },
-            }
-        }
-    };
-#endif
 }
 
 /*
