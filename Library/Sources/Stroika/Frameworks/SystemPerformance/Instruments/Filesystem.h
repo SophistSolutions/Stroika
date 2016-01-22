@@ -87,6 +87,7 @@ namespace   Stroika {
                     };
 
 
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
                     // @todo OBSOLETE - DEPRECATE SOON
                     constexpr   Configuration::EnumNames<BlockDeviceKind>    Stroika_Enum_Names(BlockDeviceKind)
                     {
@@ -101,6 +102,7 @@ namespace   Stroika {
                             }
                         }
                     };
+#endif
 
 
                     /**

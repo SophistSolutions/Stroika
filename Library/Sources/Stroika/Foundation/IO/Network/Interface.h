@@ -103,8 +103,9 @@ namespace   Stroika {
                         Stroika_Define_Enum_Bounds(eLoopback, eOther)
                     };
 
-                    // @todo MARK DEPRECATED = use Configuration::DefaultNames<>
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
                     static  const Configuration::EnumNames<Type>   Stroika_Enum_Names(Type);
+#endif
 
                     /**
                      */
@@ -140,8 +141,9 @@ namespace   Stroika {
 
                         Stroika_Define_Enum_Bounds(eConnected, eRunning)
                     };
-                    // @todo MARK DEPRECATED = use Configuration::DefaultNames<>
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
                     static  const Configuration::EnumNames<Status>   Stroika_Enum_Names(Status);
+#endif
 
                     /**
                      */

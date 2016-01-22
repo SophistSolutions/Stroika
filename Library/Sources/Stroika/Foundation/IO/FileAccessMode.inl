@@ -37,6 +37,7 @@ namespace   Stroika {
                 };
             }
 #endif
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
             constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
             {
                 Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
@@ -48,6 +49,7 @@ namespace   Stroika {
                     }
                 }
             };
+#endif
 
 
         }

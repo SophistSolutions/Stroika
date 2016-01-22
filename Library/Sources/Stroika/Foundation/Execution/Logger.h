@@ -124,8 +124,9 @@ namespace   Stroika {
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
 
-                // @todo OBSOLETE/DEPRECATE - use Configuration::DefaultNames<>
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
                 static  const EnumNames<Priority>   Stroika_Enum_Names(Priority);
+#endif
 
             public:
                 /**

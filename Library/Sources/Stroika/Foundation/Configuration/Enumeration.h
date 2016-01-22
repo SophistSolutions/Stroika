@@ -141,8 +141,13 @@ namespace   Stroika {
              *
              *  \note   PROBABLY DEPRECATE AND USE Configuration::DefaultNames<ENUMNAME> instead!!!
              */
+#ifndef qSUPPORT_LEGACY_Stroika_Enum_Names
+#define qSUPPORT_LEGACY_Stroika_Enum_Names   1
+#endif
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
 #define Stroika_Enum_Names(ENUMNAME)\
     ENUMNAME##_EnumNames
+#endif
 
 
             /**
