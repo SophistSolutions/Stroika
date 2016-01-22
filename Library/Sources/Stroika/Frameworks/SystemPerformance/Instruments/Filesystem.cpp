@@ -133,6 +133,12 @@ using   SystemPerformance::Support::WMICollector;
 
 
 
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -168,6 +174,9 @@ namespace   Stroika {
         }
     }
 }
+
+
+
 
 
 

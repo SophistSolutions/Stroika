@@ -29,6 +29,31 @@ namespace {
         return xFileAccessMode;
     }
 }
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************* FileAccessMode *******************************
+ ********************************************************************************
+ */
+#if     qCompilerAndStdLib_constexpr_Buggy
+Stroika::Foundation::IO::Private_::FileAccessModeData::FileAccessModeData ()
+    : fFileAccessModeConfigNames  (mkNames_ ())
+{
+}
+#endif
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -58,17 +83,3 @@ namespace   Stroika {
         }
     }
 }
-
-
-
-/*
- ********************************************************************************
- ********************************* FileAccessMode *******************************
- ********************************************************************************
- */
-#if     qCompilerAndStdLib_constexpr_Buggy
-Stroika::Foundation::IO::Private_::FileAccessModeData::FileAccessModeData ()
-    : fFileAccessModeConfigNames  (mkNames_ ())
-{
-}
-#endif

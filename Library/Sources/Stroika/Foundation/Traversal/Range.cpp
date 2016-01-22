@@ -11,6 +11,12 @@ using   namespace   Stroika::Foundation;
 
 
 
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {

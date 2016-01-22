@@ -37,15 +37,11 @@ using   Time::DurationSecondsType;
 
 
 
-
-
 /*
  ********************************************************************************
- ******************************** Execution::Logger *****************************
+ **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-Logger  Logger::sThe_;
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
@@ -87,6 +83,19 @@ namespace   Stroika {
 #if     qSUPPORT_LEGACY_Stroika_Enum_Names
 const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = DefaultNames<Logger::Priority>::k;
 #endif
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ******************************** Execution::Logger *****************************
+ ********************************************************************************
+ */
+Logger  Logger::sThe_;
+
 
 
 
