@@ -7,6 +7,7 @@
 #include    <wchar.h>
 
 #include    "../Configuration/Concepts.h"
+#include    "../Configuration/Enumeration.h"
 #include    "FloatConversion.h"
 #include    "StringBuilder.h"
 #include    "String_Constant.h"
@@ -64,6 +65,14 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, String>::value>::type* = 0)
                 {
                     return static_cast<String> (t);
+                }
+
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<is_enum<T>::value>::type* = 0)
+                {
+                    // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
+                    // not a problem: just dont call this, or replace it with a specific specialization of ToString
+                    return Configuration::DefaultNames<T>::k.GetName (t);
                 }
 
                 /*
