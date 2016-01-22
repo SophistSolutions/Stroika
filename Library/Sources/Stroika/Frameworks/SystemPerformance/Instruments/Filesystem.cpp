@@ -136,18 +136,19 @@ using   SystemPerformance::Support::WMICollector;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if 1
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
             template    <>
             const   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k =
-                EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
-                    {
-                        pair<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind,const wchar_t*> { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                        { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information" },
-                    }
+            EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
+                {
+                    ///pair<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind, const wchar_t*> 
+					{ Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
+                    { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eLocalDisk, L"Local-Disk" },
+                    { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
+                    { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
+                    { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
+                    { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eSystemInformation, L"System-Information" },
+                }
             };
 #else
             template    <>

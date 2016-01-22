@@ -49,7 +49,7 @@ Logger  Logger::sThe_;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if 1
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
             template    <>
             const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k  = EnumNames<Logger::Priority>::BasicArrayInitializer {
                 {

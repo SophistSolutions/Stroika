@@ -32,7 +32,7 @@ namespace {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if 1
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
             template    <>
             const   EnumNames<IO::FileAccessMode>   DefaultNames<IO::FileAccessMode>::k = EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
                 {
