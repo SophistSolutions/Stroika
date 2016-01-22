@@ -106,41 +106,6 @@ using   SystemPerformance::Support::WMICollector;
 
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k = EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
-                pair<ProcessType::RunStatus, const wchar_t*> { ProcessType::RunStatus::eRunning, L"Running" },
-                { ProcessType::RunStatus::eSleeping, L"Sleeping" },
-                { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                { ProcessType::RunStatus::eZombie, L"Zombie" },
-                { ProcessType::RunStatus::eSuspended, L"Suspended" },
-            };
-#else
-            template    <>
-            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
-                EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
-                    { ProcessType::RunStatus::eRunning, L"Running" },
-                    { ProcessType::RunStatus::eSleeping, L"Sleeping" },
-                    { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                    { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                    { ProcessType::RunStatus::eZombie, L"Zombie" },
-                    { ProcessType::RunStatus::eSuspended, L"Suspended" },
-                }
-            };
-#endif
-        }
-    }
-}
-
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)    =   DefaultNames<ProcessType::RunStatus>::k;
-#endif
-
-
 
 #if     qPlatform_Windows
 namespace   {
@@ -247,6 +212,52 @@ namespace   {
 }
 #endif
 
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            using RunStatus = ProcessType::RunStatus;
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+            template    <>
+            const EnumNames<RunStatus>   Configuration::DefaultNames<RunStatus>::k = EnumNames<RunStatus>::BasicArrayInitializer {
+                // NO IDEA WHY pair-prefix needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
+                pair<RunStatus, const wchar_t*>
+                { RunStatus::eRunning, L"Running" },
+                { RunStatus::eSleeping, L"Sleeping" },
+                { RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+                { RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+                { RunStatus::eZombie, L"Zombie" },
+                { RunStatus::eSuspended, L"Suspended" },
+            };
+#else
+            template    <>
+            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
+                EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
+                    // NO IDEA WHY pair-prefix needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
+                    pair<RunStatus, const wchar_t*>
+                    { ProcessType::RunStatus::eRunning, L"Running" },
+                    { ProcessType::RunStatus::eSleeping, L"Sleeping" },
+                    { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+                    { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+                    { ProcessType::RunStatus::eZombie, L"Zombie" },
+                    { ProcessType::RunStatus::eSuspended, L"Suspended" },
+                }
+            };
+#endif
+        }
+    }
+}
+
+#if     qSUPPORT_LEGACY_Stroika_Enum_Names
+const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)    =   DefaultNames<ProcessType::RunStatus>::k;
+#endif
 
 
 
