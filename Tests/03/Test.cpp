@@ -45,33 +45,30 @@ namespace {
             eTwo,
             Stroika_Define_Enum_Bounds(eOne, eTwo)
         };
-        const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum)
-        {
-            { fooEnum::eOne, L"eOne" },
-            { fooEnum::eTwo, L"eTwo" },
-        };
     }
-
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            const   EnumNames<Test2_EnumNames_Private_::fooEnum>    DefaultNames<Test2_EnumNames_Private_::fooEnum>::k = EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer {
+                {
+                    { Test2_EnumNames_Private_::fooEnum::eOne, L"eOne" },
+                    { Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo" },
+                }
+            };
+        }
+    }
+}
+namespace {
     void    Test2_EnumNames_ ()
     {
         using namespace Test2_EnumNames_Private_;
-        VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-        VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+        VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum>::k.GetName (fooEnum::eOne));
+        VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum>::k.GetName (fooEnum::eTwo));
         {
-            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
-                { fooEnum::eOne, L"eOne" },
-                { fooEnum::eTwo, L"eTwo" },
-            };
-            VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-            VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
-        }
-        {
-            const EnumNames<fooEnum>   Stroika_Enum_Names(fooEnum) {
-                { fooEnum::eOne, L"eOne" },
-                { fooEnum::eTwo, L"eTwo" },
-            };
-            VerifyTestResult (wstring (L"eOne") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eOne));
-            VerifyTestResult (wstring (L"eTwo") == Stroika_Enum_Names(fooEnum).GetName (fooEnum::eTwo));
+            VerifyTestResult (wstring (L"eOne") == DefaultNames<fooEnum> ().GetName (fooEnum::eOne));
+            VerifyTestResult (wstring (L"eTwo") == DefaultNames<fooEnum> ().GetName (fooEnum::eTwo));
         }
     }
 }

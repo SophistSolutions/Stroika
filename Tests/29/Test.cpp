@@ -326,7 +326,7 @@ namespace   {
             Stroika_Define_Enum_Bounds (a, h)
         };
 #endif
-        const Configuration::EnumNames<Fred>   Stroika_Enum_Names(Fred) = {
+        const Configuration::EnumNames<Fred>   Fred_NAMES = {
             { Fred::a, L"a" },
             { Fred::b, L"b" },
             { Fred::c, L"c" },
@@ -386,7 +386,7 @@ namespace   {
         {
             ObjectVariantMapper mapper;
 
-            mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Stroika_Enum_Names(Fred))));
+            mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Fred> (Bijection<Fred, String> (Fred_NAMES)));
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<SharedContactsConfig_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
