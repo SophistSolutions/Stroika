@@ -109,15 +109,29 @@ using   SystemPerformance::Support::WMICollector;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if 1
+            template    <>
+            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k = EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
+					pair<ProcessType::RunStatus,const wchar_t*> { ProcessType::RunStatus::eRunning, L"Running" },
+					{ ProcessType::RunStatus::eSleeping, L"Sleeping" },
+					{ ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+					{ ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+					{ ProcessType::RunStatus::eZombie, L"Zombie" },
+					{ ProcessType::RunStatus::eSuspended, L"Suspended" },
+            };
+#else
             template    <>
             const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
-                { ProcessType::RunStatus::eRunning, L"Running" },
-                { ProcessType::RunStatus::eSleeping, L"Sleeping" },
-                { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                { ProcessType::RunStatus::eZombie, L"Zombie" },
-                { ProcessType::RunStatus::eSuspended, L"Suspended" },
+				 EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
+					{ ProcessType::RunStatus::eRunning, L"Running" },
+					{ ProcessType::RunStatus::eSleeping, L"Sleeping" },
+					{ ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
+					{ ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
+					{ ProcessType::RunStatus::eZombie, L"Zombie" },
+					{ ProcessType::RunStatus::eSuspended, L"Suspended" },
+				}
             };
+#endif
         }
     }
 }
