@@ -77,6 +77,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
             template    <>
             const EnumNames<Interface::Status> DefaultNames<Interface::Status>::k = EnumNames<Interface::Status>::BasicArrayInitializer  {
                 {
@@ -94,6 +95,29 @@ namespace   Stroika {
                     { Interface::Type::eOther, L"Other" },
                 }
             };
+#else
+            template    <>
+            const EnumNames<Interface::Status> DefaultNames<Interface::Status>::k {
+                EnumNames<Interface::Status>::BasicArrayInitializer  {
+                    {
+                        { Interface::Status::eConnected, L"Connected" },
+                        { Interface::Status::eRunning, L"Running" },
+                    }
+                }
+            };
+            template    <>
+            const EnumNames<Interface::Type>   DefaultNames<Interface::Type>::k {
+                EnumNames<Interface::Type>::BasicArrayInitializer  {
+                    {
+                        { Interface::Type::eLoopback, L"Loopback" },
+                        { Interface::Type::eWiredEthernet, L"WiredEthernet" },
+                        { Interface::Type::eWIFI, L"WIFI" },
+                        { Interface::Type::eTunnel, L"Tunnel" },
+                        { Interface::Type::eOther, L"Other" },
+                    }
+                }
+            };
+#endif
         }
     }
 #if 0
