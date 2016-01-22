@@ -353,14 +353,14 @@ namespace {
                 DbgTrace (L"description: %s", iFace.fDescription->c_str ());
             }
             if (iFace.fType.IsPresent ()) {
-                DbgTrace (L"type: %s",  Interface::Stroika_Enum_Names(Type).GetName (*iFace.fType));
+                DbgTrace (L"type: %s",  Configuration::DefaultNames<Interface::Type>::k.GetName (*iFace.fType));
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
                 DbgTrace (L"addr: %s",  ipAddr.As<String> ().c_str ());
             }
             if (iFace.fStatus.IsPresent ()) {
                 for (Interface::Status s : *iFace.fStatus) {
-                    DbgTrace (L"status: %s",  Interface::Stroika_Enum_Names(Status).GetName (s));
+                    DbgTrace (L"status: %s",  Configuration::DefaultNames<Interface::Status>::k.GetName (s));
                 }
             }
         }

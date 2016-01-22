@@ -78,20 +78,34 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
             template    <>
-            const EnumNames<Interface::Status>   DefaultNames<Interface::Status>::k {
-                { Interface::Status::eConnected, L"Connected" },
-                { Interface::Status::eRunning, L"Running" },
+            const EnumNames<Interface::Status> DefaultNames<Interface::Status>::k = EnumNames<Interface::Status>::BasicArrayInitializer  {
+                {
+                    { Interface::Status::eConnected, L"Connected" },
+                    { Interface::Status::eRunning, L"Running" },
+                }
             };
             template    <>
-            const EnumNames<Interface::Type>   DefaultNames<Interface::Type>::k {
-                { Interface::Type::eLoopback, L"Loopback" },
-                { Interface::Type::eWiredEthernet, L"WiredEthernet" },
-                { Interface::Type::eWIFI, L"WIFI" },
-                { Interface::Type::eTunnel, L"Tunnel" },
-                { Interface::Type::eOther, L"Other" },
+            const EnumNames<Interface::Type>   DefaultNames<Interface::Type>::k = EnumNames<Interface::Type>::BasicArrayInitializer  {
+                {
+                    { Interface::Type::eLoopback, L"Loopback" },
+                    { Interface::Type::eWiredEthernet, L"WiredEthernet" },
+                    { Interface::Type::eWIFI, L"WIFI" },
+                    { Interface::Type::eTunnel, L"Tunnel" },
+                    { Interface::Type::eOther, L"Other" },
+                }
             };
         }
     }
+#if 0
+    const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
+        EnumNames<Traversal::Openness>::BasicArrayInitializer {
+            {
+                { Openness::eOpen, L"Open" },
+                { Openness::eClosed, L"Closed" },
+            }
+        }
+    };
+#endif
 }
 
 /*

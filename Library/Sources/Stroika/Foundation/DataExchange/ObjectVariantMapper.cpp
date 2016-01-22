@@ -29,15 +29,25 @@ using   Time::TimeOfDay;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if 1
+            template    <>
+            const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k = EnumNames<Traversal::Openness>::BasicArrayInitializer {
+                {
+                    { Traversal::Openness::eOpen, L"Open" },
+                    { Traversal::Openness::eClosed, L"Closed" },
+                }
+            };
+#else
             template    <>
             const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
                 EnumNames<Traversal::Openness>::BasicArrayInitializer {
                     {
-                        { Traversal::Openness::eOpen, L"Open" },
-                        { Traversal::Openness::eClosed, L"Closed" },
+                        { Openness::eOpen, L"Open" },
+                        { Openness::eClosed, L"Closed" },
                     }
                 }
             };
+#endif
         }
     }
 }

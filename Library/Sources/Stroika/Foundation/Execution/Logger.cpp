@@ -49,17 +49,37 @@ Logger  Logger::sThe_;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if 1
+            template    <>
+            const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k  = EnumNames<Logger::Priority>::BasicArrayInitializer {
+                {
+                    { Logger::Priority::eDebug, L"Debug" },
+                    { Logger::Priority::eInfo, L"Info" },
+                    { Logger::Priority::eNotice, L"Notice" },
+                    { Logger::Priority::eWarning, L"Warning" },
+                    { Logger::Priority::eError, L"Error" },
+                    { Logger::Priority::eCriticalError, L"CriticalError" },
+                    { Logger::Priority::eAlertError, L"AlertError" },
+                    { Logger::Priority::eEmergency, L"Emergency" },
+                }
+            };
+#else
             template    <>
             const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k {
-                { Logger::Priority::eDebug, L"Debug" },
-                { Logger::Priority::eInfo, L"Info" },
-                { Logger::Priority::eNotice, L"Notice" },
-                { Logger::Priority::eWarning, L"Warning" },
-                { Logger::Priority::eError, L"Error" },
-                { Logger::Priority::eCriticalError, L"CriticalError" },
-                { Logger::Priority::eAlertError, L"AlertError" },
-                { Logger::Priority::eEmergency, L"Emergency" },
+                EnumNames<Logger::Priority>::BasicArrayInitializer {
+                    {
+                        { Logger::Priority::eDebug, L"Debug" },
+                        { Logger::Priority::eInfo, L"Info" },
+                        { Logger::Priority::eNotice, L"Notice" },
+                        { Logger::Priority::eWarning, L"Warning" },
+                        { Logger::Priority::eError, L"Error" },
+                        { Logger::Priority::eCriticalError, L"CriticalError" },
+                        { Logger::Priority::eAlertError, L"AlertError" },
+                        { Logger::Priority::eEmergency, L"Emergency" },
+                    }
+                }
             };
+#endif
         }
     }
 }
