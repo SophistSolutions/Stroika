@@ -219,6 +219,18 @@ namespace   Stroika {
 #endif
 
 
+            /*
+             ********************************************************************************
+             ************************** Configuration::DefaultNames *************************
+             ********************************************************************************
+             */
+            template <typename ENUM_TYPE>
+            inline  DefaultNames<ENUM_TYPE>::DefaultNames ()
+                : EnumNames<ENUM_TYPE> (k)
+            {
+            }
+
+
         }
     }
 }
