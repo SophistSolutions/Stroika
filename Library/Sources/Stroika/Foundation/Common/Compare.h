@@ -86,9 +86,8 @@ namespace   Stroika {
              *  BUT - CANNOT DO until we have vc++ fixed for constexpr functions
              */
             template    <typename T>
-            _Deprecated_("use has_lt<>")
-            struct  Has_Operator_LessThan :
-                    Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
+struct  _Deprecated_("use has_lt<>") Has_Operator_LessThan :
+            Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
             };
 
 

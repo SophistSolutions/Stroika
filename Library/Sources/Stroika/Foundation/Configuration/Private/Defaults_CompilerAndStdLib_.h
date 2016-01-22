@@ -1979,8 +1979,11 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 /*
  *  This doesnt always work, but works for c++14 or later, and VS
  *  EXAMPLE:
- *      _Deprecated_("FRED NOW DEPRECATED - USE BARNY")
- *      struct Fred { int a; };
+ *
+ *      struct _Deprecated_("FRED NOW DEPRECATED - USE BARNY") Fred { int a; };
+ *
+ *      _Deprecated_ ("USE CheckAccess")
+ *      void     CheckFileAccess(int);
  */
 #if     !defined (_Deprecated_)
 #if     __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
