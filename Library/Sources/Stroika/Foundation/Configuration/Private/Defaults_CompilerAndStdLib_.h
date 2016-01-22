@@ -352,6 +352,26 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+2>c:\sandbox\stroika\devroot\library\sources\stroika\frameworks\systemperformance\instruments\../../../Foundation/DataExchange/ObjectVariantMapper.h(371): error C2589: '::' : illegal token on right side of '::'
+2>c:\sandbox\stroika\devroot\library\sources\stroika\frameworks\systemperformance\instruments\../../../Foundation/DataExchange/ObjectVariantMapper.h(371): error C2059: syntax error : '::'
+*/
+#ifndef qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy
+
+#if   defined (_MSC_VER)
+// still broken in _MS_VS_2k13_Update5_FULLVER_
+#define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
+#else
+#define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
+
+/*
 1>e:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\interface.cpp(87): error C2799: 'k': an object of const-qualified class type without a user-provided default constructor must be initialized
 1>  e:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\interface.cpp(87): note: see declaration of 'k'
 1>  e:\sandbox\stroikadev\library\sources\stroika\foundation\configuration\enumeration.h(173): note: see declaration of 'Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::Interface::Status>::EnumNames'
