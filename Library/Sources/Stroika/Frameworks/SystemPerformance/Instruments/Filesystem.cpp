@@ -137,7 +137,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
             template    <>
-            constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k {
+            const   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k {
                 EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::BasicArrayInitializer {
                     {
                         { Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
