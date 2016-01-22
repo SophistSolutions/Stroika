@@ -61,7 +61,7 @@ namespace   Stroika {
             };
 #else
             template    <>
-            constexpr   EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k {
+            const EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k {
                 EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer  {
                     {
                         { IO::Network::Interface::Status::eConnected, L"Connected" },
@@ -70,7 +70,7 @@ namespace   Stroika {
                 }
             };
             template    <>
-            constexpr   EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k {
+            const EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k {
                 EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer  {
                     {
                         { IO::Network::Interface::Type::eLoopback, L"Loopback" },

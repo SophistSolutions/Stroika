@@ -533,7 +533,7 @@ namespace   Stroika {
             };
 #else
             template    <>
-            constexpr   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
+            const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
                 EnumNames<Traversal::Openness>::BasicArrayInitializer {
                     {
                         { Traversal::Openness::eOpen, L"Open" },
