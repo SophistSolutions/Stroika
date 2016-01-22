@@ -520,29 +520,4 @@ namespace   Stroika {
         }
     }
 }
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k = EnumNames<Traversal::Openness>::BasicArrayInitializer {
-                {
-                    { Traversal::Openness::eOpen, L"Open" },
-                    { Traversal::Openness::eClosed, L"Closed" },
-                }
-            };
-#else
-            template    <>
-            const   EnumNames<Traversal::Openness>  DefaultNames<Traversal::Openness>::k {
-                EnumNames<Traversal::Openness>::BasicArrayInitializer {
-                    {
-                        { Traversal::Openness::eOpen, L"Open" },
-                        { Traversal::Openness::eClosed, L"Closed" },
-                    }
-                }
-            };
-#endif
-        }
-    }
-}
 #endif /* _Stroika_Foundation_Traversal_Range_inl_ */
