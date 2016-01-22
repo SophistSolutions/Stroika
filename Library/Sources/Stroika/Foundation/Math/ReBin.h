@@ -48,7 +48,6 @@ namespace   Stroika {
                     using   XType           =   X_TYPE;
                     using   ValueType       =   VALUE_TYPE;
 
-
                     /**
                      *  kNullValue is a special value, such that Accumulate() will have no effect if this value is applied. Typically
                      *  this will be zero (if we accumulate by adding - the default).
@@ -59,6 +58,9 @@ namespace   Stroika {
 #else
                     static constexpr ValueType kNullValue { 0 };
 #endif
+
+                public:
+                    static  bool    RangeElementsNearlyEqual (XType lhs, XType rhs);
 
 #if 0
                     // CONCEPT: WHEN WE HAVE - saying we support these methods!

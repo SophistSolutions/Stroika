@@ -63,7 +63,7 @@ namespace   Stroika {
             template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
             inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer)
             {
-                return Private_::IsPartition_Helper_<RANGETYPE, RANGE_ELT_COMPARER> (iterable);
+                return Private_::IsPartition_Helper_<RANGETYPE, RANGE_ELT_COMPARER> (iterable, comparer);
             }
 
 

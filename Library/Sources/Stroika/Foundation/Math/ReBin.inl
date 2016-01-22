@@ -32,6 +32,11 @@ namespace   Stroika {
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 const VALUE_TYPE DataDescriptorBase<X_TYPE, VALUE_TYPE>::kNullValue = 0;
 #endif
+                template    <typename X_TYPE, typename VALUE_TYPE>
+                inline  bool    DataDescriptorBase<X_TYPE, VALUE_TYPE>::RangeElementsNearlyEqual (XType lhs, XType rhs)
+                {
+                    return NearlyEquals (lhs, rhs);
+                }
 
 
                 /*
@@ -163,7 +168,7 @@ namespace   Stroika {
                             }
                             return result;
                         };
-                        Assert (IsPartition (CreateGenerator<Range<XType>> (getNext)));
+                        Assert (IsPartition (CreateGenerator<Range<XType>> (getNext), DATA_DESCRIPTOR_TYPE::RangeElementsNearlyEqual));
 #endif
                     }
                 }
