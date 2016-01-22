@@ -72,7 +72,8 @@ namespace   Stroika {
                      */
                     nonvirtual  void    CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
                     nonvirtual  void    CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
-                    nonvirtual  void    _Deprecated_ (CheckFileAccess, "USE CheckAccess") (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+                    _Deprecated_ ("USE CheckAccess")
+                    nonvirtual  void    CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
                     {
                         CheckAccess (fileFullPath, checkCanRead, checkCanWrite);
                     }

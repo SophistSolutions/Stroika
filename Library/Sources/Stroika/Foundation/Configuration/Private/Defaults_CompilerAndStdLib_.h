@@ -1979,15 +1979,14 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 /*
  *  This doesnt always work, but works for c++14 or later, and VS
  *  EXAMPLE:
- *      struct _Deprecated_(FRED,"FRED NOW DEPRECATED - USE BARNY") { int a; };
+ *      _Deprecated_("FRED NOW DEPRECATED - USE BARNY")
+ *      struct Fred { int a; };
  */
 #if     !defined (_Deprecated_)
-#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
-#define _Deprecated_(funOrClassName,MESSAGE) __declspec(deprecated) func
-#elif   __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
-#define _Deprecated_(funOrClassName,MESSAGE) [[deprecated(MESSAGE)]] func
+#if     __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
+#define _Deprecated_(MESSAGE) [[deprecated(MESSAGE)]]
 #else
-#define _Deprecated_(funOrClassName,MESSAGE) func
+#define _Deprecated_(MESSAGE)
 #endif
 #endif
 
