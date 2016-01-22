@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Math/Common.h"
 #include    "Iterable.h"
 
 
@@ -43,6 +44,8 @@ namespace   Stroika {
              */
             template    <typename RANGETYPE>
             bool    IsPartition (const Iterable<RANGETYPE>& iterable);
+            template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+            bool    IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
 
 
 

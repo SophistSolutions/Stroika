@@ -15,8 +15,8 @@ namespace   Stroika {
 
 
             namespace Private_ {
-                template    <typename RANGETYPE>
-                bool    IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable/*, typename enable_if <isomethingto check for operator <>::type usesInsertPair = 0*/)
+                template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+                bool    IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer/*, typename enable_if <isomethingto check for operator <>::type usesInsertPair = 0*/)
                 {
                     using   Common::KeyValuePair;
                     using   Containers::SortedMapping;
@@ -34,7 +34,7 @@ namespace   Stroika {
                     for (KeyValuePair<ElementType, RANGETYPE> i : tmp) {
                         //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                         if (upperBoundSeenSoFar) {
-                            if (not Math::NearlyEquals (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {
+                            if (not comparer (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {
                                 //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                                 //DbgTrace ("return false cuz boudns no match");
                                 return false;
@@ -58,7 +58,12 @@ namespace   Stroika {
             template    <typename RANGETYPE>
             inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable)
             {
-                return Private_::IsPartition_Helper_ (iterable);
+                return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [] (typename RANGETYPE::ElementType lhs, typename RANGETYPE::ElementType rhs) { return Math::NearlyEquals (lhs, rhs); } );
+            }
+            template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+            inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer)
+            {
+                return Private_::IsPartition_Helper_<RANGETYPE, RANGE_ELT_COMPARER> (iterable);
             }
 
 
