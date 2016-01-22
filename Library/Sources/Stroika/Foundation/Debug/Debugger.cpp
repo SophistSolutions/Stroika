@@ -30,7 +30,9 @@ void    Debug::DropIntoDebuggerIfPresent ()
     if (ptrace (PTRACE_TRACEME, 0, NULL, 0) == -1) {
         raise (SIGTRAP);
     }
-#elif   1
+#elif   0
+    // NOT SURE THIS WORKS - ESP WITH GDBSERVER!
+    // @todo - CONSIDER GETTING RID OF THIS. Not sure of the value...
     // BAD, but least bad, way I know...
     char pathBuf[1024];
     sprintf(pathBuf, "/proc/%d/exe", ::getppid ());
