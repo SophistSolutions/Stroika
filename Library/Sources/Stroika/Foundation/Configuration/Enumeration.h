@@ -262,12 +262,9 @@ namespace   Stroika {
              *  FIRST DRAFT support for using DefaultNames<> to REGISTER EnumNames - to replace Stroika_Enum_Names mechanism.
              */
             template <typename ENUM_TYPE>
-            struct   DefaultNames {
+            struct   DefaultNames : EnumNames<ENUM_TYPE> {
                 static  const   EnumNames<ENUM_TYPE>    k;
-                operator EnumNames<ENUM_TYPE> () const { return k; };
-                nonvirtual  const wchar_t*  GetName (ENUM_TYPE e) const { return k.GetName (e); }
-                nonvirtual  const ENUM_TYPE*  PeekValue (const wchar_t* name) const { return k.PeekValue (name); }
-                nonvirtual  const wchar_t*  PeekName (ENUM_TYPE e) const { return k.PeekValue (e); }
+                DefaultNames ();
             };
 
 
