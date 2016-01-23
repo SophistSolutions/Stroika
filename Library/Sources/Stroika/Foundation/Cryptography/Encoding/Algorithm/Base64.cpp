@@ -145,6 +145,12 @@ namespace   {
 
 
 
+Memory::BLOB    Algorithm::DecodeBase64 (const Characters::String& s)
+{
+    //@todo - improve/fix this
+    return DecodeBase64 (s.AsUTF8 ());
+}
+
 Memory::BLOB    Algorithm::DecodeBase64 (const string& s)
 {
     if (s.empty ()) {

@@ -9,6 +9,7 @@
 #include    <string>
 #include    <vector>
 
+#include    "../../../Characters/String.h"
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/BLOB.h"
 #include    "../../../Streams/InputStream.h"
@@ -43,6 +44,7 @@ namespace   Stroika {
 
 
                     Memory::BLOB    DecodeBase64 (const string& s);
+                    Memory::BLOB    DecodeBase64 (const Characters::String& s);
                     void            DecodeBase64 (const string& s, Streams::OutputStream<Memory::Byte> out);
 
                     enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
