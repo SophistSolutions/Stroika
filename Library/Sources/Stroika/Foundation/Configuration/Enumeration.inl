@@ -89,6 +89,7 @@ namespace   Stroika {
                 : fEnumNames_ ()
             {
                 // @todo find some way to INITIALZIE the static array.... - needed for constexpr function!
+                // @see qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
                 auto oi = fEnumNames_.begin ();
                 for (EnumName<ENUM_TYPE> i : origEnumNames) {
                     Require (oi != fEnumNames_.end ());

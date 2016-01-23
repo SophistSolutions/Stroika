@@ -41,6 +41,11 @@ namespace   Stroika {
         namespace   Configuration {
 
 
+#ifndef qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
+#define qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_ 1
+#endif
+
+
             /**
              *  \brief  Increment the given enumeration safely, without a bunch of casts.
              *
@@ -175,8 +180,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+#if     qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
+                EnumNames () = default;//hack to allow CTOR EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)
+#else
                 EnumNames () = delete;
-                //EnumNames () = default;//tmphack to test
+#endif
 
                 constexpr EnumNames (const EnumNames& src) = default;
 #if     !qCompilerAndStdLib_constexpr_Buggy
