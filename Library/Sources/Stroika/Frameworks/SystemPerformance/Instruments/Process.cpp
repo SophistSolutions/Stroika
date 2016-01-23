@@ -224,11 +224,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
             using RunStatus = ProcessType::RunStatus;
+            // NO IDEA WHY EnumName<RunStatus> needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
             template    <>
             const EnumNames<RunStatus>   Configuration::DefaultNames<RunStatus>::k = EnumNames<RunStatus>::BasicArrayInitializer {
-                // NO IDEA WHY pair-prefix needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
-                pair<RunStatus, const wchar_t*>
+                EnumName<RunStatus>
                 { RunStatus::eRunning, L"Running" },
                 { RunStatus::eSleeping, L"Sleeping" },
                 { RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
@@ -240,8 +240,7 @@ namespace   Stroika {
             template    <>
             const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
                 EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
-                    // NO IDEA WHY pair-prefix needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
-                    pair<RunStatus, const wchar_t*>
+                    EnumName<RunStatus>
                     { ProcessType::RunStatus::eRunning, L"Running" },
                     { ProcessType::RunStatus::eSleeping, L"Sleeping" },
                     { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
