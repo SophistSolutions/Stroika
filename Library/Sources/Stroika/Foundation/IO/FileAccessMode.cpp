@@ -57,15 +57,22 @@ Stroika::Foundation::IO::Private_::FileAccessModeData::FileAccessModeData ()
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
             template<>
             const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k {
                 EnumNames<FileAccessMode>::BasicArrayInitializer {
-                    { FileAccessMode::eNoAccess, L"No-Access" },
-                    { FileAccessMode::eRead, L"Read" },
-                    { FileAccessMode::eWrite, L"Write" },
-                    { FileAccessMode::eReadWrite, L"Read-Write" },
+                    {
+                        { FileAccessMode::eNoAccess, L"No-Access" },
+                        { FileAccessMode::eRead, L"Read" },
+                        { FileAccessMode::eWrite, L"Write" },
+                        { FileAccessMode::eReadWrite, L"Read-Write" },
+                    }
                 }
             };
+#else
+            template<>
+            constexpr   EnumNames<IO::FileAccessMode>    DefaultNames<IO::FileAccessMode>::k;
+#endif
         }
     }
 }
