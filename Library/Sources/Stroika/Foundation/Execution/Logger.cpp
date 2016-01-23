@@ -45,23 +45,12 @@ using   Time::DurationSecondsType;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+            template    <>
+            const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k  = EnumNames<Logger::Priority>::BasicArrayInitializer {
-                {
-                    { Logger::Priority::eDebug, L"Debug" },
-                    { Logger::Priority::eInfo, L"Info" },
-                    { Logger::Priority::eNotice, L"Notice" },
-                    { Logger::Priority::eWarning, L"Warning" },
-                    { Logger::Priority::eError, L"Error" },
-                    { Logger::Priority::eCriticalError, L"CriticalError" },
-                    { Logger::Priority::eAlertError, L"AlertError" },
-                    { Logger::Priority::eEmergency, L"Emergency" },
-                }
-            };
-#else
-            template    <>
-            const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k {
+                =
+#endif
+            {
                 EnumNames<Logger::Priority>::BasicArrayInitializer {
                     {
                         { Logger::Priority::eDebug, L"Debug" },
@@ -75,11 +64,9 @@ namespace   Stroika {
                     }
                 }
             };
-#endif
         }
     }
 }
-
 #if     qSUPPORT_LEGACY_Stroika_Enum_Names
 const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = DefaultNames<Logger::Priority>::k;
 #endif

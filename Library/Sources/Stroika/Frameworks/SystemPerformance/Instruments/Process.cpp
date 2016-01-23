@@ -223,24 +223,15 @@ namespace   {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-            using RunStatus = ProcessType::RunStatus;
             // NO IDEA WHY EnumName<RunStatus> needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
+            template    <>
+            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const EnumNames<RunStatus>   Configuration::DefaultNames<RunStatus>::k = EnumNames<RunStatus>::BasicArrayInitializer {
-                EnumName<RunStatus>
-                { RunStatus::eRunning, L"Running" },
-                { RunStatus::eSleeping, L"Sleeping" },
-                { RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                { RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                { RunStatus::eZombie, L"Zombie" },
-                { RunStatus::eSuspended, L"Suspended" },
-            };
-#else
-            template    <>
-            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k {
+                =
+#endif
+            {
                 EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
-                    EnumName<RunStatus>
+                    EnumName<ProcessType::RunStatus>
                     { ProcessType::RunStatus::eRunning, L"Running" },
                     { ProcessType::RunStatus::eSleeping, L"Sleeping" },
                     { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
@@ -249,7 +240,6 @@ namespace   Stroika {
                     { ProcessType::RunStatus::eSuspended, L"Suspended" },
                 }
             };
-#endif
         }
     }
 }

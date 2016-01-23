@@ -139,7 +139,7 @@ namespace   Stroika {
              *      };
              *      \endcode
              *
-             *  \note   PROBABLY DEPRECATE AND USE Configuration::DefaultNames<ENUMNAME> instead!!!
+             *  \note   DEPRECATED - Configuration::DefaultNames<ENUMNAME> instead!!!
              */
 // NB: Stroika itself works fine either way, but for legacy code using Stroika_Enum_Names() leave this around for one release...
 //#define qSUPPORT_LEGACY_Stroika_Enum_Names   0
@@ -261,7 +261,45 @@ namespace   Stroika {
 
 
             /**
-             *  FIRST DRAFT support for using DefaultNames<> to REGISTER EnumNames - to replace Stroika_Enum_Names mechanism.
+             *  Use DefaultNames<> to register the EnumNames<> mapping in a common place that can be used by
+             *  other templates to automatically lookup enum names.
+             *
+             *  \par Example Usage
+             *      \code
+             *      enum class Priority { a, b, c };
+             *      const EnumNames<Priority>   Stroika_Enum_Names(Priority);
+             *
+             *      // this template specailization must be located in teh Stroika::Configuration namespace
+             *      namespace Stroika::Foundation::Configuration {
+             *          template<>
+             *          const EnumNames<Priority>   DefaultNames<Priority>::k {
+             *              { Priority::a, L"a" },
+             *              { Priority::b, L"b" },
+             *              { Priority::c, L"c" },
+             *          };
+             *      };
+             *      \endcode
+             *
+             *  \par OR
+             *      \code
+             *      namespace Stroika::Foundation::Configuration {
+             *          template<>
+             *          const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k {
+             *              {
+             *                  Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
+             *                      {
+             *                          { FileAccessMode::eNoAccess, L"No-Access" },
+             *                          { FileAccessMode::eRead, L"Read" },
+             *                          { FileAccessMode::eWrite, L"Write" },
+             *                          { FileAccessMode::eReadWrite, L"Read-Write" },
+             *                      }
+             *                  }
+             *              }
+             *          };
+             *      \endcode
+             *
+             *  \note   For VS2k, beware of qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+             *  \note   namespace Stroika::Foundation::Configuration must be written out long way before C++17
              */
             template <typename ENUM_TYPE>
             struct   DefaultNames : EnumNames<ENUM_TYPE> {

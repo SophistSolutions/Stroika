@@ -88,27 +88,12 @@ using   namespace   Stroika::Foundation::IO::Network;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+            template    <>
+            const EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k = EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer  {
-                {
-                    { IO::Network::Interface::Status::eConnected, L"Connected" },
-                    { IO::Network::Interface::Status::eRunning, L"Running" },
-                }
-            };
-            template    <>
-            const EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k = EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer  {
-                {
-                    { IO::Network::Interface::Type::eLoopback, L"Loopback" },
-                    { IO::Network::Interface::Type::eWiredEthernet, L"WiredEthernet" },
-                    { IO::Network::Interface::Type::eWIFI, L"WIFI" },
-                    { IO::Network::Interface::Type::eTunnel, L"Tunnel" },
-                    { IO::Network::Interface::Type::eOther, L"Other" },
-                }
-            };
-#else
-            template    <>
-            const EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k {
+                =
+#endif
+            {
                 EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer  {
                     {
                         { IO::Network::Interface::Status::eConnected, L"Connected" },
@@ -117,7 +102,11 @@ namespace   Stroika {
                 }
             };
             template    <>
-            const EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k {
+            const EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+                =
+#endif
+            {
                 EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer  {
                     {
                         { IO::Network::Interface::Type::eLoopback, L"Loopback" },
@@ -128,7 +117,6 @@ namespace   Stroika {
                     }
                 }
             };
-#endif
         }
     }
 }

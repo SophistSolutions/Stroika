@@ -5,6 +5,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Configuration/Enumeration.h"
 
 #include    "FileAccessMode.h"
 
@@ -32,7 +33,6 @@ namespace {
 
 
 
-
 /*
  ********************************************************************************
  ********************************* FileAccessMode *******************************
@@ -54,32 +54,26 @@ Stroika::Foundation::IO::Private_::FileAccessModeData::FileAccessModeData ()
  **************************** Configuration::DefaultNames ***********************
  ********************************************************************************
  */
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Configuration {
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-            template    <>
-            const   EnumNames<IO::FileAccessMode>   DefaultNames<IO::FileAccessMode>::k = EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
+                =
+#endif
+            {
                 {
-                    { IO::FileAccessMode::eNoAccess, L"No-Access" },
-                    { IO::FileAccessMode::eRead, L"Read" },
-                    { IO::FileAccessMode::eWrite, L"Write" },
-                    { IO::FileAccessMode::eReadWrite, L"Read-Write" },
-                }
-            };
-#else
-            template    <>
-            const   EnumNames<IO::FileAccessMode>   DefaultNames<IO::FileAccessMode>::k {
-                EnumNames<IO::FileAccessMode>::BasicArrayInitializer {
-                    {
-                        { IO::FileAccessMode::eNoAccess, L"No-Access" },
-                        { IO::FileAccessMode::eRead, L"Read" },
-                        { IO::FileAccessMode::eWrite, L"Write" },
-                        { IO::FileAccessMode::eReadWrite, L"Read-Write" },
+                    EnumNames<FileAccessMode>::BasicArrayInitializer {
+                        {
+                            { FileAccessMode::eNoAccess, L"No-Access" },
+                            { FileAccessMode::eRead, L"Read" },
+                            { FileAccessMode::eWrite, L"Write" },
+                            { FileAccessMode::eReadWrite, L"Read-Write" },
+                        }
                     }
                 }
             };
-#endif
         }
     }
 }
