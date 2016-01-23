@@ -21,8 +21,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo   Make EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) constexpr;
- *
  *      @todo   I tried using EnumNames<> as an alias for initialzer_list, but then I couldnt add the
  *              GetNames () method. I tried subclassing, but then I ran into lifetime issues. I tried aggregation,
  *              but this has the same lifetime issues with subclassing std::initializer_list. In the end I had
@@ -224,7 +222,11 @@ namespace   Stroika {
                  *
                  *  @see GetName ();
                  */
-                nonvirtual  const wchar_t*  PeekName (ENUM_TYPE e) const;
+                nonvirtual
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                const wchar_t*  PeekName (ENUM_TYPE e) const;
 
             public:
                 /**
