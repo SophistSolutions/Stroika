@@ -571,7 +571,7 @@ namespace   Stroika {
                 private:
                     ElementType                     fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
-                    Sequence<ElementType>*          fValuePtr_      {};
+                    CONTAINER_OF_T*                 fValuePtr_      {};
                 };
 
 

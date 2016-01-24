@@ -252,7 +252,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
-                    fValuePtr_->Append (fProxyValue_);
+                    fValuePtr_->push_back (fProxyValue_);
                 }
 
 
