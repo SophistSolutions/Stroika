@@ -70,34 +70,8 @@ namespace Stroika {
                 }
             };
 #else
-            template<>
             constexpr   EnumNames<IO::FileAccessMode>    DefaultNames<IO::FileAccessMode>::k;
 #endif
         }
     }
 }
-#if 0
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            template<>
-            const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-                =
-#endif
-            {
-                {
-                    EnumNames<FileAccessMode>::BasicArrayInitializer {
-                        {
-                            { FileAccessMode::eNoAccess, L"No-Access" },
-                            { FileAccessMode::eRead, L"Read" },
-                            { FileAccessMode::eWrite, L"Write" },
-                            { FileAccessMode::eReadWrite, L"Read-Write" },
-                        }
-                    }
-                }
-            };
-        }
-    }
-}
-#endif

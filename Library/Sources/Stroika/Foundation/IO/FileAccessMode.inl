@@ -73,7 +73,7 @@ namespace   Stroika {
     }
 }
 #endif
-#if !qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
