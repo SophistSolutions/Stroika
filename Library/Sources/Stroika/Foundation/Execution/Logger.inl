@@ -78,7 +78,7 @@ namespace Stroika {
                         }
                     }
                 };
-                DefaultNames () : EnumNames<Execution::Logger::Priority> { k } {}
+                DefaultNames () : EnumNames<Execution::Logger::Priority> (k) {}
             };
         }
     }

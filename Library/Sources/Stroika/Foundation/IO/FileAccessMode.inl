@@ -89,7 +89,7 @@ namespace Stroika {
                         }
                     }
                 };
-                DefaultNames () : EnumNames<IO::FileAccessMode> { k } {}
+                DefaultNames () : EnumNames<IO::FileAccessMode> (k) {}
             };
         }
     }

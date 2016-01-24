@@ -534,7 +534,7 @@ namespace Stroika {
                         }
                     }
                 };
-                DefaultNames () : EnumNames<Traversal::Openness> { k } {}
+                DefaultNames () : EnumNames<Traversal::Openness> (k) {}
             };
         }
     }
