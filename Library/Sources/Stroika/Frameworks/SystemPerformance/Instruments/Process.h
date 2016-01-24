@@ -347,14 +347,14 @@ namespace Stroika {
     namespace Foundation {
         namespace Configuration {
             template<>
-            struct   DefaultNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> : EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> {
-                static  constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus>    k {
-                    EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus>::BasicArrayInitializer {
+            struct   DefaultNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> {
+                static  constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>    k {
+                    EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus>::BasicArrayInitializer {
                         {
                         }
                     }
                 };
-                DefaultNames () : EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> (k) {}
+                DefaultNames () : EnumNames<Frameworks::SystemPerformance::Instruments::Process::ProcessType::RunStatus> (k) {}
             };
         }
     }
