@@ -115,33 +115,6 @@ namespace   Stroika {
             /**
              *  \def Stroika_Enum_Names
              *
-             *
-             *  \par Example Usage
-             *      \code
-             *      enum class Priority { a, b, c };
-             *      const EnumNames<Priority>   Stroika_Enum_Names(Priority);
-             *      const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = {
-             *          { Priority::a, L"a" },
-             *          { Priority::b, L"b" },
-             *          { Priority::c, L"c" },
-             *  };
-             *      \endcode
-             *
-             *  \par OR
-             *      \code
-             *      constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
-             *      {
-             *          Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
-             *              {
-             *                  { FileAccessMode::eNoAccess, L"No-Access" },
-             *                  { FileAccessMode::eRead, L"Read" },
-             *                  { FileAccessMode::eWrite, L"Write" },
-             *                  { FileAccessMode::eReadWrite, L"Read-Write" },
-             *              }
-             *          }
-             *      };
-             *      \endcode
-             *
              *  \note   DEPRECATED - Configuration::DefaultNames<ENUMNAME> instead!!!
              */
 // NB: Stroika itself works fine either way, but for legacy code using Stroika_Enum_Names() leave this around for one release...
@@ -276,10 +249,12 @@ namespace   Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      enum class Priority { a, b, c };
-             *      const EnumNames<Priority>   Stroika_Enum_Names(Priority);
+             *      enum class Priority {
+             *          a, b, c
+             *          Stroika_Define_Enum_Bounds(a, c)
+             *      };
              *
-             *      // this template specailization must be located in teh Stroika::Configuration namespace
+             *      // this template specialization must be located in teh Stroika::Configuration namespace
              *      namespace Stroika::Foundation::Configuration {
              *          template<>
              *          const EnumNames<Priority>   DefaultNames<Priority>::k {
@@ -294,21 +269,30 @@ namespace   Stroika {
              *      \code
              *      namespace Stroika::Foundation::Configuration {
              *          template<>
-             *          const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k {
-             *              {
-             *                  Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
-             *                      {
-             *                          { FileAccessMode::eNoAccess, L"No-Access" },
-             *                          { FileAccessMode::eRead, L"Read" },
-             *                          { FileAccessMode::eWrite, L"Write" },
-             *                          { FileAccessMode::eReadWrite, L"Read-Write" },
-             *                      }
-             *                  }
+             *          const EnumNames<Priority>   DefaultNames<Priority>::k {
+             *              initializer_list<EnumName<FileAccessMode>> {
+             *                  { Priority::a, L"a" },
+             *                  { Priority::b, L"b" },
+             *                  { Priority::c, L"c" },
              *              }
+             *          };
+             *      };
+             *      \endcode
+             *
+             *  \par OR
+             *      \code
+             *      namespace Stroika::Foundation::Configuration {
+             *          template<>
+             *          const EnumNames<FileAccessMode>   DefaultNames<FileAccessMode>::k {
+             *              Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {{
+             *                  { FileAccessMode::eNoAccess, L"No-Access" },
+             *                  { FileAccessMode::eRead, L"Read" },
+             *                  { FileAccessMode::eWrite, L"Write" },
+             *                  { FileAccessMode::eReadWrite, L"Read-Write" },
+             *              }}
              *          };
              *      \endcode
              *
-             *  \note   For VS2k, beware of qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
              *  \note   namespace Stroika::Foundation::Configuration must be written out long way before C++17
              */
             template <typename ENUM_TYPE>
