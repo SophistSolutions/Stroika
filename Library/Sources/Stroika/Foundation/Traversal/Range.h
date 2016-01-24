@@ -146,22 +146,8 @@ namespace   Stroika {
                 namespace Private_ {
                     template    <typename T>
                     using  BaseDifferenceType_ =   decltype (T {} - T {});
-                    // @todo - cannot get to compile using make_unsigned or conditional<>
-#if 0
-                    template    <typename T>
-                    using  UnsignedDifferenceType_ = typename conditional <
-                                                     ((is_integral<T>::value or is_enum<T>::value) && not is_same<T, bool>::value),
-                                                     typename make_unsigned < BaseDifferenceType_<T> >::type,
-                                                     BaseDifferenceType_<T>
-                                                     >::type;
-#elif 0
-                    template    <typename T>
-                    using  UnsignedDifferenceType_ =   typename make_unsigned < BaseDifferenceType_<T> >::type;
-
-#else
                     template    <typename T>
                     using  UnsignedDifferenceType_ =   BaseDifferenceType_<T>;
-#endif
                 }
 
 
