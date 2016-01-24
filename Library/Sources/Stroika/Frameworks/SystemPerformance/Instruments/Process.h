@@ -342,5 +342,22 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
+#if     !qCompilerAndStdLib_constexpr_Buggy
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> : EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> {
+                static  constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus>    k {
+                    EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus>::BasicArrayInitializer {
+                        {
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<Frameworks::SystemPerformance::Instruments::ProcessType::RunStatus> (k) {}
+            };
+        }
+    }
+}
+#endif
 #endif  /*_Stroika_Framework_SystemPerformance_Instruments_Process_h_*/

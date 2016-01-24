@@ -142,6 +142,7 @@ using   SystemPerformance::Support::WMICollector;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
             template    <>
             const   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind> DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
@@ -159,6 +160,9 @@ namespace   Stroika {
                     }
                 }
             };
+#else
+            constexpr   EnumNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>   DefaultNames<Frameworks::SystemPerformance::Instruments::Filesystem::BlockDeviceKind>::k;
+#endif
         }
     }
 }
