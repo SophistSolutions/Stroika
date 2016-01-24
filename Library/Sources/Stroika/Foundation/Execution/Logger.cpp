@@ -45,6 +45,7 @@ using   Time::DurationSecondsType;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
             template    <>
             const EnumNames<Logger::Priority>   DefaultNames<Logger::Priority>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
@@ -64,6 +65,9 @@ namespace   Stroika {
                     }
                 }
             };
+#else
+            constexpr   EnumNames<Logger::Priority>    DefaultNames<Logger::Priority>::k;
+#endif
         }
     }
 }
