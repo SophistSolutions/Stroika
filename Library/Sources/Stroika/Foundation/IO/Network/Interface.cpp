@@ -88,6 +88,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
             template    <>
             const EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k
 #if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
@@ -117,6 +118,10 @@ namespace   Stroika {
                     }
                 }
             };
+#else
+            constexpr   EnumNames<IO::Network::Interface::Status>   DefaultNames<IO::Network::Interface::Status>::k;
+            constexpr   EnumNames<IO::Network::Interface::Type>     DefaultNames<IO::Network::Interface::Type>::k;
+#endif
         }
     }
 }

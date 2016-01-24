@@ -37,4 +37,39 @@ namespace   Stroika {
         }
     }
 }
+#if     !qCompilerAndStdLib_constexpr_Buggy
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<IO::Network::Interface::Status> : EnumNames<IO::Network::Interface::Status> {
+                static  constexpr   EnumNames<IO::Network::Interface::Status>    k {
+                    EnumNames<IO::Network::Interface::Status>::BasicArrayInitializer {
+                        {
+                            { IO::Network::Interface::Status::eConnected, L"Connected" },
+                            { IO::Network::Interface::Status::eRunning, L"Running" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<IO::Network::Interface::Status> (k) {}
+            };
+            template<>
+            struct   DefaultNames<IO::Network::Interface::Type> : EnumNames<IO::Network::Interface::Type> {
+                static  constexpr   EnumNames<IO::Network::Interface::Type>    k {
+                    EnumNames<IO::Network::Interface::Type>::BasicArrayInitializer {
+                        {
+                            { IO::Network::Interface::Type::eLoopback, L"Loopback" },
+                            { IO::Network::Interface::Type::eWiredEthernet, L"WiredEthernet" },
+                            { IO::Network::Interface::Type::eWIFI, L"WIFI" },
+                            { IO::Network::Interface::Type::eTunnel, L"Tunnel" },
+                            { IO::Network::Interface::Type::eOther, L"Other" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<IO::Network::Interface::Type> (k) {}
+            };
+        }
+    }
+}
+#endif
 #endif  /*_Stroika_Foundation_IO_Network_Interface_inl_*/
