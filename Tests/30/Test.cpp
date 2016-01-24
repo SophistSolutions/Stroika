@@ -464,6 +464,107 @@ namespace {
 
 
 
+
+
+namespace {
+    namespace  T6_SAXObjectReader_RepeatedElementReader_Sample_ {
+        struct  Person_ {
+            String firstName;
+            String lastName;
+        };
+        struct  Address_ {
+            String city;
+            String state;
+        };
+        struct Data_ {
+            vector<Person_>     people;
+            vector<Address_>    addresses;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<envelope1>\n"
+                L"	  <person>\n"
+                L"		  <FirstName>Jim</FirstName>"
+                L"		  <LastName>Smith</LastName>"
+                L"	  </person>\n"
+                L"	  <person>\n"
+                L"		  <FirstName>Fred</FirstName>"
+                L"		  <LastName>Down</LastName>"
+                L"	  </person>\n"
+                L"	  <address>\n"
+                L"		  <city>Boston</city>"
+                L"		  <state>MA</state>"
+                L"	  </address>\n"
+                L"	  <address>\n"
+                L"		  <city>New York</city>"
+                L"		  <state>NY</state>"
+                L"	  </address>\n"
+                L"	  <address>\n"
+                L"		  <city>Albany</city>"
+                L"		  <state>NY</state>"
+                L"	  </address>\n"
+                L"</envelope1>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+
+        void    DoTest ()
+        {
+            ObjectReaderRegistry registry;
+            registry.AddCommonType<String> ();
+
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+            });
+            registry.AddCommonType<vector<Person_>> ();
+            registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
+            registry.AddClass<Address_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
+                { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
+            });
+            registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
+            registry.AddClass<Data_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
+                { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+            Data_   data;
+            {
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data)) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (data.people.size () == 2);
+                VerifyTestResult (data.people[0].firstName == L"Jim");
+                VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[1].firstName == L"Fred");
+                VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.addresses.size () == 3);
+                VerifyTestResult (data.addresses[0].city == L"Boston");
+                VerifyTestResult (data.addresses[0].state == L"MA");
+                VerifyTestResult (data.addresses[1].city == L"New York");
+                VerifyTestResult (data.addresses[1].state == L"NY");
+                VerifyTestResult (data.addresses[2].city == L"Albany");
+                VerifyTestResult (data.addresses[2].state == L"NY");
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -474,6 +575,7 @@ namespace   {
             T3_SAXObjectReader_ReadDown2Sample_::DoTest ();
             T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
             T5_SAXObjectReader_DocSamples_::DoTests ();
+            T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces

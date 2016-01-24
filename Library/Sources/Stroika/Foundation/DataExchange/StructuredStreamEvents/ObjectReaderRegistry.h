@@ -552,7 +552,68 @@ namespace   Stroika {
                 /**
                  *  This is kind of like optional, but its for sequence elements - elements that are repeated inline.
                  *
-                 *  @todo DOC BETTER - AND INCLUDE EXAMPLE.
+                 *  To use RepeatedElementReader, just add the type to the type registry, and use it as normal for a regular field.
+                 *  Only declare the field as a vector or Sequence <T>. This will invoke the right 'T' reader each time the name
+                 *  is encountered, but instead of storing the value, it will append the value to the named object.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      // EXAMLPE DATA:
+                 *              <envelope1>
+                 *                    <person>
+                 *                        <FirstName>Jim</FirstName>
+                 *                        <LastName>Smith</LastName>
+                 *                    </person>
+                 *                    <person>
+                 *                        <FirstName>Fred</FirstName>
+                 *                        <LastName>Down</LastName>
+                 *                    </person>
+                 *                    <address>
+                 *                        <city>Boston</city>
+                 *                        <state>MA</state>
+                 *                    </address>
+                 *                    <address>
+                 *                        <city>New York</city>
+                 *                        <state>NY</state>
+                 *                    </address>
+                 *                    <address>
+                 *                        <city>Albany</city>
+                 *                        <state>NY</state>
+                 *                    </address>
+                 *              </envelope1>
+                 *      struct  Person_ {
+                 *          String firstName;
+                 *          String lastName;
+                 *      };
+                 *      struct  Address_ {
+                 *          String city;
+                 *          String state;
+                 *      };
+                 *      struct Data_ {
+                 *          vector<Person_>     people;
+                 *          vector<Address_>    addresses;
+                 *      };
+                 *      ObjectReaderRegistry registry;
+                 *      registry.AddCommonType<String> ();
+                 *      registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                 *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                 *      });
+                 *      registry.AddCommonType<vector<Person_>> ();
+                 *      registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
+                 *      registry.AddClass<Address_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *          { Name { L"city" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, city) },
+                 *          { Name { L"state" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Address_, state) },
+                 *      });
+                 *      registry.Add<vector<Address_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Address_>, ObjectReaderRegistry::RepeatedElementReader<vector<Address_>>> ());
+                 *      registry.AddClass<Data_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                 *          { Name { L"person" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, people) },
+                 *          { Name { L"address" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Data_, addresses) },
+                 *      });
+                 *      Data_   data;
+                 *      ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data)) };
+                 *      XML::SAXParse (srcXMLStream, ctx);
+                 *      \endcode
                  */
                 template    <typename CONTAINER_OF_T>
                 class   ObjectReaderRegistry::RepeatedElementReader : public IElementConsumer {
