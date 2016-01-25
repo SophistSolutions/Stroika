@@ -33,6 +33,8 @@
  *      @todo   FIXUP Docs and code so on thrown response, and open stream in the response is replaced by
  *              a FULLY REALIZED STREAM (MEMORY STREAM)
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-443 - cleanup exception handling and docs a little.
+ *
  *      @todo   Probably should redo Request so it can optionally use a BLOB or
  *              Stream (like Response). DO NOW the header / class changes - making
  *              CTOR/accessors, so easiser to change funcitonality later!!!
