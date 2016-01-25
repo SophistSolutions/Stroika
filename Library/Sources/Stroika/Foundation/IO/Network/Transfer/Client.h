@@ -19,6 +19,7 @@
 #include    "../../../Time/Realtime.h"
 
 #include    "../URL.h"
+#include    "../HTTP/Exception.h"
 #include    "../HTTP/Status.h"
 
 
@@ -28,6 +29,9 @@
  *
  *
  * TODO:
+ *
+ *      @todo   FIXUP Docs and code so on thrown response, and open stream in the response is replaced by
+ *              a FULLY REALIZED STREAM (MEMORY STREAM)
  *
  *      @todo   Probably should redo Request so it can optionally use a BLOB or
  *              Stream (like Response). DO NOW the header / class changes - making
@@ -75,7 +79,9 @@ namespace   Stroika {
 
 
 //avoid windows header clash...
+#if     qPlatform_Windows
 #undef DELETE
+#endif
 
 
                     using   Characters::String;
@@ -234,11 +240,14 @@ namespace   Stroika {
                          */
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
 
+#if 0
+                        // now done automatically
                     public:
                         /**
                          *  Throws HTTP::Exception if not 'GetSucceeded'
                          */
                         nonvirtual  void    ThrowIfFailed () const;
+#endif
 
                     private:
                         BLOB                                                    fData_;                     // usually empty, but provided for some methods like POST
@@ -247,6 +256,20 @@ namespace   Stroika {
                         Mapping<String, String>                                 fHeaders_;
                         HTTP::Status                                            fStatus_ {};
                         Optional<SSLResultInfo>                                 fServerEndpointSSLInfo_;
+                    };
+
+
+                    /**
+                     */
+                    struct  Exception : HTTP::Exception {
+                    public:
+                        Exception (const Response& response);
+
+                    public:
+                        nonvirtual  Response    GetResponse () const;
+
+                    private:
+                        Response    fResponse_;
                     };
 
 
@@ -312,12 +335,11 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.Send (Request (...));
-                         *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    Send (const Request& r);
 
@@ -328,12 +350,11 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.GET ();
-                         *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -344,12 +365,11 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.POST (data);
-                         *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -360,12 +380,11 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.Delete ();
-                         *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -376,12 +395,11 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.PUT (data);
-                         *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see an error HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -392,11 +410,10 @@ namespace   Stroika {
                          *  \par Example Usage
                          *      \code
                          *      Request r = conn.OPTIONS ();
-                         *      r.ThrowIfFailed ();
                          *      \endcode
                          *
-                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
-                         *          other networking or protocol error
+                         *  \note   This function only returns a Response on success. To see HTTP status response, catch (Exception e), and look
+                         *          at e.GetResponse ()
                          */
                         nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 

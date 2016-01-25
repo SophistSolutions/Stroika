@@ -73,10 +73,12 @@ InternetMediaType   Response::GetContentType () const
     return InternetMediaType ();
 }
 
+#if 0
 void    Response::ThrowIfFailed () const
 {
     HTTP::Exception::ThrowIfError (fStatus_);
 }
+#endif
 
 InputStream<Byte>       Response::GetDataBinaryInputStream () const
 {
@@ -93,6 +95,27 @@ InputStream<Character>  Response::GetDataTextInputStream () const
     }
     return *fDataTextInputStream_;
 }
+
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Transfer::Exception ******************************
+ ********************************************************************************
+ */
+Exception::Exception (const Response& response)
+    : HTTP::Exception (response.GetStatus ())
+    , fResponse_ (response)
+{
+}
+
+Response    Exception::GetResponse () const
+{
+    return fResponse_;
+}
+
+
 
 
 
@@ -145,6 +168,17 @@ Response    Connection::OPTIONS (const Mapping<String, String>& extraHeaders)
     r.fOverrideHeaders = extraHeaders;
     return Send (r);
 }
+
+Response    Connection::Send (const Request& r)
+{
+    Response    response    =    fRep_->Send (r);
+    if (not response.GetSucceeded ()) {
+        Execution::Throw (Exception (response));
+    }
+    return response;
+}
+
+
 
 
 

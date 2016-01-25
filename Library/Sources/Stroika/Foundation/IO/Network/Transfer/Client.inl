@@ -105,10 +105,6 @@ namespace   Stroika {
                     {
                         fRep_->Close ();
                     }
-                    inline  Response    Connection::Send (const Request& r)
-                    {
-                        return fRep_->Send (r);
-                    }
 
 
                 }
