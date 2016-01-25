@@ -107,12 +107,16 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
 fi
 
+
+#OK - 5 return and oen about rasppi build..
+TOTAL_WARNINGS_EXPECTED=6
+
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
-echo "   $XW items warned (expected 0)"
-echo "   $XW items warned (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)"
+echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps (expected 0)"
 echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
