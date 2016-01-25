@@ -62,15 +62,15 @@ using   Stroika::Foundation::Memory::SmallStackBuffer;
 //#pragma comment (lib, "Winhttp.lib")
 
 namespace   {
-    struct  AutoWinHINTERNET {
+    struct  AutoWinHINTERNET_ {
         HINTERNET   fHandle;
-        explicit AutoWinHINTERNET (HINTERNET handle)
+        explicit AutoWinHINTERNET_ (HINTERNET handle)
             : fHandle (handle)
         {
             ThrowIfFalseGetLastError (fHandle != nullptr);
         }
-        AutoWinHINTERNET (const AutoWinHINTERNET&) = delete;
-        ~AutoWinHINTERNET ()
+        AutoWinHINTERNET_ (const AutoWinHINTERNET_&) = delete;
+        ~AutoWinHINTERNET_ ()
         {
             Verify (::WinHttpCloseHandle (fHandle));
         }
@@ -78,7 +78,7 @@ namespace   {
         {
             return fHandle;
         }
-        nonvirtual  const AutoWinHINTERNET& operator= (const AutoWinHINTERNET&) = delete;
+        nonvirtual  const AutoWinHINTERNET_& operator= (const AutoWinHINTERNET_&) = delete;
     };
 }
 #endif
@@ -118,9 +118,9 @@ private:
     Connection::Options             fOptions_;
     DurationSecondsType             fTimeout_ { Time::kInfinite };
     URL                             fURL_;
-    shared_ptr<AutoWinHINTERNET>    fSessionHandle_;
+    shared_ptr<AutoWinHINTERNET_>   fSessionHandle_;
     String                          fSessionHandle_UserAgent_;
-    shared_ptr<AutoWinHINTERNET>    fConnectionHandle_;
+    shared_ptr<AutoWinHINTERNET_>   fConnectionHandle_;
 };
 #endif
 
@@ -248,7 +248,7 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
 
     bool    useSecureHTTP   =   fURL_.IsSecure ();
 
-    AutoWinHINTERNET   hRequest (
+    AutoWinHINTERNET_   hRequest (
         ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePath ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
@@ -471,7 +471,7 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
         fSessionHandle_.reset ();
     }
     if (fSessionHandle_.get () == nullptr) {
-        fSessionHandle_ = make_shared<AutoWinHINTERNET> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+        fSessionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
         if (not fOptions_.fSupportSessionCookies) {
             DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
@@ -484,7 +484,7 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_.get ());
     if (fConnectionHandle_.get () == nullptr) {
-        fConnectionHandle_ = make_shared<AutoWinHINTERNET> (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0));
+        fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0));
     }
 }
 #endif
