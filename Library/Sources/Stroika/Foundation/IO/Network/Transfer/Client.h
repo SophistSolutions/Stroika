@@ -315,6 +315,9 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    Send (const Request& r);
 
@@ -328,6 +331,9 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    GET (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -341,6 +347,9 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    POST (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -354,6 +363,9 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    DELETE (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -367,6 +379,9 @@ namespace   Stroika {
                          *      r.ThrowIfFailed ();
                          *      ...
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    PUT (const BLOB& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
@@ -379,6 +394,9 @@ namespace   Stroika {
                          *      Request r = conn.OPTIONS ();
                          *      r.ThrowIfFailed ();
                          *      \endcode
+                         *
+                         *  \note   This function does NOT throw internally on HTTP status report error, but throws on nearly any
+                         *          other networking or protocol error
                          */
                         nonvirtual  Response    OPTIONS (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 

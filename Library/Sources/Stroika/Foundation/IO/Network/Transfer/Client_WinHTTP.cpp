@@ -367,16 +367,7 @@ RetryWithNoCERTCheck:
         wstring statusText  =       Extract_WinHttpHeader_ (hRequest, WINHTTP_QUERY_STATUS_TEXT, WINHTTP_HEADER_NAME_BY_INDEX, WINHTTP_NO_HEADER_INDEX);
         status      =       static_cast<HTTP::Status> (_wtoi (statusStr.c_str ()));
         DbgTrace (_T ("Status = %d"), status);
-#if 0
-        if (not HTTP::Exception::IsHTTPStatusOK (status)) {
-            if (WINHTTP_ERROR_BASE <= status and status <= WINHTTP_ERROR_BASE) {
-                Execution::Throw (Execution::Platform::Windows::HRESULTErrorException (MAKE_HRESULT (SEVERITY_ERROR, FACILITY_INTERNET, status)));
-            }
-            HTTP::Exception::ThrowIfError (status, statusText);
-        }
-#endif
     }
-
 
     /*
      * We COULD check (and this code does if enabled) check to see if the cert was valid - expired - or whatever,
