@@ -258,11 +258,10 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
     bool    sslExceptionProblem =   false;
 RetryWithNoCERTCheck:
 
-    const   bool    kAllowBadCerts  =   true;   // may want to make this a param passed in!
     //
     // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesnt do rest of fetch...
     //      TODO!!!
-    if (kAllowBadCerts and sslExceptionProblem) {
+    if (not fOptions_.fFailConnectionIfSSLCertificateInvalid and sslExceptionProblem) {
         DWORD          dwOptions   =
             SECURITY_FLAG_IGNORE_CERT_CN_INVALID
             | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID

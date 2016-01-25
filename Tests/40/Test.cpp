@@ -330,6 +330,64 @@ namespace {
 
 
 
+namespace {
+    namespace Test_5_SSLCertCheckTests_ {
+        namespace Private_ {
+            void    T1_get_ (Connection::Options o)
+            {
+                Connection  c   =   IO::Network::Transfer::CreateConnection (o);
+                c.SetURL (URL::Parse (L"https://testssl-valid.disig.sk/index.en.html"));
+                Response    r   =   c.GET ();
+                VerifyTestResult (r.GetSucceeded ());
+                VerifyTestResult (r.GetData ().size () > 1);
+            }
+        }
+        void    DoTests_ ()
+        {
+            Debug::TraceContextBumper ctx ("{}::Test_5_SSLCertCheckTests_");
+            Connection::Options o;
+            try {
+                o.fFailConnectionIfSSLCertificateInvalid = true;
+                Private_::T1_get_ (o);
+                VerifyTestResult (false);
+            }
+            catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
+#else
+                Execution::ReThrow ();
+#endif
+            }
+            catch (...) {
+                // Good - this should fail
+            }
+            try {
+                o.fFailConnectionIfSSLCertificateInvalid = false;
+                Private_::T1_get_ (o);
+            }
+            catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
+                // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+                // This is more like the absence of a feature beacuse of the missing component.
+#else
+                Execution::ReThrow ();
+#endif
+            }
+            catch (...) {
+                VerifyTestResult (false);
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -337,6 +395,7 @@ namespace   {
         Test_2_SimpleFetch_httpbin_::DoTests_ ();
         Test3_TextStreamResponse_::DoTests_ ();
         Test_4_RefDocsTests_::DoTests_ ();
+        Test_5_SSLCertCheckTests_::DoTests_ ();
     }
 }
 
