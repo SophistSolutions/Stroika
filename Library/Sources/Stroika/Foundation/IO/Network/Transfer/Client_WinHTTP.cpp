@@ -256,13 +256,28 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
                              )
     );
 
+    // See https://stroika.atlassian.net/browse/STK-442 - we pre-set to avoid double try on failure, but
+    // we cannot IF we want to know if SSL connect failed (until I figure out how)
+    if (not fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid) {
+        DWORD          dwOptions   =
+            SECURITY_FLAG_IGNORE_CERT_CN_INVALID
+            | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID
+            | SECURITY_FLAG_IGNORE_UNKNOWN_CA
+            | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE
+            ;
+        Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
+    }
+
     bool    sslExceptionProblem =   false;
 RetryWithNoCERTCheck:
 
     //
     // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesnt do rest of fetch...
     //      TODO!!!
-    if (not fOptions_.fFailConnectionIfSSLCertificateInvalid and sslExceptionProblem) {
+    //
+    // See https://stroika.atlassian.net/browse/STK-442
+    //
+    if (fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid and sslExceptionProblem) {
         DWORD          dwOptions   =
             SECURITY_FLAG_IGNORE_CERT_CN_INVALID
             | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID
@@ -291,11 +306,13 @@ RetryWithNoCERTCheck:
         ThrowIfFalseGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
     }
     catch (const Execution::Platform::Windows::Exception& e) {
-        bool    looksLikeSSLError   =   (e == ERROR_WINHTTP_SECURE_FAILURE);
-        if (looksLikeSSLError and not sslExceptionProblem) {
-            DbgTrace ("Got %d ssl error so retrying with flags to disable cert checking", (DWORD)e);
-            sslExceptionProblem = true;
-            goto RetryWithNoCERTCheck;
+        if (fOptions_.fReturnSSLInfo) {
+            bool    looksLikeSSLError   =   (e == ERROR_WINHTTP_SECURE_FAILURE);
+            if (looksLikeSSLError and not sslExceptionProblem) {
+                DbgTrace ("Got %d ssl error so retrying with flags to disable cert checking", (DWORD)e);
+                sslExceptionProblem = true;
+                goto RetryWithNoCERTCheck;
+            }
         }
         Execution::ReThrow ();
     }
