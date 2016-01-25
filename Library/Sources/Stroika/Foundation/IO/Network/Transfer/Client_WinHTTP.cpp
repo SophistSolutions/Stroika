@@ -14,6 +14,7 @@
 #include    "../../../Characters/Format.h"
 #include    "../../../Characters/String_Constant.h"
 #include    "../../../Containers/STL/Utilities.h"
+#include    "../../../Execution/Finally.h"
 #include    "../../../Time/Date.h"
 #include    "../../../Time/DateTime.h"
 #include    "../../../Execution/Exceptions.h"
@@ -386,6 +387,23 @@ RetryWithNoCERTCheck:
         DWORD          dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
+        Execution::Finally cleanup ([certInfo] () {
+            if (certInfo.lpszSubjectInfo != nullptr) {
+                ::LocalFree (certInfo.lpszSubjectInfo);
+            }
+            if (certInfo.lpszIssuerInfo != nullptr) {
+                ::LocalFree (certInfo.lpszIssuerInfo);
+            }
+            if (certInfo.lpszEncryptionAlgName != nullptr) {
+                ::LocalFree (certInfo.lpszEncryptionAlgName);
+            }
+            if (certInfo.lpszProtocolName != nullptr) {
+                ::LocalFree (certInfo.lpszProtocolName);
+            }
+            if (certInfo.lpszSignatureAlgName != nullptr) {
+                ::LocalFree (certInfo.lpszSignatureAlgName);
+            }
+        });
 
         Response::SSLResultInfo resultSSLInfo;
         resultSSLInfo.fValidationStatus = sslExceptionProblem ?
@@ -420,21 +438,6 @@ RetryWithNoCERTCheck:
                 not fURL_.GetHost ().Equals (L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
            ) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
-        }
-        if (certInfo.lpszSubjectInfo != nullptr) {
-            ::LocalFree (certInfo.lpszSubjectInfo);
-        }
-        if (certInfo.lpszIssuerInfo != nullptr) {
-            ::LocalFree (certInfo.lpszIssuerInfo);
-        }
-        if (certInfo.lpszEncryptionAlgName != nullptr) {
-            ::LocalFree (certInfo.lpszEncryptionAlgName);
-        }
-        if (certInfo.lpszProtocolName != nullptr) {
-            ::LocalFree (certInfo.lpszProtocolName);
-        }
-        if (certInfo.lpszSignatureAlgName != nullptr) {
-            ::LocalFree (certInfo.lpszSignatureAlgName);
         }
 
         serverEndpointSSLInfo = resultSSLInfo;
