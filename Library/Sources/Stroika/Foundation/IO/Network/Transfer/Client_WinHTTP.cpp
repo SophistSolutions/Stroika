@@ -272,10 +272,7 @@ RetryWithNoCERTCheck:
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
     }
 
-    //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.35f);
-
     try {
-        //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
             Throw (StringException (String_Constant (L"Too large a message to send using WinHTTP")));
         }
@@ -289,7 +286,6 @@ RetryWithNoCERTCheck:
                                   )
                                  );
         DISABLE_COMPILER_MSC_WARNING_END(4267)
-        //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
 
         // this must be called before the 'body' goes out of scope!
         ThrowIfFalseGetLastError (::WinHttpReceiveResponse (hRequest, nullptr));
@@ -304,24 +300,16 @@ RetryWithNoCERTCheck:
         Execution::ReThrow ();
     }
 
-    //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.4f);
-
     list<vector<Byte>> bytesRead;
     unsigned int totalBytes =   0;
     {
         // Keep reading data til all done
-        float   percentUpTo =   0.45f;      // fake measuring progress...
         DWORD   dwSize = 0;
         do {
-            if (percentUpTo < .9f) {
-                percentUpTo += 0.05f;
-            }
             if (Time::GetTickCount () > endBy) {
                 DbgTrace (_T ("throwing Timeout"));
                 Execution::Throw (Execution::Platform::Windows::Exception (WAIT_TIMEOUT));
             }
-
-            //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, percentUpTo);
 
             // Check for available data.
             dwSize = 0;
@@ -336,9 +324,6 @@ RetryWithNoCERTCheck:
         }
         while (dwSize > 0);
     }
-
-//    ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.95f);
-
 
     // Here - we must convert the chunks of bytes to a big blob and a string
     // This API assumes the HTTP-result is a string
