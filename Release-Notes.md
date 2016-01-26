@@ -22,6 +22,9 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a126">v2.0a126x</a><br/>2016-01-??</td>
 <td>
 	<ul>
+
+
+	<!--writeup qSUPPORT_LEGACY_Stroika_Enum_Names -->
 		<!--up to date as of 2016-01-19 9pm -->
 		<li>Many fixes to RegressionTests-Unix.sh</li>
 		<li>Tweaks to OpenSSL.supp</li>
