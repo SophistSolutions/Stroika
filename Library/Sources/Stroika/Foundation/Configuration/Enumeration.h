@@ -141,6 +141,15 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *          This class fully supports multiple readers, but it is not designed to support update while ongoing access
              *          is going on.
+             *
+             *  \note   Important requirement on type ENUM_TYPE - it must use the Stroika_Define_Enum_Bounds() macro
+             *          or otherwise define eSTART,eEND,eCOUNT,eLAST
+             *
+             *  \note   Important requirement on type ENUM_TYPE - it must be 'densely packed' - that is - have no gaps.
+             *          it need not start at any particular number, but the number of enumerators must equal eCOUNT,
+             *          and a name and enumerator must be provided for each value from eSTART to eEND.
+             *          (future versions MAY lift that requirement).
+             *          \req RequireItemsOrderedByEnumValue_
              */
             template <typename ENUM_TYPE>
             class   EnumNames {
