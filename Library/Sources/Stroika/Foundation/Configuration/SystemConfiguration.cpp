@@ -830,6 +830,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
             tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
             tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
+            tmp.fMajorMinorVersionString =  p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
         }
         catch (...)
         {
@@ -841,6 +842,10 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 String n = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
+                Sequence<String>    tokens = n.Tokenize ();
+                if (tokens.size () >= 3) {
+                    tmp.fMajorMinorVersionString =  tokens[2];
+                }
             }
             catch (...) {
                 DbgTrace ("Failure reading /etc/centos-release");
@@ -852,6 +857,10 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
                 String n = Streams::TextReader (IO::FileSystem::FileInputStream::mk (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
+                Sequence<String>    tokens = n.Tokenize ();
+                if (tokens.size () >= 3) {
+                    tmp.fMajorMinorVersionString =  tokens[2];
+                }
             }
             catch (...) {
                 DbgTrace ("Failure reading /etc/redhat-release");
@@ -861,7 +870,8 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         {
             try {
                 tmp.fShortPrettyName = L"AIX";
-                tmp.fPrettyNameWithMajorVersion =  L"AIX " + Execution::ProcessRunner (L"oslevel").Run (String ()).Trim ();
+                tmp.fMajorMinorVersionString =  Execution::ProcessRunner (L"oslevel").Run (String ()).Trim ();
+                tmp.fPrettyNameWithMajorVersion =  L"AIX " + tmp.fMajorMinorVersionString;
             }
             catch (...) {
                 DbgTrace ("Failure reading oslevel");
