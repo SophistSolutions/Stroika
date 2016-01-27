@@ -145,7 +145,8 @@ namespace   Stroika {
                     String  fPrettyNameWithMajorVersion;
 
                     /**
-                     *  e.g. 1.0, 3.5, etc
+                     *  e.g. 1.0, 3.5, etc. Note - this refers to the overall os (distribution -
+                     *  like for ubuntu 11.04, this would be 11.04, not the kernel version)
                      */
                     String  fMajorMinorVersionString;
 
