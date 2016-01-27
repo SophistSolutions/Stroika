@@ -8,6 +8,7 @@
 
 #include    "../Characters/String.h"
 #include    "../Containers/Sequence.h"
+#include    "../Memory/Optional.h"
 #include    "../Time/DateTime.h"
 
 #include    "Common.h"
@@ -162,6 +163,20 @@ namespace   Stroika {
                      *  by the OS (bits of addressing).
                      */
                     unsigned int    fBits { 32 };
+
+                    /**
+                     */
+                    enum class InstallerTechnology {
+                        eRPM,
+                        eMSI,
+                        eDPKG,
+                    };
+                    /**
+                     *  Some UNIX systems use rpm (redhat, and many others), and others use dpkg (debian based).
+                     *  Windows uses MSI.
+                     *  But there are a wide variety of other choices (portage, ports, etc).
+                     */
+                    Foundation::Memory::Optional<InstallerTechnology> fPreferedInstallerTechnology;
                 };
 
 

@@ -900,6 +900,39 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         //tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
         DbgTrace ("_SC_V6_LP64_OFF64/_POSIX_V6_LP64_OFF64 not available - so assuming 32-bit...");
 #endif
+
+        // No good way I can find to tell...
+        if (tmp.fPreferedInstallerTechnology.IsMissing ())
+        {
+            if (tmp.fShortPrettyName.Equals (L"Centos", CompareOptions::eCaseInsensitive) or
+                    tmp.fShortPrettyName.Equals (L"RedHat", CompareOptions::eCaseInsensitive) or
+                    tmp.fShortPrettyName.Equals (L"AIX", CompareOptions::eCaseInsensitive)
+               ) {
+                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
+            }
+            else if (tmp.fShortPrettyName.Equals (L"Ubuntu", CompareOptions::eCaseInsensitive)) {
+                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
+            }
+        }
+        // not a great way to test since some systems have both, like ubuntu
+        if (tmp.fPreferedInstallerTechnology.IsMissing ())
+        {
+            try {
+                Execution::ProcessRunner (L"dpkg --help").Run (String ());
+                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
+            }
+            catch (...) {
+            }
+        }
+        if (tmp.fPreferedInstallerTechnology.IsMissing ())
+        {
+            try {
+                Execution::ProcessRunner (L"rpm --help").Run (String ());
+                tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
+            }
+            catch (...) {
+            }
+        }
 #elif   qPlatform_Windows
         tmp.fTokenName = String_Constant (L"Windows");
         /*
@@ -960,6 +993,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
+        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
 #else
         AssertNotImplemented ();
 #endif
