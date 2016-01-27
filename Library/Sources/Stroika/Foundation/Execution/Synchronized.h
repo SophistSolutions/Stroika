@@ -238,6 +238,11 @@ namespace   Stroika {
                     EnsureNotNull (fT);
                     return *fT;
                 }
+                T   load () const
+                {
+                    EnsureNotNull (fT);
+                    return *fT;
+                }
             };
 
 
@@ -272,6 +277,12 @@ namespace   Stroika {
                 {
                     return ReadableReference::operator-> ();
                 }
+                void    store (const T& v)
+                {
+                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                    *const_cast<T*> (this->fT) = v;
+                }
+
             };
 
 
