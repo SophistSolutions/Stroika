@@ -911,6 +911,8 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         DbgTrace ("_SC_V6_LP64_OFF64/_POSIX_V6_LP64_OFF64 not available - so assuming 32-bit...");
 #endif
 
+        using Characters::CompareOptions;
+
         // No good way I can find to tell...
         if (tmp.fPreferedInstallerTechnology.IsMissing ())
         {
