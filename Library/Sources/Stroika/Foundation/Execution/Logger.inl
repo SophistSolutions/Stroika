@@ -44,6 +44,7 @@ namespace   Stroika {
             {
                 return sThe_.fBufferingEnabled_;
             }
+#if     !qDefaultTracingOn
             inline  void    Logger::Log (Priority logLevel, String format, ...)
             {
                 if (WouldLog (logLevel)) {
@@ -53,6 +54,7 @@ namespace   Stroika {
                     va_end (argsList);
                 }
             }
+#endif
 
 
         }

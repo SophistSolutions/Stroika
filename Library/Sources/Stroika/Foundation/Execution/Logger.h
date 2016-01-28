@@ -247,7 +247,7 @@ namespace   Stroika {
              */
             class   Logger::IAppenderRep {
             public:
-                virtual ~IAppenderRep ();
+                virtual ~IAppenderRep () = default;
             public:
                 virtual void    Log (Priority logLevel, const String& message) = 0;
             };

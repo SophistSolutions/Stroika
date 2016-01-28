@@ -9,6 +9,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/ToString.h"
 #include    "../Debug/Trace.h"
 #include    "BlockingQueue.h"
 #include    "Common.h"
@@ -270,20 +271,21 @@ void    Logger::UpdateBookkeepingThread_ ()
     FlushBuffer ();
 }
 
-
-
-
-
-
-/*
- ********************************************************************************
- ************************** Execution::IAppenderRep *****************************
- ********************************************************************************
- */
-Logger::IAppenderRep::~IAppenderRep ()
+#if     qDefaultTracingOn
+void    Logger::Log (Priority logLevel, String format, ...)
 {
+    va_list     argsList;
+    va_start (argsList, format);
+    DbgTrace (L"Logger::Log (%s, %s...)", Characters::ToString (logLevel).c_str (), Characters::FormatV (format.c_str (), argsList).c_str ());
+    if (WouldLog (logLevel)) {
+        Log_ (logLevel, format, argsList);
+    }
+    else {
+        DbgTrace (L"...suppressed by WouldLog");
+    }
+    va_end (argsList);
 }
-
+#endif
 
 
 
