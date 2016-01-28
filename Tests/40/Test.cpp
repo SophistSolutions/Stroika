@@ -372,7 +372,11 @@ namespace {
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
                 Private_::T1_get_ (o);
+#if     qHasFeature_LibCurl && !qHasFeature_OpenSSL
+                // ingore this case, since we allow the failed connect above...
+#else
                 VerifyTestResult (false);
+#endif
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
