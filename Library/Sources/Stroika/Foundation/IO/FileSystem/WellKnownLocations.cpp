@@ -237,6 +237,7 @@ String FileSystem::WellKnownLocations::GetTemporary ()
     } ();
     return kCachedResult_;
 #elif   qPlatform_Windows
+    // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
     wchar_t   buf[4 * 1024];
     if (::GetTempPathW (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
         return String_Constant { L"c:\\Temp\\" };
@@ -260,6 +261,7 @@ String FileSystem::WellKnownLocations::GetTemporary ()
  */
 SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
 {
+    // @todo see if we can deprecate this function.
     return GetTemporary ().AsSDKString ();
 }
 
