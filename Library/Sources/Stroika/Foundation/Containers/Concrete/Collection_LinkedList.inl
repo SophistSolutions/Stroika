@@ -261,7 +261,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Collection_LinkedList<T>::AssertRepValidType_ () const
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertMember (&inherited::template _SafeReadRepAccessor<Rep_> { this } ._ConstGetRep (), Rep_);
                 }
 
 

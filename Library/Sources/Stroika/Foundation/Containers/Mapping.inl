@@ -276,12 +276,13 @@ namespace   Stroika {
                  *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
                  */
                 _SafeReadRepAccessor<_IRep> lhs { this };
-                if (&lhs._ConstGetRep () == &rhs._ConstGetRep ()) {
+                _SafeReadRepAccessor<_IRep> rhsR { rhs };
+                if (&lhs._ConstGetRep () == &rhsR._ConstGetRep ()) {
                     // not such an unlikely test result since we use lazy copy, but this test is only an optimization and not logically required
                     return true;
                 }
                 // Check length, so we dont need to check both iterators for end/done
-                if (lhs._ConstGetRep ().GetLength () != rhs.GetLength ()) {
+                if (lhs._ConstGetRep ().GetLength () != rhsR.GetLength ()) {
                     return false;
                 }
                 /*
