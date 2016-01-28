@@ -836,15 +836,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Memory::SharedByValue_State    _GetSharingState () const;
 
-            protected:
-                /**
-                 *  Return a const reference to owned rep pointer. This ensures result non-null before dereferencing.
-                 *
-                 *  Note - this is NOT thread safe, so use care (like only use in CTOR/DTOR cuz then we know
-                 *  we dont need to be threadsafe).
-                 */
-                nonvirtual  const typename Iterable<T>::_IRep&   _ConstGetRep () const;
-
             private:
                 struct  Rep_Cloner_ {
                     inline  static  SharedPtrImplementationTemplate<_IRep>  Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)

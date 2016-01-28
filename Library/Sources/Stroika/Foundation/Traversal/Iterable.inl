@@ -245,12 +245,6 @@ namespace   Stroika {
                 return _fRep.GetSharingState ();
             }
             template    <typename T>
-            inline  const typename Iterable<T>::_IRep&   Iterable<T>::_ConstGetRep () const
-            {
-                EnsureNotNull (_fRep.cget ());
-                return *_fRep;
-            }
-            template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
                 return _SafeReadRepAccessor<> { this } ._ConstGetRep ().MakeIterator (this);
