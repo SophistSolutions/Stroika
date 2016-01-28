@@ -234,7 +234,7 @@ namespace   Stroika {
                 /*
                  *  Return the current Date (in LocalTime - local timezone)
                  */
-                static  Date        GetToday ();
+                static  Date        GetToday () noexcept;
 
             public:
                 /*
