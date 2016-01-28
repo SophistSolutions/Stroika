@@ -8,6 +8,8 @@
 #include    <shellapi.h>
 #include    <shlobj.h>
 #elif   qPlatform_POSIX
+#include    <sys/types.h>
+#include    <sys/stat.h>
 #include    <unistd.h>
 #endif
 #if     qPlatform_Linux
@@ -349,20 +351,31 @@ C:
 
 FileOffset_t    IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
 {
-#if     qPlatform_Windows
-    WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
-    return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
+    try {
+#if     qPlatform_POSIX
+        struct  stat    s {};
+        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        return s.st_size;
+#elif   qPlatform_Windows
+        WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+        return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
-    AssertNotImplemented ();
-    return 0;
+        AssertNotImplemented ();
+        return 0;
 #endif
+    }
+    Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
 }
 
 DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const String& fileName)
 {
     try {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+        struct  stat    s {};
+        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        return DateTime (s.st_mtime);
+#elif   qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
         ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
         return DateTime (fileAttrData.ftLastWriteTime);
@@ -377,7 +390,11 @@ DateTime        IO::FileSystem::FileSystem::GetFileLastModificationDate (const S
 DateTime    IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileName)
 {
     try {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+        struct  stat    s {};
+        ThrowErrNoIfNegative (::stat (fileName.AsNarrowSDKString ().c_str (), &s));
+        return DateTime (s.st_atime);
+#elif   qPlatform_Windows
         WIN32_FILE_ATTRIBUTE_DATA   fileAttrData {};
         ThrowIfFalseGetLastError (::GetFileAttributesExW (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
         return DateTime (fileAttrData.ftLastAccessTime);
