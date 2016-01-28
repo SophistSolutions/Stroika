@@ -44,7 +44,25 @@ using   Characters::String_Constant;
  */
 String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+    // @todo NYI createIfNotPresent - not sure we want/should???
+
+    // Cacheable because the environment variables should be set externally.
+    // This has the defect that it misses setenv calls, but that SB so rare,
+    // and not clearly a bug we ignore subsequent changes...
+    static  String  kCachedResult_ = [] () -> String {
+        // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
+        const char* pPath = ::getenv ("HOME");
+        if (pPath != nullptr)
+        {
+            return AssureDirectoryPathSlashTerminated (String::FromSDKString (pPath));
+        }
+        return String {  };
+    } ();
+    return kCachedResult_;
+#elif   qPlatform_Windows
+    // @todo DO overlaod with no args, so we can CACHE - like we do for POSIX!
+
     wchar_t   fileBuf[MAX_PATH] {};
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
     String result = fileBuf;
@@ -59,12 +77,6 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or Directory (result).Exists ());
     return result;
-#elif   qPlatform_POSIX
-    const char* pPath = getenv ("HOME");
-    if (pPath == nullptr) {
-        return String ();
-    }
-    return String::FromSDKString (pPath);
 #else
     AssertNotImplemented ();
     return String ();
@@ -83,7 +95,10 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
  */
 String FileSystem::WellKnownLocations::GetSpoolDirectory ()
 {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+    static  String  kVarSpool_  =   String_Constant { L"/var/spool/" };
+    return kVarSpool_;
+#elif   qPlatform_Windows
     /// Not sure what better than FOLDERID_ProgramData / "Spool"???
     SDKChar   fileBuf[MAX_PATH] {};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, false));
@@ -103,9 +118,6 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
     else {
         return String ();
     }
-#elif   qPlatform_POSIX
-    static  String  kVarSpool_  =   String_Constant (L"/var/spool/");
-    return kVarSpool_;
 #else
     AssertNotImplemented ();
     return String ();
@@ -124,7 +136,10 @@ String FileSystem::WellKnownLocations::GetSpoolDirectory ()
  */
 String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+    static  String  kVarLib_  =   String_Constant { L"/var/lib/" };
+    return kVarLib_;
+#elif   qPlatform_Windows
     SDKChar   fileBuf[MAX_PATH] {};
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
     SDKString result = fileBuf;
@@ -139,8 +154,6 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or Directory (String::FromSDKString (result)).Exists ());
     return String::FromSDKString (result);
-#elif   qPlatform_POSIX
-    return String_Constant (L"/var/lib/");
 #else
     AssertNotImplemented ();
     return String ();
@@ -209,21 +222,32 @@ String FileSystem::WellKnownLocations::GetWinSxS ()
  */
 String FileSystem::WellKnownLocations::GetTemporary ()
 {
-    String tempPath;
-#if     qPlatform_Windows
-    wchar_t   buf[1024];
+#if     qPlatform_POSIX
+    // Cacheable because the environment variables should be set externally.
+    // This has the defect that it misses setenv calls, but that SB so rare,
+    // and not clearly a bug we ignore subsequent changes...
+    static  String  kCachedResult_ = [] () -> String {
+        // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
+        const char* pPath = ::getenv ("TMPDIR");
+        if (pPath != nullptr)
+        {
+            return AssureDirectoryPathSlashTerminated (String::FromSDKString (pPath));
+        }
+        return String_Constant { L"/tmp/" };
+    } ();
+    return kCachedResult_;
+#elif   qPlatform_Windows
+    wchar_t   buf[4 * 1024];
     if (::GetTempPathW (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
-        tempPath = String_Constant (L"c:\\Temp\\");
+        return String_Constant { L"c:\\Temp\\" };
     }
     else {
-        tempPath = buf;
+        return AssureDirectoryPathSlashTerminated (buf);
     }
-#elif   qPlatform_POSIX
-    return String_Constant (L"/tmp/");
 #else
     AssertNotImplemented ();
+    return String_Constant { L"/tmp/" };
 #endif
-    return AssureDirectoryPathSlashTerminated (tempPath);
 }
 
 
@@ -236,21 +260,7 @@ String FileSystem::WellKnownLocations::GetTemporary ()
  */
 SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
 {
-    SDKString tempPath;
-#if     qPlatform_Windows
-    SDKChar   buf[1024];
-    if (::GetTempPath (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
-        tempPath = SDKSTR ("c:\\Temp\\");
-    }
-    else {
-        tempPath = AssureDirectoryPathSlashTerminated (String::FromSDKString (buf)).AsSDKString ();
-    }
-#elif   qPlatform_POSIX
-    return SDKSTR ("/tmp/");
-#else
-    AssertNotImplemented ();
-#endif
-    return tempPath;
+    return GetTemporary ().AsSDKString ();
 }
 
 
