@@ -3045,3 +3045,50 @@
    fun:_ZN7Stroika10Foundation10Containers7MappingINS0_10Characters6StringES4_NS1_13DefaultTraits7MappingIS4_S4_NS0_6Common21DefaultEqualsComparerIS4_NS7_18ComparerWithEqualsIS4_EEEEEEE3AddERKS4_SF_
 }
 
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZN7Stroika10Foundation2IO7Network4HTTP9Exception14IsHTTPStatusOKEj
+   fun:_ZNK7Stroika10Foundation2IO7Network8Transfer8Response12GetSucceededEv
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8Private_7T1_get_EN7Stroika10Foundation2IO7Network8Transfer10Connection7OptionsE
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB9BasicRep_9GetBoundsEv
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB7GetSizeEv
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB4sizeEv
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8Private_7T1_get_EN7Stroika10Foundation2IO7Network8Transfer10Connection7OptionsE
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB7GetSizeEv
+   fun:_ZNK7Stroika10Foundation6Memory4BLOB4sizeEv
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8Private_7T1_get_EN7Stroika10Foundation2IO7Network8Transfer10Connection7OptionsE
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
+
+{
+  <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:_ZN7Stroika11TestHarness5Test_EbPKcS2_i
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8Private_7T1_get_EN7Stroika10Foundation2IO7Network8Transfer10Connection7OptionsE
+   fun:_ZN12_GLOBAL__N_125Test_5_SSLCertCheckTests_8DoTests_Ev
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
