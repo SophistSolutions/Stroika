@@ -153,14 +153,9 @@ namespace   Stroika {
             {
                 return FromNarrowString (from.c_str (), from.c_str () + from.length (), l);
             }
-            inline  const String::_IRep&    String::ConstGetRep_ () const
-            {
-                EnsureMember (&inherited::_ConstGetRep (), String::_IRep);
-                return static_cast<const String::_IRep&> (inherited::_ConstGetRep ());   // static cast for performance sake - dynamic cast in Ensure
-            }
             inline  void    String::_AssertRepValidType () const
             {
-                EnsureMember (&inherited::_ConstGetRep (), String::_IRep);
+                EnsureMember (&_SafeReadRepAccessor { this } ._ConstGetRep (), String::_IRep);
             }
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
@@ -515,7 +510,7 @@ namespace   Stroika {
             {
                 // Since this is intrinsically un-threadsafe anyhow, dont bother making a threadsafe
                 // copy (_SafeReadRepAccessor) of the shared_ptr
-                if (const wchar_t* result = ConstGetRep_ ().c_str_peek ()) {
+                if (const wchar_t* result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ()) {
                     return result;
                 }
                 else {

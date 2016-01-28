@@ -1155,10 +1155,6 @@ namespace   Stroika {
                  */
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
-            private:
-                // Use _SafeReadRepAccessor instead
-                nonvirtual  const _IRep&    ConstGetRep_ () const;
-
             protected:
                 nonvirtual  void    _AssertRepValidType () const;
 

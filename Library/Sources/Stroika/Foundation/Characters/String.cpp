@@ -287,9 +287,7 @@ String::String (const char16_t* from, const char16_t* to)
     for (const char16_t* i = from; i != to; ++i) {
         Append (*i);
     }
-#if     qDebug
-    _ConstGetRep (); // just make sure non-null and right type
-#endif
+    _AssertRepValidType (); // just make sure non-null and right type
 }
 
 String::String (const char32_t* from, const char32_t* to)
@@ -302,9 +300,7 @@ String::String (const char32_t* from, const char32_t* to)
     for (const char32_t* i = from; i != to; ++i) {
         Append (*i);
     }
-#if     qDebug
-    _ConstGetRep (); // just make sure non-null and right type
-#endif
+    _AssertRepValidType (); // just make sure non-null and right type
 }
 
 namespace {
@@ -1205,17 +1201,20 @@ void    String::AsASCII (string* into) const
 
 const wchar_t*  String::c_str_ () const
 {
+    // @todo https://stroika.atlassian.net/browse/STK-444
+    //
     /*
      *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
      *  Access to this envelope MUST be externally synchronized or the returned bare pointer is doo-doo.
      */
-    const   wchar_t*    result = ConstGetRep_ ().c_str_peek ();
+    _SafeReadRepAccessor    accessor { this };
+    const   wchar_t*        result = accessor._ConstGetRep ().c_str_peek ();
     if (result == nullptr) {
-        pair<const Character*, const Character*> d = ConstGetRep_ ().GetData ();
+        pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         _SharedPtrIRep tmp = mk_(reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
         String* REALTHIS    =   const_cast<String*> (this);
         *REALTHIS = String (move (tmp));
-        result = ConstGetRep_ ().c_str_peek ();
+        result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ();
     }
     Ensure (result != nullptr);
     return result;
@@ -1223,7 +1222,10 @@ const wchar_t*  String::c_str_ () const
 
 void    String::erase (size_t from, size_t count)
 {
+    // https://stroika.atlassian.net/browse/STK-445
     // @todo - NOT ENVELOPE THREADSAFE
+    // MUST ACQUIRE ACCESSOR HERE - not just that RemoteAt threadsafe - but must SYNC at this point - need AssureExternallySycnonized stuff here!!!
+    //
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
     if (count == kBadIndex) {
