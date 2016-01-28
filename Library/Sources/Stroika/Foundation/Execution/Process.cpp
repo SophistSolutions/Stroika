@@ -43,7 +43,7 @@ bool    Execution::IsProcessRunning (pid_t pid)
     snprintf (buf, NEltsOf(buf), "/proc/%d", pid);
     if (::stat (buf, &sts) == -1 && errno == ENOENT) {
         // process doesn't exist
-        return true;
+        return false;
     }
     else {
         return true;
