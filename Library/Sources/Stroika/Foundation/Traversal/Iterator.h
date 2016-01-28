@@ -21,8 +21,7 @@
  *
  *  \file
  *
- *  @todo   qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr DOESNT WORK -
- *          probably not too hard to fix.
+ *  @todo   https://stroika.atlassian.net/browse/STK-446 - AssertExternallySynchronizedLock
  *
  *  @todo   Consider if we want to make the promise currently defined below in Equals()
  *          about iterating two originally equal iterators. The trouble is - this doesn
