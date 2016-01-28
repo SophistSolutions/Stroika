@@ -311,7 +311,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    Set_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-                    AssertMember (&inherited::template _SafeReadRepAccessor<Rep_> { this } ._ConstGetRep (), Rep_);
+#if     qDebug
+                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMember
+#endif
                 }
 
 
