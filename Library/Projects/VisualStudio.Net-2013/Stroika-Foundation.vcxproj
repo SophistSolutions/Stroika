@@ -1539,14 +1539,12 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
