@@ -27,45 +27,50 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
 #endif
-            DateTime::DateTime ()
-                : fTimezone_ (Timezone::eUnknown)
-                , fDate_ ()
-                , fTimeOfDay_ ()
+            DateTime::DateTime () noexcept
+:
+            fTimezone_ (Timezone::eUnknown)
+            , fDate_ ()
+            , fTimeOfDay_ ()
             {
             }
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
 #endif
-            DateTime::DateTime (const Date& d)
-                : fTimezone_ (Timezone::eUnknown)
-                , fDate_ (d)
-                , fTimeOfDay_ ()
+            DateTime::DateTime (const Date& d) noexcept
+:
+            fTimezone_ (Timezone::eUnknown)
+            , fDate_ (d)
+            , fTimeOfDay_ ()
             {
             }
-            inline  DateTime::DateTime (const DateTime& dt, const Date& updateDate)
-                : fTimezone_ (dt.GetTimezone ())
-                , fDate_ (updateDate)
-                , fTimeOfDay_ (dt.GetTimeOfDay ())
+            inline  DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
+:
+            fTimezone_ (dt.GetTimezone ())
+            , fDate_ (updateDate)
+            , fTimeOfDay_ (dt.GetTimeOfDay ())
             {
             }
-            inline  DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD)
-                : fTimezone_ (dt.GetTimezone ())
-                , fDate_ (dt.GetDate ())
-                , fTimeOfDay_ (updateTOD)
+            inline  DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
+:
+            fTimezone_ (dt.GetTimezone ())
+            , fDate_ (dt.GetDate ())
+            , fTimeOfDay_ (updateTOD)
             {
             }
             inline
 #if     !qCompilerAndStdLib_constexpr_Buggy
             constexpr
 #endif
-            DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
-                : fTimezone_ (tz)
-                , fDate_ (date)
-                , fTimeOfDay_ (timeOfDay)
+            DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz) noexcept
+:
+            fTimezone_ (tz)
+            , fDate_ (date)
+            , fTimeOfDay_ (timeOfDay)
             {
             }
-            inline  constexpr   bool    DateTime::empty () const
+            inline  constexpr   bool    DateTime::empty () const noexcept
             {
                 // Risky change so late in the game - but this logic seems wrong (and causes some trouble).
                 // DateTime is NOT empty just because date part is empty. We CAN use a DateTime record to store JUST a time!
@@ -76,11 +81,11 @@ namespace   Stroika {
                 // if the Date part is empty...
                 return fDate_.empty ();
             }
-            inline  constexpr   Date    DateTime::GetDate () const
+            inline  constexpr   Date    DateTime::GetDate () const noexcept
             {
                 return fDate_;
             }
-            inline  constexpr   TimeOfDay   DateTime::GetTimeOfDay () const
+            inline  constexpr   TimeOfDay   DateTime::GetTimeOfDay () const noexcept
             {
                 return fTimeOfDay_;
             }
@@ -89,11 +94,10 @@ namespace   Stroika {
             {
                 return fDate_;
             }
-            inline  Date    DateTime::GetToday ()
-            {
+            inline  Date    DateTime::GetToday () noexcept {
                 return Now ().GetDate ();
             }
-            inline  DateTime::Timezone  DateTime::GetTimezone () const
+            inline  DateTime::Timezone  DateTime::GetTimezone () const noexcept
             {
                 return fTimezone_;
             }

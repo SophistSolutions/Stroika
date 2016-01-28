@@ -375,8 +375,7 @@ DateTime    DateTime::AsUTC () const
     }
 }
 
-DateTime    DateTime::Now ()
-{
+DateTime    DateTime::Now () noexcept {
 #if     qPlatform_Windows
     SYSTEMTIME  st {};
     ::GetLocalTime (&st);

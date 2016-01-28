@@ -150,17 +150,17 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
 #endif
-                DateTime ();
+                DateTime () noexcept;
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
 #endif
-                DateTime (const Date& d);
-                DateTime (const DateTime& dt, const Date& updateDate);
-                DateTime (const DateTime& dt, const TimeOfDay& updateTOD);
+                DateTime (const Date& d) noexcept;
+                DateTime (const DateTime& dt, const Date& updateDate) noexcept;
+                DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr
 #endif
-                DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown);
+                DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown) noexcept;
 
             public:
                 /**
@@ -168,29 +168,29 @@ namespace   Stroika {
                  *  the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
                  *  or unknown it will convert it to a localtime value.
                  */
-                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown);
+                explicit DateTime (time_t unixTime, Timezone tz = Timezone::eUnknown) noexcept;
 
                 /*
                  */
-                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown);
+                explicit DateTime (const tm& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
 
 
 #if     qPlatform_POSIX
             public:
-                explicit DateTime (const timeval& tmTime, Timezone tz = Timezone::eUnknown);
-                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown);
+                explicit DateTime (const timeval& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
+                explicit DateTime (const timespec& tmTime, Timezone tz = Timezone::eUnknown) noexcept;
 #endif
 
 #if     qPlatform_Windows
             public:
-                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime);
+                explicit DateTime (const SYSTEMTIME& sysTime, Timezone tz = Timezone::eLocalTime) noexcept;
 
                 /*
                  *  Most windows APIs return filetimes in UTC (or so it appears). Because of this,
                  *  our default interpretation of a FILETIME structure as as UTC.
                  *  Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  */
-                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC);
+                explicit DateTime (const FILETIME& fileTime, Timezone tz = Timezone::eUTC) noexcept;
 #endif
 
             public:
@@ -222,13 +222,13 @@ namespace   Stroika {
                  *  DateTime - use TimeOfDay by itself if thats what you want).
                  *  Timezone is ignored for the purpose of 'empty' check.
                  */
-                nonvirtual  constexpr   bool    empty () const;
+                nonvirtual  constexpr   bool    empty () const noexcept;
 
             public:
                 /*
                  *  Return the current DateTime (in LocalTime)
                  */
-                static  DateTime    Now ();
+                static  DateTime    Now () noexcept;
 
             public:
                 /*
@@ -257,7 +257,7 @@ namespace   Stroika {
 #endif
 
             public:
-                nonvirtual  Timezone    GetTimezone () const;
+                nonvirtual  Timezone    GetTimezone () const noexcept;
 
             public:
                 /**
@@ -367,10 +367,10 @@ namespace   Stroika {
                 nonvirtual  T   As () const;
 
             public:
-                nonvirtual  constexpr   Date        GetDate () const;       // careful of timezone issues? (always in current timezone - I guess)
+                nonvirtual  constexpr   Date        GetDate () const noexcept;       // careful of timezone issues? (always in current timezone - I guess)
 
             public:
-                nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const;  // ditto
+                nonvirtual  constexpr   TimeOfDay   GetTimeOfDay () const noexcept;  // ditto
 
             public:
                 /**
