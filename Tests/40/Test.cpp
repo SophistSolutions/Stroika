@@ -58,7 +58,13 @@ namespace {
                 }
 #if     qHasFeature_LibCurl
                 catch (const LibCurlException& lce) {
-                    DbgTrace ("Warning - ignored exception doing lubcurl/ssl - for now probably just no SSL support with libcurl");
+#if     !qHasFeature_OpenSSL
+                    if (lce.GetCode () == 1/*CURLE_UNSUPPORTED_PROTOCOL*/) {
+                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
+                        return;
+                    }
+#endif
+                    throw;
                 }
 #else
                 catch (...) {
@@ -336,10 +342,27 @@ namespace {
             void    T1_get_ (Connection::Options o)
             {
                 Connection  c   =   IO::Network::Transfer::CreateConnection (o);
-                c.SetURL (URL::Parse (L"https://testssl-valid.disig.sk/index.en.html"));
-                Response    r   =   c.GET ();
-                VerifyTestResult (r.GetSucceeded ());
-                VerifyTestResult (r.GetData ().size () > 1);
+                try {
+                    c.SetURL (URL::Parse (L"https://testssl-valid.disig.sk/index.en.html"));
+                    Response    r   =   c.GET ();
+                    VerifyTestResult (r.GetSucceeded ());
+                    VerifyTestResult (r.GetData ().size () > 1);
+                }
+#if     qHasFeature_LibCurl
+                catch (const LibCurlException& lce) {
+#if     !qHasFeature_OpenSSL
+                    if (lce.GetCode () == 1/*CURLE_UNSUPPORTED_PROTOCOL*/) {
+                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
+                        return;
+                    }
+#endif
+                    throw;
+                }
+#else
+                catch (...) {
+                    throw;
+                }
+#endif
             }
         }
         void    DoTests_ ()
