@@ -341,7 +341,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertMember (&inherited::template _SafeReadRepAccessor<Rep_> { this } ._ConstGetRep (), Rep_);
                 }
 
 

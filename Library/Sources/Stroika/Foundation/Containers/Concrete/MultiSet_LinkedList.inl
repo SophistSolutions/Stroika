@@ -371,7 +371,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertMember (&inherited::template _SafeReadRepAccessor<Rep_> { this } ._ConstGetRep (), Rep_);
                 }
 
 
@@ -379,6 +379,5 @@ namespace   Stroika {
         }
     }
 }
-
 
 #endif /* _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_inl_ */

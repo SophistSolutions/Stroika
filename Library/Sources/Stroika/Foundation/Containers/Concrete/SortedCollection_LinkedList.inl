@@ -309,7 +309,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  void    SortedCollection_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
-                    AssertMember (&inherited::_ConstGetRep (), Rep_);
+                    AssertMember (&inherited::template _SafeReadRepAccessor<Rep_> { this } ._ConstGetRep (), Rep_);
                 }
 
 
