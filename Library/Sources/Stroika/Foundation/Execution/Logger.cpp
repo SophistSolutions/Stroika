@@ -276,7 +276,7 @@ void    Logger::Log (Priority logLevel, String format, ...)
 {
     va_list     argsList;
     va_start (argsList, format);
-    DbgTrace (L"Logger::Log (%s, %s...)", Characters::ToString (logLevel).c_str (), Characters::FormatV (format.c_str (), argsList).c_str ());
+    DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), Characters::FormatV (format.c_str (), argsList).c_str ());
     if (WouldLog (logLevel)) {
         Log_ (logLevel, format, argsList);
     }

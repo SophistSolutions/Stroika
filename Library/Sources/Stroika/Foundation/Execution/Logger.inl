@@ -38,7 +38,7 @@ namespace   Stroika {
             }
             inline  bool    Logger::WouldLog (Priority logLevel)
             {
-                return logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_.get () != nullptr;
+                return logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_ != nullptr;
             }
             inline  bool        Logger::GetBufferingEnabled ()
             {

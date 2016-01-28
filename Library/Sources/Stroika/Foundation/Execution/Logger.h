@@ -24,6 +24,8 @@
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
  *              by specifying hardwired/hacked values in the CTOR args.
+ *
+ *      @todo   Fix IAppenderRepPtr to be protected in teh logger with synchonized.
  */
 
 
@@ -61,12 +63,15 @@ namespace   Stroika {
              *  SetLoggingAppender ();
              *
              *      This logging API CANNOT be used before main () has started, or after main () has completed
-             *  [if we choose to allow that we must use ModuleInit, but since this requires a call to setup a
-             *  logger, that seems unlikely]
+             *  (because this requires a call to setup a logger).
              *
+             *  \note Future Note
+             *      Some future version MIGHT handle this through some static configuration mechanism,
+             *  which might then allow this (such as environment variables, linked variables etc).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  @see DbgTrace
              */
             class   Logger final    {
             public:
