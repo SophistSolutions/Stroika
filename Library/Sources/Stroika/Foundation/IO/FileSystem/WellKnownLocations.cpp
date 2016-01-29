@@ -243,19 +243,12 @@ namespace {
     SDKString GetTemporary_ ()
     {
 #if     qPlatform_POSIX
-        // Cacheable because the environment variables should be set externally.
-        // This has the defect that it misses setenv calls, but that SB so rare,
-        // and not clearly a bug we ignore subsequent changes...
-        static  SDKString  kCachedResult_ = [] () -> SDKString {
-            // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
-            const char* pPath = ::getenv ("TMPDIR");
-            if (pPath != nullptr)
-            {
-                return AssureDirectoryPathSlashTerminated_ (pPath);
-            }
-            return L"/tmp/";
-        } ();
-        return kCachedResult_;
+        // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
+        const char* pPath = ::getenv ("TMPDIR");
+        if (pPath != nullptr) {
+            return AssureDirectoryPathSlashTerminated_ (pPath);
+        }
+        return "/tmp/";
 #elif   qPlatform_Windows
         // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
         SDKChar   buf[4 * 1024];
