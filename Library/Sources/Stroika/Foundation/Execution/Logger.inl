@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Characters/Format.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
