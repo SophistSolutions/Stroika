@@ -897,6 +897,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{F9A779C0-E
 		..\Unix\Makefile-Foundation-IO-FileSystem = ..\Unix\Makefile-Foundation-IO-FileSystem
 		..\Unix\Makefile-Foundation-IO-Network = ..\Unix\Makefile-Foundation-IO-Network
 		..\Unix\Makefile-Foundation-IO-Network-HTTP = ..\Unix\Makefile-Foundation-IO-Network-HTTP
+		..\Unix\Makefile-Foundation-IO-Network-SOAP = ..\Unix\Makefile-Foundation-IO-Network-SOAP
 		..\Unix\Makefile-Foundation-IO-Network-Transfer = ..\Unix\Makefile-Foundation-IO-Network-Transfer
 		..\Unix\Makefile-Foundation-Linguistics = ..\Unix\Makefile-Foundation-Linguistics
 		..\Unix\Makefile-Foundation-Math = ..\Unix\Makefile-Foundation-Math

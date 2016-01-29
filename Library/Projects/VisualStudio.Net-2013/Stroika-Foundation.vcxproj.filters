@@ -181,6 +181,9 @@
     <Filter Include="Sources\Containers\Factory">
       <UniqueIdentifier>{5ef803bc-e51c-4c0b-a351-a70027d1d3fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\IO\Network\SOAP">
+      <UniqueIdentifier>{ba31ae7a-0f83-425a-aaf3-2b69830611fc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -743,6 +746,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
       <Filter>Sources\Traversal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp">
+      <Filter>Sources\IO\Network\SOAP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1782,6 +1788,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h">
+      <Filter>Sources\IO\Network\SOAP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2693,6 +2702,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.inl">
+      <Filter>Sources\IO\Network\SOAP</Filter>
     </None>
   </ItemGroup>
 </Project>
