@@ -25,7 +25,7 @@ using   namespace   Stroika::Foundation::IO::Network::SOAP;
  ********************** Network::SOAP::Deserialize ******************************
  ********************************************************************************
  */
-Optional<Fault> SOAP::Deserialize (const Streams::InputStream<Byte>& from)
+Optional<Fault> SOAP::Deserialize_Fault (const Streams::InputStream<Byte>& from)
 {
     static const   ObjectReaderRegistry kSOAPTypeMapper_ = [] () -> ObjectReaderRegistry {
         using   namespace DataExchange::StructuredStreamEvents;
@@ -53,4 +53,9 @@ Optional<Fault> SOAP::Deserialize (const Streams::InputStream<Byte>& from)
         // not a bug, but a feature...
         return  Optional<Fault> {};
     }
+}
+
+Optional<Fault> SOAP::Deserialize_Fault (const Memory::BLOB& from)
+{
+    return from.As<Streams::InputStream<Byte>> ();
 }

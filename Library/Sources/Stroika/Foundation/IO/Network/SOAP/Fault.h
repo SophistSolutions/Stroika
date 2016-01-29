@@ -14,6 +14,7 @@
 
 /*
  * TODO:
+ *      INSANELY SUPER PRELIMINARY/INCOMPLETE
  */
 
 
@@ -38,7 +39,8 @@ namespace   Stroika {
                         String  faultstring;
                         //BLOB    detail;     // NYI
                     };
-                    Optional<Fault> Deserialize (const Streams::InputStream<Byte>& from);
+                    Optional<Fault> Deserialize_Fault (const Streams::InputStream<Byte>& from);
+                    Optional<Fault> Deserialize_Fault (const Memory::BLOB& from);
 
 
                 }
