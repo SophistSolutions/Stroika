@@ -240,7 +240,7 @@ namespace   Stroika {
                 static  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
 
             private:
-                static  void    Log_ (Priority logLevel, const String& format, va_list argList);
+                static  void    Log_ (Priority logLevel, const String& msg);
 
             private:
                 static  void    FlushDupsWarning_ ();

@@ -50,8 +50,9 @@ namespace   Stroika {
                 if (WouldLog (logLevel)) {
                     va_list     argsList;
                     va_start (argsList, format);
-                    Log_ (logLevel, format, argsList);
+                    String      msg     =   Characters::FormatV (format.c_str (), argsList);
                     va_end (argsList);
+                    Log_ (logLevel, msg);
                 }
             }
 #endif

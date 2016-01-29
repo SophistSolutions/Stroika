@@ -120,11 +120,11 @@ void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
     fAppender_ = rep;
 }
 
-void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
+void    Logger::Log_ (Priority logLevel, const String& msg)
 {
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {
-        auto p = pair<Logger::Priority, String> (logLevel, Characters::FormatV (format.c_str (), argList));
+        auto p = pair<Priority, String> (logLevel, msg);
         if (sSuppressDuplicatesThreshold_->IsPresent ()) {
             auto    lastMsgLocked = sLastMsg_.GetReference ();
             if (p == lastMsgLocked->fLastMsgSent_) {
@@ -277,14 +277,15 @@ void    Logger::Log (Priority logLevel, String format, ...)
 {
     va_list     argsList;
     va_start (argsList, format);
-    DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), Characters::FormatV (format.c_str (), argsList).c_str ());
+    String      msg     =   Characters::FormatV (format.c_str (), argsList);
+    va_end (argsList);
+    DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), msg.c_str ());
     if (WouldLog (logLevel)) {
-        Log_ (logLevel, format, argsList);
+        Log_ (logLevel, msg);
     }
     else {
         DbgTrace (L"...suppressed by WouldLog");
     }
-    va_end (argsList);
 }
 #endif
 
@@ -294,21 +295,19 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
     static  Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>>   sMsgSentMaybeSuppressed_;
     va_list     argsList;
     va_start (argsList, format);
-    String  msg     =   Characters::FormatV (format.c_str (), argsList);
+    String      msg     =   Characters::FormatV (format.c_str (), argsList);
+    va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
         if (not sMsgSentMaybeSuppressed_->Lookup (pair<Priority, String> { logLevel, msg }, sMsgSentMaybeSuppressed_->Ago (suppressionTimeWindow), false)) {
-            Log_ (logLevel, format, argsList);
+            Log_ (logLevel, msg);
             sMsgSentMaybeSuppressed_->Add (pair<Priority, String> { logLevel, msg }, true);
         }
     }
     else {
         DbgTrace (L"...suppressed by WouldLog");
     }
-    va_end (argsList);
 }
-
-
 
 
 
@@ -330,18 +329,18 @@ namespace   {
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
     : fApplicationName_ (mkMsg_ (applicationName))
 {
-    openlog (fApplicationName_.c_str (), 0, LOG_DAEMON);    // not sure what facility to pass?
+    ::openlog (fApplicationName_.c_str (), 0, LOG_DAEMON);    // not sure what facility to pass?
 }
 
 Logger::SysLogAppender::SysLogAppender (const String& applicationName, int facility)
     : fApplicationName_ (mkMsg_ (applicationName))
 {
-    openlog (fApplicationName_.c_str (), 0, facility);
+    ::openlog (fApplicationName_.c_str (), 0, facility);
 }
 
 Logger::SysLogAppender::~SysLogAppender ()
 {
-    closelog ();
+    ::closelog ();
 }
 
 void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
@@ -376,7 +375,7 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
         default:
             RequireNotReached ();
     }
-    syslog (sysLogLevel, "%s", message.AsNarrowSDKString ().c_str ());
+    ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString ().c_str ());
 }
 #endif
 
