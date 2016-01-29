@@ -18,6 +18,9 @@
  *
  * TODO:
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-449 and ache::CallerStalenessCache should support
+ *              second template argument VALUE=void
+ *
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.
  *
  *      @todo   Consider defect - easy to misinterpret 'TimeStampType staleIfOlderThan' arg to Lookup()
