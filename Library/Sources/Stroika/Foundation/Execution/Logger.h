@@ -8,9 +8,9 @@
 
 #include    <cstdarg>
 
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Enumeration.h"
-#include    "../Characters/String.h"
 #include    "../Debug/Assertions.h"
 #include    "../Memory/Optional.h"
 #include    "../Time/Realtime.h"
@@ -229,6 +229,15 @@ namespace   Stroika {
                  *      is no parameter, the behavior is undeﬁned.
                  */
                 static  void    Log (Priority logLevel, String format, ...); // varargs logger
+
+            public:
+                /**
+                 *  \brief  Like Log() - but taking an extra parameter which filters out identical messages,
+                 *          if they've occurred in the suppressionTimeWindow
+                 *
+                 *  @see Log
+                 */
+                static  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
 
             private:
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);

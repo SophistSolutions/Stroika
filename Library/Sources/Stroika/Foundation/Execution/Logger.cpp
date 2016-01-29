@@ -7,6 +7,7 @@
 #include    <syslog.h>
 #endif
 
+#include    "../Cache/CallerStalenessCache.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/ToString.h"
@@ -286,6 +287,29 @@ void    Logger::Log (Priority logLevel, String format, ...)
     va_end (argsList);
 }
 #endif
+
+void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
+{
+    Require (suppressionTimeWindow > 0);
+    static  Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>>   sMsgSentMaybeSuppressed_;
+    va_list     argsList;
+    va_start (argsList, format);
+    String  msg     =   Characters::FormatV (format.c_str (), argsList);
+    DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
+    if (WouldLog (logLevel)) {
+        if (not sMsgSentMaybeSuppressed_->Lookup (pair<Priority, String> { logLevel, msg }, sMsgSentMaybeSuppressed_->Ago (suppressionTimeWindow), false)) {
+            Log_ (logLevel, format, argsList);
+            sMsgSentMaybeSuppressed_->Add (pair<Priority, String> { logLevel, msg }, true);
+        }
+    }
+    else {
+        DbgTrace (L"...suppressed by WouldLog");
+    }
+    va_end (argsList);
+}
+
+
+
 
 
 
