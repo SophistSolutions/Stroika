@@ -220,35 +220,66 @@ String FileSystem::WellKnownLocations::GetWinSxS ()
  ************* FileSystem::WellKnownLocations::GetTemporary *********************
  ********************************************************************************
  */
+namespace {
+    SDKString AssureDirectoryPathSlashTerminated_ (const SDKString& dirPath)
+    {
+        if (dirPath.empty ()) {
+            AssertNotReached ();    // not sure if this is an error or not. Not sure how code used.
+            // put assert in there to find out... Probably should THROW!
+            //      -- LGP 2009-05-12
+            SDKChar tmp = FileSystem::kPathComponentSeperator;
+            return SDKString (&tmp, &tmp + 1);
+        }
+        else {
+            SDKChar   lastChar = dirPath[dirPath.size () - 1];
+            if (lastChar == kPathComponentSeperator) {
+                return dirPath;
+            }
+            SDKString result  =   dirPath;
+            result += kPathComponentSeperator;
+            return result;
+        }
+    }
+    SDKString GetTemporary_ ()
+    {
+#if     qPlatform_POSIX
+        // Cacheable because the environment variables should be set externally.
+        // This has the defect that it misses setenv calls, but that SB so rare,
+        // and not clearly a bug we ignore subsequent changes...
+        static  SDKString  kCachedResult_ = [] () -> SDKString {
+            // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
+            const char* pPath = ::getenv ("TMPDIR");
+            if (pPath != nullptr)
+            {
+                return AssureDirectoryPathSlashTerminated_ (pPath);
+            }
+            return L"/tmp/";
+        } ();
+        return kCachedResult_;
+#elif   qPlatform_Windows
+        // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
+        SDKChar   buf[4 * 1024];
+        if (::GetTempPath (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
+            return SDKSTR ("c:\\Temp\\");
+        }
+        else {
+            return AssureDirectoryPathSlashTerminated_ (buf);
+        }
+#else
+        AssertNotImplemented ();
+        return SDKSTR ( L"/tmp/" );
+#endif
+    }
+}
+
 String FileSystem::WellKnownLocations::GetTemporary ()
 {
-#if     qPlatform_POSIX
     // Cacheable because the environment variables should be set externally.
     // This has the defect that it misses setenv calls, but that SB so rare,
     // and not clearly a bug we ignore subsequent changes...
-    static  String  kCachedResult_ = [] () -> String {
-        // http://pubs.opengroup.org/onlinepubs/000095399/basedefs/xbd_chap08.html
-        const char* pPath = ::getenv ("TMPDIR");
-        if (pPath != nullptr)
-        {
-            return AssureDirectoryPathSlashTerminated (String::FromSDKString (pPath));
-        }
-        return String_Constant { L"/tmp/" };
-    } ();
+    static  String  kCachedResult_ = String::FromSDKString (GetTemporary_ ());
     return kCachedResult_;
-#elif   qPlatform_Windows
-    // NB: internally GetTempPath looks at ENV VAR TMP, then TEMP, etc...
-    wchar_t   buf[4 * 1024];
-    if (::GetTempPathW (static_cast<DWORD> (NEltsOf (buf)), buf) == 0) {
-        return String_Constant { L"c:\\Temp\\" };
-    }
-    else {
-        return AssureDirectoryPathSlashTerminated (buf);
-    }
-#else
-    AssertNotImplemented ();
-    return String_Constant { L"/tmp/" };
-#endif
+
 }
 
 
@@ -261,8 +292,11 @@ String FileSystem::WellKnownLocations::GetTemporary ()
  */
 SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
 {
-    // @todo see if we can deprecate this function.
-    return GetTemporary ().AsSDKString ();
+    // Cacheable because the environment variables should be set externally.
+    // This has the defect that it misses setenv calls, but that SB so rare,
+    // and not clearly a bug we ignore subsequent changes...
+    static  SDKString  kCachedResult_ = GetTemporary_ ();
+    return kCachedResult_;
 }
 
 

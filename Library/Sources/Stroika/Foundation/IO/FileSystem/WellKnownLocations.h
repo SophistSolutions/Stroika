@@ -99,6 +99,10 @@ namespace   Stroika {
                      *      This returns the directory where an appliation may write temporary files -
                      *      files which should not be preserved across reboots (though the OS may not enforce this).
                      *      This directory may or may not be current-user-specific.
+                     *
+                     *  \note   The 'T' variant of the function has fewer dependencies on other Stroika components
+                     *          than the GetTemporary () function, and that is critical to its use in
+                     *          the DbgTrace () code when tracing to a temporary file.
                      */
                     String      GetTemporary ();
                     SDKString   GetTemporaryT ();
