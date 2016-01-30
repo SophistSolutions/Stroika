@@ -292,14 +292,19 @@ void    Logger::Log (Priority logLevel, String format, ...)
 void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
 {
     Require (suppressionTimeWindow > 0);
-    static  Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>>   sMsgSentMaybeSuppressed_;
+    static  atomic<Time::DurationSecondsType>                                       sMaxWindow_ {};
+    sMaxWindow_.store (max (suppressionTimeWindow, sMaxWindow_.load ()));   // doesn't need to be synchonized
+    static  Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> sMsgSentMaybeSuppressed_;
     va_list     argsList;
     va_start (argsList, format);
     String      msg     =   Characters::FormatV (format.c_str (), argsList);
     va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (not sMsgSentMaybeSuppressed_->Lookup (pair<Priority, String> { logLevel, msg }, sMsgSentMaybeSuppressed_->Ago (suppressionTimeWindow), false)) {
+        if (sMsgSentMaybeSuppressed_->Lookup (pair<Priority, String> { logLevel, msg }, sMsgSentMaybeSuppressed_->Ago (suppressionTimeWindow), false)) {
+            DbgTrace (L"...suppressed by sMsgSentMaybeSuppressed_->Lookup ()");
+        }
+        else {
             Log_ (logLevel, msg);
             sMsgSentMaybeSuppressed_->Add (pair<Priority, String> { logLevel, msg }, true);
         }
@@ -307,6 +312,12 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
     else {
         DbgTrace (L"...suppressed by WouldLog");
     }
+    /*
+     *  Spend a modicum of effort, so that at least very old strings are purged. This limits how large a cache sMsgSentMaybeSuppressed_
+     *  can become.
+     */
+    constexpr   double  kCleanupFactor_ { 2.0 };
+    sMsgSentMaybeSuppressed_->ClearOlderThan (sMsgSentMaybeSuppressed_->Ago (sMaxWindow_.load () * kCleanupFactor_));
 }
 
 
