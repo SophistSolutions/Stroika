@@ -169,15 +169,15 @@ LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
 
 ifeq ($(qFeatureFlag_OpenSSL), use)
-#AVOID
+#Avoid:
 #	configure:21566: pkg-config: SSL_LIBS: "-lssl -lcrypto "
 #	configure:21568: pkg-config: SSL_LDFLAGS: "-L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib "
 #	configure:21570: pkg-config: SSL_CPPFLAGS: "-I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include "
 #	configure:21582: checking for HMAC_Update in -lcrypto
 #	configure:21604: gcc -o conftest -g -O0 -pedantic -Wall -W -Wpointer-arith -Wwrite-strings -Wunused -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wno-long-long -Wfloat-equal -Wno-multichar -Wsign-compare -Wundef -Wno-format-nonliteral -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wstrict-aliasing=3 -Wcast-align -Wtype-limits -Wold-style-declaration -Wmissing-parameter-type -Wempty-body -Wclobbered -Wignored-qualifiers -Wconversion -Wno-sign-conversion -Wvla -Wno-system-headers -DDEBUGBUILD -DCURLDEBUG -isystem /include -I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include   -L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib  conftest.c -lcrypto  -lssl -lcrypto   >&5
 #	conftest.c:57:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
- #	char HMAC_Update ();
- #	^
+#	char HMAC_Update ();
+#	^
 #	/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib/libcrypto.a(dso_dlfcn.o): In function `dlfcn_globallookup':
 #	dso_dlfcn.c:(.text+0x11): undefined reference to `dlopen'
 #	dso_dlfcn.c:(.text+0x24): undefined reference to `dlsym'
