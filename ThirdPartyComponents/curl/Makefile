@@ -101,13 +101,13 @@ doCreate:	$(ZIPPEDFILE)
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
-#PKG_CONFIG_PATH=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
+PKG_CONFIG_PATH=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 endif
 endif
 
 PKG_CONFIG_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
-#PKG_CONFIG_CONFIGURE_PREFIX=export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+PKG_CONFIG_CONFIGURE_PREFIX=export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
 endif
 
 
@@ -168,6 +168,25 @@ endif
 LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
 
+ifeq ($(qFeatureFlag_OpenSSL), use)
+#AVOID
+#	configure:21566: pkg-config: SSL_LIBS: "-lssl -lcrypto "
+#	configure:21568: pkg-config: SSL_LDFLAGS: "-L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib "
+#	configure:21570: pkg-config: SSL_CPPFLAGS: "-I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include "
+#	configure:21582: checking for HMAC_Update in -lcrypto
+#	configure:21604: gcc -o conftest -g -O0 -pedantic -Wall -W -Wpointer-arith -Wwrite-strings -Wunused -Wshadow -Winline -Wnested-externs -Wmissing-declarations -Wmissing-prototypes -Wno-long-long -Wfloat-equal -Wno-multichar -Wsign-compare -Wundef -Wno-format-nonliteral -Wendif-labels -Wstrict-prototypes -Wdeclaration-after-statement -Wstrict-aliasing=3 -Wcast-align -Wtype-limits -Wold-style-declaration -Wmissing-parameter-type -Wempty-body -Wclobbered -Wignored-qualifiers -Wconversion -Wno-sign-conversion -Wvla -Wno-system-headers -DDEBUGBUILD -DCURLDEBUG -isystem /include -I/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/include   -L/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib  conftest.c -lcrypto  -lssl -lcrypto   >&5
+#	conftest.c:57:1: warning: function declaration isn't a prototype [-Wstrict-prototypes]
+ #	char HMAC_Update ();
+ #	^
+#	/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/ThirdPartyComponents/lib/libcrypto.a(dso_dlfcn.o): In function `dlfcn_globallookup':
+#	dso_dlfcn.c:(.text+0x11): undefined reference to `dlopen'
+#	dso_dlfcn.c:(.text+0x24): undefined reference to `dlsym'
+#	dso_dlfcn.c:(.text+0x2f): undefined reference to `dlclose'
+#
+LIBCURL_CONFIGURE +=  LIBS='-ldl'
+endif
+
+
 
 doPatching_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Curl...";
@@ -184,14 +203,14 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT..."
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Configure (see CURRENT/CONFIGURE.OUT)..."
-	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
-	@cd CURRENT && (export CC="$(CC)";$(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
+	@cd CURRENT && (export CC="$(CC)";$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building (see CURRENT/MAKE.OUT)..."
 	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) ".Building libcurl CURRENT into $(BUILDS_DIR)..."
