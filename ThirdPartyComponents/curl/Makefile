@@ -16,9 +16,7 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-#https://stroika.atlassian.net/browse/STK-419
-#VERSION=7_46_0
-VERSION=7_45_0
+VERSION=7_47_0
 BASENAME=curl-curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -165,6 +163,8 @@ LIBCURL_CONFIGURE += --disable-debug
 LIBCURL_CONFIGURE += --enable-optimize
 LIBCURL_CONFIGURE += --disable-curldebug
 endif
+#seems illrelevant for us one way or the other, but breaks building for centos5.8 - https://stroika.atlassian.net/browse/STK-419
+LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
 
 doBuilds:
