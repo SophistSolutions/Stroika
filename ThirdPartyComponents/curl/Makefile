@@ -97,18 +97,18 @@ doCreate:	$(ZIPPEDFILE)
 	@$(ECHO) "done"
 
 
-#note - we override PKG_CONFIG because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
+#note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
 #didn't work (failed to find crypto lib)
-PKG_CONFIG=
+PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
-PKG_CONFIG=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
+PKG_CONFIG_PATH=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 endif
 endif
 
 PKG_CONFIG_CONFIGURE_PREFIX=
-ifneq (,$(PKG_CONFIG))
-PKG_CONFIG_CONFIGURE_PREFIX=	env PKG_CONFIG=$(PKG_CONFIG)
+ifneq (,$(PKG_CONFIG_PATH))
+PKG_CONFIG_CONFIGURE_PREFIX=	env PKG_CONFIG=$(PKG_CONFIG_PATH)
 endif
 
 
@@ -126,7 +126,7 @@ LIBCURL_CONFIGURE =
 LIBCURL_CONFIGURE += $(CONFIGURE_ARGS)
 LIBCURL_CONFIGURE += --enable-static
 ifeq ($(qFeatureFlag_OpenSSL), use)
-#finds right one through PKG_CONFIG
+#finds right one through PKG_CONFIG_PATH
 LIBCURL_CONFIGURE += --with-ssl
 endif
 ifeq ($(qFeatureFlag_OpenSSL), use-system)
