@@ -84,6 +84,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory doCreate CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
+	@$(MAKE) --no-print-directory doPatching_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 	@$(MAKE) --no-print-directory doBuilds CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 
 
@@ -166,7 +167,13 @@ endif
 #seems illrelevant for us one way or the other, but breaks building for centos5.8 - https://stroika.atlassian.net/browse/STK-419
 LIBCURL_CONFIGURE += --without-zsh-functions-dir
 
-HACK_ZSH_WORKAROUND=ZSH_FUNCTIONS_DIR=/tmp
+
+
+doPatching_:
+	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Curl...";
+	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
+	@$(ECHO) "done"
+
 
 doBuilds:
 ifeq ($(CONFIGURATION),)
@@ -180,8 +187,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
 	@cd CURRENT && (export CC="$(CC)";$(PKG_CONFIG_CONFIGURE_PREFIX) ./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building (see CURRENT/MAKE.OUT)..."
-	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" $(HACK_ZSH_WORKAROUND) > CURRENT/MAKE.OUT
-	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" $(HACK_ZSH_WORKAROUND) >> CURRENT/MAKE.OUT 2>&1
+	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
+	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/

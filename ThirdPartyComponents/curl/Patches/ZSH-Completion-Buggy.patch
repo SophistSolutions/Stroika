@@ -1,0 +1,17 @@
+*** CURRENT.orig/scripts/Makefile.am	2016-01-27 02:30:04.000000000 -0500
+--- CURRENT/scripts/Makefile.am	2016-01-30 23:59:45.441943405 -0500
+***************
+*** 38,43 ****
+  if CROSSCOMPILING
+  	@echo "NOTICE: we can't install zsh completion when cross-compiling!"
+  else # if not cross-compiling:
+! 	$(MKDIR_P) $(DESTDIR)$(ZSH_FUNCTIONS_DIR)
+! 	$(INSTALL_DATA) $(ZSH_COMPLETION_FUNCTION_FILENAME) $(DESTDIR)$(ZSH_FUNCTIONS_DIR)/$(ZSH_COMPLETION_FUNCTION_FILENAME)
+  endif
+--- 38,43 ----
+  if CROSSCOMPILING
+  	@echo "NOTICE: we can't install zsh completion when cross-compiling!"
+  else # if not cross-compiling:
+! #	$(MKDIR_P) $(DESTDIR)$(ZSH_FUNCTIONS_DIR)
+! #	$(INSTALL_DATA) $(ZSH_COMPLETION_FUNCTION_FILENAME) $(DESTDIR)$(ZSH_FUNCTIONS_DIR)/$(ZSH_COMPLETION_FUNCTION_FILENAME)
+  endif
