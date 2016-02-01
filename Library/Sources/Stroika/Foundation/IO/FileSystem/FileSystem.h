@@ -80,6 +80,12 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Walk the (environment variable) PATH and return the full path to the named executable, if any.
+                     */
+                    nonvirtual  Memory::Optional<String>    FindExecutableInPath (const String& filename) const;
+
+                public:
+                    /**
                      *  If the given file is a shortcut (or symbolic link), returns what is pointed to by a shortcut.
                      *  On Windows - this refers to shortcut files, and on
                      *  LINUX this is the same as POSIX readlink.
