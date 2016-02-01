@@ -110,6 +110,10 @@ namespace   Stroika {
              *
              *  Synchronously run the given command.
              *
+             *  \note   ProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
+             *          cwd path.
+             *
+             *
 
              // IDEA HERE IS FROM KDJ - Do something like python/perl stuff for managing subprocesses easily.
 
@@ -234,6 +238,9 @@ namespace   Stroika {
              *
              *  \note   On linux, this also detaches from the terminal driver, to avoid spurious SIGHUP
              *          and SIGTTIN and SIGTTOU
+             *
+             *  \note   DetachedProcessRunner searches the PATH for the given executable: it need not be a full or even relative to
+             *          cwd path.
              */
             pid_t   DetachedProcessRunner (const String& commandLine);
             pid_t   DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
