@@ -232,7 +232,7 @@ namespace   Stroika {
              *  name (argv[0] - which CAN differ from the path to the executable). If this is omitted or the empty
              *  string, it will be generated automatically.
              *
-             *  \note   On linux, this also detaches from the terminal driver, to avoid spurrious SIGHUP
+             *  \note   On linux, this also detaches from the terminal driver, to avoid spurious SIGHUP
              *          and SIGTTIN and SIGTTOU
              */
             pid_t   DetachedProcessRunner (const String& commandLine);
