@@ -175,6 +175,9 @@ ifndef StroikaFoundationSupportLibs
 
 	StroikaFoundationSupportLibs	+=	  -lpthread -lrt
 	StroikaFoundationSupportLibs	+=	  -lm
+	ifeq (AIX,$(shell uname))
+		StroikaFoundationSupportLibs	+=  -latomic
+	endif
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
