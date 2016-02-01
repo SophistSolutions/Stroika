@@ -18,7 +18,7 @@
  *
  * TODO:
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-449 and ache::CallerStalenessCache should support
+ *      @todo   https://stroika.atlassian.net/browse/STK-449 and Cache::CallerStalenessCache should support
  *              second template argument VALUE=void
  *
  *      @todo   Add Debug::AssertExternallySynchronizedLock usage.

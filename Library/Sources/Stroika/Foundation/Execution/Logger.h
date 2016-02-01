@@ -26,6 +26,9 @@
  *              by specifying hardwired/hacked values in the CTOR args.
  *
  *      @todo   Fix IAppenderRepPtr to be protected in teh logger with synchonized.
+ *
+ *      @todo   sMsgSentMaybeSuppressed_->ClearOlderThan (sMsgSentMaybeSuppressed_->Ago (sMaxWindow_.load () * kCleanupFactor_));
+ *              cleanup. Find a better way (maybe this goes in cache code or here? to clear old values)
  */
 
 
