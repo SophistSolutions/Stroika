@@ -77,7 +77,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
     std::unique_lock<mutex>     lock (fMutex);
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
-     * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurrious.
+     * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
      */
     while (not fTriggered) {
         CheckForThreadInterruption ();

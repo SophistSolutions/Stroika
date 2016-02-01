@@ -1954,7 +1954,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 /*
  *   Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
- *   This can allow the compiler to occasionally better optimize, but mostly avoid spurrious warnings.
+ *   This can allow the compiler to occasionally better optimize, but mostly avoid spurious warnings.
  *
  *  From http://msdn.microsoft.com/en-us/library/k6ktzx3s(v=vs.80).aspx
  *      This __declspec attribute tells the compiler that a function does not return. As a consequence,
