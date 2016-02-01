@@ -16,6 +16,7 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/ToString.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Sequence.h"
 #include    "../Debug/Trace.h"
@@ -411,7 +412,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
                         ::close (i);
                     }
                 }
-                int r   =   execvp (thisEXEPath_cstr, thisEXECArgv);
+                int r   =   ::execvp (thisEXEPath_cstr, thisEXECArgv);
                 ::_exit (EXIT_FAILURE);
             }
             catch (...) {
@@ -804,6 +805,23 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
  */
 pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper  ctx ("Execution::DetachedProcessRunner");
+    DbgTrace (L"(commandline=%s)", commandLine.c_str ());
+#endif
+    String              exe;
+    Sequence<String>    args;
+    {
+        Sequence<String> tmp     { Execution::ParseCommandLine (commandLine) };
+        if (tmp.size () == 0) {
+            Execution::Throw (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
+        }
+        exe = tmp[0];
+        args = tmp;
+    }
+    return DetachedProcessRunner (exe, args);
+#if 0
+    // OBSOLETED - I THINK RARELY IF EVER USED - 2016-02-01
 #if     qPlatform_Windows
     PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
@@ -851,11 +869,19 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         }
     }
     return DetachedProcessRunner (exe, args);
+
+#endif
 }
 
 pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
-    IO::FileSystem::FileSystem::Default ().CheckAccess (executable, true, false);
+    TraceContextBumper  ctx ("Execution::DetachedProcessRunner");
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"(executable=%s, cmd.size=%s)", executable.c_str (), Characters::ToString (args).c_str ());
+#endif
+    //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
+    // now...
+    //IO::FileSystem::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
 
     Sequence<String>    useArgs;
     if (args.empty ()) {
@@ -912,6 +938,24 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();
+
+    // Note - we do this OUTSIDE the fork since its unsafe to do mallocs etc inside forked space.
+
+    // must map args to SDKString, and then right lifetime c-string pointers
+    vector<SDKString> tmpTStrArgs;
+    tmpTStrArgs.reserve (args.size ());
+    for (String i : useArgs) {
+        tmpTStrArgs.push_back (i.AsSDKString ());
+    }
+    vector<char*>   useArgsV;
+    for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+        // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+        // their overwriting these strings!
+        // -- LGP 2013-06-08
+        useArgsV.push_back (const_cast<char*> (i->c_str ()));
+    }
+    useArgsV.push_back (nullptr);
+
     pid_t   pid =   Execution::ThrowErrNoIfNegative (::fork ());
     if (pid == 0) {
         /*
@@ -931,21 +975,11 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         // @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
         (void)::setsid ();
 
-        // must map args to SDKString, and then right lifetime c-string pointers
-        vector<SDKString> tmpTStrArgs;
-        tmpTStrArgs.reserve (args.size ());
-        for (String i : useArgs) {
-            tmpTStrArgs.push_back (i.AsSDKString ());
-        }
-        vector<char*>   useArgsV;
-        for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-            // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
-            // their overwriting these strings!
-            // -- LGP 2013-06-08
-            useArgsV.push_back (const_cast<char*> (i->c_str ()));
-        }
-        useArgsV.push_back (nullptr);
-        int r   =   ::execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
+        // @todo - CONSIDER ALSO DOING -                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+        // check and extra closer
+
+        // @todo - safer EXECVP like we did in ProcessRunner()!!!!
+        int r   =   ::execvp (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
         ::_exit (-1);
