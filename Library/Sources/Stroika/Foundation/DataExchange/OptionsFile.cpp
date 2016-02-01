@@ -29,6 +29,8 @@ using   namespace   Stroika::Foundation::Streams;
 using   Memory::BLOB;
 
 
+
+
 /*
  ********************************************************************************
  ***************** DataExchange::OptionsFile::LoggerMessage *********************
@@ -186,14 +188,24 @@ OptionsFile::OptionsFile (
 
 BLOB    OptionsFile::ReadRaw () const
 {
+    Debug::TraceContextBumper  ctx ("OptionsFile::ReadRaw");
     return IO::FileSystem::FileInputStream::mk (GetReadFilePath_ ()).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
+    Debug::TraceContextBumper  ctx ("OptionsFile::WriteRaw");
+    try {
+        if (ReadRaw () == blob) {
+            return;
+        }
+    }
+    catch (...) {
+        // No matter why we fail, nevermind. Just fall through and write.
+    }
     try {
         IO::FileSystem::ThroughTmpFileWriter    tmpFile (GetWriteFilePath_ ());
-        IO::FileSystem::FileOutputStream  outStream (tmpFile.GetFilePath ());
+        IO::FileSystem::FileOutputStream        outStream (tmpFile.GetFilePath ());
         outStream.Write (blob);
         outStream.Flush ();
         outStream.clear ();     // so any errors can be displayed as exceptions, and so closed before commit/rename
@@ -207,6 +219,7 @@ void    OptionsFile::WriteRaw (const BLOB& blob)
 template    <>
 Optional<VariantValue>  OptionsFile::Read ()
 {
+    Debug::TraceContextBumper  ctx ("OptionsFile::Read");
     try {
         Optional<VariantValue>  r   =   fReader_.Read (MemoryStream<Byte> (ReadRaw ()));
         if (r.IsPresent ()) {
@@ -224,6 +237,7 @@ Optional<VariantValue>  OptionsFile::Read ()
 template    <>
 void        OptionsFile::Write (const VariantValue& optionsObject)
 {
+    Debug::TraceContextBumper  ctx ("OptionsFile::Write");
     MemoryStream<Byte> tmp;
     fWriter_.Write (optionsObject, tmp);
     WriteRaw (tmp.As<BLOB> ());

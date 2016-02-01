@@ -90,7 +90,13 @@ namespace   Stroika {
                 struct  LoggerMessage;
 
             public:
+                /**
+                 */
                 using LoggerType = function<void(const LoggerMessage& message)>;
+
+            public:
+                /**
+                 */
                 static  const   LoggerType  kDefaultLogger;
 
             public:
@@ -180,13 +186,14 @@ namespace   Stroika {
 
             public:
                 /**
-                 *
+                 *  Read the content of the associated file as a BLOB.
                  */
                 nonvirtual  BLOB    ReadRaw () const;
 
             public:
                 /**
-                 *
+                 *  Writes the given blob to the associated file, if it represents a change. This will silently
+                 *  avoid writing, if the blob is already the same as what is on disk.
                  */
                 nonvirtual  void    WriteRaw (const BLOB& blob);
 
@@ -221,7 +228,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note - predefined version Write<VariantValue> doesn't use ObjectVariantMapper
+                 *  Note - predefined version Write<VariantValue> doesn't use ObjectVariantMapper.
+                 *
+                 *  Write () serializes T, and then invokes WriteRaw ().
+                 *
+                 *  \note   WriteRaw () - and so Write () makes no changes to the external file if the contents being
+                 *          written serialize to the  same value.
                  */
                 template    <typename T>
                 nonvirtual  void    Write (const T& optionsObject);
