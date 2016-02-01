@@ -14,6 +14,48 @@ namespace   Stroika {
             namespace   OpenSSL {
 
 
+#if     qHasFeature_OpenSSL
+                /*
+                 ********************************************************************************
+                 ********************** Cryptography::OpenSSL::DerivedKey ***********************
+                 ********************************************************************************
+                 */
+                inline  DerivedKey::DerivedKey (const BLOB& key, const BLOB& iv)
+                    : fKey (key)
+                    , fIV (iv)
+                {
+                }
+                inline  DerivedKey::DerivedKey (const pair<BLOB, BLOB>& keyAndIV)
+                    : fKey (keyAndIV.first)
+                    , fIV (keyAndIV.second)
+                {
+                }
+
+
+
+
+                /*
+                 ********************************************************************************
+                 *************** Cryptography::OpenSSL::PKCS5_PBKDF2_HMAC_SHA1 ******************
+                 ********************************************************************************
+                 */
+                inline  PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+                    : PKCS5_PBKDF2_HMAC (keyLen, ivLen, DigestAlgorithm::eSHA1, passwd, nRounds, salt)
+                {
+                }
+                inline  PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const String& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+                    : PKCS5_PBKDF2_HMAC (keyLen, ivLen, DigestAlgorithm::eSHA1, passwd, nRounds, salt)
+                {
+                }
+                inline  PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+                    : PKCS5_PBKDF2_HMAC (cipherAlgorithm, DigestAlgorithm::eSHA1, passwd, nRounds, salt)
+                {
+                }
+                inline  PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+                    : PKCS5_PBKDF2_HMAC (cipherAlgorithm, DigestAlgorithm::eSHA1, passwd, nRounds, salt)
+                {
+                }
+#endif
 
 
             }

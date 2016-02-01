@@ -19,6 +19,7 @@
 
 /**
  *  \file
+ *          \note VERY ROUGH PRELIMINARY DRAFT - NOT USEABLE YET
  *
  *  TODO:
  *
@@ -44,20 +45,8 @@ namespace   Stroika {
                 /**
                  */
                 struct  DerivedKey {
-                    enum    class   KeyDerivationStrategy {
-                        //PKCS5_PBKDF1,
-                        PKCS5_PBKDF2_HMAC,
-                        EVP_BytesToKey,
-                        CryptDeriveKey,
-                    };
-
                     BLOB    fKey;
                     BLOB    fIV;
-
-                    /**
-                     *  In OpenSSL, the Salt must either by an 8-byte array or omitted.
-                     */
-                    using   SaltType = Memory::BLOB;
 
                     /*
                      * Gen key & IV. This requires the cipher algorithm (for the key / iv length) and the hash algorithm.
@@ -67,40 +56,38 @@ namespace   Stroika {
                      *  For the string overload, we treat the strings as an array of bytes (len bytes) long.
                      *  For the String overload, we convert to UTF8 and treat as string (so L"fred" and "fred" produce the same thing).
                      */
-                    DerivedKey (KeyDerivationStrategy keyDerivationStrategy, DigestAlgorithm digestAlgorithm, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
+                    DerivedKey (const BLOB& key, const BLOB& iv);
+                    DerivedKey (const pair<BLOB, BLOB>& keyAndIV);
                 };
 
 
                 /**
                  *  CryptDeriveKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. CryptDeriveKey
                  *  creates a Microsoft-Windows format derived key, compatible with the Windows CryptDeriveKey API.
+                 *
+                 *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct  CryptDeriveKey : DerivedKey {
+                    CryptDeriveKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 
 
                 /**
                  *  EVP_BytesToKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. EVP_BytesToKey
                  *  creates an OpenSSL-default-format, old-style crypto derived key.
+                 *
+                 *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct  EVP_BytesToKey : DerivedKey {
                     /**
-                     *  In OpenSSL, the Salt must either by an 8-byte array or omitted.
+                     *  In EVP_BytesToKey, the Salt must either by an 8-byte array or omitted.
                      */
-                    using   SaltType = std::array<Byte, 8>;
-
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1);
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 
 
@@ -109,10 +96,17 @@ namespace   Stroika {
                  *  creates a PKCS5 PBKDF2 HMAC crypto derived key.
                  *
                  *  RFC 2898 suggests an iteration count of at least 1000
+                 *
+                 *  This function needs to know the keyLen and ivLen. You can pass those in explicitly, or pass in the cipher algorithm for the sole
+                 *  purpose of capturing those lengths.
+                 *
+                 *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct  PKCS5_PBKDF2_HMAC : DerivedKey {
-                    PKCS5_PBKDF2_HMAC (DigestAlgorithm digestAlgorithm, const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1000);
-                    PKCS5_PBKDF2_HMAC (DigestAlgorithm digestAlgorithm, const String& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1000);
+                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 
 
@@ -121,10 +115,14 @@ namespace   Stroika {
                  *  creates a PKCS5_PBKDF2_HMAC_SHA1 crypto derived key.
                  *
                  *  RFC 2898 suggests an iteration count of at least 1000.
+                 *
+                 *  \note for new code - PKCS5_PBKDF2_HMAC (or PKCS5_PBKDF2_HMAC_SHA1) is the preferred DerviveKey subclass to use
                  */
                 struct  PKCS5_PBKDF2_HMAC_SHA1 : PKCS5_PBKDF2_HMAC {
-                    PKCS5_PBKDF2_HMAC_SHA1 (const string& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1000);
-                    PKCS5_PBKDF2_HMAC_SHA1 (const String& passwd, const Optional<SaltType>& salt = Optional<SaltType> (), unsigned int nRounds = 1000);
+                    PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 #endif
 

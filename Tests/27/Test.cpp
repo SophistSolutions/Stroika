@@ -423,7 +423,7 @@ namespace {
                 for (BLOB inputMessage : kTestMessages_) {
                     for (CipherAlgorithm ci = CipherAlgorithm::eSTART; ci != CipherAlgorithm::eEND; ci = Configuration::Inc (ci)) {
                         for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
-                            OpenSSLCryptoParams cryptoParams { ci, DerivedKey  { di, ci, passphrase } };
+                            OpenSSLCryptoParams cryptoParams { ci, OpenSSL::EVP_BytesToKey  { di, ci, passphrase } };
                             roundTripTester_ (cryptoParams, inputMessage);
                         }
                     }
