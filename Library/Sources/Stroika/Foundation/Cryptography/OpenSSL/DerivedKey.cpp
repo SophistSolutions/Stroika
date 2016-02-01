@@ -94,7 +94,7 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* ciphe
     RequireNotNull (cipherAlgorithm);
     SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
     SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
-    int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? &salt.Value ().at (0) : nullptr, passwd.first, static_cast<int> (passwd.second - passwd.first), nRounds, useKey.begin (), useIV.begin ());
+    int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? salt.Value ().begin () : nullptr, passwd.first, static_cast<int> (passwd.second - passwd.first), nRounds, useKey.begin (), useIV.begin ());
     if (i == 0) {
         Cryptography::OpenSSL::Exception::ThrowLastError ();
     }
