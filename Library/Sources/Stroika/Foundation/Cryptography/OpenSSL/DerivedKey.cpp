@@ -72,20 +72,20 @@ namespace {
  */
 DerivedKey::DerivedKey (KeyDerivationStrategy keyDerivationStrategy, DigestAlgorithm digestAlgorithm, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
 {
-	if (keyDerivationStrategy == KeyDerivationStrategy::PKCS5_PBKDF2_HMAC) {
-		size_t k = 1024;
-		Byte buf[1024];
-		Byte salt2[222];
-		int a = ::PKCS5_PBKDF2_HMAC (passwd.c_str (), passwd.length (), salt2, sizeof(salt2), nRounds, Convert2OpenSSL (digestAlgorithm), k, buf);
+    if (keyDerivationStrategy == KeyDerivationStrategy::PKCS5_PBKDF2_HMAC) {
+        size_t k = 1024;
+        Byte buf[1024];
+        Byte salt2[222];
+        int a = ::PKCS5_PBKDF2_HMAC (passwd.c_str (), passwd.length (), salt2, sizeof(salt2), nRounds, Convert2OpenSSL (digestAlgorithm), k, buf);
 #if 0
-			PKCS5_PBKDF2_HMAC(const char *pass, int passlen,
-                      const unsigned char *salt, int saltlen, int iter,
-                      const EVP_MD *digest, int keylen, unsigned char *out);
+        PKCS5_PBKDF2_HMAC(const char* pass, int passlen,
+                          const unsigned char* salt, int saltlen, int iter,
+                          const EVP_MD * digest, int keylen, unsigned char* out);
 #endif
-	}
-	else {
-		AssertNotReached ();
-	}
+    }
+    else {
+        AssertNotReached ();
+    }
 }
 
 DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, const Optional<SaltType>& salt, unsigned int nRounds)
@@ -139,12 +139,12 @@ DerivedKey::DerivedKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherA
  ********************************************************************************
  */
 PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (DigestAlgorithm digestAlgorithm, const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-	: DerivedKey (KeyDerivationStrategy::PKCS5_PBKDF2_HMAC, digestAlgorithm, passwd, salt, nRounds)
+    : DerivedKey (KeyDerivationStrategy::PKCS5_PBKDF2_HMAC, digestAlgorithm, passwd, salt, nRounds)
 {
 }
 
 PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (DigestAlgorithm digestAlgorithm, const String& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-	: DerivedKey (KeyDerivationStrategy::PKCS5_PBKDF2_HMAC, digestAlgorithm, passwd.AsUTF8 (), salt, nRounds)
+    : DerivedKey (KeyDerivationStrategy::PKCS5_PBKDF2_HMAC, digestAlgorithm, passwd.AsUTF8 (), salt, nRounds)
 {
 }
 
@@ -158,11 +158,11 @@ PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (DigestAlgorithm digestAlgorithm, const Str
  ********************************************************************************
  */
 PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (const string& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-	: PKCS5_PBKDF2_HMAC (DigestAlgorithm::eSHA1, passwd, salt, nRounds)
+    : PKCS5_PBKDF2_HMAC (DigestAlgorithm::eSHA1, passwd, salt, nRounds)
 {
 }
 PKCS5_PBKDF2_HMAC_SHA1::PKCS5_PBKDF2_HMAC_SHA1 (const String& passwd, const Optional<SaltType>& salt, unsigned int nRounds)
-	: PKCS5_PBKDF2_HMAC (DigestAlgorithm::eSHA1, passwd, salt, nRounds)
+    : PKCS5_PBKDF2_HMAC (DigestAlgorithm::eSHA1, passwd, salt, nRounds)
 {
 }
 #endif
