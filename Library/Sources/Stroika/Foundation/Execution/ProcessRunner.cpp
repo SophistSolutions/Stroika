@@ -899,43 +899,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         }
     }
 
-#if     qPlatform_Windows
-    PROCESS_INFORMATION processInfo {};
-    processInfo.hProcess = INVALID_HANDLE_VALUE;
-    processInfo.hThread = INVALID_HANDLE_VALUE;
-    Finally cleanup = [&processInfo]() {
-        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-    };
-
-    STARTUPINFO startInfo {};
-    startInfo.cb = sizeof (startInfo);
-    startInfo.hStdInput = INVALID_HANDLE_VALUE;
-    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
-    startInfo.hStdError = INVALID_HANDLE_VALUE;
-    startInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-    DWORD   createProcFlags =   0;
-    createProcFlags |= CREATE_NO_WINDOW;
-    createProcFlags |= NORMAL_PRIORITY_CLASS;
-    createProcFlags |= DETACHED_PROCESS;
-    {
-        bool    bInheritHandles     =   true;
-        TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
-        cmdLineBuf[0] = '\0';
-        for (String i : useArgs) {
-            //quickie/weak impl...
-            if (cmdLineBuf[0] != '\0') {
-                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), SDKSTR(" "));
-            }
-            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
-        }
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (
-            ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
-        );
-    }
-    return processInfo.dwProcessId;
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
     Characters::SDKString thisEXEPath =   executable.AsSDKString ();
 
     // Note - we do this OUTSIDE the fork since its unsafe to do mallocs etc inside forked space.
@@ -989,5 +953,41 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     else {
         return pid;
     }
+#elif   qPlatform_Windows
+    PROCESS_INFORMATION processInfo {};
+    processInfo.hProcess = INVALID_HANDLE_VALUE;
+    processInfo.hThread = INVALID_HANDLE_VALUE;
+    Finally cleanup = [&processInfo]() {
+        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
+        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
+    };
+
+    STARTUPINFO startInfo {};
+    startInfo.cb = sizeof (startInfo);
+    startInfo.hStdInput = INVALID_HANDLE_VALUE;
+    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
+    startInfo.hStdError = INVALID_HANDLE_VALUE;
+    startInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    DWORD   createProcFlags =   0;
+    createProcFlags |= CREATE_NO_WINDOW;
+    createProcFlags |= NORMAL_PRIORITY_CLASS;
+    createProcFlags |= DETACHED_PROCESS;
+    {
+        bool    bInheritHandles     =   true;
+        TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
+        cmdLineBuf[0] = '\0';
+        for (String i : useArgs) {
+            //quickie/weak impl...
+            if (cmdLineBuf[0] != '\0') {
+                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), SDKSTR(" "));
+            }
+            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
+        }
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (
+            ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
+        );
+    }
+    return processInfo.dwProcessId;
 #endif
 }
