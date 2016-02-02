@@ -869,7 +869,6 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         }
     }
     return DetachedProcessRunner (exe, args);
-
 #endif
 }
 
@@ -877,7 +876,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
 {
     TraceContextBumper  ctx ("Execution::DetachedProcessRunner");
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"(executable=%s, cmd.size=%s)", executable.c_str (), Characters::ToString (args).c_str ());
+    DbgTrace (L"(executable=%s, args=%s)", executable.c_str (), Characters::ToString (args).c_str ());
 #endif
     //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
     // now...
