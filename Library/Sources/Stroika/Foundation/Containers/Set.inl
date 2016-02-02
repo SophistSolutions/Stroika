@@ -255,6 +255,12 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator^= (const Iterable<T>& items)
+            {
+                *this = Intersection (items);
+                return *this;
+            }
+            template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::clear ()
             {
                 RemoveAll ();

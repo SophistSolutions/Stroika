@@ -297,6 +297,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *      Synonym for *this = *this ^ Set<T,TRAITS> {items }
+                 */
+                nonvirtual  Set<T, TRAITS>& operator^= (const Iterable<T>& items);
+
+            public:
+                /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();
