@@ -233,7 +233,7 @@ namespace   Stroika {
                  *  Write () serializes T, and then invokes WriteRaw ().
                  *
                  *  \note   WriteRaw () - and so Write () makes no changes to the external file if the contents being
-                 *          written serialize to the  same value.
+                 *          written serialize to the same value.
                  */
                 template    <typename T>
                 nonvirtual  void    Write (const T& optionsObject);

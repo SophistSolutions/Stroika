@@ -195,13 +195,15 @@ BLOB    OptionsFile::ReadRaw () const
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
     Debug::TraceContextBumper  ctx ("OptionsFile::WriteRaw");
-    try {
-        if (ReadRaw () == blob) {
-            return;
+    if (GetReadFilePath_ () == GetWriteFilePath_ ()) {
+        try {
+            if (ReadRaw () == blob) {
+                return;
+            }
         }
-    }
-    catch (...) {
-        // No matter why we fail, nevermind. Just fall through and write.
+        catch (...) {
+            // No matter why we fail, nevermind. Just fall through and write.
+        }
     }
     try {
         IO::FileSystem::ThroughTmpFileWriter    tmpFile (GetWriteFilePath_ ());
