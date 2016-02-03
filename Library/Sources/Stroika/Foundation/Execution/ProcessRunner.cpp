@@ -332,7 +332,9 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
 
 function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper  ctx ("ProcessRunner::CreateRunnable_");
+#endif
 
     String                      cmdLine     =   fCommandLine_.Value ();
     Memory::Optional<String>    workingDir  =   GetWorkingDirectory ();
@@ -787,7 +789,6 @@ DoneWithProcess:
                 else {
                     *processResult = ProcessResultType { processExitCode };
                 }
-
             }
 
             // @todo MAYBE need to copy STDERRR TOO!!!
