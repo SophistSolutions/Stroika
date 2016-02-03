@@ -191,15 +191,17 @@ namespace   Stroika {
                 nonvirtual  Streams::OutputStream<Byte>     GetStdErr () const;
                 nonvirtual  void                            SetStdErr (const Streams::OutputStream<Byte>& err);
 
-            public:
+            private:
                 /**
                  *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
                  *  stdout of the subprocess and error will be read from the stderr of the subprocess.
                  *
                  *  Each of these CAN be null, and will if so, that will be interpretted as an empty stream
                  *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
+                 *
+                 *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
                  */
-                nonvirtual  function<void()>    CreateRunnable (ProgressMonitor::Updater progress = nullptr);
+                nonvirtual  function<void()>    CreateRunnable_ (ProgressMonitor::Updater progress = nullptr);
 
             public:
                 /**

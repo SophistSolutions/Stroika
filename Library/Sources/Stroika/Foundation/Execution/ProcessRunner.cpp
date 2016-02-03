@@ -281,9 +281,9 @@ void    ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
     fStdErr_ = err;
 }
 
-function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
+function<void()>    ProcessRunner::CreateRunnable_ (ProgressMonitor::Updater progress)
 {
-    TraceContextBumper  ctx ("ProcessRunner::CreateRunnable");
+    TraceContextBumper  ctx ("ProcessRunner::CreateRunnable_");
 
     String                      cmdLine     =   fCommandLine_.Value ();
     Memory::Optional<String>    workingDir  =   GetWorkingDirectory ();
@@ -292,7 +292,7 @@ function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater prog
     Streams::OutputStream<Byte> err         =   GetStdErr ();
 
     return [progress, cmdLine, workingDir, in, out, err] () {
-        TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
+        TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
 
         SDKString       currentDirBuf_;
         const SDKChar*  currentDir      =   workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
@@ -740,10 +740,10 @@ void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSec
 {
     TraceContextBumper  ctx ("ProcessRunner::Run");
     if (timeout == Time::kInfinite) {
-        CreateRunnable (progress) ();
+        CreateRunnable_ (progress) ();
     }
     else {
-        Thread t (CreateRunnable (progress));
+        Thread t (CreateRunnable_ (progress));
         t.SetThreadName (L"ProcessRunner thread");
         t.Start ();
         t.WaitForDone (timeout);
