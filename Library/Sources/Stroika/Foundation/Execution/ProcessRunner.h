@@ -22,19 +22,13 @@
 /**
  *  TODO:
  *
- *      @todo   Current IMPL throws on UNIX if bad status but doesnt on WINDoze. FIX TO THROW ON BOTH, and throw
- *              useful value, and be clear in docs and behavior!!!
- *
- *              However, EVEN IF WE THROW BAD VALUE, still try to read all output from process first, so that is available
- *              in the output stream object (like printout to stderr!!!)
+ *      @todo   Cleanup ProcessRunner::CreateRunnable_ () to use more Finally {} based cleanup, instead
+ *              of more redundant try/catch style.
  *
  *      @todo   Redo POSIX impl using vfork () or http://linux.die.net/man/3/posix_spawn
  *
  *      @todo   Need EXCEPTION TYPE that includes PROCESS_STATUS and throw that instead of current exception
  *              On failure.
- *
- *      @todo   PERHAPS add option to ignore process status return, and continue as if OK. Not really needed cuz
- *              you can do this yourself just ignroing the exception.
  *
  *      @todo   Windows implementation is weak, but appears fully functional.
  *
@@ -191,6 +185,34 @@ namespace   Stroika {
                 nonvirtual  Streams::OutputStream<Byte>     GetStdErr () const;
                 nonvirtual  void                            SetStdErr (const Streams::OutputStream<Byte>& err);
 
+            public:
+                /**
+                 *  Zero means success. Run() returns Optional<ProcessResultType> by reference, and that
+                 *  value is only provided if the child process exited. If exited, we return the exit
+                 *  status and signal number (if any) - see waitpid - http://pubs.opengroup.org/onlinepubs/9699919799/functions/wait.html
+                 */
+                struct  ProcessResultType {
+                    Memory::Optional<int>   fExitStatus;
+                    Memory::Optional<int>   fSignalNumber;
+                };
+
+            public:
+                /**
+                 *  Creates the runnable above, and directly runs it in place (with the given timeout).
+                 *  To be able to control cancelation, use CreateRunnable () directly.
+                 *
+                 *  The Run() overload taking cmdStdInValue replaces the current stdin stream associated with the
+                 *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
+                 *  results as a string.
+                 *
+                 *  Each overload that takes a 'processResult' argument recieves the numeric value the process
+                 *  exited with (if it called exit - that is - didnt terminate by signal etc). However, if that
+                 *  parameter is missing (nullptr) - Run () wll throw an exception if the called process returns
+                 *  non-zero.
+                 */
+                nonvirtual  void                Run (Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+
             private:
                 /**
                  *  Note that 'in' will be sent to the stdin of the subprocess, 'out' will be read from the
@@ -201,19 +223,7 @@ namespace   Stroika {
                  *
                  *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
                  */
-                nonvirtual  function<void()>    CreateRunnable_ (ProgressMonitor::Updater progress = nullptr);
-
-            public:
-                /**
-                 *  Creates the runnable above, and directly runs it in place (with the given timeout).
-                 *  To be able to control cancelation, use CreateRunnable () directly.
-                 *
-                 *  The Run() overload taking cmdStdInValue replaces the current stdin stream associated with the
-                 *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
-                 *  results as a string.
-                 */
-                nonvirtual  void                Run (ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
-                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  function<void()>    CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress);
 
             private:
                 Memory::Optional<String>        fCommandLine_;

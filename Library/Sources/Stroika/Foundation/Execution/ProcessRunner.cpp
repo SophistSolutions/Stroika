@@ -280,8 +280,57 @@ void    ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 {
     fStdErr_ = err;
 }
+void    ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+{
+    TraceContextBumper  ctx ("ProcessRunner::Run");
+    if (timeout == Time::kInfinite) {
+        CreateRunnable_ (processResult, progress) ();
+    }
+    else {
+        Thread t (CreateRunnable_ (processResult, progress));
+        t.SetThreadName (L"ProcessRunner thread");
+        t.Start ();
+        t.WaitForDone (timeout);
+        t.ThrowIfDoneWithException ();
+    }
+}
 
-function<void()>    ProcessRunner::CreateRunnable_ (ProgressMonitor::Updater progress)
+Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+{
+    Streams::InputStream<Byte>  oldStdIn    =   GetStdIn ();
+    Streams::OutputStream<Byte> oldStdOut   =   GetStdOut ();
+    try {
+        Streams::MemoryStream<Memory::Byte>   useStdIn;
+        Streams::MemoryStream<Memory::Byte>   useStdOut;
+
+        // Prefill stream
+        // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
+        if (not cmdStdInValue.empty ()) {
+            // for now while we write BOM, dont write empty string as just a BOM!
+            Streams::TextWriter (useStdIn).Write (cmdStdInValue.c_str ());
+        }
+        Assert (useStdIn.GetReadOffset () == 0);
+
+        SetStdIn (useStdIn);
+        SetStdOut (useStdOut);
+
+        Run (processResult, progress, timeout);
+
+        SetStdIn (oldStdIn);
+        SetStdOut (oldStdOut);
+
+        // get from 'useStdOut'
+        Assert (useStdOut.GetReadOffset () == 0);
+        return Streams::TextReader (useStdOut).ReadAll ();
+    }
+    catch (...) {
+        SetStdIn (oldStdIn);
+        SetStdOut (oldStdOut);
+        Execution::ReThrow ();
+    }
+}
+
+function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress)
 {
     TraceContextBumper  ctx ("ProcessRunner::CreateRunnable_");
 
@@ -291,7 +340,7 @@ function<void()>    ProcessRunner::CreateRunnable_ (ProgressMonitor::Updater pro
     Streams::OutputStream<Byte> out         =   GetStdOut ();
     Streams::OutputStream<Byte> err         =   GetStdErr ();
 
-    return [progress, cmdLine, workingDir, in, out, err] () {
+    return [processResult, progress, cmdLine, workingDir, in, out, err] () {
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable_::{}::Runner...");
 
         SDKString       currentDirBuf_;
@@ -500,12 +549,21 @@ function<void()>    ProcessRunner::CreateRunnable_ (ProgressMonitor::Updater pro
             // not sure we need?
             int status = 0;
             int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
-            int result = ::waitpid (childPID, &status, flags);                /* Wait for child */
+            //  Wait for child
+            int result = Execution::Handle_ErrNoResultInteruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags);});
             // throw / warn if result other than child exited normally
+            if (processResult != nullptr) {
+                // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
+                *processResult = ProcessResultType { WIFEXITED (status) ? WEXITSTATUS(status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG(status) : Memory::Optional<int> () };
+            }
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS(status) != 0) {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED(status), WEXITSTATUS(status), WIFSIGNALED(status));
-                Throw (StringException (L"sub-process failed"));
+
+                if (processResult == nullptr) {
+                    // @todo create special exception with process result info
+                    Throw (StringException (L"sub-process failed"));
+                }
             }
         }
 #elif   qPlatform_Windows
@@ -696,6 +754,9 @@ function<void()>    ProcessRunner::CreateRunnable_ (ProgressMonitor::Updater pro
                 }
 
 DoneWithProcess:
+                DWORD processExitCode {};
+                Verify (::GetExitCodeProcess (processInfo.hProcess, &processExitCode));
+
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
 
@@ -717,7 +778,14 @@ DoneWithProcess:
                     }
                 }
 
-                // wait some reasonable amount of time for hte process to finish, and then KILL IT
+                if (processResult == nullptr) {
+                    // @todo create special exception with process result info
+                    Throw (StringException (L"sub-process failed"));
+                }
+                else {
+                    *processResult = ProcessResultType { processExitCode };
+                }
+
             }
 
             // @todo MAYBE need to copy STDERRR TOO!!!
@@ -736,55 +804,7 @@ DoneWithProcess:
     };
 }
 
-void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
-{
-    TraceContextBumper  ctx ("ProcessRunner::Run");
-    if (timeout == Time::kInfinite) {
-        CreateRunnable_ (progress) ();
-    }
-    else {
-        Thread t (CreateRunnable_ (progress));
-        t.SetThreadName (L"ProcessRunner thread");
-        t.Start ();
-        t.WaitForDone (timeout);
-        t.ThrowIfDoneWithException ();
-    }
-}
 
-Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
-{
-    Streams::InputStream<Byte>  oldStdIn    =   GetStdIn ();
-    Streams::OutputStream<Byte> oldStdOut   =   GetStdOut ();
-    try {
-        Streams::MemoryStream<Memory::Byte>   useStdIn;
-        Streams::MemoryStream<Memory::Byte>   useStdOut;
-
-        // Prefill stream
-        // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
-        if (not cmdStdInValue.empty ()) {
-            // for now while we write BOM, dont write empty string as just a BOM!
-            Streams::TextWriter (useStdIn).Write (cmdStdInValue.c_str ());
-        }
-        Assert (useStdIn.GetReadOffset () == 0);
-
-        SetStdIn (useStdIn);
-        SetStdOut (useStdOut);
-
-        Run (progress, timeout);
-
-        SetStdIn (oldStdIn);
-        SetStdOut (oldStdOut);
-
-        // get from 'useStdOut'
-        Assert (useStdOut.GetReadOffset () == 0);
-        return Streams::TextReader (useStdOut).ReadAll ();
-    }
-    catch (...) {
-        SetStdIn (oldStdIn);
-        SetStdOut (oldStdOut);
-        Execution::ReThrow ();
-    }
-}
 
 
 
