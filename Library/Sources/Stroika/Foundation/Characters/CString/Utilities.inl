@@ -61,6 +61,60 @@ namespace   Stroika {
 
 
                 /*
+                  ********************************************************************************
+                  *************************************** Equals *********************************
+                  ********************************************************************************
+                  */
+                template    <>
+                inline  bool  Equals (const char* lhs, const char* rhs)
+                {
+                    RequireNotNull (lhs);
+                    RequireNotNull (rhs);
+                    return ::strcmp (lhs, rhs) == 0;
+                }
+                template    <>
+                inline  bool  Equals (const char16_t* lhs, const char16_t* rhs)
+                {
+                    RequireNotNull (lhs);
+                    RequireNotNull (rhs);
+                    const char16_t* li   =   lhs;
+                    const char16_t* ri   =   rhs;
+                    while (*li == *ri) {
+                        if (*li == '\0') {
+                            return true;
+                        }
+                        ++li;
+                        ++ri;
+                    }
+                    return false;
+                }
+                template    <>
+                inline  bool  Equals (const char32_t* lhs, const char32_t* rhs)
+                {
+                    RequireNotNull (lhs);
+                    RequireNotNull (rhs);
+                    const char32_t* li   =   lhs;
+                    const char32_t* ri   =   rhs;
+                    while (*li == *ri) {
+                        if (*li == '\0') {
+                            return true;
+                        }
+                        ++li;
+                        ++ri;
+                    }
+                    return false;
+                }
+                template    <>
+                inline  bool  Equals (const wchar_t* lhs, const wchar_t* rhs)
+                {
+                    RequireNotNull (lhs);
+                    RequireNotNull (rhs);
+                    return ::wcscmp (lhs, rhs) == 0;
+                }
+
+
+
+                /*
                  ********************************************************************************
                  *************************************** Copy ***********************************
                  ********************************************************************************

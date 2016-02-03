@@ -70,6 +70,21 @@ namespace   Stroika {
 
 
                 /**
+                 *  \brief  strcmp or wsccmp() as appropriate == 0
+                 */
+                template    <typename T>
+                bool  Equals (const T* lhs, const T* rhs);
+                template    <>
+                bool  Equals (const char* lhs, const char* rhs);
+                template    <>
+                bool  Equals (const char16_t* lhs, const char16_t* rhs);
+                template    <>
+                bool  Equals (const char32_t* lhs, const char32_t* rhs);
+                template    <>
+                bool  Equals (const wchar_t* lhs, const wchar_t* rhs);
+
+
+                /**
                  *  \brief  Safe variant of strncpy() - which always NUL-terminates the string
                  *
                  * Copy the C-string pointed to by 'src' to the location pointed to by 'dest'. 'nEltsInDest' -
