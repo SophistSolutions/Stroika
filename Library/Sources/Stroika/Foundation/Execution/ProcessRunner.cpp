@@ -780,7 +780,9 @@ DoneWithProcess:
 
                 if (processResult == nullptr) {
                     // @todo create special exception with process result info
-                    Throw (StringException (L"sub-process failed"));
+                    if (processExitCode != 0) {
+                        Throw (StringException (L"sub-process failed"));
+                    }
                 }
                 else {
                     *processResult = ProcessResultType { processExitCode };
