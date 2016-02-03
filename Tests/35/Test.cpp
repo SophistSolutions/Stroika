@@ -259,13 +259,8 @@ namespace   {
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
-#if     qEVENT_GCCTHREADS_LINUX_WAITBUG
-                const   Time::DurationSecondsType   kMargingOfError  =   .9;
-                const   Time::DurationSecondsType   kWaitOnAbortFor  =   5.0;   // because of BWA we used
-#else
-                const   Time::DurationSecondsType   kMargingOfError  =   .5;
-                const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
-#endif
+                constexpr   Time::DurationSecondsType   kMargingOfError  =   .5;
+                constexpr   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
                 Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
                 try {
                     thread1.AbortAndWaitForDone (kWaitOnAbortFor);
