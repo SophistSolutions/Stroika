@@ -9,6 +9,7 @@
 #include    <dirent.h>
 #endif
 
+#include    "../../Characters/CString/Utilities.h"
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
@@ -81,9 +82,17 @@ public:
                 ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
                 Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
             }
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+                Memory::Optional<String>    tmphack;
+                More (&tmphack, true);
+            }
 #elif   qPlatform_Windows
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
+            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
+                Memory::Optional<String>    tmphack;
+                More (&tmphack, true);
+            }
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
@@ -105,6 +114,10 @@ public:
         if (fDirIt_ != nullptr) {
             ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+                Memory::Optional<String>    tmphack;
+                More (&tmphack, true);
+            }
         }
     }
 #elif   qPlatform_Windows
@@ -124,6 +137,10 @@ public:
             else {
                 fSeekOffset_++;
             }
+        }
+        if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
+            Memory::Optional<String>    tmphack;
+            More (&tmphack, true);
         }
     }
 #endif
@@ -145,6 +162,7 @@ public:
         result->clear ();
 #if     qPlatform_POSIX
         if (advance) {
+Again:
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
             int e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
@@ -155,17 +173,24 @@ public:
                 ThrowIfError_errno_t (e);
             }
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+                goto Again;
+            }
         }
         if (fCur_ != nullptr) {
             *result = String::FromSDKString (fCur_->d_name);
         }
 #elif   qPlatform_Windows
         if (advance) {
+Again:
             Require (fHandle_ != INVALID_HANDLE_VALUE);
             memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
                 ::FindClose (fHandle_);
                 fHandle_ = INVALID_HANDLE_VALUE;
+            }
+            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
+                goto Again;
             }
         }
         if (fHandle_ != INVALID_HANDLE_VALUE) {

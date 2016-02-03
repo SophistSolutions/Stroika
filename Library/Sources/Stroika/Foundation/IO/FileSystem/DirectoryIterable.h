@@ -41,7 +41,7 @@ namespace   Stroika {
                  *
                  *  See @DirectoryIterator
                  *
-                 *  Does return the special value ..
+                 *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
                  */
                 class   DirectoryIterable : public Traversal::Iterable<String> {
                 public:
