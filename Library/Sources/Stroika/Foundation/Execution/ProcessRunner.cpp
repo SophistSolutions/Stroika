@@ -284,23 +284,19 @@ void    ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>& err)
 function<void()>    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
     TraceContextBumper  ctx ("ProcessRunner::CreateRunnable");
-    String          cmdLine     =   fCommandLine_.Value ();
-    SDKString       currentDirBuf_;
-    const SDKChar*  currentDir;
-    if (auto i = GetWorkingDirectory ()) {
-        currentDirBuf_ = i->AsSDKString ();
-        currentDir = currentDirBuf_.c_str ();
-    }
-    else {
-        currentDir = nullptr;
-    }
 
-    Streams::InputStream<Byte>    in  =   GetStdIn ();
-    Streams::OutputStream<Byte>   out =   GetStdOut ();
-    Streams::OutputStream<Byte>   err =   GetStdErr ();
+    String                      cmdLine     =   fCommandLine_.Value ();
+    Memory::Optional<String>    workingDir  =   GetWorkingDirectory ();
+    Streams::InputStream<Byte>  in          =   GetStdIn ();
+    Streams::OutputStream<Byte> out         =   GetStdOut ();
+    Streams::OutputStream<Byte> err         =   GetStdErr ();
 
-    return [progress, cmdLine, currentDir, in, out, err] () {
+    return [progress, cmdLine, workingDir, in, out, err] () {
         TraceContextBumper  traceCtx ("ProcessRunner::CreateRunnable::{}::Runner...");
+
+        SDKString       currentDirBuf_;
+        const SDKChar*  currentDir      =   workingDir ? (currentDirBuf_ = workingDir->AsSDKString (), currentDirBuf_.c_str ()) : nullptr;
+
         DbgTrace (L"cmdLine: %s", cmdLine.LimitLength (100, false).c_str ());
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (SDKSTR ("currentDir: %s"), currentDir == nullptr ? "nullptr" : Characters::CString::LimitLength (currentDir, 50, false).c_str ());
