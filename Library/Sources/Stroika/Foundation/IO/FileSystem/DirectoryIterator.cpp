@@ -44,39 +44,36 @@ using   Execution::ThrowIfError_errno_t;
 
 class   DirectoryIterator::Rep_ : public Iterator<String>::IRep {
 private:
-#if     qPlatform_Windows
-    String          fDirName_;
-    HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
-    WIN32_FIND_DATA fFindFileData_;
-    int             fSeekOffset_        { 0 };
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
     DIR*            fDirIt_             { nullptr };
     dirent          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
     dirent*         fCur_               { nullptr };
 #if     qCompilerAndStdLib_fdopendir_Buggy
     String          fDirName_;
 #endif
+#elif   qPlatform_Windows
+    String          fDirName_;
+    HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
+    WIN32_FIND_DATA fFindFileData_;
+    int             fSeekOffset_        { 0 };
 #endif
 
 public:
     Rep_ (const String& dir)
-#if     qPlatform_Windows
-        : fDirName_ (dir)
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #if     qCompilerAndStdLib_fdopendir_Buggy
     , fDirName_ (dir)
 #endif
+#elif   qPlatform_Windows
+        : fDirName_ (dir)
 #endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s')", dir.c_str ());
 #endif
         try {
-#if     qPlatform_Windows
-            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-            fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
             if (fDirIt_ == nullptr) {
                 Execution::ThrowIfError_errno_t ();
             }
@@ -84,30 +81,14 @@ public:
                 ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
                 Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
             }
+#elif   qPlatform_Windows
+            (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
     }
-#if     qPlatform_Windows
-    Rep_ (const String& dir, int seekPos)
-        : fDirName_ (dir)
-    {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s',seekPos=%d)", dir.c_str (), seekPos);
-#endif
-        (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-        fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-        for (int i = 0; i < seekPos; ++i) {
-            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
-                ::FindClose (fHandle_);
-                fHandle_ = INVALID_HANDLE_VALUE;
-            }
-            else {
-                fSeekOffset_++;
-            }
-        }
-    }
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
     Rep_ (DIR* dirObj
 #if     qCompilerAndStdLib_fdopendir_Buggy
           , const String& dir
@@ -126,16 +107,35 @@ public:
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
         }
     }
+#elif   qPlatform_Windows
+    Rep_ (const String& dir, int seekPos)
+        : fDirName_ (dir)
+    {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR('%s',seekPos=%d)", dir.c_str (), seekPos);
+#endif
+        (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+        fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
+        for (int i = 0; i < seekPos; ++i) {
+            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
+                ::FindClose (fHandle_);
+                fHandle_ = INVALID_HANDLE_VALUE;
+            }
+            else {
+                fSeekOffset_++;
+            }
+        }
+    }
 #endif
     virtual ~Rep_ ()
     {
-#if         qPlatform_Windows
-        if (fHandle_ != INVALID_HANDLE_VALUE) {
-            ::FindClose (fHandle_);
-        }
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         if (fDirIt_ != nullptr) {
             ::closedir (fDirIt_);
+        }
+#elif   qPlatform_Windows
+        if (fHandle_ != INVALID_HANDLE_VALUE) {
+            ::FindClose (fHandle_);
         }
 #endif
     }
@@ -143,19 +143,7 @@ public:
     {
         RequireNotNull (result);
         result->clear ();
-#if     qPlatform_Windows
-        if (advance) {
-            Require (fHandle_ != INVALID_HANDLE_VALUE);
-            memset (&fFindFileData_, 0, sizeof (fFindFileData_));
-            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
-                ::FindClose (fHandle_);
-                fHandle_ = INVALID_HANDLE_VALUE;
-            }
-        }
-        if (fHandle_ != INVALID_HANDLE_VALUE) {
-            *result = String::FromSDKString (fFindFileData_.cFileName);
-        }
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         if (advance) {
             RequireNotNull (fCur_);
             RequireNotNull (fDirIt_);
@@ -171,6 +159,18 @@ public:
         if (fCur_ != nullptr) {
             *result = String::FromSDKString (fCur_->d_name);
         }
+#elif   qPlatform_Windows
+        if (advance) {
+            Require (fHandle_ != INVALID_HANDLE_VALUE);
+            memset (&fFindFileData_, 0, sizeof (fFindFileData_));
+            if (::FindNextFile (fHandle_, &fFindFileData_) == 0) {
+                ::FindClose (fHandle_);
+                fHandle_ = INVALID_HANDLE_VALUE;
+            }
+        }
+        if (fHandle_ != INVALID_HANDLE_VALUE) {
+            *result = String::FromSDKString (fFindFileData_.cFileName);
+        }
 #endif
     }
     virtual bool    Equals (const Iterator<String>::IRep* rhs) const override
@@ -178,10 +178,10 @@ public:
         RequireNotNull (rhs);
         RequireMember (rhs, Rep_);
         const Rep_&  rrhs = *dynamic_cast<const Rep_*> (rhs);
-#if     qPlatform_Windows
-        return fHandle_ == rrhs.fHandle_;
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         return fDirIt_ == rrhs.fDirIt_;
+#elif   qPlatform_Windows
+        return fHandle_ == rrhs.fHandle_;
 #endif
     }
     virtual SharedIRepPtr    Clone () const override
@@ -189,9 +189,7 @@ public:
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Entering DirectoryIterator::Rep_::Clone");
 #endif
-#if     qPlatform_Windows
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
         if (fDirIt_ == nullptr) {
             return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr
 #if     qCompilerAndStdLib_fdopendir_Buggy
@@ -276,6 +274,8 @@ public:
                               , fDirName_
 #endif
                                                   ));
+#elif   qPlatform_Windows
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
@@ -300,6 +300,6 @@ public:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const String& directoryName)
-    : Iterator<String> (Iterator<String>::SharedIRepPtr (MakeSharedPtr<Rep_> (directoryName)))
+    : Iterator<String> (MakeSharedPtr<Rep_> (directoryName))
 {
 }
