@@ -12,5 +12,6 @@ Objs	=	\
 	$(ObjDir)Request.o\
 	$(ObjDir)RequestHandler.o\
 	$(ObjDir)Response.o\
+	$(ObjDir)Router.o\
 
 all:	$(Objs)

@@ -80,6 +80,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h" />
@@ -87,6 +88,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl" />
@@ -95,6 +97,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Router.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}</ProjectGuid>
