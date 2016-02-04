@@ -198,8 +198,13 @@ namespace   Stroika {
                      *  If MISSING, then SO_LINGER is disabled - the default. This means a socket close
                      *  will make best effort delivery, but close wont BLOCK until data delivered.
                      *
-                     *  If PRESNENT, then the value is the number of seconds close will wait to finish
+                     *  If PRESENT, then the value is the number of seconds close will wait to finish
                      *  delivering data.
+                     *
+                     *  \note   If you see (netstat -an) lots of TIME_WAIT state sockets, you can generally
+                     *          eliminate them with SetLonger (0); However, this is generally not advisable,
+                     *          as close() will send a  RST (connection reset) which indicates an error condition.
+                     *          (see http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required)
                      *
                      *  @see SetLinger()
                      */
