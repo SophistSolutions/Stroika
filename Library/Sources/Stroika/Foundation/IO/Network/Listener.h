@@ -52,8 +52,12 @@ namespace   Stroika {
                 /*
                  *  This maintains thread inside. VERY ROUGH DRAFT API. See Todo above
                  *
+                 *  Listener does the Bind() in the calling thread, and so will fail to construct if the Bind()
+                 *  fails.
                  *
-                */
+                 *  But it does the 'accepts' in a separate thread, so these can proceed as needed, and any failures
+                 *  there are handled internally, and largely ignored.
+                 */
                 class   Listener {
                 public:
                     // Define params object for stuff like listen backlog (for now hardwire)

@@ -50,7 +50,6 @@ struct  Listener::Rep_ {
         });
         fListenThread.SetThreadName (L"WebServer Listener");    // @todo include sockaddr 'pretty print' in name?
         fListenThread.Start ();
-
     }
     ~Rep_ ()
     {
