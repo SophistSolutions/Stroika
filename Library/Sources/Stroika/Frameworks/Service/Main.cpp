@@ -747,6 +747,7 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
     sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
     fRunThread_.WaitForDone ();
+    fRunThread_.ThrowIfDoneWithException ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -1046,6 +1047,7 @@ void    Main::WindowsService::_RunDirectly ()
     fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
+    fRunThread_.ThrowIfDoneWithException ();
 }
 
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
