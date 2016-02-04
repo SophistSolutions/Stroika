@@ -38,8 +38,10 @@ Router::Router (const Collection<Route>& routes)
 {
 }
 
-Optional<Handler>   Router::Lookup (const String& method, const URL& url) const
+Optional<Handler>   Router::Lookup (const Request& request) const
 {
+    String  method  =   request.fMethod;
+    URL     url     =   request.fURL;
     String  hostRelPath =   url.GetHostRelativePath ();
     for (Route r : fRoutes_.load ()) {
         if (method.Match (r.fVerbMatch) and hostRelPath.Match (r.fPathMatch)) {

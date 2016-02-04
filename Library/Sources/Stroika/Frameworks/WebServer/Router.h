@@ -45,6 +45,13 @@ namespace   Stroika {
              *  @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
              *
               * \note - this is internally synchonized (THREADSAFE)
+
+              **        NOTE - may verb match and path match each OPTIONALS in class and have maybe a LIST of THINGS we know how to match.
+              *             VERB
+              *             RELPATH
+              *             HTTP HEADER (like SOAPACTION)
+              *             RequestObject????
+              *         then we use "Route" to make generic the mapping of a request to a Handler.
             */
             struct  Route {
             private:
@@ -78,7 +85,11 @@ namespace   Stroika {
 
             public:
                 // typically just examine host-relative part of URL
-                nonvirtual  Optional<Handler>   Lookup (const String& method, const URL& url) const;
+                nonvirtual  Optional<Handler>   Lookup (const Request& request) const;
+
+                //public:
+                // typically just examine host-relative part of URL
+                //    nonvirtual  Optional<Handler>   Lookup (const String& method, const URL& url) const;
 
             private:
                 Execution::Synchronized<Collection<Route>>  fRoutes_;
