@@ -15,6 +15,7 @@
 #include    "Stroika/Foundation/Streams/TextReader.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include    "Stroika/Frameworks/WebServer/Router.h"
 
 using   namespace std;
 
@@ -33,6 +34,28 @@ using   Memory::BLOB;
  *      o   curl  http://localhost:8080/ OR
  *      o   curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState
  */
+
+
+namespace {
+    void    DefaultPage_ (Request* request, Response* response)
+    {
+        response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
+        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+    }
+    void    SetAppState_ (Request* request, Response* response)
+    {
+        BLOB    setAppState2    =   request->GetBody ();
+        String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
+        response->writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
+        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+    }
+    Router s_Router_ {
+        Sequence<Route> {
+            Route { RegularExpression (L"", RegularExpression::SyntaxType::eECMAScript), DefaultPage_},
+            Route { RegularExpression (L"POST", RegularExpression::SyntaxType::eECMAScript), RegularExpression (L"SetAppState", RegularExpression::SyntaxType::eECMAScript), SetAppState_},
+        }
+    };
+}
 
 int main (int argc, const char* argv[])
 {
@@ -56,18 +79,9 @@ int main (int argc, const char* argv[])
                 String path = conn.GetRequest ().fURL.GetHostRelativePath ();
                 DbgTrace (L"Serving page %s", path.c_str ());
                 try {
-                    if (path == L"") {
-                        conn.GetResponse ().writeln (L"<html><body><p>Hi Mom</p></body></html>");
-                        conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-                    }
-                    else if (path == L"SetAppState") {
-                        if (conn.GetRequest ().fMethod != L"POST") {
-                            Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kBadRequest, L"Expected POST for this url"));
-                        }
-                        BLOB    setAppState2    =   conn.GetRequest ().GetBody ();
-                        String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
-                        conn.GetResponse ().writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
-                        conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+                    Optional<RequestHandler>    handler = s_Router_.Lookup (conn.GetRequest ());
+                    if (handler) {
+                        (*handler) (&conn.GetRequest (), &conn.GetResponse ());
                     }
                     else {
                         Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));

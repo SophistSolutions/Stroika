@@ -53,6 +53,7 @@ void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeou
     fThreads_.AbortAndWaitForDone ();
 }
 
+#if 0
 void    ConnectionManager::AddHandler (const shared_ptr<RequestHandler>& h)
 {
     fHandlers_->push_back (h);
@@ -69,6 +70,7 @@ void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
     }
     RequireNotReached ();   // you must specify a valid handler to remove
 }
+#endif
 
 void    ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 {
@@ -117,6 +119,8 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
     try {
         c->ReadHeaders ();
 
+        AssertNotImplemented ();
+#if 0
         shared_ptr<RequestHandler>   h;
         {
             auto    readWriteObj = fHandlers_.GetReference ();
@@ -132,6 +136,7 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
             c->Close ();//tmphack
             return;
         }
+#endif
         Execution::Throw (Network::HTTP::Exception (StatusCodes::kNotFound));
     }
     catch (...) {

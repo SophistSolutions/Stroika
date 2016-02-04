@@ -38,7 +38,7 @@ Router::Router (const Sequence<Route>& routes)
 {
 }
 
-Optional<Handler>   Router::Lookup (const Request& request) const
+Optional<RequestHandler>   Router::Lookup (const Request& request) const
 {
     String  method  =   request.fMethod;
     URL     url     =   request.fURL;
@@ -48,6 +48,6 @@ Optional<Handler>   Router::Lookup (const Request& request) const
             return r.fHandler;
         }
     }
-    return Optional<Handler> {};
+    return Optional<RequestHandler> {};
 }
 

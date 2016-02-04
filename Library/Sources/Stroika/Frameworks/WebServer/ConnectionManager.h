@@ -13,7 +13,7 @@
 #include    "../../Foundation/Execution/ThreadPool.h"
 
 #include    "Request.h"
-#include    "RequestHandler.h"
+//#include    "RequestHandler.h"
 #include    "Response.h"
 #include    "Connection.h"
 
@@ -64,10 +64,11 @@ namespace   Stroika {
                 nonvirtual  void    Abort ();
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-
+#if 0
             public:
                 nonvirtual  void    AddHandler (const shared_ptr<RequestHandler>& h);
                 nonvirtual  void    RemoveHandler (const shared_ptr<RequestHandler>& h);
+#endif
 
             public:
                 nonvirtual  void    AddConnection (const shared_ptr<Connection>& conn);
@@ -88,7 +89,7 @@ namespace   Stroika {
 
             private:
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-                Execution::Synchronized<list<shared_ptr<RequestHandler>>>   fHandlers_;
+//                Execution::Synchronized<list<shared_ptr<RequestHandler>>>   fHandlers_;
                 Execution::Synchronized<list<shared_ptr<Connection>>>       fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling

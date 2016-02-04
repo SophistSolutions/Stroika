@@ -13,13 +13,27 @@
 #include    "../../Foundation/IO/Network/URL.h"
 
 #include    "Request.h"
-#include    "Response.h"
+#include    "RequestHandler.h"
 
 
 /*
  *  SUPER ROUGH DRAFT - inspired (soemwaht) by rails router
  * TODO:
  *
+ * Design Choice Notes:
+ *
+ *      o   RequestHandler::CanHandleRequest() -> bool method, or association list of PATTERN->RequestHandler?
+ *
+ *          We COULD either have a special RequestHandler maintaining a list of owned RequestHandler, with KEYs
+ *          of patterns like with Django:
+ *
+ *          extra_patterns = patterns('',
+ *              url(r'^reports/(?P<id>\d+)/$', 'credit.views.report', name='credit-reports'),
+ *              url(r'^charge/$', 'credit.views.charge', name='credit-charge'),
+ *          )
+ *
+ *          However, in terms of performance and flexability its not clear the regular expression matching would be any more efficent or easier to code than
+ *          just having a C++ method on RequestHandler().
  */
 
 namespace   Stroika {
@@ -34,7 +48,6 @@ namespace   Stroika {
             using   IO::Network::URL;
             using   Memory::Optional;
 
-            using   Handler = function<void(Request* request, Request* response)>;
 
 
             class   Router;
@@ -60,16 +73,16 @@ namespace   Stroika {
             private:
                 RegularExpression   fVerbMatch;
                 RegularExpression   fPathMatch;
-                Handler             fHandler;
+                RequestHandler      fHandler;
             public:
 
-                Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const Handler& handler)
+                Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
                     : fVerbMatch (verbMatch)
                     , fPathMatch (pathMatch)
                     , fHandler (handler)
                 {
                 }
-                Route (const RegularExpression& pathMatch, const Handler& handler)
+                Route (const RegularExpression& pathMatch, const RequestHandler& handler)
                     : fVerbMatch (RegularExpression (L".*", RegularExpression::SyntaxType::eECMAScript))
                     , fPathMatch (pathMatch)
                     , fHandler (handler)
@@ -81,6 +94,7 @@ namespace   Stroika {
 
 
             /**
+            *       UNCLEAR where to put synconized - insizde Router or outside?
             */
             class   Router {
             public:
@@ -88,7 +102,7 @@ namespace   Stroika {
 
             public:
                 // typically just examine host-relative part of URL
-                nonvirtual  Optional<Handler>   Lookup (const Request& request) const;
+                nonvirtual  Optional<RequestHandler>   Lookup (const Request& request) const;
 
                 //public:
                 // typically just examine host-relative part of URL

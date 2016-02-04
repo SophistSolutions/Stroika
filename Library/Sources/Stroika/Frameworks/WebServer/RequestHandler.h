@@ -6,31 +6,15 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
-
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 
-#include    "Connection.h"
+#include    "Request.h"
+#include    "Response.h"
 
 
 /*
- * Design Choice Notes:
- *
- *      o   RequestHandler::CanHandleRequest() -> bool method, or association list of PATTERN->RequestHandler?
- *
- *          We COULD either have a special RequestHandler maintaining a list of owned RequestHandler, with KEYs
- *          of patterns like with Django:
- *
- *          extra_patterns = patterns('',
- *              url(r'^reports/(?P<id>\d+)/$', 'credit.views.report', name='credit-reports'),
- *              url(r'^charge/$', 'credit.views.charge', name='credit-charge'),
- *          )
- *
- *          However, in terms of performance and flexability its not clear the regular expression matching would be any more efficent or easier to code than
- *          just having a C++ method on RequestHandler().
  */
 
 /*
@@ -46,6 +30,9 @@ namespace   Stroika {
             using   Characters::String;
             using   DataExchange::InternetMediaType;
 
+
+            using   RequestHandler = function<void(Request* request, Response* response)>;
+#if 0
 
             /*
              * A request handler should be understood to be stateless - as far as the connection is concerned.
@@ -69,6 +56,7 @@ namespace   Stroika {
                 // This will write an answer to the connection Response object
                 virtual void    HandleRequest (Connection& connection) = 0;
             };
+#endif
 
         }
     }

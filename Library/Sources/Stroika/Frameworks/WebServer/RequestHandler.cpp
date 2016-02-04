@@ -31,6 +31,7 @@ using   namespace   Stroika::Frameworks::WebServer;
  ********************* WebServer::RequestHandler ****************************
  ********************************************************************************
  */
+#if 0
 RequestHandler::RequestHandler ()
 {
 }
@@ -38,3 +39,4 @@ RequestHandler::RequestHandler ()
 RequestHandler::~RequestHandler ()
 {
 }
+#endif
