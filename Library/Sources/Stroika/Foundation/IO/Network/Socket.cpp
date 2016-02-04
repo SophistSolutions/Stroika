@@ -301,6 +301,20 @@ AGAIN:
                 AssertNotImplemented ();
 #endif
             }
+            virtual  Optional<int>        GetLinger () override
+            {
+                linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
+                return lr.l_onoff ? lr.l_linger :  Optional<int> {};
+            }
+            inline  void        SetLinger (Optional<int> linger) override
+            {
+                struct linger so_linger {};
+                if (linger) {
+                    so_linger.l_onoff = true;
+                    so_linger.l_linger = *linger;
+                }
+                ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::setsockopt (fSD_, SOL_SOCKET, SO_LINGER, reinterpret_cast<const char*> (&so_linger), sizeof (so_linger)));
+            }
             virtual Socket::PlatformNativeHandle    GetNativeSocket () const override
             {
                 return fSD_;

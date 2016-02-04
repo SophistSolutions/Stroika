@@ -89,6 +89,14 @@ namespace   Stroika {
                 {
                     fRep_->SetMulticastLoopMode (loopMode);
                 }
+                inline  Optional<int>        Socket::GetLinger ()
+                {
+                    return fRep_->GetLinger ();
+                }
+                inline  void        Socket::SetLinger (Optional<int> linger)
+                {
+                    fRep_->SetLinger (linger);
+                }
                 inline  void    Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
                     fRep_->JoinMulticastGroup (iaddr, onInterface);

@@ -19,6 +19,7 @@
 #if     qPlatform_Windows
 #include    "Platform/Windows/WinSock.h"
 #endif
+#include    "../../Memory/Optional.h"
 
 #include    "SocketAddress.h"
 
@@ -32,6 +33,7 @@ namespace   Stroika {
 
                 using   Characters::String;
                 using   Memory::Byte;
+                using   Memory::Optional;
 
 
                 /**
@@ -191,6 +193,27 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  See http://man7.org/linux/man-pages/man7/socket.7.html - option SO_LINGER
+                     *
+                     *  If MISSING, then SO_LINGER is disabled - the default. This means a socket close
+                     *  will make best effort delivery, but close wont BLOCK until data delivered.
+                     *
+                     *  If PRESNENT, then the value is the number of seconds close will wait to finish
+                     *  delivering data.
+                     *
+                     *  @see SetLinger()
+                     */
+                    nonvirtual  Optional<int>   GetLinger ();
+
+                public:
+                    /**
+                     *
+                     *  @see GetLinger()
+                     */
+                    nonvirtual  void        SetLinger (Optional<int> linger);
+
+                public:
+                    /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      *   throws on error, and otherwise means should call accept
@@ -342,6 +365,8 @@ namespace   Stroika {
                     virtual void                    SetMulticastTTL (uint8_t ttl) = 0;
                     virtual bool                    GetMulticastLoopMode () const = 0;
                     virtual void                    SetMulticastLoopMode (bool loopMode) = 0;
+                    virtual Optional<int>           GetLinger () = 0;
+                    virtual void                    SetLinger (Optional<int> linger) = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                     virtual void                    getsockopt (int level, int optname, void* optval, socklen_t* optlen) const = 0;
                 };
