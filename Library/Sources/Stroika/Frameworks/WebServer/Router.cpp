@@ -33,7 +33,7 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::Router ************************************
  ********************************************************************************
  */
-Router::Router (const Collection<Route>& routes)
+Router::Router (const Sequence<Route>& routes)
     : fRoutes_ (routes)
 {
 }

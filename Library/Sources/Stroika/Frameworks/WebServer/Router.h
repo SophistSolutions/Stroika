@@ -8,7 +8,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Characters/RegularExpression.h"
-#include    "../../Foundation/Containers/Collection.h"
+#include    "../../Foundation/Containers/Sequence.h"
 #include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/IO/Network/URL.h"
 
@@ -30,7 +30,7 @@ namespace   Stroika {
 
             using   Characters::String;
             using   Characters::RegularExpression;
-            using   Containers::Collection;
+            using   Containers::Sequence;
             using   IO::Network::URL;
             using   Memory::Optional;
 
@@ -52,6 +52,9 @@ namespace   Stroika {
               *             HTTP HEADER (like SOAPACTION)
               *             RequestObject????
               *         then we use "Route" to make generic the mapping of a request to a Handler.
+              (
+            *       @todo NEED to support NESTED Routes (or aggregated).
+            *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
             */
             struct  Route {
             private:
@@ -81,7 +84,7 @@ namespace   Stroika {
             */
             class   Router {
             public:
-                Router (const Collection<Route>& routes);
+                Router (const Sequence<Route>& routes);
 
             public:
                 // typically just examine host-relative part of URL
@@ -92,7 +95,7 @@ namespace   Stroika {
                 //    nonvirtual  Optional<Handler>   Lookup (const String& method, const URL& url) const;
 
             private:
-                Execution::Synchronized<Collection<Route>>  fRoutes_;
+                Execution::Synchronized<Sequence<Route>>  fRoutes_;
             };
 
 
