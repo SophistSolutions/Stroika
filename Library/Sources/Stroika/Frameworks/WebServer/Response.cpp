@@ -272,3 +272,12 @@ void    Response::write (const wchar_t* s, const wchar_t* e)
         }
     }
 }
+
+void    Response::printf (const wchar_t* format, ...)
+{
+    va_list     argsList;
+    va_start (argsList, format);
+    String      tmp     =   Characters::FormatV (format, argsList);
+    va_end (argsList);
+    write (tmp);
+}

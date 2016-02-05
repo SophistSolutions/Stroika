@@ -156,10 +156,10 @@ namespace   Stroika {
                 nonvirtual  void    write (const Byte* start, const Byte* end);
                 nonvirtual  void    write (const wchar_t* e);
                 nonvirtual  void    write (const wchar_t* s, const wchar_t* e);
-                nonvirtual  void    write (const wstring& e);
+                nonvirtual  void    write (const String& e);
                 nonvirtual  void    printf (const wchar_t* format, ...);
                 nonvirtual  void    writeln (const wchar_t* e);
-                nonvirtual  void    writeln (const wstring& e);
+                nonvirtual  void    writeln (const String& e);
 
             public:
                 virtual     void    clear ();

@@ -39,10 +39,11 @@ namespace   Stroika {
                 RequireNotNull (e);
                 write (e, e + ::wcslen (e));
             }
-            inline  void    Response::write (const wstring& e)
+            inline  void    Response::write (const String& e)
             {
                 if (not e.empty ()) {
-                    write (Containers::Start (e), Containers::End (e));
+                    wstring tmp { e.As<wstring> () };
+                    write (Containers::Start (tmp), Containers::End (tmp));
                 }
             }
             inline  void    Response::writeln (const wchar_t* e)
@@ -52,11 +53,12 @@ namespace   Stroika {
                 write (e, e + ::wcslen (e));
                 write (std::begin (kEOL), std::end (kEOL));
             }
-            inline  void    Response::writeln (const wstring& e)
+            inline  void    Response::writeln (const String& e)
             {
                 const   wchar_t kEOL[]  =   L"\r\n";
                 if (not e.empty ()) {
-                    write (Containers::Start (e), Containers::End (e));
+                    wstring tmp { e.As<wstring> () };
+                    write (Containers::Start (tmp), Containers::End (tmp));
                 }
                 write (std::begin (kEOL), std::end (kEOL));
             }
@@ -76,6 +78,7 @@ namespace   Stroika {
             {
                 return fContentSizePolicy_;
             }
+
 
         }
     }
