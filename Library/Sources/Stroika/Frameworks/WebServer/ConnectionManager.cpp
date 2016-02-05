@@ -6,6 +6,7 @@
 #include    <algorithm>
 #include    <cstdlib>
 
+#include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
@@ -19,6 +20,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
@@ -28,15 +30,16 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+
 /*
  ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router)
-    : fRouter_ (router)
-    , fListener_  (bindAddress, [this](Socket s)  { onConnect_ (s); })
-, fServerHeader_ (L"Stroika/2.0")
+    : fServerHeader_ (String_Constant { L"Stroika/2.0" })
+, fRouter_ (router)
+, fListener_  (bindAddress, [this](Socket s)  { onConnect_ (s); })
 {
 }
 

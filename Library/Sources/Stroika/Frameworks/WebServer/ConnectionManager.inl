@@ -14,6 +14,30 @@ namespace   Stroika {
     namespace   Frameworks  {
         namespace   WebServer {
 
+
+            /*
+             ********************************************************************************
+             ******************************** ConnectionManager *****************************
+             ********************************************************************************
+             */
+            inline  Optional<String> ConnectionManager::GetServerHeader () const
+            {
+                return fServerHeader_;
+            }
+            inline  void ConnectionManager::SetServerHeader (Optional<String> server)
+            {
+                fServerHeader_ = server;
+            }
+            inline      bool ConnectionManager::GetIgnoreCORS () const
+            {
+                return fIgnoreSillyCORS_;
+            }
+            inline    void ConnectionManager::SetIgnoreCORS (bool ignoreCORS)
+            {
+                fIgnoreSillyCORS_ = ignoreCORS;
+            }
+
+
         }
     }
 }

@@ -58,29 +58,30 @@ namespace   Stroika {
                 ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager () = default;
 
-
-            private:
-                Optional<String>    fServerHeader_;
-            public:
-                Optional<String> GetServerHeader () const { return fServerHeader_; }
-                void SetServerHeader (Optional<String> server) {  fServerHeader_ = server; }
-
-
-            private:
-                bool    fIgnoreSillyCORS_;
-            public:
-                bool GetIgnoreCORS () const { return fIgnoreSillyCORS_; }
-                void SetIgnoreCORS (bool ignoreCORS)  {  fIgnoreSillyCORS_ = ignoreCORS; }
-
-
-
-            private:
-                void onConnect_ (Socket s);
-                Router  fRouter_;
-                IO::Network::Listener fListener_;
-
             public:
                 nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
+
+
+            public:
+                /**
+                 */
+                nonvirtual  Optional<String> GetServerHeader () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void SetServerHeader (Optional<String> server);
+
+            public:
+                /**
+                 */
+                nonvirtual  bool GetIgnoreCORS () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void SetIgnoreCORS (bool ignoreCORS);
+
 
 #if 0
             public:
@@ -115,6 +116,13 @@ namespace   Stroika {
 #endif
 
             private:
+                nonvirtual  void onConnect_ (Socket s);
+
+            private:
+                Optional<String>        fServerHeader_;
+                bool                    fIgnoreSillyCORS_ { true };
+                Router                  fRouter_;
+                IO::Network::Listener   fListener_;
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
 //                Execution::Synchronized<list<shared_ptr<RequestHandler>>>   fHandlers_;
                 Execution::Synchronized<list<shared_ptr<Connection>>>       fActiveConnections_;
@@ -127,6 +135,7 @@ namespace   Stroika {
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
                 Execution::ThreadPool                                       fThreads_;
             };
+
 
         }
     }
