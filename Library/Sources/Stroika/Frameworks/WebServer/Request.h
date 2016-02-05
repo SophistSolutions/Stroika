@@ -31,10 +31,13 @@ namespace   Stroika {
             using   Containers::Mapping;
             using   DataExchange::InternetMediaType;
 
-            // Maybe associated TextStream, and maybe readline method goes here
-            // Quicky impl. Need to improve this significantly. Probably/possibly hide the fInptuStream and other public
-            //
-            // For now assume externally sycnhonized
+
+            /**
+             *  Maybe associated TextStream, and maybe readline method goes here
+             *  Quicky impl. Need to improve this significantly. Probably/possibly hide the fInptuStream and other public
+             *
+             *  For now assume externally sycnhonized
+             */
             struct  Request {
             public:
                 Request () = delete;
@@ -61,6 +64,7 @@ namespace   Stroika {
             private:
                 Memory::Optional<Memory::BLOB>          fBody_;
             };
+
 
         }
     }

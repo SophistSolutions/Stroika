@@ -35,7 +35,6 @@ using   namespace   Stroika::Frameworks::WebServer;
  */
 Request::Request (const Streams::InputStream<Byte>& inStream)
     : fInputStream (inStream)
-//    , fInputTextStream (fInputStream)
     , fHTTPVersion ()
     , fURL ()
     , fHeaders ()
