@@ -202,7 +202,7 @@ namespace   Stroika {
                      *  delivering data.
                      *
                      *  \note   If you see (netstat -an) lots of TIME_WAIT state sockets, you can generally
-                     *          eliminate them with SetLonger (0); However, this is generally not advisable,
+                     *          eliminate them with SetLinger (0); However, this is generally not advisable,
                      *          as close() will send a  RST (connection reset) which indicates an error condition.
                      *          (see http://stackoverflow.com/questions/3757289/tcp-option-so-linger-zero-when-its-required)
                      *
@@ -356,7 +356,7 @@ namespace   Stroika {
                  */
                 class   Socket::_Rep {
                 public:
-                    virtual ~_Rep ();
+                    virtual ~_Rep () = default;
                     virtual void                    Close () = 0;
                     virtual size_t                  Read (Byte* intoStart, Byte* intoEnd) = 0;
                     virtual void                    Write (const Byte* start, const Byte* end) = 0;

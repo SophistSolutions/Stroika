@@ -67,7 +67,7 @@ namespace {
         Verify (::QueryPerformanceCounter (&counter));
         return static_cast<DurationSecondsType> (counter.QuadPart) / sPerformanceFrequencyBasis_;
 #else
-        return ::time (0);    //tmphack... not good but better than assert erorr
+        return ::time (0);    //tmphack... not good but better than assert error
 #endif
     }
 }

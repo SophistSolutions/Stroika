@@ -401,7 +401,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a113">v2.0a113</a><br/>2015-10-24</td>
 <td>
 	<ul>
-		<li>Syntax Erorr (TimedCache)</li>
+		<li>Syntax Error (TimedCache)</li>
 		<li>no testing - cuz little changed - emergency release</li>
 	</ul>
 </td>

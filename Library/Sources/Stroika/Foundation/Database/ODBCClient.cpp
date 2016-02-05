@@ -101,7 +101,7 @@ public:
                                              nullptr, SQL_NTS
                                          );
                 if ((return_value != SQL_SUCCESS) && (return_value != SQL_SUCCESS_WITH_INFO)) {
-// This logic for producing an erorr message completely sucks and is largely incorrect
+// This logic for producing an error message completely sucks and is largely incorrect
                     wstring     errorString = L"Error SQLConnect: ";
                     SQLTCHAR    sqlState[6];
                     SQLINTEGER  errorCode;

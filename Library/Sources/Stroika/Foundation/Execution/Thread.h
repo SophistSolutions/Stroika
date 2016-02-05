@@ -358,7 +358,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Look pumping messages until either time2Pump is exceeded or the thread completes.
-                 *  Its NOT an erorr if the timeout is exceeded.
+                 *  Its NOT an error if the timeout is exceeded.
                  *
                  *  throws if timeout
                  */

@@ -242,7 +242,7 @@ namespace   Stroika {
                  *      respect the 'subsetToDraw'.
                  */
                 if (fCachedImager != NULL) {
-                    // del and set null if anythingimportnat changed...
+                    // del and set null if anything important changed...
                     if (fCachedIntoRect != intoRect or fCachedIntoTablet != tablet) {
                         delete fCachedImager;
                         fCachedImager = NULL;

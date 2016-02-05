@@ -395,14 +395,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
     }
     catch (const InterruptException&)
     {
-        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow still not working");
+        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
     catch (...)
     {
-        DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
+        DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught exception");
 
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS

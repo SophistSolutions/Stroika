@@ -110,9 +110,8 @@ namespace   {
             }
             virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
             {
-                // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_POSIX
-                return Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
+                return ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif   qPlatform_Windows
                 ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
@@ -125,11 +124,10 @@ namespace   {
             }
             virtual void    Write (const Byte* start, const Byte* end) override
             {
-                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
-
-                // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_POSIX
+                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
                 int     n   =   Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+                ThrowErrNoIfNegative (n);
 #elif   qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
@@ -159,7 +157,6 @@ namespace   {
             }
             virtual void  SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
             {
-                // Must do erorr checking and throw exceptions!!!
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if     qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
@@ -173,7 +170,6 @@ namespace   {
             virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override
             {
                 RequireNotNull (fromAddress);
-                // Must do erorr checking and throw exceptions!!!
                 sockaddr    sa;
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_POSIX
@@ -350,22 +346,6 @@ AGAIN:
 
 
 
-
-/*
- ********************************************************************************
- ****************************** Network::Socket::_Rep ***************************
- ********************************************************************************
- */
-Socket::_Rep::~_Rep ()
-{
-}
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ********************************** Network::Socket *****************************
@@ -507,7 +487,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 
 void    Socket::Close ()
 {
-    // not importnat to null-out, but may as well...
+    // not important to null-out, but may as well...
     if (fRep_.get () != nullptr) {
         fRep_->Close ();
         fRep_.reset ();

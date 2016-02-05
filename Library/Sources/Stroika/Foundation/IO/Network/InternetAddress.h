@@ -84,6 +84,8 @@ namespace   Stroika {
                 class   InternetAddress {
                 public:
                     /**
+                     *  @see Configuration::Endian
+                     *  @see Configuration::EndianConverter
                      */
                     enum    class  ByteOrder {
                         Network,

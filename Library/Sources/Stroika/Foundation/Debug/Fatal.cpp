@@ -13,7 +13,7 @@ using   namespace   Stroika::Foundation::Debug;
 
 
 namespace   {
-    void    _DefaultFatalErorrHandler_ (const SDKChar* msg)
+    void    _DefaultFatalErrorHandler_ (const SDKChar* msg)
     {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
         Debug::DropIntoDebuggerIfPresent ();
@@ -43,7 +43,7 @@ namespace   {
 
 void    Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const SDKChar* msg))
 {
-    sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErorrHandler_ : fatalErrorHandler;
+    sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErrorHandler_ : fatalErrorHandler;
     set_terminate (TerminateHandler_);
     set_unexpected (UnexpectedHandler_);
 #if     qPlatform_Windows

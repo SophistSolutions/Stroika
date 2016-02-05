@@ -674,7 +674,7 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                                 DWORD   err = ::GetLastError ();
                                 // sometimes we fail because the target process hasn't read enough and the pipe is full.
                                 // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
-                                // documentation about what WriteFile () returns in this case... So there maybe other erorrs
+                                // documentation about what WriteFile () returns in this case... So there maybe other errors
                                 // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
                                 //      -- LGP 2009-05-07
                                 if (err != ERROR_SUCCESS and

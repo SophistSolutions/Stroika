@@ -80,7 +80,7 @@
  *                      if (dynamic_cast<Sequence_Array::_IRep*> (myIRep) != nullptr) {
  *                          then peek and cheat...
  *                      }
- *                      Maybe when the iterator is constructed - it checks for a couple importnat types
+ *                      Maybe when the iterator is constructed - it checks for a couple important types
  *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
  *                      And the benefit in teh more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).

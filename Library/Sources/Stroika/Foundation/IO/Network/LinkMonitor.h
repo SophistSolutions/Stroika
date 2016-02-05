@@ -71,7 +71,7 @@ namespace   Stroika {
                 // Otherwise, not super-well defined
                 // THINK OUT RELATION BETWEENT HIS AND GetPrimaryInternetAddress???
                 //
-                // think through and document erorr conditions
+                // think through and document error conditions
                 String GetPrimaryNetworkDeviceMacAddress ();
 
 
