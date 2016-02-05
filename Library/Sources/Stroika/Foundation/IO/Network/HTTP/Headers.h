@@ -34,6 +34,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_constexpr_Buggy
                         extern  const   wchar_t kContentType[13];
                         extern  const   wchar_t kContentLength[15];
+                        extern  const   wchar_t kConnection[11];
                         extern  const   wchar_t kServer[7];
                         extern  const   wchar_t kDate[5];
                         extern  const   wchar_t kLastModified[14];
@@ -47,6 +48,7 @@ namespace   Stroika {
 #else
                         constexpr   wchar_t kContentType[]                  =   L"Content-Type";
                         constexpr   wchar_t kContentLength[]                =   L"Content-Length";
+                        constexpr   wchar_t kConnection[]                   =   L"Connection";
                         constexpr   wchar_t kServer[]                       =   L"Server";
                         constexpr   wchar_t kDate[]                         =   L"Date";
                         constexpr   wchar_t kLastModified[]                 =   L"Last-Modified";

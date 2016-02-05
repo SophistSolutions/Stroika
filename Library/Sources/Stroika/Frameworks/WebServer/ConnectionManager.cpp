@@ -53,8 +53,14 @@ void ConnectionManager::onConnect_ (Socket s)
             conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
         }
         if (fIgnoreSillyCORS_) {
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*");
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, L"Origin, X-Requested-With, Content-Type, Accept, Authorization");
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
+        }
+        constexpr bool kSupportHTTPKeepAlives_ { false };
+        if (not kSupportHTTPKeepAlives_) {
+            // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
         }
         String url = conn.GetRequest ().fURL.GetFullURL ();
         DbgTrace (L"Serving page %s", url.c_str ());

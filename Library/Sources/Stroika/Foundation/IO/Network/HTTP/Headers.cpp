@@ -19,6 +19,7 @@ using   namespace   Stroika::Foundation::IO::Network::HTTP;
 #if     qCompilerAndStdLib_constexpr_Buggy
 extern  const   wchar_t HeaderName::kContentType[]                  =   L"Content-Type";
 extern  const   wchar_t HeaderName::kContentLength[]                =   L"Content-Length";
+extern  const   wchar_t HeaderName::kConnection[]                   =   L"Connection";
 extern  const   wchar_t HeaderName::kServer[]                       =   L"Server";
 extern  const   wchar_t HeaderName::kDate[]                         =   L"Date";
 extern  const   wchar_t HeaderName::kLastModified[]                 =   L"Last-Modified";
