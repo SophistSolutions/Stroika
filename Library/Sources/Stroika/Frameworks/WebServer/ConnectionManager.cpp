@@ -11,6 +11,7 @@
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Execution/Sleep.h"
+#include    "../../Foundation/IO/Network/HTTP/Headers.h"
 #include    "../../Foundation/IO/Network/HTTP/Exception.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -22,9 +23,8 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
+using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Frameworks::WebServer;
-
-
 
 
 
@@ -33,6 +33,55 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router)
+    : fRouter_ (router)
+    , fListener_  (bindAddress, [this](Socket s)  { onConnect_ (s); })
+, fServerHeader_ (L"stroika-web-server-demo")
+{
+}
+
+void ConnectionManager::onConnect_ (Socket s)
+{
+    Execution::Thread runConnectionOnAnotherThread ([this, s]() {
+        // now read
+        Connection conn (s);
+        conn.ReadHeaders ();    // bad API. Must rethink...
+        if (fServerHeader_) {
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
+        }
+        if (fIgnoreSillyCORS_) {
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, L"*");
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, L"Origin, X-Requested-With, Content-Type, Accept, Authorization");
+        }
+        String url = conn.GetRequest ().fURL.GetFullURL ();
+        DbgTrace (L"Serving page %s", url.c_str ());
+        try {
+            Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
+            if (handler) {
+                (*handler) (&conn.GetRequest (), &conn.GetResponse ());
+            }
+            else {
+                Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+            }
+        }
+        catch (const IO::Network::HTTP::Exception& e) {
+            conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
+            conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        catch (...) {
+            conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
+            conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        conn.GetResponse ().End ();
+    });
+    runConnectionOnAnotherThread.SetThreadName (L"Connection Thread");  // Could use a fancier name (connection#, from remote address?)
+    runConnectionOnAnotherThread.Start ();
+    runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
+};
+
+#if 0
 void    ConnectionManager::Start ()
 {
     fThreads_.AddTask (bind (&ConnectionManager::DoMainConnectionLoop_, this));
@@ -52,6 +101,7 @@ void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeou
 {
     fThreads_.AbortAndWaitForDone ();
 }
+#endif
 
 #if 0
 void    ConnectionManager::AddHandler (const shared_ptr<RequestHandler>& h)
@@ -82,6 +132,7 @@ void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
     AssertNotImplemented ();
 }
 
+#if 0
 void    ConnectionManager::DoMainConnectionLoop_ ()
 {
     // MUST DO MAJOR CRITICAL SECTION WORK HERE
@@ -144,3 +195,4 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
         c->Close ();//tmphack
     }
 }
+#endif

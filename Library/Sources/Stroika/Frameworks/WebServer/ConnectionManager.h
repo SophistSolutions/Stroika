@@ -11,10 +11,12 @@
 
 #include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/Execution/ThreadPool.h"
+#include    "../../Foundation/IO/Network/SocketAddress.h"
+#include    "../../Foundation/IO/Network/Listener.h"
 
 #include    "Request.h"
-//#include    "RequestHandler.h"
 #include    "Response.h"
+#include    "Router.h"
 #include    "Connection.h"
 
 
@@ -36,8 +38,8 @@ namespace   Stroika {
         namespace   WebServer {
 
             using   namespace   Stroika::Foundation;
-            using   namespace   Stroika::Foundation::IO;
             using   Characters::String;
+            using   IO::Network::SocketAddress;
             using   std::shared_ptr;
 
 
@@ -52,18 +54,41 @@ namespace   Stroika {
              */
             class   ConnectionManager {
             public:
-                ConnectionManager () = default;
+                ConnectionManager (const SocketAddress& bindAddress, const Router& router);
                 ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager () = default;
+
+
+            private:
+                Optional<String>    fServerHeader_;
+            public:
+                Optional<String> GetServerHeader () const { return fServerHeader_; }
+                void SetServerHeader (Optional<String> server) {  fServerHeader_ = server; }
+
+
+            private:
+                bool    fIgnoreSillyCORS_;
+            public:
+                bool GetIgnoreCORS () const { return fIgnoreSillyCORS_; }
+                void SetIgnoreCORS (bool ignoreCORS)  {  fIgnoreSillyCORS_ = ignoreCORS; }
+
+
+
+            private:
+                void onConnect_ (Socket s);
+                Router  fRouter_;
+                IO::Network::Listener fListener_;
 
             public:
                 nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
 
+#if 0
             public:
                 nonvirtual  void    Start ();
                 nonvirtual  void    Abort ();
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+#endif
 #if 0
             public:
                 nonvirtual  void    AddHandler (const shared_ptr<RequestHandler>& h);
@@ -82,10 +107,12 @@ namespace   Stroika {
                  */
                 nonvirtual  vector<shared_ptr<Connection>> GetConnections () const;
 
+#if 0
             private:
                 //VERY VERY SUPER PRIMITIVE FIFRST DRAFT OF CONNECTION HANDLING
                 nonvirtual  void    DoMainConnectionLoop_ ();
                 nonvirtual  void    DoOneConnection_ (shared_ptr<Connection> c);
+#endif
 
             private:
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
