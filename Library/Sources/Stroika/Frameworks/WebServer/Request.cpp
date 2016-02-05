@@ -42,23 +42,23 @@ Request::Request (const Streams::InputStream<Byte>& inStream)
 {
 }
 
-
 Memory::BLOB    Request::GetBody ()
 {
     if (fBody_.IsMissing ()) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
-        auto ci = fHeaders.find (IO::Network::HTTP::HeaderName::kContentLength);
-        if (ci == fHeaders.end ()) {
-            fBody_ = fInputStream.ReadAll ();
-        }
-        else {
-            size_t contentLength = Characters::String2Int<size_t> (ci->second);
+        if (auto ci = fHeaders.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
+            size_t contentLength = Characters::String2Int<size_t> (*ci);
             Memory::SmallStackBuffer<Memory::Byte>  buf (contentLength);
-            size_t  nRead = fInputStream.Read (buf.begin (), buf.end ());
-            if (contentLength != nRead) {
-                Execution::Throw (Execution::StringException (L"unexpeced wrong number of bytes returned in HTTP body"));
+            if (contentLength != 0) {
+                size_t  nRead = fInputStream.Read (buf.begin (), buf.end ());
+                if (contentLength != nRead) {
+                    Execution::Throw (Execution::StringException (L"unexpected wrong number of bytes returned in HTTP body"));
+                }
             }
             fBody_ = Memory::BLOB (buf.begin (), buf.end ());
+        }
+        else {
+            fBody_ = fInputStream.ReadAll ();
         }
     }
     return *fBody_;

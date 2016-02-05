@@ -6,11 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <map>
-#include    <string>
-#include    <vector>
-
 #include    "../../Foundation/Characters/String.h"
+#include    "../../Foundation/Containers/Mapping.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/URL.h"
@@ -31,6 +28,7 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
+            using   Containers::Mapping;
             using   DataExchange::InternetMediaType;
 
             // Maybe associated TextStream, and maybe readline method goes here
@@ -58,7 +56,7 @@ namespace   Stroika {
                 String                                  fHTTPVersion;
                 String                                  fMethod;
                 IO::Network::URL                        fURL;
-                map<String, String>                     fHeaders;
+                Mapping<String, String>                 fHeaders;
 
             private:
                 Memory::Optional<Memory::BLOB>          fBody_;
