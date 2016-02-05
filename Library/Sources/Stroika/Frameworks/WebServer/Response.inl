@@ -34,6 +34,10 @@ namespace   Stroika {
             {
                 return fCodePage_;
             }
+            inline  void    Response::write (const BLOB& b)
+            {
+                write (b.begin (), b.end ());
+            }
             inline  void    Response::write (const wchar_t* e)
             {
                 RequireNotNull (e);

@@ -16,6 +16,7 @@
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/IO/Network/HTTP/Status.h"
+#include    "../../Foundation/Memory/BLOB.h"
 #include    "../../Foundation/Streams/OutputStream.h"
 #include    "../../Foundation/Streams/BufferedOutputStream.h"
 
@@ -51,6 +52,7 @@ namespace   Stroika {
 
             using   Characters::String;
             using   DataExchange::InternetMediaType;
+            using   Memory::BLOB;
             using   Memory::Byte;
 
 
@@ -153,6 +155,7 @@ namespace   Stroika {
                 nonvirtual  void    Redirect (const String& url);
 
             public:
+                nonvirtual  void    write (const BLOB& b);
                 nonvirtual  void    write (const Byte* start, const Byte* end);
                 nonvirtual  void    write (const wchar_t* e);
                 nonvirtual  void    write (const wchar_t* s, const wchar_t* e);
@@ -181,7 +184,6 @@ namespace   Stroika {
                  * be automatically generated based on the status.
                  */
                 nonvirtual  void    SetStatus (Status newStatus, const String& overrideReason = wstring ());
-
 
             public:
                 //
