@@ -88,7 +88,7 @@ void    Connection::ReadHeaders ()
         else {
             String  hdr     =   line.SubString (0, i).Trim ();
             String  value   =   line.SubString (i + 1).Trim ();
-            fRequest_.fHeaders.insert (map<String, String>::value_type (hdr, value));
+            fRequest_.fHeaders.Add (hdr, value);
         }
     }
 }
