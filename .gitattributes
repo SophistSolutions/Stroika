@@ -10,7 +10,7 @@
 README text diff
 *Makefile* text eol=lf diff
 *.mk text eol=lf diff
-*.pl text diff
+*.pl text eol=lf diff
 *.PATCH text eol=lf diff
 *.h text diff
 *.inl text diff
