@@ -57,7 +57,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        using   SimpleClassWithoutComparisonOperators_SETRAITS  =   Set_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_>;
+        using   SimpleClassWithoutComparisonOperators_SETRAITS  =   DefaultTraits::Set<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_>;
 
         DoTestForConcreteContainer_<Set<size_t>> ();
         DoTestForConcreteContainer_<Set<SimpleClass>> ();
