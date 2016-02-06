@@ -17,6 +17,7 @@ namespace   Stroika {
         namespace   WebServer {
 
 
+#if     !qCompilerAndStdLib_regex_Buggy
             /*
              ********************************************************************************
              ******************************** WebServer::Route ******************************
@@ -38,6 +39,7 @@ namespace   Stroika {
                 , fHandler_ (handler)
             {
             }
+#endif
 
 
         }
