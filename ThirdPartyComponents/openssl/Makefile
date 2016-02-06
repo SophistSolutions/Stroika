@@ -24,6 +24,10 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 CrossCompiling			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling)
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
 
+ifeq (Unix,$(ProjectPlatformSubdir))
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
+AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
+endif
 
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
@@ -144,7 +148,7 @@ doCreate:	$(ZIPEDFILE)
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT/CONFIG.OUT - new configuration..."
-	@BASE_CONFIG_LINE=`cd CURRENT && ./config -t | tail -1`; $(ECHO) "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
+	@BASE_CONFIG_LINE=`export CC=$(CC); export AR=$(AR); cd CURRENT && ./config -t | tail -1`; $(ECHO) "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
