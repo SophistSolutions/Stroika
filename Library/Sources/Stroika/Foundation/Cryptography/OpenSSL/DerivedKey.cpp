@@ -60,22 +60,36 @@ namespace {
 
 
 
-namespace {
-    string          toPasswd_ (const String& s)
-    {
-        return s.AsUTF8 ();
-    }
-    Optional<BLOB>  toSalt_ (const Optional<string>& s)
-    {
-        // @todo NYI
-        return Optional<BLOB> ();
-    }
-    Optional<BLOB>  toSalt_ (const Optional<String>& s)
-    {
-        // @todo NYI
-        return Optional<BLOB> ();
-    }
+
+
+
+
+#if     qHasFeature_OpenSSL
+/*
+ ********************************************************************************
+ ********************** Cryptography::OpenSSL::DerivedKey ***********************
+ ********************************************************************************
+ */
+size_t  DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
+{
+    return Convert2OpenSSL (cipherAlgorithm)->key_len;
 }
+size_t  DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
+{
+    return cipherAlgorithm->key_len;
+}
+
+size_t  DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
+{
+    return Convert2OpenSSL (cipherAlgorithm)->iv_len;
+}
+size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
+{
+    return cipherAlgorithm->iv_len;
+}
+#endif
+
+
 
 
 
@@ -87,48 +101,28 @@ namespace {
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB>    mkEVP_BytesToKey_ (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB>    mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        RequireNotNull (cipherAlgorithm);
-        SmallStackBuffer<Byte> useKey   { static_cast<size_t> (cipherAlgorithm->key_len) };
-        SmallStackBuffer<Byte> useIV    { static_cast<size_t> (cipherAlgorithm->iv_len) };
-        int i = ::EVP_BytesToKey (cipherAlgorithm, Convert2OpenSSL (digestAlgorithm), salt ? salt.Value ().begin () : nullptr, passwd.first, static_cast<int> (passwd.second - passwd.first), nRounds, useKey.begin (), useIV.begin ());
+        SmallStackBuffer<Byte> useKey   { keyLen };
+        SmallStackBuffer<Byte> useIV    { ivLen };
+        if (salt and salt->GetSize () != 8) {
+            // Could truncate and fill to adapt to differnt sized salt...
+            Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
+        }
+        int i = ::EVP_BytesToKey (FakeCryptoAlgo_ (keyLen, ivLen), Convert2OpenSSL (digestAlgorithm), salt ? salt.Value ().begin () : nullptr, passwd.begin (), static_cast<int> (passwd.size ()), nRounds, useKey.begin (), useIV.begin ());
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
         return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
     }
 }
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : DerivedKey (mkEVP_BytesToKey_ (digestAlgorithm, cipherAlgorithm, passwd, nRounds, salt))
+template    <>
+EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    : DerivedKey (mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
 {
 }
 
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : EVP_BytesToKey (digestAlgorithm, FakeCryptoAlgo_ (keyLength, ivLength), passwd, nRounds, salt)
-{
-}
-
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : EVP_BytesToKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), passwd, nRounds, salt)
-{
-}
-
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : EVP_BytesToKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), passwd.As<pair<const Byte*, const Byte*>> (), nRounds, salt)
-{
-}
-
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : EVP_BytesToKey (digestAlgorithm, Convert2OpenSSL (cipherAlgorithm), pair<const Byte*, const Byte*> (reinterpret_cast<const Byte*> (passwd.c_str ()), reinterpret_cast<const Byte*> (passwd.c_str () + passwd.length ())), nRounds, salt)
-{
-}
-
-EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : EVP_BytesToKey (digestAlgorithm, cipherAlgorithm, toPasswd_ (passwd), nRounds, salt)
-{
-}
 
 
 
@@ -139,41 +133,21 @@ EVP_BytesToKey::EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     {
-        AssertNotImplemented ();    // almost - pretty easy
-        SmallStackBuffer<Byte> outBuf   { static_cast<size_t> (keyLen + ivLen) };
-        // @todo map salt
-        Byte salt2[222];
-        int a = ::PKCS5_PBKDF2_HMAC (passwd.c_str (), passwd.length (), salt2, sizeof(salt2), nRounds, Convert2OpenSSL (digestAlgorithm), keyLen + ivLen, outBuf.begin ());
-        // todo fill in fKey/fIV!!! or throw if error
-#if 0
-        PKCS5_PBKDF2_HMAC(const char* pass, int passlen,
-                          const unsigned char* salt, int saltlen, int iter,
-                          const EVP_MD * digest, int keylen, unsigned char* out);
-#endif
+        SmallStackBuffer<Byte> outBuf   { keyLen + ivLen };
+        int a = ::PKCS5_PBKDF2_HMAC (reinterpret_cast<const char*> (passwd.begin ()), passwd.length (), salt ? salt->begin () : nullptr, salt ? salt->size () : 0, nRounds, Convert2OpenSSL (digestAlgorithm), keyLen + ivLen, outBuf.begin ());
+        if (a == 0) {
+            Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
+        }
         const Byte* p = outBuf.begin ();
         return pair<BLOB, BLOB> (BLOB (p, p + keyLen), BLOB (p + keyLen, p + keyLen + ivLen));
     }
-
 }
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+
+template    <>
+PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
     : DerivedKey (mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
-{
-}
-
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : PKCS5_PBKDF2_HMAC (keyLen, ivLen, digestAlgorithm, toPasswd_ (passwd), nRounds, salt)
-{
-}
-
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : DerivedKey (mkPKCS5_PBKDF2_HMAC_ (Convert2OpenSSL (cipherAlgorithm)->key_len, Convert2OpenSSL (cipherAlgorithm)->iv_len, digestAlgorithm, passwd, nRounds, salt))
-{
-}
-
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
-    : PKCS5_PBKDF2_HMAC (Convert2OpenSSL (cipherAlgorithm)->key_len, Convert2OpenSSL (cipherAlgorithm)->iv_len, digestAlgorithm, toPasswd_ (passwd), nRounds, salt)
 {
 }
 #endif

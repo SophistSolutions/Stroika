@@ -58,6 +58,28 @@ namespace   Stroika {
                      */
                     DerivedKey (const BLOB& key, const BLOB& iv);
                     DerivedKey (const pair<BLOB, BLOB>& keyAndIV);
+
+                    /**
+                     *  These algorithms treat a password as just a BLOB - bunch of bytes. Typically, its an
+                     *  ascii string. But to this easier to work with in Stroika, we allow passing in differnt
+                     *  formats for the password, and provide standardized (within stroika) ways to produce the
+                     *  BLOB that is used as the crytopgraphic password. The only IMPORTANT thing about this algorithm
+                     *  is that it is repeatable, and that it maps ASCII characters to what everyone expects - those
+                     *  ascii bytes (thus the interoperability).
+                     */
+                    static  BLOB    NormalizePassword (const BLOB& passwd);
+                    static  BLOB    NormalizePassword (const string& passwd);
+                    static  BLOB    NormalizePassword (const String& passwd);
+
+                    /**
+                     */
+                    static  size_t  KeyLength (CipherAlgorithm cipherAlgorithm);
+                    static  size_t  KeyLength (const EVP_CIPHER* cipherAlgorithm);
+
+                    /**
+                     */
+                    static  size_t  IVLength (CipherAlgorithm cipherAlgorithm);
+                    static  size_t  IVLength (const EVP_CIPHER* cipherAlgorithm);
                 };
 
 
@@ -82,12 +104,12 @@ namespace   Stroika {
                     /**
                      *  In EVP_BytesToKey, the Salt must either by an 8-byte array or omitted.
                      */
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, const EVP_CIPHER* cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, size_t keyLength, size_t ivLength, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, pair<const Byte*, const Byte*> passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, BLOB passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    EVP_BytesToKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds = 1, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <typename PASSWORD_TYPE>
+                    EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
+                    EVP_BytesToKey (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <>
+                    EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
                 };
 
 
@@ -103,10 +125,15 @@ namespace   Stroika {
                  *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct  PKCS5_PBKDF2_HMAC : DerivedKey {
-                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    /**
+                     *  The passwd argument can be any type which is (unambiguously) convertible to String, string, or BLOB.
+                     */
+                    template    <typename PASSWORD_TYPE>
+                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
+                    PKCS5_PBKDF2_HMAC (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <>
+                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
                 };
 
 
@@ -119,10 +146,10 @@ namespace   Stroika {
                  *  \note for new code - PKCS5_PBKDF2_HMAC (or PKCS5_PBKDF2_HMAC_SHA1) is the preferred DerviveKey subclass to use
                  */
                 struct  PKCS5_PBKDF2_HMAC_SHA1 : PKCS5_PBKDF2_HMAC {
-                    PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const string& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    PKCS5_PBKDF2_HMAC_SHA1 (CipherAlgorithm cipherAlgorithm, const String& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <typename PASSWORD_TYPE>
+                    PKCS5_PBKDF2_HMAC_SHA1 (size_t keyLen, size_t ivLen, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    template    <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
+                    PKCS5_PBKDF2_HMAC_SHA1 (CIPHER_ALGORITHM_TYPE cipherAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 #endif
 
