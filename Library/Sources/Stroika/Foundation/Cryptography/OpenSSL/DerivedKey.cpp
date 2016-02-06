@@ -76,6 +76,7 @@ size_t  DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 }
 size_t  DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
 {
+    RequireNotNull (cipherAlgorithm);
     return cipherAlgorithm->key_len;
 }
 
@@ -85,6 +86,7 @@ size_t  DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 }
 size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
 {
+    RequireNotNull (cipherAlgorithm);
     return cipherAlgorithm->iv_len;
 }
 #endif
@@ -114,6 +116,7 @@ namespace {
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
+        Assert (i == keyLen);
         return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
     }
 }

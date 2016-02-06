@@ -108,9 +108,9 @@ namespace   Stroika {
                     EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
                     template    <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
                     EVP_BytesToKey (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    template    <>
-                    EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
                 };
+                template    <>
+                EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
 
 
                 /**
@@ -132,9 +132,9 @@ namespace   Stroika {
                     PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
                     template    <typename PASSWORD_TYPE, typename CIPHER_ALGORITHM_TYPE>
                     PKCS5_PBKDF2_HMAC (CIPHER_ALGORITHM_TYPE cipherAlgorithm, DigestAlgorithm digestAlgorithm, const PASSWORD_TYPE& passwd, unsigned int nRounds = 1000, const Optional<BLOB>& salt = Optional<BLOB> ());
-                    template    <>
-                    PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
                 };
+                template    <>
+                PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt);
 
 
                 /**
