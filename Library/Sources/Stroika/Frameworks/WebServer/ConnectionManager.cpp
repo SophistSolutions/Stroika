@@ -31,6 +31,7 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+#if     !qCompilerAndStdLib_regex_Buggy
 /*
  ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
@@ -204,4 +205,5 @@ void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
         c->Close ();//tmphack
     }
 }
+#endif
 #endif

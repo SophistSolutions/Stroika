@@ -36,6 +36,7 @@ using   Memory::BLOB;
  */
 
 
+#if     !qCompilerAndStdLib_regex_Buggy
 namespace {
     void    DefaultPage_ (Request* request, Response* response)
     {
@@ -56,14 +57,19 @@ namespace {
         }
     };
 }
+#endif
 
 int main (int argc, const char* argv[])
 {
     Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     try {
+#if     qCompilerAndStdLib_regex_Buggy
+        AssertNotReached ();
+#else
         ConnectionManager   cm { SocketAddress (Network::V4::kAddrAny, 8080), kRouter_ } ;  // listen and dispatch while this object exists
         cm.SetServerHeader (String { L"Stroika-Sample-WebServer" });
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
+#endif
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;

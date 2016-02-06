@@ -28,6 +28,7 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+#if     !qCompilerAndStdLib_regex_Buggy
 /*
  ********************************************************************************
  ************************* WebServer::Router ************************************
@@ -44,10 +45,17 @@ Optional<RequestHandler>   Router::Lookup (const Request& request) const
     URL     url     =   request.fURL;
     String  hostRelPath =   url.GetHostRelativePath ();
     for (Route r : fRoutes_.load ()) {
-        if (method.Match (r.fVerbMatch) and hostRelPath.Match (r.fPathMatch)) {
-            return r.fHandler;
+        if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
+            continue;
         }
+        if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
+            continue;
+        }
+        if (r.fRequestMatch_ and not (r.fRequestMatch_) (request)) {
+            continue;
+        }
+        return r.fHandler_;
     }
     return Optional<RequestHandler> {};
 }
-
+#endif

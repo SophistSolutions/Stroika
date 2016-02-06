@@ -50,6 +50,7 @@ namespace   Stroika {
 
 
 
+#if     !qCompilerAndStdLib_regex_Buggy
             class   Router;
 
             /**
@@ -69,25 +70,21 @@ namespace   Stroika {
             *       @todo NEED to support NESTED Routes (or aggregated).
             *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
             */
-            struct  Route {
-            private:
-                RegularExpression   fVerbMatch;
-                RegularExpression   fPathMatch;
-                RequestHandler      fHandler;
+            class   Route {
             public:
+                /**
+                 *  Any route to apply the handler, must match ALL argument constraints.
+                 */
+                Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler);
+                Route (const RegularExpression& pathMatch, const RequestHandler& handler);
+                Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler);
 
-                Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
-                    : fVerbMatch (verbMatch)
-                    , fPathMatch (pathMatch)
-                    , fHandler (handler)
-                {
-                }
-                Route (const RegularExpression& pathMatch, const RequestHandler& handler)
-                    : fVerbMatch (RegularExpression (L".*", RegularExpression::SyntaxType::eECMAScript))
-                    , fPathMatch (pathMatch)
-                    , fHandler (handler)
-                {
-                }
+            private:
+                Optional<RegularExpression>                 fVerbMatch_;
+                Optional<RegularExpression>                 fPathMatch_;
+                Optional<function<bool(const Request&)>>    fRequestMatch_;
+                RequestHandler                              fHandler_;
+
             private:
                 friend class Router;
             };
@@ -111,12 +108,12 @@ namespace   Stroika {
             private:
                 Execution::Synchronized<Sequence<Route>>  fRoutes_;
             };
+#endif
 
 
         }
     }
 }
-
 
 
 
