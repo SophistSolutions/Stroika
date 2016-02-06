@@ -3,17 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cstdlib>
-
-#include    "../../Foundation/Characters/String2Int.h"
-#include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchange/BadFormatException.h"
-#include    "../../Foundation/Debug/Assertions.h"
-#include    "../../Foundation/Execution/Exceptions.h"
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
-#include    "../../Foundation/IO/Network/HTTP/Headers.h"
-
 #include    "Router.h"
 
 
