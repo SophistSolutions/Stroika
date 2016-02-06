@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//      TEST    Foundation::Containers::SortedMapping
+//  TEST    Foundation::Containers::SortedMapping
 //      STATUS  Alpha-Late
 #include    "Stroika/Foundation/StroikaPreComp.h"
 

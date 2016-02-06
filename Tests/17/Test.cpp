@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//      TEST    Foundation::Containers::PriorityQueue
+//  TEST    Foundation::Containers::PriorityQueue
 //      STATUS  TOTALLY WRONG - PLACEHOLDER
 #include    "Stroika/Foundation/StroikaPreComp.h"
 

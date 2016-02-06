@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//      TEST    Foundation::Containers::Set
+//  TEST    Foundation::Containers::Set
 //      STATUS  PRELIMINARY
 #include    "Stroika/Foundation/StroikaPreComp.h"
 

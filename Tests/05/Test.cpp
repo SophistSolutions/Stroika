@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-//  Foundation::Containers::ExternallySynchronizedDataStructures::LinkedList
+//  TEST    Foundation::Containers::ExternallySynchronizedDataStructures::LinkedList
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

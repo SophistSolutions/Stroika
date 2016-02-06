@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-//  Foundation::Cryptography
+//  TEST    Foundation::Cryptography
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

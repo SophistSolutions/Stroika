@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
  */
-// TEST: Foundation::Execution::Signals
+//  TEST    Foundation::Execution::Signals
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
