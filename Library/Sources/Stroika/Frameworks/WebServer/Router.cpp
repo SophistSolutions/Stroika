@@ -51,7 +51,7 @@ Optional<RequestHandler>   Router::Lookup (const Request& request) const
         if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
             continue;
         }
-        if (r.fRequestMatch_ and not (r.fRequestMatch_) (request)) {
+        if (r.fRequestMatch_ and not (*r.fRequestMatch_) (request)) {
             continue;
         }
         return r.fHandler_;
