@@ -692,6 +692,7 @@ sub PostProcessOptions_ ()
 			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 		}
 		else {
+			#See https://stroika.atlassian.net/browse/STK-427 
 			#Dont know how to do this yet...
 			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		}
