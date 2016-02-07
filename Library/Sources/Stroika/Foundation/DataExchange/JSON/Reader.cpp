@@ -78,7 +78,7 @@ namespace   {
         if ('A' <= c and c <= 'F') {
             return (c - 'A') + 10;
         }
-        if ('a' <= c and c <= 'a') {
+        if ('a' <= c and c <= 'f') {
             return (c - 'a') + 10;
         }
         Execution::Throw (BadFormatException (String_Constant (L"JSON: bad hex digit after \\u")));
