@@ -454,16 +454,31 @@ namespace {
             using   Memory::BLOB;
             using   namespace   Stroika::Foundation::Cryptography::Encoding;
 
-            auto check = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String & password, const DerivedKey & expected) {
+            auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String & password, const DerivedKey & expected) {
                 unsigned int    nRounds = 1;    // command-line tool uses this
                 DerivedKey  dk = OpenSSL::EVP_BytesToKey { cipherAlgorithm, digestAlgorithm, password, nRounds };
                 DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
                 VerifyTestResult (dk == expected);
             };
+            auto checkWithSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String & password, const BLOB & salt, const DerivedKey & expected) {
+                unsigned int    nRounds = 1;    // command-line tool uses this
+                DerivedKey  dk = OpenSSL::EVP_BytesToKey { cipherAlgorithm, digestAlgorithm, password, nRounds, salt };
+                DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
+                VerifyTestResult (dk == expected);
+            };
 
-            // openssl rc4 -P -k mypass -nosalt  -md md5
+            // openssl rc4 -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5
-            check (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB { 0xA0, 0x29, 0xD0, 0xDF, 0x84, 0xEB, 0x55, 0x49, 0xC6, 0x41, 0xE0, 0x4A, 0x9E, 0xF3, 0x89, 0xE5 }, BLOB {} });
+            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB { 0xA0, 0x29, 0xD0, 0xDF, 0x84, 0xEB, 0x55, 0x49, 0xC6, 0x41, 0xE0, 0x4A, 0x9E, 0xF3, 0x89, 0xE5 }, BLOB {} });
+
+            // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
+            //  salt=0102030405060708
+            //  key=56BDFF04895C5D16F5E3F68737000092
+            checkWithSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", BLOB {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8 }, DerivedKey { BLOB { 0x56, 0xBD, 0xFF, 0x04, 0x89, 0x5C, 0x5D, 0x16, 0xF5, 0xE3, 0xF6, 0x87, 0x37, 0x00, 0x00, 0x92 }, BLOB {} });
+
+            // openssl blowfish -P -k mypass -md sha1 -nosalt
+            //      key=A029D0DF84EB5549C641E04A9EF389E5
+            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eSHA1, L"mypass", DerivedKey { BLOB { 0xE7, 0x27, 0xD1, 0x46, 0x4A, 0xE1, 0x24, 0x36, 0xE8, 0x99, 0xA7, 0x26, 0xDA, 0x5B, 0x2F, 0x11 }, BLOB { 0xD8, 0x38, 0x1B, 0x26, 0x92, 0x3E, 0x04, 0x15 } });
 #endif
         }
 
