@@ -137,7 +137,7 @@ namespace   Stroika {
                 /**
                  * \brief   Enumeration of variant types
                  */
-                enum class Type : uint8_t {
+                enum class  Type : uint8_t {
                     eNull,
                     eBoolean,
                     eInteger,
@@ -153,6 +153,8 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 */
                 VariantValue () = default;
                 VariantValue (bool val);
                 VariantValue (signed char val);
