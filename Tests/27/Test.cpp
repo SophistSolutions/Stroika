@@ -11,6 +11,7 @@
 #include    <atlenc.h>
 #endif
 
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Configuration/Endian.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/AES.h"
@@ -439,6 +440,43 @@ namespace {
 
 
 
+
+
+namespace {
+    namespace OpenSSLDeriveKeyTests_ {
+        using   namespace   Cryptography::Encoding;
+        using   namespace   Cryptography::Encoding::Algorithm;
+
+        void    DoRegressionTests_ ()
+        {
+#if     qHasFeature_OpenSSL
+            using   Characters::String;
+            using   Memory::BLOB;
+            using   namespace   Stroika::Foundation::Cryptography::Encoding;
+
+            auto check = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String & password, const DerivedKey & expected) {
+                unsigned int    nRounds = 1;    // command-line tool uses this
+                DerivedKey  dk = OpenSSL::EVP_BytesToKey { cipherAlgorithm, digestAlgorithm, password, nRounds };
+                DbgTrace (L"dk=%s; expected=%s", Characters::ToString (dk).c_str (), Characters::ToString (expected).c_str ());
+                VerifyTestResult (dk == expected);
+            };
+
+            // openssl rc4 -P -k mypass -nosalt  -md md5
+            //      key=A029D0DF84EB5549C641E04A9EF389E5
+            check (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB { 0xA0, 0x29, 0xD0, 0xDF, 0x84, 0xEB, 0x55, 0x49, 0xC6, 0x41, 0xE0, 0x4A, 0x9E, 0xF3, 0x89, 0xE5 }, BLOB {} });
+#endif
+        }
+
+    }
+}
+
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -450,6 +488,7 @@ namespace   {
         Hash_MD5::DoRegressionTests_ ();
         Hash_SuperFastHash::DoRegressionTests_ ();
         AllSSLEncrytionRoundtrip::DoRegressionTests_ ();
+        OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
     }
 }
 
