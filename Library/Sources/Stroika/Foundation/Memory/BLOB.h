@@ -106,6 +106,19 @@ namespace   Stroika {
                 BLOB (const initializer_list<BLOB>& list2Concatenate);
                 BLOB (const initializer_list<Byte>& bytes);
 
+            public:
+                /**
+                 *  \brief  Convert string of hex bytes to BLOB.
+                 *
+                 *  Like a constructor, but where you clearly name the intention of how to interpret the
+                 *  bytes.
+                 *
+                 *  Spaces allowed, but treat as array of (possibly space delimited) hex bytes to BLOB.
+                 */
+                static  BLOB    Hex (const char* b);
+                static  BLOB    Hex (const char* s, const char* e);
+                static  BLOB    Hex (const string& s);
+
             protected:
                 struct  _IRep;
 

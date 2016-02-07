@@ -8,6 +8,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Execution/Exceptions.h"
+#include    "../Execution/StringException.h"
 #include    "../Streams/InputStream.h"
 
 #include    "BLOB.h"
@@ -20,6 +21,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
 
+using   Memory::BLOB;
 
 
 
@@ -37,7 +39,7 @@ namespace {
         }
         return sz;
     }
-    size_t  len_ (const initializer_list<Memory::BLOB>& list2Concatenate)
+    size_t  len_ (const initializer_list<BLOB>& list2Concatenate)
     {
         size_t  sz = 0;
         for (auto i : list2Concatenate) {
@@ -48,7 +50,7 @@ namespace {
 }
 
 
-Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
+BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
     : fData { len_ (startEndPairs) } {
     Byte*   pb  =   fData.begin ();
     for (auto i : startEndPairs)
@@ -150,6 +152,39 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptAppLifetimeRep_::GetBounds (
  ********************************* Memory::BLOB *********************************
  ********************************************************************************
  */
+namespace {
+    unsigned int    HexChar2Num_ (char c)
+    {
+        if ('0' <= c and c <= '9') {
+            return c - '0';
+        }
+        if ('A' <= c and c <= 'F') {
+            return (c - 'A') + 10;
+        }
+        if ('a' <= c and c <= 'f') {
+            return (c - 'a') + 10;
+        }
+        Execution::Throw (Execution::StringException (L"Invalid HEX character in BLOB::Hex"));
+    }
+}
+BLOB    BLOB::Hex (const char* s, const char* e)
+{
+    SmallStackBuffer<Byte>  buf (0);
+    for (const char* i = s; i < e; ++i) {
+        if (isspace (*i)) {
+            continue;
+        }
+        Byte    b   =   HexChar2Num_ (*i);
+        ++i;
+        if (i == e) {
+            Execution::Throw (Execution::StringException (L"Invalid partial HEX character in BLOB::Hex"));
+        }
+        b = (b << 4) + HexChar2Num_ (*i);
+        buf.push_back (b);
+    }
+    return BLOB (buf.begin (), buf.end ());
+}
+
 int  Memory::BLOB::Compare (const BLOB& rhs) const
 {
     pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
