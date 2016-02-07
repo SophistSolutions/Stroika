@@ -7,6 +7,8 @@
 #include    <openssl/evp.h>
 #endif
 
+#include    "../../Characters/StringBuilder.h"
+#include    "../../Characters/ToString.h"
 #include    "../../Containers/Common.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Common.h"
@@ -88,6 +90,17 @@ size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
     return cipherAlgorithm->iv_len;
+}
+
+String  DerivedKey::ToString () const
+{
+    Characters::StringBuilder  result;
+    result += L"{";
+    result += L"fKey: " + Characters::ToString (fKey);
+    result += L", ";
+    result += L"fIV: " + Characters::ToString (fIV);
+    result += L"}";
+    return result.str ();
 }
 #endif
 

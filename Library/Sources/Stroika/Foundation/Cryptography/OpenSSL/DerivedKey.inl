@@ -42,6 +42,14 @@ namespace   Stroika {
                 {
                     return NormalizePassword (passwd.AsUTF8 ());
                 }
+                inline  bool    operator== (const DerivedKey& lhs, const DerivedKey& rhs)
+                {
+                    return lhs.fKey == rhs.fKey and lhs.fIV == rhs.fIV;
+                }
+                inline  bool    operator!= (const DerivedKey& lhs, const DerivedKey& rhs)
+                {
+                    return not (lhs == rhs);
+                }
 
 
 

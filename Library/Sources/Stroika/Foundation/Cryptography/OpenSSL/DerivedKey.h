@@ -59,6 +59,10 @@ namespace   Stroika {
                     DerivedKey (const BLOB& key, const BLOB& iv);
                     DerivedKey (const pair<BLOB, BLOB>& keyAndIV);
 
+                    /*
+                     */
+                    nonvirtual  String  ToString () const;
+
                     /**
                      *  These algorithms treat a password as just a BLOB - bunch of bytes. Typically, its an
                      *  ascii string. But to this easier to work with in Stroika, we allow passing in differnt
@@ -81,6 +85,8 @@ namespace   Stroika {
                     static  size_t  IVLength (CipherAlgorithm cipherAlgorithm);
                     static  size_t  IVLength (const EVP_CIPHER* cipherAlgorithm);
                 };
+                bool    operator== (const DerivedKey& lhs, const DerivedKey& rhs);
+                bool    operator!= (const DerivedKey& lhs, const DerivedKey& rhs);
 
 
                 /**
