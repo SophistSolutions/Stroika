@@ -515,25 +515,37 @@ namespace {
             using   namespace   Stroika::Foundation::Cryptography::Encoding;
 
             auto checkNoSalt = [] (CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const String & password, const BLOB & src, const BLOB & expected) {
-                unsigned int    nRounds = 1;    // command-line tool uses this
+                unsigned int        nRounds = 1;    // command-line tool uses this
                 OpenSSLCryptoParams cryptoParams { cipherAlgorithm, OpenSSL::EVP_BytesToKey { cipherAlgorithm, digestAlgorithm, password, nRounds } };
+                DbgTrace (L"dk=%s", Characters::ToString (OpenSSL::EVP_BytesToKey { cipherAlgorithm, digestAlgorithm, password, nRounds }).c_str ());
                 BLOB    encodedData = OpenSSLInputStream (cryptoParams, Direction::eEncrypt, src.As<Streams::InputStream<Byte>> ()).ReadAll ();
                 BLOB    decodedData = OpenSSLInputStream (cryptoParams, Direction::eDecrypt, encodedData.As<Streams::InputStream<Byte>> ()).ReadAll ();
                 DbgTrace (L"src=%s; encodedData=%s; expected=%s; decodedData=%s", Characters::ToString (src).c_str (), Characters::ToString (encodedData).c_str (), Characters::ToString (expected).c_str (), Characters::ToString (decodedData).c_str ());
-
-
-//failing - not sure why?? DEBUG
-                //VerifyTestResult (encodedData == expected);
+                VerifyTestResult (encodedData == expected);
                 VerifyTestResult (src == decodedData);
             };
 
-            //  echo hi mom| od -x
-            //      0000000 6968 6d20 6d6f 0a0d
-            // echo hi mom| openssl bf  -k aaa -nosalt | openssl bf -d -k aaa -nosalt
+            //  echo apples and pears| od -t x1 --width=64
+            //      0000000 61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a
+            //
+            //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt -P
+            //      key=900150983CD24FB0D6963F7D28E17F72
+            //
+            //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | openssl rc4 -md md5 -d -k abc -nosalt
+            //      apples and pears
+            //
+            //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | od -t x1 --width=64
+            //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
+            //
+            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"abc", BLOB { 0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a }, BLOB { 0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d });
+
+            //  echo hi mom| od -t x1 --width=64
+            //      0000000 68 69 20 6d 6f 6d 0d 0a
+            //  echo hi mom| openssl bf -e -k aaa -nosalt | openssl bf -d -k aaa -nosalt
             //      hi mom
-            // echo hi mom| openssl bf -md md5  -k aaa -nosalt | od -x
-            //      0000000 1429 db4a ce4e 4520 5609 13e8 2f65 d6e8
-            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB { 0x69, 0x68, 0x6d, 0x20, 0x6d, 0x6f, 0x0a, 0x0d }, BLOB { 0x14, 0x29, 0xdb, 0x4a, 0xce, 0x4e, 0x45, 0x20, 0x56, 0x09, 0x13, 0xe8, 0x2f, 0x65, 0xd6, 0xe8 });
+            //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
+            //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
+            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB { 0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a }, BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 });
 #endif
         }
 
