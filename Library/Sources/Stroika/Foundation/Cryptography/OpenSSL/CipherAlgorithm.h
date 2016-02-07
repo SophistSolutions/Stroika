@@ -62,6 +62,7 @@ namespace   Stroika {
                     eAES_256_CFB128,
 
                     eBlowfish_CBC,
+                    eBlowfish = eBlowfish_CBC,
                     eBlowfish_ECB,
                     eBlowfish_CFB,
                     eBlowfish_OFB,
