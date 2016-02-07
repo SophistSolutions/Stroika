@@ -537,7 +537,7 @@ namespace {
             //  echo apples and pears| openssl rc4 -md md5 -e -k abc -nosalt | od -t x1 --width=64
             //      0000000 4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d
             //
-            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"abc", BLOB { 0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a }, BLOB { 0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d });
+            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"abc", BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a"), BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d"));
 
             //  echo hi mom| od -t x1 --width=64
             //      0000000 68 69 20 6d 6f 6d 0d 0a
@@ -545,7 +545,7 @@ namespace {
             //      hi mom
             //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
-            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB { 0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a }, BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 });
+            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"));
 #endif
         }
 
