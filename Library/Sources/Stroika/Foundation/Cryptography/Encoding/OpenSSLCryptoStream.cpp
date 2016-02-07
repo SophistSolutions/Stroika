@@ -41,6 +41,7 @@ using   Memory::BLOB;
 
 //// VERY ROUGH DRAFT - NOT VERY CLOSE TO CORRECT FOR ALL ALGORITHSM
 //// SEE http://www.openssl.org/docs/crypto/EVP_EncryptInit.html
+/// SEE https://wiki.openssl.org/index.php/EVP_Symmetric_Encryption_and_Decryption
 //// for details on what todo
 
 
@@ -142,12 +143,14 @@ public:
             size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
             if (n2Decrypt == 0) {
                 size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 fOutBufStart_ = fOutBuf_.begin ();
                 fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
             }
             else {
                 fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
                 size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 fOutBufStart_ = fOutBuf_.begin ();
                 fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
             }
