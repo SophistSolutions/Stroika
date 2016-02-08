@@ -4,6 +4,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Characters/String.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "PathName.h"
@@ -169,7 +170,26 @@ String FileSystem::GetFileSuffix (const String& fileName)
  */
 String FileSystem::GetFileBaseName (const String& pathName)
 {
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+    String tmp =   pathName;
+    // Examples to consider:
+    //      /tmp/foo.txt ==> foo
+    //      /tmp/foo/ ==> foo
+    {
+        size_t i = tmp.rfind ('/');
+        if (i != String::kBadIndex) {
+            tmp =  tmp.substr (i + 1);
+        }
+    }
+    {
+        size_t i = tmp.find ('.');
+        // if the string
+        if (i != String::kBadIndex and i != tmp.length ()) {
+            tmp =  tmp.substr (0, i);
+        }
+    }
+    return tmp;
+#elif   qPlatform_Windows
     String useFName    =   pathName;
     {
         SDKChar   fNameBuf[4 * MAX_PATH ];
@@ -184,24 +204,51 @@ String FileSystem::GetFileBaseName (const String& pathName)
     SDKChar   ext[_MAX_EXT] {};
     ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     return String::FromSDKString (fname);
-#elif   qPlatform_POSIX
-    String tmp =   pathName;
-    {
-        size_t i = tmp.rfind ('/');
-        if (i != String::kBadIndex) {
-            tmp =  tmp.substr (i + 1);
-        }
-    }
-    {
-        size_t i = tmp.find ('.');
-        if (i != String::kBadIndex) {
-            tmp =  tmp.substr (0, i);
-        }
-    }
-    return tmp;
 #else
     AssertNotImplemented ();
 #endif
+}
+
+
+
+/*
+ ********************************************************************************
+ ******************** FileSystem::ExtractDirAndBaseName *************************
+ ********************************************************************************
+ */
+pair<String, String> FileSystem::ExtractDirAndBaseName (const String& pathName)
+{
+    bool    endedWithSlash = false;
+    String  dirname;
+    String  basename;
+    {
+        String tmp =   pathName;
+        while (not tmp.empty () and tmp.GetCharAt (tmp.size () - 1) == kPathComponentSeperator) {
+            tmp = tmp.RemoveAt (tmp.size () - 1);
+            endedWithSlash = true;
+        }
+        size_t i = tmp.rfind (kPathComponentSeperator);
+        if (i == String::kBadIndex) {
+            basename = tmp;
+        }
+        else {
+            dirname = tmp.SubString (0, i + 1);
+            basename =  tmp.SubString (i + 1);
+        }
+    }
+    if (dirname.empty ()) {
+        if (basename.empty ()) {
+            dirname =  AssureDirectoryPathSlashTerminated (pathName);   // e.g. pathName = "/" and so we stripped trailing slashes down to nothing!
+        }
+        else {
+            dirname =  AssureDirectoryPathSlashTerminated (L".");
+        }
+    }
+    Assert (dirname == AssureDirectoryPathSlashTerminated (dirname));
+    if (endedWithSlash and not basename.empty ()) {
+        basename += kPathComponentSeperator;
+    }
+    return pair<String, String> { dirname, basename };
 }
 
 

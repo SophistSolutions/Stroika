@@ -903,13 +903,13 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
 
     Sequence<String>    useArgs;
     if (args.empty ()) {
-        useArgs.Append (IO::FileSystem::GetFileBaseName (executable));
+        useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (executable).second);
     }
     else {
         bool firstTimeThru = true;
         for (auto i = args.begin (); i != args.end (); ++i) {
             if (firstTimeThru and i->empty ()) {
-                useArgs.Append (IO::FileSystem::GetFileBaseName (executable));
+                useArgs.Append (IO::FileSystem::ExtractDirAndBaseName (executable).second);
             }
             else {
                 useArgs.Append (*i);

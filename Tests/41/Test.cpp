@@ -8,6 +8,7 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/IO/FileSystem/DirectoryIterator.h"
 #include    "Stroika/Foundation/IO/FileSystem/DirectoryIterable.h"
+#include    "Stroika/Foundation/IO/FileSystem/PathName.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 
 
@@ -48,12 +49,42 @@ namespace   {
 }
 
 
+namespace {
+    namespace   Test3_Pathnames_ {
+        void    Test_ExtractDirAndBaseName_ ()
+        {
+            // Tests from DOCS line in ExtractDirAndBaseName
+#if     qPlatform_POSIX
+            VerifyTestResult ((ExtractDirAndBaseName (L"/usr/lib") == pair<String, String> { L"/usr/", L"lib" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"/usr/") == pair<String, String> { L"/", L"usr/" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"usr") == pair<String, String> { L"./", L"usr" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"/") == pair<String, String> { L"/", L"" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L".") == pair<String, String> { L"./", L"." }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"..") == pair<String, String> { L"./", L".." }));
+#elif   qPlatform_Windows
+            VerifyTestResult ((ExtractDirAndBaseName (L"\\usr\\lib") == pair<String, String> { L"\\usr\\", L"lib" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"\\usr\\") == pair<String, String> { L"\\", L"usr\\" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"usr") == pair<String, String> { L".\\", L"usr" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"\\") == pair<String, String> { L"\\", L"" }));
+            VerifyTestResult ((ExtractDirAndBaseName (L".") == pair<String, String> { L".\\", L"." }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"..") == pair<String, String> { L".\\", L".." }));
+            VerifyTestResult ((ExtractDirAndBaseName (L"c:\\h\\m.t") == pair<String, String> { L"c:\\h\\", L"m.t" }));
+#endif
+        }
+        void    DoTest ()
+        {
+            Test_ExtractDirAndBaseName_ ();
+        }
+    }
+}
+
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_DirectoryIterator_ ();
         Test2_DirectoryIterable_ ();
+        Test3_Pathnames_::DoTest ();
     }
 }
 

@@ -86,6 +86,43 @@ namespace   Stroika {
 
 
                 /*
+                 *  Portable version of http://linux.die.net/man/3/basename  http://linux.die.net/man/3/dirname
+                 *
+                 *  ExtractDirAndBaseName () break a pathname string into directory and filename components.
+                 *  In the usual case, dirname() returns the string up to, but not including, the final '/',
+                 *  and basename() returns the component following the final '/'.
+                 *  Trailing '/' characters are not counted as part of the pathname.
+                 *
+                 *  Where this differs from dirname/basenmae is that the dirname we return always is a legal dirname
+                 *  ending with 'dir separator').
+                 *
+                 *  Examples based on examples (from http://linux.die.net/man/3/dirname):
+                 *      path         dirname    basename
+                 *
+                 *  POSIX:
+                 *      "/usr/lib"    "/usr/"    "lib"
+                 *      "/usr/"       "/"       "usr/"
+                 *      "usr"         "./"       "usr"
+                 *      "/"           "/"       ""
+                 *      "."           "./"       "."
+                 *      ".."          "./"       ".."
+                 *
+                 *  Windows:
+                 *      "\usr\lib"    "\usr\"    "lib"
+                 *      "\usr\"       "\"       "usr\"
+                 *      "usr"         ".\"       "usr"
+                 *      "\"           "\"       ""
+                 *      "."           ".\"       "."
+                 *      ".."          ".\"       ".."
+                 *      c:\h\m.t    "c:\h\"     "m.t"
+                 *
+                 *  \note   This function PRESERVES the trailing 'directory separator' if present, and this
+                 *          is another difference with 'basename' and 'dirname'
+                 */
+                pair<String, String> ExtractDirAndBaseName (const String& pathName);
+
+
+                /*
                  *  // get the full path WITHOUT the file suffix at the end
                  */
                 String StripFileSuffix (const String& pathName);
