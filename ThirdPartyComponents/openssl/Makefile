@@ -29,6 +29,13 @@ CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) 
 AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
 endif
 
+#Gross hack so builds on AIX - https://stroika.atlassian.net/browse/STK-452
+ifeq($(shell uname),AIX)
+CC=gcc
+AR=ar
+endif
+
+
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
@@ -145,10 +152,13 @@ doCreate:	$(ZIPEDFILE)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
 
 
+
 doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT/CONFIG.OUT - new configuration..."
-	@BASE_CONFIG_LINE=`export CC=$(CC); export AR=$(AR); cd CURRENT && ./config -t | tail -1`; $(ECHO) "cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT; (cd CURRENT ; $$BASE_CONFIG_LINE $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
+	$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval ./config -t | tail -1" > CURRENT/CONFIG.OUT
+	@export CC="$(CC)"; export AR="$(AR)"; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT
+	@export CC="$(CC)"; export AR="$(AR)"; cd CURRENT && eval `./config -t | tail -1`" >> CONFIG.OUT;
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
