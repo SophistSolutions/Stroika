@@ -348,10 +348,16 @@ sub	SetDefaultForCompilerDriver_
 		$ccLessArgs  =~ s/\ .*//;
 		$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
 	}
+	if (!(defined $AR) and (!("$^O" eq "cygwin")) {
+		$AR = "ar";
+	}
 	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
 		$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
+	}
+	if (!(defined $RANLIB) and (!("$^O" eq "cygwin")) {
+		$RANLIB = "ranlib";
 	}
 }
 
