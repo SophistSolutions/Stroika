@@ -61,7 +61,7 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*
     Ensure (pb == fData.end ());
 }
 
-Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
+BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
     : fData { len_ (list2Concatenate) } {
     Byte*   pb  =   fData.begin ();
     for (auto i : list2Concatenate)
@@ -72,7 +72,7 @@ Memory::BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatena
     Ensure (pb == fData.end ());
 }
 
-pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
+pair<const Byte*, const Byte*>   BLOB::BasicRep_::GetBounds () const
 {
     Ensure (fData.begin () <= fData.end ());
     return pair<const Byte*, const Byte*> (fData.begin (), fData.end ());
@@ -88,7 +88,7 @@ pair<const Byte*, const Byte*>   Memory::BLOB::BasicRep_::GetBounds () const
  ************************** Memory::BLOB::ZeroRep_ ******************************
  ********************************************************************************
  */
-pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
+pair<const Byte*, const Byte*>   BLOB::ZeroRep_::GetBounds () const
 {
     return pair<const Byte*, const Byte*> (nullptr, nullptr);
 }
@@ -102,19 +102,19 @@ pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
  ************************* Memory::BLOB::AdoptRep_ ******************************
  ********************************************************************************
  */
-Memory::BLOB::AdoptRep_::AdoptRep_ (const Byte* start, const Byte* end)
+BLOB::AdoptRep_::AdoptRep_ (const Byte* start, const Byte* end)
     : fStart (start)
     , fEnd (end)
 {
     Require (start <= end);
 }
 
-Memory::BLOB::AdoptRep_::~AdoptRep_ ()
+BLOB::AdoptRep_::~AdoptRep_ ()
 {
     delete[] fStart;
 }
 
-pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
+pair<const Byte*, const Byte*>   BLOB::AdoptRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
@@ -129,14 +129,14 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
  ******************* Memory::BLOB::AdoptAppLifetimeRep_ *************************
  ********************************************************************************
  */
-Memory::BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte* end)
+BLOB::AdoptAppLifetimeRep_::AdoptAppLifetimeRep_ (const Byte* start, const Byte* end)
     : fStart (start)
     , fEnd (end)
 {
     Require (start <= end);
 }
 
-pair<const Byte*, const Byte*>   Memory::BLOB::AdoptAppLifetimeRep_::GetBounds () const
+pair<const Byte*, const Byte*>   BLOB::AdoptAppLifetimeRep_::GetBounds () const
 {
     Ensure (fStart <= fEnd);
     return pair<const Byte*, const Byte*> (fStart, fEnd);
@@ -185,7 +185,7 @@ BLOB    BLOB::Hex (const char* s, const char* e)
     return BLOB (buf.begin (), buf.end ());
 }
 
-int  Memory::BLOB::Compare (const BLOB& rhs) const
+int  BLOB::Compare (const BLOB& rhs) const
 {
     pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
     pair<const Byte*, const Byte*>   r =   rhs.fRep_->GetBounds ();
@@ -208,12 +208,12 @@ int  Memory::BLOB::Compare (const BLOB& rhs) const
 namespace {
     using namespace Streams;
     struct BLOBBINSTREAM_ : InputStream<Byte> {
-        BLOBBINSTREAM_ (const Memory::BLOB& b)
+        BLOBBINSTREAM_ (const BLOB& b)
             : InputStream<Byte> (make_shared<REP> (b))
         {
         }
         struct REP : InputStream<Byte>::_IRep  {
-            REP (const Memory::BLOB& b)
+            REP (const BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
                 , fEnd (b.end ())
@@ -290,12 +290,12 @@ namespace {
 }
 
 template    <>
-Streams::InputStream<Byte> Memory::BLOB::As () const
+Streams::InputStream<Byte> BLOB::As () const
 {
     return BLOBBINSTREAM_ (*this);
 }
 
-String    Memory::BLOB::ToString () const
+String    BLOB::ToString () const
 {
     StringBuilder   sb;
     sb += Characters::Format (L"[%d bytes: ", size ());
