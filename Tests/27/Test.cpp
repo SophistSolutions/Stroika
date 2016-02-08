@@ -78,9 +78,9 @@ namespace {
                  *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
                  */
                 const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
-                const   Memory::BLOB key ((const Byte*)kKey, (const Byte*)kKey + ::strlen(kKey));
-                const   Memory::BLOB src ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc));
-                const   Memory::BLOB encodedVal = Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
+                const   Memory::BLOB key        =   Memory::BLOB::Raw (kKey, NEltsOf(kKey) - 1);
+                const   Memory::BLOB src        =   Memory::BLOB::Raw (kSrc, NEltsOf(kSrc) - 1);
+                const   Memory::BLOB encodedVal =   Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
 #if     qHasFeature_OpenSSL
                 VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
                 if (false) {
@@ -409,6 +409,7 @@ namespace {
             const   char    kSrc2_[] = "";
             const   char    kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
             const   char    kSrc4_[] = "0123456789";
+
             static  const BLOB  kTestMessages_ [] = {
                 BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen(kSrc1_)),
                 BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen(kSrc2_)),
@@ -469,27 +470,28 @@ namespace {
 
             // openssl rc4 -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5
-            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB { 0xA0, 0x29, 0xD0, 0xDF, 0x84, 0xEB, 0x55, 0x49, 0xC6, 0x41, 0xE0, 0x4A, 0x9E, 0xF3, 0x89, 0xE5 }, BLOB {} });
+            checkNoSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5"), BLOB {} });
 
             // openssl rc4 -P -k mypass  -md md5 -S 0102030405060708
             //  salt=0102030405060708
             //  key=56BDFF04895C5D16F5E3F68737000092
-            checkWithSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", BLOB {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8 }, DerivedKey { BLOB { 0x56, 0xBD, 0xFF, 0x04, 0x89, 0x5C, 0x5D, 0x16, 0xF5, 0xE3, 0xF6, 0x87, 0x37, 0x00, 0x00, 0x92 }, BLOB {} });
+            checkWithSalt (CipherAlgorithm::eRC4, DigestAlgorithm::eMD5, L"mypass", BLOB::Hex ("0102030405060708"), DerivedKey { BLOB::Hex ("56BDFF04895C5D16F5E3F68737000092"), BLOB {} });
 
             // openssl blowfish -P -k mypass -md sha1 -nosalt
-            //      key=A029D0DF84EB5549C641E04A9EF389E5
-            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eSHA1, L"mypass", DerivedKey { BLOB { 0xE7, 0x27, 0xD1, 0x46, 0x4A, 0xE1, 0x24, 0x36, 0xE8, 0x99, 0xA7, 0x26, 0xDA, 0x5B, 0x2F, 0x11 }, BLOB { 0xD8, 0x38, 0x1B, 0x26, 0x92, 0x3E, 0x04, 0x15 } });
+            //      key=E727D1464AE12436E899A726DA5B2F11
+            //      iv =D8381B26923E0415
+            checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eSHA1, L"mypass", DerivedKey { BLOB::Hex ("E727D1464AE12436E899A726DA5B2F11"), BLOB::Hex ("D8381B26923E0415") });
 
             // openssl aes-256-cbc -P -k mypass -md md5 -nosalt
             //      key=A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367
             //      iv =541F477059FAEFD57328A0B0D22F2A20
-            checkNoSalt (CipherAlgorithm::eAES_256_CBC, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB { 0xA0, 0x29, 0xD0, 0xDF, 0x84, 0xEB, 0x55, 0x49, 0xC6, 0x41, 0xE0, 0x4A, 0x9E, 0xF3, 0x89, 0xE5, 0xA1, 0x0C, 0xE9, 0xC4, 0x68, 0x24, 0x86, 0xF8, 0x62, 0x2F, 0x2F, 0x18, 0xE7, 0x29, 0x13, 0x67 }, BLOB { 0x54, 0x1F, 0x47, 0x70, 0x59, 0xFA, 0xEF, 0xD5, 0x73, 0x28, 0xA0, 0xB0, 0xD2, 0x2F, 0x2A, 0x20 } });
+            checkNoSalt (CipherAlgorithm::eAES_256_CBC, DigestAlgorithm::eMD5, L"mypass", DerivedKey { BLOB::Hex ("A029D0DF84EB5549C641E04A9EF389E5A10CE9C4682486F8622F2F18E7291367"), BLOB::Hex ("541F477059FAEFD57328A0B0D22F2A20") });
 
             // openssl aes-128-ofb -P -k mypass -md sha1 -S 1122334455667788
             //      salt=1122334455667788
             //      key=36237DC4B90DD237329731E85EE5BB5A
             //      iv =35F1A763D974A002DB1721B8F25498E6
-            checkWithSalt (CipherAlgorithm::eAES_128_OFB, DigestAlgorithm::eSHA1, L"mypass", BLOB {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88 }, DerivedKey { BLOB { 0x36, 0x23, 0x7D, 0xC4, 0xB9, 0x0D, 0xD2, 0x37, 0x32, 0x97, 0x31, 0xE8, 0x5E, 0xE5, 0xBB, 0x5A }, BLOB { 0x35, 0xF1, 0xA7, 0x63, 0xD9, 0x74, 0xA0, 0x02, 0xDB, 0x17, 0x21, 0xB8, 0xF2, 0x54, 0x98, 0xE6 } });
+            checkWithSalt (CipherAlgorithm::eAES_128_OFB, DigestAlgorithm::eSHA1, L"mypass", BLOB::Hex ("1122334455667788"), DerivedKey { BLOB::Hex ("36237DC4B90DD237329731E85EE5BB5A"), BLOB::Hex ("35F1A763D974A002DB1721B8F25498E6") });
 #endif
         }
 
