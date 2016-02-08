@@ -147,6 +147,11 @@ namespace   Stroika {
             {
                 return Hex (s.c_str ());
             }
+            template    <typename T>
+            static  BLOB    BLOB::Raw (const T* s, const T* e)
+            {
+                return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (e));
+            }
             inline  BLOB    BLOB::Attach (const Byte* start, const Byte* end)
             {
                 Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));

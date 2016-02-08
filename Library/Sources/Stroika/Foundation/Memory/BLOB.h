@@ -119,6 +119,18 @@ namespace   Stroika {
                 static  BLOB    Hex (const char* s, const char* e);
                 static  BLOB    Hex (const string& s);
 
+            public:
+                /**
+                 *  \brief  Convert pointed to data as raw bytes to BLOB.
+                 *
+                 *  Like a constructor, but where you clearly name the intention of how to interpret the
+                 *  bytes.
+                 *
+                 *  This does little more than a cast (taking into account sizeof T)
+                 */
+                template    <typename T>
+                static  BLOB    Raw (const T* s, const T* e);
+
             protected:
                 struct  _IRep;
 
