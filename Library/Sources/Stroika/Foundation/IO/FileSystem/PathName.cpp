@@ -168,45 +168,66 @@ String FileSystem::GetFileSuffix (const String& fileName)
  ************************ FileSystem::GetFileBaseName ***************************
  ********************************************************************************
  */
+namespace {
+    String  OLD_GetFileBaseName_ (const String& pathName)
+    {
+#if     qPlatform_POSIX
+        String tmp =   pathName;
+        // Examples to consider:
+        //      /tmp/foo.txt ==> foo
+        //      /tmp/foo/ ==> foo
+        {
+            size_t i = tmp.rfind ('/');
+            if (i != String::kBadIndex) {
+                tmp =  tmp.substr (i + 1);
+            }
+        }
+        {
+            size_t i = tmp.find ('.');
+            // if the string
+            if (i != String::kBadIndex and i != tmp.length ()) {
+                tmp =  tmp.substr (0, i);
+            }
+        }
+        return tmp;
+#elif   qPlatform_Windows
+        String useFName    =   pathName;
+        {
+            SDKChar   fNameBuf[4 * MAX_PATH ];
+            DWORD   r   =   ::GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, static_cast<DWORD> (NEltsOf (fNameBuf) - 1));
+            if (r != 0) {
+                useFName = String::FromSDKString (fNameBuf);
+            }
+        }
+        SDKChar   fname[_MAX_FNAME] {};
+        SDKChar   drive[_MAX_DRIVE] {};
+        SDKChar   dir[_MAX_DIR] {};
+        SDKChar   ext[_MAX_EXT] {};
+        ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
+        return String::FromSDKString (fname);
+#else
+        AssertNotImplemented ();
+#endif
+    }
+}
 String FileSystem::GetFileBaseName (const String& pathName)
 {
-#if     qPlatform_POSIX
-    String tmp =   pathName;
-    // Examples to consider:
-    //      /tmp/foo.txt ==> foo
-    //      /tmp/foo/ ==> foo
-    {
-        size_t i = tmp.rfind ('/');
-        if (i != String::kBadIndex) {
-            tmp =  tmp.substr (i + 1);
-        }
+    String  baseName = ExtractDirAndBaseName (pathName).second;
+    if (not baseName.empty () and baseName.GetCharAt (baseName.size () - 1) == kPathComponentSeperator) {
+        baseName = baseName.RemoveAt (baseName.size () - 1);
     }
     {
-        size_t i = tmp.find ('.');
-        // if the string
-        if (i != String::kBadIndex and i != tmp.length ()) {
-            tmp =  tmp.substr (0, i);
+        size_t i = baseName.find ('.');
+        // Strip the trailing .XXX if that isn't the entire string
+        if (i != String::kBadIndex and i != 0) {
+            baseName =  baseName.SubString (0, i);
         }
     }
-    return tmp;
-#elif   qPlatform_Windows
-    String useFName    =   pathName;
-    {
-        SDKChar   fNameBuf[4 * MAX_PATH ];
-        DWORD   r   =   ::GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, static_cast<DWORD> (NEltsOf (fNameBuf) - 1));
-        if (r != 0) {
-            useFName = String::FromSDKString (fNameBuf);
-        }
-    }
-    SDKChar   fname[_MAX_FNAME] {};
-    SDKChar   drive[_MAX_DRIVE] {};
-    SDKChar   dir[_MAX_DIR] {};
-    SDKChar   ext[_MAX_EXT] {};
-    ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
-    return String::FromSDKString (fname);
-#else
-    AssertNotImplemented ();
+#if     qPlatform_Windows
+    //tmphack to test - not REALLY a bug - if diff was cuz of GetLongPath
+    Assert (baseName == OLD_GetFileBaseName_ (pathName) or (baseName.StartsWith (L".") and OLD_GetFileBaseName_ (pathName).empty ()));
 #endif
+    return baseName;
 }
 
 

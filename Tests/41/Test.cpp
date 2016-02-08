@@ -71,9 +71,23 @@ namespace {
             VerifyTestResult ((ExtractDirAndBaseName (L"c:\\h\\m.t") == pair<String, String> { L"c:\\h\\", L"m.t" }));
 #endif
         }
+        void    Test_GetFileBaseName_ ()
+        {
+            VerifyTestResult (GetFileBaseName (L"foo") == L"foo");
+            VerifyTestResult (GetFileBaseName (L"foo.cpp") == L"foo");
+            VerifyTestResult (GetFileBaseName (L"foo.exe") == L"foo");
+            VerifyTestResult (GetFileBaseName (L".exe") == L".exe");
+#if     qPlatform_POSIX
+            VerifyTestResult (GetFileBaseName (L"/tmp/.CPUBurner") == L".CPUBurner");
+#elif   qPlatform_Windows
+            VerifyTestResult (GetFileBaseName (L"c:\\tmp\\.CPUBurner") == L".CPUBurner");
+#endif
+        }
+
         void    DoTest ()
         {
             Test_ExtractDirAndBaseName_ ();
+            Test_GetFileBaseName_ ();
         }
     }
 }

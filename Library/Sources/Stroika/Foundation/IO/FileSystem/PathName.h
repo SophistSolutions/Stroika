@@ -80,7 +80,25 @@ namespace   Stroika {
 
 
                 /*
-                 *  get the base name (strippping path and suffix)
+                 *  get the base name (strippping path and suffix).
+                 *
+                 *  \note   this differs from the UNIX 'basename' - which does not strip file suffixes.
+                 *  \note   if the base filename consists of one '.' at the start, and no other ., then this
+                 *          ignores the file suffix.
+                 *
+                 *  \note   Before Stroika v2.0a126, this internally called GetLongPathName() - to get that result in the current
+                 *          version, use GetFileBaseName (AssureLongFileName (n))
+                 *  EXAMPLES:
+                 *      GetFileBaseName (L"foo") ==> L"foo";
+                 *      GetFileBaseName (L"foo.cpp") ==> L"foo";
+                 *      GetFileBaseName (L"foo.exe") ==> L"foo";
+                 *      GetFileBaseName (L".exe") ==> L".exe";
+                 *  POSIX:
+                 *      GetFileBaseName (L"/tmp/.CPUBurner") ==> L".CPUBurner";
+                 *  Windows:
+                 *      GetFileBaseName (L"c:\\tmp\\.CPUBurner") ==> L".CPUBurner";
+                 *
+                 *  @see ExtractDirAndBaseName
                  */
                 String GetFileBaseName (const String& pathName);
 
