@@ -130,6 +130,8 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 static  BLOB    Raw (const T* s, const T* e);
+                template    <typename T>
+                static  BLOB    Raw (const T* s, size_t sz);
 
             protected:
                 struct  _IRep;

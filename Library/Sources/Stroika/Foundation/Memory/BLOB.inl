@@ -152,6 +152,11 @@ namespace   Stroika {
             {
                 return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (e));
             }
+            template    <typename T>
+            static  BLOB    BLOB::Raw (const T* s, size_t sz)
+            {
+                return BLOB (reinterpret_cast<const Byte*> (s), reinterpret_cast<const Byte*> (s) + sz);
+            }
             inline  BLOB    BLOB::Attach (const Byte* start, const Byte* end)
             {
                 Require ((start == nullptr and end == nullptr) or (start != nullptr and end != nullptr));
