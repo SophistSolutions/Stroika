@@ -161,7 +161,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@export CC="$(CC)"; export AR="$(AR)"; cd CURRENT && eval `./config -t | tail -1`" >> CONFIG.OUT;
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
-	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
+	@$(MAKE) -j1 --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Installing (to CURRENT/Builds), and redirecting messages to CURRENT/INSTALL.OUT ...";
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
