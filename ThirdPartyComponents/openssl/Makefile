@@ -30,7 +30,7 @@ AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) 
 endif
 
 #Gross hack so builds on AIX - https://stroika.atlassian.net/browse/STK-452
-ifeq($(shell uname),AIX)
+ifeq ($(shell uname),AIX)
 CC=gcc
 AR=ar
 endif
