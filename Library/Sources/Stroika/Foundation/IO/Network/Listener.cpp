@@ -23,13 +23,13 @@ using   namespace   Stroika::Foundation::IO::Network;
 ********************************************************************************
 */
 struct  Listener::Rep_ {
-    Rep_ (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor)
+    Rep_ (const SocketAddress& addr, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void (Socket newConnection)>& newConnectionAcceptor)
         : fSockAddr (addr)
         , fNewConnectionAcceptor (newConnectionAcceptor)
         , fMasterSocket (Socket::SocketKind::STREAM)
     {
-        fMasterSocket.Bind (addr);  // do in CTOR so throw propagated
-        fMasterSocket.Listen (10);//need param
+        fMasterSocket.Bind (addr, bindFlags);  // do in CTOR so throw propagated
+        fMasterSocket.Listen (backlog);//need param
 
         fListenThread = Execution::Thread ([this]() {
             while (true) {
@@ -71,8 +71,16 @@ struct  Listener::Rep_ {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
+namespace {
+    constexpr   unsigned int kBacklog_ { 10 };
+}
 Listener::Listener (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor)
-    : fRep_ (make_shared<Rep_> (addr, newConnectionAcceptor))
+    : fRep_ (make_shared<Rep_> (addr, Socket::BindFlags {}, kBacklog_, newConnectionAcceptor))
+{
+}
+
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (Socket newConnection)>& newConnectionAcceptor)
+    : fRep_ (make_shared<Rep_> (addr, bindFlags, kBacklog_, newConnectionAcceptor))
 {
 }
 

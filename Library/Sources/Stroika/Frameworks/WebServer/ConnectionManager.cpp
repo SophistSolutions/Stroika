@@ -38,9 +38,14 @@ using   namespace   Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router)
+    : ConnectionManager (bindAddress, Socket::BindFlags {}, router)
+{
+}
+
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
 , fRouter_ (router)
-, fListener_  (bindAddress, [this](Socket s)  { onConnect_ (s); })
+, fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); })
 {
 }
 
