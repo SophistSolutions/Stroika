@@ -157,8 +157,8 @@ doBuilds:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT/CONFIG.OUT - new configuration..."
 	$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
-	+@export CC="$(CC)"; export AR="$(AR)"; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT
-	+@export CC="$(CC)"; export AR="$(AR)"; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS)" >> CONFIG.OUT;
+	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT
+	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS)" >> CONFIG.OUT;
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ...";
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
