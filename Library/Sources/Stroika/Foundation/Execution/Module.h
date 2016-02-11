@@ -43,11 +43,15 @@ namespace   Stroika {
 
 
             /**
+             *  The directory where the executable that is running this code is located. If this code is compiled into a DLL,
+             *  this returns the executable directory for the underlying process/executable (not the DLL/so file).
              */
             String GetEXEDir ();
 
 
             /**
+             *  The path where the executable that is running this code is located. If this code is compiled into a DLL,
+             *  this returns the executable for the underlying process/executable (not the DLL/so file).
              */
             String GetEXEPath ();
 
