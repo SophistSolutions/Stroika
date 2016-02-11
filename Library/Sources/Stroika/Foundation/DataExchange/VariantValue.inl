@@ -45,6 +45,10 @@ namespace   Stroika {
                 return make_shared<T> (forward<ARGS_TYPE> (args)...);
 #endif
             }
+            inline  VariantValue::VariantValue (nullptr_t)
+                : VariantValue ()
+            {
+            }
             inline  VariantValue::VariantValue (const vector<VariantValue>& val)
                 : VariantValue (Sequence<VariantValue> (val))
             {
@@ -60,7 +64,7 @@ namespace   Stroika {
             }
             inline  VariantValue::Type  VariantValue::GetType () const
             {
-                if (fVal_.get () == nullptr) {
+                if (fVal_ == nullptr) {
                     return Type::eNull;
                 }
                 return fVal_->GetType ();

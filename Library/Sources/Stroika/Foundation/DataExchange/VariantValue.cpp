@@ -197,7 +197,7 @@ VariantValue::VariantValue (Sequence<VariantValue>&& val)
 
 bool    VariantValue::empty () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return true;
     }
     switch (fVal_->GetType ()) {
@@ -250,7 +250,7 @@ String    VariantValue::ToString () const
 template    <>
 bool    VariantValue::As () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return false;
     }
     switch (fVal_->GetType ()) {
@@ -277,7 +277,7 @@ bool    VariantValue::As () const
 
 VariantValue::IntegerType_ VariantValue::AsInteger_ () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return 0;
     }
     switch (fVal_->GetType ()) {
@@ -309,7 +309,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
 
 VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return 0;
     }
     switch (fVal_->GetType ()) {
@@ -343,7 +343,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
 
 VariantValue::FloatType_ VariantValue::AsFloatType_ () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return 0.0f;
     }
     switch (fVal_->GetType ()) {
@@ -377,7 +377,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
 template    <>
 Date VariantValue::As() const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return Date ();
     }
     switch (fVal_->GetType ()) {
@@ -405,7 +405,7 @@ Date VariantValue::As() const
 template    <>
 DateTime VariantValue::As () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return DateTime ();
     }
     switch (fVal_->GetType ()) {
@@ -432,7 +432,7 @@ DateTime VariantValue::As () const
 
 String  VariantValue::AsString_ () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return String ();
     }
     switch (fVal_->GetType ()) {
@@ -539,7 +539,7 @@ String  VariantValue::AsString_ () const
 template    <>
 map<wstring, VariantValue>   VariantValue::As () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return map<wstring, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -561,7 +561,7 @@ map<wstring, VariantValue>   VariantValue::As () const
 template    <>
 Mapping<String, VariantValue>   VariantValue::As () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return Mapping<String, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
@@ -585,7 +585,7 @@ vector<VariantValue> VariantValue::As () const
 template    <>
 Sequence<VariantValue> VariantValue::As () const
 {
-    if (fVal_.get () == nullptr) {
+    if (fVal_ == nullptr) {
         return Sequence<VariantValue> ();
     }
     switch (fVal_->GetType ()) {

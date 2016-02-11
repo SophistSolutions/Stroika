@@ -156,6 +156,7 @@ namespace   Stroika {
                 /**
                  */
                 VariantValue () = default;
+                VariantValue (nullptr_t);
                 VariantValue (bool val);
                 VariantValue (signed char val);
                 VariantValue (short int val);
