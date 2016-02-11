@@ -246,6 +246,11 @@ namespace   Stroika {
                  *
                  *  \note   About As<DateTime> ()
                  *          Coerences String value to dates assuming ISO8601 string format.
+                 *
+                 *  \note   About As<float> ()
+                 *          This converts strings and integer and floating point types. 'empty' - or the null type - is converted to nan().
+                 *          Similarly, if the string cannot be converted, a nan will be returned. Other types (like Mapping) generate
+                 *          an exception.
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;

@@ -344,7 +344,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
 VariantValue::FloatType_ VariantValue::AsFloatType_ () const
 {
     if (fVal_ == nullptr) {
-        return 0.0f;
+        return Math::nan<FloatType_> ();
     }
     switch (fVal_->GetType ()) {
         case    Type::eInteger: {
