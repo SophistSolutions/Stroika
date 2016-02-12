@@ -273,6 +273,7 @@ namespace   Stroika {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 fStorage_.destroy ();
             }
+#if 0
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
@@ -292,6 +293,7 @@ namespace   Stroika {
                 }
                 return *this;
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
@@ -338,6 +340,7 @@ namespace   Stroika {
                 }
                 return *this;
             }
+#if 0
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
             {
@@ -357,6 +360,7 @@ namespace   Stroika {
                 }
                 return *this;
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
             {
