@@ -14,6 +14,8 @@ SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
 FETCHURLS=
+FETCHURLS+=http://zlib.net/zlib-$(VERSION).tar.gz
+FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?download
 FETCHURLS+=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
