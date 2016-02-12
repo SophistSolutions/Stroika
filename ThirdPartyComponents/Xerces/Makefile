@@ -126,6 +126,9 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGURE_ARGS=
 CONFIGURE_ARGS+=--enable-static --disable-shared --without-icu --without-curl
+#on RedHat6, I had trouble with icu, so lose the dependency - not sure why helpful
+CONFIGURE_ARGS+=--enable-transcoder-gnuiconv
+CONFIGURE_ARGS+=--disable-transcoder-icu
 ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling),true)
 CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
 endif
