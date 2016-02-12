@@ -68,6 +68,12 @@ endif
 #	(gdb) #3  0x0000000000d0d4bd in dlfcn_load ()
 #	(gdb) #4  0x0000000000cd2348 in DSO_load ()
 #	(gdb) #5  0x0000000000c60d06 in ibm_4758_cca_init ()
+#
+# Note - this COULD be specific to the fact that we are using 
+#		-Wl,--rpath='$$ORIGIN/ii-esx-dynamic-libs' -Wl,--dynamic-linker='/opt/Analitiqa-II/ii-esx-dynamic-libs/ld-linux.so.2'
+#	in which case we really want the disabling specific to that configuraiton so we need
+#	https://stroika.atlassian.net/browse/STK-454 addressed. But - I don't think we really count on
+#	dso or engines, and you can always use --openssl=use-system
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	-no-dso
 CONFIG_ARGS+=	-no-engines
