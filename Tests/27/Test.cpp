@@ -60,42 +60,6 @@ namespace {
 
 
 
-namespace {
-    namespace AESTest_ {
-        using   namespace   Cryptography::Encoding;
-        using   namespace   Cryptography::Encoding::Algorithm;
-
-        void    DoRegressionTests_ ()
-        {
-            /// @todo fix this test after I switch to using DerviedKey - this is useless as is - not doig anywhere near the rihgt htin
-            /// which is why not working. I HTINK it will work if I use derviedKey!!!
-            ///
-            {
-                // super quick hack - must validate results
-                const   char    kKey[] = "Mr Key";
-                const   char    kSrc[] = "This is a very good test of a very good test";
-                /*
-                 *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
-                 */
-                const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
-                const   Memory::BLOB key        =   Memory::BLOB::Raw (kKey, NEltsOf(kKey) - 1);
-                const   Memory::BLOB src        =   Memory::BLOB::Raw (kSrc, NEltsOf(kSrc) - 1);
-                const   Memory::BLOB encodedVal =   Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
-#if     qHasFeature_OpenSSL
-                VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
-                if (false) {
-                    // @todo Not yet working - fully - gets differnt results than commandline tool
-                    VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
-                    VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
-                }
-#endif
-
-            }
-        }
-
-    }
-}
-
 
 
 namespace  {
@@ -560,13 +524,72 @@ namespace {
 
 
 
+namespace {
+    namespace AESTest_ {
+        using   namespace   Cryptography::Encoding;
+        using   namespace   Cryptography::Encoding::Algorithm;
+
+        void    DoRegressionTests_ ()
+        {
+            /// @todo fix this test after I switch to using DerviedKey - this is useless as is - not doig anywhere near the rihgt htin
+            /// which is why not working. I HTINK it will work if I use derviedKey!!!
+            ///
+#if 0
+            {
+                // super quick hack - must validate results
+                const   char    kKey[] = "Mr Key";
+                const   char    kSrc[] = "This is a very good test of a very good test";
+                /*
+                 *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
+                 */
+                const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
+                const   Memory::BLOB key        =   Memory::BLOB::Raw (kKey, NEltsOf(kKey) - 1);
+                const   Memory::BLOB src        =   Memory::BLOB::Raw (kSrc, NEltsOf(kSrc) - 1);
+                const   Memory::BLOB encodedVal =   Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
+#if     qHasFeature_OpenSSL
+                VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
+                if (false) {
+                    // @todo Not yet working - fully - gets differnt results than commandline tool
+                    VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
+                    VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
+                }
+#endif
+
+            }
+#endif
+            {
+                /**
+                 *      echo -n "This is a very good test of a very good test" | od -t x1 --width=100
+                 *          0000000 2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a
+                 *
+                 *      echo -n "This is a very good test of a very good test" | openssl enc -k password -e -aes-256-cbc -nosalt | od -t x1 --width=100
+                 *          0000000 62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd
+                 */
+                const   Memory::BLOB srcText    =   Memory::BLOB::Hex ("2d 6e 20 22 54 68 69 73 20 69 73 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 20 6f 66 20 61 20 76 65 72 79 20 67 6f 6f 64 20 74 65 73 74 22 20 0d 0a");
+                const   Memory::BLOB encResult  =   Memory::BLOB::Hex ("62 d2 eb f6 ee 92 4f 7f 1d 5e 70 d0 dc 90 cc 3a b2 37 f5 d6 2c e4 42 d9 34 50 5b 6c fc 89 5b da c9 ab 29 5b ef d2 87 b6 07 0f df 55 f5 43 21 7b 0c cc 4a 2f d6 d8 25 d7 73 ed a9 1c 48 15 96 cd");
+#if     qHasFeature_OpenSSL
+                const   OpenSSL::DerivedKey kDerivedKey = OpenSSL::EVP_BytesToKey { CipherAlgorithm::eAES_256_CBC, DigestAlgorithm::eMD5, "password" };
+                // HORRIBLE MESS OF AN API! -
+                // @todo - FIX
+                VerifyTestResult (EncodeAES (kDerivedKey, srcText, AESOptions::e256_CBC) == encResult);
+                VerifyTestResult (DecodeAES (kDerivedKey, encResult, AESOptions::e256_CBC) == srcText);
+#endif
+            }
+        }
+
+    }
+}
+
+
+
+
+
 
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        AESTest_::DoRegressionTests_ ();
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
         Hash_CRC32::DoRegressionTests_ ();
@@ -576,6 +599,7 @@ namespace   {
         AllSSLEncrytionRoundtrip::DoRegressionTests_ ();
         OpenSSLDeriveKeyTests_::DoRegressionTests_ ();
         OpenSSLEncryptDecryptTests_::DoRegressionTests_ ();
+        AESTest_::DoRegressionTests_ ();
     }
 }
 
