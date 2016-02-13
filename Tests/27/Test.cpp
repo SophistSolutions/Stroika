@@ -401,8 +401,8 @@ namespace {
             const   char    kKey1_[] = "Mr Key";
             const   char    kKey2_[] = "One Very Very Very Long key 123";
             static  const BLOB  kPassphrases_ [] = {
-                BLOB ((const Byte*)kKey1_, (const Byte*)kKey1_ + ::strlen(kKey1_)),
-                BLOB ((const Byte*)kKey2_, (const Byte*)kKey2_ + ::strlen(kKey2_)),
+                BLOB::Raw (kKey1_, NEltsOf (kKey1_) - 1),
+                BLOB::Raw (kKey2_, NEltsOf (kKey2_) - 1),
             };
 
             const   char    kSrc1_[] = "This is a very good test of a very good test";
@@ -411,15 +411,14 @@ namespace {
             const   char    kSrc4_[] = "0123456789";
 
             static  const BLOB  kTestMessages_ [] = {
-                BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen(kSrc1_)),
-                BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen(kSrc2_)),
-                BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen(kSrc3_)),
+                BLOB::Raw (kSrc1_, NEltsOf (kSrc1_) - 1),
+                BLOB::Raw (kSrc2_, NEltsOf (kSrc2_) - 1),
+                BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
 #if 0
                 // DEBUG WHY THIS FAILS - I THINK WE NEED TO ENABLE PADDING FOR SOME CYPHERS!
-                BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen(kSrc4_)),
+                BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)
 #endif
             };
-
 
             for (BLOB passphrase : kPassphrases_) {
                 for (BLOB inputMessage : kTestMessages_) {
