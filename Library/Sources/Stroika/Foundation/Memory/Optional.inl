@@ -205,6 +205,14 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
+            inline
+#if     !qCompilerAndStdLib_constexpr_Buggy
+            constexpr
+#endif
+            Optional<T, TRAITS>::Optional (nullopt_t)
+            {
+            }
+            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const T& from)
             {
                 fStorage_.fValue_ = fStorage_.alloc (from);
@@ -294,11 +302,20 @@ namespace   Stroika {
                 return *this;
             }
 #endif
+#if 0
+            template    <typename T, typename TRAITS>
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (nullopt_t)
+            {
+                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
+                clear_ ();
+                return *this;
+            }
+#endif
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                if (fStorage_.peek () == &rhs) {
+                if (fStorage_.peek () == reinterpret_cast<const T*> (&rhs)) {
                     // No need to move in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;

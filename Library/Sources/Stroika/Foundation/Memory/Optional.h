@@ -23,6 +23,8 @@
  *
  *  TODO:
  *
+ *		@todo	https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (nullopt_t and typenmae U U&&;
+ *
  *      @todo   Add appropriate constexpr code. Now that we have DIRECTCONSTRUCTION we can use
  *              constexpr for some more constructors. But we must carefully use enable_if for this because
  *              if you use Optional_Traits_Blockallocated_Indirect_Storage it wont work.
@@ -135,6 +137,28 @@ namespace   Stroika {
              */
             template    <typename T>
             using   Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
+
+
+            /**
+             *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
+             *
+             *      @todo make this a typealias when we have c++ impls with c++17 version
+             */
+            struct  nullopt_t {
+                constexpr nullopt_t(int) {}
+            };
+
+
+            /**
+             *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
+             *
+             *      @todo make this a typealias when we have c++ impls with c++17 version
+             */
+#if     qCompilerAndStdLib_constexpr_Buggy
+            const nullopt_t nullopt {1};
+#else
+            constexpr nullopt_t nullopt {1};
+#endif
 
 
             /**
@@ -264,6 +288,10 @@ namespace   Stroika {
                 constexpr
 #endif
                 Optional ();
+#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr
+#endif
+                Optional (nullopt_t);
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
@@ -283,6 +311,8 @@ namespace   Stroika {
                 /**
                  */
 //               nonvirtual  Optional& operator= (const T& rhs);
+
+                //nonvirtual  Optional& operator= (nullopt_t);
                 nonvirtual  Optional& operator= (T && rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
                 nonvirtual  Optional& operator= (Optional && rhs);
