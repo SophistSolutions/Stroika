@@ -414,16 +414,14 @@ namespace {
                 BLOB::Raw (kSrc1_, NEltsOf (kSrc1_) - 1),
                 BLOB::Raw (kSrc2_, NEltsOf (kSrc2_) - 1),
                 BLOB::Raw (kSrc3_, NEltsOf (kSrc3_) - 1),
-#if 0
-                // DEBUG WHY THIS FAILS - I THINK WE NEED TO ENABLE PADDING FOR SOME CYPHERS!
                 BLOB::Raw (kSrc4_, NEltsOf (kSrc4_) - 1)
-#endif
             };
 
             for (BLOB passphrase : kPassphrases_) {
                 for (BLOB inputMessage : kTestMessages_) {
                     for (CipherAlgorithm ci = CipherAlgorithm::eSTART; ci != CipherAlgorithm::eEND; ci = Configuration::Inc (ci)) {
                         for (DigestAlgorithm di = DigestAlgorithm::eSTART; di != DigestAlgorithm::eEND; di = Configuration::Inc (di)) {
+                            //DbgTrace (L"ci=%s, di=%s", Characters::ToString (ci).c_str (), Characters::ToString(di).c_str ());
                             OpenSSLCryptoParams cryptoParams { ci, OpenSSL::EVP_BytesToKey  { ci, di, passphrase } };
                             roundTripTester_ (cryptoParams, inputMessage);
                         }
@@ -547,6 +545,12 @@ namespace {
             //  echo hi mom| openssl bf -md md5 -k aaa -nosalt | od -t x1 --width=64
             //      0000000 29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6
             checkNoSalt (CipherAlgorithm::eBlowfish, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6"));
+
+            //  echo hi mom| od -t x1 --width=64
+            //      0000000 68 69 20 6d 6f 6d 0d 0a
+            //   echo hi mom| openssl aes-128-cbc -md md5 -k aaa -nosalt | od -t x1 --width=64
+            //      0000000 6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53
+            checkNoSalt (CipherAlgorithm::eAES_128_CBC, DigestAlgorithm::eMD5, L"aaa", BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a"), BLOB::Hex ("6b 95 c9 eb 68 5e c3 7f 4f e4 86 99 55 1d 05 53"));
 #endif
         }
 
