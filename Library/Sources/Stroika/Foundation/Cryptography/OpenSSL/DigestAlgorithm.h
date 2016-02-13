@@ -83,15 +83,19 @@ namespace Stroika {
     namespace Foundation {
         namespace Configuration {
             template<>
-            const EnumNames<Cryptography::OpenSSL::DigestAlgorithm>   DefaultNames<Cryptography::OpenSSL::DigestAlgorithm>::k {
-                Configuration::EnumNames<DigestAlgorithm>::BasicArrayInitializer {{
-                        { Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
-                        { Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5" },
-                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1" },
-                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224" },
-                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256" },
+            struct   DefaultNames<Cryptography::OpenSSL::DigestAlgorithm> : EnumNames<Cryptography::OpenSSL::DigestAlgorithm> {
+                static  constexpr   EnumNames<Cryptography::OpenSSL::DigestAlgorithm>    k {
+                    EnumNames<Cryptography::OpenSSL::DigestAlgorithm>::BasicArrayInitializer {
+                        {
+                            { Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
+                            { Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5" },
+                            { Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1" },
+                            { Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224" },
+                            { Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256" },
+                        }
                     }
-                }
+                };
+                DefaultNames () : EnumNames<Cryptography::OpenSSL::DigestAlgorithm> (k) {}
             };
         }
     }
