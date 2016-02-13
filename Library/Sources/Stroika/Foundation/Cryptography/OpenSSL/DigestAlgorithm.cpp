@@ -34,6 +34,43 @@ using   namespace   Stroika::Foundation::Memory;
 #if     qHasFeature_OpenSSL
 /*
  ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
+            template    <>
+            const EnumNames<Cryptography::OpenSSL::DigestAlgorithm> DefaultNames<Cryptography::OpenSSL::DigestAlgorithm>::k
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+                =
+#endif
+            {
+                EnumNames<Cryptography::OpenSSL::DigestAlgorithm>::BasicArrayInitializer  {
+                    {
+                        { Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
+                        { Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5" },
+                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1" },
+                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224" },
+                        { Cryptography::OpenSSL::DigestAlgorithm::eSHA256, L"eSHA256" },
+                    }
+                }
+            };
+#else
+            constexpr   EnumNames<Cryptography::OpenSSL::DigestAlgorithm>   DefaultNames<Cryptography::OpenSSL::DigestAlgorithm>::k;
+#endif
+        }
+    }
+}
+#endif
+
+
+
+
+#if     qHasFeature_OpenSSL
+/*
+ ********************************************************************************
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
  ********************************************************************************
  */
