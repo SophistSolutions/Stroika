@@ -141,7 +141,7 @@ namespace   Stroika {
             inline  BLOB    BLOB::Hex (const char* b)
             {
                 RequireNotNull (b);
-                return Hex (b, b + strlen (b));
+                return Hex (b, b + ::strlen (b));
             }
             inline  BLOB    BLOB::Hex (const string& s)
             {
