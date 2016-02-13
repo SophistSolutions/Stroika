@@ -217,7 +217,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
         baseName = baseName.RemoveAt (baseName.size () - 1);
     }
     {
-        size_t i = baseName.find ('.');
+        size_t i = baseName.rfind ('.');
         // Strip the trailing .XXX if that isn't the entire string
         if (i != String::kBadIndex and i != 0) {
             baseName =  baseName.SubString (0, i);
