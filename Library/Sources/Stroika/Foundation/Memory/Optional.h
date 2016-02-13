@@ -23,7 +23,7 @@
  *
  *  TODO:
  *
- *		@todo	https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (nullopt_t and typenmae U U&&;
+ *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (nullopt_t and typenmae U U&&;
  *
  *      @todo   Add appropriate constexpr code. Now that we have DIRECTCONSTRUCTION we can use
  *              constexpr for some more constructors. But we must carefully use enable_if for this because
@@ -295,8 +295,6 @@ namespace   Stroika {
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
-
-
                 template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 Optional (const Optional<T2, TRAITS2>& from);
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
@@ -310,13 +308,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-//               nonvirtual  Optional& operator= (const T& rhs);
-
                 //nonvirtual  Optional& operator= (nullopt_t);
                 nonvirtual  Optional& operator= (T && rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
                 nonvirtual  Optional& operator= (Optional && rhs);
-//               nonvirtual  Optional& operator= (const T* rhs);
 
             public:
                 /**
