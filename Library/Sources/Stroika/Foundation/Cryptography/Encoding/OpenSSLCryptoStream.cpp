@@ -139,7 +139,12 @@ public:
         Require (intoStart < intoEnd);
         auto    critSec { Execution::make_unique_lock (fCriticalSection_) };
         if (fOutBufStart_ == fOutBufEnd_) {
+            /*
+             *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
+             *  on our own.
+             */
             Byte toDecryptBuf[kInBufSize_];
+Again:
             size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
             if (n2Decrypt == 0) {
                 size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
@@ -151,8 +156,15 @@ public:
                 fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
                 size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
                 Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
-                fOutBufStart_ = fOutBuf_.begin ();
-                fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                if (nBytesInOutBuf == 0) {
+                    // This can happen with block ciphers - we put stuff in, and get nothing out. But we cannot return EOF
+                    // yet, so try again...
+                    goto Again;
+                }
+                else {
+                    fOutBufStart_ = fOutBuf_.begin ();
+                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                }
             }
         }
         if (fOutBufStart_ < fOutBufEnd_) {
