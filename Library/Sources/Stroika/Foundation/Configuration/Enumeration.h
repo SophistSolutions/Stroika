@@ -271,7 +271,7 @@ namespace   Stroika {
              *              { Priority::b, L"b" },
              *              { Priority::c, L"c" },
              *          };
-             *      };
+             *      }
              *      \endcode
              *
              *  \par OR
@@ -285,7 +285,7 @@ namespace   Stroika {
              *                  { Priority::c, L"c" },
              *              }
              *          };
-             *      };
+             *      }
              *      \endcode
              *
              *  \par OR
@@ -300,6 +300,7 @@ namespace   Stroika {
              *                  { FileAccessMode::eReadWrite, L"Read-Write" },
              *              }}
              *          };
+             *      }
              *      \endcode
              *
              *  \note   namespace Stroika::Foundation::Configuration must be written out long way before C++17
