@@ -531,32 +531,6 @@ namespace {
 
         void    DoRegressionTests_ ()
         {
-            /// @todo fix this test after I switch to using DerviedKey - this is useless as is - not doig anywhere near the rihgt htin
-            /// which is why not working. I HTINK it will work if I use derviedKey!!!
-            ///
-#if 0
-            {
-                // super quick hack - must validate results
-                const   char    kKey[] = "Mr Key";
-                const   char    kSrc[] = "This is a very good test of a very good test";
-                /*
-                 *  echo -n "This is a very good test of a very good test" | openssl enc -e -aes-256-cbc -a -nosalt -pass 'pass:Mr Key'
-                 */
-                const   char    kBase64EncodedResultAESCBC_[] = "MfNuP5LTVHfbeOAT8MAnfltNj05ZcRhEI2ySQoUhMCXUI8pYFKIPJ0PtX6eD0/W80IGy3Wg0U5cY3bXxWBltTQ==";
-                const   Memory::BLOB key        =   Memory::BLOB::Raw (kKey, NEltsOf(kKey) - 1);
-                const   Memory::BLOB src        =   Memory::BLOB::Raw (kSrc, NEltsOf(kSrc) - 1);
-                const   Memory::BLOB encodedVal =   Encoding::Algorithm::DecodeBase64 (kBase64EncodedResultAESCBC_);
-#if     qHasFeature_OpenSSL
-                VerifyTestResult (DecodeAES (key, EncodeAES (key, src, AESOptions::e256_CBC), AESOptions::e256_CBC)  == src);
-                if (false) {
-                    // @todo Not yet working - fully - gets differnt results than commandline tool
-                    VerifyTestResult (EncodeAES (key, src, AESOptions::e256_CBC) == encodedVal);
-                    VerifyTestResult (DecodeAES (key, encodedVal, AESOptions::e256_CBC)  == src);
-                }
-#endif
-
-            }
-#endif
             {
                 /**
                  *      echo -n "This is a very good test of a very good test" | od -t x1 --width=100
