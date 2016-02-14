@@ -96,7 +96,9 @@ namespace   Stroika {
                  *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct  CryptDeriveKey : DerivedKey {
-                    CryptDeriveKey (DigestAlgorithm digestAlgorithm, CipherAlgorithm cipherAlgorithm, const string& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    CryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    enum Provider { Base, Enhanced, Strong };
+                    CryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 
 

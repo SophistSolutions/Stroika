@@ -5,6 +5,7 @@
 
 #if     qHasFeature_OpenSSL
 #include    <openssl/evp.h>
+#include    <openssl/md5.h>
 #endif
 
 #include    "../../Characters/StringBuilder.h"
@@ -103,6 +104,78 @@ String  DerivedKey::ToString () const
     return result.str ();
 }
 #endif
+
+
+
+/*
+ ********************************************************************************
+ ******************* Cryptography::OpenSSL::CryptDeriveKey **********************
+ ********************************************************************************
+ */
+#if     qHasFeature_OpenSSL
+namespace {
+    pair<BLOB, BLOB>    mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    {
+        Require (digestAlgorithm == DigestAlgorithm::eMD5); // else NYI
+        /*
+         *  From http://msdn2.microsoft.com/en-us/library/aa379916.aspx
+         *
+         *      o   Form a 64-byte buffer by repeating the constant 0x36 64 times.
+         *          Let k be the length of the hash value that is represented by the
+         *          input parameter hBaseData. Set the first k bytes of the buffer to the result
+         *          of an XOR operation of the first k bytes of the buffer with the hash value that
+         *          is represented by the input parameter hBaseData.
+         *      o   Form a 64-byte buffer by repeating the constant 0x5C 64 times.
+         *          Set the first k bytes of the buffer to the result of an XOR operation of the
+         *          first k bytes of the buffer with the hash value that is represented by the input parameter hBaseData.
+         *      o   Hash the result of step 1 by using the same hash algorithm as that used to compute the
+         *          hash value that is represented by the hBaseData parameter.
+         *      o   Hash the result of step 2 by using the same hash algorithm as that used
+         *          to compute the hash value that is represented by the hBaseData parameter.
+         *      o   Concatenate the result of step 3 with the result of step 4.
+         *      o   Use the first n bytes of the result of step 5 as the derived key.
+         */
+        size_t      usePWDLen = min (passwd.length (), 64u);
+        const Byte* passwordBytes = passwd.begin ();
+        unsigned char buf1[64];
+        {
+            std::fill_n (buf1, NEltsOf (buf1), 0x36);
+            for (unsigned long i = 0; i < usePWDLen; ++i) {
+                buf1[i] ^= passwordBytes[i];
+            }
+        }
+        unsigned char buf2[64];
+        {
+            std::fill_n (buf2, NEltsOf (buf2), 0x5C);
+            for (unsigned long i = 0; i < usePWDLen; ++i) {
+                buf2[i] ^= passwordBytes[i];
+            }
+        }
+        Byte md5OutputBuf[2 * MD5_DIGEST_LENGTH];
+        (void)::MD5 (buf1, NEltsOf (buf1), md5OutputBuf);
+        (void)::MD5 (buf2, NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
+        Assert (keyLen <= NEltsOf (md5OutputBuf));      // NYI otherwise - but we could zero fill
+        BLOB    resultKey { begin (md5OutputBuf), begin (md5OutputBuf) + std::min (NEltsOf (md5OutputBuf), keyLen) };
+        BLOB    iv;
+        return pair<BLOB, BLOB> { resultKey, iv };
+    }
+    size_t  mkDefKeyLen_ (CryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
+    {
+        // @todo see table https://msdn.microsoft.com/en-us/library/aa379916.aspx
+        return 128 / 8;
+    }
+}
+CryptDeriveKey::CryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    : DerivedKey (mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd, salt))
+{
+}
+
+CryptDeriveKey::CryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    : DerivedKey (CryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd, salt))
+{
+}
+#endif
+
 
 
 
