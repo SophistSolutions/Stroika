@@ -140,7 +140,7 @@ namespace {
          *      o   Concatenate the result of step 3 with the result of step 4.
          *      o   Use the first n bytes of the result of step 5 as the derived key.
          */
-        size_t      usePWDLen = min (passwd.length (), 64u);
+        size_t      usePWDLen = min (passwd.length (), static_cast<size_t> (64));
         const Byte* passwordBytes = passwd.begin ();
         unsigned char buf1[64];
         {
