@@ -19,27 +19,24 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a126">v2.0a126x</a><br/>2016-01-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a126">v2.0a126</a><br/>2016-02-15</td>
 <td>
 	<ul>
 		<li>
 			OpenSSL crypto
 			<ul>
-				<li>https://stroika.atlassian.net/browse/STK-123 and https://stroika.atlassian.net/browse/STK-190 .. 194</li>
-				<li>tons .. fixed msotly</li>
+				<li>progress on https://stroika.atlassian.net/browse/STK-123 Finish getting wrapper on openssl working</li>
+				<li>RESOLVED https://stroika.atlassian.net/browse/STK-190</li>
+				<li>RESOLVED https://stroika.atlassian.net/browse/STK-191</li>
+				<li>PROGRESS but not fixed - https://stroika.atlassian.net/browse/STK-192</li>
+				<li>RESOLVED https://stroika.atlassian.net/browse/STK-193 - issue with short encrpytions failing with block ciphers - was bug in pull code in streams</li>
+				<li>Lowered priority - defaults good - https://stroika.atlassian.net/browse/STK-194</li>
+				<li>tons .. fixed mostly working now</li>
 				<li>EVP_BytesToKey  - nRounds defaults to 1 (and document why)</li>
-				<li>Cryptography::OpenSSL::WinCryptDeriveKey</li>
+				<li>Cryptography::OpenSSL::WinCryptDeriveKey (didnt produce same results as windows in one case I tested - not sure why)</li>
 				<li>slightly restrucutre AES wrapper API - so usable, and now regrssion test passes (was missing IV); API A HORRIBLE MESS. see https://stroika.atlassian.net/browse/STK-458</li>
-				<li>fixed https://stroika.atlassian.net/browse/STK-193 - issue with short encrpytions failing with block ciphers - was bug in pull code in streams</li>
-				<li> attempt at fixing openssl makefile for crosscompiling (https://stroika.atlassian.net/browse/STK-427)</li>
+				<li>attempt at fixing openssl makefile for crosscompiling (https://stroika.atlassian.net/browse/STK-427)</li>
 				<li>DecodeBase64() takes String overload</li>
-			</ul>
-		</li>
-		<li>
-			<ul>
-				<li>attempted to add nullopt_t support to Optional<> but not quite fully working (added https://stroika.atlassian.net/browse/STK-456)</li>
-				<li>attempt losing two Optional operator= overloads (not backward compat) - but designed to more closely mimic http://en.cppreference.com/w/cpp/experimental/optional/operator%3D and avoid some overload ambiguities I was running into. Just testing...
-				</li>
 			</ul>
 		</li>
 		<li>
@@ -48,6 +45,12 @@ History
 				<li>-no-dso and -no-engines on building openssl - to wrokaround crasher bug using ssl from curl on centos6 (II-ESX-Agent); I should be able to get it working, but it doesn't appear needed so disabling SB OK - at least for now</li>
 				<li>hopefully bug workaround for https://stroika.atlassian.net/browse/STK-452 - AIX openssl build issue</li>
 				<li>I think I solved problem with using pkg-config with openssl/curl - issue seems to be its configure script misses the dependency on teh private ldl, so we force that in, and the link tests work again</li>
+			</ul>
+		</li>
+		<li>
+			<ul>
+				<li>attempted to add nullopt_t support to Optional<> but not quite fully working (added https://stroika.atlassian.net/browse/STK-456)</li>
+				<li>attempt losing two Optional operator= overloads (not backward compat) - but designed to more closely mimic http://en.cppreference.com/w/cpp/experimental/optional/operator%3D and avoid some overload ambiguities I was running into. Just testing...</li>
 			</ul>
 		</li>
 		<li>
@@ -91,27 +94,20 @@ History
 		<li>ToString now supports KeyValuePair</li>
 		<li>Framewowrks::Service - if we have an exception runing the thread service - propagate it</li>
 		<li>Added Socket SO_LINGER support</li>
-		<li>SLIGHLY incompatible change to DirectoryIterator/DirectoryIterable - so they NEVER return . or ..: looking through my existing usage, it was NEVER helpful and I had tons of specail case code filtering these out (nearly every use)</li>
 		<li>Added Set<T, TRAITS>::operator^=</li>
 		<li>
+			ProcessRunner (Big - not fully backward compatible - changes)
 			<ul>
 				<li>fixed a serious bug with ProcessRunner::CreateRunnable - capturing stack variable and returning it in function object before exec!</li>
-				<li>
-		 Big - not fully backward compatible - changes to ProcessRunner:
-    			o	First - on windows - with default settings - we throw on failed process
-    				exec (subprocess returns nonzero) - like on UNIX.
-    
-    			o	There are now overloads of Run() - taking a reference to a
+				<li>First - on windows - with default settings - we throw on failed process exec (subprocess returns nonzero) - like on UNIX.</li>
+    			<li>There are now overloads of Run() - taking a reference to a
     				Memory::Optional<ProcessResultType> - which will be filled in iff we
     				have status return results. And if filled in, the throw behaivor (on windows
-    				and unix) is disabled.
-    
-    			o	and on UNIX fixed EINTR bug - where waidpid was not handling EINTR.
-				</li>
+    				and unix) is disabled.</li>
+    			<li>and on UNIX fixed EINTR bug - where waidpid was not handling EINTR.</li>
 				<li>Cleanup Execution::DetachedProcessRunner - mode DebugStrs - and execvp on UNIX - so searches path; and documentation</li>
 			</ul>
 		</li>
-		<li>IO::FileSystem::FileSystem::FindExecutableInPath ()</li>
 		<li>FOR AIX, we just add -latomic to StroikaFoundationSupportLibs to avoid ld: 0711-317 ERROR: Undefined symbol: .__atomic_load_8</li>
 		<li>DataExchange/OptionsFile - docs, and Write and WriteRaw() does noting (no file change) if no actual changes; OptionsFile::WriteRaw () optimizaiton to not write doesnt apply when read/write paths are differnt! - like in upgrade!</li>
 		<li>Added exceedingly preliminary/primitive SOAP support (just parse some kinds of partial) SOAPFault objects</li>
@@ -122,7 +118,14 @@ History
 				<li> Imporved DbgTrace() handling of Logger::Log - always logging immediately to tracelog - not when output to syslog - and with proirity, and note about supressions</li>
 			</ul>
 		</li>
-		<li> some cleanups o fFileSystem::WellKnownLocations:: - making POSIX GetTemporary respoect enviroment variables, and CACHE (so faster), and other related cleanups</li>
+		<li>
+			<ul>
+				<li>SLIGHLY incompatible change to DirectoryIterator/DirectoryIterable - so they NEVER return . or ..: looking through my existing usage, it was NEVER helpful and I had tons of specail case code filtering these out (nearly every use)</li>
+				<li>IO::FileSystem::FileSystem::FindExecutableInPath ()</li>
+				<li>POSIX support for IO::FileSystem::FileSystem::GetFileLastAccessDate/IO::FileSystem::FileSystem::GetFileSize and IO::FileSystem::FileSystem::GetFileLastModificationDate</li>
+				<li> some cleanups o fFileSystem::WellKnownLocations:: - making POSIX GetTemporary respoect enviroment variables, and CACHE (so faster), and other related cleanups</li>
+			</ul>
+		</li>
 		<li>fixed Execution::IsProcessRunning() for AIX</li>
 		<li>
 			<ul>
@@ -131,13 +134,17 @@ History
 				lose obsolete Iterable<T>::_ConstGetRep - use _SafeReadRepAccessor<>::_ConstGetRep () instead</li>
 			</ul>
 		</li>
-		<li>POSIX support for IO::FileSystem::FileSystem::GetFileLastAccessDate/IO::FileSystem::FileSystem::GetFileSize and IO::FileSystem::FileSystem::GetFileLastModificationDate</li>
 		<li>new system configuration fPreferedInstallerTechnology</li>
 		<li>Added load/store names for readableReference/WritableReference in Synchonized</li>
-		<li>IO::Network::Transfer - cleanup and force consistently ALL POST, Send () etc calls will throw on failure, and to get the status/details catch and find the response object in exception</li>
-		<li>slight improvement on https://stroika.atlassian.net/browse/STK-442 - for winhttp - set flag earlier so we ignore ssl errors if we dont need to know about them (leave bug open cuz even when we do need ssl info, we should be able to tell if it would have failed)</li>
-		<li>exception memleak bulletproof in Transfer/Client_WinHTTP</li>
-		<li>make WinHTTP support .fFailConnectionIfSSLCertificateInvalid and added regresison test teo verify this</li>
+		<li>
+			IO::Network::Transfer
+			<ul>
+				<li>IO::Network::Transfer - cleanup and force consistently ALL POST, Send () etc calls will throw on failure, and to get the status/details catch and find the response object in exception</li>
+				<li>slight improvement on https://stroika.atlassian.net/browse/STK-442 - for winhttp - set flag earlier so we ignore ssl errors if we dont need to know about them (leave bug open cuz even when we do need ssl info, we should be able to tell if it would have failed)</li>
+				<li>exception memleak bulletproof in Transfer/Client_WinHTTP</li>
+				<li>make WinHTTP support .fFailConnectionIfSSLCertificateInvalid and added regresison test teo verify this</li>
+			</ul>
+		</li>
 		<li>small fix to ObjectReaderRegistry::RepeatedElementReader, and docs/examples</li>
 		<li>overload IsPartition so takes optional comparer for range elements, and use in Math::ReBin()</li>
 		<li>fixed _Deprecated_ macro</li>
@@ -160,6 +167,22 @@ History
 		<li>hopefully improved dependencies on rules in top level makefile (so less redundant building when called with no configuraiton argument - SB no diff otherwise)</li>
 		<li>docs cleanups and deprecated FileSystem::CheckFileAccess (use CheckAccess)</li>
 		<li>use noexcept on a few functions: GetTickCount, and Debug:: trace code</li>
+		<li>PerformanceDump-v2.0a126-x86-ReleaseU.txt, PerformanceDump-v2.0a126-linux-gcc-5.2.0-x64.txt, PerformanceDump-v2.0a126-linux-gcc-4.9-x64.txt added</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (except https://stroika.atlassian.net/browse/STK-451)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
