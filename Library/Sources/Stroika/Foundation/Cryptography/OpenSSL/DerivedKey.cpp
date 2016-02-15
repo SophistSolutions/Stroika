@@ -31,6 +31,7 @@ using   Memory::BLOB;
 using   Memory::SmallStackBuffer;
 
 
+
 #if     qHasFeature_OpenSSL && defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #pragma comment (lib, "libeay32.lib")
@@ -77,6 +78,7 @@ size_t  DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 {
     return Convert2OpenSSL (cipherAlgorithm)->key_len;
 }
+
 size_t  DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
@@ -87,6 +89,7 @@ size_t  DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 {
     return Convert2OpenSSL (cipherAlgorithm)->iv_len;
 }
+
 size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
@@ -107,16 +110,18 @@ String  DerivedKey::ToString () const
 
 
 
+
+
 /*
  ********************************************************************************
- ******************* Cryptography::OpenSSL::CryptDeriveKey **********************
+ **************** Cryptography::OpenSSL::WinCryptDeriveKey **********************
  ********************************************************************************
  */
 #if     qHasFeature_OpenSSL
 namespace {
     pair<BLOB, BLOB>    mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
     {
-        Require (digestAlgorithm == DigestAlgorithm::eMD5); // else NYI
+        // @todo https://stroika.atlassian.net/browse/STK-192
         /*
          *  From http://msdn2.microsoft.com/en-us/library/aa379916.aspx
          *
@@ -151,6 +156,7 @@ namespace {
                 buf2[i] ^= passwordBytes[i];
             }
         }
+        Require (digestAlgorithm == DigestAlgorithm::eMD5); // else NYI
         Byte md5OutputBuf[2 * MD5_DIGEST_LENGTH];
         (void)::MD5 (buf1, NEltsOf (buf1), md5OutputBuf);
         (void)::MD5 (buf2, NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
@@ -159,19 +165,19 @@ namespace {
         BLOB    iv;
         return pair<BLOB, BLOB> { resultKey, iv };
     }
-    size_t  mkDefKeyLen_ (CryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
+    size_t  mkDefKeyLen_ (WinCryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
     {
         // @todo see table https://msdn.microsoft.com/en-us/library/aa379916.aspx
         return 128 / 8;
     }
 }
-CryptDeriveKey::CryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+WinCryptDeriveKey::WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
     : DerivedKey (mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd, salt))
 {
 }
 
-CryptDeriveKey::CryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
-    : DerivedKey (CryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd, salt))
+WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    : DerivedKey (WinCryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd, salt))
 {
 }
 #endif

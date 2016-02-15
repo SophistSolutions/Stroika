@@ -90,15 +90,15 @@ namespace   Stroika {
 
 
                 /**
-                 *  CryptDeriveKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. CryptDeriveKey
-                 *  creates a Microsoft-Windows format derived key, compatible with the Windows CryptDeriveKey API.
+                 *  WinCryptDeriveKey CAN be object sliced. Its a simple construction wrapper on a DerivedKey. WinCryptDeriveKey
+                 *  creates a Microsoft-Windows format derived key, compatible with the Windows WinCryptDeriveKey API.
                  *
                  *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
-                struct  CryptDeriveKey : DerivedKey {
-                    CryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                struct  WinCryptDeriveKey : DerivedKey {
+                    WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
                     enum Provider { Base, Enhanced, Strong };
-                    CryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
                 };
 
 
