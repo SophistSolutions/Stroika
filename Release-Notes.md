@@ -22,12 +22,127 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a126">v2.0a126x</a><br/>2016-01-??</td>
 <td>
 	<ul>
-
-
-	<!--writeup qSUPPORT_LEGACY_Stroika_Enum_Names -->
-		<!--up to date as of 2016-01-19 9pm -->
+		<li>
+			OpenSSL crypto
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-123 and https://stroika.atlassian.net/browse/STK-190 .. 194</li>
+				<li>tons .. fixed msotly</li>
+				<li>EVP_BytesToKey  - nRounds defaults to 1 (and document why)</li>
+				<li>Cryptography::OpenSSL::WinCryptDeriveKey</li>
+				<li>slightly restrucutre AES wrapper API - so usable, and now regrssion test passes (was missing IV); API A HORRIBLE MESS. see https://stroika.atlassian.net/browse/STK-458</li>
+				<li>fixed https://stroika.atlassian.net/browse/STK-193 - issue with short encrpytions failing with block ciphers - was bug in pull code in streams</li>
+				<li> attempt at fixing openssl makefile for crosscompiling (https://stroika.atlassian.net/browse/STK-427)</li>
+				<li>DecodeBase64() takes String overload</li>
+			</ul>
+		</li>
+		<li>
+			<ul>
+				<li>attempted to add nullopt_t support to Optional<> but not quite fully working (added https://stroika.atlassian.net/browse/STK-456)</li>
+				<li>attempt losing two Optional operator= overloads (not backward compat) - but designed to more closely mimic http://en.cppreference.com/w/cpp/experimental/optional/operator%3D and avoid some overload ambiguities I was running into. Just testing...
+				</li>
+			</ul>
+		</li>
+		<li>
+			<ul>
+				<li>openssl 1.0.2f</li>
+				<li>-no-dso and -no-engines on building openssl - to wrokaround crasher bug using ssl from curl on centos6 (II-ESX-Agent); I should be able to get it working, but it doesn't appear needed so disabling SB OK - at least for now</li>
+				<li>hopefully bug workaround for https://stroika.atlassian.net/browse/STK-452 - AIX openssl build issue</li>
+				<li>I think I solved problem with using pkg-config with openssl/curl - issue seems to be its configure script misses the dependency on teh private ldl, so we force that in, and the link tests work again</li>
+			</ul>
+		</li>
+		<li>
+			<ul>
+				<li>use curl 7.47, and use --without-zsh-functions-dir to workaround  https://stroika.atlassian.net/browse/STK-419; PATCH to workaround ZSH curl bug</li>
+				<li>fixed curl makefile to use PKG_CONFIG_PATH - not PKG_CONFIG</li>
+			</ul>
+		</li>
+		<li>
+			<ul>
+				<li>workaround trnascoder bug/issue on RedHat 6 - so did for xerces config - --enable-transcoder-gnuiconv --disable-transcoder-icu;
+				use enable-transcoder-iconv disable-transcoder-gnuiconv for xerces - cuz gnuiconv depends on the LANG environment variable/locale stuff and that doesnt work on centos6
+				</li>
+			</ul>
+		</li>
+		<li>fixed zlib mirror</li>
+		<li>VariantValue::As<float> returns NAN if null-type (more consistent with other docs on behavior of empty - but NOTE - NOT BACKWARD COMPATIBLE)</li>
+		<li>Added optional Socket BindFlags to ConnecitonManager and Listener</li>
+		<li>default values (not on cygwin) for AR/RANLIB (used in new openssl makefile and we didnset set them for AIX)</li>
+		<li>Added new Filesystem::ExtractDirAndBaseName and used that in place of FileSystem::GetFileBaseName in processrunner (cuz abotu to change GetFileBaseName a bit). AND refined definition of Filesystem::GetFileBaseName and added regression tests</li>
+		<li>
+			BLOB
+			<ul>
+				<li>BLOB::Hex () utility function; BLOB::Raw()</li>
+			</ul>
+		</li>
+		<li>
+			Frameworks/WebServer/ConnectionManager and WebServer Sample
+			<ul>
+				<li>in Frameworks/WebServer/ConnectionManager - since we dont yet support connection keepalives, set Connection: close (required)</li>
+				<li>WebServer Response - better support String, and fixed missing printf()</li>
+				<li>WebServer Resposne::Write () overload for BLOB</li>
+				<li>wrap new Route/ConnectionMgr stuff with !qCompilerAndStdLib_regex_Buggy; and  support new Route RequestMatch</li>
+				<li>WebServer request uses Mapping (for now so i can use ToString); And fixed bug (assert error) fetchbgin BODY with zero sized content-length</li>
+				<li>Added draft WebServer Router class; more cleanups of webserver code - including sample - to use (proto) router;
+				got usable WebServer ConnectionManager, and greatly simplfied the WebServer sample app demo
+				</li>
+			</ul>
+		</li>
+		<li>Fix re-order regtests and fixed fixed accidentlaly remapped regression tests - #20 - Set</li>
+		<li>ToString now supports KeyValuePair</li>
+		<li>Framewowrks::Service - if we have an exception runing the thread service - propagate it</li>
+		<li>Added Socket SO_LINGER support</li>
+		<li>SLIGHLY incompatible change to DirectoryIterator/DirectoryIterable - so they NEVER return . or ..: looking through my existing usage, it was NEVER helpful and I had tons of specail case code filtering these out (nearly every use)</li>
+		<li>Added Set<T, TRAITS>::operator^=</li>
+		<li>
+			<ul>
+				<li>fixed a serious bug with ProcessRunner::CreateRunnable - capturing stack variable and returning it in function object before exec!</li>
+				<li>
+		 Big - not fully backward compatible - changes to ProcessRunner:
+    			o	First - on windows - with default settings - we throw on failed process
+    				exec (subprocess returns nonzero) - like on UNIX.
+    
+    			o	There are now overloads of Run() - taking a reference to a
+    				Memory::Optional<ProcessResultType> - which will be filled in iff we
+    				have status return results. And if filled in, the throw behaivor (on windows
+    				and unix) is disabled.
+    
+    			o	and on UNIX fixed EINTR bug - where waidpid was not handling EINTR.
+				</li>
+				<li>Cleanup Execution::DetachedProcessRunner - mode DebugStrs - and execvp on UNIX - so searches path; and documentation</li>
+			</ul>
+		</li>
+		<li>IO::FileSystem::FileSystem::FindExecutableInPath ()</li>
+		<li>FOR AIX, we just add -latomic to StroikaFoundationSupportLibs to avoid ld: 0711-317 ERROR: Undefined symbol: .__atomic_load_8</li>
+		<li>DataExchange/OptionsFile - docs, and Write and WriteRaw() does noting (no file change) if no actual changes; OptionsFile::WriteRaw () optimizaiton to not write doesnt apply when read/write paths are differnt! - like in upgrade!</li>
+		<li>Added exceedingly preliminary/primitive SOAP support (just parse some kinds of partial) SOAPFault objects</li>
+		<li>
+			Logger
+			<ul>
+				<li>Logger::LogIfNew ()</li>
+				<li> Imporved DbgTrace() handling of Logger::Log - always logging immediately to tracelog - not when output to syslog - and with proirity, and note about supressions</li>
+			</ul>
+		</li>
+		<li> some cleanups o fFileSystem::WellKnownLocations:: - making POSIX GetTemporary respoect enviroment variables, and CACHE (so faster), and other related cleanups</li>
+		<li>fixed Execution::IsProcessRunning() for AIX</li>
+		<li>
+			<ul>
+				<li>lose String::ConstGetRep_ - and use _SafeReadRepAccessor instead; and added strika bug defines for a few importatnt string threading bugs (one very serious);
+				stop using obsolete Interable::_ConstGetRep and instead use _SafeReadRepAccessor<> and iuts _ConstGetRep;
+				lose obsolete Iterable<T>::_ConstGetRep - use _SafeReadRepAccessor<>::_ConstGetRep () instead</li>
+			</ul>
+		</li>
+		<li>POSIX support for IO::FileSystem::FileSystem::GetFileLastAccessDate/IO::FileSystem::FileSystem::GetFileSize and IO::FileSystem::FileSystem::GetFileLastModificationDate</li>
+		<li>new system configuration fPreferedInstallerTechnology</li>
+		<li>Added load/store names for readableReference/WritableReference in Synchonized</li>
+		<li>IO::Network::Transfer - cleanup and force consistently ALL POST, Send () etc calls will throw on failure, and to get the status/details catch and find the response object in exception</li>
+		<li>slight improvement on https://stroika.atlassian.net/browse/STK-442 - for winhttp - set flag earlier so we ignore ssl errors if we dont need to know about them (leave bug open cuz even when we do need ssl info, we should be able to tell if it would have failed)</li>
+		<li>exception memleak bulletproof in Transfer/Client_WinHTTP</li>
+		<li>make WinHTTP support .fFailConnectionIfSSLCertificateInvalid and added regresison test teo verify this</li>
+		<li>small fix to ObjectReaderRegistry::RepeatedElementReader, and docs/examples</li>
+		<li>overload IsPartition so takes optional comparer for range elements, and use in Math::ReBin()</li>
+		<li>fixed _Deprecated_ macro</li>
+		<li>DEPRECATED -Stroika_Enum_Names - use Configuration::DefaultNames&lt;ENUMNAME&gt; instead, and used that in in ToString(), and EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const constexpr</li>
 		<li>Many fixes to RegressionTests-Unix.sh</li>
-		<li>Tweaks to OpenSSL.supp</li>
 		<li>Debug/Trace code: fixed dbgstr code for dumping very large lines to windows debugger, and noexcept usage</li>
 		<li>ToString () improvements (fix unsigned)</li>
 		<li>better factor EQUALS_COMPARER for SortedSet_DefaultTraits, SortedMapping_DefaultTraits, Set_stdset_DefaultTraits, Mapping_stdmap_DefaultTraits - depending on their base 'archtype' traits</li>
