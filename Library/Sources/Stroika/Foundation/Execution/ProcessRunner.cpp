@@ -787,7 +787,7 @@ DoneWithProcess:
                     }
                 }
                 else {
-                    *processResult = ProcessResultType { processExitCode };
+                    *processResult = ProcessResultType { static_cast<int> (processExitCode) };
                 }
             }
 
