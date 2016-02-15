@@ -168,6 +168,39 @@ namespace {
     size_t  mkDefKeyLen_ (WinCryptDeriveKey::Provider provider, CipherAlgorithm cipherAlgorithm)
     {
         // @todo see table https://msdn.microsoft.com/en-us/library/aa379916.aspx
+
+        switch (provider) {
+            case WinCryptDeriveKey::Provider::Base: {
+                    switch (cipherAlgorithm) {
+                        case    CipherAlgorithm::eRC2_CBC:
+                        case    CipherAlgorithm::eRC2_CFB:
+                        case    CipherAlgorithm::eRC2_ECB:
+                        case    CipherAlgorithm::eRC2_OFB:
+                        case    CipherAlgorithm::eRC4: {
+                                return 40 / 8;
+                            }
+#if 0
+                        case    CipherAlgorithm::eDES {
+                                return 56 / 8;
+                            }
+#endif
+                    }
+                }
+                break;
+            case WinCryptDeriveKey::Provider::Enhanced: {
+                    switch (cipherAlgorithm) {
+                        case    CipherAlgorithm::eRC2_CBC:
+                        case    CipherAlgorithm::eRC2_CFB:
+                        case    CipherAlgorithm::eRC2_ECB:
+                        case    CipherAlgorithm::eRC2_OFB:
+                        case    CipherAlgorithm::eRC4: {
+                                return 128 / 8;
+                            }
+                    }
+                }
+                break;
+        }
+        AssertNotImplemented ();    // incomplete set of defautl see above table
         return 128 / 8;
     }
 }
