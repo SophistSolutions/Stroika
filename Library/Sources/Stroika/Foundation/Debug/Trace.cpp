@@ -315,6 +315,13 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
+    catch (const Execution::Thread::InterruptException&)
+    {
+        // safe to ignore
+        // but may not be advisible to ReThrow() - so use low level rethrow
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
+        throw;
+    }
     catch (...)
     {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -332,6 +339,13 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (const Execution::Thread::InterruptException&)
+    {
+        // safe to ignore
+        // but may not be advisible to ReThrow() - so use low level rethrow
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
+        throw;
     }
     catch (...)
     {
@@ -351,6 +365,13 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
+    catch (const Execution::Thread::InterruptException&)
+    {
+        // safe to ignore
+        // but may not be advisible to ReThrow() - so use low level rethrow
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
+        throw;
+    }
     catch (...)
     {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -369,6 +390,13 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (const Execution::Thread::InterruptException&)
+    {
+        // safe to ignore
+        // but may not be advisible to ReThrow() - so use low level rethrow
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
+        throw;
     }
     catch (...)
     {
