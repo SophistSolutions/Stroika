@@ -45,11 +45,7 @@
  *              BLOB (object slicing) – and have different CTOR, and different virtual Rep
  *              (decide semantics – not clear – readonly)
  *
- *      @todo   Create overloads in the MD5/SHA1 hash code taking BLOBs as arguments.
- *
  *      @todo   Do CTOR that uses iterator start/end not just const Byte* start, const Byte* end.
- *
- *      @todo   BLOB::As<InputStream>() should be seekable
  *
  */
 
@@ -282,7 +278,7 @@ namespace   Stroika {
             public:
                 /**
                  *  @see Characters::ToString()
-                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
+                 *  Return a debug-friendly, display version of the current BLOB. This is not guarnateed parseable or usable except for debugging.
                  */
                 nonvirtual  Characters::String    ToString () const;
 
