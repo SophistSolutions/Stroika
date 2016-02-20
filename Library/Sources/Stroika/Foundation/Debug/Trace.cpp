@@ -318,9 +318,10 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
     catch (const Execution::Thread::InterruptException&)
     {
         // safe to ignore
-        // but may not be advisible to ReThrow() - so use low level rethrow
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
-        throw;
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
+        //  when shutting down, and I think this is why...
+        //
+        // This interrupt will be thrown someplace later (but this marked noexcept)
     }
     catch (...)
     {
@@ -343,9 +344,10 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
     catch (const Execution::Thread::InterruptException&)
     {
         // safe to ignore
-        // but may not be advisible to ReThrow() - so use low level rethrow
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
-        throw;
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
+        //  when shutting down, and I think this is why...
+        //
+        // This interrupt will be thrown someplace later (but this marked noexcept)
     }
     catch (...)
     {
@@ -368,9 +370,10 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     catch (const Execution::Thread::InterruptException&)
     {
         // safe to ignore
-        // but may not be advisible to ReThrow() - so use low level rethrow
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
-        throw;
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
+        //  when shutting down, and I think this is why...
+        //
+        // This interrupt will be thrown someplace later (but this marked noexcept)
     }
     catch (...)
     {
@@ -394,9 +397,10 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     catch (const Execution::Thread::InterruptException&)
     {
         // safe to ignore
-        // but may not be advisible to ReThrow() - so use low level rethrow
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below, when shutting down, and I think this is why...
-        throw;
+        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
+        //  when shutting down, and I think this is why...
+        //
+        // This interrupt will be thrown someplace later (but this marked noexcept)
     }
     catch (...)
     {
