@@ -16,6 +16,17 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a129">v2.0a129</a><br/>2016-02-20</td>
+<td>
+	<ul>
+		<li>OMG another bugfix for Debug::EmitTrace... code... minor but...</li>
+		<li>quickie release - no testing</li>
+	</ul>
+</td>
+</tr>
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a128">v2.0a128</a><br/>2016-02-20</td>
