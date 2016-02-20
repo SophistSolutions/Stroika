@@ -16,12 +16,28 @@ History
 
 
 
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a128">v2.0a128</a><br/>2016-02-20</td>
+<td>
+	<ul>
+		<li>fixed xerces makefiles to also have archive.apache fetch url; and switched to 3.1.3</li> 
+		<li>fix Debug::EmitTrace... code ...thread interupt exception in low level DebugTrace code</li>
+		<li>quickie release - no testing</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a127">v2.0a127</a><br/>2016-02-20</td>
 <td>
 	<ul>
 		<li>Small assertion cleanups to FileSystem::ExtractDirAndBaseName; and in FileSystem::GetFileBaseName</li>
-		<li>ont assert out and pass through - thread interupt exception in low level DebugTrace code</li>
+		<li>dont assert out and pass through - thread interupt exception in low level DebugTrace code</li>
 		<li>quickie release - no testing</li>
 	</ul>
 </td>
