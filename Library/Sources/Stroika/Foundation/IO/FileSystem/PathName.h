@@ -136,6 +136,8 @@ namespace   Stroika {
                  *
                  *  \note   This function PRESERVES the trailing 'directory separator' if present, and this
                  *          is another difference with 'basename' and 'dirname'
+                 *
+                 *  \req not pathName.empty ()
                  */
                 pair<String, String> ExtractDirAndBaseName (const String& pathName);
 

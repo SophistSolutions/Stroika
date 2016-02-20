@@ -212,6 +212,9 @@ namespace {
 }
 String FileSystem::GetFileBaseName (const String& pathName)
 {
+    if (pathName.empty ()) {
+        return String ();
+    }
     String  baseName = ExtractDirAndBaseName (pathName).second;
     if (not baseName.empty () and baseName.GetCharAt (baseName.size () - 1) == kPathComponentSeperator) {
         baseName = baseName.RemoveAt (baseName.size () - 1);
@@ -239,6 +242,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
  */
 pair<String, String> FileSystem::ExtractDirAndBaseName (const String& pathName)
 {
+    Require (not pathName.empty ());
     bool    endedWithSlash = false;
     String  dirname;
     String  basename;
