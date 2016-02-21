@@ -349,7 +349,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
         //  when shutting down, and I think this is why...
         //
         // This interrupt will be thrown someplace later (but this marked noexcept)
-        return 0;
+        return;
     }
     catch (...)
     {
