@@ -16,7 +16,7 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-VERSION=7_47_0
+VERSION=7_47_1
 BASENAME=curl-curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
