@@ -418,7 +418,14 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 #if     qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)));
 #else
-    ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
+    // EACCESS reproted as FileAccessException - which is crazy confusing.
+    // @todo - find a better way, but for now remap this...
+    try {
+        ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
+    }
+    catch (const IO::FileAccessException&) {
+        Throw (StringException (L"Cannot Bind to port"));
+    }
 #endif
 }
 
