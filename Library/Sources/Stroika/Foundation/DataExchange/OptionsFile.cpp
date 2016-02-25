@@ -31,6 +31,13 @@ using   Memory::BLOB;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 /*
  ********************************************************************************
  ***************** DataExchange::OptionsFile::LoggerMessage *********************
@@ -189,12 +196,18 @@ OptionsFile::OptionsFile (
 BLOB    OptionsFile::ReadRaw () const
 {
     Debug::TraceContextBumper  ctx ("OptionsFile::ReadRaw");
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"(readfilename=%s)", GetReadFilePath_ ().c_str ());
+#endif
     return IO::FileSystem::FileInputStream::mk (GetReadFilePath_ ()).ReadAll ();
 }
 
 void    OptionsFile::WriteRaw (const BLOB& blob)
 {
     Debug::TraceContextBumper  ctx ("OptionsFile::WriteRaw");
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"(writefilename=%s)", GetWriteFilePath_ ().c_str ());
+#endif
     if (GetReadFilePath_ () == GetWriteFilePath_ ()) {
         try {
             if (ReadRaw () == blob) {
