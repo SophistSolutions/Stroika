@@ -262,7 +262,7 @@ namespace   Stroika {
                  *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
                  */
                 nonvirtual  Memory::Optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
-                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE()>& cacheFiller);
+                nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE(typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
                 nonvirtual  VALUE                   Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue);
 
             public:

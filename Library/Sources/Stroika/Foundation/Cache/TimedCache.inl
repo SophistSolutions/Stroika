@@ -104,7 +104,7 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename VALUE, typename TRAITS>
-            VALUE       TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE()>& cacheFiller)
+            VALUE       TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE(typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
             {
                 if (Memory::Optional<VALUE> o = Lookup (key)) {
                     return *o;
