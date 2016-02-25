@@ -26,6 +26,7 @@
 #include "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #include    "Platform/Windows/WinSock.h"
 #endif
+#include    "../../IO/FileAccessException.h"
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "Socket.h"
