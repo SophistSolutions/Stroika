@@ -1791,6 +1791,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h">
       <Filter>Sources\IO\Network\SOAP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2705,6 +2708,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.inl">
       <Filter>Sources\IO\Network\SOAP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl">
+      <Filter>Sources\Cache</Filter>
     </None>
   </ItemGroup>
 </Project>
