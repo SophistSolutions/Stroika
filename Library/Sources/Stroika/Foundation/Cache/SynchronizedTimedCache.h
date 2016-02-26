@@ -35,15 +35,15 @@ namespace   Stroika {
             /**
              */
             template    <typename   KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-            class   SynchonizedTimedCache : public TimedCache<KEY, VALUE, TRAITS> {
+            class   SynchronizedTimedCache : public TimedCache<KEY, VALUE, TRAITS> {
                 using inherited = TimedCache<KEY, VALUE, TRAITS>;
             public:
-                SynchonizedTimedCache (Time::DurationSecondsType timeoutInSeconds)
+                SynchronizedTimedCache (Time::DurationSecondsType timeoutInSeconds)
                     : inherited (timeoutInSeconds)
                 {
                 }
                 // support eventually, but not trivial
-                SynchonizedTimedCache (const SynchonizedTimedCache&) = delete;
+                SynchronizedTimedCache (const SynchronizedTimedCache&) = delete;
 
                 // @todo need much more but this is atart
             public:
@@ -72,7 +72,7 @@ namespace   Stroika {
 
             public:
                 // support eventually, but not trivial
-                nonvirtual  SynchonizedTimedCache& operator= (const SynchonizedTimedCache&) = delete;
+                nonvirtual  SynchronizedTimedCache& operator= (const SynchronizedTimedCache&) = delete;
 
             private:
 #if     qCompilerAndStdLib_shared_mutex_module_Buggy
