@@ -412,6 +412,12 @@ namespace   Stroika {
                  */
                 nonvirtual  Characters::String  Format (const function<Characters::String(T)>& formatBound = DefaultElementFormat_ /*TraitsType::Format*/) const;
 
+            public:
+                /**
+                 *
+                 */
+                nonvirtual  Characters::String  ToString () const;
+
             private:
                 T           fBegin_;
                 T           fEnd_;

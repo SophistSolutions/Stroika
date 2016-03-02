@@ -467,6 +467,11 @@ namespace   Stroika {
                 }
                 return out.str ();
             }
+            template    <typename T, typename TRAITS>
+            inline  Characters::String  Range<T, TRAITS>::ToString () const
+            {
+                return Format ();
+            }
 
 
             /*
