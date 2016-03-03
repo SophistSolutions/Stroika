@@ -57,6 +57,9 @@
  *
  * TODO:
  *
+ *      @todo   Consider having a method last() \req not empty, and returns last character. This is almost silly, but
+ *              seems a commonly helpful shortcut.
+ *
  *      @todo   CLEANUP (INCLUDING GOOD DOC EXAMPLES) ALL THE REGEXP CODE!! AND GOOD REGRESSION TESTS>
  *
  *      @todo   PROBALY get rid of
