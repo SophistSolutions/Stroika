@@ -321,3 +321,16 @@ String FileSystem::GetFileDirectory (const String& pathName)
 
 
 
+
+
+
+/*
+ ********************************************************************************
+ ************************* FileSystem::IsDirectoryName **************************
+ ********************************************************************************
+ */
+bool    FileSystem::IsDirectoryName (const String& pathName)
+{
+    Require (not pathName.empty ());
+    return pathName.EndsWith (kPathComponentSeperator);
+}

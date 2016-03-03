@@ -154,6 +154,16 @@ namespace   Stroika {
                 String GetFileDirectory (const String& pathName);
 
 
+                /**
+                 *  Return true if the argument pathName is a directory name.
+                 *
+                 *  Basically - this just tests if the path name ends in a kPathComponentSeperator.
+                 *
+                 *  \req argument not empty string
+                 */
+                bool    IsDirectoryName (const String& pathName);
+
+
             }
         }
     }
