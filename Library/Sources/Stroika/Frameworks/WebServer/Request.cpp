@@ -6,6 +6,7 @@
 #include    <algorithm>
 #include    <cstdlib>
 
+#include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String2Int.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
@@ -51,7 +52,7 @@ Memory::BLOB    Request::GetBody ()
             if (contentLength != 0) {
                 size_t  nRead = fInputStream.Read (buf.begin (), buf.end ());
                 if (contentLength != nRead) {
-                    Execution::Throw (Execution::StringException (L"unexpected wrong number of bytes returned in HTTP body"));
+                    Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", nRead, contentLength)));
                 }
             }
             fBody_ = Memory::BLOB (buf.begin (), buf.end ());
