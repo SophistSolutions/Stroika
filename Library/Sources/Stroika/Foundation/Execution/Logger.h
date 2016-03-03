@@ -230,6 +230,11 @@ namespace   Stroika {
                  *      parmN is declared with a function, array, or reference type, or with a type that is
                  *      not compatible with the type that results when passing an argument for which there
                  *      is no parameter, the behavior is undeﬁned.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Logger::Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+                 *      \endcode
                  */
                 static  void    Log (Priority logLevel, String format, ...); // varargs logger
 
@@ -239,6 +244,12 @@ namespace   Stroika {
                  *          if they've occurred in the suppressionTimeWindow
                  *
                  *  @see Log
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          // same as Log, but dont emit this error if we've seen the message in the last 60 seconds
+                 *          Logger::LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
+                 *      \endcode
                  */
                 static  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
 
