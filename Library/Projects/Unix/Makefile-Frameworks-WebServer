@@ -7,6 +7,7 @@ SrcDir						=       $(StroikaRoot)Library/Sources/Stroika/Frameworks/WebServer/
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)ClientErrorException.o\
 	$(ObjDir)ConnectionManager.o\
 	$(ObjDir)Connection.o\
 	$(ObjDir)Request.o\
