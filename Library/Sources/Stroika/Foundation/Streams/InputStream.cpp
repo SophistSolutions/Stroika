@@ -160,9 +160,14 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
             size_t          n           =   Read (s, e);
             Assert (0 <= n and n <= nEltsLeft);
             Assert (0 <= n and n <= NEltsOf (buf));
-            Assert (nEltsLeft >= n);
-            nEltsLeft -= n;
-            r.insert (r.end (), s, s + n);
+            if (n == 0) {
+                break;
+            }
+            else {
+                Assert (nEltsLeft >= n);
+                nEltsLeft -= n;
+                r.insert (r.end (), s, s + n);
+            }
         }
         return BLOB (r);
     }
