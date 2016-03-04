@@ -156,7 +156,7 @@ namespace   Stroika {
                 size_t          elementsRead {};
                 for (ElementType* readCursor = intoStart; readCursor < intoEnd; ) {
                     size_t  eltsReadThisTime    =   Read (readCursor, intoEnd);
-                    Assert (eltsReadThisTime <= (intoEnd - readCursor))
+                    Assert (eltsReadThisTime <= static_cast<size_t> (intoEnd - readCursor))
                     if (eltsReadThisTime == 0) {
                         // irrevocable EOF
                         break;

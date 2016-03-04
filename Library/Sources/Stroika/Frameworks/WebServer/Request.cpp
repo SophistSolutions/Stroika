@@ -49,22 +49,12 @@ Memory::BLOB    Request::GetBody ()
         if (auto ci = fHeaders.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
             size_t contentLength = Characters::String2Int<size_t> (*ci);
             Memory::SmallStackBuffer<Memory::Byte>  buf (contentLength);
-            size_t  nBytesMore2Read = contentLength;
-            Byte*   readCursor  =   buf.begin ();
-            while (nBytesMore2Read > 0) {
-                size_t  nRead = fInputStream.Read (readCursor, buf.end ());
-                if (nRead == 0) {
-                    break;  // EOF
-                }
-                Assert (nRead <= static_cast<size_t> (buf.end () - readCursor));
-                readCursor += nRead;
-                Assert (nBytesMore2Read >= nRead);
-                nBytesMore2Read -= nRead;
+            size_t  n   =   fInputStream.ReadAll (begin (buf), end (buf));
+            Assert (n <= contentLength);
+            if (n != contentLength) {
+                Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, contentLength)));
             }
-            if (nBytesMore2Read != 0) {
-                Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", (contentLength - nBytesMore2Read), contentLength)));
-            }
-            fBody_ = Memory::BLOB (buf.begin (), buf.end ());
+            fBody_ = Memory::BLOB (begin (buf), end (buf));
         }
         else {
             fBody_ = fInputStream.ReadAll ();

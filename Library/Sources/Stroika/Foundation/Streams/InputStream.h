@@ -250,25 +250,29 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Read/0
-                 *      Read from the current seek position, until EOF, and accumulate all of it into a String.
+                 *  ReadAll/0
+                 *  ReadAll/1
+                 *      Read from the current seek position, until EOF or upTo elements read (whichever comes first),
+                 *      and accumulate all of it into a String or BLOB (depending on stream type).
+                 *
                  *      Note - since the stream may not start at the beginning, this isn't necessarily ALL
                  *      that was in the stream -just all that remains.
                  *
-                 *      Read from the current stream position until EOF, and accumulate all of it into a BLOB.
-                 *
-                 *  Read/2
+                 *  ReadAll/2
                  *      Like Read, in that it reads all the elements that will fit into the range intoStart...intoEnd.
                  *      However, this guarantees to read all the data that will fit before returning (Read () only
                  *      guarantees to read at least one element).
                  *
                  *      So this can be handy when you KNOW you have a buffer large enough to read all the data in
                  *      the file, you can read without having to check the number of elements read and re-call Read().
+                 *
+                 *      ReadAll/2 will always return a size_t = intoEnd-intoStart unless it encounters EOF before filling
+                 *      the entire buffer.
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
-                nonvirtual  Characters::String ReadAll () const;
+                nonvirtual  Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                nonvirtual  Memory::BLOB ReadAll () const;
+                nonvirtual  Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
                 nonvirtual  size_t  ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
             };
 
@@ -284,10 +288,10 @@ namespace   Stroika {
             Traversal::Iterable<Characters::String> InputStream<Characters::Character>::ReadLines () const;
             template    <>
             template    <>
-            Characters::String InputStream<Characters::Character>::ReadAll () const;
+            Characters::String InputStream<Characters::Character>::ReadAll (size_t upTo) const;
             template    <>
             template    <>
-            Memory::BLOB InputStream<Memory::Byte>::ReadAll () const;
+            Memory::BLOB InputStream<Memory::Byte>::ReadAll (size_t upTo) const;
 
 
             /**

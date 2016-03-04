@@ -94,17 +94,26 @@ Traversal::Iterable<String> InputStream<Character>::ReadLines () const
 
 template    <>
 template    <>
-String InputStream<Character>::ReadAll () const
+String InputStream<Character>::ReadAll (size_t upTo) const
 {
     Characters::StringBuilder result;
-    while (true) {
+    size_t  nEltsLeft = upTo;
+    while (nEltsLeft > 0) {
         Character buf[16 * 1024];
-        size_t n = Read (std::begin (buf), std::end (buf));
+        Character*  s   =   std::begin (buf);
+        Character*  e   =   std::end (buf);
+        if (nEltsLeft < NEltsOf (buf)) {
+            e = s + nEltsLeft;
+        }
+        size_t n = Read (s, e);
+        Assert (0 <= n and n <= nEltsLeft);
         Assert (0 <= n and n <= NEltsOf (buf));
         if (n == 0) {
             break;
         }
         else {
+            Assert (nEltsLeft >= n);
+            nEltsLeft -= n;
             result.Append (std::begin (buf), std::begin (buf) + n);
         }
     }
@@ -114,7 +123,7 @@ String InputStream<Character>::ReadAll () const
 
 template    <>
 template    <>
-Memory::BLOB InputStream<Byte>::ReadAll () const
+Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 {
     if (this->IsSeekable ()) {
         SeekOffsetType  size = this->GetOffsetToEndOfStream ();
@@ -122,21 +131,38 @@ Memory::BLOB InputStream<Byte>::ReadAll () const
             Execution::Throw (bad_alloc ());
         }
         size_t sb = static_cast<size_t> (size);
+        sb = min (sb, upTo);
         if (sb == 0) {
             return BLOB ();
         }
         Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
-        size_t n = this->Read (b, b + sb);
-        Assert (n <= sb);
-        return BLOB::Attach (b, b + n);
+        try {
+            size_t n = this->Read (b, b + sb);
+            Assert (n <= sb);
+            return BLOB::Attach (b, b + n);
+        }
+        catch (...) {
+            delete[] (b);
+            Execution::ReThrow ();
+        }
     }
     else {
         // Less efficient implementation
         vector<Byte>    r;
-        size_t          n;
-        Byte            buf[32 * 1024];
-        while ( (n = this->Read (std::begin (buf), std::end (buf))) != 0) {
-            r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
+        for (size_t nEltsLeft = upTo; nEltsLeft != 0; ) {
+            Byte            buf[64 * 1024];
+            Byte*           s           =   std::begin (buf);
+            Byte*           e           =   std::end (buf);
+            if (nEltsLeft < NEltsOf (buf)) {
+                e = s + nEltsLeft;
+            }
+            Assert (s < e);
+            size_t          n           =   Read (s, e);
+            Assert (0 <= n and n <= nEltsLeft);
+            Assert (0 <= n and n <= NEltsOf (buf));
+            Assert (nEltsLeft >= n);
+            nEltsLeft -= n;
+            r.insert (r.end (), s, s + n);
         }
         return BLOB (r);
     }
