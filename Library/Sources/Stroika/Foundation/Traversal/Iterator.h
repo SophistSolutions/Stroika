@@ -291,12 +291,14 @@ namespace   Stroika {
                 class   IRep;
                 using   SharedIRepPtr   =   SharedPtrImplementationTemplate<IRep>;
 
+#if 0
             public:
                 template    <typename   SHARED_TYPE, typename... ARGS_TYPE>
                 inline  static  SharedPtrImplementationTemplate<SHARED_TYPE>    MakeSharedPtr (ARGS_TYPE&& ... args)
                 {
                     return IteratorBase::MakeSharedPtr<SHARED_TYPE> (forward<ARGS_TYPE> (args)...);
                 }
+#endif
 
             private:
                 struct  Rep_Cloner_ {
