@@ -310,8 +310,8 @@ namespace   Stroika {
             */
             inline  shared_ptr<TextBreaks>  SpellCheckEngine_Basic::GetTextBreaker () const
             {
-                if (fTextBreaker.get () == nullptr) {
-                    fTextBreaker = shared_ptr<TextBreaks> (new TextBreaks_SpellChecker ());
+                if (fTextBreaker == nullptr) {
+                    fTextBreaker = make_shared<TextBreaks_SpellChecker> ();
                 }
                 return fTextBreaker;
             }

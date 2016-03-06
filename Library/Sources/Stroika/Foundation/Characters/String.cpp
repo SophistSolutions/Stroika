@@ -72,7 +72,7 @@ namespace   {
             AssertNotReached ();    // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return _IterableSharedPtrIRep (new String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return String::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
     public:

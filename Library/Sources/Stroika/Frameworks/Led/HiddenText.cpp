@@ -366,8 +366,8 @@ bool    HidableTextMarkerOwner::GetHidableRegionsContiguous (size_t from, size_t
 void    HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i)
 {
     fInternalizer = i;
-    if (fInternalizer.get () == nullptr) {
-        fInternalizer = shared_ptr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
+    if (fInternalizer == nullptr) {
+        fInternalizer = make_shared<FlavorPackageInternalizer> (GetTextStore ());
     }
 }
 
@@ -379,8 +379,8 @@ void    HidableTextMarkerOwner::SetInternalizer (const shared_ptr<FlavorPackageI
 void    HidableTextMarkerOwner::SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e)
 {
     fExternalizer = e;
-    if (fExternalizer.get () == nullptr) {
-        fExternalizer = shared_ptr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
+    if (fExternalizer == nullptr) {
+        fExternalizer = make_shared<FlavorPackageExternalizer> (GetTextStore ());
     }
 }
 

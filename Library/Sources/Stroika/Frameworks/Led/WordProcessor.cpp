@@ -1190,12 +1190,12 @@ void    WordProcessor::HookHidableTextDatabaseChanged_ ()
 
 shared_ptr<FlavorPackageInternalizer>    WordProcessor::MakeDefaultInternalizer ()
 {
-    return shared_ptr<FlavorPackageInternalizer> (new WordProcessorFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
+    return make_shared<WordProcessorFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ());
 }
 
 shared_ptr<FlavorPackageExternalizer>    WordProcessor::MakeDefaultExternalizer ()
 {
-    return shared_ptr<FlavorPackageExternalizer> (new WordProcessorFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ()));
+    return make_shared<WordProcessorFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase (), GetParagraphDatabase (), GetHidableTextDatabase ());
 }
 
 /*

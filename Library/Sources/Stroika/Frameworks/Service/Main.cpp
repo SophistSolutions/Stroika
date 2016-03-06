@@ -182,11 +182,11 @@ Main*   Main::sTHIS_    =   nullptr;
 shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep ()
 {
 #if     qPlatform_POSIX
-    return shared_ptr<IServiceIntegrationRep> (new BasicUNIXServiceImpl ());
+    return make_shared<BasicUNIXServiceImpl> ();
 #elif   qPlatform_Windows
-    return shared_ptr<IServiceIntegrationRep> (new WindowsService ());
+    return make_shared<WindowsService> ();
 #else
-    return shared_ptr<IServiceIntegrationRep> (new RunNoFrillsService ());
+    return make_shared<RunNoFrillsService> ();
 #endif
 }
 

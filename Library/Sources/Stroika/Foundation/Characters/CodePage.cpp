@@ -1648,7 +1648,7 @@ CodePagesInstalled::CodePagesInstalled ()
 {
     Assert (fCodePages_.size () == 0);
 
-    shared_ptr<set<CodePage>>   accum (new set<CodePage> ());
+    shared_ptr<set<CodePage>>   accum = make_shared<set<CodePage>> ();
 #if     qPlatform_Windows
     static  mutex  sCritSec_;
     {

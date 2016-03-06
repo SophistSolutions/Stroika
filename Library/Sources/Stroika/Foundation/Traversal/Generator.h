@@ -55,7 +55,7 @@ namespace   Stroika {
              *      \code
              *      constexpr int kMin = 1;
              *      constexpr int kMax = 10;
-             *      auto myContext = shared_ptr<int> (new int (kMin - 1));
+             *      auto myContext = make_shared<int> (kMin - 1);
              *      auto getNext = [myContext] () -> Memory::Optional<int> {
              *          (*myContext)++;
              *          if (*myContext > 10)

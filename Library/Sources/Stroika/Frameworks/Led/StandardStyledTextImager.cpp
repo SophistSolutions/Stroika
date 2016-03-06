@@ -115,8 +115,8 @@ void    StandardStyledTextImager::HookGainedNewTextStore ()
 
 void    StandardStyledTextImager::HookGainedNewTextStore_ ()
 {
-    if (fStyleDatabase.get () == nullptr) {
-        fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
+    if (fStyleDatabase == nullptr) {
+        fStyleDatabase = make_shared<StyleDatabaseRep> (GetTextStore ());
         fICreatedDatabase = true;
         HookStyleDatabaseChanged ();
     }
@@ -126,8 +126,8 @@ void    StandardStyledTextImager::SetStyleDatabase (const StyleDatabasePtr& styl
 {
     fStyleDatabase = styleDatabase;
     fICreatedDatabase = false;
-    if (fStyleDatabase.get () == nullptr and PeekAtTextStore () != nullptr) {
-        fStyleDatabase = StyleDatabasePtr (new StyleDatabaseRep (GetTextStore ()));
+    if (fStyleDatabase == nullptr and PeekAtTextStore () != nullptr) {
+        fStyleDatabase = make_shared<StyleDatabaseRep> (GetTextStore ());
         fICreatedDatabase = true;
     }
     HookStyleDatabaseChanged ();

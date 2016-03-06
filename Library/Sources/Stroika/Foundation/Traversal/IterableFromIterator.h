@@ -33,7 +33,7 @@ namespace   Stroika {
             namespace  Private_ {
                 template    <typename T>
                 struct  IteratorTracker {
-                    shared_ptr<unsigned int> fCountRunning = shared_ptr<unsigned int> (new unsigned int (0));
+                    shared_ptr<unsigned int> fCountRunning = make_shared<unsigned int> (0);
                     ~IteratorTracker ();
                     Iterator<T>     MakeDelegatedIterator (const Iterator<T>& sourceIterator);
                 };

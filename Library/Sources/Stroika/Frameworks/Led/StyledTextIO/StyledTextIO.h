@@ -934,7 +934,7 @@ namespace   Stroika {
                 {
                     RequireNotNull (srcStream);
                     if (fBadInputHandler.get () == nullptr) {
-                        fBadInputHandler = shared_ptr<BadInputHandler> (new BadInputHandler ());
+                        fBadInputHandler = make_shared<BadInputHandler> ();
                     }
                 }
                 inline  StyledTextIOReader::SrcStream&  StyledTextIOReader::GetSrcStream () const
@@ -965,8 +965,8 @@ namespace   Stroika {
                 inline  void        StyledTextIOReader::SetBadInputHandler (const shared_ptr<BadInputHandler>& badInputHandler)
                 {
                     fBadInputHandler = badInputHandler;
-                    if (fBadInputHandler.get () == nullptr) {
-                        fBadInputHandler = shared_ptr<BadInputHandler> (new BadInputHandler ());
+                    if (fBadInputHandler == nullptr) {
+                        fBadInputHandler = make_shared<BadInputHandler> ();
                     }
                 }
                 /*

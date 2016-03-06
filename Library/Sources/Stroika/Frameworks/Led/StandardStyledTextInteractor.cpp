@@ -292,12 +292,12 @@ void    StandardStyledTextInteractor::HookStyleDatabaseChanged ()
 
 shared_ptr<FlavorPackageInternalizer>    StandardStyledTextInteractor::MakeDefaultInternalizer ()
 {
-    return shared_ptr<FlavorPackageInternalizer> (new StyledTextFlavorPackageInternalizer (GetTextStore (), GetStyleDatabase ()));
+    return make_shared<StyledTextFlavorPackageInternalizer> (GetTextStore (), GetStyleDatabase ());
 }
 
 shared_ptr<FlavorPackageExternalizer>    StandardStyledTextInteractor::MakeDefaultExternalizer ()
 {
-    return shared_ptr<FlavorPackageExternalizer> (new StyledTextFlavorPackageExternalizer (GetTextStore (), GetStyleDatabase ()));
+    return make_shared<StyledTextFlavorPackageExternalizer> (GetTextStore (), GetStyleDatabase ());
 }
 
 /*

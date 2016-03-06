@@ -3010,7 +3010,7 @@ void    TextInteractor::InternalizeFlavor_Specific (ReaderFlavorPackage& flavorP
 */
 shared_ptr<FlavorPackageInternalizer>    TextInteractor::MakeDefaultInternalizer ()
 {
-    return shared_ptr<FlavorPackageInternalizer> (new FlavorPackageInternalizer (GetTextStore ()));
+    return make_shared<FlavorPackageInternalizer> (GetTextStore ());
 }
 
 /*
@@ -3049,7 +3049,7 @@ void    TextInteractor::ExternalizeBestFlavor (WriterFlavorPackage& flavorPackag
 */
 shared_ptr<FlavorPackageExternalizer>    TextInteractor::MakeDefaultExternalizer ()
 {
-    return shared_ptr<FlavorPackageExternalizer> (new FlavorPackageExternalizer (GetTextStore ()));
+    return make_shared<FlavorPackageExternalizer> (GetTextStore ());
 }
 
 /*

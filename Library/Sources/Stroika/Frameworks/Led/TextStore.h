@@ -374,8 +374,8 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  shared_ptr<TextBreaks>   GetTextBreaker () const;
-                nonvirtual  void                            SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+                nonvirtual  shared_ptr<TextBreaks>      GetTextBreaker () const;
+                nonvirtual  void                        SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
             private:
                 mutable shared_ptr<TextBreaks>   fTextBreaker;
 
@@ -841,8 +841,8 @@ namespace   Stroika {
             */
             inline  shared_ptr<TextBreaks>   TextStore::GetTextBreaker () const
             {
-                if (fTextBreaker.get () == nullptr) {
-                    fTextBreaker = shared_ptr<TextBreaks> (new TextBreaks_DefaultImpl ());
+                if (fTextBreaker == nullptr) {
+                    fTextBreaker = make_shared<TextBreaks_DefaultImpl> ();
                 }
                 return fTextBreaker;
             }

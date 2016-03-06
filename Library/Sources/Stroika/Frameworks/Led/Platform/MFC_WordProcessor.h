@@ -303,7 +303,7 @@ namespace   Stroika {
                 template    <typename   BASECLASS>
                 shared_ptr<FlavorPackageInternalizer>   WordProcessorCommonCommandHelper_MFC<BASECLASS>::MakeDefaultInternalizer ()
                 {
-                    return shared_ptr<FlavorPackageInternalizer> (new ControlItemContextInternalizer (dynamic_cast<COleDocument*> (this->GetDocument ()), this->GetTextStore (), this->GetStyleDatabase (), this->GetParagraphDatabase (), this->GetHidableTextDatabase ()));
+                    return make_shared<ControlItemContextInternalizer> (dynamic_cast<COleDocument*> (this->GetDocument ()), this->GetTextStore (), this->GetStyleDatabase (), this->GetParagraphDatabase (), this->GetHidableTextDatabase ());
                 }
 #endif
                 template    <typename   BASECLASS>
