@@ -235,28 +235,27 @@ SDKString Emitter::GetTraceFileName () const
 
 #if     qTraceToFile
 namespace   {
-    void    Emit2File_ (const char* text) noexcept {
+    void    Emit2File_ (const char* text) noexcept
+    {
         RequireNotNull (text);
         RequireNotNull (sTraceFile);
         try {
-            if (sTraceFile->is_open ())
-            {
+            if (sTraceFile->is_open ()) {
                 (*sTraceFile) << text;
                 sTraceFile->flush ();
             }
         }
-        catch (...)
-        {
+        catch (...) {
             AssertNotReached ();
         }
     }
-    void    Emit2File_ (const wchar_t* text) noexcept {
+    void    Emit2File_ (const wchar_t* text) noexcept
+    {
         RequireNotNull (text);
         try {
             Emit2File_ (WideStringToUTF8 (text).c_str ());
         }
-        catch (...)
-        {
+        catch (...) {
             AssertNotReached ();
         }
     }
@@ -305,7 +304,8 @@ Emitter::Emitter ()
              @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
              @'DbgTrace'.</p>
 */
-void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
+void    Emitter::EmitTraceMessage (const char* format, ...) noexcept
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -315,8 +315,7 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (const Execution::Thread::InterruptException&)
-    {
+    catch (const Execution::Thread::InterruptException&) {
         // safe to ignore
         // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
         //  when shutting down, and I think this is why...
@@ -324,15 +323,15 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept {
         // This interrupt will be thrown someplace later (but this marked noexcept)
         return;
     }
-    catch (...)
-    {
+    catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
 
-void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
+void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -342,8 +341,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (const Execution::Thread::InterruptException&)
-    {
+    catch (const Execution::Thread::InterruptException&) {
         // safe to ignore
         // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
         //  when shutting down, and I think this is why...
@@ -351,15 +349,15 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept {
         // This interrupt will be thrown someplace later (but this marked noexcept)
         return;
     }
-    catch (...)
-    {
+    catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept {
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -369,8 +367,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (const Execution::Thread::InterruptException&)
-    {
+    catch (const Execution::Thread::InterruptException&) {
         // safe to ignore
         // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
         //  when shutting down, and I think this is why...
@@ -378,8 +375,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         // This interrupt will be thrown someplace later (but this marked noexcept)
         return 0;
     }
-    catch (...)
-    {
+    catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
@@ -387,7 +383,8 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     }
 }
 
-Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept {
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept
+{
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -397,8 +394,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
     }
-    catch (const Execution::Thread::InterruptException&)
-    {
+    catch (const Execution::Thread::InterruptException&) {
         // safe to ignore
         // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
         //  when shutting down, and I think this is why...
@@ -406,8 +402,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         // This interrupt will be thrown someplace later (but this marked noexcept)
         return 0;
     }
-    catch (...)
-    {
+    catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
         // Most likely indicates invalid format string for varargs parameters
         DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
@@ -531,11 +526,11 @@ bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWrite
     return false;   // assume old behavior for now
 }
 
-void    Emitter::DoEmit_ (const char* p) noexcept {
+void    Emitter::DoEmit_ (const char* p) noexcept
+{
 #if     qPlatform_Windows
     constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
-    if (::strlen (p) < kMaxLen_)
-    {
+    if (::strlen (p) < kMaxLen_) {
         ::OutputDebugStringA (p);
     }
     else {
@@ -551,11 +546,11 @@ void    Emitter::DoEmit_ (const char* p) noexcept {
 #endif
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p) noexcept {
+void    Emitter::DoEmit_ (const wchar_t* p) noexcept
+{
 #if     qPlatform_Windows
     constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
-    if (::wcslen (p) < kMaxLen_)
-    {
+    if (::wcslen (p) < kMaxLen_) {
         ::OutputDebugStringW (p);
     }
     else {
@@ -571,7 +566,8 @@ void    Emitter::DoEmit_ (const wchar_t* p) noexcept {
 #endif
 }
 
-void    Emitter::DoEmit_ (const char* p, const char* e) noexcept {
+void    Emitter::DoEmit_ (const char* p, const char* e) noexcept
+{
     try {
         size_t  len =   e - p;
         Memory::SmallStackBuffer<char>  buf (len + 1);
@@ -579,13 +575,13 @@ void    Emitter::DoEmit_ (const char* p, const char* e) noexcept {
         buf.begin () [len] = '\0';
         DoEmit_ (buf.begin ());
     }
-    catch (...)
-    {
+    catch (...) {
         AssertNotReached ();
     }
 }
 
-void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept {
+void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+{
     try {
         size_t  len =   e - p;
         Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
@@ -593,8 +589,7 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept {
         buf.begin () [len] = '\0';
         DoEmit_ (buf.begin ());
     }
-    catch (...)
-    {
+    catch (...) {
         AssertNotReached ();
     }
 }
@@ -615,7 +610,7 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept {
 #if     qDefaultTracingOn
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName)
     : fDoEndMarker (true)
-    //,fSavedContextName_ ()
+      //,fSavedContextName_ ()
 {
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
     size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));

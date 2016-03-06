@@ -30,7 +30,8 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T* p)
-                : fValue_ { p } {
+                : fValue_ { p }
+            {
             }
             template    <typename T>
             template    <typename ...ARGS>
@@ -84,7 +85,8 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (AutomaticallyBlockAllocated<T>* p)
-                : fValue_ { p } {
+                : fValue_ { p }
+            {
             }
             template    <typename T>
             template    <typename ...ARGS>
@@ -133,7 +135,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::ConstHolder_::ConstHolder_ (ConstHolder_&& from)
+            inline  Optional<T, TRAITS>::ConstHolder_::ConstHolder_ (ConstHolder_ && from)
                 : fVal (from.fVal)
             {
                 from.fVal = nullptr;
@@ -169,7 +171,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::MutableHolder_::MutableHolder_ (MutableHolder_&& from)
+            inline  Optional<T, TRAITS>::MutableHolder_::MutableHolder_ (MutableHolder_ && from)
                 : fVal (from.fVal)
             {
                 from.fVal = nullptr;
@@ -312,7 +314,7 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T&& rhs)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () == reinterpret_cast<const T*> (&rhs)) {
@@ -344,7 +346,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional && rhs)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional&& rhs)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.peek () != rhs.fStorage_.peek ()) {

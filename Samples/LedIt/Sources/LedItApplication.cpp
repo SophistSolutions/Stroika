@@ -1466,12 +1466,14 @@ BOOL    LedItApplication::PumpMessage ()
     return true;
 }
 
-void    LedItApplication::HandleMFCException (CException* /*e*/) noexcept {
+void    LedItApplication::HandleMFCException (CException* /*e*/) noexcept
+{
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void    LedItApplication::HandleHRESULTException (HRESULT hr) noexcept {
+void    LedItApplication::HandleHRESULTException (HRESULT hr) noexcept
+{
     // tmp hack for now...
     HandleUnknownException ();
 }
@@ -1621,7 +1623,8 @@ void    LedItApplication::OnChooseDefaultFontCommand ()
 #endif
 }
 
-void    LedItApplication::HandleBadAllocException () noexcept {
+void    LedItApplication::HandleBadAllocException () noexcept
+{
     try {
 #if     qPlatform_Windows
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
@@ -1631,8 +1634,7 @@ void    LedItApplication::HandleBadAllocException () noexcept {
         TArray<LDocument*>&         docList =   LDocument::GetDocumentList ();
         TArrayIterator<LDocument*>  iterator (docList);
         LDocument*  theDoc  =   NULL;
-        while (iterator.Next (theDoc))
-        {
+        while (iterator.Next (theDoc)) {
             AssertMember (theDoc, LedItDocument);
             LedItDocument*  d   =   dynamic_cast<LedItDocument*> (theDoc);
             d->PurgeUnneededMemory ();
@@ -1643,13 +1645,13 @@ void    LedItApplication::HandleBadAllocException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }
 
-void    LedItApplication::HandleBadUserInputException () noexcept {
+void    LedItApplication::HandleBadUserInputException () noexcept
+{
     try {
 #if     qPlatform_MacOS
         DoStringyAlert (kBadUserInputExceptionAlertID);
@@ -1660,13 +1662,13 @@ void    LedItApplication::HandleBadUserInputException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }
 
-void    LedItApplication::HandleUnknownException () noexcept {
+void    LedItApplication::HandleUnknownException () noexcept
+{
     try {
 #if     qPlatform_MacOS
         DoStringyAlert (kUnknownExceptionAlertID);
@@ -1675,8 +1677,7 @@ void    LedItApplication::HandleUnknownException () noexcept {
         errorDialog.DoModal ();
 #endif
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }

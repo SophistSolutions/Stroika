@@ -508,23 +508,25 @@ BOOL    LedLineItApplication::PumpMessage ()
     return true;
 }
 
-void    LedLineItApplication::HandleMFCException (CException* /*e*/) noexcept {
+void    LedLineItApplication::HandleMFCException (CException* /*e*/) noexcept
+{
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void    LedLineItApplication::HandleBadAllocException () noexcept {
+void    LedLineItApplication::HandleBadAllocException () noexcept
+{
     try {
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
         errorDialog.DoModal ();
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }
 
-void    LedLineItApplication::HandleBadUserInputException () noexcept {
+void    LedLineItApplication::HandleBadUserInputException () noexcept
+{
     try {
 #if     qPlatform_Windows
         CDialog errorDialog (kBadUserInputExceptionOnCmdDialogID);
@@ -533,19 +535,18 @@ void    LedLineItApplication::HandleBadUserInputException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }
 
-void    LedLineItApplication::HandleUnknownException () noexcept {
+void    LedLineItApplication::HandleUnknownException () noexcept
+{
     try {
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
         errorDialog.DoModal ();
     }
-    catch (...)
-    {
+    catch (...) {
         Led_BeepNotify ();
     }
 }

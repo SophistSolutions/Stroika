@@ -547,7 +547,8 @@ SimpleSyntaxColoringMarkerOwner::~SimpleSyntaxColoringMarkerOwner ()
     fInteractor.Refresh ();
 }
 
-void    SimpleSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    SimpleSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
     RecheckRange (updateInfo.fReplaceFrom, updateInfo.fReplaceFrom + updateInfo.fTextLength);
 }
@@ -675,10 +676,10 @@ void    WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& 
     }
 }
 
-void    WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
-    if (fDeletedLines)
-    {
+    if (fDeletedLines) {
         fDeletedLines = false;
         RecheckAll ();
     }

@@ -138,13 +138,13 @@ namespace   Stroika {
             public:
                 nonvirtual  Collection<T>& operator= (const Collection<T>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Collection<T>& operator= (Collection<T> && rhs)
+                nonvirtual  Collection<T>& operator= (Collection<T>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  Collection<T>& operator= (Collection<T> && rhs) = default;
+                nonvirtual  Collection<T>& operator= (Collection<T>&& rhs) = default;
 #endif
 
             public:

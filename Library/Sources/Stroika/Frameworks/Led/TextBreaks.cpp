@@ -379,7 +379,7 @@ void    TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t l
 #if     qSingleByteCharacters || qWideCharacters
             Led_tChar   thisChar = *cur;
 #elif   qMultiByteCharacters
-            Led_tChar   thisChar[2] =   {   *cur, Led_IsLeadByte (*cur) ?* (cur + 1) : '\0' };
+            Led_tChar   thisChar[2] =   {   *cur, Led_IsLeadByte (*cur) ? * (cur + 1) : '\0' };
 #endif
 
             CharacterClasses    charClass = CharToCharacterClass (startOfText, lengthOfText, cur);
@@ -429,7 +429,7 @@ TextBreaks_Basic::CharacterClasses  TextBreaks_Basic::CharToCharacterClass (cons
 #if     qSingleByteCharacters || qWideCharacters
     Led_tChar   c = *charToExamine;
 #elif   qMultiByteCharacters
-    Led_tChar   c[2]    =   {   *charToExamine, Led_IsLeadByte (*charToExamine) ?* (charToExamine + 1) : '\0' };
+    Led_tChar   c[2]    =   {   *charToExamine, Led_IsLeadByte (*charToExamine) ? * (charToExamine + 1) : '\0' };
 #endif
 
     if (c == 0) {

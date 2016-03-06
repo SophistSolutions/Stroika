@@ -76,7 +76,7 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             inline  SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
                 : fSize_ (0)
-                //, fBuffer_ ()
+                  //, fBuffer_ ()
                 , fPointer_ (fBuffer_)
             {
 #if     qDebug
@@ -96,7 +96,7 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
                 : fSize_ (0)
-                //, fBuffer_ (),
+                  //, fBuffer_ (),
                 , fPointer_ (fBuffer_)
             {
 #if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy

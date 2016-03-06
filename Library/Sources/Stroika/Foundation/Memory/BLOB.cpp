@@ -51,10 +51,10 @@ namespace {
 
 
 BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-    : fData { len_ (startEndPairs) } {
+    : fData { len_ (startEndPairs) }
+{
     Byte*   pb  =   fData.begin ();
-    for (auto i : startEndPairs)
-    {
+    for (auto i : startEndPairs) {
         (void)::memcpy (pb, i.first, i.second - i.first);
         pb += (i.second - i.first);
     }
@@ -62,10 +62,10 @@ BLOB::BasicRep_::BasicRep_ (const initializer_list<pair<const Byte*, const Byte*
 }
 
 BLOB::BasicRep_::BasicRep_ (const initializer_list<BLOB>& list2Concatenate)
-    : fData { len_ (list2Concatenate) } {
+    : fData { len_ (list2Concatenate) }
+{
     Byte*   pb  =   fData.begin ();
-    for (auto i : list2Concatenate)
-    {
+    for (auto i : list2Concatenate) {
         (void)::memcpy (pb, i.begin (), i.GetSize ());
         pb += i.GetSize ();
     }

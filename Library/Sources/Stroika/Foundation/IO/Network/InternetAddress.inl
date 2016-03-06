@@ -31,7 +31,8 @@ namespace   Stroika {
 #endif
                 InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
-                    , fV4_ {} {
+                    , fV4_ {}
+                {
                 }
 #if     qPlatform_POSIX
                 inline
@@ -40,13 +41,14 @@ namespace   Stroika {
 #endif
                 InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_ { i } {
+                    , fV4_ { i }
+                {
                 }
                 inline  InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_ { i } {
-                    if (byteOrder == ByteOrder::Host)
-                    {
+                    , fV4_ { i }
+                {
+                    if (byteOrder == ByteOrder::Host) {
                         fV4_.s_addr = htonl (fV4_.s_addr);      //NB no ':' cuz some systems use macro
                     }
                 }
@@ -77,7 +79,7 @@ namespace   Stroika {
 #if     qPlatform_POSIX
                     , fV4_ { Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24)) }
 #elif   qPlatform_Windows && !qCompilerAndStdLib_union_designators_Buggy
-                    , fV4_ ({{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
+                    , fV4_ ( {{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
 #endif
                 {
                     // @todo - only these cases supported, and cannot static_assert cuz too many compiler bugs.... Soon... --LGP 2015-08-26

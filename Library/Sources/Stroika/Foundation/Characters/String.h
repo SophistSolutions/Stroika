@@ -401,13 +401,13 @@ namespace   Stroika {
             public:
                 nonvirtual  String& operator= (const String& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  String& operator= (String && rhs)
+                nonvirtual  String& operator= (String&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  String& operator= (String && newString) = default;
+                nonvirtual  String& operator= (String&& newString) = default;
 #endif
 
             public:

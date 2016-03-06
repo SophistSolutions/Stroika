@@ -21,9 +21,9 @@ namespace   Stroika {
              */
             struct  VariantValue::IRep_
 #if     qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-                    : public Memory::enable_shared_from_this<VariantValue::IRep_>
+                : public Memory::enable_shared_from_this<VariantValue::IRep_>
 #else
-                    : public std::enable_shared_from_this<VariantValue::IRep_>
+                : public std::enable_shared_from_this<VariantValue::IRep_>
 #endif
             {
                 virtual ~IRep_ () {}
@@ -57,7 +57,7 @@ namespace   Stroika {
                 : fVal_ (move (src.fVal_))
             {
             }
-            inline  VariantValue&   VariantValue::operator= (VariantValue && rhs)
+            inline  VariantValue&   VariantValue::operator= (VariantValue&& rhs)
             {
                 fVal_ = move (rhs.fVal_);
                 return *this;

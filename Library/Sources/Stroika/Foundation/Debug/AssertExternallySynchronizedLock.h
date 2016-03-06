@@ -104,7 +104,7 @@ namespace   Stroika {
                  *  \note   operator= checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on target or move.
                  */
-                nonvirtual  AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock && rhs);
+                nonvirtual  AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs);
                 nonvirtual  AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
 
             public:

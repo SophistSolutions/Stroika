@@ -64,7 +64,8 @@ Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
  *********** Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ **************
  ********************************************************************************
  */
-void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept {
+void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept
+{
     /*
      *  Logically this just does a lock acquire and assginemnt through pointers (swap). But
      *  it checks for thread abort exceptions, and supresses that if needed, since this is noexcept
@@ -80,8 +81,7 @@ void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** s
         (*(void**)p) = *staticNextLinkP;
         * staticNextLinkP = p;
     }
-    catch (const Execution::Thread::AbortException&)
-    {
+    catch (const Execution::Thread::AbortException&) {
         Execution::Thread::SuppressInterruptionInContext  suppressContext;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());

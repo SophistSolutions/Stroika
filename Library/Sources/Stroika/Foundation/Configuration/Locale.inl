@@ -34,7 +34,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  ScopedUseLocale::ScopedUseLocale (const locale& l)
-                : fPrev_  {  locale::global (l) } {
+                : fPrev_  {  locale::global (l) }
+            {
             }
             inline  ScopedUseLocale::~ScopedUseLocale ()
             {

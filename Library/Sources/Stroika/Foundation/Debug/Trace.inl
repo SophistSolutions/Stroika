@@ -32,7 +32,7 @@ namespace   Stroika {
             inline  TraceContextBumper::TraceContextBumper ()
 #if     qDefaultTracingOn
                 : fDoEndMarker (false)
-                //,fSavedContextName_ ()
+                  //,fSavedContextName_ ()
 #endif
             {
 #if     qDefaultTracingOn
@@ -79,7 +79,8 @@ namespace   {
 }
 
 
-inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get () noexcept {
+inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get () noexcept
+{
     return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fEmitter;
 }
 #endif  /*_Stroika_Foundation_Debug_Trace_inl_*/

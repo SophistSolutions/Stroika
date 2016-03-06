@@ -24,17 +24,20 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 inline  Name::Name (NameType type)
-                    : fType { eValue } {
+                    : fType { eValue }
+                {
                     Require (type == eValue);
                 }
                 inline  Name::Name (const String& localName, NameType type)
                     : fLocalName { localName }
-                , fType { type } {
+                    , fType { type }
+                {
                 }
                 inline  Name::Name (const String& namespaceURI, const String& localName, NameType type)
                     : fNamespaceURI { namespaceURI }
-                , fLocalName { localName }
-                , fType { type } {
+                    , fLocalName { localName }
+                    , fType { type }
+                {
                 }
                 inline  String  Name::ToString () const
                 {

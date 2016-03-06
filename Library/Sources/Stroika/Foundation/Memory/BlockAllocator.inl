@@ -204,7 +204,8 @@ namespace   Stroika {
                 return result;
             }
             template    <size_t SIZE>
-            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept {
+            inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept
+            {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
                 Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
@@ -311,14 +312,14 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept {
+            inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept
+            {
                 using Private_::BlockAllocationPool_;
 #if     !qCompilerAndStdLib_constexpr_Buggy
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
 #endif
 #if     qAllowBlockAllocation
-                if (p != nullptr)
-                {
+                if (p != nullptr) {
                     BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
                 }
 #else

@@ -41,7 +41,7 @@ namespace   Stroika {
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src)
             // dont udnrestand why move doesnt work
                 : inherited (move (src))
-                //: inherited (move<inherited> (src))
+                  //: inherited (move<inherited> (src))
             {
                 _AssertRepValidType ();
             }

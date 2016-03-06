@@ -1037,7 +1037,8 @@ void    SimpleTextImager::SetDefaultFont (const Led_IncrementalFontSpecification
     }
 }
 
-void    SimpleTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    SimpleTextImager::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     InvalidateTotalRowsInWindow ();
     inherited::DidUpdateText (updateInfo);
     AssertNotNull (fTopLinePartitionMarkerInWindow);

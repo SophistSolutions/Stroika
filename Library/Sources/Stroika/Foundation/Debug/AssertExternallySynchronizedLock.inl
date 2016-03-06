@@ -44,7 +44,7 @@ namespace   Stroika {
 #endif
                 return *this;
             }
-            inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock && rhs)
+            inline  AssertExternallySynchronizedLock&   AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock&& rhs)
             {
 #if     qDebug
                 lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };

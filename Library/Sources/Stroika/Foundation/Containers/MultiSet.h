@@ -168,13 +168,13 @@ namespace   Stroika {
             public:
                 nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  MultiSet& operator= (MultiSet && rhs)
+                nonvirtual  MultiSet& operator= (MultiSet&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  MultiSet& operator= (MultiSet && rhs) = default;
+                nonvirtual  MultiSet& operator= (MultiSet&& rhs) = default;
 #endif
 
             public:
@@ -316,7 +316,7 @@ namespace   Stroika {
             class   MultiSet<T, TRAITS>::_IRep
                 : public Iterable<CountedValue<T>>::_IRep
 #if     !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                                                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
+                , public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
 #endif
             {
             private:

@@ -210,9 +210,9 @@ namespace   Stroika {
 
             public:
                 nonvirtual  SharedByValue<TRAITS>& operator= (const SharedByValue<TRAITS>& src);
-                nonvirtual  SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS> && src);
+                nonvirtual  SharedByValue<TRAITS>& operator= (SharedByValue<TRAITS>&& src);
                 nonvirtual  SharedByValue<TRAITS>& operator= (const shared_ptr_type& from);
-                nonvirtual  SharedByValue<TRAITS>& operator= (shared_ptr_type && from);
+                nonvirtual  SharedByValue<TRAITS>& operator= (shared_ptr_type&& from);
 
             public:
                 /**

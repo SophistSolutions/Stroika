@@ -1966,10 +1966,10 @@ void    TextInteractor::AboutToUpdateText (const MarkerOwner::UpdateInfo& update
     }
 }
 
-void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     TextImager::DidUpdateText (updateInfo);
-    if (fDoingUpdateModeReplaceOn != this)
-    {
+    if (fDoingUpdateModeReplaceOn != this) {
         try {
             PostReplace (fTmpPreReplaceInfo);
         }

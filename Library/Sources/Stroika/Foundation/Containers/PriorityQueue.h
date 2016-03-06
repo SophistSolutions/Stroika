@@ -120,13 +120,13 @@ namespace   Stroika {
                  */
                 nonvirtual  PriorityQueue<T>& operator= (const PriorityQueue<T>& src);
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T> && rhs)
+                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T> && rhs) = default;
+                nonvirtual  PriorityQueue<T>& operator= (PriorityQueue<T>&& rhs) = default;
 #endif
 
             public:

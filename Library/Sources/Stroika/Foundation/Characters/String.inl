@@ -91,24 +91,24 @@ namespace   Stroika {
             ********************************************************************************
             */
             inline  String::String (const String& from) noexcept
-:
-            inherited (from)
+                :
+                inherited (from)
             {
             }
             inline  String::String (String&& from) noexcept
-:
-            inherited (move (from))
+                :
+                inherited (move (from))
             {
             }
             inline  String::String (const _SharedPtrIRep& rep) noexcept
-:
-            inherited (rep)
+                :
+                inherited (rep)
             {
                 _AssertRepValidType ();
             }
             inline  String::String (_SharedPtrIRep&& rep) noexcept
-:
-            inherited (move (rep))
+                :
+                inherited (move (rep))
             {
                 //RequireNotNull (rep); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();

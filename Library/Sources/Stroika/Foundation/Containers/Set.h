@@ -151,13 +151,13 @@ namespace   Stroika {
                  */
                 nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS> && rhs)
+                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS> && rhs) = default;
+                nonvirtual  Set<T, TRAITS>& operator= (Set<T, TRAITS>&& rhs) = default;
 #endif
 
             public:

@@ -191,7 +191,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  VariantValue&   operator= (const VariantValue& rhs) = default;
-                nonvirtual  VariantValue&   operator= (VariantValue && rhs);
+                nonvirtual  VariantValue&   operator= (VariantValue&& rhs);
 
             public:
                 nonvirtual  Type    GetType () const;

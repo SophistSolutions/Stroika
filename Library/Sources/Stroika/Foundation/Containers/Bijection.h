@@ -157,13 +157,13 @@ namespace   Stroika {
                  */
                 nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) =   default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> && rhs)
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> && rhs) = default;
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& rhs) = default;
 #endif
 
             public:

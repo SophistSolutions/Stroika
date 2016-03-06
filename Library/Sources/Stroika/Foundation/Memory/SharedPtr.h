@@ -188,7 +188,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual      SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;
-                nonvirtual      SharedPtr<T>& operator= (SharedPtr<T> && rhs) noexcept;
+                nonvirtual      SharedPtr<T>& operator= (SharedPtr<T>&& rhs) noexcept;
 
             public:
                 ~SharedPtr ();

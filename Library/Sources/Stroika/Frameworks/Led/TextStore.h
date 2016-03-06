@@ -787,7 +787,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the end-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerEnd'.</p>
             */
-            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept {
+            inline  void    TextStore::SetMarkerStart (Marker* marker, size_t start) noexcept
+            {
                 SetMarkerRange (marker, start, marker->GetEnd ());
             }
             /*
@@ -795,7 +796,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Similar to @'TextStore::SetMarkerRange', except that the start-point doesn't change.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept {
+            inline  void    TextStore::SetMarkerEnd (Marker* marker, size_t end) noexcept
+            {
                 SetMarkerRange (marker, marker->GetStart (), end);
             }
             /*
@@ -804,7 +806,8 @@ namespace   Stroika {
                         Similar to @'TextStore::SetMarkerEnd' except that it takes a length, not an end-point.
                         Vectors to @'TextStore::SetMarkerRange'. See @'TextStore::SetMarkerStart'.</p>
             */
-            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) noexcept {
+            inline  void    TextStore::SetMarkerLength (Marker* marker, size_t length) noexcept
+            {
                 size_t  start   =   marker->GetStart ();
                 SetMarkerRange (marker, start, start + length);
             }

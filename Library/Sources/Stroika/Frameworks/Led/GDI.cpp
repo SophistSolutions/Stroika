@@ -1091,7 +1091,7 @@ inline  COLORREF    Led_Tablet_::RecolorHelper::MapColor (RGBQUAD c) const
 #endif
 Led_Tablet_::RecolorHelper::RecolorHelper (HDC baseHDC, Led_Size size, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
     : fDibData (nullptr)
-    //fMappingTable ()
+      //fMappingTable ()
     , fDibDataByteCount (0)
     , fHMemDC (nullptr)
     , fBaseDC (baseHDC)

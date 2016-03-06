@@ -61,11 +61,11 @@ void    LineBasedPartition::FinalConstruct ()
                 <p>Call @'LineBasedPartition::CheckForSplits' for each character to see if any splits are needed,
             and call @'LineBasedPartition::NeedToCoalesce' to see if the given PM needs coalescing because of the update.</p>
 */
-void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept {
+void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept
+{
     RequireNotNull (pm);
 
-    if (updateInfo.fTextModified)
-    {
+    if (updateInfo.fTextModified) {
         /*
         *   First check if we had any newlines inserted into our middle. If so, then
         *   we must split ourselves. Then check if we retain our trailing newline (or
@@ -96,10 +96,10 @@ void    LineBasedPartition::UpdatePartitions (PartitionMarker* pm, const UpdateI
             requires any partition elements to be split. 'i' is the position at which we may want
             to do a split (e.g. right after the newline character).</p>
 */
-void    LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept {
+void    LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept
+{
     Require (updateInfo.fTextModified); //so there is something in the fTextInserted area
-    if (updateInfo.fTextInserted[i - updateInfo.fReplaceFrom - 1] == '\n')
-    {
+    if (updateInfo.fTextInserted[i - updateInfo.fReplaceFrom - 1] == '\n') {
         Split (pm, i);
     }
 }
@@ -110,17 +110,16 @@ void    LineBasedPartition::CheckForSplits (PartitionMarker* pm, const UpdateInf
 @DESCRIPTION:   <p>Called by @'LineBasedPartition::UpdatePartitions' () to check if the given inserted text requires this PM to be coalesed with its
             following one.</p>
 */
-bool    LineBasedPartition::NeedToCoalesce (PartitionMarker* pm) noexcept {
+bool    LineBasedPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
+{
     // If after inserting a bunch of characters, and deleting some too, my
     // last character is no longer a newline - better Coalece...
     bool    coalesce    =   false;
-    if (pm->GetLength () == 0)
-    {
+    if (pm->GetLength () == 0) {
         coalesce = true;
     }
     else {
-        if (pm->GetNext () != nullptr)
-        {
+        if (pm->GetNext () != nullptr) {
             size_t  end =   pm->GetEnd ();
             Led_tChar   endChar =   '\0';
             // Look at the character just BEFORE (rather than after) the end

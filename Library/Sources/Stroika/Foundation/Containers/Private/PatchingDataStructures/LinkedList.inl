@@ -228,7 +228,7 @@ namespace   Stroika {
                     inline  LinkedList<T, LOCKER, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, LOCKER, TRAITS>* data)
                         : inherited_DataStructure (data)
                         , inherited_PatchHelper (const_cast<LinkedList<T, LOCKER, TRAITS>*> (data), ownerID)
-                        //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
+                          //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
                         RequireNotNull (data);
                         this->Invariant ();
@@ -237,7 +237,7 @@ namespace   Stroika {
                     inline  LinkedList<T, LOCKER, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
-                        //, fPrev (from.fPrev)
+                          //, fPrev (from.fPrev)
                     {
                         from.Invariant ();
                         this->Invariant ();

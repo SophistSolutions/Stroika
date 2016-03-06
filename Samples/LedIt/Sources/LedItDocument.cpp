@@ -320,9 +320,9 @@ LedItDocument::~LedItDocument ()
 #endif
 }
 
-void    LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
-    if (updateInfo.fRealContentUpdate)
-    {
+void    LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
+    if (updateInfo.fRealContentUpdate) {
 #if     qPlatform_MacOS
         mIsModified = true;
         SetUpdateCommandStatus (true);

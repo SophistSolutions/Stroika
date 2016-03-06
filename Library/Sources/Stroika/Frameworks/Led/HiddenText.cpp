@@ -460,10 +460,10 @@ void    HidableTextMarkerOwner::AboutToUpdateText (const UpdateInfo& updateInfo)
     inherited::AboutToUpdateText (updateInfo);
 }
 
-void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    HidableTextMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
-    if (updateInfo.fTextModified)
-    {
+    if (updateInfo.fTextModified) {
         // cull empty markers
         MarkerList  markers =   CollectAllInRange_OrSurroundings (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
         for (auto i = markers.begin (); i != markers.end (); ++i) {

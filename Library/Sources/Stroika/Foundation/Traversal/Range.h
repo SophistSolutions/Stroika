@@ -159,7 +159,7 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 struct  DefaultRangeTraits : enable_if <
-                        is_arithmetic<T>::value,
+                    is_arithmetic<T>::value,
                 ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T {} - T {}), Private_::UnsignedDifferenceType_<T> >
                 >::type {
 #if     qCompilerAndStdLib_constexpr_Buggy

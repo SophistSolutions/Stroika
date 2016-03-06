@@ -108,14 +108,17 @@ namespace   Stroika {
 #endif
             }
             inline  BLOB::BLOB ()
-                : fRep_ { _MakeSharedPtr<ZeroRep_> () } {
+                : fRep_ { _MakeSharedPtr<ZeroRep_> () }
+            {
             }
             inline  BLOB::BLOB (BLOB&& src)
-                : fRep_ { move (src.fRep_) } {
+                : fRep_ { move (src.fRep_) }
+            {
             }
             template    <typename CONTAINER_OF_BYTE, typename ENABLE_IF>
             inline  BLOB::BLOB (const CONTAINER_OF_BYTE& data)
-                : fRep_ { move ((std::begin (data) == std::end (data)) ? move <_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))) } {
+                : fRep_ { move ((std::begin (data) == std::end (data)) ? move <_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ()))) }
+            {
             }
             inline  BLOB::BLOB (const initializer_list<Byte>& bytes)
                 : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
@@ -126,13 +129,16 @@ namespace   Stroika {
             {
             }
             inline  BLOB::BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs)
-                : fRep_ { _MakeSharedPtr<BasicRep_> (startEndPairs) } {
+                : fRep_ { _MakeSharedPtr<BasicRep_> (startEndPairs) }
+            {
             }
             inline  BLOB::BLOB (const initializer_list<BLOB>& list2Concatenate)
-                : fRep_ { _MakeSharedPtr<BasicRep_> (list2Concatenate) } {
+                : fRep_ { _MakeSharedPtr<BasicRep_> (list2Concatenate) }
+            {
             }
             inline  BLOB::BLOB (const _SharedIRep& rep)
-                : fRep_ { rep } {
+                : fRep_ { rep }
+            {
             }
             inline  BLOB::BLOB (_SharedIRep&& rep)
                 : fRep_ (std::move (rep))

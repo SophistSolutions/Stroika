@@ -309,9 +309,9 @@ namespace   Stroika {
                 /**
                  */
                 //nonvirtual  Optional& operator= (nullopt_t);
-                nonvirtual  Optional& operator= (T && rhs);
+                nonvirtual  Optional& operator= (T&& rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
-                nonvirtual  Optional& operator= (Optional && rhs);
+                nonvirtual  Optional& operator= (Optional&& rhs);
 
             public:
                 /**

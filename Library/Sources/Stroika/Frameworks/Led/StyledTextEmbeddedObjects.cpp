@@ -162,17 +162,16 @@ Led_Distance    SimpleEmbeddedObjectStyleMarker::MeasureSegmentBaseLine (const S
     return (MeasureSegmentHeight (imager, runElement, from, to) - 1 * kDefaultEmbeddingMargin.v);
 }
 
-void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept {
+void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
+{
     RequireNotNull (GetOwner ());
     RequireNotNull (GetOwner ()->PeekAtTextStore ());
     size_t  newLength   =   GetLength ();
-    if (newLength == 0)
-    {
+    if (newLength == 0) {
         GetOwner ()->PeekAtTextStore ()->RemoveMarker (this);
         delete this;
     }
-    else if (newLength == 1)
-    {
+    else if (newLength == 1) {
         inherited::DidUpdateText (updateInfo);
     }
     else {
@@ -1663,7 +1662,8 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
                                        Led_Tablet tablet, Led_Color foreColor, Led_Color backColor, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                        const Led_Size& imageSize,
                                        const Led_Size& margin
-                                      ) noexcept {
+                                      ) noexcept
+{
     RequireNotNull (pictureHandle);
 
     Led_StackBasedHandleLocker  locker ((Led_StackBasedHandleLocker::GenericHandle)pictureHandle);
@@ -1728,12 +1728,10 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
     Led_Brush   eraseBrush (backColor.GetOSRep ());
     Led_Win_Obj_Selector    brush (dc, eraseBrush);
     bool    displaySuccessful   =   false;
-    if (sIniter.fGood)
-    {
+    if (sIniter.fGood) {
         displaySuccessful = (::DrawPicture (dc->m_hDC, (PicHandle)pictureHandle, &rr, nullptr) == noErr);
     }
-    if (not displaySuccessful)
-    {
+    if (not displaySuccessful) {
         // fill in with some other picture...
         // treat all excpetions the same. In principle, could draw different picst for memory and
         // unsupported format exceptions...
@@ -1746,8 +1744,7 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
         ::StretchDIBits (dc->m_hDC, innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.GetWidth (), innerBoundsRect.GetHeight (), 0, 0, dibImageSize.h, dibImageSize.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
     }
 #endif
-    if (pixelsDrawn != nullptr)
-    {
+    if (pixelsDrawn != nullptr) {
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 }
@@ -1759,7 +1756,8 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
                                 const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                                 const Led_Size& imageSize,
                                 const Led_Size& margin
-                               ) noexcept {
+                               ) noexcept
+{
     RequireNotNull (dib);
     RequireNotNull (tablet);
     Led_Arg_Unused (foreColor);
@@ -1781,8 +1779,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
     Assert (embedBottom <= drawInto.GetBottom ());
     Led_Rect    innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), dibImageSize);
 
-    if (pixelsDrawn != nullptr)
-    {
+    if (pixelsDrawn != nullptr) {
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 
@@ -1816,8 +1813,7 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
         delete[] (char*)pmPtr->baseAddr;
         ::DisposePixMap (pm);
     }
-    catch (...)
-    {
+    catch (...) {
         // treat all excpetions the same. In principle, could draw different picst for memory and
         // unsupported format exceptions...
         AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);

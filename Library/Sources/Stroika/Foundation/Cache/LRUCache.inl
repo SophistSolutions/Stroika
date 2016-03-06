@@ -85,7 +85,7 @@ namespace   Stroika {
                 explicit CacheIterator (CacheElement_** start, CacheElement_** end)
                     : fCurV (start)
                     , fEndV (end)
-                    , fCur (start == end ? nullptr : *fCurV)
+                    , fCur (start == end ? nullptr : * fCurV)
                 {
                 }
                 CacheIterator& operator++ ()

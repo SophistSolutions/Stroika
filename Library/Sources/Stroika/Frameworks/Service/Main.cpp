@@ -1158,14 +1158,16 @@ bool    Main::WindowsService::IsInstalled_ () const noexcept
     return hService != NULL;
 }
 
-void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
+void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept
+{
     DbgTrace ("SetServiceStatus_ (%d)", dwState);
     Assert (fServiceStatusHandle_ != nullptr);
     fServiceStatus_.dwCurrentState = dwState;
     ::SetServiceStatus (fServiceStatusHandle_, &fServiceStatus_);
 }
 
-void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept
+{
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_");
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
@@ -1185,8 +1187,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] ()
-    {
+    fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
@@ -1201,26 +1202,27 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     SetServiceStatus_ (SERVICE_STOPPED);
 }
 
-void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept
+{
     AssertNotNull (s_SvcRunningTHIS_);
     s_SvcRunningTHIS_->ServiceMain_ (dwArgc, lpszArgv);
 }
 
-void    Main::WindowsService::OnStopRequest_ () noexcept {
+void    Main::WindowsService::OnStopRequest_ () noexcept
+{
     /*
      *  WARNING - this maybe a race about setting status!!! - what if we get stop request when already stopped.
      *  THIS CODE NEEDS THREAD LOCKS!!!
      */
-    if (fServiceStatus_.dwCurrentState == SERVICE_RUNNING)
-    {
+    if (fServiceStatus_.dwCurrentState == SERVICE_RUNNING) {
         SetServiceStatus_ (SERVICE_STOP_PENDING);
         fRunThread_.Abort ();
     }
 }
 
-void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept {
-    switch (dwOpcode)
-    {
+void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept
+{
+    switch (dwOpcode) {
         case SERVICE_CONTROL_STOP:
             OnStopRequest_  ();
             break;
@@ -1230,7 +1232,8 @@ void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept {
     }
 }
 
-void    WINAPI  Main::WindowsService::StaticHandler_ (DWORD dwOpcode) noexcept {
+void    WINAPI  Main::WindowsService::StaticHandler_ (DWORD dwOpcode) noexcept
+{
     AssertNotNull (s_SvcRunningTHIS_);
     s_SvcRunningTHIS_->Handler_ (dwOpcode);
 }

@@ -473,7 +473,8 @@ namespace   Stroika {
                 in some rare cases - you can tell if your getting a callback between your AboutToUpdate() call and your DidUpdateText () call - so you can
                 tell if the text is truely updated yet.</p>
             */
-            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {
+            inline  void    MarkerOwner::EarlyDidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
+            {
             }
             /*
             @METHOD:        MarkerOwner::DidUpdateText
@@ -481,7 +482,8 @@ namespace   Stroika {
                 some appropriate data structures based on the change. NB: an exception <em>cannot</em> be raised by this method, or
                 any overrides of it.</p>
             */
-            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept {
+            inline  void    MarkerOwner::DidUpdateText (const UpdateInfo& /*updateInfo*/) noexcept
+            {
             }
 
 
@@ -512,7 +514,8 @@ namespace   Stroika {
                 from this routine. Use @'Marker::AboutToUpdateText' to preflight, and assure any DidUpdateText method calls will
                 work without a hitch.</p>
             */
-            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    noexcept {
+            inline  void    Marker::DidUpdateText (const UpdateInfo& /*updateInfo*/)    noexcept
+            {
             }
             /*
             @METHOD:        Marker::GetStart
@@ -683,9 +686,9 @@ namespace   Stroika {
             @DESCRIPTION:   <p>Call anytime, but preferably after we've finished doing a bunch of marker deletions.
                 See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
             */
-            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept {
-                if (fMarkersToBeDeleted.size () != 0)
-                {
+            void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept
+            {
+                if (fMarkersToBeDeleted.size () != 0) {
                     MarkerOwner*    owner       =   static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
                     AssertNotNull (owner);
                     TextStore&      textStore   =   owner->GetTextStore ();

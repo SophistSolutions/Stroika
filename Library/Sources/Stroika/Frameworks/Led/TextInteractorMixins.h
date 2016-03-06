@@ -161,7 +161,8 @@ namespace   Stroika {
                 TextInteractor::AboutToUpdateText (updateInfo);
             }
             template    <typename   IMAGER>
-            void    InteractorImagerMixinHelper<IMAGER>::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+            void    InteractorImagerMixinHelper<IMAGER>::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+            {
                 IMAGER::DidUpdateText (updateInfo);
                 TextInteractor::DidUpdateText (updateInfo);
             }
@@ -206,7 +207,8 @@ namespace   Stroika {
                 INTERACTOR2::HookGainedNewTextStore ();
             }
             template    <typename   INTERACTOR1, typename INTERACTOR2>
-            void    InteractorInteractorMixinHelper<INTERACTOR1, INTERACTOR2>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept {
+            void    InteractorInteractorMixinHelper<INTERACTOR1, INTERACTOR2>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
+            {
                 INTERACTOR1::DidUpdateText (updateInfo);
                 INTERACTOR2::DidUpdateText (updateInfo);
             }

@@ -28,10 +28,10 @@ namespace   Stroika {
             constexpr
 #endif
             DateTime::DateTime () noexcept
-:
-            fTimezone_ (Timezone::eUnknown)
-            , fDate_ ()
-            , fTimeOfDay_ ()
+                :
+                fTimezone_ (Timezone::eUnknown)
+                , fDate_ ()
+                , fTimeOfDay_ ()
             {
             }
             inline
@@ -39,24 +39,24 @@ namespace   Stroika {
             constexpr
 #endif
             DateTime::DateTime (const Date& d) noexcept
-:
-            fTimezone_ (Timezone::eUnknown)
-            , fDate_ (d)
-            , fTimeOfDay_ ()
+                :
+                fTimezone_ (Timezone::eUnknown)
+                , fDate_ (d)
+                , fTimeOfDay_ ()
             {
             }
             inline  DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
-:
-            fTimezone_ (dt.GetTimezone ())
-            , fDate_ (updateDate)
-            , fTimeOfDay_ (dt.GetTimeOfDay ())
+                :
+                fTimezone_ (dt.GetTimezone ())
+                , fDate_ (updateDate)
+                , fTimeOfDay_ (dt.GetTimeOfDay ())
             {
             }
             inline  DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
-:
-            fTimezone_ (dt.GetTimezone ())
-            , fDate_ (dt.GetDate ())
-            , fTimeOfDay_ (updateTOD)
+                :
+                fTimezone_ (dt.GetTimezone ())
+                , fDate_ (dt.GetDate ())
+                , fTimeOfDay_ (updateTOD)
             {
             }
             inline
@@ -64,10 +64,10 @@ namespace   Stroika {
             constexpr
 #endif
             DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz) noexcept
-:
-            fTimezone_ (tz)
-            , fDate_ (date)
-            , fTimeOfDay_ (timeOfDay)
+                :
+                fTimezone_ (tz)
+                , fDate_ (date)
+                , fTimeOfDay_ (timeOfDay)
             {
             }
             inline  constexpr   bool    DateTime::empty () const noexcept
@@ -94,7 +94,8 @@ namespace   Stroika {
             {
                 return fDate_;
             }
-            inline  Date    DateTime::GetToday () noexcept {
+            inline  Date    DateTime::GetToday () noexcept
+            {
                 return Now ().GetDate ();
             }
             inline  DateTime::Timezone  DateTime::GetTimezone () const noexcept

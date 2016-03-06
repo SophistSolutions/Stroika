@@ -1794,7 +1794,8 @@ namespace   Stroika {
                 @DESCRIPTION:   Override to handle mixin ambiguity.
                 */
                 template    <typename   ChosenInteractor, typename LEDMFC>
-                void    Led_MFC_X<ChosenInteractor, LEDMFC>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept {
+                void    Led_MFC_X<ChosenInteractor, LEDMFC>::DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept
+                {
                     LEDMFC::DidUpdateText_ (updateInfo);
                     ChosenInteractor::DidUpdateText (updateInfo);
                 }

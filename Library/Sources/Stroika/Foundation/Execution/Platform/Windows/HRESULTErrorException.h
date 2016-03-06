@@ -75,10 +75,10 @@ namespace   Stroika {
     catch (...) {\
         return DISP_E_EXCEPTION;\
     }\
-     
 
-        }
-    }
+
+}
+}
 }
 
 

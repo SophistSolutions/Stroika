@@ -96,7 +96,7 @@ struct  _Deprecated_("use has_lt<>") Has_Operator_LessThan :
              */
             template    <typename T>
             struct  Has_Compare :
-                    Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type> {
+                Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type> {
             };
 
             /**

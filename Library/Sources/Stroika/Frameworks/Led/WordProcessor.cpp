@@ -376,22 +376,22 @@ void    ParagraphDatabaseRep::ConstrainSetInfoArgs (size_t* charAfterPos, size_t
 @DESCRIPTION:   <p>Called internally to check that all the paragraph info records in the MarkerCover
             respect the contraint that they start and end on paragraph boundaries.</p>
 */
-void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept {
-    if (fPartition.get () != nullptr)
-    {
+void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept
+{
+    if (fPartition.get () != nullptr) {
         MarkerVector    markers =   CollectAllInRange_OrSurroundings (from, to);
         sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
         CheckMarkerBounaryConstraints (markers);
     }
 }
 
-void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept {
+void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector& rangeAndSurroundingsMarkers) noexcept
+{
     /*
      *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
      *  If not - then adjust the style runs so they do.
      */
-    if (fPartition.get () != nullptr)
-    {
+    if (fPartition.get () != nullptr) {
         for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
             ParagraphInfoMarker*    m           =   *i;
             AssertNotNull (m);
@@ -2121,7 +2121,8 @@ void    WordProcessor::TabletChangedMetrics ()
     }
 }
 
-void    WordProcessor::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    WordProcessor::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
     fCachedCurSelFontSpecValid = false;
 }
@@ -5420,7 +5421,8 @@ void    WordProcessor::WPPartition::FinalConstruct ()
     DoHandleUpdateForTableRangeCheck (0, GetTextStore ().GetLength ());
 }
 
-void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
 // cuz random ordering of whether table DidUpdateText() gets called first or PartitionElt::DidUpdateText () - so we msut
 // do our checks HERE - to make sure size of table has been adjusted.
     {
@@ -5430,14 +5432,14 @@ void    WordProcessor::WPPartition::DidUpdateText (const UpdateInfo& updateInfo)
     inherited::DidUpdateText (updateInfo);
 }
 
-void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t from, size_t to) noexcept {
+void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t from, size_t to) noexcept
+{
     TextStore&  ts  =   GetTextStore ();
 
 // must go one forward/back to make sure we get new chars inserted BEFORE a table or just after one
 //  vector<Table*>  tables  =   GetTablesInRange (from, to);
     vector<Table*>  tables  =   GetTablesInRange (ts.FindPreviousCharacter (from), ts.FindNextCharacter (to));
-    for (auto i = tables.begin (); i != tables.end (); ++i)
-    {
+    for (auto i = tables.begin (); i != tables.end (); ++i) {
         Table*  t   =   *i;
         if (t->GetLength () != 0) {
             size_t  tableEnd    =   t->GetEnd ();
@@ -5481,13 +5483,11 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
     PartitionMarker*    pm  =   GetPartitionMarkerContainingPosition (from);
     // See if after insertion of that text this PM needs to be coalesed with the next
     bool    coalesce    =   NeedToCoalesce (pm);
-    if (coalesce)
-    {
+    if (coalesce) {
         Coalece (pm);       // 'pm' is DELETED BY THIS SO DO NOTHING to it AFTERWARDS!!!
     }
     pm  =   pm->GetPrevious ();
-    if (pm != nullptr)
-    {
+    if (pm != nullptr) {
         coalesce    =   NeedToCoalesce (pm);
         if (coalesce) {
             Coalece (pm);       // 'pm' is DELETED BY THIS SO DO NOTHING to it AFTERWARDS!!!
@@ -5502,12 +5502,12 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
     }
 }
 
-bool    WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept {
+bool    WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcept
+{
     RequireNotNull (pm);
 
     bool    coalesce    =   inherited::NeedToCoalesce (pm);
-    if (coalesce)
-    {
+    if (coalesce) {
         /*
          *  If default implementation said to coalese - it could have been for good reasons, or bad. One good reason would be
          *  an empty marker. Another would be if this marker didn't end with a table (and some other conditions were met).
@@ -7763,15 +7763,14 @@ void    WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& upda
     }
 }
 
-void    WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept {
+void    WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
 
-    if (not fForTable.fSuppressCellUpdatePropagationContext)
-    {
+    if (not fForTable.fSuppressCellUpdatePropagationContext) {
         fForTable.InvalidateLayout ();
     }
-    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate)
-    {
+    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
         AssertNotNull (fForTable.fCellUpdatePropationUpdater);
         delete fForTable.fCellUpdatePropationUpdater;       // NB: This calls the DidUpdate calls for the table itself and its owners...
         fForTable.fCellUpdatePropationUpdater = nullptr;

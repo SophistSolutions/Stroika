@@ -48,42 +48,42 @@ using   namespace   Stroika::Foundation::IO;
         }\
         Execution::ReThrow ();\
     }\
-     
 
 
 
 
 
-/*
- ********************************************************************************
- ********************** iostream::OpenInputFileStream ***************************
- ********************************************************************************
- */
-ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
-{
-    RequireNotNull (ifStream);
-    try {
-        ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
-        if (!(*ifStream)) {
+
+    /*
+     ********************************************************************************
+     ********************** iostream::OpenInputFileStream ***************************
+     ********************************************************************************
+     */
+    ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode mode)
+    {
+        RequireNotNull (ifStream);
+        try {
+            ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
+            if (!(*ifStream)) {
 #if     qPlatform_Windows
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
+                Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 #elif   qPlatform_POSIX
-            Execution::ThrowIfError_errno_t ();
-            AssertNotReached ();// errno sb set
+                Execution::ThrowIfError_errno_t ();
+                AssertNotReached ();// errno sb set
 #else
-            AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
+            }
+            return *ifStream;
         }
-        return *ifStream;
+        CATCH_REBIND_FILENAMES_HELPER_(fileName);
     }
-    CATCH_REBIND_FILENAMES_HELPER_(fileName);
-}
 
-ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode mode)
-{
-    OpenInputFileStream (&tmpIFStream, fileName, mode);
-    return tmpIFStream;
-}
+    ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode mode)
+    {
+        OpenInputFileStream (&tmpIFStream, fileName, mode);
+        return tmpIFStream;
+    }
 
 
 
@@ -91,35 +91,35 @@ ifstream&   Streams::iostream::OpenInputFileStream (ifstream& tmpIFStream, const
 
 
 
-/*
- ********************************************************************************
- ****************** StreamUtils::OpenOutputFileStream ***************************
- ********************************************************************************
- */
-ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
-{
-    RequireNotNull (ofStream);
-    try {
-        ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
-        if (!(*ofStream)) {
+    /*
+     ********************************************************************************
+     ****************** StreamUtils::OpenOutputFileStream ***************************
+     ********************************************************************************
+     */
+    ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode mode)
+    {
+        RequireNotNull (ofStream);
+        try {
+            ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
+            if (!(*ofStream)) {
 #if     qPlatform_Windows
-            Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
+                Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
 #elif   qPlatform_POSIX
-            Execution::ThrowIfError_errno_t ();
-            AssertNotReached ();// errno sb set
+                Execution::ThrowIfError_errno_t ();
+                AssertNotReached ();// errno sb set
 #else
-            AssertNotImplemented ();
+                AssertNotImplemented ();
 #endif
+            }
+            return *ofStream;
         }
-        return *ofStream;
+        CATCH_REBIND_FILENAMES_HELPER_(fileName);
     }
-    CATCH_REBIND_FILENAMES_HELPER_(fileName);
-}
 
-ofstream&   Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode mode)
-{
-    OpenOutputFileStream (&tmpOfStream, fileName, mode);
-    return tmpOfStream;
-}
+    ofstream&   Streams::iostream::OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode mode)
+    {
+        OpenOutputFileStream (&tmpOfStream, fileName, mode);
+        return tmpOfStream;
+    }
 
 

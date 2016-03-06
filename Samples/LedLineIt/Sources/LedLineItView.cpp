@@ -496,7 +496,8 @@ void    LedLineItView::TabletChangedMetrics ()
 #endif
 }
 
-void    LedLineItView::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
+void    LedLineItView::DidUpdateText (const UpdateInfo& updateInfo) noexcept
+{
     inherited::DidUpdateText (updateInfo);
     fCachedLayoutWidth = kBadDistance;
 }

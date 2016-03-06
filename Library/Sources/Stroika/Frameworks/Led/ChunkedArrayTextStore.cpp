@@ -90,7 +90,8 @@ inline  const Led_tChar*    ChunkedArrayTextStore::TextChunk::PeekAfter (size_t 
     Assert (charPos < fTotalTcharsUsed);
     return (&fData[charPos]);
 }
-inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept {
+inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept
+{
     Assert (what != 0 or howMany == 0);
     Assert (after >= 0);
     Assert (after <= fTotalTcharsUsed); // cannot insert past end (other than appending)
@@ -101,18 +102,17 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
      */
     Assert (fTotalTcharsUsed >= after);
     size_t  bytesToMove =   fTotalTcharsUsed - after;
-    if (bytesToMove != 0)
-    {
+    if (bytesToMove != 0) {
         (void)memmove (&fData[after + howMany], &fData[after], bytesToMove * sizeof (Led_tChar));
     }
     (void)::memcpy (&fData[after], what, howMany * sizeof (Led_tChar));
     fTotalTcharsUsed += howMany;
 }
-inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept {
+inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept
+{
     Require (after + howMany <= fTotalTcharsUsed);
     size_t  bytesToMove =   fTotalTcharsUsed - ( after + howMany );
-    if (bytesToMove != 0)
-    {
+    if (bytesToMove != 0) {
         (void)::memmove (&fData [after], &fData [after + howMany], bytesToMove * sizeof (Led_tChar));
     }
     fTotalTcharsUsed -= howMany;
@@ -1505,7 +1505,8 @@ void    ChunkedArrayTextStore::LoseIfUselessHackMarker (Marker* potentiallyUsele
     }
 }
 
-void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept {
+void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
+{
     RequireNotNull (marker);
 #if     qUseLRUCacheForRecentlyLookedUpMarkers
     GetAMOH (marker)->ClearCache ();
@@ -1530,8 +1531,7 @@ void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, siz
     size_t  len =   end - start;
 
     // changing the start, or end may force a re-ordering...
-    if (GetMarkerStart_ (marker) != start or GetMarkerLength_ (marker) != len)
-    {
+    if (GetMarkerStart_ (marker) != start or GetMarkerLength_ (marker) != len) {
         /*
          *  If this marker is still contained in its parent - no need to remove it.
          *  Furthermore - if all its children remain in it - no need to move them up.

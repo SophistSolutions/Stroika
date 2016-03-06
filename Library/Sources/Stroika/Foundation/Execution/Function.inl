@@ -29,7 +29,8 @@ namespace   Stroika {
             }
             template    <typename FUNCTION_SIGNATURE>
             inline  Function<FUNCTION_SIGNATURE>::Function (nullptr_t)
-                : fFun_ { } {
+                : fFun_ { }
+            {
             }
             template    <typename FUNCTION_SIGNATURE>
             inline  Function<FUNCTION_SIGNATURE>::operator STDFUNCTION () const

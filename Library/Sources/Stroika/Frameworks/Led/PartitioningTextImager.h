@@ -591,7 +591,7 @@ namespace   Stroika {
             }
             inline  PartitioningTextImager::MeasureTextCache::CacheElt::CacheElt (const COMPARE_ITEM& ci)
                 : fValidFor { ci }
-            , fMeasurementsCache (0)
+                , fMeasurementsCache (0)
             {
             }
 #endif

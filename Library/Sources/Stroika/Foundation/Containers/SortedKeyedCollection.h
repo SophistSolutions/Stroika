@@ -128,13 +128,13 @@ namespace   Stroika {
                  */
                 nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (const SortedKeyedCollection<T, TRAITS>& rhs);
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS> && rhs)
+                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS> && rhs) = default;
+                nonvirtual  SortedKeyedCollection<T, TRAITS>& operator= (SortedKeyedCollection<T, TRAITS>&& rhs) = default;
 #endif
 
             protected:

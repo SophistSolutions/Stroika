@@ -268,8 +268,9 @@ namespace {
             uint64_t    fTotalErrors;
             PerfFetchResults_ (uint64_t tbr, uint64_t tbs, uint64_t tpr, uint64_t tps, uint64_t baud, uint64_t totalErrors)
                 : PerfStats_ { tbr, tbs, tpr, tps }
-            , fBAUDRate { baud }
-            , fTotalErrors { totalErrors } {
+                , fBAUDRate { baud }
+                , fTotalErrors { totalErrors }
+            {
             }
         };
         Mapping<String, PerfFetchResults_>   perfstat_fetch_ ()
@@ -697,13 +698,13 @@ namespace {
 
 namespace {
     struct  CapturerWithContext_
-            : Debug::AssertExternallySynchronizedLock
+        : Debug::AssertExternallySynchronizedLock
 #if     qPlatform_AIX
-            , CapturerWithContext_AIX_
+        , CapturerWithContext_AIX_
 #elif   qPlatform_POSIX
-            , CapturerWithContext_POSIX_
+        , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
-            , CapturerWithContext_Windows_
+        , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_AIX

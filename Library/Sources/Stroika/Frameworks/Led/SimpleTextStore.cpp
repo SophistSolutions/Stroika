@@ -328,15 +328,15 @@ void    SimpleTextStore::PreRemoveMarker (Marker* marker)
     OurStuff (marker)->fIsPreRemoved = true;
 }
 
-void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept {
+void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept
+{
     Assert (start >= 0);
     Assert (end >= 0);
     Assert (start <= end);
     AssertNotNull (marker);
 
     // changing the start may force a re-ordering...
-    if (marker->GetStart () == start)
-    {
+    if (marker->GetStart () == start) {
         OurStuff (marker)->fLength = end - start;
     }
     else {

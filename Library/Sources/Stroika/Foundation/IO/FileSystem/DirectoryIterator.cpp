@@ -64,7 +64,7 @@ public:
 #if     qPlatform_POSIX
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
 #if     qCompilerAndStdLib_fdopendir_Buggy
-    , fDirName_ (dir)
+        , fDirName_ (dir)
 #endif
 #elif   qPlatform_Windows
         : fDirName_ (dir)
@@ -105,7 +105,7 @@ public:
          )
         : fDirIt_ { dirObj }
 #if     qCompilerAndStdLib_fdopendir_Buggy
-    , fDirName_ (dir)
+        , fDirName_ (dir)
 #endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_

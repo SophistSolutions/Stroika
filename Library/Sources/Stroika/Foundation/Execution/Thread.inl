@@ -148,9 +148,9 @@ namespace   Stroika {
                 }
                 return fRep_->GetID ();
             }
-            inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept {
-                if (fRep_.get () == nullptr)
-                {
+            inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept
+            {
+                if (fRep_.get () == nullptr) {
                     return Thread::NativeHandleType (0);    // on some systems (e.g. AIX64 7.1) this is not a pointer type and assign nullptr illegal
                 }
                 return fRep_->GetNativeHandle ();
@@ -184,7 +184,8 @@ namespace   Stroika {
              *************************** GetCurrentThreadID *********************************
              ********************************************************************************
              */
-            inline  Thread::IDType  GetCurrentThreadID () noexcept {
+            inline  Thread::IDType  GetCurrentThreadID () noexcept
+            {
                 return this_thread::get_id ();
             }
 

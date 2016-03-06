@@ -810,7 +810,8 @@ void    TextStore::DoAboutToUpdateCalls (const UpdateInfo& updateInfo, Marker* c
             in the <em>reverse</em> order in which the @'MarkerOwner::AboutToUpdateText' calls were made.</p>
             <p>Note also that this API changed arguments in Led 3.1a4</p>
 */
-void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  noexcept {
+void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* markersBegin, Marker* const* markersEnd)  noexcept
+{
     vector<MarkerOwner*>    markerOwners    =   GetMarkerOwners ();
     /*
      *  Not STRICTLY required that the list of markerowners doesn't change during this call - but would be a possible symptom of
@@ -819,8 +820,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<MarkerOwner*>::reverse_iterator  start   =   markerOwners.rbegin ();
         vector<MarkerOwner*>::reverse_iterator  end     =   markerOwners.rend ();
-        for (auto i = start; i != end; ++i)
-        {
+        for (auto i = start; i != end; ++i) {
             Assert (GetMarkerOwners () == markerOwners);
             (*i)->EarlyDidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);
@@ -828,8 +828,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     }
 #if 1
     {
-        for (Marker* const* i = markersEnd; i != markersBegin;)
-        {
+        for (Marker * const* i = markersEnd; i != markersBegin;) {
             --i;
 //          (*(i-1))->DidUpdateText (updateInfo);
             (*i)->DidUpdateText (updateInfo);
@@ -840,8 +839,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<Marker*>::const_reverse_iterator start   =   markers.rbegin ();
         vector<Marker*>::const_reverse_iterator end     =   markers.rend ();
-        for (auto i = start; i != end; ++i)
-        {
+        for (auto i = start; i != end; ++i) {
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);
         }
@@ -850,8 +848,7 @@ void    TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const
     {
         vector<MarkerOwner*>::reverse_iterator  start   =   markerOwners.rbegin ();
         vector<MarkerOwner*>::reverse_iterator  end     =   markerOwners.rend ();
-        for (auto i = start; i != end; ++i)
-        {
+        for (auto i = start; i != end; ++i) {
             Assert (GetMarkerOwners () == markerOwners);
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);

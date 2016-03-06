@@ -54,7 +54,7 @@ namespace   Stroika {
                     }
                     return *this;
                 }
-                inline  Socket& Socket::operator= (Socket && s)
+                inline  Socket& Socket::operator= (Socket&& s)
                 {
                     if (fRep_ != s.fRep_) {
                         fRep_ = std::move (s.fRep_);

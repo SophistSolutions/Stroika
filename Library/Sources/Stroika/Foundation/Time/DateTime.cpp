@@ -153,10 +153,10 @@ const   DateTime&    DateTime::kMin  =   Execution::ModuleInitializer<Time::Priv
 const   DateTime&    DateTime::kMax  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax;
 
 DateTime::DateTime (time_t unixTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ ()
-, fTimeOfDay_ ()
+    :
+    fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     struct  tm  tmTime {};
 #if qPlatform_Windows
@@ -169,19 +169,19 @@ fTimezone_ (tz)
 }
 
 DateTime::DateTime (const tm& tmTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
-, fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
+    :
+    fTimezone_ (tz)
+    , fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
+    , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
 {
 }
 
 #if     qPlatform_POSIX
 DateTime::DateTime (const timeval& tmTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ ()
-, fTimeOfDay_ ()
+    :
+    fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_usec FOR NOW because we currently don't support fractional seconds in DateTime
     struct  tm  tmTimeData {};
@@ -191,10 +191,10 @@ fTimezone_ (tz)
 }
 
 DateTime::DateTime (const timespec& tmTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ ()
-, fTimeOfDay_ ()
+    :
+    fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     time_t      unixTime    =   tmTime.tv_sec;          // IGNORE tv_nsec FOR NOW because we currently don't support fractional seconds in DateTime
     struct  tm  tmTimeData {};
@@ -205,18 +205,18 @@ fTimezone_ (tz)
 #endif
 #if     qPlatform_Windows
 DateTime::DateTime (const SYSTEMTIME& sysTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ (mkDate_ (sysTime))
-, fTimeOfDay_ (mkTimeOfDay_ (sysTime))
+    :
+    fTimezone_ (tz)
+    , fDate_ (mkDate_ (sysTime))
+    , fTimeOfDay_ (mkTimeOfDay_ (sysTime))
 {
 }
 
 DateTime::DateTime (const FILETIME& fileTime, Timezone tz) noexcept
-:
-fTimezone_ (tz)
-, fDate_ ()
-, fTimeOfDay_ ()
+    :
+    fTimezone_ (tz)
+    , fDate_ ()
+    , fTimeOfDay_ ()
 {
     SYSTEMTIME sysTime {};
     if (::FileTimeToSystemTime (&fileTime, &sysTime)) {
@@ -381,7 +381,8 @@ DateTime    DateTime::AsUTC () const
     }
 }
 
-DateTime    DateTime::Now () noexcept {
+DateTime    DateTime::Now () noexcept
+{
 #if     qPlatform_Windows
     SYSTEMTIME  st {};
     ::GetLocalTime (&st);

@@ -106,13 +106,13 @@ namespace   Stroika {
                  */
                 nonvirtual  Stack<T>& operator= (const Stack<T>& rhs) = default;
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Stack<T>& operator= (Stack<T> && rhs)
+                nonvirtual  Stack<T>& operator= (Stack<T>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  Stack<T>& operator= (Stack<T> && rhs) = default;
+                nonvirtual  Stack<T>& operator= (Stack<T>&& rhs) = default;
 #endif
 
             public:

@@ -81,18 +81,18 @@ namespace   Stroika {
         };\
         tester_##NAME##_ t_##NAME##_;\
     }\
-     
 
-            /**
-             */
+
+    /**
+     */
 #define CompileTimeFlagChecker_SOURCE(NS_PREFIX,NAME,VALUE)\
     CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,CompileTimeCheck_##NAME,VALUE)
 #define CompileTimeCheck_SOURCE_PRIVATE_1_(NS_PREFIX,NAME,VALUE)\
     Stroika::Foundation::Debug::CompileTimeFlagChecker::HiddenValueType    NS_PREFIX :: NAME##VALUE = 1;
 
 
-        }
-    }
+}
+}
 }
 
 

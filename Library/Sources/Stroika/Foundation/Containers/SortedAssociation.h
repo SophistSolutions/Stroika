@@ -89,13 +89,13 @@ namespace   Stroika {
                  */
                 nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 #if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs)
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs)
                 {
                     inherited::operator= (move (rhs));
                     return *this;
                 }
 #else
-                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS> && rhs) = default;
+                nonvirtual  SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
 #endif
 
             public:

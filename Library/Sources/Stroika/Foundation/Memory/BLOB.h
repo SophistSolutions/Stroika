@@ -316,9 +316,9 @@ namespace   Stroika {
              */
             struct  BLOB::_IRep
 #if     qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-                    : public Memory::enable_shared_from_this<BLOB::_IRep>
+                : public Memory::enable_shared_from_this<BLOB::_IRep>
 #else
-                    : public std::enable_shared_from_this<BLOB::_IRep>
+                : public std::enable_shared_from_this<BLOB::_IRep>
 #endif
             {
                 _IRep () = default;

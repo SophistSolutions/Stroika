@@ -2048,13 +2048,13 @@ SkipCmdLine_:
 
 namespace {
     struct  CapturerWithContext_
-            : Debug::AssertExternallySynchronizedLock
+        : Debug::AssertExternallySynchronizedLock
 #if     qPlatform_AIX
-            , CapturerWithContext_AIX_
+        , CapturerWithContext_AIX_
 #elif   qPlatform_Linux
-            , CapturerWithContext_Linux_
+        , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
-            , CapturerWithContext_Windows_
+        , CapturerWithContext_Windows_
 #endif
     {
 #if     qPlatform_AIX

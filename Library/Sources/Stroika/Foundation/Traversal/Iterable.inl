@@ -165,22 +165,22 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep) noexcept
-:
-            _fRep (rep)
+                :
+                _fRep (rep)
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from) noexcept
-:
-            _fRep (from._fRep)
+                :
+                _fRep (from._fRep)
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (Iterable<T>&& from) noexcept
-:
-            _fRep (std::move (from._fRep))
+                :
+                _fRep (std::move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
@@ -195,8 +195,8 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep) noexcept
-:
-            _fRep (std::move (rep))
+                :
+                _fRep (std::move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
@@ -211,7 +211,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T> && rhs)
+            inline  Iterable<T>&    Iterable<T>::operator= (Iterable<T>&& rhs)
             {
                 RequireNotNull (rhs._fRep.cget ());
                 _fRep = move (rhs._fRep);
@@ -364,7 +364,7 @@ namespace   Stroika {
                     {
                         ++tmpIt;
                     }
-                    return tmpIt ?* tmpIt : Optional<T> ();
+                    return tmpIt ? * tmpIt : Optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
@@ -486,7 +486,7 @@ namespace   Stroika {
                         nItemsToSkip--;
                         ++tmpIt;
                     }
-                    return tmpIt ?* tmpIt++ : Optional<T> ();
+                    return tmpIt ? * tmpIt++ : Optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
@@ -502,7 +502,7 @@ namespace   Stroika {
                         return Optional<T> ();
                     }
                     nItemsToTake--;
-                    return tmpIt ?* tmpIt++ : Optional<T> ();
+                    return tmpIt ? * tmpIt++ : Optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
