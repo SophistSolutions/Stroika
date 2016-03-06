@@ -16,14 +16,37 @@ History
 
 
 
+
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a132">v2.0a132x</a><br/>2016-02-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a132">v2.0a132</a><br/>2016-03-06</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>fixed typo with Foundation/Cache/TimedCache, and new draft Cache/SynchronizedTimedCache</li>
+		<li>FileSystem::IsDirectoryName ()</li>
+		<li>Frameworks/WebServer: Request exception cleanups, new ClientErrorException</li>
+		<li>fixed serious bug with Request::GetBody (): was not handling partial reads (where read returns less than requested), 
+			optional upTo arg to InputStream::ReadAll()</li>
+		<li>fixed has KeyvaluePair definition - for ToString, and sampe for Range<>::ToString</li>
+		<li>Small cleanups to Iterator/Iterable/MakeSharedPtr - and use mew MakeSharedPtr/make_shared_ptr isntead of shared_ptr<> (new x)</li>
+		<li>updated version of astyle</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (except https://stroika.atlassian.net/browse/STK-451)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
+
 
 
 
