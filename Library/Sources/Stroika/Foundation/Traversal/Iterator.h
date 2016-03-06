@@ -137,18 +137,12 @@ namespace   Stroika {
                 template    <typename SHARED_T>
                 using   SharedPtrImplementationTemplate =   Memory::SharedPtr<SHARED_T>;
                 template    <typename SHARED_T, typename... ARGS_TYPE>
-                inline  static  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args)
-                {
-                    return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
-                }
+                static  Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&& ... args);
 #else
                 template    <typename SHARED_T>
                 using   SharedPtrImplementationTemplate =   shared_ptr<SHARED_T>;
                 template    <typename SHARED_T, typename... ARGS_TYPE>
-                inline  static  shared_ptr<SHARED_T>    MakeSharedPtr (ARGS_TYPE&& ... args)
-                {
-                    return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
-                }
+                static  shared_ptr<SHARED_T>        MakeSharedPtr (ARGS_TYPE&& ... args);
 #endif
 
 #if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
@@ -290,15 +284,6 @@ namespace   Stroika {
             public:
                 class   IRep;
                 using   SharedIRepPtr   =   SharedPtrImplementationTemplate<IRep>;
-
-#if 0
-            public:
-                template    <typename   SHARED_TYPE, typename... ARGS_TYPE>
-                inline  static  SharedPtrImplementationTemplate<SHARED_TYPE>    MakeSharedPtr (ARGS_TYPE&& ... args)
-                {
-                    return IteratorBase::MakeSharedPtr<SHARED_TYPE> (forward<ARGS_TYPE> (args)...);
-                }
-#endif
 
             private:
                 struct  Rep_Cloner_ {

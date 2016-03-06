@@ -14,10 +14,30 @@ namespace   Stroika {
 
 
             /*
-            ********************************************************************************
-            **************** Iterator<T, BASE_STD_ITERATOR>::Rep_Cloner_ *******************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ******************************** IteratorBase **********************************
+             ********************************************************************************
+             */
+#if     qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
+            template    <typename SHARED_T, typename... ARGS_TYPE>
+            inline  Memory::SharedPtr<SHARED_T> IteratorBase::MakeSharedPtr (ARGS_TYPE&& ... args)
+            {
+                return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+            }
+#else
+            template    <typename SHARED_T, typename... ARGS_TYPE>
+            inline  shared_ptr<SHARED_T>    IteratorBase::MakeSharedPtr (ARGS_TYPE&& ... args)
+            {
+                return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
+            }
+#endif
+
+
+            /*
+             ********************************************************************************
+             **************** Iterator<T, BASE_STD_ITERATOR>::Rep_Cloner_ *******************
+             ********************************************************************************
+             */
             template    <typename T, typename BASE_STD_ITERATOR>
             inline  typename IteratorBase::SharedPtrImplementationTemplate<typename Iterator<T, BASE_STD_ITERATOR>::IRep>  Iterator<T, BASE_STD_ITERATOR>::Rep_Cloner_::Copy (const IRep& t)
             {
