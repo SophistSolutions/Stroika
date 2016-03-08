@@ -80,12 +80,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Run this function - in the body of your thread. Interupt with a thread abort.
-                 */
-                nonvirtual  void    RunDirectly ();
-
-            public:
-                /**
                  *  Typically this is what you would do, and recieve the Thread object, to cancel (Abort)
                  *
                  *  \req only called once.
@@ -93,6 +87,14 @@ namespace   Stroika {
                  *  If ever run, PIDLoop DTOR automatically terminates Run loop and waits for thread to terminate.
                  */
                 nonvirtual  Thread    RunInThread ();
+
+            public:
+                /**
+                 *  Run this function - in the body of your thread. Interupt with a thread abort.
+				 *
+				 *	Use this if you want to control thread usage yourself. Otherwise, try @see RunInThread
+                 */
+                nonvirtual  void    RunDirectly ();
 
             private:
                 ControlParams               fPIDParams_;
