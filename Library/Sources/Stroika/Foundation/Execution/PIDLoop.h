@@ -9,6 +9,8 @@
 #include    "../Configuration/Common.h"
 
 #include    "../Time/Realtime.h"
+#include    "Sleep.h"
+#include    "Synchronized.h"
 
 
 
@@ -28,47 +30,56 @@ namespace   Stroika {
 
 
             /**
-			 *		\note	Based on https://en.wikipedia.org/wiki/PID_controller (Discrete implementation)
+             *      \note   Based on https://en.wikipedia.org/wiki/PID_controller (Discrete implementation)
+             *
+             *  This code is internally synchronized (except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction).
              *
              */
             template    <typename CONTROL_VAR_TYPE = double>
-            class	PIDLoop {
-			public:
+            class   PIDLoop {
+            public:
                 using   ValueType = CONTROL_VAR_TYPE;
-			public:
+
+            public:
                 struct  ControlParams {
                     ValueType   P;
                     ValueType   I;
                     ValueType   D;
                 };
-			public:
-				// Measure function produces PV = ProcessVariable, and SP - SetPoint is target value
-                PIDLoop (const ControlParams& pidParams, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
 
-			public:
-                void    SetSetPoint (sp)
-                {
-                    fSetPoint = sp;
-                }
+            public:
+                /**
+                 *  Measure function produces PV = ProcessVariable, and SP - SetPoint is target value
+                 */
+                PIDLoop () = delete;
+                PIDLoop (const PIDLoop&) = delete;
+                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+                PIDLoop& operator= (const PIDLoop&) = delete;
 
-			public:
-                void    Run ()
-                {
-                    while (true) {
-                        ValueType	measuredValue = measureFunction ();
-                        ValueType   error = fSetPoint - measuredValue;
-                        ValueType	derivative = (error - fPrevError) / dt;
-                        ValueType	output = fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivitive;
-                        outputFunction (output);
-                        fPrevErrror = error;
-                        wait (dt);
-                    }
-                }
+            public:
+                /**
+                 */
+                nonvirtual  ValueType    GetSetPoint () const;
 
-			private:
-                ControlParams	fPIDParams_;
-                Time::DurationSecondsType dt;
-                ValueType fPrevError = {};
+            public:
+                /**
+                 */
+                nonvirtual  void    SetSetPoint (ValueType sp);
+
+            public:
+                /**
+                 *  Run this function - in the body of your thread. Interupt with a thread abort.
+                 */
+                nonvirtual  void    Run ();
+
+            private:
+                ControlParams               fPIDParams_;
+                Time::DurationSecondsType   fTimeDelta_;
+                function<ValueType()>       fMeasureFunction_;
+                function<(ValueType o)>     fOutputFunction_;
+                Synchronized<ValueType>     fSetPoint_ = {};
+                ValueType                   fPrevError_ = {};
+                ValueType                   fIntegral_ = {};
             };
 
 

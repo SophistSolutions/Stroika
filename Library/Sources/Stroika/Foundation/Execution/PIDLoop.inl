@@ -16,7 +16,41 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            template    <typename CONTROL_VAR_TYPE>
+            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint)
+                : fPIDParams_ (pidParams)
+                , fTimeDelta_ (timeDelta)
+                , fMeasureFunction_ (measureFunction)
+                , fOutputFunction_ (outputFunction)
+                , fSetPoint_ (initialSetPoint)
+            {
+            }
 
+            template    <typename CONTROL_VAR_TYPE>
+            auto    PIDLoop<CONTROL_VAR_TYPE>::GetSetPoint () const -> ValueType
+            {
+                return fSetPoint_;
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            void    PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
+            {
+                fSetPoint_ = sp;
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            void    PIDLoop<CONTROL_VAR_TYPE>::Run ()
+            {
+                Time::DurationSecondsType   nextRunAt = Time::GetTickCount ();
+                while (true) {
+                    SleepUntil (nextRunAt);
+                    ValueType   measuredValue = fMeasureFunction_ ();
+                    ValueType   error = fSetPoint_ - measuredValue;
+                    fIntegral_ += error * fTimeDelta_;
+                    ValueType   derivative = (error - fPrevError) / fTimeDelta_;
+                    fPrevError_ = error;
+                    fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivative);
+                    nextRunAt += fTimeDelta_;
+                }
+            }
 
 
         }
