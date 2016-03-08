@@ -9,8 +9,8 @@
 #include    "../Configuration/Common.h"
 
 #include    "../Time/Realtime.h"
-#include    "Sleep.h"
 #include    "Synchronized.h"
+#include    "Thread.h"
 
 
 
@@ -19,7 +19,15 @@
  *
  * TODO:
  *
- *      @todo   quick hack - not ready for prime time
+ *      @todo   rough, untested draft
+ *
+ *      @todo   Example integrating with threads
+
+ *          I THINK
+                mixin of Thread and PIDLoop? - or make PIDLoop copyable? Or pass shared_ptr<PIDLoop> to thread?
+                * or newmethod
+
+                *RunInThread(Thread t= Thread ()); THAT IS BEST!
  */
 
 
@@ -33,6 +41,14 @@ namespace   Stroika {
              *      \note   Based on https://en.wikipedia.org/wiki/PID_controller (Discrete implementation)
              *
              *  This code is internally synchronized (except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction).
+             *
+             *  \par Example Usage
+             *      \code
+             *      PIDLoop<> pidLoop { PIDLoop<>::ControlParams { 3, -4.0, 4.0 }, 1.0, [] () -> double { return getTemperature (); }, [] (double voltage) { setDAC (voltage); } };
+             *      pidLoop.SetSetPoint (23.3);
+             *      pidLoop.RunInThread ();
+             *      Sleep (10*60);  // run PID loop 10 minutes, and when PIDLoop goes out of scope, auto-terminates
+             *      \endcode
              *
              */
             template    <typename CONTROL_VAR_TYPE = double>
@@ -57,6 +73,9 @@ namespace   Stroika {
                 PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
+                ~PIDLoop ();
+
+            public:
                 /**
                  */
                 nonvirtual  ValueType    GetSetPoint () const;
@@ -70,7 +89,17 @@ namespace   Stroika {
                 /**
                  *  Run this function - in the body of your thread. Interupt with a thread abort.
                  */
-                nonvirtual  void    Run ();
+                nonvirtual  void    RunDirectly ();
+
+            public:
+                /**
+                 *  Typically this is what you would do, and recieve the Thread object, to cancel (Abort)
+                 *
+                 *  \req only called once.
+                 *
+                 *  If ever run, PIDLoop DTOR automatically terminates Run loop and waits for thread to terminate.
+                 */
+                nonvirtual  Thread    RunInThread ();
 
             private:
                 ControlParams               fPIDParams_;
@@ -80,6 +109,7 @@ namespace   Stroika {
                 Synchronized<ValueType>     fSetPoint_ = {};
                 ValueType                   fPrevError_ = {};
                 ValueType                   fIntegral_ = {};
+                Optional<Thread>            fThread_;
             };
 
 

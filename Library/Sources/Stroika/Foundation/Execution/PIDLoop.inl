@@ -10,12 +10,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "Sleep.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
 
+            /*
+             ********************************************************************************
+             ************************** PIDLoop<CONTROL_VAR_TYPE> ***************************
+             ********************************************************************************
+             */
             template    <typename CONTROL_VAR_TYPE>
             PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint)
                 : fPIDParams_ (pidParams)
@@ -25,19 +31,25 @@ namespace   Stroika {
                 , fSetPoint_ (initialSetPoint)
             {
             }
-
             template    <typename CONTROL_VAR_TYPE>
-            auto    PIDLoop<CONTROL_VAR_TYPE>::GetSetPoint () const -> ValueType
+            PIDLoop<CONTROL_VAR_TYPE>::~PIDLoop ()
+            {
+                if (fThread_) {
+                    fThread_->AbortAndWaitTilDone ();
+                }
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            inline  auto    PIDLoop<CONTROL_VAR_TYPE>::GetSetPoint () const -> ValueType
             {
                 return fSetPoint_;
             }
             template    <typename CONTROL_VAR_TYPE>
-            void    PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
+            inline  void    PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
             {
                 fSetPoint_ = sp;
             }
             template    <typename CONTROL_VAR_TYPE>
-            void    PIDLoop<CONTROL_VAR_TYPE>::Run ()
+            void    PIDLoop<CONTROL_VAR_TYPE>::RunDirectly ()
             {
                 Time::DurationSecondsType   nextRunAt = Time::GetTickCount ();
                 while (true) {
@@ -50,6 +62,13 @@ namespace   Stroika {
                     fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivative);
                     nextRunAt += fTimeDelta_;
                 }
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            Thread    PIDLoop<CONTROL_VAR_TYPE>::RunInThread ()
+            {
+                Require (fThread_.IsMissing ());
+                fThread_ = Thread ([this] () { RunDirectly (); }, Thread::eAutoStart);
+                return *fThread_;
             }
 
 
