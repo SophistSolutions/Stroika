@@ -21,13 +21,6 @@
  *
  *      @todo   rough, untested draft
  *
- *      @todo   Example integrating with threads
-
- *          I THINK
-                mixin of Thread and PIDLoop? - or make PIDLoop copyable? Or pass shared_ptr<PIDLoop> to thread?
-                * or newmethod
-
-                *RunInThread(Thread t= Thread ()); THAT IS BEST!
  */
 
 
