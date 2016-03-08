@@ -91,8 +91,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Run this function - in the body of your thread. Interupt with a thread abort.
-				 *
-				 *	Use this if you want to control thread usage yourself. Otherwise, try @see RunInThread
+                 *
+                 *  Use this if you want to control thread usage yourself. Otherwise, try @see RunInThread
                  */
                 nonvirtual  void    RunDirectly ();
 
