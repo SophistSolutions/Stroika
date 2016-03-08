@@ -258,6 +258,13 @@ namespace   Stroika {
                  */
                 nonvirtual  Characters::String PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo = kDefaultAgePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo = kDefaultPrettyPrintInfo) const;
 
+
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual Characters::String  ToString () const;
+
             public:
                 /**
                  * Duration::kMin is the least duration this Duration class supports representing.

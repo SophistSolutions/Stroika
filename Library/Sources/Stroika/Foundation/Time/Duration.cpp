@@ -388,6 +388,11 @@ Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) con
     return PrettyPrint (prettyPrintInfo);
 }
 
+Characters::String  Duration::ToString () const
+{
+    return Format ();
+}
+
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
     InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
