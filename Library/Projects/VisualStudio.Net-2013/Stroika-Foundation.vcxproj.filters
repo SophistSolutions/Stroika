@@ -1794,6 +1794,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2711,6 +2714,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl">
       <Filter>Sources\Cache</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
