@@ -355,7 +355,7 @@ namespace   {
         {
             ObjectVariantMapper mapper;
 
-            mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
+            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations<Fred> (Fred_NAMES));
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             mapper.AddClass<SharedContactsConfig_> ({
                 ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1), L"fEnum1" },
