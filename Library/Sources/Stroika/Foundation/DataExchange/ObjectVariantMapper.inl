@@ -485,7 +485,7 @@ namespace   Stroika {
             template    <typename ENUM_TYPE>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&, typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
             {
-                return MakeCommonSerializer_NamedEnumerations ();
+                return MakeCommonSerializer_NamedEnumerations<ENUM_TYPE> ();
             }
             template    <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
