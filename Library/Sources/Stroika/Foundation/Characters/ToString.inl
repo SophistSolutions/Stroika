@@ -6,7 +6,6 @@
 
 #include    <wchar.h>
 
-#include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Enumeration.h"
 #include    "FloatConversion.h"
@@ -32,7 +31,9 @@ namespace   Stroika {
 
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(ToString, (x.ToString ()));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(beginenditerable, (x.begin () != x.end ()));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(pair, (x.first, x.second));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(KeyValuePair, (x.fKey, x.fValue));
+                STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(CountedValue, (x.fValue, x.fCount));
 
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
@@ -70,11 +71,31 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
+                {
+                    StringBuilder sb;
+                    sb << L"{";
+                    sb << L"'" << ToString (t.first) << L"': " << ToString (t.second);
+                    sb << L"}";
+                    return sb.str ();
+                }
+
+                template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_KeyValuePair<T>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
                     sb << L"'" << ToString (t.fKey) << L"': " << ToString (t.fValue);
+                    sb << L"}";
+                    return sb.str ();
+                }
+
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<has_CountedValue<T>::value>::type* = 0)
+                {
+                    StringBuilder sb;
+                    sb << L"{";
+                    sb << L"'" << ToString (t.fValue) << L"': " << ToString (t.fCount);
                     sb << L"}";
                     return sb.str ();
                 }
