@@ -67,6 +67,16 @@ namespace   Stroika {
                 fDelegate_ = v;
             }
             template    <typename   T, typename TRAITS>
+            inline auto Synchronized<T, TRAITS>::cget () const -> const ReadableReference
+            {
+                return ReadableReference (&fDelegate_, &fLock_);
+            }
+
+            template    <typename   T, typename TRAITS>
+            inline auto  Synchronized<T, TRAITS>::get () -> WritableReference {
+                return WritableReference (&fDelegate_, &fLock_);
+            }
+            template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::GetReference () const -> const WritableReference
             {
                 auto nonConstThis = const_cast<Synchronized<T, TRAITS>*> (this);
@@ -96,6 +106,92 @@ namespace   Stroika {
             {
                 fLock_.unlock ();
             }
+
+
+            /*
+             ********************************************************************************
+             ************** Synchronized<T, TRAITS>::ReadableReference **********************
+             ********************************************************************************
+             */
+            template    <typename   T, typename TRAITS>
+            inline  Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, MutexType* m)
+                : fT (t)
+                , l (*m)
+            {
+                RequireNotNull (t);
+                RequireNotNull (m);
+            }
+            template    <typename   T, typename TRAITS>
+            inline      Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
+                : fT (src.fT)
+                , l { move (src.l) }
+            {
+                src.fT = nullptr;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
+            {
+                EnsureNotNull (fT);
+                return fT;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  Synchronized<T, TRAITS>::ReadableReference::operator const T& () const
+            {
+                EnsureNotNull (fT);
+                return *fT;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  T   Synchronized<T, TRAITS>::ReadableReference::load () const
+            {
+                EnsureNotNull (fT);
+                return *fT;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************** Synchronized<T, TRAITS>::WritableReference **********************
+             ********************************************************************************
+             */
+            template    <typename   T, typename TRAITS>
+            inline  Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m)
+                : ReadableReference (t, m)
+            {
+            }
+            template    <typename   T, typename TRAITS>
+            inline  Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)
+                : ReadableReference (move (src))
+            {
+            }
+            template    <typename   T, typename TRAITS>
+            inline  auto Synchronized<T, TRAITS>::WritableReference::operator= (T rhs) -> const WritableReference&
+            {
+                RequireNotNull (this->fT);
+                // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                *const_cast<T*> (this->fT) = rhs;
+                return *this;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  T* Synchronized<T, TRAITS>::WritableReference::operator-> ()
+            {
+                // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                EnsureNotNull (this->fT);
+                return const_cast<T*> (this->fT);
+            }
+            template    <typename   T, typename TRAITS>
+            inline  const T* Synchronized<T, TRAITS>::WritableReference::operator-> () const
+            {
+                return ReadableReference::operator-> ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  void    Synchronized<T, TRAITS>::WritableReference::store (const T& v)
+            {
+                // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                *const_cast<T*> (this->fT) = v;
+            }
+
+
+
 
 
             /*

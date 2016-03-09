@@ -132,17 +132,21 @@ namespace   Stroika {
                 using   MutexType = typename TRAITS::MutexType;
 
             public:
-                struct  ReadableReference;
+                class   ReadableReference;
 
             public:
-                struct  WritableReference;
+                class   WritableReference;
 
             public:
+                /**
+                 */
                 template    <typename ...ARGUMENT_TYPES>
                 Synchronized (ARGUMENT_TYPES&& ...args);
                 Synchronized (const Synchronized& src);
 
             public:
+                /**
+                 */
                 nonvirtual  Synchronized&   operator= (const Synchronized& rhs);
                 nonvirtual  Synchronized&   operator= (const T& rhs);
 
@@ -165,6 +169,18 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    store (const T& v);
+
+            public:
+                /**
+                \\\experimental
+                 */
+                nonvirtual  const ReadableReference cget () const;
+
+            public:
+                /**
+                \\\experimental
+                 */
+                nonvirtual  WritableReference get ();
 
             public:
                 /**
@@ -211,79 +227,59 @@ namespace   Stroika {
             * @todo KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
              */
             template    <typename   T, typename TRAITS>
-            struct  Synchronized<T, TRAITS>::ReadableReference {
+            class  Synchronized<T, TRAITS>::ReadableReference {
+            public:
+                /**
+                 */
+                ReadableReference (const T* t, MutexType* m);
+                ReadableReference (const ReadableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
+                ReadableReference (ReadableReference&& src);
+                const ReadableReference& operator= (const ReadableReference& rhs) = delete;
+
+            public:
+                /**
+                 */
+                nonvirtual  const T* operator-> () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  operator const T& () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  T   load () const;
+
+            protected:
                 const T*                fT;
                 unique_lock<MutexType>  l;
-                ReadableReference (const T* t, MutexType* m)
-                    : fT (t)
-                    , l (*m)
-                {
-                    RequireNotNull (t);
-                    RequireNotNull (m);
-                }
-                ReadableReference (const ReadableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
-                ReadableReference (ReadableReference&& src)
-                    : fT (src.fT)
-                    , l { move (src.l) }
-                {
-                    src.fT = nullptr;
-                }
-                const ReadableReference& operator= (const ReadableReference& rhs) = delete;
-                const T* operator-> () const
-                {
-                    EnsureNotNull (fT);
-                    return fT;
-                }
-                operator const T& () const
-                {
-                    EnsureNotNull (fT);
-                    return *fT;
-                }
-                T   load () const
-                {
-                    EnsureNotNull (fT);
-                    return *fT;
-                }
             };
 
 
             /**
              */
             template    <typename   T, typename TRAITS>
-            struct  Synchronized<T, TRAITS>::WritableReference : Synchronized<T, TRAITS>::ReadableReference {
-                WritableReference (T* t, MutexType* m)
-                    : ReadableReference (t, m)
-                {
-                }
+            class  Synchronized<T, TRAITS>::WritableReference : public Synchronized<T, TRAITS>::ReadableReference {
+            public:
+                /**
+                 */
+                WritableReference (T* t, MutexType* m);
                 WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
-                WritableReference (WritableReference&& src)
-                    : ReadableReference (move (src))
-                {
-                }
+                WritableReference (WritableReference&& src);
                 const WritableReference& operator= (const WritableReference& rhs) = delete;
-                const WritableReference& operator= (T rhs)
-                {
-                    RequireNotNull (this->fT);
-                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                    *const_cast<T*> (this->fT) = rhs;
-                    return *this;
-                }
-                T* operator-> ()
-                {
-                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                    EnsureNotNull (this->fT);
-                    return const_cast<T*> (this->fT);
-                }
-                const T* operator-> () const
-                {
-                    return ReadableReference::operator-> ();
-                }
-                void    store (const T& v)
-                {
-                    // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                    *const_cast<T*> (this->fT) = v;
-                }
+                const WritableReference& operator= (T rhs);
 
+            public:
+                /**
+                 */
+                nonvirtual  T* operator-> ();
+                nonvirtual  const T* operator-> () const;
+
+            public:
+                /**
+                 */
+                nonvirtual      void    store (const T& v);
             };
 
 
