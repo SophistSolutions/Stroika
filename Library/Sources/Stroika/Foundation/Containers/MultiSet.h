@@ -246,6 +246,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
+            public:
+                /**
                  * This is like the MultiSet was a Bag<T>. If something is in there N times,
                  *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
                  *

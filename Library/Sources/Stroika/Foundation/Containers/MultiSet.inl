@@ -378,6 +378,11 @@ namespace   Stroika {
                 return sum;
             }
             template    <typename T, typename TRAITS>
+            inline  void  MultiSet<T, TRAITS>::clear ()
+            {
+                RemoveAll ();
+            }
+            template    <typename T, typename TRAITS>
             inline  Iterable<T>   MultiSet<T, TRAITS>::Elements () const
             {
                 _SafeReadRepAccessor<_IRep> accessor { this };
