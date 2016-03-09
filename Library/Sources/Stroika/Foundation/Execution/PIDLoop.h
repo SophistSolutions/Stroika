@@ -40,8 +40,13 @@ namespace   Stroika {
              *      PIDLoop<> pidLoop { PIDLoop<>::ControlParams { 3, -4.0, 4.0 }, 1.0, [] () -> double { return getTemperature (); }, [] (double voltage) { setDAC (voltage); } };
              *      pidLoop.SetSetPoint (23.3);
              *      pidLoop.RunInThread ();
-             *      Sleep (10*60);  // run PID loop 10 minutes, and when PIDLoop goes out of scope, auto-terminates
+             *      Sleep (1*60);   // run PID loop 1 minutes
+             *      pidLoop.SetSetPoint (40.0);             // then raise temperature
+             *      Sleep (10*60);  // then run PID loop 10 minutes, and when PIDLoop goes out of scope, auto-terminates
              *      \endcode
+             *
+             *  \note   To have code which preflights or cleanps up after the PIDLoop, create your own subclass of PIDLoop<>, and do your
+             *          initialization in the CTOR, and cleanup in the DTOR, so leverage and respects the RAII.
              *
              */
             template    <typename CONTROL_VAR_TYPE = double>
