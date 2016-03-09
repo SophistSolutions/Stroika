@@ -71,6 +71,12 @@ namespace   Stroika {
                 PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
+                /**
+                 *  If any existing PIDLoop thread is running (due to RunInThead call), this will abort that thread
+                 *  and wait for it to terminate before the PIDLoop destructor completes. If its calling
+                 *  a measure or output function, this means those must respect the thread abort call or a hang can
+                 *  result.
+                 */
                 ~PIDLoop ();
 
             public:
@@ -80,6 +86,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This can be called anytime, and the PIDLoop will automatically adjust.
                  */
                 nonvirtual  void    SetSetPoint (ValueType sp);
 
@@ -106,10 +113,13 @@ namespace   Stroika {
                 Time::DurationSecondsType   fTimeDelta_;
                 function<ValueType()>       fMeasureFunction_;
                 function<(ValueType o)>     fOutputFunction_;
-                Synchronized<ValueType>     fSetPoint_ = {};
-                ValueType                   fPrevError_ = {};
-                ValueType                   fIntegral_ = {};
-                Optional<Thread>            fThread_;
+                struct  UpdatableParams_ {
+                    ValueType   fSetPoint_ = {};
+                    ValueType   fPrevError_ = {};
+                    ValueType   fIntegral_ = {};
+                };
+                Synchronized<UpdatableParams_>  fUpdatableParams_;
+                Optional<Thread>                fThread_;
             };
 
 

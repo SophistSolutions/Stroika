@@ -46,7 +46,10 @@ namespace   Stroika {
             template    <typename CONTROL_VAR_TYPE>
             inline  void    PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
             {
-                fSetPoint_ = sp;
+                if (sp != fUpdatableParams_->fSetPoint_) {
+                    // we cannot predict how fPrevError_/fIntegral_ should change with a new setpoint, so clear them
+                    fUpdatableParams_ = { sp, ValueType {}, ValueType {} };
+                }
             }
             template    <typename CONTROL_VAR_TYPE>
             void    PIDLoop<CONTROL_VAR_TYPE>::RunDirectly ()
@@ -55,10 +58,10 @@ namespace   Stroika {
                 while (true) {
                     SleepUntil (nextRunAt);
                     ValueType   measuredValue = fMeasureFunction_ ();
-                    ValueType   error = fSetPoint_ - measuredValue;
-                    fIntegral_ += error * fTimeDelta_;
+                    ValueType   error = fUpdatableParams_->fSetPoint_ - measuredValue;
+                    fUpdatableParams_->fIntegral_ += error * fTimeDelta_;
                     ValueType   derivative = (error - fPrevError) / fTimeDelta_;
-                    fPrevError_ = error;
+                    fUpdatableParams_->fPrevError_ = error;
                     fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivative);
                     nextRunAt += fTimeDelta_;
                 }
