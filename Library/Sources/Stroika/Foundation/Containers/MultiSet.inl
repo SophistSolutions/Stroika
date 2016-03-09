@@ -480,7 +480,7 @@ namespace   Stroika {
             inline  void    MultiSet<T, TRAITS>::SetCount (ArgByValueType<T> i, CounterType newCount)
             {
                 CounterType cnt = OccurrencesOf (i);
-                if (newCnt > cnt) {
+                if (newCount > cnt) {
                     Add (i, newCount - cnt);
                 }
                 else if (newCount < cnt) {
