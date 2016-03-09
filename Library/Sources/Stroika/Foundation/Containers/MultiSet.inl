@@ -477,6 +477,17 @@ namespace   Stroika {
                 _SafeReadWriteRepAccessor<_IRep> { this } ._GetWriteableRep ().UpdateCount (i, newCount);
             }
             template    <typename T, typename TRAITS>
+            inline  void    MultiSet<T, TRAITS>::SetCount (ArgByValueType<T> i, CounterType newCount)
+            {
+                CounterType cnt = OccurrencesOf (i);
+                if (newCnt > cnt) {
+                    Add (i, newCount - cnt);
+                }
+                else if (newCount < cnt) {
+                    Remove (i, cnt - newCount);
+                }
+            }
+            template    <typename T, typename TRAITS>
             inline  auto  MultiSet<T, TRAITS>::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().OccurrencesOf (item);

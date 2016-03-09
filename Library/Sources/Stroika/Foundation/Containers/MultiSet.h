@@ -225,6 +225,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  It's perfectly legal for i to be missing before or after.
+                 */
+                nonvirtual  void    SetCount (ArgByValueType<T> i, CounterType newCount);
+
+            public:
+                /**
                  *  OccurrencesOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
                  *
                  *  If there are no copies of item in the MultiSet, 0 is returned.
