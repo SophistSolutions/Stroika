@@ -372,6 +372,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                template    <typename ENUM_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_EnumAsInt ();
+
+            public:
+                /**
                  *
                  *  This works on Any Iterable<KeyValuePair<>>, where the Key can be Mapped to / from a String, using
                  *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.

@@ -483,7 +483,39 @@ namespace   Stroika {
                 return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
             }
             template    <typename ENUM_TYPE>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&, typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
+            {
+                return MakeCommonSerializer_NamedEnumerations ();
+            }
+            template    <typename ENUM_TYPE>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
+            {
+                using   Characters::String_Constant;
+                static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
+                using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
+                static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
+                auto toVariantMapper = [nameMap] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
+                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+                    Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
+                    return VariantValue (*nameMap.Lookup (*actualMember));
+                };
+                auto fromVariantMapper = [nameMap] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
+                    auto optVal = nameMap.InverseLookup (d.As<String> ());
+                    if (optVal.IsMissing ())
+                    {
+                        DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), d.As<String> ().AsUTF8 ().c_str ());
+                        Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                    }
+                    * actualInto = *optVal;
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename ENUM_TYPE>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_EnumAsInt ()
             {
                 using   Characters::String_Constant;
                 /*
@@ -511,33 +543,6 @@ namespace   Stroika {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
                         Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename ENUM_TYPE>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
-            {
-                using   Characters::String_Constant;
-                static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
-                using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
-                static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
-                auto toVariantMapper = [nameMap] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
-                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
-                    Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
-                    return VariantValue (*nameMap.Lookup (*actualMember));
-                };
-                auto fromVariantMapper = [nameMap] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
-                    auto optVal = nameMap.InverseLookup (d.As<String> ());
-                    if (optVal.IsMissing ())
-                    {
-                        DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), d.As<String> ().AsUTF8 ().c_str ());
-                        Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
-                    }
-                    * actualInto = *optVal;
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
