@@ -24,6 +24,8 @@
  *
  * TODO:
  *
+ *      @todo   Consider relationship between windows GetLongPathName() and our CanonicalizePathName...
+ *
  *      @todo   Terrible name - class FileSystem inside namesapce FileSystem!
  *
  *      @todo   Great IDEA FROM KDJ. I USED TO support abstractfilesystem in stroika. Maybe in old code base. Used for Win32 FS versus UNIX versus MacOS FS.
