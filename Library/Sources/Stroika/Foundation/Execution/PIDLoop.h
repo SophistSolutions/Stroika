@@ -35,6 +35,9 @@ namespace   Stroika {
              *
              *  This code is internally synchronized (except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction).
              *
+             *  This code captures the basic logic/implementation of a discrete PID loop. It can be run from an owner-controlled
+             *  thread, or internally maintain its own thread to run the loop in (the easiest to use is the later).
+             *
              *  \par Example Usage
              *      \code
              *      PIDLoop<> pidLoop { PIDLoop<>::ControlParams { 3, -4.0, 4.0 }, 1.0, [] () -> double { return getTemperature (); }, [] (double voltage) { setDAC (voltage); } };
