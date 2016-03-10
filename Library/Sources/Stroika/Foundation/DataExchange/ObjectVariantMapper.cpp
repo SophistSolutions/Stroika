@@ -314,12 +314,7 @@ void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
     fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
 }
 
-ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields) const
-{
-    return MakeCommonSerializer_ForClassObject_ (forTypeInfo, n, fields, [] (VariantValue*) {});
-}
-
-ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const
 {
 #if     qDebug
     for (auto i : fields) {
@@ -367,8 +362,12 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
 #endif
+        RequireNotNull (intoObjOfTypeT);
         VariantValue v2Decode = d;
-        preflightBeforeToObject (&v2Decode);
+        if (preflightBeforeToObject != nullptr)
+        {
+            preflightBeforeToObject (&v2Decode);
+        }
         Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
         for (auto i : fields)
         {

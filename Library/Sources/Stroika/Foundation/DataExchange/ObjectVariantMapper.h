@@ -280,17 +280,14 @@ namespace   Stroika {
                  *          a bug.
                  */
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const Sequence<StructFieldInfo>& fieldDescriptions);
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions);
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd);
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const Sequence<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const std::initializer_list<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject);
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const StructFieldInfo* fieldDescriptionsStart, const StructFieldInfo* fieldDescriptionsEnd, function<void(VariantValue*)> preflightBeforeToObject);
+                nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
+
+            public:
+                /**
+                 *  \brief  Like @AddClass<> - adding a new class based on parameters - but based on the argument baseClass.
+                 */
+                template    <typename CLASS, typename BASE_CLASS>
+                nonvirtual  void    AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
 
             public:
                 /**
@@ -436,8 +433,7 @@ namespace   Stroika {
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields) const;
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Sequence<StructFieldInfo>& fields, function<void(VariantValue*)> preflightBeforeToObject) const;
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
