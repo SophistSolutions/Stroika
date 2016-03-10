@@ -94,7 +94,7 @@ namespace   Stroika {
                     (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                 }
 #endif
-                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, typeid (BASE_CLASS)));
+                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, type_index { typeid (BASE_CLASS) }));
             }
             inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const ->FromVariantMapperType
             {
