@@ -84,7 +84,17 @@ namespace   Stroika {
                     (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                 }
 #endif
-                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject));
+                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, Memory::Optional<type_index> {}));
+            }
+            template    <typename CLASS, typename BASE_CLASS>
+            inline  void    ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
+            {
+#if     qDebug
+                for (auto f : fieldDescriptions) {
+                    (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
+                }
+#endif
+                Add (MakeCommonSerializer_ForClassObject_ (typeid (CLASS), sizeof (CLASS), fieldDescriptions, preflightBeforeToObject, typeid (BASE_CLASS)));
             }
             inline auto ObjectVariantMapper::ToObjectMapper (const type_index& forTypeInfo) const ->FromVariantMapperType
             {

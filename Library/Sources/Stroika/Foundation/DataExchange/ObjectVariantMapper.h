@@ -287,7 +287,7 @@ namespace   Stroika {
                  *  \brief  Like @AddClass<> - adding a new class based on parameters - but based on the argument baseClass.
                  */
                 template    <typename CLASS, typename BASE_CLASS>
-                nonvirtual  void    AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions);
+                nonvirtual  void    AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
 
             public:
                 /**
@@ -433,7 +433,7 @@ namespace   Stroika {
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const;
+                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;

@@ -19,6 +19,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
+using   Memory::Optional;
 using   Time::Date;
 using   Time::DateTime;
 using   Time::Duration;
@@ -314,7 +315,7 @@ void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
     fTypeMappingRegistry_ = GetDefaultTypeMappers_ ();
 }
 
-ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const
+ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Optional<type_index>& baseClassTypeInfo) const
 {
 #if     qDebug
     for (auto i : fields) {
@@ -337,14 +338,21 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         for (auto i : fields) {
             (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
         }
+        if (baseClassTypeInfo) {
+            (void)Lookup_ (*baseClassTypeInfo);
+        }
     }
 #endif
 
-    auto toVariantMapper = [fields] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+    auto toVariantMapper = [fields, baseClassTypeInfo] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
 #endif
         Mapping<String, VariantValue> m;
+        if (baseClassTypeInfo)
+        {
+            m = mapper.FromObjectMapper (*baseClassTypeInfo) (mapper, fromObjOfTypeT).As<Mapping<String, VariantValue>> (); // so we can extend
+        }
         for (auto i : fields)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -358,7 +366,7 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         }
         return VariantValue (m);
     };
-    auto fromVariantMapper = [fields, preflightBeforeToObject] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+    auto fromVariantMapper = [fields, baseClassTypeInfo, preflightBeforeToObject] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
 #endif
@@ -367,6 +375,10 @@ ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerialize
         if (preflightBeforeToObject != nullptr)
         {
             preflightBeforeToObject (&v2Decode);
+        }
+        if (baseClassTypeInfo)
+        {
+            mapper.ToObjectMapper (*baseClassTypeInfo) (mapper, d, intoObjOfTypeT);
         }
         Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
         for (auto i : fields)
