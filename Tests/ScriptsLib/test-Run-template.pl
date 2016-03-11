@@ -16,7 +16,7 @@ sub DoRun {
 	local $date = `sh -c date`;
 	chomp ($date);
 	if ($progress) {
-		print "Starting regression test #[$testNumber] $testName Test: $date ------------------------------\r\n";
+		print "Starting regression test #[$testNumber] $testName Test: $date ------------------------------\n";
 	}
 	
 	if (index($projectPlatformSubdir, "VisualStudio") == -1) {
@@ -29,6 +29,6 @@ sub DoRun {
 	if ($progress) {
 		local $date = `sh -c date`;
 		chomp ($date);
-		print "End of Regression Test #[$testNumber] $testName Test: $date -------------------------------\r\n";
+		print "End of Regression Test #[$testNumber] $testName Test: $date -------------------------------\n";
 	}
 }
