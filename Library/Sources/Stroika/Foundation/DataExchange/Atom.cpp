@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::DataExchange;
 
 
-// @todo Consider using Synchonized<> for Sequence<>
+// @todo Consider using Synchronized<> for Sequence<>
 
 namespace {
     // VERY CRUDDY (but close to what we use in HF) impl - to get started...

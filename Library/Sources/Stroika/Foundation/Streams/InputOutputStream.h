@@ -17,7 +17,7 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Need InputOutputStream<ELEMENT_TYPE>::Synchonized() like InpoutStream<>::Synconbized.
+ *      @todo   Need InputOutputStream<ELEMENT_TYPE>::Synchronized() like InpoutStream<>::Synconbized.
  *
  */
 

@@ -293,7 +293,7 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
 {
     Require (suppressionTimeWindow > 0);
     static  atomic<Time::DurationSecondsType>                                       sMaxWindow_ {};
-    sMaxWindow_.store (max (suppressionTimeWindow, sMaxWindow_.load ()));   // doesn't need to be synchonized
+    sMaxWindow_.store (max (suppressionTimeWindow, sMaxWindow_.load ()));   // doesn't need to be synchronized
     static  Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> sMsgSentMaybeSuppressed_;
     va_list     argsList;
     va_start (argsList, format);

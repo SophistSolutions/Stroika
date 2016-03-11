@@ -123,7 +123,7 @@ namespace   Stroika {
 
 
             /**
-             *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchonized.
+             *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchronized.
              *
              *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is
              *          relevant only in case where the objects use significant resources, or where their lifetime has

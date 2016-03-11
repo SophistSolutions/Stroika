@@ -60,8 +60,8 @@ namespace   Stroika {
              *  EXPERIMENTAL -- LGP 2014-03-23 (v2.0a22x)
              *
              *  Turn back OFF (at least to experiment) - 2015-06-21 (v2.0a95). High overhead and we want to just require
-             *  this for code that use Synchonized<> now. Note - according to C++ spec, perfrectly OK to ahve two
-             *  readers read from the same shared_ptr<> unsynchonized.
+             *  this for code that use Synchronized<> now. Note - according to C++ spec, perfrectly OK to ahve two
+             *  readers read from the same shared_ptr<> unsynchronized.
              */
 #ifndef qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
 #define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_       0

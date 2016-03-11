@@ -65,7 +65,7 @@ namespace   Stroika {
                  *  concurrently.
                  *
                  *  \note   \em Thread-Safety
-                 *      InputStreamFromStdIStream must be externally synchonized, except for purely read-only operations.
+                 *      InputStreamFromStdIStream must be externally synchronized, except for purely read-only operations.
                  *
                  *  \par Example Usage
                  *      \code

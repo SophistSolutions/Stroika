@@ -192,7 +192,7 @@ namespace   Stroika {
              *      struct FolderDetails_ {
              *          int size;       // ...info to cache about a folder
              *      };
-             *      Synchonized<Cache::TimedCache<
+             *      Synchronized<Cache::TimedCache<
              *          ScanFolderKey_,
              *          shared_ptr<FolderDetails_>,
              *          TimedCachedSupport::DefaultTraits<ScanFolderKey_,shared_ptr<FolderDetails_>,Common::ComparerWithWellOrder<ScanFolderKey_>,true>

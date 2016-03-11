@@ -37,8 +37,8 @@
  *              have flush/close allowed, and anything else generate an assert error?
  *
  *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
- *              and be safely atomic (atomic stuff only an lssue for 'Synchonized' stream and could probably just
- *              make both calls inside ITS synchonized lock?).
+ *              and be safely atomic (atomic stuff only an lssue for 'Synchronized' stream and could probably just
+ *              make both calls inside ITS Synchronized lock?).
  *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
  *              Then it would ONLY require Seekable() for CRLF or Auto.
@@ -156,7 +156,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *     Create a synchonized (thread safe) copy of this stream. Note - this still refers to the same
+                 *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
                 nonvirtual  InputStream<ELEMENT_TYPE>   Synchronized () const;

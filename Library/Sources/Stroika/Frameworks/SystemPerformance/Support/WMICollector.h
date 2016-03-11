@@ -187,7 +187,7 @@ namespace   Stroika {
                     struct  PerInstanceData_ {
                         String                          fObjectName_;
                         String                          fInstance_;
-                        PDH_HQUERY                      fQuery_ {};              // @todo use Synchonized<> on this as a locker
+                        PDH_HQUERY                      fQuery_ {};              // @todo use Synchronized<> on this as a locker
                         Mapping<String, PDH_HCOUNTER>   fCounters_ {};
 
                         PerInstanceData_ (const String& objectName, const String& instance, const Iterable<String>& counterNames);

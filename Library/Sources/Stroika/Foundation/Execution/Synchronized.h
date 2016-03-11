@@ -73,12 +73,12 @@ namespace   Stroika {
              *  objects with methods.
              *
              *  \note   LIKE JAVA SYNCHRONIZED
-             *          This is SIMPLE to use like the Java (and .net) synchonized attribute(lock) mechanism.
+             *          This is SIMPLE to use like the Java (and .net) synchronized attribute(lock) mechanism.
              *          But why does it not suffer from the same performance deficiit?
              *
              *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
              *          checking for races (Debug::AssertExternallySynchronizedLock) in most objects, so
-             *          you only use Synchonized<> (or some other more performant mechanism) in the few places
+             *          you only use Synchronized<> (or some other more performant mechanism) in the few places
              *          you need it.
              */
 
@@ -94,13 +94,13 @@ namespace   Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      Synchonized<String> n;                                                  // SAME
-             *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
-             *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
+             *      Synchronized<String> n;                                                 // SAME
+             *      Synchronized<String,Synchronized_Traits<>> n;                           // SAME
+             *      Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
              *      \endcode
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
-             *      Synchonized<String,Synchronized_Traits<SpinLock>>   n;
+             *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
              */
             template    <typename MUTEX = recursive_mutex>
             struct  Synchronized_Traits {
@@ -111,19 +111,19 @@ namespace   Stroika {
             /**
              *  \par Example Usage
              *      \code
-             *      Synchonized<String> n;                                                  // SAME
-             *      Synchonized<String,Synchronized_Traits<>> n;                            // SAME
-             *      Synchonized<String,Synchronized_Traits<recursive_mutex>>    n;          // SAME
+             *      Synchronized<String> n;                                                 // SAME
+             *      Synchronized<String,Synchronized_Traits<>> n;                           // SAME
+             *      Synchronized<String,Synchronized_Traits<recursive_mutex>>       n;      // SAME
              *      \endcode
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      \code
-             *      Synchonized<String,Synchronized_Traits<SpinLock>>           n;
+             *      Synchronized<String,Synchronized_Traits<SpinLock>>              n;
              *      \endcode
              *
              *  or to allow timed locks
              *      \code
-             *      Synchonized<String,Synchronized_Traits<timed_recursive_mutex>>  n;
+             *      Synchronized<String,Synchronized_Traits<timed_recursive_mutex>> n;
              *      \endcode
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
@@ -395,7 +395,7 @@ namespace   Stroika {
              *  Tentative definition is quick non recursive. Use like 'atomic'.
              */
             template    <typename   T>
-            using   QuickSynchonized = Synchronized<T, Synchronized_Traits<mutex>>;
+            using   QuickSynchronized = Synchronized<T, Synchronized_Traits<mutex>>;
 
 
             /**
@@ -403,10 +403,10 @@ namespace   Stroika {
              */
 #if     qCompilerAndStdLib_shared_mutex_module_Buggy
             template    <typename   T>
-            using   RWSynchonized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
+            using   RWSynchronized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
 #else
             template    <typename   T>
-            using   RWSynchonized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
+            using   RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
 #endif
 
 

@@ -37,7 +37,7 @@ namespace   Stroika {
              *  \note   Calls to Add/Remove/clear/SetDescriptors () doesn't affect already running calls to Wait()
              *
              *  \note   This class is Automatically-Synchronized-Thread-Safety. It would not be helpful to use this class with an
-             *          extenral 'Synchonized', because then adds would block for the entire time a Wait was going on.
+             *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */

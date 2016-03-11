@@ -282,7 +282,7 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
 
     Mapping<String, String>  overrideHeaders = request.fOverrideHeaders;
     if (fOptions_.fAssumeLowestCommonDenominatorHTTPServer) {
-        // @todo CONSIDER if we need to use Synchonized<> here. At one point we did, but perhaps no longer?
+        // @todo CONSIDER if we need to use Synchronized<> here. At one point we did, but perhaps no longer?
         // --LGP 2015-01-10
         static  const   Mapping<String, String>    kSilenceTheseHeaders_  {
             {

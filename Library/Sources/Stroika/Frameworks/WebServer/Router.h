@@ -58,7 +58,7 @@ namespace   Stroika {
              *
              *  @todo need more generic matchign to fit in (maybe optional matcher that takes URL?, or even full Request).
              *
-              * \note - this is internally synchonized (THREADSAFE)
+              * \note - this is internally synchronized (THREADSAFE)
 
               **        NOTE - may verb match and path match each OPTIONALS in class and have maybe a LIST of THINGS we know how to match.
               *             VERB

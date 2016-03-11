@@ -124,7 +124,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *     Create a synchonized (thread safe) copy of this stream. Note - this still refers to the same
+                 *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
                 nonvirtual  OutputStream<ELEMENT_TYPE>  Synchronized () const;

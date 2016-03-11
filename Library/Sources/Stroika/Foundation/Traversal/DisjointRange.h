@@ -47,7 +47,7 @@ namespace   Stroika {
 
             /**
              *
-             *  \note   NOT internally threadsafe. To use from multiple threads, use Synchonized<DisjointRange>, or otherwise protect.
+             *  \note   NOT internally threadsafe. To use from multiple threads, use Synchronized<DisjointRange>, or otherwise protect.
              */
             template    <typename T, typename RANGE_TYPE = Range<T>>
             class   DisjointRange {

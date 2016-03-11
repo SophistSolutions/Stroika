@@ -197,15 +197,15 @@ namespace   Stroika {
              *
              *  \note   lifetime example
              *          Optional<pair<int,int>> x;
-             *          Synchonized<Optional<pair<int,int>>> sx;
+             *          Synchronized<Optional<pair<int,int>>> sx;
              *
              *          x->first = 3;   // safe: temporeray holder created by operator->, which contains internal pointer, and keeps lock
              *                          // and deref and assigment happens, and then holder temporary destroyed at end of statement
              *                          // which releases the lock
              *
-             *          sx->second = 4; // works with threads, in that Synchonized<>::operator-> returns a temporary proxy object
+             *          sx->second = 4; // works with threads, in that Synchronized<>::operator-> returns a temporary proxy object
              *                          // which owns a mutex lock and then the rest is just as above.
-             *                          // Note - the synchonized proxy is created first, and destroyed last, so it prevents
+             *                          // Note - the synchronized proxy is created first, and destroyed last, so it prevents
              *                          // any changes during setup/elipogue of Optional handling.
              *
              *  \note   To use Optional with un-copyable things, use:
