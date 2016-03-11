@@ -646,6 +646,60 @@ namespace   {
 
 
 
+
+
+
+namespace   {
+    void    DoRegressionTests_Subclass_9_ ()
+    {
+        using   namespace Traversal;
+
+        struct BaseObj_ {
+            int fVV1 {};
+            bool operator== (const BaseObj_& rhs) const
+            {
+                return fVV1 == rhs.fVV1;
+            }
+        };
+
+        struct Derived_ : BaseObj_ {
+            int fVV2 {};
+            bool operator== (const Derived_& rhs) const
+            {
+                return BaseObj_::operator== (rhs) and fVV2 == rhs.fVV2;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        mapper.AddClass<BaseObj_> ({
+            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (BaseObj_, fVV1), L"fVV1" },
+        });
+        mapper.AddSubClass<Derived_, BaseObj_> ({
+            ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (Derived_, fVV2), L"fVV2" },
+        });
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+        Derived_   tmp;
+        tmp.fVV1 = 55;
+        tmp.fVV2 = 345;
+        VariantValue v = mapper.FromObject (tmp);
+
+        Streams::MemoryStream<Byte>   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        // THEN deserialized, and mapped back to C++ object form
+        Derived_    tmp2 = mapper.ToObject<Derived_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -657,6 +711,7 @@ namespace   {
         DoRegressionTests_DurationsDateTime_6_ ();
         DoRegressionTests_VariantValue_7_ ();
         DoRegressionTests_MakeCommonSerializer_8_ ();
+        DoRegressionTests_Subclass_9_ ();
     }
 }
 
