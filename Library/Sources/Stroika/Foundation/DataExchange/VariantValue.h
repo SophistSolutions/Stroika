@@ -41,10 +41,6 @@
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *              (mostly done but review)
  *
- *      @todo   Fix VariantValue::Equals () - for case in DoRegressionTests_VariantValue_7_().
- *
- *              Key is compare of string versus int, etc.
- *
  *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
  *              warrent a careful review
  *
@@ -275,11 +271,13 @@ namespace   Stroika {
                  *  If exactTypeMatchOnly is true, no type coersion takes place, but by default types
                  *  are automatically coereced, if reasonable, so that they can be compared for equality.
                  *
-                 *  When comparing two items, at least one of which is a floating point number,
-                 *  @Math::NearlyEquals() is used (because often these values come from serializaiton/deserializaiton which
-                 *  loses a tiny bit of precision).
-                 *
+                 *  When comparing two items, at least one of which is a floating point number, the other type
+                 *  is coereced into a floating point number and  @Math::NearlyEquals() is used
+                 *  (because often these values come from serializaiton/deserializaiton which loses a tiny bit of precision).
                  *  Note that NANs compare as equal, and Equals (L"NAN", Math::nan<double> ()) compares as true.
+                 *
+                 *  When comparing any other types (except Map or Array) with a String, the to types are coerenced
+                 *  into Strings, and compared as strings.
                  */
                 nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 

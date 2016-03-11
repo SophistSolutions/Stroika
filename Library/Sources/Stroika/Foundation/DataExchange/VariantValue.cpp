@@ -704,23 +704,26 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
             (lt == VariantValue::Type::eInteger or lt == VariantValue::Type::eUnsignedInteger) and
             (rt == VariantValue::Type::eInteger or rt == VariantValue::Type::eUnsignedInteger)
         ) {
-            return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
+            // Set compare as type and fall through
+            lt = VariantValue::Type::eUnsignedInteger;
+            rt = VariantValue::Type::eUnsignedInteger;
         }
         else if (
-            (lt == VariantValue::Type::eFloat and rt == VariantValue::Type::eString) or
-            (rt == VariantValue::Type::eFloat and lt == VariantValue::Type::eString)
+            (lt == VariantValue::Type::eFloat and (rt == VariantValue::Type::eString or rt == VariantValue::Type::eInteger or rt == VariantValue::Type::eUnsignedInteger)) or
+            (rt == VariantValue::Type::eFloat and (lt == VariantValue::Type::eString or lt == VariantValue::Type::eInteger or lt == VariantValue::Type::eUnsignedInteger))
         ) {
+            // Set compare as type and fall through
             lt = VariantValue::Type::eFloat;
             rt = VariantValue::Type::eFloat;
-            // fall through
         }
-        // special case - comparing a string with a bool or bool with a string
         else if (
-            (lt == VariantValue::Type::eBoolean and rt == VariantValue::Type::eString) or
-            (lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean)
+            ((lt != VariantValue::Type::eArray and lt != VariantValue::Type::eMap) and rt == VariantValue::Type::eString) or
+            ((rt != VariantValue::Type::eArray and rt != VariantValue::Type::eMap) and lt == VariantValue::Type::eString)
         ) {
-            // compare as STRING  - in case someone compares true with 'FRED' (we want that to come out as a FALSE compare result)
-            return  As<String> () == rhs.As<String> ();
+            // special case - comparing a string with any type except map or array, trat as strings
+            // Set compare as type and fall through
+            lt = VariantValue::Type::eString;
+            rt = VariantValue::Type::eString;
         }
         else {
             return false;
