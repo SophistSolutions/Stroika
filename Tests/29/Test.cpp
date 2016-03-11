@@ -540,8 +540,7 @@ namespace   {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        //  @todo - FIX COMPARE OF VARIANTS !!!!
-        //        VerifyTestResult (tmp2 == tmp);
+        VerifyTestResult (tmp2 == tmp);
     }
 }
 
