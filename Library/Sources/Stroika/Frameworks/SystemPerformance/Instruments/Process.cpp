@@ -21,6 +21,7 @@
 #include    "../../../Foundation/Characters/StringBuilder.h"
 #include    "../../../Foundation/Configuration/SystemConfiguration.h"
 #include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/Containers/MultiSet.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Execution/ErrNoException.h"
@@ -75,13 +76,57 @@ using   Time::DurationSecondsType;
 
 
 
-
-
-#ifndef qUseWMICollectionSupport_
-#define qUseWMICollectionSupport_       qPlatform_Windows
+// --LGP 2016-03-11
+// Sadly - though ALMOST working - not quite.
+// Produces bogus PIDs, and misses many, and thread counts sometimes right, and sometimes wrong (maybe due to WOW64?)
+// Anyhow - disable til working reliably...
+// Or permanently. But keep around a bit, as lots of good stuff there and gives one quick copy to get out alot of data we want,
+// avoiding other calls
+#define qUseWinInternalSupport_     0
+#ifndef qUseWinInternalSupport_
+#define qUseWinInternalSupport_         qPlatform_Windows
 #endif
 
 
+
+
+// This appears to work, but I fear (not tested) its not super performant - performance not tested -- LGP 2016-03-11
+//#define   qUseCreateToolhelp32SnapshotToCountThreads      0
+#ifndef qUseCreateToolhelp32SnapshotToCountThreads
+#define qUseCreateToolhelp32SnapshotToCountThreads         qPlatform_Windows
+#endif
+
+
+// Still maybe needed for thread count -- but check with ifdefs
+#define qUseWMICollectionSupport_		0
+#ifndef qUseWMICollectionSupport_
+#define qUseWMICollectionSupport_       qPlatform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
+#endif
+
+
+
+#if     qUseWinInternalSupport_
+#if		1
+//avoid redef warnings... maybe not needed -
+#define STATUS_BUFFER_TOO_SMALL          ((NTSTATUS)0xC0000023L)
+#define STATUS_INFO_LENGTH_MISMATCH      ((NTSTATUS)0xC0000004L)
+#else
+#include    <ntstatus.h>
+#endif
+#include    <Winternl.h>
+#if     defined (_MSC_VER)
+#pragma comment (lib, "Ntdll.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#endif
+#endif
+
+
+
+#if     qUseCreateToolhelp32SnapshotToCountThreads
+#include    <tlhelp32.h>
+#if     defined (_MSC_VER)
+#pragma comment (lib, "Ntdll.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#endif
+#endif
 
 
 
@@ -98,8 +143,7 @@ using   SystemPerformance::Support::WMICollector;
 
 
 #if     defined (_MSC_VER)
-// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
-#pragma comment (lib, "psapi.lib")
+#pragma comment (lib, "psapi.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 
 
@@ -212,6 +256,50 @@ namespace   {
 }
 #endif
 
+
+
+
+
+
+#if     qUseCreateToolhelp32SnapshotToCountThreads
+namespace {
+    class  ThreadCounter_ {
+	private:
+        MultiSet<pid_t>		fThreads_;
+	public:
+        ThreadCounter_ ()
+        {
+            HANDLE    hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
+            if (hThreadSnap == INVALID_HANDLE_VALUE) {
+                DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
+                return;
+            }
+            Execution::Finally cleanup { [hThreadSnap] () { ::CloseHandle (hThreadSnap); }};
+
+            // Fill in the size of the structure before using it.
+            THREADENTRY32 te32 {};
+            te32.dwSize = sizeof(THREADENTRY32 );
+
+            // Retrieve information about the first thread, and exit if unsuccessful
+            if (not ::Thread32First (hThreadSnap, &te32)) {
+                DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
+                return;
+            }
+            unsigned int cnt = 0;
+            // Now walk the thread list of the system,
+            do {
+                fThreads_.Add (te32.th32OwnerProcessID);
+            }
+            while (::Thread32Next (hThreadSnap, &te32 ));
+        }
+	public:
+        Optional<unsigned int>  CountThreads (pid_t pid) const
+        {
+            return fThreads_.OccurrencesOf (pid);
+        }
+    };
+}
+#endif
 
 
 
@@ -1787,7 +1875,7 @@ namespace {
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
 #if     qUseWMICollectionSupport_
-        WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ } };
+        WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ }};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
@@ -1843,7 +1931,88 @@ namespace {
             Mapping<String, double> processStartAt_ByPID        =   fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
 #endif
 
-            for (pid_t pid : GetAllProcessIDs_ ()) {
+#if     qUseWinInternalSupport_
+            struct AllSysInfo_ {
+                AllSysInfo_ ()
+                    : fBuf_ (2 * 0x4000)  // arbitrary, but empirically seems to work pretty often
+                {
+Again:
+                    ULONG   returnLength {};
+                    NTSTATUS    status = ::NtQuerySystemInformation(m
+                                         SystemProcessInformation,
+                                         fBuf_.begin (),
+                                         static_cast<ULONG> (fBuf_.GetSize ()),
+                                         &returnLength
+                                                                   );
+                    if (status == STATUS_BUFFER_TOO_SMALL or status == STATUS_INFO_LENGTH_MISMATCH) {
+                        fBuf_.GrowToSize (returnLength);
+                        goto Again;
+                    }
+                    if (status != 0) {
+                        Throw (Execution::StringException (L"Bad result from NtQuerySystemInformation"));
+                    }
+                    fActualNumElts_ = returnLength / sizeof (SYSTEM_PROCESS_INFORMATION);
+                }
+                SmallStackBuffer<Byte>  fBuf_;
+                const SYSTEM_PROCESS_INFORMATION*   GetProcessInfo () const
+                {
+                    return reinterpret_cast<const SYSTEM_PROCESS_INFORMATION*> (fBuf_.begin ());
+                }
+                static  bool    IsValidPID_ (pid_t p)
+                {
+                    return static_cast<make_signed<pid_t>::type> (p) > 0;
+                }
+                Set<pid_t>  GetAllProcessIDs_ () const
+                {
+                    const SYSTEM_PROCESS_INFORMATION*   start = GetProcessInfo ();
+                    const SYSTEM_PROCESS_INFORMATION*   end = start + fActualNumElts_;
+                    Set<pid_t>  result;
+                    for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
+                        pid_t   pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
+                        if (IsValidPID_ (pid)) {
+                            result.Add (pid);
+                        }
+                    }
+                    return result;
+                }
+                Mapping<pid_t, unsigned int> GetThreadCountMap () const
+                {
+                    if (fThreadCntMap_.IsMissing ()) {
+                        const SYSTEM_PROCESS_INFORMATION*   start = GetProcessInfo ();
+                        const SYSTEM_PROCESS_INFORMATION*   end = start + fActualNumElts_;
+                        Mapping<pid_t, unsigned int> tmp;
+                        for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
+
+                            pid_t   pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
+                            if (IsValidPID_ (pid)) {
+
+                                struct PRIVATE_SYSTEM_PROCESS_INFORMATION_ {
+                                    ULONG NextEntryOffset;
+                                    ULONG NumberOfThreads;      // from ProcessHacker include/ntexapi.h
+                                    //...
+                                };
+                                ULONG  threadCount = reinterpret_cast<const PRIVATE_SYSTEM_PROCESS_INFORMATION_*> (i)->NumberOfThreads;
+                                tmp.Add (pid, threadCount);
+                            }
+                        }
+                        fThreadCntMap_ = tmp;
+                    }
+                    return *fThreadCntMap_;
+                }
+                unsigned int    fActualNumElts_;
+                mutable Optional<Mapping<pid_t, unsigned int>>   fThreadCntMap_;
+            };
+            AllSysInfo_ allSysInfo;
+            Iterable<pid_t> allPids =   allSysInfo.GetAllProcessIDs_ ();
+#else
+            Iterable<pid_t> allPids =   GetAllProcessIDs_ ();
+#endif
+
+#if     qUseCreateToolhelp32SnapshotToCountThreads
+            ThreadCounter_  threadCounter;
+#endif
+
+            for (pid_t pid : allPids) {
                 ProcessType     processInfo;
                 bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
@@ -1877,6 +2046,58 @@ namespace {
                                 processInfo.fPageFaultCount = memInfo.PageFaultCount;   // docs not 100% clear but I think this is total # pagefaults
                             }
                         }
+                        {
+                            auto convertFILETIME2DurationSeconds = [] (FILETIME ft) -> Time::DurationSecondsType {
+                                // From https://msdn.microsoft.com/en-us/library/windows/desktop/ms683223%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396
+                                // Process kernel mode and user mode times are amounts of time.
+                                // For example, if a process has spent one second in kernel mode, this function
+                                // will fill the FILETIME structure specified by lpKernelTime with a 64-bit value of ten million.
+                                // That is the number of 100-nanosecond units in one second.
+                                //
+                                // Note - we go through this instead of a cast, since the FILETIME might not be 64-bit aligned
+                                ULARGE_INTEGER  tmp;
+                                tmp.LowPart = ft.dwLowDateTime;
+                                tmp.HighPart = ft.dwHighDateTime;
+                                return static_cast<Time::DurationSecondsType> (tmp.QuadPart) * 100e-9;
+                            };
+                            FILETIME    creationTime {};
+                            FILETIME    exitTime {};
+                            FILETIME    kernelTime {};
+                            FILETIME    userTime {};
+                            if (::GetProcessTimes (hProcess, &creationTime, &exitTime, &kernelTime, &userTime)) {
+                                if (grabStaticData) {
+
+                                    processInfo.fProcessStartedAt = DateTime (creationTime);
+                                }
+                                processInfo.fTotalCPUTimeEverUsed = convertFILETIME2DurationSeconds (kernelTime) + convertFILETIME2DurationSeconds (userTime);
+                            }
+                            else {
+                                DbgTrace (L"error calling GetProcessTimes: %d", ::GetLastError ());
+                            }
+                        }
+                        {
+                            IO_COUNTERS ioCounters {};
+                            if (::GetProcessIoCounters (hProcess, &ioCounters)) {
+                                processInfo.fCombinedIOReadBytes = static_cast<double> (ioCounters.ReadTransferCount);
+                                processInfo.fCombinedIOWriteBytes = static_cast<double> (ioCounters.WriteTransferCount);
+                            }
+                            else {
+                                DbgTrace (L"error calling GetProcessIoCounters: %d", ::GetLastError ());
+                            }
+                        }
+
+#if     qUseCreateToolhelp32SnapshotToCountThreads
+                        processInfo.fThreadCount = threadCounter.CountThreads (pid);
+#endif
+
+
+#if     qUseWinInternalSupport_
+                        {
+                            if (auto i = allSysInfo.GetThreadCountMap ().Lookup (pid)) {
+                                processInfo.fThreadCount = *i;
+                            }
+                        }
+#endif
                     }
                 }
 #if   qUseWMICollectionSupport_
