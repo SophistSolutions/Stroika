@@ -89,17 +89,12 @@ endif
 
 
 
-ORIG:	$(ZIPEDFILE)
-	@tar xf $(ZIPPEDFILE) --no-same-owner
-	@mv $(EXTRACTED_DIRNAME) ORIGS
-
 doCreate:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
 	@rm -rf CURRENT
 	@tar xf $(ZIPPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) CURRENT
 	@$(ECHO) "done"
-
 
 
 ORIG:	$(ZIPEDFILE)
@@ -202,7 +197,11 @@ endif
 doPatching_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Curl...";
 	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
+ifeq ($(qFeatureFlag_OpenSSL), use)
+ifeq ($(shell uname),AIX)
 	@patch --quiet -p0 CURRENT/configure.ac < Patches/AIX-Lose-SSLv2_client_method_check.patch
+endif
+endif
 	@$(ECHO) "done"
 
 
