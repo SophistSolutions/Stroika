@@ -539,6 +539,7 @@ void    Emitter::DoEmit_ (const char* p) noexcept
         buf[NEltsOf(buf) - 1] = 0;
         ::OutputDebugStringA (buf);
         ::OutputDebugStringA ("...");
+        ::OutputDebugStringA (GetEOL<char> ());
     }
 #endif
 #if     qTraceToFile
@@ -559,6 +560,7 @@ void    Emitter::DoEmit_ (const wchar_t* p) noexcept
         buf[NEltsOf(buf) - 1] = 0;
         ::OutputDebugStringW (buf);
         ::OutputDebugStringW (L"...");
+        ::OutputDebugStringW (GetEOL<wchar_t> ());
     }
 #endif
 #if     qTraceToFile
