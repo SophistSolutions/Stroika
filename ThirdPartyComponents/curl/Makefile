@@ -101,6 +101,12 @@ doCreate:	$(ZIPPEDFILE)
 	@$(ECHO) "done"
 
 
+
+ORIG:	$(ZIPEDFILE)
+	@tar xf $(ZIPPEDFILE) --no-same-owner
+	@mv $(EXTRACTED_DIRNAME) ORIGS
+
+
 #note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
 #didn't work (failed to find crypto lib)
 PKG_CONFIG_PATH=
