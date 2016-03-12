@@ -1,0 +1,13 @@
+diff -c -r ORIGS/configure.ac CURRENT/configure.ac
+*** ORIGS/configure.ac	2016-02-08 04:26:24.000000000 -0500
+--- CURRENT/configure.ac	2016-03-11 22:38:38.624875368 -0500
+***************
+*** 1640,1646 ****
+                      ENGINE_cleanup \
+                      CRYPTO_cleanup_all_ex_data \
+                      SSL_get_shutdown \
+-                     SSLv2_client_method \
+                      DES_set_odd_parity )
+  
+      AC_MSG_CHECKING([for BoringSSL])
+--- 1640,1645 ----
