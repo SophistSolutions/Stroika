@@ -98,7 +98,7 @@ using   Time::DurationSecondsType;
 
 
 // Still maybe needed for thread count -- but check with ifdefs
-#define qUseWMICollectionSupport_		0
+#define qUseWMICollectionSupport_       0
 #ifndef qUseWMICollectionSupport_
 #define qUseWMICollectionSupport_       qPlatform_Windows && (!qUseCreateToolhelp32SnapshotToCountThreads and !qUseWinInternalSupport_)
 #endif
@@ -106,7 +106,7 @@ using   Time::DurationSecondsType;
 
 
 #if     qUseWinInternalSupport_
-#if		1
+#if     1
 //avoid redef warnings... maybe not needed -
 #define STATUS_BUFFER_TOO_SMALL          ((NTSTATUS)0xC0000023L)
 #define STATUS_INFO_LENGTH_MISMATCH      ((NTSTATUS)0xC0000004L)
@@ -115,7 +115,7 @@ using   Time::DurationSecondsType;
 #endif
 #include    <Winternl.h>
 #if     defined (_MSC_VER)
-#pragma comment (lib, "Ntdll.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "Ntdll.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 #endif
 
@@ -124,7 +124,7 @@ using   Time::DurationSecondsType;
 #if     qUseCreateToolhelp32SnapshotToCountThreads
 #include    <tlhelp32.h>
 #if     defined (_MSC_VER)
-#pragma comment (lib, "Ntdll.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "Ntdll.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 #endif
 
@@ -143,7 +143,7 @@ using   SystemPerformance::Support::WMICollector;
 
 
 #if     defined (_MSC_VER)
-#pragma comment (lib, "psapi.lib")		// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "psapi.lib")      // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #endif
 
 
@@ -264,9 +264,9 @@ namespace   {
 #if     qUseCreateToolhelp32SnapshotToCountThreads
 namespace {
     class  ThreadCounter_ {
-	private:
-        MultiSet<pid_t>		fThreads_;
-	public:
+    private:
+        MultiSet<pid_t>     fThreads_;
+    public:
         ThreadCounter_ ()
         {
             HANDLE    hThreadSnap = ::CreateToolhelp32Snapshot (TH32CS_SNAPTHREAD, 0);
@@ -292,7 +292,7 @@ namespace {
             }
             while (::Thread32Next (hThreadSnap, &te32 ));
         }
-	public:
+    public:
         Optional<unsigned int>  CountThreads (pid_t pid) const
         {
             return fThreads_.OccurrencesOf (pid);
