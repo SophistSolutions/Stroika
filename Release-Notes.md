@@ -21,7 +21,20 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a133">v2.0a133x</a><br/>2016-03-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+	<!-- up to date as of 2016-03-13 -->
+
+		<li>check-tools code for Stroika makefile - so prints clearer error message</li>
+		<li>PIDLoop support</li>
+		<li>Improved Characters::ToStrings () support: Duration, Characters::ToString module loses include of KeyValuePair, but adds support for serializing pair and CountedValue</li>
+		<li>Synchronized:- readable/writable reference code</li>
+		<li>fixed default for ObjectVariantMapper::MakeCOmmonType<> for enum to use DefaultNames<> an dallow MakeCommonSerializer_EnumAsInt () for cases where people want to explicit write as integer</li>
+		<li>added MultiSet&lt;T, TRAITS&gt;::SetCount (), added MultiSet&lt;T, TRAITS&gt;::clear ()</li>
+		<li>ObjectVariantMapper: simplified (fewer overloads - Iterable isntead of zillions of choices) for AddClass and added AddSubClass </li>
+		<li>Lose deprecated CheckFileAccess</li>
+		<li>cleanup code and docs for VariantValue::Equals() - now more cases it compares as equals it used to treat as unequal (like taking a date and convert to string with json converter and then readback and compare - now compares equal</li>
+		<li>Big changes to SystemPerformance/Instruments/Process for windows. It no longer (requires/uses by default) WMI.</li>
+		<li>Patch for curl/openssl issue AIX bug (SSHv2 not recognized properly by curl autoconf)</li>
+		<li>emit EOL after shortened / elipsis added dbg log message</li>
 	</ul>
 </td>
 </tr>
