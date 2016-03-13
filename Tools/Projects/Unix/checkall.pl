@@ -5,7 +5,7 @@ my $activeConfig = $ENV{'CONFIGURATION'};
 CheckFileExists ("../../../Builds/$activeConfig/HTMLViewCompiler");
 
 
-print "      [SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\n";
 
 
 sub	CheckFileExists {
@@ -18,6 +18,6 @@ sub	CheckFileExists {
 
 sub Failed {
 	local $reason = $_[0];
-	print "[FAILED]: $reason\r\n";
+	print "[FAILED]: $reason\n";
 	exit(1);
 }

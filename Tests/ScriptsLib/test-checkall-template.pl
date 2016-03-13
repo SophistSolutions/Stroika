@@ -12,7 +12,7 @@ sub	DoCheckBuilds {
 		CheckFileExists ("../../../../Builds/$activeConfig/Test$testNumber");
 	}
 	
-	print "[SUCCEEDED]\r\n";
+	print "[SUCCEEDED]\n";
 	
 	
 	sub	CheckFileExists {
@@ -25,7 +25,7 @@ sub	DoCheckBuilds {
 	
 	sub Failed {
 		local $reason = $_[0];
-		print "[FAILED]: $reason\r\n";
+		print "[FAILED]: $reason\n";
 		exit(1);
 	}
 	
