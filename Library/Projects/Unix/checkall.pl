@@ -6,7 +6,7 @@ CheckFileExists ("../../../Builds/$activeConfig/Stroika-Foundation.a");
 CheckFileExists ("../../../Builds/$activeConfig/Stroika-Frameworks.a");
 
 
-print "      [SUCCEEDED]\r\n";
+print "      [SUCCEEDED]\n";
 
 
 sub	CheckFileExists {
@@ -19,6 +19,6 @@ sub	CheckFileExists {
 
 sub Failed {
 	local $reason = $_[0];
-	print "[FAILED]: $reason\r\n";
+	print "[FAILED]: $reason\n";
 	exit(1);
 }
