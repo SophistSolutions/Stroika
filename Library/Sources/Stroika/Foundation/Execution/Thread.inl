@@ -141,16 +141,14 @@ namespace   Stroika {
 #endif
             inline  Thread::IDType  Thread::GetID () const
             {
-                if (fRep_.get () == nullptr) {
-#if     qPlatform_POSIX
+                if (fRep_ == nullptr) {
                     return Thread::IDType ();
-#endif
                 }
                 return fRep_->GetID ();
             }
             inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept
             {
-                if (fRep_.get () == nullptr) {
+                if (fRep_ == nullptr) {
                     return Thread::NativeHandleType (0);    // on some systems (e.g. AIX64 7.1) this is not a pointer type and assign nullptr illegal
                 }
                 return fRep_->GetNativeHandle ();
@@ -168,7 +166,7 @@ namespace   Stroika {
             }
             inline  Thread::Status  Thread::GetStatus () const noexcept
             {
-                if (fRep_.get () == nullptr) {
+                if (fRep_ == nullptr) {
                     return Status::eNull;
                 }
                 return GetStatus_ ();

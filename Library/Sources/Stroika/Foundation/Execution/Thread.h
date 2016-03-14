@@ -22,6 +22,8 @@
  *
  *  \file
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchonized - for envelope!
+ *
  *      @todo   Probably no longer need siginterrupt () calls, since we DONT set SA_RESTART in our call to sigaction().
  *
  *      @todo   MAYBE should change the DTOR for Thead object - so taht if use_count () == 1 or 2
