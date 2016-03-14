@@ -18,26 +18,42 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a133">v2.0a133x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a133">v2.0a133</a><br/>2016-03-13</td>
 <td>
 	<ul>
-	<!-- up to date as of 2016-03-13 -->
-
-		<li>check-tools code for Stroika makefile - so prints clearer error message</li>
+		<li>Check-tools code for Stroika makefile - so prints clearer error message</li>
 		<li>PIDLoop support</li>
 		<li>Improved Characters::ToStrings () support: Duration, Characters::ToString module loses include of KeyValuePair, but adds support for serializing pair and CountedValue</li>
 		<li>Synchronized:- readable/writable reference code</li>
-		<li>fixed default for ObjectVariantMapper::MakeCOmmonType<> for enum to use DefaultNames<> an dallow MakeCommonSerializer_EnumAsInt () for cases where people want to explicit write as integer</li>
-		<li>added MultiSet&lt;T, TRAITS&gt;::SetCount (), added MultiSet&lt;T, TRAITS&gt;::clear ()</li>
+		<li>Fixed default for ObjectVariantMapper::MakeCOmmonType<> for enum to use DefaultNames<> an dallow MakeCommonSerializer_EnumAsInt () for cases where people want to explicit write as integer</li>
+		<li>Added MultiSet&lt;T, TRAITS&gt;::SetCount (), added MultiSet&lt;T, TRAITS&gt;::clear ()</li>
 		<li>ObjectVariantMapper: simplified (fewer overloads - Iterable isntead of zillions of choices) for AddClass and added AddSubClass </li>
 		<li>Lose deprecated CheckFileAccess</li>
-		<li>cleanup code and docs for VariantValue::Equals() - now more cases it compares as equals it used to treat as unequal (like taking a date and convert to string with json converter and then readback and compare - now compares equal</li>
+		<li>Cleanup code and docs for VariantValue::Equals() - now more cases it compares as equals it used to treat as unequal (like taking a date and convert to string with json converter and then readback and compare - now compares equal</li>
 		<li>Big changes to SystemPerformance/Instruments/Process for windows. It no longer (requires/uses by default) WMI.</li>
 		<li>Patch for curl/openssl issue AIX bug (SSHv2 not recognized properly by curl autoconf)</li>
-		<li>emit EOL after shortened / elipsis added dbg log message</li>
+		<li>Emit EOL after shortened / elipsis added dbg log message</li>
+		<li>Added PerformanceDump-v2.0a133-x86-ReleaseU.txt, PerformanceDump-v2.0a133-linux-gcc-5.2.0-x64.txt</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (except https://stroika.atlassian.net/browse/STK-451)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 
@@ -74,6 +90,7 @@ History
 
 
 
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a131">v2.0a131</a><br/>2016-02-20</td>
 <td>
@@ -83,6 +100,7 @@ History
 	</ul>
 </td>
 </tr>
+
 
 
 
@@ -98,6 +116,7 @@ History
 
 
 
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a129">v2.0a129</a><br/>2016-02-20</td>
 <td>
@@ -107,6 +126,7 @@ History
 	</ul>
 </td>
 </tr>
+
 
 
 
