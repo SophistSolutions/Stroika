@@ -35,6 +35,7 @@
 #include    "../../Foundation/Execution/TimeOutException.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/SignalHandlers.h"
+#include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 #include    "../../Foundation/Streams/iostream/FStreamSupport.h"
@@ -44,6 +45,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
