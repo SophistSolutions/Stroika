@@ -847,7 +847,7 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 
 void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 {
-    static  const   Execution::SignalHandlerRegistry::SignalHandler kMySigHandler_  =   SignalHandler_;
+    static  const   Execution::SignalHandler    kMySigHandler_  =   SignalHandler_;
     if (install) {
         Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, kMySigHandler_);
         Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, kMySigHandler_);
@@ -886,7 +886,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
                     AssertNotReached (); // possibly can avoid by reseting signal handlers above?
                 }
                 else {
-                    Thread  sigHandlerThread2Abort = sCurrApp_->fRunThread_;
+                    Thread  sigHandlerThread2Abort = rwLockedApp->fRunThread_;
                     DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
                     sigHandlerThread2Abort.Abort ();
                 }
