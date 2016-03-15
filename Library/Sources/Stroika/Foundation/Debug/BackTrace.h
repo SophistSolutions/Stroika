@@ -44,6 +44,8 @@ namespace   Stroika {
              *        info symbol 0x1b974
              *      ... etc for each symbol returned in []
              *
+             *  \note to get symbols working on Linux, it may be necessary to link with -rdynamic
+             *
              */
             Characters::String    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 
