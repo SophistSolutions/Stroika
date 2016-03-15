@@ -46,7 +46,6 @@ String    Debug::BackTrace ()
         out.Append (String::FromNarrowSDKString (syms[j]) + Characters::GetEOL<wchar_t> ());
     }
     return out.str ();
-}
 #else
     return Characters::String {};
 #endif
