@@ -34,9 +34,9 @@ namespace   Stroika {
             {
                 fMinLogLevel_ = minLogLevel;
             }
-            inline  bool    Logger::WouldLog (Priority logLevel)
+            inline  bool    Logger::WouldLog (Priority logLevel) const
             {
-                return logLevel >= sThe_.fMinLogLevel_ and sThe_.GetAppender () != nullptr;
+                return logLevel >= fMinLogLevel_ and GetAppender () != nullptr;
             }
 #if     !qDefaultTracingOn
             inline  void    Logger::Log (Priority logLevel, String format, ...)

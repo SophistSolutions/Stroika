@@ -26,7 +26,7 @@ namespace   Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      WhenTimeExceeded    whenTimeExceeded (1.0, [] (DurationSecondsType timeTaken) { Logger::LogMessage (Logger::eWarning, "Took along time  to do 'x'"); });
+             *      WhenTimeExceeded    whenTimeExceeded (1.0, [] (DurationSecondsType timeTaken) { Logger::Get ().Log (Logger::eWarning, "Took along time  to do 'x'"); });
              *      \endcode
              */
             struct  WhenTimeExceeded {

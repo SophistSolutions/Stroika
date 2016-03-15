@@ -111,7 +111,7 @@ const   OptionsFile::LoggerType OptionsFile::kDefaultLogger =
             priority = Logger::Priority::eCriticalError;
             break;
     }
-    Logger::Log (priority, L"%s", message.FormatMessage ().c_str ());
+    Logger::Get ().Log (priority, L"%s", message.FormatMessage ().c_str ());
 };
 
 const   OptionsFile::ModuleNameToFileNameMapperType  OptionsFile::mkFilenameMapper (const String& appName)

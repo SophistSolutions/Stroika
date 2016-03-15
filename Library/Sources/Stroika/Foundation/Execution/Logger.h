@@ -22,6 +22,11 @@
  *  \file
  *
  *  TODO:
+ *      @todo   Consider making most of the static logger methods non-static so we could have multiple loggers (with differnt configs/params).
+ *              Still wish to retain the magic singleton, but then you use Logger::Get ().
+ *
+ *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?
+ *
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
  *              by specifying hardwired/hacked values in the CTOR args.
@@ -142,10 +147,6 @@ namespace   Stroika {
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
 
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-                static  const EnumNames<Priority>   Stroika_Enum_Names(Priority);
-#endif
-
             public:
                 /**
                  *  This defaults to eInfo. Messages of lower priority (e.g. eDebug) will not be logged to the underlying log
@@ -169,7 +170,7 @@ namespace   Stroika {
                  *      This determines if a call to Log() with this argument log-level would
                  *      write anything.
                  */
-                static  bool    WouldLog (Priority logLevel);
+                nonvirtual  bool    WouldLog (Priority logLevel) const;
 
             public:
                 /**
@@ -191,13 +192,13 @@ namespace   Stroika {
                  *
                  *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
                  */
-                static  bool        GetBufferingEnabled ();
+                nonvirtual  bool        GetBufferingEnabled () const;
 
             public:
                 /**
                  *      @see GetBufferingEnabled ()
                  */
-                static  void        SetBufferingEnabled (bool logBufferingEnabled);
+                nonvirtual  void        SetBufferingEnabled (bool logBufferingEnabled);
 
             public:
                 /**
@@ -205,7 +206,7 @@ namespace   Stroika {
                  *
                  *  This has no effect if the buffer is empty or buffering is disabled.
                  */
-                static  void        FlushBuffer ();
+                nonvirtual  void        FlushBuffer ();
 
             public:
                 /**
@@ -215,13 +216,13 @@ namespace   Stroika {
                  *      The duration is the window of time after the last message we wait before emitting the
                  *      last message. A good default for this might be 5 or 10 seconds.
                  */
-                static  Memory::Optional<Time::DurationSecondsType>     GetSuppressDuplicates ();
+                nonvirtual  Memory::Optional<Time::DurationSecondsType>     GetSuppressDuplicates () const;
 
             public:
                 /**
                  *      @see GetSuppressDuplicates ()
                  */
-                static  void        SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
+                nonvirtual  void        SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
 
             public:
                 /**
@@ -246,7 +247,7 @@ namespace   Stroika {
                  *          Logger::Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                static  void    Log (Priority logLevel, String format, ...); // varargs logger
+                nonvirtual  void    Log (Priority logLevel, String format, ...); // varargs logger
 
             public:
                 /**
@@ -261,22 +262,19 @@ namespace   Stroika {
                  *          Logger::LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                static  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
+                nonvirtual  void    LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
 
             private:
-                static  void    Log_ (Priority logLevel, const String& msg);
+                nonvirtual  void    Log_ (Priority logLevel, const String& msg);
 
             private:
-                static  void    FlushDupsWarning_ ();
-
-            private:
-                static  void    UpdateBookkeepingThread_ ();
+                nonvirtual  void    UpdateBookkeepingThread_ ();
 
             private:
                 struct  Rep_;
 
             private:
-                unique_ptr<Rep_>    fRep_;
+                shared_ptr<Rep_>    fRep_;                          // unsure if we want to use shared_ptr or unique_ptr but shared among threads so easiest that way
                 Priority    fMinLogLevel_ { Priority::eInfo };      // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
 
             private:
