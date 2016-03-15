@@ -635,10 +635,16 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fAppRep_ ()
     , fRunThread_ ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=0x%x", this);
+#endif
 }
 
 Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this=0x%x", this);
+#endif
     // SHOULD CLEAN THIS CODE UP SO YOU COULD DESTROY AND RECREATE - PROBABLY SHOULD LOSE sCurrApp_
     Require (fAppRep_ == nullptr);
     Require (sCurrApp_ == nullptr);
