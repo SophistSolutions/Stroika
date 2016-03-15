@@ -33,7 +33,7 @@ String    Debug::BackTrace ()
     // @see http://man7.org/linux/man-pages/man3/backtrace.3.html
     constexpr   size_t  kMaxStackSize_  =   100;        // could look at return size and re-run if equals exactly...
     void* stackTraceBuf[kMaxStackSize_] {};
-    int nptrs = ::backtrace (buffer, NEltsOf (stackTraceBuf));
+    int nptrs = ::backtrace (stackTraceBuf, NEltsOf (stackTraceBuf));
     DbgTrace ("backtrace() returned %d addresses\n", nptrs);
     char**   syms = ::backtrace_symbols (stackTraceBuf, nptrs);
     if (syms == NULL) {
@@ -41,7 +41,7 @@ String    Debug::BackTrace ()
         return String {};
     }
     Execution::Finally cleanup ([syms] () { if (syms != nullptr) ::free (syms); });
-    Characters::StringBuilder    out;
+    StringBuilder    out;
     for (int j = 0; j < nptrs; j++) {
         out.Append (String::FromNarrowSDKString (syms[j]) + Characters::GetEOL<wchar_t> ());
     }
