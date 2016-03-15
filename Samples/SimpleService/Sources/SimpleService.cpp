@@ -257,6 +257,18 @@ int     main (int argc, const char* argv[])
 #elif   qPlatform_Windows
     Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-SimpleService"));
 #endif
+
+    /*
+     *  Optional - use buffering feature
+     *  Optional - use suppress duplicates in a 15 second window
+     */
+    Logger::Get ().SetBufferingEnabled (true);
+    Logger::Get ().SetSuppressDuplicates (15);
+    Execution::Finally cleanup ([] () {
+        // re-disable before we exit (flushes) - so logs printed near exit all flushed/shown
+        Logger::Get ().SetBufferingEnabled (false);
+        Logger::Get ().SetSuppressDuplicates (Memory::Optional<Time::DurationSecondsType> ());
+    });
 #endif
 
     /*
@@ -275,7 +287,7 @@ int     main (int argc, const char* argv[])
     /*
      *  Create service handler instance.
      */
-    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
+    Main    m (make_shared<AppRep_> (), serviceIntegrationRep);
 
     /*
      *  Run request.
