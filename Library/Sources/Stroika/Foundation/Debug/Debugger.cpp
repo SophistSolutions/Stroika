@@ -18,6 +18,17 @@
 
 using   namespace   Stroika::Foundation;
 
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************ Debug::DropIntoDebuggerIfPresent **********************
+ ********************************************************************************
+ */
 void    Debug::DropIntoDebuggerIfPresent ()
 {
 #if     qPlatform_Windows
