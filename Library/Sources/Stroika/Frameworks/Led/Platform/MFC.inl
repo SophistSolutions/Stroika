@@ -1496,7 +1496,7 @@ namespace   Stroika {
 
                     if (m_pDocument != NULL and dynamic_cast<COleDocument*> (m_pDocument) != NULL) {
                         // Any time we get a click, make sure there are no active in-place activations.
-                        // Any click anyplace outside the active item is ingored, except for deactivating
+                        // Any click anyplace outside the active item is ignored, except for deactivating
                         // that item.
                         AssertMember (m_pDocument, COleDocument);   //
                         COleDocument&   doc     =   *(COleDocument*)m_pDocument;

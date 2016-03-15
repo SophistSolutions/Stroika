@@ -133,7 +133,7 @@
 				{55, 180, 55+18, 180+120},
 				CheckBox {
 					enabled,
-					"Ingore case"
+					"Ignore case"
 				},
 				{17, 320, 17+20, 320+90},
 				Button {
@@ -215,7 +215,7 @@
 				{79, 180, 79+18, 180+120},
 				CheckBox {
 					enabled,
-					"Ingore case"
+					"Ignore case"
 				},
 				{17, 320, 17+20, 320+90},
 				Button {

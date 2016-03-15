@@ -284,7 +284,7 @@ Led_IncrementalFontSpecification    StandardStyledTextImager::GetContinuousStyle
 bool    StandardStyledTextImager::DoContinuousStyle_Mac (size_t from, size_t nTChars, short* mode, TextStyle* theStyle)
 {
     //  Require ((*mode & doColor) == 0);   // NB: we currently don't support   doColor,  doAll , addSize
-    // Just silently ingore doColor for now since done from TCL - and we just return NO for that style...
+    // Just silently ignore doColor for now since done from TCL - and we just return NO for that style...
     Require ((*mode & addSize) == 0);
     RequireNotNull (theStyle);
 

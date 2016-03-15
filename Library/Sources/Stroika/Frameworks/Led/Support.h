@@ -1391,7 +1391,7 @@ namespace   Stroika {
             inline  Handle  Led_DoNewHandle (size_t n)
             {
 #if     qUseMacTmpMemForAllocs
-                OSErr err;  // ingored...
+                OSErr err;  // ignored...
                 Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
                 if (h == nullptr) {
                     h = ::NewHandle (n);

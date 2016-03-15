@@ -1322,7 +1322,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable):
      *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
      *  XErrorHandler do anything bad.
      */
-    int (*oldErrHandler) (Display*, XErrorEvent*)   =   ::XSetErrorHandler (IngoreXErrorHandler);
+    int (*oldErrHandler) (Display*, XErrorEvent*)   =   ::XSetErrorHandler (IgnoreXErrorHandler);
     Status s = ::XGetWindowAttributes (display, drawable, &wa);
     ::XSetErrorHandler (oldErrHandler);
     if (s != 0 && wa.map_installed) {
@@ -2371,7 +2371,7 @@ Led_SDK_String  Led_Tablet_::BestMatchFont (const Led_FontSpecification& fsp, co
     return bestAnswer;
 }
 
-int Led_Tablet_::IngoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
+int Led_Tablet_::IgnoreXErrorHandler (Display* /*display*/, XErrorEvent* /*error*/)
 {
     return 0;
 }
@@ -2665,7 +2665,7 @@ good:
              *  Since we don't know for sure the drawable is a window - catch the error and ignore it. Don't let
              *  XErrorHandler do anything bad.
              */
-            int (*oldErrHandler) (Display*, XErrorEvent*)   =   ::XSetErrorHandler (Led_Tablet_::IngoreXErrorHandler);
+            int (*oldErrHandler) (Display*, XErrorEvent*)   =   ::XSetErrorHandler (Led_Tablet_::IgnoreXErrorHandler);
             Status  s   =   ::XGetWindowAttributes (fOrigTablet->fDisplay, fOrigTablet->fDrawable, &winAttrs);
             ::XSetErrorHandler (oldErrHandler);
             if (s == 0) {

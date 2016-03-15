@@ -1875,7 +1875,7 @@ void    StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
 
             case '\n':
             case '\r': {
-                    // ingored??
+                    // ignored??
                 }
                 break;
 
@@ -2659,7 +2659,7 @@ bool    StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerC
      *  types we don't support.
      *
      *  For ones we don't support, we SHOULD use the \result tag - if any - to display the thing reasonably. But for now,
-     *  we don't support that. We simply ingore \result tags (see RTF spec for details).
+     *  we don't support that. We simply ignore \result tags (see RTF spec for details).
      */
 
     /*
@@ -3354,7 +3354,7 @@ RTFIO::ControlWord  StyledTextIOReader_RTF::ReadControlWord ()
      *          treated as a \par control if the character is preceded by a backslash. You must
      *          include the backslash; otherwise, RTF ignores the control word.
      *
-     *      Pretty clearly - the MSWord RTF readers ingore this dictate - at least under some circumstances.
+     *      Pretty clearly - the MSWord RTF readers ignore this dictate - at least under some circumstances.
      *
      *      To ignore this in MY code - you would have to sprinkle
      *          #if 0

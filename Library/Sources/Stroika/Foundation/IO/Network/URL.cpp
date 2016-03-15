@@ -134,7 +134,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 
     /*
      *  We MIGHT need to canonicalize the URL:
-     *          ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
+     *          ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ignored, 0));
      *  But empirically, so far, its slow, and doesn't appear to be doing anything. It MIGHT be used in case where we get a URL
      *  with %nn encodings, and they need to be rewritten. But even that doesn't appear critical here. Consider doing that if we
      *  ever get diffs with the OLD_Cracker () reported.
@@ -303,7 +303,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 
     /*
      *  We MIGHT need to canonicalize the URL:
-     *          ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ingored, 0));
+     *          ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, NEltsOf (outBuf), &ignored, 0));
      *  But empirically, so far, its slow, and doesn't appear to be doing anything. It MIGHT be used in case where we get a URL
      *  with %nn encodings, and they need to be rewritten. But even that doesn't appear critical here. Consider doing that if we
      *  ever get diffs with the OLD_Cracker () reported.

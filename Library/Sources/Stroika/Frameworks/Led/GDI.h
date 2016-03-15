@@ -1449,7 +1449,7 @@ namespace   Stroika {
 
 #if     qXWindows
             public:
-                static int  IngoreXErrorHandler (Display* display, XErrorEvent* error);
+                static int  IgnoreXErrorHandler (Display* display, XErrorEvent* error);
 #endif
 
 #if     qXWindows

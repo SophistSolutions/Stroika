@@ -205,7 +205,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& 
 
 bool    FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage, size_t from, size_t to)
 {
-    // For now, we ingore any files beyond the first one (Mac&PC)...LGP 960522
+    // For now, we ignore any files beyond the first one (Mac&PC)...LGP 960522
     if (flavorPackage.GetFlavorAvailable (kFILEClipFormat)) {
         size_t  fileSpecBufferLength        =   flavorPackage.GetFlavorSize (kFILEClipFormat);
         Memory::SmallStackBuffer<char> fileSpecBuffer (fileSpecBufferLength);

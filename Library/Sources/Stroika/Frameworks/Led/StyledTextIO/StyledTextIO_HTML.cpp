@@ -717,7 +717,7 @@ StyledTextIOReader_HTML::ThingyType StyledTextIOReader_HTML::ScanTilNextHTMLThin
                     break;
 
                 default: {
-                        // ingore - plain characters
+                        // ignore - plain characters
                         ConsumeNextChar ();
                     }
                     break;
@@ -1435,7 +1435,7 @@ void    StyledTextIOReader_HTML::HandleHTMLThingyTag_hN (bool start, const char*
                     SetHTMLFontSize (3);
                     break;
                 default: {
-                        // ingored
+                        // ignored
                     }
             }
         }

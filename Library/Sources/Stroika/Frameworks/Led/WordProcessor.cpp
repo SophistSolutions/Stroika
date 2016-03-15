@@ -886,7 +886,7 @@ WordProcessor::DialogSupport*   WordProcessor::sDialogSupport       =       null
 
 
 template    <class  T, class EXTRACTOR>
-bool    CheckForCommonParaValue (EXTRACTOR /*INGORED_BUT_HERE_FOR_OVERLOADING*/, const WordProcessor::ParagraphDatabasePtr& paraDB, size_t from, size_t to, T* commonValue)
+bool    CheckForCommonParaValue (EXTRACTOR /*IGNORED_BUT_HERE_FOR_OVERLOADING*/, const WordProcessor::ParagraphDatabasePtr& paraDB, size_t from, size_t to, T* commonValue)
 {
     RequireNotNull (commonValue);
     if (paraDB.get () == nullptr) {
