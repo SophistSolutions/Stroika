@@ -886,7 +886,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
                     AssertNotReached (); // possibly can avoid by reseting signal handlers above?
                 }
                 else {
-                    Thread  sigHandlerThread2Abort = rwLockedApp->fRunThread_;
+                    Thread  sigHandlerThread2Abort = rwLockedApp.load ()->fRunThread_;
                     DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
                     sigHandlerThread2Abort.Abort ();
                 }
