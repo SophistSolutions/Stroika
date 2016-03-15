@@ -37,6 +37,13 @@ namespace   Stroika {
              *  for debugging...
              *
              *  The frames are EOL (line) delimited.
+             *
+             *  \note - if you've distributed a copy of the program without symbols, you can use gdb to read back symbol names with:
+             *      > gdb-multiarch Output/arm-linux-gnueabi/Debug/BLKQCL-Controller
+             *        info symbol 0x770368
+             *        info symbol 0x1b974
+             *      ... etc for each symbol returned in []
+             *
              */
             Characters::String    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 
