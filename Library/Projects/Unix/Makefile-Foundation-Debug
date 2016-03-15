@@ -10,6 +10,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)Assertions.o\
 	$(ObjDir)AssertExternallySynchronizedLock.o\
+	$(ObjDir)BackTrace.o\
 	$(ObjDir)Debugger.o\
 	$(ObjDir)Fatal.o\
 	$(ObjDir)Trace.o\
