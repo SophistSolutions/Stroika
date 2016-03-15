@@ -94,8 +94,8 @@ Logger  Logger::sThe_;
 
 namespace {
     BlockingQueue<pair<Logger::Priority, String>>       sOutMsgQ_;
-    Execution::Thread                                   sBookkeepingThread_;
-    bool                                                sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
+    Synchronized<Execution::Thread>                     sBookkeepingThread_;
+    bool                                                sOutQMaybeNeedsFlush_ = true;       // slight optimization of not using buffering
 
     Synchronized<Memory::Optional<DurationSecondsType>> sSuppressDuplicatesThreshold_;
 
@@ -239,14 +239,18 @@ void    Logger::FlushDupsWarning_ ()
 
 void    Logger::UpdateBookkeepingThread_ ()
 {
-    sBookkeepingThread_.AbortAndWaitForDone ();
-    sBookkeepingThread_ = Thread ();  // so null
+    {
+        auto bktLck =      sBookkeepingThread_.get ();
+        bktLck->AbortAndWaitForDone ();
+        bktLck.store (Thread ());  // so null
+    }
 
     Time::DurationSecondsType   suppressDuplicatesThreshold =   sSuppressDuplicatesThreshold_->Value (0);
     bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
     if (suppressDuplicates or GetBufferingEnabled ()) {
+        Thread  newBookKeepThread;
         if (suppressDuplicates) {
-            sBookkeepingThread_ = Thread ([suppressDuplicatesThreshold] () {
+            newBookKeepThread = Thread ([suppressDuplicatesThreshold] () {
                 while (true) {
                     DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
                     /// Not ready fo prime time because BlockinqQ RemoveHeadIfPossible currently ignores time2Wait... Must fix that first...
@@ -266,7 +270,7 @@ void    Logger::UpdateBookkeepingThread_ ()
             });
         }
         else {
-            sBookkeepingThread_ = Thread ([] () {
+            newBookKeepThread = Thread ([] () {
                 while (true) {
                     auto p = sOutMsgQ_.RemoveHead ();
                     shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
@@ -276,9 +280,10 @@ void    Logger::UpdateBookkeepingThread_ ()
                 }
             });
         }
-        sBookkeepingThread_.SetThreadName (L"Logger Bookkeeping");
-        sBookkeepingThread_.SetThreadPriority (Thread::Priority::eBelowNormal);
-        sBookkeepingThread_.Start ();
+        newBookKeepThread.SetThreadName (L"Logger Bookkeeping");
+        newBookKeepThread.SetThreadPriority (Thread::Priority::eBelowNormal);
+        newBookKeepThread.Start ();
+        sBookkeepingThread_ = newBookKeepThread;
     }
 
     // manually push out pending messages
