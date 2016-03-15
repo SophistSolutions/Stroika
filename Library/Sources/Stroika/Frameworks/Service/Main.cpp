@@ -878,20 +878,32 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case    SIGINT:
-        case    SIGTERM:
-
-            AssertNotNull (sCurrApp_);
-            Thread  sigHandlerThread2Abort = sCurrApp_->fRunThread_;
-            DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
-            sigHandlerThread2Abort.Abort ();
+        case    SIGTERM: {
+                auto rwLockedApp = sBasicUNIXServiceImpl_CurrApp_.get ();
+                if (rwLockedApp.load () == nullptr) {
+                    AssertNotReached (); // possibly can avoid by reseting signal handlers above?
+                }
+                else {
+                    Thread  sigHandlerThread2Abort = sCurrApp_->fRunThread_;
+                    DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
+                    sigHandlerThread2Abort.Abort ();
+                }
+            }
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
         case    SIGHUP:
 #else
         case    kSIG_ReReadConfiguration:
 #endif
-            AssertNotNull (sCurrApp_);
-            sCurrApp_->OnReReadConfigurationRequest ();
+            {
+                auto rwLockedApp = sBasicUNIXServiceImpl_CurrApp_.get ();
+                if (rwLockedApp.load () == nullptr) {
+                    AssertNotReached (); // possibly can avoid by reseting signal handlers above?
+                }
+                else {
+                    sCurrApp_->OnReReadConfigurationRequest ();
+                }
+            }
             break;
     }
 }
