@@ -666,13 +666,13 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
     }
     fAppRep_ = appRep;
     if (appRep == nullptr) {
-        Assert (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
-        sBasicUNIXServiceImpl_CurrApp_ = this;
+        Assert (sBasicUNIXServiceImpl_CurrApp_ == this);
+        sBasicUNIXServiceImpl_CurrApp_ = nullptr;
         SetupSignalHanlders_ (false);
     }
     else {
-        Assert (sBasicUNIXServiceImpl_CurrApp_ != nullptr);
-        sBasicUNIXServiceImpl_CurrApp_ = nullptr;
+        Assert (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
+        sBasicUNIXServiceImpl_CurrApp_ = this;
         SetupSignalHanlders_ (true);
     }
     fRunThread_.AbortAndWaitForDone ();
