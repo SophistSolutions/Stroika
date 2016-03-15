@@ -93,16 +93,16 @@ Logger  Logger::sThe_;
 
 
 namespace {
-    BlockingQueue<pair<Logger::Priority, String>>   sOutMsgQ_;
-    Execution::Thread                               sBookkeepingThread_;
-    bool                                            sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
+    BlockingQueue<pair<Logger::Priority, String>>       sOutMsgQ_;
+    Execution::Thread                                   sBookkeepingThread_;
+    bool                                                sOutQMaybeNeedsFlush_ = true;       // sligt optimziation of not using buffering
 
-    Synchronized<Memory::Optional<DurationSecondsType>>       sSuppressDuplicatesThreshold_;
+    Synchronized<Memory::Optional<DurationSecondsType>> sSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
-        pair<Logger::Priority, String>      fLastMsgSent_;
-        Time::DurationSecondsType           fLastSentAt = 0.0;
-        unsigned int                        fRepeatCount_ = 0;
+        pair<Logger::Priority, String>      fLastMsgSent_   {};
+        Time::DurationSecondsType           fLastSentAt     {};
+        unsigned int                        fRepeatCount_   {};
     };
     Synchronized<LastMsg_>    sLastMsg_;
 }
@@ -112,8 +112,18 @@ Logger::Logger ()
     : fAppender_ ()
     , fMinLogLevel_ (Priority::eInfo)
     , fBufferingEnabled_ (false)
+#if     qDebug
+    , fConstructed_ (true)
+#endif
 {
 }
+
+#if     qDebug
+Logger::~Logger ()
+{
+    fConstructed_ = false;
+}
+#endif
 
 void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 {
@@ -122,8 +132,9 @@ void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 
 void    Logger::Log_ (Priority logLevel, const String& msg)
 {
-    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
-    if (tmp.get () != nullptr) {
+    Require (sThe_.fConstructed_);
+    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
+    if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
         if (sSuppressDuplicatesThreshold_->IsPresent ()) {
             auto    lastMsgLocked = sLastMsg_.GetReference ();
@@ -166,7 +177,8 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 
 void        Logger::FlushBuffer ()
 {
-    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+    Require (sThe_.fConstructed_);
+    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
     if (tmp != nullptr) {
         while (true) {
             Optional<pair<Logger::Priority, String>> p = sOutMsgQ_.RemoveHeadIfPossible ();
@@ -210,7 +222,8 @@ void    Logger::FlushDupsWarning_ ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
-        shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+        Require (sThe_.fConstructed_);
+        shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
         if (tmp != nullptr) {
             if (lastMsgLocked->fRepeatCount_ == 1) {
                 tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
@@ -238,7 +251,7 @@ void    Logger::UpdateBookkeepingThread_ ()
                     DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
                     /// Not ready fo prime time because BlockinqQ RemoveHeadIfPossible currently ignores time2Wait... Must fix that first...
                     if (auto p = sOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
-                        shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                        shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
                         if (tmp != nullptr) {
                             IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
                         }
@@ -256,7 +269,7 @@ void    Logger::UpdateBookkeepingThread_ ()
             sBookkeepingThread_ = Thread ([] () {
                 while (true) {
                     auto p = sOutMsgQ_.RemoveHead ();
-                    shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
+                    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
                     if (tmp != nullptr) {
                         tmp->Log (p.first, p.second);
                     }
@@ -386,6 +399,7 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
         default:
             RequireNotReached ();
     }
+    // According to http://pubs.opengroup.org/onlinepubs/000095399/functions/xsh_chap02_09.html#tag_02_09_01 this is threadsafe
     ::syslog (sysLogLevel, "%s", message.AsNarrowSDKString ().c_str ());
 }
 #endif

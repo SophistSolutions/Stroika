@@ -14,6 +14,7 @@
 #include    "../Debug/Assertions.h"
 #include    "../Memory/Optional.h"
 #include    "../Time/Realtime.h"
+#include    "Synchronized.h"
 
 
 
@@ -99,16 +100,30 @@ namespace   Stroika {
                 static  Logger& Get ();
             private:
                 Logger ();
+#if     qDebug
+            private:
+                ~Logger ();
+#endif
             public:
                 Logger (const Logger&) = delete;
                 const Logger& operator= (const Logger&) = delete;
 
             public:
+                /**
+                 *  Note - all Stroika provided appenders are internally synchronized.
+                 */
                 nonvirtual  IAppenderRepPtr GetAppender () const;
+
+            public:
+                /**
+                 *  Note - all Stroika provided appenders are internally synchronized.
+                 *
+                 *  However, user-defined appenders are assumed internally synchonized (threadsafe).
+                 */
                 nonvirtual  void            SetAppender (const IAppenderRepPtr& rep);
 
             private:
-                IAppenderRepPtr fAppender_;
+                Synchronized<IAppenderRepPtr> fAppender_;
 
             public:
                 /**
@@ -265,6 +280,12 @@ namespace   Stroika {
             private:
                 Priority    fMinLogLevel_;
                 bool        fBufferingEnabled_;
+
+#if     qDebug
+            private:
+                // Since this is essentially a global static variable, make sure stray threads/callers dont call after shutdown/destruction
+                bool        fConstructed_ {};
+#endif
 
             private:
                 static  Logger  sThe_;

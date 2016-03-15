@@ -24,10 +24,12 @@ namespace   Stroika {
              */
             inline  Logger& Logger::Get ()
             {
+                Require (sThe_.fConstructed_);
                 return sThe_;
             }
             inline  Logger::IAppenderRepPtr Logger::GetAppender () const
             {
+                Require (fConstructed_);
                 return fAppender_;
             }
             inline  Logger::Priority    Logger::GetMinLogLevel () const
@@ -40,7 +42,8 @@ namespace   Stroika {
             }
             inline  bool    Logger::WouldLog (Priority logLevel)
             {
-                return logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_ != nullptr;
+                Require (sThe_.fConstructed_);
+                return logLevel >= sThe_.fMinLogLevel_ and sThe_.fAppender_.load () != nullptr;
             }
             inline  bool        Logger::GetBufferingEnabled ()
             {
