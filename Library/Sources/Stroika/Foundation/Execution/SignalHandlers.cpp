@@ -6,6 +6,7 @@
 #include    <mutex>
 
 #include    "../Containers/Mapping.h"
+#include    "../Debug/BackTrace.h"
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
 
@@ -29,10 +30,16 @@ using   Containers::Set;
 // maybe useful while debugging signal code, but VERY unsafe
 // and could easily be the source of bugs/deadlocks!
 #ifndef qDoDbgTraceOnSignalHandlers_
-#define qDoDbgTraceOnSignalHandlers_    0
+#define qDoDbgTraceOnSignalHandlers_            0
 #endif
 
 
+
+// maybe useful while debugging signal code, but VERY unsafe
+// and could easily be the source of bugs/deadlocks!
+#ifndef qDoBacktraceOnFirstPassSignalHandler_
+#define qDoBacktraceOnFirstPassSignalHandler_    0
+#endif
 
 
 
@@ -395,6 +402,10 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_");
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
+#if     qDoBacktraceOnFirstPassSignalHandler_
+    DbgTrace (L"BT=%s", Debug::BackTrace ().c_str ());
+#endif
+
     SignalHandlerRegistry&  SHR =   Get ();
 
     {
