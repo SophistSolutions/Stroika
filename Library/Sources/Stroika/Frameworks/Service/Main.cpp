@@ -903,7 +903,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
                     AssertNotReached (); // possibly can avoid by reseting signal handlers above?
                 }
                 else {
-                    sCurrApp_->OnReReadConfigurationRequest ();
+                    AssertNotNull (rwLockedApp->fAppRep_);  // cuz we null/unnull both ptrs at same time (UGLY!)
+                    rwLockedApp->fAppRep_->OnReReadConfigurationRequest ();
                 }
             }
             break;
