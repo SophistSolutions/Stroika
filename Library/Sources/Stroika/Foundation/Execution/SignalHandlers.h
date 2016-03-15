@@ -202,7 +202,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 * @see GetSignalHandlers()
+                 * @see GetSignalHandlers().
+                 *
+                 *  \note - subtlety - if you wish to later call RemoveSignalHandler, save the signalhandler in a static const of type
+                 *          SignalHandler, and re-use that value.
                  */
                 nonvirtual  void    AddSignalHandler (SignalID signal, SignalHandler handler);
 
