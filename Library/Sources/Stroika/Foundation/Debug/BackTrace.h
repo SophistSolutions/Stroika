@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <limits>
+
 #include    "../Characters/String.h"
 
 
@@ -30,8 +32,13 @@ namespace   Stroika {
              *  Return a string/printable version of the current stack backtrace. This is handy in debugging.
              *
              *  This function will fail gracefully and return an empty string if needed.
+             *
+             *  There are cases where one would want to limit the number of 'stack frames' returned - since this is just used
+             *  for debugging...
+             *
+             *  The frames are EOL (line) delimited.
              */
-            Characters::String    BackTrace ();
+            Characters::String    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 
         }
     }
