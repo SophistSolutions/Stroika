@@ -132,8 +132,7 @@ void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 
 void    Logger::Log_ (Priority logLevel, const String& msg)
 {
-    Require (sThe_.fConstructed_);
-    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
+    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
         if (sSuppressDuplicatesThreshold_->IsPresent ()) {
@@ -167,18 +166,17 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
 
 void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Logger::SetBufferingEnabled");
     DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
-#endif
-    sThe_.fBufferingEnabled_ = logBufferingEnabled;
-    UpdateBookkeepingThread_ ();
+    if (sThe_.fBufferingEnabled_ != logBufferingEnabled) {
+        sThe_.fBufferingEnabled_ = logBufferingEnabled;
+        UpdateBookkeepingThread_ ();
+    }
 }
 
 void        Logger::FlushBuffer ()
 {
-    Require (sThe_.fConstructed_);
-    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
+    shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
     if (tmp != nullptr) {
         while (true) {
             Optional<pair<Logger::Priority, String>> p = sOutMsgQ_.RemoveHeadIfPossible ();
@@ -200,10 +198,8 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Logger::SetSuppressDuplicates");
     DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
-#endif
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
     auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
     if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
@@ -222,8 +218,7 @@ void    Logger::FlushDupsWarning_ ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
-        Require (sThe_.fConstructed_);
-        shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
+        shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
         if (tmp != nullptr) {
             if (lastMsgLocked->fRepeatCount_ == 1) {
                 tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
@@ -239,6 +234,7 @@ void    Logger::FlushDupsWarning_ ()
 
 void    Logger::UpdateBookkeepingThread_ ()
 {
+    Debug::TraceContextBumper ctx ("Logger::UpdateBookkeepingThread_");
     {
         auto bktLck =      sBookkeepingThread_.get ();
         bktLck->AbortAndWaitForDone ();
