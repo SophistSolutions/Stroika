@@ -414,7 +414,7 @@ Main::LoggerServiceWrapper::LoggerServiceWrapper (shared_ptr<Main::IServiceInteg
     RequireNotNull (delegateTo);
 }
 
-void    Main::LoggerServiceWrapper::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::LoggerServiceWrapper::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
     fDelegateTo_->_Attach (appRep);
 }
@@ -521,7 +521,7 @@ Main::RunTilIdleService::RunTilIdleService ()
 {
 }
 
-void    Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::RunTilIdleService::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)
@@ -627,8 +627,7 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  ********************************************************************************
  */
 namespace {
-    Execution::Thread sigHandlerThread2Abort_;
-    shared_ptr<Main::IApplicationRep> sCurrApp_;
+    Synchronized<Main::BasicUNIXServiceImpl*> sBasicUNIXServiceImpl_CurrApp_;   // @todo FIND a more elegant way to keep track of this
 }
 
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
@@ -638,6 +637,7 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=0x%x", this);
 #endif
+    Require (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
 }
 
 Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
@@ -647,10 +647,10 @@ Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 #endif
     // SHOULD CLEAN THIS CODE UP SO YOU COULD DESTROY AND RECREATE - PROBABLY SHOULD LOSE sCurrApp_
     Require (fAppRep_ == nullptr);
-    Require (sCurrApp_ == nullptr);
+    Require (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
 }
 
-void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach");
@@ -663,9 +663,15 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
         // @todo CLEAR SIGNAL HANDLER
     }
     fAppRep_ = appRep;
-    sCurrApp_ = appRep;
-    if (appRep != nullptr) {
-        SetupSignalHanlders_ ();
+    if (appRep == nullptr) {
+        Assert (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
+        sBasicUNIXServiceImpl_CurrApp_ = this;
+        SetupSignalHanlders_ (false);
+    }
+    else {
+        Assert (sBasicUNIXServiceImpl_CurrApp_ != nullptr);
+        sBasicUNIXServiceImpl_CurrApp_ = nullptr;
+        SetupSignalHanlders_ (true);
     }
     fRunThread_.AbortAndWaitForDone ();
     fRunThread_ = Execution::Thread ();
@@ -725,7 +731,6 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
-    sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
     Execution::Finally cleanup ([this] () {
         (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
@@ -751,7 +756,6 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
-    sigHandlerThread2Abort_ = fRunThread_;
     fRunThread_.Start ();
     fRunThread_.WaitForDone ();
     fRunThread_.ThrowIfDoneWithException ();
@@ -839,11 +843,19 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
     return 0;
 }
 
-void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
+void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 {
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler_);
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGTERM, SignalHandler_);
-    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (kSIG_ReReadConfiguration, SignalHandler_);
+    static  const   Execution::SignalHandlerRegistry::SignalHandler kMySigHandler_  =   SignalHandler_;
+    if (install) {
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, kMySigHandler_);
+    }
+    else {
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, kMySigHandler_);
+    }
 }
 
 String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
@@ -860,17 +872,18 @@ void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 
 void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
-    // @todo        TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
-    //
-
+    // NOTE - this is only safe due to the use of SignalHandlerRegistry::SafeSignalsManager
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_");
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case    SIGINT:
         case    SIGTERM:
-            DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort_ (%s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort_.GetID ()).c_str ());
-            sigHandlerThread2Abort_.Abort ();
+
+            AssertNotNull (sCurrApp_);
+            Thread  sigHandlerThread2Abort = sCurrApp_->fRunThread_;
+            DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
+            sigHandlerThread2Abort.Abort ();
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
         case    SIGHUP:
@@ -907,7 +920,7 @@ Main::WindowsService::WindowsService ()
     fServiceStatus_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 }
 
-void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::WindowsService::_Attach (const shared_ptr<IApplicationRep>& appRep)
 {
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)

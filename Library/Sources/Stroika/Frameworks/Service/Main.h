@@ -550,7 +550,7 @@ namespace   Stroika {
                  *
                  *  Must be detatched before DTOR.
                  */
-                virtual void    _Attach (shared_ptr<IApplicationRep> appRep)    =   0;
+                virtual void    _Attach (const shared_ptr<IApplicationRep>& appRep)    =   0;
 
             protected:
                 /**
@@ -633,7 +633,7 @@ namespace   Stroika {
             public:
                 LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo);
             protected:
-                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual  State                                      _GetState () const override;
@@ -657,7 +657,7 @@ namespace   Stroika {
             public:
                 RunTilIdleService ();
             protected:
-                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual State                                       _GetState () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
@@ -681,7 +681,7 @@ namespace   Stroika {
              */
             class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
             protected:
-                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual State                                       _GetState () const override;
@@ -707,7 +707,7 @@ namespace   Stroika {
                 BasicUNIXServiceImpl ();
                 ~BasicUNIXServiceImpl ();
             protected:
-                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual  State                                      _GetState () const override;
@@ -729,7 +729,7 @@ namespace   Stroika {
                 virtual     void            _CleanupDeadService ();
 
             private:
-                nonvirtual  void    SetupSignalHanlders_ ();
+                nonvirtual  void    SetupSignalHanlders_ (bool install);
 
                 /*
                  * By default, ServiceMain sets up its own signal handlers for
@@ -777,7 +777,7 @@ namespace   Stroika {
             public:
                 WindowsService ();
             protected:
-                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
                 virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
                 virtual  State                                      _GetState () const override;
