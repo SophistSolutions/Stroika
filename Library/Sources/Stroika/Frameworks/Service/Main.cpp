@@ -640,8 +640,8 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 {
     // SHOULD CLEAN THIS CODE UP SO YOU COULD DESTROY AND RECREATE - PROBABLY SHOULD LOSE sCurrApp_
-    Require (fAppRep_.get () == nullptr);
-    Require (sCurrApp_.get () == nullptr);
+    Require (fAppRep_ == nullptr);
+    Require (sCurrApp_ == nullptr);
 }
 
 void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
@@ -708,6 +708,7 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
 
 void    Main::BasicUNIXServiceImpl::_RunAsService ()
 {
+    Debug::TraceContextBumper ctx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_RunAsService");
     if (_GetServicePID () > 0) {
         Execution::Throw (Execution::StringException (String_Constant { L"Service Already Running" }));
     }
