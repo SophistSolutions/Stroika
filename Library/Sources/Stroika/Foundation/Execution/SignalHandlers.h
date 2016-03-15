@@ -193,7 +193,7 @@ namespace   Stroika {
                  * exactly the one given (effectively removing any others previously added).
                  * SetSignalHandlers () with ONE a set of handlers registers all the given handlers.
                  *
-                 * Note - if through ANY combination of set/add/remvoe - you have NO signal handler - this reverts to SIG_DFL, and if you have
+                 * Note - if through ANY combination of set/add/remove - you have NO signal handler - this reverts to SIG_DFL, and if you have
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalID signal);
