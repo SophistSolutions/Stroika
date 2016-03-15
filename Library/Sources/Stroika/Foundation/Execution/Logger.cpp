@@ -89,54 +89,54 @@ const EnumNames<Logger::Priority>   Logger::Stroika_Enum_Names(Priority) = Defau
  */
 Logger  Logger::sThe_;
 
-
-
-
-namespace {
-    BlockingQueue<pair<Logger::Priority, String>>       sOutMsgQ_;
-    Synchronized<Execution::Thread>                     sBookkeepingThread_;
-    bool                                                sOutQMaybeNeedsFlush_ = true;       // slight optimization of not using buffering
-
-    Synchronized<Memory::Optional<DurationSecondsType>> sSuppressDuplicatesThreshold_;
+struct  Logger::Rep_ {
+    bool                                                fBufferingEnabled_              { false };
+    Synchronized<IAppenderRepPtr>                       fAppender_;
+    BlockingQueue<pair<Logger::Priority, String>>       fOutMsgQ_;
+    bool                                                fOutQMaybeNeedsFlush_           { true };       // slight optimization of not using buffering
+    Synchronized<Memory::Optional<DurationSecondsType>> fSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         pair<Logger::Priority, String>      fLastMsgSent_   {};
         Time::DurationSecondsType           fLastSentAt     {};
         unsigned int                        fRepeatCount_   {};
     };
-    Synchronized<LastMsg_>    sLastMsg_;
-}
-
+    Synchronized<LastMsg_>                              fLastMsg_;
+};
 
 Logger::Logger ()
-    : fAppender_ ()
-    , fMinLogLevel_ (Priority::eInfo)
-    , fBufferingEnabled_ (false)
-#if     qDebug
-    , fConstructed_ (true)
-#endif
+    : fRep_ { make_unique<Rep_> () }
 {
 }
 
 #if     qDebug
 Logger::~Logger ()
 {
-    fConstructed_ = false;
+    RequireNotNull (sThe_.fRep_);
+    fRep_.release ();   // so more likely debug checks for null say its null
 }
 #endif
 
+Logger::IAppenderRepPtr Logger::GetAppender () const
+{
+    RequireNotNull (sThe_.fRep_);
+    return fRep_->fAppender_;
+}
+
 void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 {
-    fAppender_ = rep;
+    RequireNotNull (sThe_.fRep_);
+    fRep_->fAppender_ = rep;
 }
 
 void    Logger::Log_ (Priority logLevel, const String& msg)
 {
+    RequireNotNull (sThe_.fRep_);
     shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
-        if (sSuppressDuplicatesThreshold_->IsPresent ()) {
-            auto    lastMsgLocked = sLastMsg_.GetReference ();
+        if (sThe_.fRep_->fSuppressDuplicatesThreshold_->IsPresent ()) {
+            auto    lastMsgLocked = sThe_.fRep_->fLastMsg_.GetReference ();
             if (p == lastMsgLocked->fLastMsgSent_) {
                 lastMsgLocked->fRepeatCount_++;
                 lastMsgLocked->fLastSentAt = Time::GetTickCount ();
@@ -152,11 +152,11 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
             }
         }
         if (GetBufferingEnabled ()) {
-            sOutQMaybeNeedsFlush_ = true;
-            sOutMsgQ_.AddTail (p);
+            sThe_.fRep_->fOutQMaybeNeedsFlush_ = true;
+            sThe_.fRep_->fOutMsgQ_.AddTail (p);
         }
         else {
-            if (sOutQMaybeNeedsFlush_) {
+            if (sThe_.fRep_->fOutQMaybeNeedsFlush_) {
                 FlushBuffer (); // in case recently disabled
             }
             tmp->Log (p.first, p.second);
@@ -168,18 +168,20 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 {
     Debug::TraceContextBumper ctx ("Logger::SetBufferingEnabled");
     DbgTrace (L"(logBufferingEnabled=%d)", logBufferingEnabled);
-    if (sThe_.fBufferingEnabled_ != logBufferingEnabled) {
-        sThe_.fBufferingEnabled_ = logBufferingEnabled;
+    RequireNotNull (sThe_.fRep_);
+    if (sThe_.fRep_->fBufferingEnabled_ != logBufferingEnabled) {
+        sThe_.fRep_->fBufferingEnabled_ = logBufferingEnabled;
         UpdateBookkeepingThread_ ();
     }
 }
 
 void        Logger::FlushBuffer ()
 {
+    RequireNotNull (sThe_.fRep_);
     shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
     if (tmp != nullptr) {
         while (true) {
-            Optional<pair<Logger::Priority, String>> p = sOutMsgQ_.RemoveHeadIfPossible ();
+            Optional<pair<Logger::Priority, String>> p = sThe_.fRep_->fOutMsgQ_.RemoveHeadIfPossible ();
             if (p.IsPresent ()) {
                 tmp->Log (p->first, p->second);
             }
@@ -188,12 +190,18 @@ void        Logger::FlushBuffer ()
             }
         }
     }
-    sOutQMaybeNeedsFlush_ = false;
+    sThe_.fRep_->fOutQMaybeNeedsFlush_ = false;
+}
+
+bool        Logger::GetBufferingEnabled ()
+{
+    return sThe_.fRep_->fBufferingEnabled_;
 }
 
 Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates ()
 {
-    return Memory::Optional<Time::DurationSecondsType> (sSuppressDuplicatesThreshold_);
+    RequireNotNull (sThe_.fRep_);
+    return Memory::Optional<Time::DurationSecondsType> (sThe_.fRep_->fSuppressDuplicatesThreshold_);
 }
 
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
@@ -201,9 +209,10 @@ void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsTyp
     Debug::TraceContextBumper ctx ("Logger::SetSuppressDuplicates");
     DbgTrace (L"(suppressDuplicatesThreshold=%f)", suppressDuplicatesThreshold.Value (-1));
     Require (suppressDuplicatesThreshold.IsMissing () or * suppressDuplicatesThreshold > 0.0);
-    auto    critSec { Execution::make_unique_lock (sSuppressDuplicatesThreshold_) };
-    if (sSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
-        sSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
+    RequireNotNull (sThe_.fRep_);
+    auto    critSec { Execution::make_unique_lock (sThe_.fRep_->fSuppressDuplicatesThreshold_) };
+    if (sThe_.fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
+        sThe_.fRep_->fSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         UpdateBookkeepingThread_ ();
     }
 }
@@ -213,10 +222,10 @@ void    Logger::FlushDupsWarning_ ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Logger::FlushDupsWarning_");
 #endif
-    auto    lastMsgLocked = sLastMsg_.GetReference ();
+    auto    lastMsgLocked = sThe_.fRep_->fLastMsg_.GetReference ();
     if (lastMsgLocked->fRepeatCount_ > 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
+        DbgTrace (L"fLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
         shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections (appender internally threadsafe)
         if (tmp != nullptr) {
@@ -235,29 +244,34 @@ void    Logger::FlushDupsWarning_ ()
 void    Logger::UpdateBookkeepingThread_ ()
 {
     Debug::TraceContextBumper ctx ("Logger::UpdateBookkeepingThread_");
+    static  Synchronized<Execution::Thread>     sBookkeepingThread_;
+    RequireNotNull (sThe_.fRep_);
     {
         auto bktLck =      sBookkeepingThread_.get ();
         bktLck->AbortAndWaitForDone ();
         bktLck.store (Thread ());  // so null
     }
 
-    Time::DurationSecondsType   suppressDuplicatesThreshold =   sSuppressDuplicatesThreshold_->Value (0);
+    AssertNotNull (sThe_.fRep_);
+    Time::DurationSecondsType   suppressDuplicatesThreshold =   sThe_.fRep_->fSuppressDuplicatesThreshold_->Value (0);
     bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
     if (suppressDuplicates or GetBufferingEnabled ()) {
         Thread  newBookKeepThread;
         if (suppressDuplicates) {
             newBookKeepThread = Thread ([suppressDuplicatesThreshold] () {
+                Debug::TraceContextBumper ctx1 ("Logger::UpdateBookkeepingThread_... internal thread/1");
                 while (true) {
                     DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
-                    /// Not ready fo prime time because BlockinqQ RemoveHeadIfPossible currently ignores time2Wait... Must fix that first...
-                    if (auto p = sOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
+                    AssertNotNull (sThe_.fRep_);
+                    if (auto p = sThe_.fRep_->fOutMsgQ_.RemoveHeadIfPossible (time2Wait)) {
                         shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
                         if (tmp != nullptr) {
                             IgnoreExceptionsExceptThreadAbortForCall (tmp->Log (p->first, p->second));
                         }
                     }
+                    AssertNotNull (sThe_.fRep_);
                     {
-                        auto    lastMsgLocked = sLastMsg_.GetReference ();
+                        auto    lastMsgLocked = sThe_.fRep_->fLastMsg_.GetReference ();
                         if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
                             IgnoreExceptionsExceptThreadAbortForCall (FlushDupsWarning_ ());
                         }
@@ -267,8 +281,10 @@ void    Logger::UpdateBookkeepingThread_ ()
         }
         else {
             newBookKeepThread = Thread ([] () {
+                Debug::TraceContextBumper ctx1 ("Logger::UpdateBookkeepingThread_... internal thread/2");
                 while (true) {
-                    auto p = sOutMsgQ_.RemoveHead ();
+                    AssertNotNull (sThe_.fRep_);
+                    auto p = sThe_.fRep_->fOutMsgQ_.RemoveHead ();
                     shared_ptr<IAppenderRep> tmp =   Get ().GetAppender ();   // avoid races and critical sections
                     if (tmp != nullptr) {
                         tmp->Log (p.first, p.second);

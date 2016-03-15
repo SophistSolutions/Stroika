@@ -122,9 +122,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void            SetAppender (const IAppenderRepPtr& rep);
 
-            private:
-                Synchronized<IAppenderRepPtr> fAppender_;
-
             public:
                 /**
                  *
@@ -278,14 +275,11 @@ namespace   Stroika {
                 static  void    UpdateBookkeepingThread_ ();
 
             private:
-                Priority    fMinLogLevel_;
-                bool        fBufferingEnabled_;
+                struct  Rep_;
 
-#if     qDebug
             private:
-                // Since this is essentially a global static variable, make sure stray threads/callers dont call after shutdown/destruction
-                bool        fConstructed_ {};
-#endif
+                unique_ptr<Rep_>    fRep_;
+                Priority    fMinLogLevel_ { Priority::eInfo };      // Keep out of rep only so we can reference from inlines and put the Rep_ in the .cpp file for better hiding
 
             private:
                 static  Logger  sThe_;
