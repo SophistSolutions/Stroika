@@ -102,7 +102,6 @@ struct  Logger::Rep_ {
 
     Synchronized<Execution::Thread>                     fBookkeepingThread_;
 
-
     void    FlushDupsWarning_ ()
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -131,11 +130,21 @@ struct  Logger::Rep_ {
 Logger::Logger ()
     : fRep_ { make_shared<Rep_> () }
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    if (&sThe_ == this) {
+        DbgTrace (L"Allocating global logger: %p", this);
+    }
+#endif
 }
 
 #if     qDebug
 Logger::~Logger ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    if (&sThe_ == this) {
+        DbgTrace (L"Destroying global logger: %p", this);
+    }
+#endif
     RequireNotNull (fRep_);
     fRep_.reset ();   // so more likely debug checks for null say its null
 }
@@ -433,7 +442,7 @@ struct  Logger::StreamAppender::Rep_ {
     using   TextWriter = Streams::TextWriter;
 public:
     template    <typename T>
-    Rep_ (Streams::OutputStream<T> out)
+    Rep_ (const Streams::OutputStream<T>& out)
         : fWriter_ (out)
     {
     }

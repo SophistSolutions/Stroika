@@ -24,6 +24,7 @@ namespace   Stroika {
              */
             inline  Logger& Logger::Get ()
             {
+                Ensure (sThe_.fRep_ != nullptr);    // good but not great since no guarantee about race - that while used doesn't 'go null' in sThe DTOR
                 return sThe_;
             }
             inline  Logger::Priority    Logger::GetMinLogLevel () const
