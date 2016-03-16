@@ -22,10 +22,22 @@
  *  \file
  *
  *  TODO:
- *      @todo   Consider making most of the static logger methods non-static so we could have multiple loggers (with differnt configs/params).
+ *      @todo   Consider allowingmultiple loggers (with differnt configs/params).
  *              Still wish to retain the magic singleton, but then you use Logger::Get ().
  *
  *              Then make possible to create (construct) own logger objects (possibly for various purposes)... like one to file, and one to syslog?
+ *
+ *      @todo   Consider some shortcut for
+ *              Logger::Get ().Log ()
+ *
+ *              Thats not very long - but its long.
+ *              Apparently cannot do operator()() as a static method (appears not allowed in C++).
+ *              And cannot overload static/non-static methods with same params (cuz in definition how would you distinguish them).
+ *
+ *              COULD do:
+ *                  Logger::LOG()
+ *                  Logger::GlobalLog()/CommonLog() or just
+ *                  Execution::DefaultLogger()      -- that maybe best but even longer than what we were replacing, unless you import Execution ns.
  *
  *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
  *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
