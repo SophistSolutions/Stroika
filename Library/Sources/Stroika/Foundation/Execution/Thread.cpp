@@ -561,12 +561,9 @@ Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Cha
 }
 
 Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name)
-    : Thread (fun2CallOnce)
+    : Thread (fun2CallOnce, name)
 {
     Start ();
-    if (name) {
-        SetThreadName (*name);
-    }
 }
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
