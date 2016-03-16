@@ -280,9 +280,6 @@ namespace   Stroika {
                 nonvirtual  void    Log_ (Priority logLevel, const String& msg);
 
             private:
-                nonvirtual  void    UpdateBookkeepingThread_ ();
-
-            private:
                 struct  Rep_;
 
             private:
