@@ -80,9 +80,6 @@ private:
     ThreadPool&                 fThreadPool_;
     ThreadPool::TaskType        fCurTask_;
     ThreadPool::TaskType        fNextTask_;
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION(MyRunnable_);
 };
 
 

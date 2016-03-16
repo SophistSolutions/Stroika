@@ -240,7 +240,7 @@ namespace   Stroika {
             private:
                 mutable recursive_mutex         fCriticalSection_;
                 bool                            fAborted_;
-                Containers::Collection<TPInfo_> fThreads_;
+                Containers::Collection<TPInfo_> fThreads_;          // all threads, and a data member for thread object, and one for running task, if any
                 list<TaskType>                  fTasks_;            // Use Stroika Queue
                 WaitableEvent                   fTasksAdded_;
             private:
