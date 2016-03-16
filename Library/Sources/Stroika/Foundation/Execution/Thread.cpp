@@ -304,12 +304,12 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         {
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             Verify (sRunningThreads_.insert (incRefCnt->GetID ()).second);      // .second true if inserted, so checking not already there
-            DbgTrace (L"Running thread count up to: %d", sRunningThreads_.size ());
+            DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size (), FormatThreadID (incRefCnt->GetID ()).c_str ());
         }
         Execution::Finally cleanup ([incRefCnt] () {
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             Verify (sRunningThreads_.erase (incRefCnt->GetID ()) == 1);         // verify exactly one erased
-            DbgTrace (L"Running thread count down to: %d", sRunningThreads_.size ());
+            DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size (), FormatThreadID (incRefCnt->GetID ()).c_str ());
         });
 #endif
 
@@ -952,4 +952,13 @@ void    Execution::CheckForThreadInterruption ()
             }
         }
     }
+#if     qDefaultTracingOn
+    else if (s_Aborting_ or s_Interrupting_) {
+        static  atomic<unsigned int>    sSuperSuppress_ { };
+        if (++sSuperSuppress_ <= 1) {
+            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Aborting_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, (bool)s_Aborting_, (bool)s_Interrupting_));
+            sSuperSuppress_--;
+        }
+    }
+#endif
 }
