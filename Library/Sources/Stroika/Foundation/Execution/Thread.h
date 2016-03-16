@@ -453,6 +453,13 @@ namespace   Stroika {
                 nonvirtual  Status  GetStatus_ () const noexcept;
 
             public:
+                /*
+                 *  Return true iff WaitForDone () would return immediately
+                 *  @todo DOCUMENT RELATIONSHIP WITH GETSTATUS
+                 */
+                nonvirtual  bool    IsDone () const;
+
+            public:
                 /**
                  *  \req GetStatus () != Status::eNull
                  *

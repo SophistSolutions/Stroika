@@ -25,6 +25,8 @@
  *
  *  TODO:
  *
+ *      @todo   See if I can simplify use of critical sections with Synchonized!!!
+ *
  *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
  *
  *      @todo   REDO USING Stroika Q - CONSIDER USE OF blcoking q - I htink it will help. Or firgure out
@@ -95,6 +97,8 @@ namespace   Stroika {
                 using   TaskType    =   Function<void()>;
 
             public:
+                /**
+                 */
                 nonvirtual  unsigned int    GetPoolSize () const;
 
             public:
@@ -176,6 +180,11 @@ namespace   Stroika {
                 nonvirtual  Containers::Collection<TaskType>    GetTasks () const;
 
             public:
+                /**
+                 *  return all tasks which are currently running (assigned to some thread  in the thread pool).
+                 *  \note - this is a snapshot in time of something which is often rapidly changing, so by the time
+                 *  you look at it, it may have changed (but since we use shared_ptr's, its always safe to look at).
+                 */
                 nonvirtual  Containers::Collection<TaskType>    GetRunningTasks () const;
 
             public:
@@ -249,6 +258,7 @@ namespace   Stroika {
                 Containers::Collection<TPInfo_> fThreads_;          // all threads, and a data member for thread object, and one for running task, if any
                 list<TaskType>                  fPendingTasks_;     // tasks not yet running - @todo Use Stroika Queue
                 WaitableEvent                   fTasksMaybeAdded_;  // recheck for new tasks (or other events - wakeup waiters on fTasks)
+
             private:
                 friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };

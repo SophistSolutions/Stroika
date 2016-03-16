@@ -865,9 +865,16 @@ Thread::Status  Thread::GetStatus_ () const noexcept
     return fRep_->fStatus_;
 }
 
-
-
-
+bool    Thread::IsDone () const
+{
+    switch (GetStatus ()) {
+        case Status::eNull:
+            return true;
+        case Status::eCompleted:
+            return true;
+    }
+    return false;
+}
 
 
 

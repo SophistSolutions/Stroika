@@ -357,14 +357,25 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
     DbgTrace (L"this-status: %s", ToString ().c_str ());
     Require (fAborted_);
     {
-        Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+        Collection<Thread>  threadsToShutdown;      // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
+#if     qDefaultTracingOn
+        Collection<String>  threadsNotAlreadyDone;  // just for DbgTrace message purposes
+#endif
         {
             auto    critSec { make_unique_lock (fCriticalSection_) };
             for (auto ti : fThreads_) {
                 threadsToShutdown.Add (ti.fThread);
+#if     qDefaultTracingOn
+                if (not ti.fThread.IsDone ()) {
+                    threadsNotAlreadyDone.Add (Execution::FormatThreadID (ti.fThread.GetID ()));
+                }
+#endif
             }
         }
         DbgTrace (L"threadsToShutdown.size = %d", threadsToShutdown.size ());
+#if     qDefaultTracingOn
+        DbgTrace (L"threadsNotAlreadyDone = %s", Characters::ToString (threadsNotAlreadyDone).c_str ());
+#endif
         for (auto t : threadsToShutdown) {
             t.WaitForDoneUntil (timeoutAt);
         }
@@ -374,6 +385,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 void    ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx ("ThreadPool::Abort");
+    DbgTrace (L"this-status: %s", ToString ().c_str ());
     fAborted_ = true;   // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
