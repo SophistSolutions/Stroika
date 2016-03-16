@@ -223,12 +223,12 @@ namespace   Stroika {
                  *  another thread with the arg 'arg'.
                  */
                 Thread ();
-                Thread (const Function<void()>& fun2CallOnce, Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
-                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
+                Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
+                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
                 template <typename FUNCTION>
-                Thread (FUNCTION f, Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
                 template <typename FUNCTION>
-                Thread (FUNCTION f, AutoStartFlag, Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
                 /**

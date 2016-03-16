@@ -552,7 +552,7 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce, Memory::Optional<Characters::String>& name)
+Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name)
     : fRep_ (make_shared<Rep_> (fun2CallOnce))
 {
     Rep_::DoCreate (&fRep_);
@@ -561,7 +561,7 @@ Thread::Thread (const Function<void()>& fun2CallOnce, Memory::Optional<Character
     }
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, Memory::Optional<Characters::String>& name)
+Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name)
     : Thread (fun2CallOnce)
 {
     Start ();
