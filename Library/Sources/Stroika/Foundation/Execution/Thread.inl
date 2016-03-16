@@ -124,13 +124,13 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename FUNCTION>
-            inline  Thread::Thread (FUNCTION f, typename enable_if<is_function<FUNCTION>::value>::type*) :
-                Thread (Function<void()>(f))
+            inline  Thread::Thread (FUNCTION f, Memory::Optional<Characters::String>& name, typename enable_if<is_function<FUNCTION>::value>::type*) :
+                Thread (Function<void()>(f), name)
             {
             }
             template    <typename FUNCTION>
-            inline  Thread::Thread (FUNCTION f, AutoStartFlag flag, typename enable_if<is_function<FUNCTION>::value>::type*) :
-                Thread (Function<void()>(f), flag)
+            inline  Thread::Thread (FUNCTION f, AutoStartFlag flag, Memory::Optional<Characters::String>& name, typename enable_if<is_function<FUNCTION>::value>::type*) :
+                Thread (Function<void()>(f), flag, name)
             {
             }
 #if     qPlatform_POSIX

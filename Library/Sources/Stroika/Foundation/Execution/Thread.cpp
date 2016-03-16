@@ -552,16 +552,22 @@ Thread::Thread ()
 {
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce)
+Thread::Thread (const Function<void()>& fun2CallOnce, Memory::Optional<Characters::String>& name)
     : fRep_ (make_shared<Rep_> (fun2CallOnce))
 {
     Rep_::DoCreate (&fRep_);
+    if (name) {
+        SetThreadName (*name);
+    }
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag)
+Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, Memory::Optional<Characters::String>& name)
     : Thread (fun2CallOnce)
 {
     Start ();
+    if (name) {
+        SetThreadName (*name);
+    }
 }
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
