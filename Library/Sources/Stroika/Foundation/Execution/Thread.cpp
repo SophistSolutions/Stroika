@@ -79,6 +79,7 @@ using   namespace   Execution;
 
 
 namespace {
+    // Use atomic because we take the address of these, and reference across threads
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
     using   TLSInterruptFlagType_  =   volatile bool;
 #else
@@ -88,11 +89,8 @@ namespace {
 
 
 namespace {
-#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    using   InterruptSuppressCountType_ =   volatile unsigned int;
-#else
-    using   InterruptSuppressCountType_ =   atomic<unsigned int>;
-#endif
+    // Used to use 'atomic' but not needed, bcause always used from the same thread (thread local)
+    using   InterruptSuppressCountType_ =   unsigned int;
 }
 
 
@@ -101,7 +99,7 @@ namespace {
     mutex                                       sChangeInterruptingMutex_;
     thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
     thread_local TLSInterruptFlagType_          s_Interrupting_                 { false };
-    thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };          // atomic because updated from one thread but peeked at from another
+    thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };
 }
 
 
@@ -208,6 +206,7 @@ Thread::SuppressInterruptionInContext::SuppressInterruptionInContext ()
 
 Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
+    Assert (s_InterruptionSuppressDepth_ >= 1);
     s_InterruptionSuppressDepth_--;
 }
 
