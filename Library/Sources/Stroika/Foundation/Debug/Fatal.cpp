@@ -16,6 +16,9 @@ namespace   {
     void    _DefaultFatalErrorHandler_ (const SDKChar* msg)
     {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
+        if (auto exc = std::current_exception()) {
+            DbgTrace ("uncaught exception");
+        }
         Debug::DropIntoDebuggerIfPresent ();
         abort ();
     }
