@@ -105,6 +105,13 @@ namespace {
 
 
 
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+namespace {
+    atomic<unsigned int>    sRunningThreadCnt_ {};
+}
+#endif
+
+
 
 
 
@@ -300,6 +307,15 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
          */
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
+
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+        sRunningThreadCnt_++;
+        DbgTrace (L"Running thread count up to: %d", sRunningThreadCnt_.load ());
+        Execution::Finally cleanup ([] () {
+            sRunningThreadCnt_--;
+            DbgTrace (L"Running thread count down to: %d", sRunningThreadCnt_.load ());
+        });
+#endif
 
         /*
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
@@ -576,6 +592,15 @@ Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag)
 {
     Start ();
 }
+
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+Thread::Statistics  Thread::GetStatistics ()
+{
+    Statistics  result;
+    result.fNumberOfRunningThreads = sRunningThreadCnt_;
+    return result;
+}
+#endif
 
 void    Thread::SetThreadPriority (Priority priority)
 {

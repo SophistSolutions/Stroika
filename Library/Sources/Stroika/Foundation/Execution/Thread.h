@@ -75,6 +75,17 @@ namespace   Stroika {
 
 
             /**
+             *  This is only meant for debugging. If true, track the number of running threads (and provide API to access)
+             *  and DbgTrace() automatically in construction/destruction.
+             *
+             *  This does NOT count the number of thread objects, but the number in the running state.
+             */
+#ifndef qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+#define qStroika_Foundation_Exection_Thread_SupportThreadStatistics   qDebug
+#endif
+
+
+            /**
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
              *  Stroika threads add a number of very useful features to std::threads:
@@ -229,6 +240,18 @@ namespace   Stroika {
                  * Generally should not be reported. This is to support Thread::Interupt();
                  */
                 class   InterruptException;
+
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+            public:
+                struct  Statistics;
+
+            public:
+                /**
+                 *  This does not return statistics about this thread (its a static method) - but about all thread allocations (through
+                 *  the Stroika thread API).
+                 */
+                static  Statistics  GetStatistics ();
+#endif
 
             public:
                 /**
@@ -521,6 +544,19 @@ namespace   Stroika {
             void    CheckForThreadInterruption ();
             template    <unsigned int kEveryNTimes>
             void    CheckForThreadInterruption ();
+
+
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+            /**
+             */
+            struct  Thread::Statistics {
+                /**
+                 *  This is the number of thread objects in the status 'running'. It doesnt count ones that exist, or Thread objects (which could be null
+                 *  or completed)
+                 */
+                unsigned int    fNumberOfRunningThreads {};
+            };
+#endif
 
 
         }
