@@ -67,7 +67,7 @@ namespace   Stroika {
             inline  void    _NoReturn_  ReThrow (const exception_ptr& e, const wchar_t* traceMsg)
             {
                 DbgTrace (L"ReThrow: %s", traceMsg);
-                rethrow_exception (e);
+                std::rethrow_exception (e);
             }
 
 
