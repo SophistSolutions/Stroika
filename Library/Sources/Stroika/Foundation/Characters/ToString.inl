@@ -5,7 +5,7 @@
 #define _Stroika_Foundation_Characters_ToString_inl_    1
 
 #include    <wchar.h>
-
+#include    <exception>
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Enumeration.h"
 #include    "FloatConversion.h"
@@ -39,6 +39,21 @@ namespace   Stroika {
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
                     return t.ToString ();
+                }
+
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<is_same<T, exception_ptr>::value>::type* = 0)
+                {
+                    // it would be nice to do better with other sorts of exceptions and better messages, but this maybe good enuf...
+                    try {
+                        rethrow_exception (t);
+                    }
+                    catch (const std::exception& e) {
+                        return Characters::Format (L"Exception: %s", String::FromNarrowSDKString (e.what ()).c_str ());
+                    }
+                    catch (...) {
+                        return L"Unknown Exception";
+                    }
                 }
 
                 template    <typename T>
