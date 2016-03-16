@@ -5,6 +5,8 @@
 
 #include    "../Characters/Format.h"
 #include    "../Characters/CString/Utilities.h"
+#include    "../Characters/StringBuilder.h"
+#include    "../Characters/ToString.h"
 #include    "../Memory/BlockAllocated.h"
 
 #include    "Common.h"
@@ -19,6 +21,9 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 
+
+using   Characters::String;
+using   Characters::StringBuilder;
 
 
 class   ThreadPool::MyRunnable_  {
@@ -102,7 +107,7 @@ ThreadPool::ThreadPool (unsigned int nThreads)
     , fAborted_ (false)
     , fThreads_ ()
     , fTasks_ ()
-    , fTasksAdded_ (WaitableEvent::eAutoReset)
+    , fTasksMaybeAdded_ (WaitableEvent::eAutoReset)
 {
     SetPoolSize (nThreads);
 }
@@ -163,7 +168,7 @@ ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
     }
 
     // Notify any waiting threads to wakeup and claim the next task
-    fTasksAdded_.Set ();
+    fTasksMaybeAdded_.Set ();
     // this would be a race - if aborting and adding tasks at the same time
     Require (not fAborted_);
     return task;
@@ -349,6 +354,7 @@ size_t   ThreadPool::GetPendingTasksCount () const
 void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("ThreadPool::WaitForDoneUntil");
+    DbgTrace (L"this-status: %s", ToString ().c_str ());
     Require (fAborted_);
     {
         Collection<Thread>  threadsToShutdown;  // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
@@ -358,6 +364,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
                 threadsToShutdown.Add (ti.fThread);
             }
         }
+        DbgTrace (L"threadsToShutdown.size = %d", threadsToShutdown.size ());
         for (auto t : threadsToShutdown) {
             t.WaitForDoneUntil (timeoutAt);
         }
@@ -368,11 +375,12 @@ void    ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx ("ThreadPool::Abort");
     fAborted_ = true;   // No race, because fAborted never 'unset'
+    // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
         auto    critSec { make_unique_lock (fCriticalSection_) };
         fTasks_.clear ();
-        for (auto ti : fThreads_) {
+        for (TPInfo_ && ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
@@ -381,9 +389,22 @@ void    ThreadPool::Abort ()
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
+    DbgTrace (L"this-status: %s", ToString ().c_str ());
     Thread::SuppressInterruptionInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     Abort ();
     WaitForDone (timeout);
+}
+
+String  ThreadPool::ToString () const
+{
+    auto    critSec { make_unique_lock (fCriticalSection_) };
+    StringBuilder   sb;
+    sb += L"{";
+    sb += Characters::Format (L"pending-task-count: %d", GetPendingTasksCount ()) + L", ";
+    sb += Characters::Format (L"running-task-count: %d", GetRunningTasks ().size ()) + L", ";
+    sb += Characters::Format (L"pool-thread-count: %d", fThreads_.size ()) + L", ";
+    sb += L"}";
+    return sb.str ();
 }
 
 // THIS is called NOT from 'this' - but from the context of an OWNED thread of the pool
@@ -407,7 +428,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 
         // Prevent spinwaiting... This event is SET when any new item arrives
         //DbgTrace ("ThreadPool::WaitForNextTask_ () - about to wait for added tasks");
-        fTasksAdded_.Wait ();
+        fTasksMaybeAdded_.Wait ();
         //DbgTrace ("ThreadPool::WaitForNextTask_ () - completed wait for added tasks");
     }
 }

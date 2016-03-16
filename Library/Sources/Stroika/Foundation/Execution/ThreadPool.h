@@ -216,6 +216,12 @@ namespace   Stroika {
                  */
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
+            public:
+                /**
+                 *  a helpful debug dump of the ThreadPool status
+                 */
+                nonvirtual  Characters::String  ToString () const;
+
             private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
@@ -242,7 +248,7 @@ namespace   Stroika {
                 bool                            fAborted_;
                 Containers::Collection<TPInfo_> fThreads_;          // all threads, and a data member for thread object, and one for running task, if any
                 list<TaskType>                  fTasks_;            // Use Stroika Queue
-                WaitableEvent                   fTasksAdded_;
+                WaitableEvent                   fTasksMaybeAdded_;  // recheck for new tasks (or other events - wakeup waiters on fTasks)
             private:
                 friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };
