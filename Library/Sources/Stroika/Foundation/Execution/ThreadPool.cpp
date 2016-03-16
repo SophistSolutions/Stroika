@@ -106,7 +106,7 @@ ThreadPool::ThreadPool (unsigned int nThreads)
     : fCriticalSection_ ()
     , fAborted_ (false)
     , fThreads_ ()
-    , fTasks_ ()
+    , fPendingTasks_ ()
     , fTasksMaybeAdded_ (WaitableEvent::eAutoReset)
 {
     SetPoolSize (nThreads);
@@ -164,7 +164,7 @@ ThreadPool::TaskType    ThreadPool::AddTask (const TaskType& task)
     Require (not fAborted_);
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        fTasks_.push_back (task);
+        fPendingTasks_.push_back (task);
     }
 
     // Notify any waiting threads to wakeup and claim the next task
@@ -180,9 +180,9 @@ void    ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType t
     {
         // First see if its in the Q
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
+        for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
-                fTasks_.erase (i);
+                fPendingTasks_.erase (i);
                 return;
             }
         }
@@ -223,7 +223,7 @@ void    ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     auto tps = GetPoolSize ();
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        fTasks_.clear ();
+        fPendingTasks_.clear ();
     }
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
@@ -249,7 +249,7 @@ bool    ThreadPool::IsPresent (const TaskType& task) const
     {
         // First see if its in the Q
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        for (auto i = fTasks_.begin (); i != fTasks_.end (); ++i) {
+        for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
             }
@@ -295,7 +295,7 @@ Collection<ThreadPool::TaskType>    ThreadPool::GetTasks () const
     Collection<ThreadPool::TaskType>    result;
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        result.AddAll (fTasks_.begin (), fTasks_.end ());          // copy pending tasks
+        result.AddAll (fPendingTasks_.begin (), fPendingTasks_.end ());          // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
             TaskType                    task    { tr->GetCurrentTask () };
@@ -329,7 +329,7 @@ size_t  ThreadPool::GetTasksCount () const
     {
         // First see if its in the Q
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        count += fTasks_.size ();
+        count += fPendingTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_>     tr      { i->fRunnable };
             TaskType                    task    { tr->GetCurrentTask () };
@@ -346,7 +346,7 @@ size_t   ThreadPool::GetPendingTasksCount () const
     size_t  count   =   0;
     {
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        count += fTasks_.size ();
+        count += fPendingTasks_.size ();
     }
     return count;
 }
@@ -379,7 +379,7 @@ void    ThreadPool::Abort ()
     {
         // Clear the task Q and then abort each thread
         auto    critSec { make_unique_lock (fCriticalSection_) };
-        fTasks_.clear ();
+        fPendingTasks_.clear ();
         for (TPInfo_ && ti : fThreads_) {
             ti.fThread.Abort ();
         }
@@ -418,9 +418,9 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
     while (true) {
         {
             auto    critSec { make_unique_lock (fCriticalSection_) };
-            if (not fTasks_.empty ()) {
-                *result =   fTasks_.front ();
-                fTasks_.pop_front ();
+            if (not fPendingTasks_.empty ()) {
+                *result =   fPendingTasks_.front ();
+                fPendingTasks_.pop_front ();
                 DbgTrace ("ThreadPool::WaitForNextTask_ () is starting a new task");
                 return;
             }
