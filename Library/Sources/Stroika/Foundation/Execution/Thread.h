@@ -10,6 +10,7 @@
 #include    <thread>
 
 #include    "../Configuration/Common.h"
+#include    "../Traversal/Iterable.h"
 #include    "../Time/Realtime.h"
 
 #include    "Function.h"
@@ -551,10 +552,10 @@ namespace   Stroika {
              */
             struct  Thread::Statistics {
                 /**
-                 *  This is the number of thread objects in the status 'running'. It doesnt count ones that exist, or Thread objects (which could be null
-                 *  or completed)
+                 *  These are the thread objects in the status 'running'. It doesnt count ones that exist,
+                 *  or Thread objects (which could be null or completed)
                  */
-                unsigned int    fNumberOfRunningThreads {};
+                Traversal::Iterable<IDType> fRunningThreads;
             };
 #endif
 

@@ -15,6 +15,7 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String.h"
+#include    "../Containers/Set.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Realtime.h"
 
@@ -107,7 +108,9 @@ namespace {
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
 namespace {
-    atomic<unsigned int>    sRunningThreadCnt_ {};
+    // use mutext and set<> to avoid interdependencies between low level Stroika facilities
+    mutex               sThreadSupportStatsMutex_;
+    set<Thread::IDType> sRunningThreads_;               // protected by sThreadSupportStatsMutex_
 }
 #endif
 
@@ -304,11 +307,15 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        sRunningThreadCnt_++;
-        DbgTrace (L"Running thread count up to: %d", sRunningThreadCnt_.load ());
-        Execution::Finally cleanup ([] () {
-            sRunningThreadCnt_--;
-            DbgTrace (L"Running thread count down to: %d", sRunningThreadCnt_.load ());
+        {
+            MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
+            Verify (sRunningThreads_.insert (incRefCnt->GetID ()).second);      // .second true if inserted, so checking not already there
+            DbgTrace (L"Running thread count up to: %d", sRunningThreads_.size ());
+        }
+        Execution::Finally cleanup ([incRefCnt] () {
+            MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
+            Verify (sRunningThreads_.erase (incRefCnt->GetID ()) == 1);         // verify exactly one erased
+            DbgTrace (L"Running thread count down to: %d", sRunningThreads_.size ());
         });
 #endif
 
@@ -591,9 +598,8 @@ Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag)
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
 Thread::Statistics  Thread::GetStatistics ()
 {
-    Statistics  result;
-    result.fNumberOfRunningThreads = sRunningThreadCnt_;
-    return result;
+    MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
+    return Statistics { Containers::Set<Thread::IDType> { sRunningThreads_ } };
 }
 #endif
 
