@@ -65,6 +65,8 @@
  *
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
+ *
+ *              (note we've seen no warnings in valgrind for years, so pretty safe)
  */
 namespace   Stroika {  namespace   Foundation {  namespace   Characters { class String; } } }
 
@@ -76,10 +78,8 @@ namespace   Stroika {
 
 
             /**
-             *  This is only meant for debugging. If true, track the number of running threads (and provide API to access)
+             *  This is only meant for debugging. If true, track the running threads (and provide API to access)
              *  and DbgTrace() automatically in construction/destruction.
-             *
-             *  This does NOT count the number of thread objects, but the number in the running state.
              */
 #ifndef qStroika_Foundation_Exection_Thread_SupportThreadStatistics
 #define qStroika_Foundation_Exection_Thread_SupportThreadStatistics   qDebug
