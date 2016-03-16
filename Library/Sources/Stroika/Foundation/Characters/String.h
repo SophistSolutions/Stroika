@@ -13,6 +13,7 @@
 #include    "../Containers/Set.h"
 #include    "../Execution/ModuleInit.h"
 #include    "../Execution/Synchronized.h"
+#include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 #include    "SDKString.h"
@@ -833,6 +834,19 @@ namespace   Stroika {
                  */
                 nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+
+            public:
+                /**
+                 *  Utility to squash out bad characters from a string, and replace them with the argument 'safe' character. Handly
+                 *  for things like file names, etc...
+                 *
+                 *  If replacement missing (the default) - the badCharacters are just removed, and not replaced.
+                 *
+                 *  \note FilteredString could have been called 'SafeString'
+                 */
+                nonvirtual  String  FilteredString (const Iterable<Character>& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
+                nonvirtual  String  FilteredString (const RegularExpression& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
+                nonvirtual  String  FilteredString (const function<bool(Character)>& badCharacterP, Memory::Optional<Character> replacement = Memory::Optional<Character> {}) const;
 
             public:
                 /**
