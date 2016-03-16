@@ -243,11 +243,6 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
-#if 0
-#if     qPlatform_POSIX
-    Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-#endif
-#endif
     /*
      *  Once we have constructed the other thread, its critical it be allowed to run at least to the
      *  point where it's bumped its reference count before we allow aborting this thread.
@@ -338,7 +333,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it - and acept aborts after we've marked
                 // reference count as set.
                 sigset_t    mySet;
-                sigemptyset (&mySet);
+                ::sigemptyset (&mySet);
                 (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -441,19 +436,11 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
     }
 
     if (GetCurrentThreadID () == GetID ()) {
-#if 1
         Assert (fTLSInterruptFlag_ == &s_Interrupting_);
         Assert (fTLSAbortFlag_ == &s_Aborting_);
+        // NOTE - using CheckForThreadInterruption uses TLS s_Aborting_ instead of fStatus
+        //      --LGP 2015-02-26
         CheckForThreadInterruption ();      // unless suppressed, this will throw
-
-        // NOTE - using CheckForThreadInterruption uses TLS s_Aborting_ instead of fStatus,but I think thats better...
-        //  --LGP 2015-02-26
-#else
-        Assert (s_Aborting_);
-        if (fStatus_ == Status::eAborting and s_InterruptionSuppressDepth_ == 0) {
-            Execution::Throw (AbortException ());
-        }
-#endif
     }
     // Note we fall through here either if we have throws suppressed, or if sending to another thread
 
@@ -519,7 +506,6 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
 
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-#if 1
     // @todo review/test carefully - cahgnged LGP 2015-02-26 to suppor tinterupt and abort
     /*
      *  Note why this is safe here:
@@ -536,25 +522,8 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
             }
             break;
     }
-#else
-    Require (rep->fStatus_ == Status::eAborting or rep->fStatus_ == Status::eCompleted);
-    /*
-     *  Note - this only gets called by special thread-proces marked as alertable (like sleepex or waitfor...event,
-     *  so its safe to throw there.
-     */
-    Require (GetCurrentThreadID () == rep->GetID ());
-    Assert (s_Aborting_);
-    // this isn't the race it might look like because this can only be called when the target (rep) thread is in an alertable state, meaning
-    // inside a call to SleepEx, etc... so not updating variables
-    if (rep->fStatus_ == Status::eAborting) {
-        if (s_InterruptionSuppressDepth_ == 0) {
-            Execution::Throw (AbortException ());
-        }
-        else {
-            return; // dont assert out at the end
-        }
-    }
-
+    // this got disabled a year ago, but probably should still be there as an assert --LGP 2016-03-15
+#if 1
     // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
     Require (rep->fStatus_ == Status::eCompleted);
@@ -723,7 +692,7 @@ void    Thread::SetThreadName (const String& threadName)
         if (tnUTF8.length () > 15) {
             tnUTF8.erase (15);
         }
-        pthread_setname_np (fRep_->GetNativeHandle (), tnUTF8.c_str ());
+        ::pthread_setname_np (fRep_->GetNativeHandle (), tnUTF8.c_str ());
 #endif
 #endif
     }
