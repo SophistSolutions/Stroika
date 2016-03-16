@@ -56,19 +56,19 @@ using   Time::DurationSecondsType;
 // According to http://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx - its best NOT to call this RaiseException call
 // unless a debugger is present. Use IsDebuggerPresent(). Still not perfect.
 //
-//#define   qSupportSetThreadNameDebuggerCall   0
-#ifndef qSupportSetThreadNameDebuggerCall
+//#define   qSupportSetThreadNameDebuggerCall_   0
+#ifndef qSupportSetThreadNameDebuggerCall_
 #if     qDebug && qPlatform_Windows
-#define qSupportSetThreadNameDebuggerCall   1
+#define qSupportSetThreadNameDebuggerCall_   1
 #endif
 #endif
-#ifndef qSupportSetThreadNameDebuggerCall
+#ifndef qSupportSetThreadNameDebuggerCall_
 #if     qPlatform_POSIX
-#define qSupportSetThreadNameDebuggerCall   1
+#define qSupportSetThreadNameDebuggerCall_   1
 #endif
 #endif
-#ifndef qSupportSetThreadNameDebuggerCall
-#define qSupportSetThreadNameDebuggerCall   0
+#ifndef qSupportSetThreadNameDebuggerCall_
+#define qSupportSetThreadNameDebuggerCall_   0
 #endif
 
 
@@ -669,7 +669,7 @@ void    Thread::SetThreadName (const String& threadName)
         TraceContextBumper  ctx ("Execution::Thread::SetThreadName");
         DbgTrace (L"(thisThreadID=%s, threadName = '%s')", FormatThreadID (GetID ()).c_str (), threadName.c_str ());
         fRep_->fThreadName_ = threadName.As<wstring> ();
-#if     qSupportSetThreadNameDebuggerCall
+#if     qSupportSetThreadNameDebuggerCall_
 #if     qPlatform_Windows
         if (::IsDebuggerPresent ()) {
             // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
