@@ -301,11 +301,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
 
     try {
-        /*
-         * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
-         * shared_ptr<> here to NOT be destroyed. We could force that with an explicit scope, but there
-         * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
-         */
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -338,7 +333,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 sigset_t    mySet;
                 sigemptyset (&mySet);
                 (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
-                Verify (pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
+                Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadAbort ()).c_str ());
 #endif
