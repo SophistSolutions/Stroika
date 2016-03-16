@@ -40,6 +40,10 @@ namespace   Stroika {
              *
              *  Inspired by:
              *      http://nerds-central.blogspot.com/2012/03/c11-trycatchfinally-pattern-using-raii.html
+             *
+             *  \note   For cleanup which is important/critical to be completed, its sometimes wise to include
+             *              Thread::SuppressInterruptionInContext suppressThreadInterupts;
+             *          in the function body
              */
             class   Finally {
             public:
