@@ -3,9 +3,11 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
+#include    <cstdlib>
 #include    <iostream>
 
 #include    "Stroika/Foundation/Characters/String_Constant.h"
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Debug/Fatal.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
@@ -73,6 +75,7 @@ using   Execution::Thread;
 
 
 #if     qUseLogger
+#include    "Stroika/Foundation/Debug/BackTrace.h"
 #include    "Stroika/Foundation/Execution/Logger.h"
 using   Execution::Logger;
 #endif
@@ -87,19 +90,36 @@ using   Execution::Logger;
 namespace   {
     void    _FatalErorrHandler_ (const Characters::SDKChar* msg)
     {
+        Thread::SuppressInterruptionInContext   suppressCtx;
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if     qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::SDKString2NarrowSDK (msg).c_str ());
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
+        if (std::exception_ptr exc = std::current_exception ()) {
+            Logger::Get ().Log (Logger::Priority::eCriticalError, L"Uncaught exception: %s", Characters::ToString (exc).c_str ());
+        }
+        Logger::Get ().Flush ();
 #endif
-        _exit (1);
+#if     qCompilerAndStdLib_StdExitBuggy
+        _exit (EXIT_FAILURE);
+#else
+        std::_Exit (EXIT_FAILURE);  // skip
+#endif
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
-        DbgTrace (L"FAILED SIGNAL: %s", Execution::SignalToName (signal).c_str ());
+        Thread::SuppressInterruptionInContext   suppressCtx;
+        DbgTrace (L"Fatal Signal encountered: %s", Execution::SignalToName (signal).c_str ());
 #if     qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Signal: %s; Aborting...", Execution::SignalToName (signal).c_str ());
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
+        Logger::Get ().Flush ();
 #endif
-        exit (EXIT_FAILURE);
+#if     qCompilerAndStdLib_StdExitBuggy
+        _exit (EXIT_FAILURE);
+#else
+        std::_Exit (EXIT_FAILURE);  // skip
+#endif
     }
 }
 
@@ -257,7 +277,6 @@ int     main (int argc, const char* argv[])
 #elif   qPlatform_Windows
     Logger::Get ().SetAppender (make_shared<Logger::WindowsEventLogAppender> (L"Stroika-Sample-SimpleService"));
 #endif
-
     /*
      *  Optional - use buffering feature
      *  Optional - use suppress duplicates in a 15 second window
@@ -265,9 +284,7 @@ int     main (int argc, const char* argv[])
     Logger::Get ().SetBufferingEnabled (true);
     Logger::Get ().SetSuppressDuplicates (15);
     Execution::Finally cleanup ([] () {
-        // re-disable before we exit (flushes) - so logs printed near exit all flushed/shown
-        Logger::Get ().SetBufferingEnabled (false);
-        Logger::Get ().SetSuppressDuplicates (Memory::Optional<Time::DurationSecondsType> ());
+        Logger::ShutdownSingleton ();   // shutdown Logger::Get () threads, and flush... Note - cannot Logger::Get ()... after this!!!
     });
 #endif
 

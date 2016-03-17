@@ -243,6 +243,24 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_StdExitBuggy
+*/
+#ifndef qCompilerAndStdLib_StdExitBuggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_StdExitBuggy  (_MSC_FULL_VER < _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_StdExitBuggy   0
+#endif
+
+#endif
+
+
+
+
+
 /*
 @DESCRIPTION:   Just annowing warning workaround
 1>c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(210): warning C4996: 'std::_Uninitialized_copy_n': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'

@@ -112,7 +112,20 @@ namespace   Stroika {
 #endif
 
             public:
+                /**
+                 *  You CAN have multiple Loggers, but this singleton is what is used by default, and nearly
+                 *  always exists.
+                 *
+                 *  Be sure to shut it down (@see ShutdownSingleton) near the end of Main - so that any threads it runs are shutdown
+                 *  before the end of main.
+                 */
                 static  Logger& Get ();
+
+            public:
+                /**
+                 */
+                static  void    ShutdownSingleton ();
+
             private:
                 Logger ();
 #if     qDebug
@@ -200,7 +213,7 @@ namespace   Stroika {
                  *      \endcode
                  *
                  *      probably won't get logged. To avoid this issue, call SetBufferingEnabled(false) before quitting, or
-                 *      call FlushBuffer();
+                 *      call Flush ();
                  *
                  *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
                  */
@@ -218,7 +231,7 @@ namespace   Stroika {
                  *
                  *  This has no effect if the buffer is empty or buffering is disabled.
                  */
-                nonvirtual  void        FlushBuffer ();
+                nonvirtual  void        Flush ();
 
             public:
                 /**

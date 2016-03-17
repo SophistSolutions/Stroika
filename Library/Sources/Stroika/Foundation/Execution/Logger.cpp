@@ -127,10 +127,10 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             lastMsgLocked->fLastMsgSent_.second.clear ();
         }
     }
-    void        FlushBuffer_ ()
+    void        Flush_ ()
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("Logger::Rep_::FlushBuffer_");
+        Debug::TraceContextBumper ctx ("Logger::Rep_::Flush_");
 #endif
         shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (between check and invoke)
         if (tmp != nullptr) {
@@ -200,7 +200,7 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         }
 
         // manually push out pending messages
-        FlushBuffer_ ();
+        Flush_ ();
     }
 
 };
@@ -227,6 +227,15 @@ Logger::~Logger ()
     fRep_.reset ();   // so more likely debug checks for null say its null
 }
 #endif
+
+void    Logger::ShutdownSingleton ()
+{
+    // @todo FIX to assure all shutdwon properly...
+    // But this is OK for now pragmatically
+    sThe_.SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
+    sThe_.SetBufferingEnabled (false);
+    sThe_.Flush ();
+}
 
 Logger::IAppenderRepPtr Logger::GetAppender () const
 {
@@ -268,7 +277,7 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
         }
         else {
             if (fRep_->fOutQMaybeNeedsFlush_) {
-                fRep_->FlushBuffer_ (); // in case recently disabled
+                fRep_->Flush_ (); // in case recently disabled
             }
             tmp->Log (p.first, p.second);
         }
@@ -286,10 +295,10 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
     }
 }
 
-void        Logger::FlushBuffer ()
+void        Logger::Flush ()
 {
     RequireNotNull (fRep_);
-    fRep_->FlushBuffer_ ();
+    fRep_->Flush_ ();
 }
 
 bool        Logger::GetBufferingEnabled () const
