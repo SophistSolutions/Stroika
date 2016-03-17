@@ -50,7 +50,7 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
+                String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
@@ -79,7 +79,7 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
+                String  ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
@@ -89,7 +89,7 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_KeyValuePair<T>::value>::type* = 0)
+                String  ToString_ (const T& t, typename enable_if<has_KeyValuePair<T>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
@@ -99,7 +99,7 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
-                inline  String  ToString_ (const T& t, typename enable_if<has_CountedValue<T>::value>::type* = 0)
+                String  ToString_ (const T& t, typename enable_if<has_CountedValue<T>::value>::type* = 0)
                 {
                     StringBuilder sb;
                     sb << L"{";
