@@ -35,7 +35,7 @@ String    Debug::BackTrace (unsigned int maxFrames)
     // @todo combine maxFrames with trial and error on backtrace() calls
     void* stackTraceBuf[kMaxStackSize_] {};
     int nptrs = ::backtrace (stackTraceBuf, NEltsOf (stackTraceBuf));
-    DbgTrace ("backtrace() returned %d addresses\n", nptrs);
+    //DbgTrace ("backtrace() returned %d addresses\n", nptrs);
     char**   syms = ::backtrace_symbols (stackTraceBuf, nptrs);
     if (syms == NULL) {
         DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
