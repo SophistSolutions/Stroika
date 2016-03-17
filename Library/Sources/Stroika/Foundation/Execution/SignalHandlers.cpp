@@ -108,6 +108,7 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
     ~Rep_ ()
     {
         Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
+        Thread::SuppressInterruptionInContext  suppressInterruption;
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
     Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
