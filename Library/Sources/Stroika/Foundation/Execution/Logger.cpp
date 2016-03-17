@@ -10,6 +10,7 @@
 #include    "../Cache/CallerStalenessCache.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Characters/ToString.h"
 #include    "../Debug/Trace.h"
 #include    "BlockingQueue.h"
@@ -29,6 +30,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Configuration;
 using   namespace   Stroika::Foundation::Execution;
 
+using   Characters::String_Constant;
 using   Memory::Optional;
 using   Time::DurationSecondsType;
 
@@ -155,13 +157,15 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             bktLck.store (Thread ());  // so null
         }
 
-        Time::DurationSecondsType   suppressDuplicatesThreshold =   fSuppressDuplicatesThreshold_->Value (0);
-        bool                        suppressDuplicates          =   suppressDuplicatesThreshold > 0;
+        Time::DurationSecondsType       suppressDuplicatesThreshold =   fSuppressDuplicatesThreshold_->Value (0);
+        bool                            suppressDuplicates          =   suppressDuplicatesThreshold > 0;
+        static const String_Constant    kThreadName_ { L"Logger Bookkeeping" };
         if (suppressDuplicates or fBufferingEnabled_) {
             Thread              newBookKeepThread;
             shared_ptr<Rep_>    useRepInThread = shared_from_this (); // capture by value the shared_ptr
             if (suppressDuplicates) {
-                newBookKeepThread = Thread ([suppressDuplicatesThreshold, useRepInThread] () {
+                newBookKeepThread = Thread (
+                [suppressDuplicatesThreshold, useRepInThread] () {
                     Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
                     while (true) {
                         DurationSecondsType time2Wait = max (static_cast<DurationSecondsType> (2), suppressDuplicatesThreshold);    // never wait less than this
@@ -178,10 +182,13 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             }
                         }
                     }
-                });
+                },
+                kThreadName_
+                                    );
             }
             else {
-                newBookKeepThread = Thread ([useRepInThread] () {
+                newBookKeepThread = Thread (
+                [useRepInThread] () {
                     Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
                     while (true) {
                         AssertNotNull (useRepInThread);
@@ -191,9 +198,10 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             tmp->Log (p.first, p.second);
                         }
                     }
-                });
+                },
+                kThreadName_
+                                    );
             }
-            newBookKeepThread.SetThreadName (L"Logger Bookkeeping");
             newBookKeepThread.SetThreadPriority (Thread::Priority::eBelowNormal);
             newBookKeepThread.Start ();
             fBookkeepingThread_ = newBookKeepThread;

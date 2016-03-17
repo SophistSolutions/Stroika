@@ -63,8 +63,10 @@ using   Execution::Logger;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
-
-
+namespace {
+    // safe to declare here because we cannot start the threads before main...
+    const   String  kServiceRunThreadName_ =  String_Constant { L"Service 'Run' thread" };
+}
 
 /*
  ********************************************************************************
@@ -567,11 +569,14 @@ void        Main::RunTilIdleService::_RunAsService ()
 {
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     float timeTilIdleHack = 3.0;
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack));   //tmphack - as
 }
@@ -579,11 +584,14 @@ void        Main::RunTilIdleService::_RunAsService ()
 void    Main::RunTilIdleService::_RunDirectly ()
 {
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
@@ -591,11 +599,14 @@ void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
 }
 
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
@@ -729,11 +740,14 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
 
     // VERY WEAK IMPL
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     Execution::Finally cleanup ([this] () {
         (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     });
@@ -754,11 +768,14 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
 {
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     fRunThread_.WaitForDone ();
     fRunThread_.ThrowIfDoneWithException ();
 }
@@ -1076,11 +1093,14 @@ void    Main::WindowsService::_RunAsService ()
 void    Main::WindowsService::_RunDirectly ()
 {
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
     fRunThread_.ThrowIfDoneWithException ();
 }
@@ -1222,11 +1242,14 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ([] () {});
-    });
-    fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
+    fRunThread_ = Execution::Thread {
+        [appRep] ()
+        {
+            appRep->MainLoop ([] () {});
+        }
+        , Execution::Thread::eAutoStart
+        , kServiceRunThreadName_
+    };
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 

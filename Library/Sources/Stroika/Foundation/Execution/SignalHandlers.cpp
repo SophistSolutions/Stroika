@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include    "../Characters/String_Constant.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/BackTrace.h"
 #include    "../Debug/Trace.h"
@@ -21,6 +22,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 
+using   Characters::String_Constant;
 using   Containers::Mapping;
 using   Containers::Queue;
 using   Containers::Set;
@@ -83,23 +85,25 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
         , fIncomingSafeSignals_ (mkQ_ ())
         , fBlockingQueuePusherThread_ ()
     {
-        Thread watcherThread ([this] () {
-            // This is a safe context
-            Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
-            while (true) {
-                Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
-                SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-                Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
-                DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
-                for (SignalHandler sh : fHandlers_.LookupValue (i)) {
-                    Assert (sh.GetType () == SignalHandler::Type::eSafe);
-                    IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+        fBlockingQueuePusherThread_ = Thread {
+            [this] ()
+            {
+                // This is a safe context
+                Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
+                while (true) {
+                    Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
+                    SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
+                    Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
+                    DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
+                    for (SignalHandler sh : fHandlers_.LookupValue (i)) {
+                        Assert (sh.GetType () == SignalHandler::Type::eSafe);
+                        IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+                    }
                 }
-            }
-        });
-        watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
-        watcherThread.Start ();
-        fBlockingQueuePusherThread_ = std::move (watcherThread);
+            },
+            Thread::eAutoStart,
+            String_Constant { L"Signal Handler Safe Execution Thread" }
+        };
     }
     ~Rep_ ()
     {
