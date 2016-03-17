@@ -119,21 +119,27 @@ public:
     }
     void    StartNotifier_ ()
     {
-        fNotifierThread_ = Thread ([this]() {
-            PeriodicNotifier l;
-            l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
-        });
-        fNotifierThread_.SetThreadName (L"SSDP Notifier Thread");
-        fNotifierThread_.Start ();
+        fNotifierThread_ = Thread {
+            [this]()
+            {
+                PeriodicNotifier l;
+                l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
+            }
+            , Thread::eAutoStart
+            , String { L"SSDP Notifier" }
+        };
     }
     void    StartResponder_ ()
     {
-        fSearchResponderThread_ = Thread ([this]() {
-            SearchResponder sr;
-            sr.Run (GetAdjustedAdvertisements_ ());
-        });
-        fNotifierThread_.SetThreadName (L"SSDP Search Responder Thread");
-        fSearchResponderThread_.Start ();
+        fSearchResponderThread_ = Thread {
+            [this]()
+            {
+                SearchResponder sr;
+                sr.Run (GetAdjustedAdvertisements_ ());
+            }
+            , Thread::eAutoStart
+            , String { L"SSDP Search Responder" }
+        };
     }
     void    Restart_ ()
     {

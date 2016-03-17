@@ -148,55 +148,59 @@ void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
     for (auto a : advertisements) {
         Require (not a.fTarget.empty ());
     }
-#endif // qDebug
-    fListenThread_ = Execution::Thread ([advertisements]() {
-        Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
-        Socket s (Socket::SocketKind::DGRAM);
-        Socket::BindFlags   bindFlags = Socket::BindFlags ();
-        bindFlags.fReUseAddr = true;
-        s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-        s.SetMulticastLoopMode (true);       // probably should make this configurable
-        const   unsigned int kMaxHops_   =   3;
-        s.SetMulticastTTL (kMaxHops_);
+#endif
+    static  const   String  kThreadName_    { String_Constant { L"SSDP Search Responder" } };
+    fListenThread_ = Execution::Thread {
+        [advertisements]()
         {
+            Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
+            Socket s (Socket::SocketKind::DGRAM);
+            Socket::BindFlags   bindFlags = Socket::BindFlags ();
+            bindFlags.fReUseAddr = true;
+            s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+            s.SetMulticastLoopMode (true);       // probably should make this configurable
+            const   unsigned int kMaxHops_   =   3;
+            s.SetMulticastTTL (kMaxHops_);
+            {
 Again:
-            try {
-                s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
-            }
-            catch (const Execution::errno_ErrorException& e) {
-                if (e == ENODEV) {
-                    // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
-                    DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
-                    Execution::Sleep (1);
-                    goto Again;
+                try {
+                    s.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
                 }
-                else {
+                catch (const Execution::errno_ErrorException& e) {
+                    if (e == ENODEV) {
+                        // This can happen on Linux when you start before you have a network connection - no problem - just keep trying
+                        DbgTrace ("Got exception (errno: ENODEV) - while joining multicast group, so try again");
+                        Execution::Sleep (1);
+                        goto Again;
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
+            }
+
+            // only stopped by thread abort
+            while (1) {
+                try {
+                    Byte    buf[4 * 1024];  // not sure of max packet size
+                    SocketAddress   from;
+                    size_t nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
+                    Assert (nBytesRead <= NEltsOf (buf));
+                    using   namespace   Streams;
+                    ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
+                }
+                catch (const Execution::Thread::AbortException&) {
                     Execution::ReThrow ();
                 }
+                catch (...) {
+                    // ignore errors - and keep on trucking
+                    // but avoid wasting too much time if we get into an error storm
+                    Execution::Sleep (1.0);
+                }
             }
         }
-
-        // only stopped by thread abort
-        while (1) {
-            try {
-                Byte    buf[4 * 1024];  // not sure of max packet size
-                SocketAddress   from;
-                size_t nBytesRead = s.ReceiveFrom (begin (buf), end (buf), 0, &from);
-                Assert (nBytesRead <= NEltsOf (buf));
-                using   namespace   Streams;
-                ParsePacketAndRespond_ (TextReader (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead)), advertisements, s, from);
-            }
-            catch (const Execution::Thread::AbortException&) {
-                Execution::ReThrow ();
-            }
-            catch (...) {
-                // ignore errors - and keep on trucking
-                // but avoid wasting too much time if we get into an error storm
-                Execution::Sleep (1.0);
-            }
-        }
-    });
-    fListenThread_.SetThreadName (L"SSDP Search Responder thread");
-    fListenThread_.Start ();
+        , Execution::Thread::eAutoStart
+        , kThreadName_
+    };
     fListenThread_.WaitForDone ();
 }

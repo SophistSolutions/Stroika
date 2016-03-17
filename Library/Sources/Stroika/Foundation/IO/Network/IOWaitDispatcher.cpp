@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/String_Constant.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/Thread.h"
@@ -12,6 +13,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO::Network;
@@ -109,7 +111,9 @@ void    IOWaitDispatcher::RestartOngoingWait_ ()
 
 void    IOWaitDispatcher::Startthread_ ()
 {
-    fThread_ = Thread ([this] () {
+    static  const   String  kThreadName_ { String_Constant { L"IOWaitDispatcher::{}..."} };
+    fThread_ = Thread (
+    [this] () {
         /// need some 'set' to tell if alreadye in list todo
         for (FileDescriptorType fdi : fWaiter_.Wait ()) {
             fElts2Send_.Add (fdi);
@@ -127,7 +131,8 @@ void    IOWaitDispatcher::Startthread_ ()
                 }
             }
         }
-    });
-    fThread_.SetThreadName (L"IOWaitDispatcher::{}...run-thread");
-    fThread_.Start ();
+    }
+    , Thread::eAutoStart
+    , kThreadName_
+               );
 }

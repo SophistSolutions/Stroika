@@ -70,9 +70,12 @@ public:
     }
     void    Start ()
     {
-        fThread_ = Execution::Thread ([this] () { DoRun_ (); });
-        fThread_.SetThreadName (L"SSDP Listener");
-        fThread_.Start ();
+        static  const   String  kThreadName_    =   String_Constant { L"SSDP Listener" };
+        fThread_ = Execution::Thread {
+            [this] () { DoRun_ (); }
+            , Execution::Thread::eAutoStart
+            , kThreadName_
+        };
     }
     void    Stop ()
     {

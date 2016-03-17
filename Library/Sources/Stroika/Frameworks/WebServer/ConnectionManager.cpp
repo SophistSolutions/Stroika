@@ -51,48 +51,51 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const So
 
 void ConnectionManager::onConnect_ (Socket s)
 {
-    Execution::Thread runConnectionOnAnotherThread ([this, s]() {
-        // now read
-        Connection conn (s);
-        conn.ReadHeaders ();    // bad API. Must rethink...
-        if (fServerHeader_) {
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
-        }
-        if (fIgnoreSillyCORS_) {
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
-        }
-        constexpr bool kSupportHTTPKeepAlives_ { false };
-        if (not kSupportHTTPKeepAlives_) {
-            // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-            //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
-        }
-        String url = conn.GetRequest ().fURL.GetFullURL ();
-        DbgTrace (L"Serving page %s", url.c_str ());
-        try {
-            Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
-            if (handler) {
-                (*handler) (&conn.GetRequest (), &conn.GetResponse ());
+    Execution::Thread runConnectionOnAnotherThread {
+        [this, s]()
+        {
+            // now read
+            Connection conn (s);
+            conn.ReadHeaders ();    // bad API. Must rethink...
+            if (fServerHeader_) {
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
             }
-            else {
-                Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+            if (fIgnoreSillyCORS_) {
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
             }
+            constexpr bool kSupportHTTPKeepAlives_ { false };
+            if (not kSupportHTTPKeepAlives_) {
+                // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+                //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
+            }
+            String url = conn.GetRequest ().fURL.GetFullURL ();
+            DbgTrace (L"Serving page %s", url.c_str ());
+            try {
+                Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
+                if (handler) {
+                    (*handler) (&conn.GetRequest (), &conn.GetResponse ());
+                }
+                else {
+                    Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+                }
+            }
+            catch (const IO::Network::HTTP::Exception& e) {
+                conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
+                conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            }
+            catch (...) {
+                conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
+                conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            }
+            conn.GetResponse ().End ();
         }
-        catch (const IO::Network::HTTP::Exception& e) {
-            conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
-            conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
-            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-        }
-        catch (...) {
-            conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
-            conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
-            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-        }
-        conn.GetResponse ().End ();
-    });
-    runConnectionOnAnotherThread.SetThreadName (L"Connection Thread");  // Could use a fancier name (connection#, from remote address?)
-    runConnectionOnAnotherThread.Start ();
+        , Execution::Thread::eAutoStart
+        , String (L"Connection Thread")     // Could use a fancier name (connection#, from remote address?)
+    };
     runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
 };
 

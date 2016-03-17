@@ -542,9 +542,11 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
         , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter))
         , fQuitting (false)
     {
-        fThread = Execution::Thread (bind (&ThreadProc, this));
-        fThread.SetThreadName (L"DirectoryChangeWatcher");
-        fThread.Start ();
+        fThread = Execution::Thread {
+            [this] () { ThreadProc (this); }
+            , Execution::Thread::eAutoStart
+            , String { L"DirectoryChangeWatcher" }
+        };
     }
 
     IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
