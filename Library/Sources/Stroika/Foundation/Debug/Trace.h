@@ -153,9 +153,9 @@ namespace   Stroika {
                 /**
                  *  If constructor taking const char* used, the argument must be ASCII characters.
                  */
-                TraceContextBumper ();
-                TraceContextBumper (const char* contextName);
-                TraceContextBumper (const wchar_t* contextName);
+                TraceContextBumper () noexcept;
+                TraceContextBumper (const char* contextName) noexcept;
+                TraceContextBumper (const wchar_t* contextName) noexcept;
                 TraceContextBumper (const TraceContextBumper&) = delete;
                 ~TraceContextBumper ();
 
@@ -184,8 +184,8 @@ namespace   Stroika {
                 static  array<wchar_t, kMaxContextNameLen_>  mkwtrfromascii_ (const char* contextName);
 
             private:
-                static  void    IncCount_ ();
-                static  void    DecrCount_ ();
+                static  void    IncCount_ () noexcept;
+                static  void    DecrCount_ () noexcept;
 #endif
             };
 

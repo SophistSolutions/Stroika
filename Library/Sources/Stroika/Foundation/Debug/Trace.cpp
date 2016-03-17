@@ -610,7 +610,7 @@ void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
  ********************************************************************************
  */
 #if     qDefaultTracingOn
-TraceContextBumper::TraceContextBumper (const wchar_t* contextName)
+TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
     : fDoEndMarker (true)
       //,fSavedContextName_ ()
 {
@@ -622,7 +622,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName)
     IncCount_ ();
 }
 
-TraceContextBumper::TraceContextBumper (const char* contextName)
+TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
     : TraceContextBumper (mkwtrfromascii_ (contextName).data ())
 {
 }
@@ -632,12 +632,12 @@ unsigned int    TraceContextBumper::GetCount ()
     return sTraceContextDepth_;
 }
 
-void    TraceContextBumper::IncCount_ ()
+void    TraceContextBumper::IncCount_ () noexcept
 {
     sTraceContextDepth_++;
 }
 
-void    TraceContextBumper::DecrCount_ ()
+void    TraceContextBumper::DecrCount_ () noexcept
 {
     --sTraceContextDepth_;
 }
