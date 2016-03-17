@@ -49,7 +49,7 @@ namespace   Stroika {
                         rethrow_exception (t);
                     }
                     catch (const std::exception& e) {
-                        return Characters::Format (L"Exception: %s", String::FromNarrowSDKString (e.what ()).c_str ());
+                        return L"Exception: " + String::FromNarrowSDKString (e.what ());
                     }
                     catch (...) {
                         return L"Unknown Exception";
