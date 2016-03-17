@@ -417,11 +417,13 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             incRefCnt->fThreadDone_.Set ();
         }
         catch (const InterruptException&) {
+            SuppressInterruptionInContext   suppressCtx;
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
         catch (...) {
+            SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             {
@@ -438,12 +440,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         }
     }
     catch (const InterruptException&) {
+        SuppressInterruptionInContext   suppressCtx;
         DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught InterruptException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
     catch (...) {
+        SuppressInterruptionInContext   suppressCtx;
         DbgTrace ("SERIOUS ERROR in Thread::Rep_::ThreadMain_ () - uncaught exception");
 
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
