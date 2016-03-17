@@ -401,8 +401,8 @@ void    ThreadPool::Abort ()
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
-    DbgTrace (L"this-status: %s", ToString ().c_str ());
     Thread::SuppressInterruptionInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
+    DbgTrace (L"this-status: %s", ToString ().c_str ());
     Abort ();
     WaitForDone (timeout);
 }
