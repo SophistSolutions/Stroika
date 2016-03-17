@@ -385,6 +385,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 void    ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx ("ThreadPool::Abort");
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     DbgTrace (L"this-status: %s", ToString ().c_str ());
     fAborted_ = true;   // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
@@ -401,7 +402,7 @@ void    ThreadPool::Abort ()
 void    ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx ("ThreadPool::AbortAndWaitForDone");
-    Thread::SuppressInterruptionInContext ctx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     DbgTrace (L"this-status: %s", ToString ().c_str ());
     Abort ();
     WaitForDone (timeout);
