@@ -35,6 +35,8 @@ namespace   Stroika {
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(KeyValuePair, (x.fKey, x.fValue));
                 STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(CountedValue, (x.fValue, x.fCount));
 
+                String  ToString_exception_ptr (const exception_ptr& e);
+
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
                 {
@@ -44,16 +46,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, exception_ptr>::value>::type* = 0)
                 {
-                    // it would be nice to do better with other sorts of exceptions and better messages, but this maybe good enuf...
-                    try {
-                        rethrow_exception (t);
-                    }
-                    catch (const std::exception& e) {
-                        return L"Exception: " + String::FromNarrowSDKString (e.what ());
-                    }
-                    catch (...) {
-                        return L"Unknown Exception";
-                    }
+                    return ToString_exception_ptr (t);
                 }
 
                 template    <typename T>
