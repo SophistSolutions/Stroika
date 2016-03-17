@@ -21,6 +21,7 @@ Objs	=	\
 	$(ObjDir)BlockingQueue.o\
 	$(ObjDir)CommandLine.o\
 	$(ObjDir)DLLSupport.o\
+	$(ObjDir)Exceptions.o\
 	$(ObjDir)ErrNoException.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
 	$(ObjDir)Finally.o\

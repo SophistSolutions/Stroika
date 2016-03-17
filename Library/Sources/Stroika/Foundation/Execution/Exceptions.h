@@ -39,6 +39,16 @@ namespace   Stroika {
 
 
             /**
+             *  This is only meant for debugging. If true, then the overloads to DoThrow will also include a call
+             *  to BackTrace, so its easier to track in TraceLogs where an exception is thrown from (helpful when you dont
+             *  have a debugger).
+             */
+#ifndef qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
+#define qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace   qDebug
+#endif
+
+
+            /**
              *  \brief  identical to builtin C++ 'throw' except that it does helpful, type dependent DbgTrace() messages first
              *
              *  Utility to call a Trace message (hopefully an appropriate one) for an exception being
