@@ -15,6 +15,7 @@
 
 #include    "Function.h"
 #include    "Signals.h"
+#include    "StringException.h"
 
 
 
@@ -313,7 +314,7 @@ namespace   Stroika {
                  *
                  *  A thread being Aborted can also be interrupted, but Abort() takes precedence if both are attempted.
                  *
-                 *  \note   If the function associated with the thread doesn't handle the InteruptExcpetion, this will effectively
+                 *  \note   If the function associated with the thread doesn't handle the InterruptException, this will effectively
                  *          abort the thread (as would any other exception).
                  *
                  *  \note   only partly implemented and untested
@@ -491,9 +492,11 @@ namespace   Stroika {
 
             /**
              */
-            class   Thread::InterruptException {
+            class   Thread::InterruptException : public StringException {
             public:
                 InterruptException ();
+            protected:
+                InterruptException (const Characters::String& msg);
             };
 
 

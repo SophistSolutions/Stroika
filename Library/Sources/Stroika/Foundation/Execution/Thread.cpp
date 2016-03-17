@@ -15,6 +15,7 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String.h"
+#include    "../Characters/String_Constant.h"
 #include    "../Containers/Set.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Realtime.h"
@@ -208,6 +209,40 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
 {
     Assert (s_InterruptionSuppressDepth_ >= 1);
     s_InterruptionSuppressDepth_--;
+}
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************** Thread::InterruptException ******************************
+ ********************************************************************************
+ */
+Thread::InterruptException::InterruptException ()
+    : InterruptException (Characters::String_Constant { L"Thread Interrupt" })
+{
+}
+
+Thread::InterruptException::InterruptException (const Characters::String& msg)
+    : StringException (msg)
+{
+}
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** Thread::AbortException ******************************
+ ********************************************************************************
+ */
+Thread::AbortException::AbortException ()
+    : InterruptException (Characters::String_Constant { L"Thread Abort" })
+{
 }
 
 
