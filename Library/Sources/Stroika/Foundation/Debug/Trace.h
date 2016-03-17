@@ -195,6 +195,8 @@ namespace   Stroika {
             @DESCRIPTION:   <p>This function either does NOTHING (trying to not even evaluate its arguments)
                         or does a printf style PRINT function by delegating to @'EmitTraceMessage'. Which of
                         these two behaviors you see is conditioned on @'qDefaultTracingOn'</p>
+            *
+            *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
             */
 #ifndef DbgTrace
 #if     qDefaultTracingOn
