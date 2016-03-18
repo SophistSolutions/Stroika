@@ -492,6 +492,8 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
+
+    private:
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
@@ -510,7 +512,6 @@ namespace {
             fPostponeCaptureUntil_ = fLastCapturedAt + fMinimumAveragingInterval_;
             return result;
         }
-
         Mapping<pid_t, String>   capture_pid2CmdLineMapFromPS_ (const Iterable<pid_t>& pids)
         {
             Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::capture_pid2CmdLineMapFromPS_");
@@ -821,11 +822,15 @@ namespace {
                     }
                 }
                 else {
-                    // if new process we also can capture this data here!
-                    processDetails.fCombinedIOReadRate =  procBuf[i].inBytes /  (now - p->fCapturedAt);
-                    processDetails.fCombinedIOWriteRate =  procBuf[i].outBytes /  (now - p->fCapturedAt);
-                    // @todo but minor
-                    //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
+                    /*
+                     *  Considered something like:
+                     *      if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
+                     *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
+                     *      }
+                     *
+                     *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
+                     *  it started SOMETIME during this capture, but we dont know when (so we dont know the divisor).
+                     */
                 }
 
                 // So next time we can compute 'diffs'
@@ -1034,6 +1039,8 @@ namespace {
             Execution::SleepUntil (fPostponeCaptureUntil_);
             return capture_ ();
         }
+
+    private:
         ProcessMapType  capture_ ()
         {
             ProcessMapType  result {};
@@ -1269,7 +1276,6 @@ namespace {
             }
             return Optional<T> ();
         }
-
         Sequence<String>  ReadFileStrings_(const String& fullPath)
         {
             Sequence<String>            results;
@@ -1297,7 +1303,6 @@ namespace {
             }
             return results;
         }
-
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
         Optional<String>    ReadCmdLineString_(const String& fullPath2CmdLineFile)
         {
@@ -1333,7 +1338,6 @@ namespace {
             }
             return Optional<String> ();
         }
-
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
         Optional<String>    OptionallyResolveShortcut_ (const String& shortcutPath)
         {
@@ -1349,7 +1353,6 @@ namespace {
             }
             return Optional<Mapping<String, String>> ();
         }
-
         struct  StatFileInfo_ {
             /*
              *  From  http://linux.die.net/man/5/proc,  search for '/proc/[pid]/stat'
@@ -1623,7 +1626,6 @@ namespace {
 
             return result;
         }
-
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/3828/io'
         struct  proc_io_data_ {
@@ -1662,7 +1664,6 @@ namespace {
             }
             return result;
         }
-
         Optional<MemorySizeType>   ReadPrivateBytes_ (const String& fullPath)
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -1697,7 +1698,6 @@ namespace {
             }
             return result;
         }
-
         // https://www.kernel.org/doc/Documentation/filesystems/proc.txt
         // search for 'cat /proc/PID/status'
         struct  proc_status_data_ {
@@ -1920,6 +1920,7 @@ namespace {
             return capture_ ();
         }
 
+    private:
         ProcessMapType  capture_ ()
         {
 #if     qUseWMICollectionSupport_
@@ -2341,6 +2342,7 @@ namespace {
             : inherited (options)
         {
         }
+
         ProcessMapType capture ()
         {
             lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
