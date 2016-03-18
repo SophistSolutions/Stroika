@@ -106,7 +106,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  check
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
@@ -136,7 +136,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "      FAILED: missing $$i";\

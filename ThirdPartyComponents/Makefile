@@ -61,6 +61,11 @@ endif
 
 
 clean:
+ifeq ($(CONFIGURATION),)
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika ThirdPartyComponents clean..."
+else
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clean..."
+endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory openssl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
@@ -71,9 +76,9 @@ clean:
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@$(ECHO) -n "Stroika ThirdPartyComponents clobber..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika ThirdPartyComponents clobber..."
 else
-	@$(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clobber..."
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Stroika {$(CONFIGURATION)} ThirdPartyComponents clobber..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
