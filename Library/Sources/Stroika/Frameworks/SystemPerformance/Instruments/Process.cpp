@@ -822,8 +822,8 @@ namespace {
                 }
                 else {
                     // if new process we also can capture this data here!
-                    processDetails.fCombinedIOReadRate =  procBuf[i].inBytes;
-                    processDetails.fCombinedIOWriteRate =  procBuf[i].outBytes;
+                    processDetails.fCombinedIOReadRate =  procBuf[i].inBytes /  (now - p->fCapturedAt);
+                    processDetails.fCombinedIOWriteRate =  procBuf[i].outBytes /  (now - p->fCapturedAt);
                     // @todo but minor
                     //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
                 }
@@ -1874,34 +1874,54 @@ namespace {
 #if     qPlatform_Windows
 namespace {
     struct  CapturerWithContext_Windows_ : CapturerWithContext_COMMON_ {
+        struct PerfStats_ {
+            DurationSecondsType     fCapturedAt;
+            Optional<double>        fTotalCPUTimeEverUsed;
+            Optional<double>        fCombinedIOReadBytes;
+            Optional<double>        fCombinedIOWriteBytes;
+        };
+        Mapping<pid_t, PerfStats_>  fContextStats_;
+
 #if     qUseWMICollectionSupport_
         WMICollector            fProcessWMICollector_ { String_Constant { L"Process" }, {WMICollector::kWildcardInstance},  {kProcessID_, kThreadCount_, kIOReadBytesPerSecond_, kIOWriteBytesPerSecond_, kPercentProcessorTime_, kElapsedTime_ }};
 #endif
         CapturerWithContext_Windows_ (const Options& options)
             : CapturerWithContext_COMMON_ (options)
         {
-#if   qUseWMICollectionSupport_
+#if   qUseWMICollectionSupport_ && 0
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // prefill with each process capture
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt = Time::GetTickCount ();
 #endif
+            // for side-effect of setting fContextStats_
+            try {
+                capture_ ();
+            }
+            catch (...) {
+                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
+            }
         }
+#if     qUseWMICollectionSupport_
         CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from)
             : CapturerWithContext_COMMON_ (from)
-#if     qUseWMICollectionSupport_
             , fProcessWMICollector_ (from.fProcessWMICollector_)
-#endif
-
         {
-#if   qUseWMICollectionSupport_
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
             fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
             fLastCapturedAt = Time::GetTickCount ();
-#endif
         }
+#else
+        CapturerWithContext_Windows_ (const CapturerWithContext_Windows_& from) = default;
+#endif
+
         ProcessMapType  capture ()
         {
             Execution::SleepUntil (fPostponeCaptureUntil_);
+            return capture_ ();
+        }
+
+        ProcessMapType  capture_ ()
+        {
 #if     qUseWMICollectionSupport_
             DurationSecondsType   timeOfPrevCollection = fProcessWMICollector_.GetTimeOfLastCollection ();
             IgnoreExceptionsForCall (fProcessWMICollector_.Collect ()); // hack cuz no way to copy
@@ -1930,6 +1950,10 @@ namespace {
             Mapping<String, double> pctProcessorTime_ByPID      =   fProcessWMICollector_.GetCurrentValues (kPercentProcessorTime_);
             Mapping<String, double> processStartAt_ByPID        =   fProcessWMICollector_.GetCurrentValues (kElapsedTime_);
 #endif
+
+            DurationSecondsType now     { Time::GetTickCount () };
+
+            Mapping<pid_t, PerfStats_>  newContextStats;
 
 #if     qUseWinInternalSupport_
             struct AllSysInfo_ {
@@ -2122,10 +2146,38 @@ Again:
                     }
                 }
 #endif
+                if (processInfo.fCombinedIOReadRate.IsMissing () or processInfo.fCombinedIOWriteRate.IsMissing () or processInfo.fPercentCPUTime.IsMissing ()) {
+                    if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
+                        if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
+                            processInfo.fCombinedIOReadRate =   (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
+                        }
+                        if (p->fCombinedIOWriteBytes and processInfo.fCombinedIOWriteBytes) {
+                            processInfo.fCombinedIOWriteRate =   (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
+                        }
+                        if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
+                            processInfo.fPercentCPUTime =   (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
+                        }
+                    }
+                    else {
+                        // if new process we also can capture this data here!
+                        if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
+                            processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - p->fCapturedAt);
+                        }
+                        if (processInfo.fCombinedIOWriteRate.IsMissing () and processInfo.fCombinedIOWriteBytes.IsPresent ()) {
+                            processInfo.fCombinedIOWriteRate =  *processInfo.fCombinedIOWriteBytes / (now - p->fCapturedAt);
+                        }
+                        // @todo but minor
+                        //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
+                    }
+                }
+
+                // So next time we can compute 'diffs'
+                newContextStats.Add (pid, PerfStats_ { now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes });
+
                 results.Add (pid, processInfo);
             }
-            fLastCapturedAt = Time::GetTickCount ();
-            fPostponeCaptureUntil_ = Time::GetTickCount () + fMinimumAveragingInterval_;
+            fLastCapturedAt = now;
+            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
             if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
                 fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
             }

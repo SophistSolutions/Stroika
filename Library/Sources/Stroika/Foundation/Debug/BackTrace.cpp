@@ -38,7 +38,7 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
     char**   syms = ::backtrace_symbols (stackTraceBuf, nptrs);
     if (syms == NULL) {
         //DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
-        return String {};
+        return wstring {};
     }
     Execution::Finally cleanup ([syms] () { if (syms != nullptr) ::free (syms); });
     wstring    out;
