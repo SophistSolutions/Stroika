@@ -336,15 +336,16 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+        IDType  thisThreadID    =   incRefCnt->GetID ();    // not clear getting the thread ID remains valid after the thread terminates? Was getting occasional errors using the thread shared_ptr rep itself
         {
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
-            Verify (sRunningThreads_.insert (incRefCnt->GetID ()).second);      // .second true if inserted, so checking not already there
-            DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size (), FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
+            Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
         }
-        Execution::Finally cleanup ([incRefCnt] () {
+        Execution::Finally cleanup ([thisThreadID] () {
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
-            Verify (sRunningThreads_.erase (incRefCnt->GetID ()) == 1);         // verify exactly one erased
-            DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size (), FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
+            Verify (sRunningThreads_.erase (thisThreadID) == 1);         // verify exactly one erased
         });
 #endif
 
