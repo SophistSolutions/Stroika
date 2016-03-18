@@ -279,7 +279,7 @@ namespace   Stroika {
             private:
                 const vector<SignalHandler>*    PeekAtSignalHandlersForSignal_ (SignalID signal) const
                 {
-                    Require (signal < NSIG);
+                    Require (0 <= signal and signal < NEltsOf (fDirectSignalHandlersCache_));
                     return &fDirectSignalHandlersCache_[signal];
                 }
                 void                            ReleaseSignalHandlersForSignalLock_ (SignalID signal)
@@ -288,6 +288,7 @@ namespace   Stroika {
                 }
                 void                            PopulateDirectSignalHandlersCache_ (SignalID signal)
                 {
+                    Require (0 <= signal and signal < NEltsOf (fDirectSignalHandlersCache_));
                     vector<SignalHandler>   shs;
                     for (SignalHandler sh : fDirectHandlers_.LookupValue (signal)) {
                         shs.push_back (sh);

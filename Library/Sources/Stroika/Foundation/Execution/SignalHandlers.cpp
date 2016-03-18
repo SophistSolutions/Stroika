@@ -71,7 +71,7 @@ namespace   {
  ********************************************************************************
  */
 namespace {
-    Queue<SignalID> mkQ_ ()
+    Queue<SignalID> mkSafeSignalsManagerQ_ ()
     {
         Containers::Concrete::Queue_Array<SignalID> signalQ;
         signalQ.SetCapacity (25);  // quite arbitrary - @todo make configurable somehow...
@@ -79,11 +79,10 @@ namespace {
     }
 }
 
+DISABLE_COMPILER_MSC_WARNING_START(4351)
 struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
     Rep_ ()
-        : fHandlers_ ()
-        , fIncomingSafeSignals_ (mkQ_ ())
-        , fBlockingQueuePusherThread_ ()
+        : fIncomingSafeSignals_ (mkSafeSignalsManagerQ_ ())
     {
         fBlockingQueuePusherThread_ = Thread {
             [this] ()
@@ -114,15 +113,23 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
     Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
     BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
     Thread                                                          fBlockingQueuePusherThread_;
+    bool                                                            fSafeSignalHanldersAvailable_[NSIG] {};         // if true post to blocking q
+
+    void    PopulateSafeSignalHandlersCache_ (SignalID signal)
+    {
+        Require (0 <= signal and signal < NEltsOf (fSafeSignalHanldersAvailable_));
+        fSafeSignalHanldersAvailable_[signal] = fHandlers_.Lookup (signal).IsPresent ();
+    }
 
     void    NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
     {
         // harmless - but pointless - to add signals that will be ignored
-        if (fHandlers_.Lookup (signal).IsPresent ()) {
+        if (fSafeSignalHanldersAvailable_[signal]) {
             fIncomingSafeSignals_.AddTail (signal);
         }
     }
 };
+DISABLE_COMPILER_MSC_WARNING_END(4351)
 
 
 
@@ -291,6 +298,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         PopulateDirectSignalHandlersCache_ (signal);
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
+            tmp->PopulateSafeSignalHandlersCache_ (signal);
         }
         sigSetDefault (signal);
     }
@@ -300,6 +308,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         PopulateDirectSignalHandlersCache_ (signal);
         if (tmp != nullptr) {
             tmp->fHandlers_.Remove (signal);
+            tmp->PopulateSafeSignalHandlersCache_ (signal);
         }
         sigSetIgnore (signal);
     }
@@ -330,9 +339,11 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             if (safeHandlers.empty ()) {
                 tmp->fHandlers_.Remove (signal);
+                tmp->PopulateSafeSignalHandlersCache_ (signal);
             }
             else {
                 tmp->fHandlers_.Add (signal, safeHandlers);
+                tmp->PopulateSafeSignalHandlersCache_ (signal);
             }
         }
         sigSetHandler (signal);
