@@ -258,7 +258,8 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
 
     // See https://stroika.atlassian.net/browse/STK-442 - we pre-set to avoid double try on failure, but
     // we cannot IF we want to know if SSL connect failed (until I figure out how)
-    if (not fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid) {
+	constexpr	bool	kDefault_FailConnectionIfSSLCertificateInvalid	{ true };
+    if (not fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid.Value (kDefault_FailConnectionIfSSLCertificateInvalid)) {
         DWORD          dwOptions   =
             SECURITY_FLAG_IGNORE_CERT_CN_INVALID
             | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID
@@ -277,7 +278,7 @@ RetryWithNoCERTCheck:
     //
     // See https://stroika.atlassian.net/browse/STK-442
     //
-    if (fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid and sslExceptionProblem) {
+    if (fOptions_.fReturnSSLInfo and not fOptions_.fFailConnectionIfSSLCertificateInvalid.Value (kDefault_FailConnectionIfSSLCertificateInvalid) and sslExceptionProblem) {
         DWORD          dwOptions   =
             SECURITY_FLAG_IGNORE_CERT_CN_INVALID
             | SECURITY_FLAG_IGNORE_CERT_DATE_INVALID
