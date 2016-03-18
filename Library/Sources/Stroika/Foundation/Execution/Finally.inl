@@ -24,7 +24,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  Finally::Finally (const function<void()>& cleanupCodeBlock)
-                : fCleanupCodeBlock_(cleanupCodeBlock)
+                : fCleanupCodeBlock_ (cleanupCodeBlock)
             {
             }
             template <typename FUNCTION>
@@ -34,8 +34,22 @@ namespace   Stroika {
             }
             inline  Finally::~Finally()
             {
-                IgnoreExceptionsForCall (fCleanupCodeBlock_());
+                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
             }
+
+
+
+            template <typename FUNCTION>
+            FinallyT<FUNCTION>::FinallyT (FUNCTION f)
+                : fCleanupCodeBlock_ (f)
+            {
+            }
+            template <typename FUNCTION>
+            FinallyT<FUNCTION>::~FinallyT()
+            {
+                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
+            }
+
 
 
         }

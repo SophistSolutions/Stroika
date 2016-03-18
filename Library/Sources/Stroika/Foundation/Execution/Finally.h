@@ -64,6 +64,29 @@ namespace   Stroika {
             };
 
 
+            /**
+             *  DRAFT
+             */
+            template <typename FUNCTION>
+            class   FinallyT {
+            public:
+                FinallyT (FUNCTION f);
+                FinallyT () = delete;
+                FinallyT (const Finally&) = delete;
+
+            public:
+                ~FinallyT();
+
+            public:
+                nonvirtual  FinallyT& operator= (const FinallyT&) = delete;
+
+            private:
+                FUNCTION fCleanupCodeBlock_;
+            };
+            template <typename FUNCTION>
+            auto mkFinally (FUNCTION f) -> FinallyT<FUNCTION>&&  { return move (FinallyT<FUNCTION> (f)); }
+
+
         }
     }
 }

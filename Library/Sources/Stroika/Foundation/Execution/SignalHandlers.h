@@ -63,10 +63,13 @@ namespace   Stroika {
 
 
             /**
-             *  The key feature of SignalHandler versus function<void(SignalID)> is that you can compare them.
+             *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them.
              *
              *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
              *  creating another SignalHandler (even with the same arguments) may not compare as equal.
+             *
+             *  Also, signal handlers come with a flag indicating that they are intended to be run in a 'safe' manner
+             *  or a direct signal handling manner.
              *
              *  \note   BEWARE - these are copied during exception handling, which is a dangerous, finicky place.
              *          Copy must not do operations (like allocate memory) which would be unsafe during signal handling.

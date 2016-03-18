@@ -526,7 +526,8 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          *  Pretty sure this all allocates no memory, so should be safe/lock free
          */
         const   vector<SignalHandler>*  shs = SHR.PeekAtSignalHandlersForSignal_ (signal);
-        Execution::Finally cleanup { [signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); } };
+        auto    cleanup { mkFinally ([signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); }) };
+        //Execution::FinallyT<> cleanup { [signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); } };
         for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
             (*shi) (signal);
         }
