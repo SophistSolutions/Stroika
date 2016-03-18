@@ -131,6 +131,7 @@ sub	DoHelp_
         print("	    --apply-default-debug-flags                     /*  */\n");
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
+        print("	    --debug-symbols {true|false}					/* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
 		
 	exit ($x);
 }
@@ -590,6 +591,14 @@ sub	ParseCommandLine_Remaining_
 				die ("Invalid argument to --cross-compiling");
 			}
 			$CrossCompiling = $var;
+		}
+		elsif ((lc ($var) eq "-debug-symbols") or (lc ($var) eq "--debug-symbols")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols");
+			}
+			$INCLUDE_SYMBOLS = $var;
 		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
 			$onlyGenerateIfCompilerExists = true;
