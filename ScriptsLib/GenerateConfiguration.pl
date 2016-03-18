@@ -368,7 +368,9 @@ sub	SetDefaultForPlatform_
 		$COMPILER_DRIVER = "gcc";
 		if ("$^O" eq "aix") {
 			$COMPILER_DRIVER = "gcc -pthread";
-			$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	# we seem to almost always get these big TOC errors -- LGP 2015-08-21
+			#mminimal-toc seems to work better than bbigtoc -- LGP 2016-03-18
+			#$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	# we seem to almost always get these big TOC errors -- LGP 2015-08-21
+			$EXTRA_COMPILER_ARGS = "-mminimal-toc";	# avoid big TOC errors -- LGP 2016-03-18
 		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
