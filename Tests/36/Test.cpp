@@ -502,6 +502,16 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+        Execution::Finally cleanupReport ([] () {
+            auto runningThreads =   Execution::Thread::GetStatistics ().fRunningThreads;
+            DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
+            for (Execution::Thread::IDType threadID : runningThreads) {
+                DbgTrace (L"Exiting main with thread %s running", Execution::FormatThreadID (threadID).c_str ());
+            }
+            VerifyTestResult (runningThreads.size () == 0);
+        });
+#endif
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
         IterateWhileMutatingContainer_Test_2_::DoIt ();
         Test3_SynchonizedOptional_::DoIt_ ();
