@@ -2159,15 +2159,15 @@ Again:
                         }
                     }
                     else {
-                        // if new process we also can capture this data here!
-                        if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
-                            processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - p->fCapturedAt);
-                        }
-                        if (processInfo.fCombinedIOWriteRate.IsMissing () and processInfo.fCombinedIOWriteBytes.IsPresent ()) {
-                            processInfo.fCombinedIOWriteRate =  *processInfo.fCombinedIOWriteBytes / (now - p->fCapturedAt);
-                        }
-                        // @todo but minor
-                        //????? processDetails.fPercentCPUTime =  *processDetails.fTotalCPUTimeEverUsed but must divide by life of process
+                        /*
+                         *  Considered something like:
+                         *      if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
+                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
+                         *      }
+                         *
+                         *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
+                         *  it started SOMETIME during this capture, but we dont know when (so we dont know the divisor).
+                         */
                     }
                 }
 
