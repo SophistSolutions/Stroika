@@ -103,7 +103,7 @@ errno_t    Execution::SendSignal (std::thread::native_handle_type target, Signal
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
 #if     qPlatform_POSIX
-    errno_t e = pthread_kill (target, signal);
+    errno_t e = ::pthread_kill (target, signal);
     Verify (e == 0 or e == ESRCH);
     if (e != 0) {
         DbgTrace ("pthread_kill returned error %d", e);     // ESRCH can be OK, for example if abort sent to thread that already terminated
