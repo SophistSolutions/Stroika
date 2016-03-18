@@ -268,6 +268,9 @@ namespace   Stroika {
                  *
                  *      ReadAll/2 will always return a size_t = intoEnd-intoStart unless it encounters EOF before filling
                  *      the entire buffer.
+                 *
+                 *      Note - in the special case for ReadAll () - where you pass in upTo==0, or a zero sized buffer (intoEnd-intoStart)
+                 *      ReadAll () will return 0 elements, and you cannot tell if it was EOF or not.
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual  Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
