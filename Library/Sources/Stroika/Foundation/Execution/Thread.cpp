@@ -335,8 +335,19 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     try {
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
+
+        /*
+         *  \note   SUBTLE!!!!
+         *
+         *      We cannot refernece anything pointer to by incRefCnt (aka Rep_*), because the fThread has not necesarily been
+         *      assigned to until after incRefCnt->fRefCountBumpedEvent_, and in fact since its in another thread
+         *      we have no idea how long to wait. So don't!
+         *
+         *  The only time we can be SURE its safe is after 'fOK2StartEvent_'
+         */
+        IDType  thisThreadID    =   GetCurrentThreadID ();      // CANNOT USE incRefCnt->GetID (); because of above!
+
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        IDType  thisThreadID    =   incRefCnt->GetID ();    // not clear getting the thread ID remains valid after the thread terminates? Was getting occasional errors using the thread shared_ptr rep itself
         {
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
@@ -400,7 +411,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
              */
             incRefCnt->fOK2StartEvent_.Wait ();
 
-            DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            Assert (thisThreadID == incRefCnt->GetID ());   // By NOW we know this is OK
+
+            DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (thisThreadID).c_str ());
             bool    doRun   =   false;
             {
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
@@ -411,7 +424,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             if (doRun) {
                 incRefCnt->Run_ ();
             }
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (thisThreadID).c_str ());
             {
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
@@ -419,7 +432,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         }
         catch (const InterruptException&) {
             SuppressInterruptionInContext   suppressCtx;
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (thisThreadID).c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
@@ -433,7 +446,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 s_Interrupting_ = false;
             }
 #endif
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (thisThreadID).c_str ());
             {
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
