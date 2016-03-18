@@ -274,6 +274,27 @@ namespace   Stroika {
                 Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;
 
             private:
+                const vector<SignalHandler>*    PeekAtSignalHandlersForSignal_ (SignalID signal) const
+                {
+                    Require (signal < NSIG);
+                    return &fDirectSignalHandlersCache_[signal];
+                }
+                void                            ReleaseSignalHandlersForSignalLock_ (SignalID signal)
+                {
+                    // NYI
+                }
+                void                            PopulateDirectSignalHandlersCache_ (SignalID signal)
+                {
+                    vector<SignalHandler>   shs;
+                    for (SignalHandler sh : fDirectHandlers_.LookupValue (signal)) {
+                        shs.push_back (sh);
+                    }
+                    // unsafe - need some sort of interlock
+                    fDirectSignalHandlersCache_[signal] = shs;
+                }
+                vector<SignalHandler>   fDirectSignalHandlersCache_[NSIG];
+
+            private:
                 static      void    FirstPassSignalHandler_ (SignalID signal);
             };
 
