@@ -123,6 +123,10 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This operates ONLY on the global singleton Logger. Any other loggers, its the creators
+                 *  responsability to destroy/shutdown before the end of main ().
+                 *
+                 *  @see Shutdown
                  */
                 static  void    ShutdownSingleton ();
 
@@ -171,6 +175,16 @@ namespace   Stroika {
                     eEmergency          =   7,              // The message says the system is unusable
                     Stroika_Define_Enum_Bounds(eDebug, eEmergency)
                 };
+
+            public:
+                /**
+                 *  Flush all buffers, and disable any buffering for this logger. This also has the
+                 *  side effect of shutting down any threads associated with the logger. It is
+                 *  perfectly legal to continue sending log messages after calling Shutdown ();
+                 *
+                 *      \note   We may reconsider if sending log messages after shutdown is wise.
+                 */
+                nonvirtual  void    Shutdown ();
 
             public:
                 /**

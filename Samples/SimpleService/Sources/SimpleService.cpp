@@ -272,6 +272,9 @@ int     main (int argc, const char* argv[])
      *  Setup Logging to the OS logging facility.
      */
 #if     qUseLogger
+    Execution::Finally cleanup ([] () {
+        Logger::ShutdownSingleton ();
+    });
 #if     qHas_Syslog
     Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-SimpleService"));
 #elif   qPlatform_Windows
@@ -283,9 +286,6 @@ int     main (int argc, const char* argv[])
      */
     Logger::Get ().SetBufferingEnabled (true);
     Logger::Get ().SetSuppressDuplicates (15);
-    Execution::Finally cleanup ([] () {
-        Logger::ShutdownSingleton ();   // shutdown Logger::Get () threads, and flush... Note - cannot Logger::Get ()... after this!!!
-    });
 #endif
 
     /*

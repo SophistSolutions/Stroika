@@ -238,11 +238,17 @@ Logger::~Logger ()
 
 void    Logger::ShutdownSingleton ()
 {
+    // @todo Assure done before end of main?? Or try???
+    sThe_.Shutdown ();
+}
+
+void    Logger::Shutdown ()
+{
     // @todo FIX to assure all shutdwon properly...
     // But this is OK for now pragmatically
-    sThe_.SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
-    sThe_.SetBufferingEnabled (false);
-    sThe_.Flush ();
+    SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
+    SetBufferingEnabled (false);
+    Flush ();
 }
 
 Logger::IAppenderRepPtr Logger::GetAppender () const
