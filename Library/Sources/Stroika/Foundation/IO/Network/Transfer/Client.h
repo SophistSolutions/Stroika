@@ -437,14 +437,14 @@ namespace   Stroika {
                          *
                          *      \note - we may want to do something more sophisticated, like a callback with stats about the remote side
                          *              and allow that to throw, indicating rejection. BUt this is good enuf for now.
-						 *
-						 *		\note -	fFailConnectionIfSSLCertificateInvalid, because it may default on or off depending on the
-						 *				the underlying http client software. For example, with embedded apps, and openssl, we may not
-						 *				have access to a reliable certs file.
-						 *
-						 *				Specify it explicitly if you care.
+                         *
+                         *      \note - fFailConnectionIfSSLCertificateInvalid, because it may default on or off depending on the
+                         *              the underlying http client software. For example, with embedded apps, and openssl, we may not
+                         *              have access to a reliable certs file.
+                         *
+                         *              Specify it explicitly if you care.
                          */
-                        Optional<bool>	fFailConnectionIfSSLCertificateInvalid;
+                        Optional<bool>  fFailConnectionIfSSLCertificateInvalid;
 
                         /**
                          */
