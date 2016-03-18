@@ -993,11 +993,13 @@ void    Execution::CheckForThreadInterruption ()
                 Throw (Thread::AbortException ());
             }
             else {
-                lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
-                s_Interrupting_ = false;
-                if (s_Aborting_) {
-                    // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
-                    s_Interrupting_ = true;
+                {
+                    lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
+                    s_Interrupting_ = false;
+                    if (s_Aborting_) {
+                        // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
+                        s_Interrupting_ = true;
+                    }
                 }
                 Throw (Thread::InterruptException ());
             }
