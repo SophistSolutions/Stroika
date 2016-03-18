@@ -97,7 +97,13 @@ sub	ConfigParam2BoolInt
 	if ($v eq "0") {
 		return 0;
 	}
+	if ($v eq "false") {
+		return 0;
+	}
 	if ($v eq "1") {
+		return 1;
+	}
+	if ($v eq "true") {
 		return 1;
 	}
 	return DEFAULT_BOOL_OPTIONS;
