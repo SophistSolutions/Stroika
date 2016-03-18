@@ -46,8 +46,13 @@ namespace   Stroika {
              *
              *  \note to get symbols working on Linux, it may be necessary to link with -rdynamic
              *
+             *  \note   BackTrace () Uses no Stroika classes internally (like String, SmallStackBuffer) etc, since
+             *          doing so could create deadlocks in the likely use cases where one would want to call this, from
+             *          a low level place where you might have locks.
+             *
+             *          This DOES - however - however, call STL routines and C-library routines, like string::CTOR {}
              */
-            Characters::String    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
+            wstring    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 
         }
     }
