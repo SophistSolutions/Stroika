@@ -6,6 +6,7 @@
 #include    "../Characters/Character.h"
 #include    "../Characters/String.h"
 #include    "../Characters/StringBuilder.h"
+#include    "../Containers/Common.h"
 
 #include    "InputStream.h"
 
@@ -112,9 +113,9 @@ String InputStream<Character>::ReadAll (size_t upTo) const
             break;
         }
         else {
-            Assert (nEltsLeft >= n);
+            Assert (n <= nEltsLeft);
             nEltsLeft -= n;
-            result.Append (std::begin (buf), std::begin (buf) + n);
+            result.Append (s, s + n);
         }
     }
     return result.str ();
@@ -170,7 +171,11 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
                 break;
             }
             else {
-                Assert (nEltsLeft >= n);
+                // @todo???
+                //      could also maintain linked list - std::list<> - of BLOBs, and then construct BLOB from
+                //      list of BLOBs - that would be quite efficeint too - maybe more
+                Containers::ReserveSpeedTweekAddNCapacity (r, n, 32 * 1024); // grow exponentially, so not too many reallocs
+                Assert (n <= nEltsLeft);
                 nEltsLeft -= n;
                 r.insert (r.end (), s, s + n);
             }
