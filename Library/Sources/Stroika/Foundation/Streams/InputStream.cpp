@@ -135,6 +135,12 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         if (sb == 0) {
             return BLOB ();
         }
+        // @todo this isn't crazy worse than SmallStackBuffer, because if sb is the size read and wouldn't
+        // fit in a small stack buffer (stack part) - we avoid a second allocation.
+        // But - on balance - thats a lot of iffs. And we probably should use SmallStackBuffer and just
+        // do another alloc if needed. Maybe use an artificially large stack allocaiton here so we are likely to
+        // actually use the stack, or new stl 'get_temporeary_buffer' or wahtever the new routine is for stack allocs
+        //
         Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
         try {
             size_t n = this->Read (b, b + sb);
