@@ -54,7 +54,6 @@ History
 				<li> Thread InterruptSuppressCountType_ need not be atomic (corrcted comment too) - cuz only accessed within a single thread. But added assert it never goes negative (wraps)</li>
 				<li>make Thread::InterruptException inherit from StringException - so its caught in Characters::ToString() conversion - and displayed reasonable</li>
 				<li>optional name parameter to Thread objects, new Thread::IsDone()</li>
-				<li>new qStroika_Foundation_Exection_Thread_SupportThreadStatistics support</li>
 			</ul>
 		</li>
 		<li>Threadpool cleanups, and added primitive ToString() support</li>
