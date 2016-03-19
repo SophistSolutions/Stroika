@@ -42,7 +42,7 @@ History
 				<li>make (clobber/indent) cleanups</li>
 				<li>try -mminimal-toc gcc arg instead of -bbigtoc for AIX TOC size workaround issue; causes fewer linker crashes (though docs say make slower code) - see https://stroika.atlassian.net/browse/STK-464</li>
 				<li>draft support in configure script for --debug-symbols (workaround crazy AIX debug build failure) (ADD BUGRE PROT TO MAKE MORE THAN TRUEFASLE</li>
-			</li>
+			</ul>
 		</li>
 		<li>Thread/Execution
 			<ul>
@@ -55,7 +55,7 @@ History
 				<li>make Thread::InterruptException inherit from StringException - so its caught in Characters::ToString() conversion - and displayed reasonable</li>
 				<li>optional name parameter to Thread objects, new Thread::IsDone()</li>
 				<li>new qStroika_Foundation_Exection_Thread_SupportThreadStatistics support</li>
-			</li>
+			</ul>
 		</li>
 		<li>Threadpool cleanups, and added primitive ToString() support</li>
 		<li>threadpool::abort also uses Thread::SuppressInterruptionInContext</li>
