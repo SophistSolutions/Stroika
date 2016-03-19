@@ -6,6 +6,7 @@ modern, reliable and multi-threaded applications easier to write.
 
 Stroika is now at the late alpha stage - still underoing much revision - but
 very usable, and now used in a wide variety of applications.
+	[Release-Notes.md](Release-Notes.md)
 
 Quick start building instructions can be found in
 	[Documentation/Building Stroika.pdf](Documentation/Building%20Stroika.pdf)
