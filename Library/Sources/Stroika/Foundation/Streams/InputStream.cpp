@@ -7,6 +7,7 @@
 #include    "../Characters/String.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Containers/Common.h"
+#include    "../Debug/Trace.h"
 
 #include    "InputStream.h"
 
@@ -21,6 +22,12 @@ using   Characters::String;
 using   Characters::StringBuilder;
 using   Memory::BLOB;
 using   Memory::Byte;
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 
 
 
@@ -97,6 +104,10 @@ template    <>
 template    <>
 String InputStream<Character>::ReadAll (size_t upTo) const
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll");
+    DbgTrace (L"(upTo: %d", upTo);
+#endif
     Characters::StringBuilder result;
     size_t  nEltsLeft = upTo;
     while (nEltsLeft > 0) {
@@ -126,8 +137,12 @@ template    <>
 template    <>
 Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 {
-    if (this->IsSeekable ()) {
-        SeekOffsetType  size = this->GetOffsetToEndOfStream ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll");
+    DbgTrace (L"(upTo: %d", upTo);
+#endif
+    if (IsSeekable ()) {
+        SeekOffsetType  size = GetOffsetToEndOfStream ();
         if (size >= numeric_limits<size_t>::max ()) {
             Execution::Throw (bad_alloc ());
         }
@@ -136,6 +151,9 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         if (sb == 0) {
             return BLOB ();
         }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("Seekable case: sb=%d", sb);
+#endif
         // @todo this isn't crazy worse than SmallStackBuffer, because if sb is the size read and wouldn't
         // fit in a small stack buffer (stack part) - we avoid a second allocation.
         // But - on balance - thats a lot of iffs. And we probably should use SmallStackBuffer and just
@@ -157,6 +175,9 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         // Less efficient implementation
         vector<Byte>    r;
         for (size_t nEltsLeft = upTo; nEltsLeft != 0; ) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("Unseekable case: nEltsLeft=%d", nEltsLeft);
+#endif
             Byte            buf[64 * 1024];
             Byte*           s           =   std::begin (buf);
             Byte*           e           =   std::end (buf);
