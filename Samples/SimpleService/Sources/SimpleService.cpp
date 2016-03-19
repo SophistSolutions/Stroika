@@ -273,7 +273,7 @@ int     main (int argc, const char* argv[])
      */
 #if     qUseLogger
     Execution::Finally cleanup ([] () {
-        Logger::ShutdownSingleton ();
+        Logger::ShutdownSingleton ();       // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if     qHas_Syslog
     Logger::Get ().SetAppender (make_shared<Logger::SysLogAppender> (L"Stroika-Sample-SimpleService"));
@@ -295,7 +295,7 @@ int     main (int argc, const char* argv[])
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
         cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
-        serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
+        serviceIntegrationRep = make_shared<Main::RunTilIdleService> ();
     }
 #if     qUseLogger
     serviceIntegrationRep = make_shared<Main::LoggerServiceWrapper> (serviceIntegrationRep);
