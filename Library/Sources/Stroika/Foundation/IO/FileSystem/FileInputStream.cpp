@@ -14,6 +14,7 @@
 #endif
 
 #include    "../../Debug/AssertExternallySynchronizedLock.h"
+#include    "../../Debug/Trace.h"
 #include    "../../Execution/Common.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
@@ -44,6 +45,19 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
+
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
 /*
  ********************************************************************************
  **************************** FileSystem::FileInputStream ***********************
@@ -59,13 +73,13 @@ public:
     {
         try {
 #if     qPlatform_Windows
-            errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+            errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
             if (e != 0) {
                 Execution::errno_ErrorException::Throw (e);
             }
             ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-            Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+            Execution::ThrowErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
@@ -102,9 +116,9 @@ public:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
-        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, 0, SEEK_CUR)));
 #else
-        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, 0, SEEK_CUR)));
 #endif
     }
     virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
@@ -117,25 +131,25 @@ public:
                         Execution::Throw (std::range_error ("seek"));
                     }
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_SET)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_SET)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_SET)));
 #endif
                 }
                 break;
             case    Whence::eFromCurrent: {
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_CUR)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_CUR)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_CUR)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_CUR)));
 #endif
                 }
                 break;
             case    Whence::eFromEnd: {
 #if     qPlatform_Windows
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, offset, SEEK_END)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_END)));
 #else
-                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, offset, SEEK_END)));
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::lseek64 (fFD_, offset, SEEK_END)));
 #endif
                 }
                 break;
@@ -168,6 +182,10 @@ FileInputStream::FileInputStream (const shared_ptr<Rep_>& rep)
 
 InputStream<Byte>   FileInputStream::mk (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"FileInputStream::mk");
+    DbgTrace (L"(fileName: %s, seekable: %d, bufferFlag: %d)", fileName.c_str (), seekable, bufferFlag);
+#endif
     InputStream<Byte>   in  =   FileInputStream (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
