@@ -106,7 +106,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll");
-    DbgTrace (L"(upTo: %d", upTo);
+    DbgTrace (L"(upTo: %u)", upTo);
 #endif
     Characters::StringBuilder result;
     size_t  nEltsLeft = upTo;
@@ -139,9 +139,12 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll");
-    DbgTrace (L"(upTo: %d", upTo);
+    DbgTrace (L"(upTo: %u)", upTo);
 #endif
     if (IsSeekable ()) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace ("Seekable case");
+#endif
         SeekOffsetType  size = GetOffsetToEndOfStream ();
         if (size >= numeric_limits<size_t>::max ()) {
             Execution::Throw (bad_alloc ());
