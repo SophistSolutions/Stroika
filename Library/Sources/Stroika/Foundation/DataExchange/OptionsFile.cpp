@@ -260,10 +260,10 @@ void        OptionsFile::Write (const VariantValue& optionsObject)
 
 String  OptionsFile::GetReadFilePath_ () const
 {
-    return fModuleNameToReadFileNameMapper_(fModuleName_, fFileSuffix_);
+    return fModuleNameToReadFileNameMapper_ (fModuleName_, fFileSuffix_);
 }
 
 String  OptionsFile::GetWriteFilePath_ () const
 {
-    return fModuleNameToWriteFileNameMapper_(fModuleName_, fFileSuffix_);
+    return fModuleNameToWriteFileNameMapper_ (fModuleName_, fFileSuffix_);
 }
