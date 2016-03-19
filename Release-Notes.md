@@ -37,13 +37,6 @@ History
 			are thrown in tracelog.
 			DefaultFatalErrorHandler_ prints current backtace.
 		</li>
-		<li>Build System
-			<ul>
-				<li>make (clobber/indent) cleanups</li>
-				<li>try -mminimal-toc gcc arg instead of -bbigtoc for AIX TOC size workaround issue; causes fewer linker crashes (though docs say make slower code) - see https://stroika.atlassian.net/browse/STK-464</li>
-				<li>draft support in configure script for --debug-symbols (workaround crazy AIX debug build failure) (ADD BUGRE PROT TO MAKE MORE THAN TRUEFASLE</li>
-			</ul>
-		</li>
 		<li>Thread/Execution
 			<ul>
 				<li>Cleanup code starting/naming threads (pass in threadname in CTOR so clearer each thread is named)</li>
@@ -75,11 +68,33 @@ History
 				<li>Attempted ToString() support for exception_ptr objects</li>
 			</ul>
 		</li>
+		<li>Build System
+			<ul>
+				<li>make (clobber/indent) cleanups</li>
+				<li>try -mminimal-toc gcc arg instead of -bbigtoc for AIX TOC size workaround issue; causes fewer linker crashes (though docs say make slower code) - see https://stroika.atlassian.net/browse/STK-464</li>
+				<li>draft support in configure script for --debug-symbols (workaround crazy AIX debug build failure) (ADD BUGRE PROT TO MAKE MORE THAN TRUEFASLE</li>
+			</ul>
+		</li>
 		<li>More use of USE_NOISY_TRACE_IN_THIS_MODULE_ code (disabled but easy to turn on noisy per module)</li>
-		<li>change IO::Networking::Transfer::Options  fOptions_.fFailConnectionIfSSLCertificateInvalid to be optional - and default true in WinHTTP, and false in curl (cuz we may not have ssl cert files - as on AIX)</li>
+		<li>change IO::Networking::Transfer::Options  fOptions_.fFailConnectionIfSSLCertificateInvalid to be optional - and default true in WinHTTP, and false in curl (cuz we may not have ssl cert files - as on AIX - fixing https://stroika.atlassian.net/browse/STK-451)</li>
 		<li>experimental FinallyT<> and mkFinally to try and avoid memory allocaiton (used in  in SignalHandlerRegistry::FirstPassSignalHandler_)</li>
 		<li>Fixed Frameworks/SystemPerformance/INstruments/Process windwos genration of percent values,a nd bug on aix side first time through (mislabled commit 46c83f715bed3700988b58f6bdcaf2aac08e3cea)</li>
 		<li>new String::FilteredString</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
