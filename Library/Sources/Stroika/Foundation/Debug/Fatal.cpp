@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/ToString.h"
+
 #include    "Debugger.h"
 #include    "Trace.h"
 
@@ -17,7 +19,7 @@ namespace   {
     {
         DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
         if (auto exc = std::current_exception()) {
-            DbgTrace ("uncaught exception");
+            DbgTrace (L"Uncaught exception", Characters::ToString (exc).c_str ());
         }
         Debug::DropIntoDebuggerIfPresent ();
         abort ();
