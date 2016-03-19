@@ -20,60 +20,67 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a134">v2.0a134x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a134">v2.0a134</a><br/>2016-03-19</td>
 <td>
 	<ul>
+		<li>Cleanup docs (e.g. markdown readmes, and inline in source code)</li>
 		<li>Signal handling, and thread safety and deadlocks
 			<ul>
+				<li>safer signal hanlding - no memory allocation during handling - INCOMPELTE</li>
+				<li>Disable thread abort during destroy of blocking q un Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_</li>
 			</ul>
 		</li>
+		<li>Cleanup signal handling and static usage (still more todo) on Frameworks::Service</li>
 		<li>minor comments/celanups/. Containers::ReserveSpeedTweekAddNCapacity in InputStream<Byte>::ReadAll</li>
 		<li>New Debug::Backtrace() call to generate a string with stack backtrace, suitable
 			for logging. Now automatically called at the point where exceptions
 			are thrown in tracelog.
-
 			DefaultFatalErrorHandler_ prints current backtace.
 		</li>
-		<li>USE_NOISY_TRACE_IN_THIS_MODULE_  code (disabled)....</li>
-		<li>change IO::Networking::Transfer::Options  fOptions_.fFailConnectionIfSSLCertificateInvalid to be optional - and default true in WinHTTP, and false in curl (cuz we may not have ssl cert files - as on AIX)</li>
-		<li>modest progress on thread re-entrancy issue/bug - still far from OK, but maybe passable for now</li>
-		<li>experimental FinallyT<> and mkFinally to try and avoid memory allocaiton in SignalHandlerRegistry::FirstPassSignalHandler_</li>
-		<li>safer signal hanlding - no memory allocation during handling - INCOMPELTE</li>
-		<li>Fixed Frameworks/SystemPerformance/INstruments/Process windwos genration of percent values,a nd bug on aix side first time through (mislabled commit 46c83f715bed3700988b58f6bdcaf2aac08e3cea)</li>
-		<li>moved lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ } inside scope in Execution::CheckForThreadInterruption since Throw now does mcuh more than it used to (backtrace)</lI>
-		<li> try -mminimal-toc gcc arg instead of -bbigtoc for AIX TOC size workaround issue</li>
-
-		<li>FIX bug with thread id stuff in ThreadMain ... issue is we dont assign to fThread yet in other thread sometimes - RACE - but fixed using GetCurrentThread and better documetned and asserts we eventually get the right value</loi>
-		<li>use qStroika_Foundation_Exection_Thread_SupportThreadStatistics to add testings to regtests all threads cleaned up</li>
-		<li>make (clobber/indent) cleanups</li>
-		<li>draft support in configure script for --debug-symbols (workaround crazy AIX debug build failure) (ADD BUGRE PROT TO MAKE MORE THAN TRUEFASLE</li>
-		<li>Disable thread abort during destroy of blocking q un Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_</li>
-		<li>Cleanup code starting/naming threads (pass in threadname in CTOR so clearer each thread is named)</li>
-		<li>define qCompilerAndStdLib_StdExitBuggy; renamed Logger::...FlushBuffer to Flush(); added Logger::ShutdownSingleton (); and cleaned up samples usage to be more correct and use the above</li>
-		<li>document DbgTrace not cancelation point</li>
-		<li>TraceContextBumper noexcept</li>
-		<li>threadpool::abort also uses Thread::SuppressInterruptionInContext</li>
-		<li>Added possibly unneeded SuppressInterruptionInContext in exception handinging inside of thread code - to avoid possible threadabort exception in dbgtrace code</li>
-		<li>draft new support for qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace</li>
-		<li>Attempted ToString() support for exception_ptr objects</li>
-		<li>make Thread::InterruptException inherit from StringException - so its caught in Characters::ToString() conversion - and displayed reasonable</li>
-		<li>new String::FilteredString</li>
-		<li> Thread InterruptSuppressCountType_ need not be atomic (corrcted comment too) - cuz only accessed within a single thread. But added assert it never goes negative (wraps)</li>
-		<li>optional name parameter to Thread objects, new Thread::IsDone()</li>
+		<li>Build System
+			<ul>
+				<li>make (clobber/indent) cleanups</li>
+				<li>try -mminimal-toc gcc arg instead of -bbigtoc for AIX TOC size workaround issue; causes fewer linker crashes (though docs say make slower code) - see https://stroika.atlassian.net/browse/STK-464</li>
+				<li>draft support in configure script for --debug-symbols (workaround crazy AIX debug build failure) (ADD BUGRE PROT TO MAKE MORE THAN TRUEFASLE</li>
+			</li>
+		</li>
+		<li>Thread/Execution
+			<ul>
+				<li>Cleanup code starting/naming threads (pass in threadname in CTOR so clearer each thread is named)</li>
+				<li>Fixed non-POSIX calls to Thread::GetID() for null thread.</li>
+				<li>moved lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ } inside scope in Execution::CheckForThreadInterruption since Throw now does mcuh more than it used to (backtrace)</lI>
+				<li>FIX bug with thread id stuff in ThreadMain ... issue is we dont assign to fThread yet in other thread sometimes - RACE - but fixed using GetCurrentThread and better documetned and asserts we eventually get the right value</loi>
+				<li>use qStroika_Foundation_Exection_Thread_SupportThreadStatistics to add testings to regtests all threads cleaned up</li>
+				<li> Thread InterruptSuppressCountType_ need not be atomic (corrcted comment too) - cuz only accessed within a single thread. But added assert it never goes negative (wraps)</li>
+				<li>make Thread::InterruptException inherit from StringException - so its caught in Characters::ToString() conversion - and displayed reasonable</li>
+				<li>optional name parameter to Thread objects, new Thread::IsDone()</li>
+				<li>new qStroika_Foundation_Exection_Thread_SupportThreadStatistics support</li>
+			</li>
+		</li>
 		<li>Threadpool cleanups, and added primitive ToString() support</li>
-		<li>new qStroika_Foundation_Exection_Thread_SupportThreadStatistics support</li>
-		<li>Cleanup signal handling and static usage (still more todo) on Frameworks::Service</li>
-		<li>Enhanced simpleservice sample with buffering for logging, and Logger::ShutdownSingleton</li>
-		<li>Fixed non-POSIX calls to Thread::GetID() for null thread.</li>
+		<li>threadpool::abort also uses Thread::SuppressInterruptionInContext</li>
 		<li>Restrucutre Logger code
 			<ul>
+				<li>define qCompilerAndStdLib_StdExitBuggy; renamed Logger::...FlushBuffer to Flush(); added Logger::ShutdownSingleton (); and cleaned up samples usage to be more correct and use the above</li>
 				<li>Logger::Log () now non-static method</li>
 				<li>Much improved threadsafety - https://stroika.atlassian.net/browse/STK-463</li>
 				<li>Lose all(?) static fields, and make them fields of Rep_</li>
-				<
-
+				<li>Enhanced samples with buffering for logging, and Logger::ShutdownSingleton</li>
 			</ul>
 		</li>
+		<li>Tracing
+			<ul>
+				<li>document DbgTrace not cancelation point</li>
+				<li>TraceContextBumper noexcept</li>
+				<li>draft new support for qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace</li>
+				<li>Attempted ToString() support for exception_ptr objects</li>
+			</ul>
+		</li>
+		<li>More use of USE_NOISY_TRACE_IN_THIS_MODULE_ code (disabled but easy to turn on noisy per module)</li>
+		<li>change IO::Networking::Transfer::Options  fOptions_.fFailConnectionIfSSLCertificateInvalid to be optional - and default true in WinHTTP, and false in curl (cuz we may not have ssl cert files - as on AIX)</li>
+		<li>experimental FinallyT<> and mkFinally to try and avoid memory allocaiton (used in  in SignalHandlerRegistry::FirstPassSignalHandler_)</li>
+		<li>Fixed Frameworks/SystemPerformance/INstruments/Process windwos genration of percent values,a nd bug on aix side first time through (mislabled commit 46c83f715bed3700988b58f6bdcaf2aac08e3cea)</li>
+		<li>new String::FilteredString</li>
 	</ul>
 </td>
 </tr>
