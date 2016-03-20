@@ -117,12 +117,13 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 
     void    PopulateSafeSignalHandlersCache_ (SignalID signal)
     {
-        Require (0 <= signal and signal < NEltsOf (fSafeSignalHanldersAvailable_));
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fSafeSignalHanldersAvailable_)));
         fSafeSignalHanldersAvailable_[signal] = fHandlers_.Lookup (signal).IsPresent ();
     }
 
     void    NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
     {
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fSafeSignalHanldersAvailable_)));
         // harmless - but pointless - to add signals that will be ignored
         if (fSafeSignalHanldersAvailable_[signal]) {
             fIncomingSafeSignals_.AddTail (signal);
