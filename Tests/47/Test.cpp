@@ -1529,7 +1529,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             26900,
-            .89,
+            .90,
             &failedTests
         );
 #endif
@@ -1700,7 +1700,7 @@ namespace   {
             Test_String_Format_<wstring>, L"sprintf",
             Test_String_Format_<String>, L"String Characters::Format",
             2040000,
-            1.6,
+            1.7,
             &failedTests
         );
         Tester (
@@ -1708,7 +1708,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.32,
+            0.35,
             &failedTests
         );
         Tester (
