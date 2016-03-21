@@ -103,6 +103,17 @@ namespace {
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };
 }
 
+#if     qDebug
+namespace {
+    bool    sKnownBadBeforeMainOrAfterMain_ { true };
+    struct MainDetector_ {
+        MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = false; }
+        ~MainDetector_ () { sKnownBadBeforeMainOrAfterMain_ = true; }
+    };
+    MainDetector_   sMainDetector_;
+}
+#endif
+
 
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -331,6 +342,11 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
     TraceContextBumper ctx ("Thread::Rep_::ThreadMain_");
+    Require (not sKnownBadBeforeMainOrAfterMain_);
+
+#if     qDebug
+    auto cleanupCheckMain  { mkFinally ([] () { Require (not sKnownBadBeforeMainOrAfterMain_); }) };
+#endif
 
     try {
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
@@ -353,7 +369,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
         }
-        Execution::Finally cleanup ([thisThreadID] () {
+        Finally cleanup ([thisThreadID] () {
+            Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.erase (thisThreadID) == 1);         // verify exactly one erased
