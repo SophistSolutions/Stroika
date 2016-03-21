@@ -30,6 +30,13 @@ using   Time::DurationSecondsType;
 
 
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
 // maybe useful while debugging signal code, but VERY unsafe
 // and could easily be the source of bugs/deadlocks!
 #ifndef qDoDbgTraceOnSignalHandlers_
@@ -322,6 +329,23 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    unsigned int    nDirectHandlers {};
+    unsigned int    nSafeHandlers {};
+    handlers.Apply ([&nDirectHandlers, &nSafeHandlers] (SignalHandler si) {
+        switch (si.GetType ()) {
+            case SignalHandler::Type::eDirect: {
+                    nDirectHandlers++;
+                }
+                break;
+            case SignalHandler::Type::eSafe: {
+                    nSafeHandlers++;
+                }
+                break;
+        }
+    });
+    DbgTrace (L"n-Direct-Handlers=%d, nSafeHandlers=%d", nDirectHandlers, nSafeHandlers);
+#endif
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
 
