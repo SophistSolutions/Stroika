@@ -29,10 +29,6 @@
  *      @todo   REDO operator== etc using non-member functions
  *              (see See coding conventions document about operator usage: Compare () and operator<, operator>, etc comments)
  *
- *      @todo   SignalHandlerRegistry::FirstPassSignalHandler_ is NOT signal safe. Its close (esp given
- *              the block allocation). But its not fully safe. SO MUST FIX!!! But can be done without
- *              changing API (just store vector of actual direct handlers).
- *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
  *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
  *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event
@@ -133,6 +129,9 @@ namespace   Stroika {
              *  When an platform signal-handler is installed (via 'sigaction' for example) -
              *  and then later UNINSTALLED (due to changes in GetHandledSignals) - this code resets the
              *  signal handler to SIG_DFL (not the previous value).
+             *
+             *  \note   The SignalHandlerRegistry must only be accessed after the start of main, and must not
+             *          be accessed after main has completed.
              *
              *  To use 'safe' signal handlers, be sure to read about and use
              *      @see SignalHandlerRegistry::SafeSignalsManager

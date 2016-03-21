@@ -269,21 +269,8 @@ const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SignalHandler (SIG_I
 
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 {
-    /*
-     * Safe - even thread safe - ASSUMING never called after end of main. Then results undefined.
-     */
-    shared_ptr<SignalHandlerRegistry>   sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;
-    if (sp == nullptr) {
-        auto    critSec { make_unique_lock (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fMutex) };
-        sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;    // avoid race, and avoid locking unless needed
-        if (sp == nullptr) {
-            sp = make_shared<SignalHandlerRegistry> ();
-            Assert (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry == nullptr);
-            _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry = sp;
-        }
-    }
-    Assert (sp != nullptr);
-    return *sp;
+    static  SignalHandlerRegistry   sThe_;
+    return sThe_;
 }
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
