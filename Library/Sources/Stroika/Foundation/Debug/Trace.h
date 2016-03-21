@@ -94,6 +94,9 @@ namespace   Stroika {
 #endif
 
             public:
+                /**
+                 *   \note DbgTrace() is NOT a cancelation point, so you can call this freely without worrying about Throw (ThreadAbortException) etc
+                 */
                 nonvirtual  void    EmitTraceMessage (const char* format, ...) noexcept;
                 nonvirtual  void    EmitTraceMessage (const wchar_t* format, ...) noexcept;
 

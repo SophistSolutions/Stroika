@@ -306,6 +306,7 @@ Emitter::Emitter ()
 */
 void    Emitter::EmitTraceMessage (const char* format, ...) noexcept
 {
+    Thread::SuppressInterruptionInContext   suppressAborts;
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -314,14 +315,6 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
-    }
-    catch (const Execution::Thread::InterruptException&) {
-        // safe to ignore
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
-        //  when shutting down, and I think this is why...
-        //
-        // This interrupt will be thrown someplace later (but this marked noexcept)
-        return;
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -332,6 +325,7 @@ void    Emitter::EmitTraceMessage (const char* format, ...) noexcept
 
 void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
 {
+    Thread::SuppressInterruptionInContext   suppressAborts;
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -340,14 +334,6 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
-    }
-    catch (const Execution::Thread::InterruptException&) {
-        // safe to ignore
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
-        //  when shutting down, and I think this is why...
-        //
-        // This interrupt will be thrown someplace later (but this marked noexcept)
-        return;
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -358,6 +344,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
 
 Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept
 {
+    Thread::SuppressInterruptionInContext   suppressAborts;
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -366,14 +353,6 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
-    }
-    catch (const Execution::Thread::InterruptException&) {
-        // safe to ignore
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
-        //  when shutting down, and I think this is why...
-        //
-        // This interrupt will be thrown someplace later (but this marked noexcept)
-        return 0;
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
@@ -385,6 +364,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
 
 Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept
 {
+    Thread::SuppressInterruptionInContext   suppressAborts;
     try {
         va_list     argsList;
         va_start (argsList, format);
@@ -393,14 +373,6 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
         return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
-    }
-    catch (const Execution::Thread::InterruptException&) {
-        // safe to ignore
-        // -- NOTE - looking at logs of BLKQCL-Controller - I saw the assert trigger in the ... case below,
-        //  when shutting down, and I think this is why...
-        //
-        // This interrupt will be thrown someplace later (but this marked noexcept)
-        return 0;
     }
     catch (...) {
         Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
