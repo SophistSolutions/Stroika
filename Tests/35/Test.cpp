@@ -7,6 +7,7 @@
 #include    <iostream>
 #include    <mutex>
 
+#include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Execution/BlockingQueue.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
@@ -23,6 +24,8 @@
 using   namespace   Stroika::Foundation;
 
 
+using   Characters::String;
+using   Containers::Sequence;
 using   Execution::BlockingQueue;
 using   Execution::Thread;
 using   Execution::Finally;
@@ -31,11 +34,6 @@ using   Execution::Synchronized;
 using   Execution::ThreadPool;
 using   Execution::WaitableEvent;
 
-
-
-
-#include    "Stroika/Foundation/Containers/Sequence.h"
-using   Containers::Sequence;
 
 
 
@@ -548,25 +546,33 @@ namespace {
 
         Verify (q.GetLength () == 0);
 
-        Thread  producerThread ([&q, &counter] () {
-            for (int incBy = START; incBy <= END; ++incBy) {
-                q.AddTail ([&counter, incBy] () { counter += incBy; });
-            }
-        });
-        Thread  consumerThread ([&q] () {
-            while (true) {
-                function<void()>    f   =   q.RemoveHead ();
-                f();
-            }
-        });
-        producerThread.Start();
-        consumerThread.Start();
+        Thread  producerThread {
+            [&q, &counter] ()
+            {
+                for (int incBy = START; incBy <= END; ++incBy) {
+                    q.AddTail ([&counter, incBy] () { counter += incBy; });
+                }
+            },
+            Thread::eAutoStart,
+            String { L"Producer" }
+        };
+        Thread  consumerThread {
+            [&q] ()
+            {
+                while (true) {
+                    function<void()>    f   =   q.RemoveHead ();
+                    f();
+                }
+            },
+            Thread::eAutoStart,
+            String { L"Consumer" }
+        };
         Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
         while (counter != expectedValue and Time::GetTickCount () < killAt) {
             Execution::Sleep (.5);
         }
         Verify (counter == expectedValue);
-        producerThread.AbortAndWaitForDone ();
+        producerThread.WaitForDone ();      // producer already set to run off the end...
         consumerThread.AbortAndWaitForDone ();
     }
 }
