@@ -1013,6 +1013,11 @@ String Execution::FormatThreadID (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadInterruption ()
 {
+    /*
+     *  NOTE: subtle but important that we use static Thread::InterruptException::kThe so we avoid
+     *  re-throw with string operations. Otheriwse we would have to use SuppressInterruptionInContext
+     *  just before the actual throw.
+     */
     if (s_InterruptionSuppressDepth_ == 0) {
         if (s_Interrupting_) {
             if (s_Aborting_) {
