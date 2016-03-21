@@ -335,7 +335,6 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         }
     });
     Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
-
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"n-Direct-Handlers=%d, nSafeHandlers=%d", directHandlers.size (), safeHandlers.size ());
 #endif
@@ -349,7 +348,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         Require (SafeSignalsManager::sTheRep_ != nullptr);
     }
 
-    auto sigSetHandler = [] (SignalID signal, void (__cdecl * fun)(int)) {
+    auto sigSetHandler = [] (SignalID signal, void (*fun)(int)) {
 #if     qPlatform_POSIX
         struct  sigaction sa {};
         sa.sa_handler = fun;
@@ -360,44 +359,6 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
 #endif
     };
-#if 0
-    auto sigSetHandler = [] (SignalID signal) {
-#if     qPlatform_POSIX
-        struct  sigaction sa {};
-        sa.sa_handler = FirstPassSignalHandler_;
-        Verify (::sigemptyset (&sa.sa_mask) == 0);
-        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
-        Verify (::sigaction (signal, &sa, nullptr) == 0);
-#else
-        Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
-#endif
-        DbgTrace (L"Setup signal handler for signal: %s -> FirstPassSignalHandler_", SignalToName (signal).c_str ());
-    };
-    auto sigSetDefault = [] (SignalID signal) {
-#if     qPlatform_POSIX
-        struct  sigaction sa {};
-        sa.sa_handler = SIG_DFL;
-        Verify (::sigemptyset (&sa.sa_mask) == 0);
-        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
-        Verify (::sigaction (signal, &sa, nullptr) == 0);
-#else
-        Verify (::signal (signal, SIG_DFL) != SIG_ERR);
-#endif
-        DbgTrace (L"Setup signal (%s) -> SIG_DFL", SignalToName (signal).c_str ());
-    };
-    auto sigSetIgnore = [] (SignalID signal) {
-#if     qPlatform_POSIX
-        struct  sigaction sa {};
-        sa.sa_handler = SIG_IGN;
-        Verify (::sigemptyset (&sa.sa_mask) == 0);
-        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
-        Verify (::sigaction (signal, &sa, nullptr) == 0);
-#else
-        Verify (::signal (signal, SIG_IGN) != SIG_ERR);
-#endif
-        DbgTrace (L"Setup signal (%s) -> SIG_IGN", SignalToName (signal).c_str ());
-    };
-#endif
 
     if (directHandlers.empty ()) {
         fDirectHandlers_.Remove (signal);
