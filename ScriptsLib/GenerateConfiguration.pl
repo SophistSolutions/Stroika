@@ -328,7 +328,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 
 		#helpful to print stack traces in log (not critical, and has performance overhead)
-		$EXTRA_LINKER_ARGS += "-rdynamic";
+		$EXTRA_LINKER_ARGS .= "-rdynamic";
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
