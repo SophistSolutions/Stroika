@@ -326,6 +326,9 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
+
+		#helpful to print stack traces in log (not critical, and has performance overhead)
+		$EXTRA_LINKER_ARGS += "-rdynamic";
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
