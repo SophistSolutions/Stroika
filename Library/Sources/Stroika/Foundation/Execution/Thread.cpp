@@ -959,6 +959,9 @@ bool    Thread::IsDone () const
  */
 String Execution::FormatThreadID (Thread::IDType threadID)
 {
+
+    Thread::SuppressInterruptionInContext   suppressAborts;
+
     /*
      *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
      *  way we usually format a thread ID (hex, fixed width). So do that, so thread IDs look more consistent.

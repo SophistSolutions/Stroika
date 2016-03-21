@@ -569,7 +569,9 @@ namespace   Stroika {
 
 
             /**
-             *  Represent the thread ID for display - typically as an integer
+             *  Represent the thread ID for display - typically as an integer.
+             *
+             *  \note this function is NOT a cancelation point
              */
             Characters::String     FormatThreadID (Thread::IDType threadID);
 
