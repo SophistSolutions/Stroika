@@ -50,7 +50,8 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
-CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+#Tried, but then xerces didnt build - debug later - not critical now
+#CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 endif
 
 
@@ -142,8 +143,8 @@ endif
 doBuilds_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; export CFLAGS=\"$(CFLAGS)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
-	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; export CFLAGS=\"$(CFLAGS)\"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
+	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
+	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  all 2>&1 >> CURRENT/BUILD.OUT
 else
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl build > CURRENT/BUILD.OUT 2>&1
