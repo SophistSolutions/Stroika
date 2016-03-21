@@ -39,7 +39,11 @@ namespace   {
 
         Debug::DropIntoDebuggerIfPresent ();
 
-        exit (EXIT_FAILURE);
+#if     qCompilerAndStdLib_StdExitBuggy
+        _exit (EXIT_FAILURE);
+#else
+        std::_Exit (EXIT_FAILURE);  // skip
+#endif
     }
     void    _FatalErrorHandler_ (const Characters::SDKChar* msg)
     {
@@ -50,14 +54,22 @@ namespace   {
 #endif
         DbgTrace (SDKSTR ("FAILED: %s"), msg);
         Debug::DropIntoDebuggerIfPresent ();
-        exit (EXIT_FAILURE);
+#if     qCompilerAndStdLib_StdExitBuggy
+        _exit (EXIT_FAILURE);
+#else
+        std::_Exit (EXIT_FAILURE);  // skip
+#endif
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
         cerr << "FAILED: SIGNAL= " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
-        exit (EXIT_FAILURE);
+#if     qCompilerAndStdLib_StdExitBuggy
+        _exit (EXIT_FAILURE);
+#else
+        std::_Exit (EXIT_FAILURE);  // skip
+#endif
     }
 }
 
