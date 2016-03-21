@@ -43,7 +43,9 @@
  *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
  *              handlers?
  *
- *      @todo   Consider use of threadpool for SafeSignalsManager.
+ *      @todo   Consider use of threadpool for SafeSignalsManager
+ *              Good idea since we may need to handle signals quickly so as to not overflow
+ *              fixed size incoming buffer.
  *
  *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow
  *              these to be (more or less) interchangable with regular SignalHandler.
@@ -81,7 +83,8 @@ namespace   Stroika {
             public:
                 /**
                  *  A direct (eDirect) signal handler is invoked in the stack context in which the
-                 *  signal is delivered.
+                 *  signal is delivered. Direct signal handlers are VERY UNSAFE and use carefully,
+                 *  since they can EASILY produce deadlocks.
                  *
                  *  A 'safe' (eSafe) signal handler is run in a separate thread context.
                  *
@@ -277,25 +280,11 @@ namespace   Stroika {
                 Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;
 
             private:
-                const vector<SignalHandler>*    PeekAtSignalHandlersForSignal_ (SignalID signal) const
-                {
-                    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
-                    return &fDirectSignalHandlersCache_[signal];
-                }
-                void                            ReleaseSignalHandlersForSignalLock_ (SignalID signal)
-                {
-                    // NYI
-                }
-                void                            PopulateDirectSignalHandlersCache_ (SignalID signal)
-                {
-                    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
-                    vector<SignalHandler>   shs;
-                    for (SignalHandler sh : fDirectHandlers_.LookupValue (signal)) {
-                        shs.push_back (sh);
-                    }
-                    // unsafe - need some sort of interlock
-                    fDirectSignalHandlersCache_[signal] = shs;
-                }
+                const vector<SignalHandler>*    PeekAtSignalHandlersForSignal_ (SignalID signal) const;
+                void                            ReleaseSignalHandlersForSignalLock_ (SignalID signal);
+                void                            PopulateDirectSignalHandlersCache_ (SignalID signal);
+
+            private:
                 vector<SignalHandler>   fDirectSignalHandlersCache_[NSIG];
 
             private:
@@ -330,6 +319,8 @@ namespace   Stroika {
              */
             class   SignalHandlerRegistry::SafeSignalsManager {
             public:
+                /**
+                 */
                 SafeSignalsManager ();
                 SafeSignalsManager (const SafeSignalsManager&) = delete;
 
@@ -340,7 +331,7 @@ namespace   Stroika {
                 nonvirtual  SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
 
             private:
-                struct Rep_;
+                class   Rep_;
                 static  shared_ptr<Rep_>    sTheRep_;
 
             private:

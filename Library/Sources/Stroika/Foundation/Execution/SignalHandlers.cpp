@@ -3,15 +3,16 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <condition_variable>
 #include    <mutex>
 
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/BackTrace.h"
 #include    "../Debug/Trace.h"
-#include    "../Containers/Concrete/Queue_Array.h"
+#include    "../Execution/Synchronized.h"
+#include    "../Execution/WaitableEvent.h"
 
-#include    "BlockingQueue.h"
 #include    "Common.h"
 #include    "Thread.h"
 
@@ -24,8 +25,8 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   Characters::String_Constant;
 using   Containers::Mapping;
-using   Containers::Queue;
 using   Containers::Set;
+using   Time::DurationSecondsType;
 
 
 
@@ -46,8 +47,11 @@ using   Containers::Set;
 
 
 
-
-
+// VERY UNSURE???
+//#define qConditionVariableSetSafeFromSignalHandler_ 0
+#ifndef qConditionVariableSetSafeFromSignalHandler_
+#define qConditionVariableSetSafeFromSignalHandler_ 1
+#endif
 
 
 
@@ -70,19 +74,10 @@ namespace   {
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-namespace {
-    Queue<SignalID> mkSafeSignalsManagerQ_ ()
-    {
-        Containers::Concrete::Queue_Array<SignalID> signalQ;
-        signalQ.SetCapacity (25);  // quite arbitrary - @todo make configurable somehow...
-        return signalQ;
-    }
-}
-
 DISABLE_COMPILER_MSC_WARNING_START(4351)
-struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+class   SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+public:
     Rep_ ()
-        : fIncomingSafeSignals_ (mkSafeSignalsManagerQ_ ())
     {
         fBlockingQueuePusherThread_ = Thread {
             [this] ()
@@ -91,44 +86,147 @@ struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
-                    SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-                    Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
-                    DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
-                    for (SignalHandler sh : fHandlers_.LookupValue (i)) {
-                        Assert (sh.GetType () == SignalHandler::Type::eSafe);
-                        IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+                    // @todo - re-do this using POSIX pthread_cond_wait, or std::condition_variable (not sure that is safe in signal handler)
+                    // THis is probably OK for now
+                    CheckForThreadInterruption ();
+#if     qConditionVariableSetSafeFromSignalHandler_
+                    unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+                    fRecievedSig_.wait_for (lk, std::chrono::seconds(100), [this]() {return fWorkAvailable_.load ();});
+#else
+                    constexpr   DurationSecondsType kLongCheck_  { 1.0f };
+                    constexpr   DurationSecondsType kQuickCheck_  { 0.1f };
+                    fChangedRecheckTime_.WaitQuietly (fHandlers_->empty () ? kLongCheck_ : kQuickCheck_);   // HACK til we can do condition variable SET from signal handler
+#endif
+                    if (fLastSignalRecieved_ < NSIG) {
+Again:
+                        for (int i = 0; i < NSIG; ++i) {
+                            while (fIncomingSignalCounts[i] > 0) {
+                                fIncomingSignalCounts[i]--;
+                                Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
+                                for (SignalHandler sh : fHandlers_->LookupValue (i)) {
+                                    Assert (sh.GetType () == SignalHandler::Type::eSafe);
+                                    IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+                                }
+                            }
+                        }
+
+                        // reset fLastSignalRecieved_ as a shortcut
+                        fLastSignalRecieved_ = NSIG;
+                        // but check for races, and reset
+                        for (int i = 0; i < NSIG; ++i) {
+                            while (fIncomingSignalCounts[i] > 0) {
+                                fLastSignalRecieved_ = i;
+                                DbgTrace ("Rare, but possible race avoidance");
+                                goto Again;
+                            }
+                        }
+
                     }
+#if     qConditionVariableSetSafeFromSignalHandler_
+                    fWorkAvailable_ = false;
+#endif
                 }
             },
             Thread::eAutoStart,
             String_Constant { L"Signal Handler Safe Execution Thread" }
         };
     }
+public:
     ~Rep_ ()
     {
         Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
         Thread::SuppressInterruptionInContext  suppressInterruption;
+        fBlockingQueuePusherThread_.Abort ();
+#if     qConditionVariableSetSafeFromSignalHandler_
+        fRecievedSig_.notify_one ();
+        {
+            std::lock_guard<std::mutex> lk(fRecievedSig_NotSureWhatMutexFor_);
+            fWorkAvailable_ = true;
+        }
+        fRecievedSig_.notify_one ();
+#else
+        fChangedRecheckTime_.Set ();
+#endif
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
-    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
-    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
-    Thread                                                          fBlockingQueuePusherThread_;
-    bool                                                            fSafeSignalHanldersAvailable_[NSIG] {};         // if true post to blocking q
-
-    void    PopulateSafeSignalHandlersCache_ (SignalID signal)
-    {
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fSafeSignalHanldersAvailable_)));
-        fSafeSignalHanldersAvailable_[signal] = fHandlers_.Lookup (signal).IsPresent ();
-    }
-
+public:
+    /*
+     *  Called at VERY UNSAFE TIME. NEVER allocates memory, or use locks.
+     */
     void    NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
     {
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fSafeSignalHanldersAvailable_)));
-        // harmless - but pointless - to add signals that will be ignored
-        if (fSafeSignalHanldersAvailable_[signal]) {
-            fIncomingSafeSignals_.AddTail (signal);
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fIncomingSignalCounts)));
+        // Check fHanlderAvailable_ [] as a performance optimizaiton. This gets called by direct-sginals, even when there are no safe signals to
+        // be delegated to
+        if (fHanlderAvailable_[signal]) {
+            fIncomingSignalCounts[signal]++;
+            fLastSignalRecieved_ = signal;      // used as a quick check
+#if     qConditionVariableSetSafeFromSignalHandler_
+            fRecievedSig_.notify_one ();
+            {
+                lock_guard<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+                fWorkAvailable_ = true;
+            }
+            fRecievedSig_.notify_one ();
+#endif
         }
     }
+public:
+    Set<SignalID>   GetHandledSignals () const
+    {
+        return fHandlers_->Keys ();
+    }
+public:
+    Set<SignalHandler>  GetSignalHandlers (SignalID signal) const
+    {
+        return fHandlers_->LookupValue (signal);
+    }
+public:
+    void    Remove (SignalID signal)
+    {
+        fHandlers_->Remove (signal);
+        PopulateSafeSignalHandlersCache_ (signal);
+#if     !qConditionVariableSetSafeFromSignalHandler_
+        fChangedRecheckTime_.Set ();
+#endif
+    }
+public:
+    void    Add  (SignalID signal, const Containers::Set<SignalHandler>& safeHandlers)
+    {
+        fHandlers_->Add (signal, safeHandlers);
+        PopulateSafeSignalHandlersCache_ (signal);
+#if     !qConditionVariableSetSafeFromSignalHandler_
+        fChangedRecheckTime_.Set ();
+#endif
+    }
+
+private:
+    void    PopulateSafeSignalHandlersCache_ (SignalID signal)
+    {
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fHanlderAvailable_)));
+        fHanlderAvailable_[signal] = fHandlers_->Lookup (signal).IsPresent ();
+    }
+
+private:
+    Synchronized<Mapping<SignalID, Set<SignalHandler>>> fHandlers_;
+    bool                                                fHanlderAvailable_[NSIG] {};         // if true post to blocking q
+private:
+    /*
+     *  Instead of maintaining an acutal Q, just maintain a count of number of signals recieved for each signal number.
+     *  This means signals not necessarily delivered in order, but this appraoch has the advantage of using a small amount of memory to
+     *  essentially guarantee no overflow
+     */
+    atomic<unsigned int>    fIncomingSignalCounts[NSIG];
+    atomic<SignalID>        fLastSignalRecieved_ { NSIG };
+    Thread                  fBlockingQueuePusherThread_;    // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
+private:
+#if     qConditionVariableSetSafeFromSignalHandler_
+    std::atomic<bool>       fWorkAvailable_ { false };
+    mutex                   fRecievedSig_NotSureWhatMutexFor_;
+    condition_variable      fRecievedSig_;
+#else
+    WaitableEvent           fChangedRecheckTime_ { WaitableEvent::eAutoReset }; // tmphack until we support using condition variables or some such
+#endif
 };
 DISABLE_COMPILER_MSC_WARNING_END(4351)
 
@@ -154,14 +252,7 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR");
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
-    sTheRep_.reset ();
-    // avoid slight race - after reset above - could still be processing a signal (holding refcount above zero).
-    // this check and abort/wait guaratess at least no more thread running (though other stuff - like signal handling - could
-    // still be running)
-    if (tmp != nullptr) {
-        tmp->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-    }
+    SignalHandlerRegistry::SafeSignalsManager::sTheRep_.reset ();   // this will wait for shutdown of safe processing thread to shut down
 }
 
 
@@ -186,7 +277,7 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
         auto    critSec { make_unique_lock (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fMutex) };
         sp = _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry;    // avoid race, and avoid locking unless needed
         if (sp == nullptr) {
-            sp.reset (new SignalHandlerRegistry ());
+            sp = make_shared<SignalHandlerRegistry> ();
             Assert (_Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry == nullptr);
             _Stroika_Foundation_ExecutionSignalHandlers_ModuleData_.Actual ().fTheRegistry = sp;
         }
@@ -214,16 +305,9 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
-    // @todo redo using Mapping<>::Keys () when implemented...
-    Set<SignalID>   result;
-    for (auto i : fDirectHandlers_) {
-        result.Add (i.fKey);
-    }
-    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_;
-    if (tmp != nullptr) {
-        for (auto i : tmp->fHandlers_) {
-            result.Add (i.fKey);
-        }
+    Set<SignalID>   result  =   fDirectHandlers_.Keys ();
+    if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
+        result += tmp->GetHandledSignals ();
     }
     return result;
 }
@@ -231,9 +315,8 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
     Set<SignalHandler>  result  =   fDirectHandlers_.LookupValue (signal);
-    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_;
-    if (tmp != nullptr) {
-        result += tmp->fHandlers_.LookupValue (signal);
+    if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
+        result += tmp->GetSignalHandlers (signal);
     }
     return result;
 }
@@ -298,8 +381,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         fDirectHandlers_.Remove (signal);
         PopulateDirectSignalHandlersCache_ (signal);
         if (tmp != nullptr) {
-            tmp->fHandlers_.Remove (signal);
-            tmp->PopulateSafeSignalHandlersCache_ (signal);
+            tmp->Remove (signal);
         }
         sigSetDefault (signal);
     }
@@ -308,8 +390,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         fDirectHandlers_.Add (signal, handlers);
         PopulateDirectSignalHandlersCache_ (signal);
         if (tmp != nullptr) {
-            tmp->fHandlers_.Remove (signal);
-            tmp->PopulateSafeSignalHandlersCache_ (signal);
+            tmp->Remove (signal);
         }
         sigSetIgnore (signal);
     }
@@ -339,12 +420,10 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         }
         if (tmp != nullptr) {
             if (safeHandlers.empty ()) {
-                tmp->fHandlers_.Remove (signal);
-                tmp->PopulateSafeSignalHandlersCache_ (signal);
+                tmp->Remove (signal);
             }
             else {
-                tmp->fHandlers_.Add (signal, safeHandlers);
-                tmp->PopulateSafeSignalHandlersCache_ (signal);
+                tmp->Add (signal, safeHandlers);
             }
         }
         sigSetHandler (signal);
@@ -414,6 +493,30 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
             SetSignalHandlers (s, handler);
         }
     }
+}
+
+const vector<SignalHandler>*    SignalHandlerRegistry::PeekAtSignalHandlersForSignal_ (SignalID signal) const
+{
+    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
+    return &fDirectSignalHandlersCache_[signal];
+}
+
+void    SignalHandlerRegistry::ReleaseSignalHandlersForSignalLock_ (SignalID signal)
+{
+    // NYI
+    // @todo see https://stroika.atlassian.net/browse/STK-465
+}
+
+void    SignalHandlerRegistry::PopulateDirectSignalHandlersCache_ (SignalID signal)
+{
+    // @todo see https://stroika.atlassian.net/browse/STK-465
+    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
+    vector<SignalHandler>   shs;
+    for (SignalHandler sh : fDirectHandlers_.LookupValue (signal)) {
+        shs.push_back (sh);
+    }
+    // unsafe - need some sort of interlock
+    fDirectSignalHandlersCache_[signal] = shs;
 }
 
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
@@ -504,7 +607,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
                 #53 0x00007f4edd8056aa in start_thread (arg=0x7f4eb7fff700) at pthread_create.c:333
                 #54 0x00007f4edce14eed in clone () at ../sysdeps/unix/sysv/linux/x86_64/clone.S:109
 
-        *ANALYSIS OF ABOVE:
+        *   ANALYSIS OF ABOVE:
         *       At frame 22 (#22 <signal handler called>) - we have AT LEAST the malloc lock held (we could have more in principle)
         *       We receive a signal
         *       Deeper down, at frame 11 (#11 0x0000000000410f61) we acquire an unrelated lock, and AssertExternallySynchronizedLock
@@ -513,7 +616,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
         *
         *       BUT - worse than deadlocking this thread (thats bad enuf) - we acquired a lock on AssertExternallySynchronizedLock
         *       which we will never give up, and kill any other thread doing much of anything.
-        *
         *
         *   SUMAMRY:
         *       >   THIS CODE - CAN NEVER SAFELY CALL MALLOC!!!!
@@ -532,7 +634,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
      */
     SignalHandlerRegistry&  SHR =   Get ();
 
-#if 1
     {
         /*
          *  Pretty sure this all allocates no memory, so should be safe/lock free
@@ -544,26 +645,13 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
             (*shi) (signal);
         }
     }
-#else
-    {
-        // Copy out of Stroika-based containers, because these may throw thread-abort exceptions.
-        // The Set<> and Mapping<> code I'm thinking of here. Just use stl code (stuff that wont throw abort exceptions)
-        vector<SignalHandler>   shs;
-        {
-            Thread::SuppressInterruptionInContext  suppressContext;
-            for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
-                shs.push_back (sh);
-            }
-        }
-        for (SignalHandler sh : shs) {
-            sh (signal);
-        }
-    }
-#endif
 
+    //
+    // I THINK/HOPE it safe to increment/decrement the reference count on the shared_ptr.
+    // But this isn't guarnateed by anything I'm aware of.
+    //
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
-        /// @todo STILL VERY VERY UNSAFE IN SIGNAL HANLDER CALLBACK
         tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
     }
 }
