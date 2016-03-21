@@ -121,6 +121,12 @@ namespace {
     // use mutext and set<> to avoid interdependencies between low level Stroika facilities
     mutex               sThreadSupportStatsMutex_;
     set<Thread::IDType> sRunningThreads_;               // protected by sThreadSupportStatsMutex_
+
+    struct AllThreadsDeadDetector_ {
+        AllThreadsDeadDetector_ ()  { Require (sRunningThreads_.empty ()); }
+        ~AllThreadsDeadDetector_ () { Require (sRunningThreads_.empty ()); }
+    };
+    AllThreadsDeadDetector_   sAllThreadsDeadDetector_;
 }
 #endif
 

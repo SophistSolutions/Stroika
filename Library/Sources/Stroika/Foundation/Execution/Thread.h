@@ -193,7 +193,14 @@ namespace   Stroika {
              *              NotifyOfAbort/SleepEx/QueueUserAPC stuff - it should be pretty automatic...
              *                  -- LGP 2009-05-08
              *
+             *  \note   Stroika threads lifetime must NOT extend outside the lifetime of 'main'. That means they cannot
+             *          be started by static constructors, and must not be left running past the end of main, to
+             *          be shut down by static destructors. The reason for this is that its too hard to guarantee
+             *          all the rest of the Stroika infrastructure (signals etc) work properly in that context,
+             *          and its do overwhemlingly likely a softare bug waiting to happen.
              *
+             *          If you must have a thread running like that, use std::thread (though I'm not sure how well that
+             *          will work either).
              */
             class   Thread {
             public:
