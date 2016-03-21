@@ -64,17 +64,6 @@ using   Time::DurationSecondsType;
 
 
 
-namespace   {
-    bool    IsSigIgnore_ (const Set<SignalHandler>& sigSet)
-    {
-        return sigSet.size () == 1 and sigSet.Contains (SignalHandlerRegistry::kIGNORED);
-    }
-}
-
-
-
-
-
 
 /*
  ********************************************************************************
@@ -108,6 +97,7 @@ public:
 Again:
                         for (int i = 0; i < NSIG; ++i) {
                             while (fIncomingSignalCounts[i] > 0) {
+                                DbgTrace (L"fIncomingSignalCounts[%d] = %d", i, fIncomingSignalCounts[i].load ());
                                 fIncomingSignalCounts[i]--;
                                 Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
                                 for (SignalHandler sh : fHandlers_->LookupValue (i)) {
@@ -223,12 +213,12 @@ private:
      *  This means signals not necessarily delivered in order, but this appraoch has the advantage of using a small amount of memory to
      *  essentially guarantee no overflow
      */
-    atomic<unsigned int>    fIncomingSignalCounts[NSIG];
-    atomic<SignalID>        fLastSignalRecieved_ { NSIG };
+    atomic<unsigned int>    fIncomingSignalCounts[NSIG]     {};
+    atomic<SignalID>        fLastSignalRecieved_            { NSIG };
     Thread                  fBlockingQueuePusherThread_;    // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
 #if     qConditionVariableSetSafeFromSignalHandler_
-    std::atomic<bool>       fWorkAvailable_ { false };
+    std::atomic<bool>       fWorkAvailable_                 { false };
     mutex                   fRecievedSig_NotSureWhatMutexFor_;
     condition_variable      fRecievedSig_;
 #else
@@ -329,26 +319,48 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    unsigned int    nDirectHandlers {};
-    unsigned int    nSafeHandlers {};
-    handlers.Apply ([&nDirectHandlers, &nSafeHandlers] (SignalHandler si) {
+
+    Set<SignalHandler>  directHandlers;
+    Set<SignalHandler>  safeHandlers;
+    handlers.Apply ([&directHandlers, &safeHandlers] (SignalHandler si) {
         switch (si.GetType ()) {
             case SignalHandler::Type::eDirect: {
-                    nDirectHandlers++;
+                    directHandlers.Add (si);
                 }
                 break;
             case SignalHandler::Type::eSafe: {
-                    nSafeHandlers++;
+                    safeHandlers.Add (si);
                 }
                 break;
         }
     });
-    DbgTrace (L"n-Direct-Handlers=%d, nSafeHandlers=%d", nDirectHandlers, nSafeHandlers);
+    Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
+
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"n-Direct-Handlers=%d, nSafeHandlers=%d", directHandlers.size (), safeHandlers.size ());
 #endif
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
 
+    if (not safeHandlers.empty ()) {
+        // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
+        // defined first. It is recommended that you define an instance of
+        // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
+        Require (SafeSignalsManager::sTheRep_ != nullptr);
+    }
+
+    auto sigSetHandler = [] (SignalID signal, void (__cdecl * fun)(int)) {
+#if     qPlatform_POSIX
+        struct  sigaction sa {};
+        sa.sa_handler = fun;
+        Verify (::sigemptyset (&sa.sa_mask) == 0);
+        sa.sa_flags = 0; // important NOT to set SA_RESTART for interrupt() - but maybe for others helpful - maybe add option?
+        Verify (::sigaction (signal, &sa, nullptr) == 0);
+#else
+        Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
+#endif
+    };
+#if 0
     auto sigSetHandler = [] (SignalID signal) {
 #if     qPlatform_POSIX
         struct  sigaction sa {};
@@ -359,7 +371,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 #else
         Verify (::signal (signal, FirstPassSignalHandler_) != SIG_ERR);
 #endif
-        DbgTrace (L"DID ::signal (%s, FirstPassSignalHandler_)", SignalToName (signal).c_str ());
+        DbgTrace (L"Setup signal handler for signal: %s -> FirstPassSignalHandler_", SignalToName (signal).c_str ());
     };
     auto sigSetDefault = [] (SignalID signal) {
 #if     qPlatform_POSIX
@@ -371,7 +383,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 #else
         Verify (::signal (signal, SIG_DFL) != SIG_ERR);
 #endif
-        DbgTrace (L"DID ::signal (%s, SIG_DFL)", SignalToName (signal).c_str ());
+        DbgTrace (L"Setup signal (%s) -> SIG_DFL", SignalToName (signal).c_str ());
     };
     auto sigSetIgnore = [] (SignalID signal) {
 #if     qPlatform_POSIX
@@ -383,61 +395,36 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 #else
         Verify (::signal (signal, SIG_IGN) != SIG_ERR);
 #endif
-        DbgTrace (L"DID ::signal (%s, SIG_IGN)", SignalToName (signal).c_str ());
+        DbgTrace (L"Setup signal (%s) -> SIG_IGN", SignalToName (signal).c_str ());
     };
-    if (handlers.empty ()) {
-        /*
-         *  No handlers means use default.
-         */
+#endif
+
+    if (directHandlers.empty ()) {
         fDirectHandlers_.Remove (signal);
-        PopulateDirectSignalHandlersCache_ (signal);
-        if (tmp != nullptr) {
-            tmp->Remove (signal);
-        }
-        sigSetDefault (signal);
-    }
-    else if (IsSigIgnore_ (handlers)) {
-        Assert (handlers.size () == 1);
-        fDirectHandlers_.Add (signal, handlers);
-        PopulateDirectSignalHandlersCache_ (signal);
-        if (tmp != nullptr) {
-            tmp->Remove (signal);
-        }
-        sigSetIgnore (signal);
     }
     else {
-        Set<SignalHandler>  directHandlers;
-        Set<SignalHandler>  safeHandlers;
-        handlers.Apply ([&directHandlers, &safeHandlers] (SignalHandler si) {
-            switch (si.GetType ()) {
-                case SignalHandler::Type::eDirect: {
-                        directHandlers.Add (si);
-                    }
-                    break;
-                case SignalHandler::Type::eSafe: {
-                        safeHandlers.Add (si);
-                    }
-                    break;
-            }
-        });
-        Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
         fDirectHandlers_.Add (signal, directHandlers);
-        PopulateDirectSignalHandlersCache_ (signal);
-        if (not safeHandlers.empty ()) {
-            // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
-            // defined first. It is recommended that you define an instance of
-            // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
-            Require (SafeSignalsManager::sTheRep_ != nullptr);
+    }
+    PopulateDirectSignalHandlersCache_ (signal);
+
+    if (tmp != nullptr) {
+        if (safeHandlers.empty ()) {
+            tmp->Remove (signal);
         }
-        if (tmp != nullptr) {
-            if (safeHandlers.empty ()) {
-                tmp->Remove (signal);
-            }
-            else {
-                tmp->Add (signal, safeHandlers);
-            }
+        else {
+            tmp->Add (signal, safeHandlers);
         }
-        sigSetHandler (signal);
+    }
+
+    // And set the actual signal handlers
+    if (handlers.empty ()) {
+        sigSetHandler (signal, SIG_DFL);
+    }
+    else if (bool isSigIgnore = handlers.size () == 1 and handlers.Contains (SignalHandlerRegistry::kIGNORED)) {
+        sigSetHandler (signal, SIG_IGN);
+    }
+    else {
+        sigSetHandler (signal, FirstPassSignalHandler_);
     }
 }
 
@@ -651,7 +638,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          */
         const   vector<SignalHandler>*  shs = SHR.PeekAtSignalHandlersForSignal_ (signal);
         auto    cleanup { mkFinally ([signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); }) };
-        //Execution::FinallyT<> cleanup { [signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); } };
         for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
             (*shi) (signal);
         }
