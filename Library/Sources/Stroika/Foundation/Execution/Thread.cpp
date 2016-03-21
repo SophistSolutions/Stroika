@@ -247,6 +247,7 @@ Thread::InterruptException::InterruptException (const Characters::String& msg)
     : StringException (msg)
 {
 }
+const   Thread::InterruptException  Thread::InterruptException::kThe;
 
 
 
@@ -261,6 +262,9 @@ Thread::AbortException::AbortException ()
     : InterruptException (Characters::String_Constant { L"Thread Abort" })
 {
 }
+
+const   Thread::AbortException  Thread::AbortException::kThe;
+
 
 
 
@@ -1013,7 +1017,7 @@ void    Execution::CheckForThreadInterruption ()
         if (s_Interrupting_) {
             if (s_Aborting_) {
                 Assert (s_Interrupting_);   // if s_Aborting_, then s_Interrupting_ must be true
-                Throw (Thread::AbortException ());
+                Throw (Thread::AbortException::kThe);
             }
             else {
                 {
@@ -1024,7 +1028,7 @@ void    Execution::CheckForThreadInterruption ()
                         s_Interrupting_ = true;
                     }
                 }
-                Throw (Thread::InterruptException ());
+                Throw (Thread::InterruptException::kThe);
             }
         }
     }

@@ -504,6 +504,17 @@ namespace   Stroika {
                 InterruptException ();
             protected:
                 InterruptException (const Characters::String& msg);
+
+            public:
+                /*
+                 *  Handy constant you can use to avoid construction.
+                 *
+                 *  Statically allocate because:
+                 *      o   Performance
+                 *      o   Only legal to throw these while main active (so safe to use in that context)
+                 *      o   Avoids issue with re-throwing while constructing one
+                 */
+                static  const   InterruptException  kThe;
             };
 
 
@@ -512,6 +523,17 @@ namespace   Stroika {
             class   Thread::AbortException : public Thread::InterruptException {
             public:
                 AbortException ();
+
+            public:
+                /*
+                 *  Handy constant you can use to avoid construction.
+                 *
+                 *  Statically allocate because:
+                 *      o   Performance
+                 *      o   Only legal to throw these while main active (so safe to use in that context)
+                 *      o   Avoids issue with re-throwing while constructing one
+                 */
+                static  const   AbortException  kThe;
             };
 
 

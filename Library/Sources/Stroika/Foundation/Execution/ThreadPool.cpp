@@ -434,7 +434,7 @@ void    ThreadPool::WaitForNextTask_ (TaskType* result)
 {
     RequireNotNull (result);
     if (fAborted_) {
-        Execution::Throw (Thread::AbortException ());
+        Execution::Throw (Thread::AbortException::kThe);
     }
 
     while (true) {
