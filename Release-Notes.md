@@ -18,22 +18,21 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a135">v2.0a135x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a135">v2.0a135</a><br/>2016-03-22</td>
 <td>
 	<ul>
-		<!-- notes up to 2016-03-21 @ 10pm -->
 		<li>Signal Handlers:
 			<ul>
 				<li>Misc cleanups</li>
-				<li>simplified SignalHandler CTOR code - so just static sThe</li>
+				<li>Simplified SignalHandler CTOR code - so just static sThe</li>
 				<li>new - hopefully safe now - SignalHanlder notification scheme for 'safe signal handlers'; 
 				has one defect which is delivered oout of order; 
 				and by default uses qConditionVariableSetSafeFromSignalHandler_ which now testing is safe with signals, but not super clearly documetned as such
 				</li>
 			</ul>
 		</li>
-		<li>cleanup BlockingQueue test and added it to example docs</li>
-		<li>enlarge tolerances on performance regtests to hopefully pass on AWS VMs</li>
+		<li>Cleanup BlockingQueue test and added it to example docs</li>
+		<li>Enlarge tolerances on performance regtests to hopefully pass on AWS VMs</li>
 		<li>Debug:
 			<ul>
 				<li>configure apply-default-debug-flags for gcc, then set -rdynamic as default linker option - so stack traces come out better in debug traces</li>
@@ -56,8 +55,24 @@ History
 		<li>
 			AIX
 			<ul>
-				<li>experiemnt with hack to make extra compiler args (like AIX minimal TOC stuff) work with xerces compile</li>
+				<li>experiment with hack to make extra compiler args (like AIX minimal TOC stuff) work with xerces compile (didnt work)</li>
 				<li>dont use -rdynamic on AIX (doesnt work - no idea why - but just changing defaults so SB OK)</li>
+			</ul>
+		</li>
+		<li>Added PerformanceDump-v2.0a135-x86-ReleaseU.txt, PerformanceDump-v2.0a135-linux-gcc-5.2.0-x64.txt</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (release works fully, but DEBUG crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
 			</ul>
 		</li>
 	</ul>
