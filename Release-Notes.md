@@ -21,7 +21,45 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a135">v2.0a135x</a><br/>2016-03-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<!-- notes up to 2016-03-21 @ 10pm -->
+		<li>Signal Handlers:
+			<ul>
+				<li>Misc cleanups</li>
+				<li>simplified SignalHandler CTOR code - so just static sThe</li>
+				<li>new - hopefully safe now - SignalHanlder notification scheme for 'safe signal handlers'; 
+				has one defect which is delivered oout of order; 
+				and by default uses qConditionVariableSetSafeFromSignalHandler_ which now testing is safe with signals, but not super clearly documetned as such
+				</li>
+			</ul>
+		</li>
+		<li>cleanup BlockingQueue test and added it to example docs</li>
+		<li>enlarge tolerances on performance regtests to hopefully pass on AWS VMs</li>
+		<li>Debug:
+			<ul>
+				<li>configure apply-default-debug-flags for gcc, then set -rdynamic as default linker option - so stack traces come out better in debug traces</li>
+			</ul>
+		</li>
+		<li>Threads
+			<ul>
+				<li>define and use Thread::AbortException::kThe and Thread::InterruptException::kThe to avoid problems constructing them (copyies strings) during abort, so abort in abort</li>
+				<li>dicmetne that Execution::FormatThreadID () is not a cancelation point and force with Thread::SuppressInterruptionInContext</li>
+				<li>document that Trace::EmitTraceMEssage is not a cancelation point; include Thread::SuppressInterruptionInContext</li>
+			</ul>
+		</li>
+		<li>Before/After Main:
+			<ul>
+				<li>docs and assertion testing to document/ensure we dont have Thread objects outside the lifetime of main (at least not running)</li>
+				<li>in test harness, call to EXIT is _ version - so no call to after main</li>
+				<li>Added code to detect problems with threads running before or after main. Not perfect (cuz I lack a good way to detect)</li>
+			</ul>
+		</li>
+		<li>
+			AIX
+			<ul>
+				<li>experiemnt with hack to make extra compiler args (like AIX minimal TOC stuff) work with xerces compile</li>
+				<li>dont use -rdynamic on AIX (doesnt work - no idea why - but just changing defaults so SB OK)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
