@@ -72,7 +72,8 @@ namespace   Stroika {
             public:
                 FinallyT (FUNCTION f);
                 FinallyT () = delete;
-                FinallyT (const Finally&) = delete;
+                FinallyT (FinallyT&& src) : fCleanupCodeBlock_ (move (src.fCleanupCodeBlock_)) {}
+                FinallyT (const FinallyT&) = delete;
 
             public:
                 ~FinallyT();
