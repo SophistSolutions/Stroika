@@ -482,20 +482,19 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                 CLOSE_ (jStderr[1]);
             }
 
-            Execution::Finally cleanup1 ([&useSTDIN, &useSTDOUT, &useSTDERR] {
-                if (useSTDIN >= 0)
-                {
+            auto&&  cleanup1    =   Execution::mkFinally (
+            [&useSTDIN, &useSTDOUT, &useSTDERR] () noexcept {
+                if (useSTDIN >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
-                if (useSTDOUT >= 0)
-                {
+                if (useSTDOUT >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
-                if (useSTDERR >= 0)
-                {
+                if (useSTDERR >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
-            });
+            }
+                                    );
 
 // really need to do peicemail like above to avoid deadlock
             {
@@ -845,10 +844,12 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-    Finally cleanup = [&processInfo]() {
+    auto&&  cleanup =   mkFinally (
+    [&processInfo] () noexcept {
         SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-    };
+    }
+                        );
 
     STARTUPINFO startInfo {};
     startInfo.cb = sizeof (startInfo);
@@ -976,10 +977,12 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-    Finally cleanup = [&processInfo]() {
+    auto&&  cleanup =   mkFinally (
+    [&processInfo] () noexcept {
         SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-    };
+    }
+                        );
 
     STARTUPINFO startInfo {};
     startInfo.cb = sizeof (startInfo);

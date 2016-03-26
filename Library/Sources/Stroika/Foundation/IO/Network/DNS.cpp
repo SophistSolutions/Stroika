@@ -86,9 +86,7 @@ DNS::HostEntry   DNS::GetHostEntry (const String& hostNameOrAddress) const
     string      tmp     =   hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
     addrinfo*   res     =   nullptr;
     int         errCode =   ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
-    Execution::Finally cleanup ([res] {
-        ::freeaddrinfo (res);
-    });
+    auto&&      cleanup =   Execution::mkFinally ([res] () noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }

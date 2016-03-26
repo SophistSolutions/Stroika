@@ -381,7 +381,8 @@ RetryWithNoCERTCheck:
         DWORD          dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
-        Execution::Finally cleanup ([certInfo] () {
+        auto&&  cleanup =   Execution::mkFinally (
+        [certInfo] () noexcept {
             if (certInfo.lpszSubjectInfo != nullptr) {
                 ::LocalFree (certInfo.lpszSubjectInfo);
             }
@@ -397,7 +398,8 @@ RetryWithNoCERTCheck:
             if (certInfo.lpszSignatureAlgName != nullptr) {
                 ::LocalFree (certInfo.lpszSignatureAlgName);
             }
-        });
+        }
+                            );
 
         Response::SSLResultInfo resultSSLInfo;
         resultSSLInfo.fValidationStatus = sslExceptionProblem ?

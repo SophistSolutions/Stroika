@@ -4,7 +4,6 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
-#include    "../Execution/Finally.h"
 #include    "../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "ArchiveReader.h"

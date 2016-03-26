@@ -93,6 +93,7 @@ namespace {
         {
             {
                 unsigned int    cnt = 0;
+#if 0
                 {
                     Finally c (
                     [&cnt] () {
@@ -102,6 +103,7 @@ namespace {
                     cnt++;
                 }
                 VerifyTestResult (cnt == 0);
+#endif
                 {
                     auto&& c = mkFinally (
                     [&cnt] () noexcept {

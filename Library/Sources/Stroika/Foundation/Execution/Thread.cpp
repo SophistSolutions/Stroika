@@ -378,12 +378,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
         }
-        Finally cleanup ([thisThreadID] () {
+        auto&&  cleanup =   mkFinally (
+        [thisThreadID] () noexcept {
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.erase (thisThreadID) == 1);         // verify exactly one erased
-        });
+        }
+                            );
 #endif
 
         /*

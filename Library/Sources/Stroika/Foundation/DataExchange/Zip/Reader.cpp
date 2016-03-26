@@ -2911,11 +2911,8 @@ public:
             Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
         }
         const char* password = nullptr;
-        int err = unzOpenCurrentFilePassword (fZipFile_, password);
-        Execution::Finally cleanup { [this] {
-                unzCloseCurrentFile (fZipFile_);
-            }
-        };
+        int     err     = unzOpenCurrentFilePassword (fZipFile_, password);
+        auto&&  cleanup =   Execution::mkFinally ([this] () noexcept { unzCloseCurrentFile (fZipFile_); });
         Streams::MemoryStream<Byte> tmpBuf;
         do {
             Byte    buf [10 * 1024];
