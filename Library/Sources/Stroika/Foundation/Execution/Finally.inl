@@ -38,18 +38,36 @@ namespace   Stroika {
             }
 
 
-
+            /*
+             ********************************************************************************
+             ******************************** Execution::FinallyT ***************************
+             ********************************************************************************
+             */
             template <typename FUNCTION>
             FinallyT<FUNCTION>::FinallyT (FUNCTION f)
-                : fCleanupCodeBlock_ (f)
+                : fCleanupCodeBlock_ (move (f))
             {
+#if     !qCompilerAndStdLib_noexcept_Buggy
+                static_assert (noexcept (f), "Finally block cannot throw, so caller must mark lambda argument as noexcept");
+#endif
             }
             template <typename FUNCTION>
-            FinallyT<FUNCTION>::~FinallyT()
+            FinallyT<FUNCTION>::~FinallyT ()
             {
+                // no need for IgnoreExceptionsForCall if we do static_assert??
                 IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
             }
 
+
+            /*
+             ********************************************************************************
+             ******************************* Execution::mkFinally ***************************
+             ********************************************************************************
+             */
+            template <typename FUNCTION>
+            inline  auto    mkFinally (FUNCTION f) -> FinallyT<FUNCTION> {
+                return { std::move (f) };
+            }
 
 
         }

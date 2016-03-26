@@ -70,22 +70,24 @@ namespace   Stroika {
             template <typename FUNCTION>
             class   FinallyT {
             public:
-                FinallyT (FUNCTION f);
                 FinallyT () = delete;
-                FinallyT (FinallyT&& src) : fCleanupCodeBlock_ (move (src.fCleanupCodeBlock_)) {}
+                FinallyT (FUNCTION f);
+                FinallyT (FinallyT&&) = delete;
                 FinallyT (const FinallyT&) = delete;
 
             public:
-                ~FinallyT();
+                ~FinallyT ();
 
             public:
                 nonvirtual  FinallyT& operator= (const FinallyT&) = delete;
 
             private:
-                FUNCTION fCleanupCodeBlock_;
+                FUNCTION    fCleanupCodeBlock_;
             };
+
+
             template <typename FUNCTION>
-            auto mkFinally (FUNCTION f) -> FinallyT<FUNCTION>&&  { return move (FinallyT<FUNCTION> (f)); }
+            auto    mkFinally (FUNCTION f) -> FinallyT<FUNCTION>;
 
 
         }

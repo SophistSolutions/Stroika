@@ -7,6 +7,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Function.h"
 
 #include    "../TestHarness/SimpleClass.h"
@@ -86,11 +87,42 @@ namespace {
 }
 
 
+namespace {
+    namespace   Test3_ {
+        void    DoAll ()
+        {
+            {
+                unsigned int    cnt = 0;
+                {
+                    Finally c (
+                    [&cnt] () {
+                        cnt--;
+                    }
+                    );
+                    cnt++;
+                }
+                VerifyTestResult (cnt == 0);
+                {
+                    auto&& c = mkFinally (
+                    [&cnt] () {
+                        cnt--;
+                    }
+                               );
+                    cnt++;
+                }
+                VerifyTestResult (cnt == 0);
+            }
+        }
+    }
+}
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Function_ ();
         Test2_CommandLine_ ();
+        Test3_::DoAll ();
     }
 }
 
