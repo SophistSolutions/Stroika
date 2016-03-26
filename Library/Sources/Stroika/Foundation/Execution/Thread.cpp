@@ -355,12 +355,11 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     Require (not sKnownBadBeforeMainOrAfterMain_);
 
 #if     qDebug
-    auto cleanupCheckMain   =   mkFinally ([] () { Require (not sKnownBadBeforeMainOrAfterMain_); });
+    auto cleanupCheckMain   =   mkFinally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
 #endif
 
     try {
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
-
 
         /*
          *  \note   SUBTLE!!!!

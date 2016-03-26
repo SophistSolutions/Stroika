@@ -104,7 +104,7 @@ namespace {
                 VerifyTestResult (cnt == 0);
                 {
                     auto&& c = mkFinally (
-                    [&cnt] () {
+                    [&cnt] () noexcept {
                         cnt--;
                     }
                                );
