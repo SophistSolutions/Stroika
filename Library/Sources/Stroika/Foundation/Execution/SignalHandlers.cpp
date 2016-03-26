@@ -10,6 +10,7 @@
 #include    "../Containers/Mapping.h"
 #include    "../Debug/BackTrace.h"
 #include    "../Debug/Trace.h"
+#include    "../Execution/Sleep.h"
 #include    "../Execution/Synchronized.h"
 #include    "../Execution/WaitableEvent.h"
 
@@ -72,6 +73,11 @@ using   Time::DurationSecondsType;
  ********************************************************************************
  */
 DISABLE_COMPILER_MSC_WARNING_START(4351)
+/*
+ *  Design note:
+ *      Though it would be logical to use a BlockQueue<> here to implement the signal forwarding,
+ *      we cannot since that code allocates memory, and could deadlock.
+ */
 class   SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 public:
     Rep_ ()
@@ -97,9 +103,9 @@ public:
                     if (fLastSignalRecieved_ < NSIG) {
 Again:
                         for (int i = 0; i < NSIG; ++i) {
-                            while (fIncomingSignalCounts[i] > 0) {
-                                DbgTrace (L"fIncomingSignalCounts[%d] = %d", i, fIncomingSignalCounts[i].load ());
-                                fIncomingSignalCounts[i]--;
+                            while (fIncomingSignalCounts_[i] > 0) {
+                                DbgTrace (L"fIncomingSignalCounts_[%d] = %d", i, fIncomingSignalCounts_[i].load ());
+                                fIncomingSignalCounts_[i]--;
                                 Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
                                 for (SignalHandler sh : fHandlers_->LookupValue (i)) {
                                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
@@ -112,7 +118,7 @@ Again:
                         fLastSignalRecieved_ = NSIG;
                         // but check for races, and reset
                         for (int i = 0; i < NSIG; ++i) {
-                            while (fIncomingSignalCounts[i] > 0) {
+                            while (fIncomingSignalCounts_[i] > 0) {
                                 fLastSignalRecieved_ = i;
                                 DbgTrace ("Rare, but possible race avoidance");
                                 goto Again;
@@ -153,11 +159,11 @@ public:
      */
     void    NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
     {
-        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fIncomingSignalCounts)));
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fIncomingSignalCounts_)));
         // Check fHanlderAvailable_ [] as a performance optimizaiton. This gets called by direct-sginals, even when there are no safe signals to
         // be delegated to
         if (fHanlderAvailable_[signal]) {
-            fIncomingSignalCounts[signal]++;
+            fIncomingSignalCounts_[signal]++;
             fLastSignalRecieved_ = signal;      // used as a quick check
 #if     qConditionVariableSetSafeFromSignalHandler_
             fRecievedSig_.notify_one ();
@@ -214,7 +220,7 @@ private:
      *  This means signals not necessarily delivered in order, but this appraoch has the advantage of using a small amount of memory to
      *  essentially guarantee no overflow
      */
-    atomic<unsigned int>    fIncomingSignalCounts[NSIG]     {};
+    atomic<unsigned int>    fIncomingSignalCounts_[NSIG]    {};
     atomic<SignalID>        fLastSignalRecieved_            { NSIG };
     Thread                  fBlockingQueuePusherThread_;    // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
@@ -290,7 +296,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
-    Set<SignalID>   result  =   fDirectHandlers_.Keys ();
+    Set<SignalID>   result  =   fDirectHandlers_->Keys ();
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
         result += tmp->GetHandledSignals ();
     }
@@ -299,7 +305,7 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 
 Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
-    Set<SignalHandler>  result  =   fDirectHandlers_.LookupValue (signal);
+    Set<SignalHandler>  result  =   fDirectHandlers_->LookupValue (signal);
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
         result += tmp->GetSignalHandlers (signal);
     }
@@ -361,13 +367,39 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 #endif
     };
 
-    if (directHandlers.empty ()) {
-        fDirectHandlers_.Remove (signal);
+    {
+        auto l = fDirectHandlers_.get ();
+        if (directHandlers.empty ()) {
+            l->Remove (signal);
+        }
+        else {
+            l->Add (signal, directHandlers);
+        }
+        // @todo see https://stroika.atlassian.net/browse/STK-465
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
+        vector<function<void(SignalID)>>   shs;
+        for (SignalHandler sh : l->LookupValue (signal)) {
+            shs.push_back (sh);
+        }
+        {
+            // Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
+Again:
+            auto&&   cleanup {
+                mkFinally ([this] () noexcept
+                {
+                    fDirectSignalHandlersCache_Lock_--;
+                }
+                          )
+            };
+            if (fDirectSignalHandlersCache_Lock_++ == 0) {
+                fDirectSignalHandlersCache_[signal] = shs;
+            }
+            else {
+                Execution::Sleep (0.001);   // not sure how long 2 wait
+                goto Again;
+            }
+        }
     }
-    else {
-        fDirectHandlers_.Add (signal, directHandlers);
-    }
-    PopulateDirectSignalHandlersCache_ (signal);
 
     if (tmp != nullptr) {
         if (safeHandlers.empty ()) {
@@ -453,30 +485,6 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
             SetSignalHandlers (s, handler);
         }
     }
-}
-
-const vector<SignalHandler>*    SignalHandlerRegistry::PeekAtSignalHandlersForSignal_ (SignalID signal) const
-{
-    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
-    return &fDirectSignalHandlersCache_[signal];
-}
-
-void    SignalHandlerRegistry::ReleaseSignalHandlersForSignalLock_ (SignalID signal)
-{
-    // NYI
-    // @todo see https://stroika.atlassian.net/browse/STK-465
-}
-
-void    SignalHandlerRegistry::PopulateDirectSignalHandlersCache_ (SignalID signal)
-{
-    // @todo see https://stroika.atlassian.net/browse/STK-465
-    Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fDirectSignalHandlersCache_)));
-    vector<SignalHandler>   shs;
-    for (SignalHandler sh : fDirectHandlers_.LookupValue (signal)) {
-        shs.push_back (sh);
-    }
-    // unsafe - need some sort of interlock
-    fDirectSignalHandlersCache_[signal] = shs;
 }
 
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
@@ -596,11 +604,22 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     {
         /*
          *  Pretty sure this all allocates no memory, so should be safe/lock free
+         *
+         *  @todo see https://stroika.atlassian.net/browse/STK-465
+         *
+         *  Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
          */
-        const   vector<SignalHandler>*  shs = SHR.PeekAtSignalHandlersForSignal_ (signal);
-        auto    cleanup { mkFinally ([signal, &SHR] () { SHR.ReleaseSignalHandlersForSignalLock_ (signal); }) };
-        for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
-            (*shi) (signal);
+        Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
+Again:
+        auto&&    cleanup { mkFinally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; }) };
+        if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
+            const   vector<function<void(SignalID)>>*  shs  =   &SHR.fDirectSignalHandlersCache_[signal];
+            for (auto shi = shs->begin (); shi != shs->end (); ++shi) {
+                (*shi) (signal);
+            }
+        }
+        else {
+            goto Again;
         }
     }
 

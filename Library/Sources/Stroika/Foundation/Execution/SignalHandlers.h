@@ -49,7 +49,7 @@
  *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow
  *              these to be (more or less) interchangable with regular SignalHandler.
  *
- *      @todo   Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers
+ *      @todo   Consider adding "ThreadSignalHandler" facility - where we register a set of handlers
  *              that ONLY apply when the signal is sent to the given (argument with register) thread.
  *              If we do this - we will want to write cooperating code with the thread start/end
  *              stuff so these get cleared out appropriately.
@@ -279,15 +279,12 @@ namespace   Stroika {
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
             private:
-                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;
+                Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>>   fDirectHandlers_;
 
             private:
-                const vector<SignalHandler>*    PeekAtSignalHandlersForSignal_ (SignalID signal) const;
-                void                            ReleaseSignalHandlersForSignalLock_ (SignalID signal);
-                void                            PopulateDirectSignalHandlersCache_ (SignalID signal);
-
-            private:
-                vector<SignalHandler>   fDirectSignalHandlersCache_[NSIG];
+                //mutable atomic<unsigned int>        fDirectSignalHandlersCache_Lock_ { 0 };
+                mutable unsigned int        fDirectSignalHandlersCache_Lock_ { 0 };
+                vector<function<void(SignalID)>>    fDirectSignalHandlersCache_[NSIG];
 
             private:
                 static      void    FirstPassSignalHandler_ (SignalID signal);
@@ -300,11 +297,11 @@ namespace   Stroika {
              *
              *  A 'safe' (eSafe) signal handler is run in a separate thread context.
              *
-             *  Direct is more performant, has lower latency. However, since many signals are
+             *  Direct is more performant, and has lower latency. However, since many signals are
              *  delivered on an arbitrary thread, this can easily lead to deadlocks!
              *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
              *
-             *  'safe' signal handlers avoid this by automatically moving the signal delivery to a specaial
+             *  'safe' signal handlers avoid this by automatically moving the signal delivery to a special
              *  thread that handles the signals one at a time, and careful to avoid any memory allocation
              *  in the direct signal handling thread.
              *
