@@ -65,29 +65,53 @@ namespace   Stroika {
 
 
             /**
-             *  DRAFT
+             *  @see Finally<FUNCTION>
              */
             template <typename FUNCTION>
-            class   FinallyT {
+            class   FinallySentry {
             public:
-                FinallyT () = delete;
-                FinallyT (FUNCTION f);
-                FinallyT (FinallyT&&) = delete;
-                FinallyT (const FinallyT&) = delete;
+                FinallySentry () = delete;
+                FinallySentry (FUNCTION f);
+                FinallySentry (FinallySentry&&) = delete;
+                FinallySentry (const FinallySentry&) = delete;
 
             public:
-                ~FinallyT ();
+                ~FinallySentry ();
 
             public:
-                nonvirtual  FinallyT& operator= (const FinallyT&) = delete;
+                nonvirtual  FinallySentry& operator= (const FinallySentry&) = delete;
 
             private:
                 FUNCTION    fCleanupCodeBlock_;
             };
 
 
+            /**
+             *  This helpful utility to plug a missing feature from C++11 - to have a block of code run at the end
+             *  of a scope - regardless of whether you use normal exit or exception based exit.
+             *
+             *  This has some defects:
+             *      o   The syntax is ugly - the cleanup having to be declared
+             *          BEFORE the block instead of afterwards (languages like C# with try/finally the finally goes
+             *          at the end)
+             *
+             *      o   Exceptions inside of cleanupCodeBlock must be suppressed
+             *
+             *  Inspired by:
+             *      http://nerds-central.blogspot.com/2012/03/c11-trycatchfinally-pattern-using-raii.html
+             *
+             *  \note   For cleanup which is important/critical to be completed, its sometimes wise to include
+             *              Thread::SuppressInterruptionInContext suppressThreadInterupts;
+             *          in the function body
+             *
+             *  \note   This is (now) done in such a way that no locks are used or memory allocated, except if
+             *          argument lambda uses them/does it.
+             *
+             *  EXMAPLE USGE:
+             *      auto&& cleanup  =   mkFinally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+             */
             template <typename FUNCTION>
-            auto    mkFinally (FUNCTION f) -> FinallyT<FUNCTION>;
+            auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;
 
 
         }

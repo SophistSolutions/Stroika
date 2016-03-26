@@ -355,7 +355,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     Require (not sKnownBadBeforeMainOrAfterMain_);
 
 #if     qDebug
-    auto cleanupCheckMain  { mkFinally ([] () { Require (not sKnownBadBeforeMainOrAfterMain_); }) };
+    auto cleanupCheckMain   =   mkFinally ([] () { Require (not sKnownBadBeforeMainOrAfterMain_); });
 #endif
 
     try {

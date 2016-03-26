@@ -40,11 +40,11 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** Execution::FinallyT ***************************
+             **************************** Execution::FinallySentry **************************
              ********************************************************************************
              */
             template <typename FUNCTION>
-            FinallyT<FUNCTION>::FinallyT (FUNCTION f)
+            FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
                 : fCleanupCodeBlock_ (move (f))
             {
 #if     !qCompilerAndStdLib_noexcept_Buggy
@@ -52,7 +52,7 @@ namespace   Stroika {
 #endif
             }
             template <typename FUNCTION>
-            FinallyT<FUNCTION>::~FinallyT ()
+            FinallySentry<FUNCTION>::~FinallySentry ()
             {
                 // no need for IgnoreExceptionsForCall if we do static_assert??
                 IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
@@ -65,7 +65,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template <typename FUNCTION>
-            inline  auto    mkFinally (FUNCTION f) -> FinallyT<FUNCTION> {
+            inline  auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION> {
                 return { std::move (f) };
             }
 
