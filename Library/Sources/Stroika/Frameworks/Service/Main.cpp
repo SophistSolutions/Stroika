@@ -748,9 +748,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         , Execution::Thread::eAutoStart
         , kServiceRunThreadName_
     };
-    Execution::Finally cleanup ([this] () {
-        (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
-    });
+    auto&&  cleanup =   Execution::mkFinally ([this] () noexcept { (void)::unlink (_GetPIDFileName ().AsSDKString ().c_str ()); });
     {
         ofstream    out;
         Streams::iostream::OpenOutputFileStream (&out, _GetPIDFileName ());
@@ -979,16 +977,19 @@ Main::State     Main::WindowsService::_GetState () const
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup1 ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
 
     const bool  kUseQueryServiceStatusEx_   =    false;
     if (kUseQueryServiceStatusEx_) {
@@ -1023,7 +1024,8 @@ void    Main::WindowsService::_Install ()
     String  cmdLineForRunSvc = Characters::String_Constant { L"\"" } + Execution::GetEXEPath () + String_Constant { L"\" --" } + CommandNames::kRunAsService;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup ([hSCM] () {
+    auto&&  cleanup =   Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
@@ -1044,17 +1046,20 @@ void    Main::WindowsService::_UnInstall ()
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_STOP | DELETE;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
 
     {
         SERVICE_STATUS status;
@@ -1114,16 +1119,20 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_START;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
-    });
+    }
+                        );
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
 
     DWORD dwNumServiceArgs = 0;
     LPCTSTR* lpServiceArgVectors = nullptr;
@@ -1137,17 +1146,21 @@ void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_STOP;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
-    });
+    }
+                        );
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
 
     {
         SERVICE_STATUS status;
@@ -1170,16 +1183,20 @@ pid_t   Main::WindowsService::_GetServicePID () const
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup1 ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
-    });
+    }
+                        );
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
 
     SERVICE_STATUS_PROCESS  serviceProcess {};
     DWORD ignored = 0;
@@ -1199,17 +1216,21 @@ bool    Main::WindowsService::IsInstalled_ () const noexcept
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_CONFIG;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup1 ([hSCM] () {
+    auto&&  cleanup1 =  Execution::mkFinally (
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
-    });
+    }
+                        );
 
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    Execution::Finally cleanup2 ([hService] () {
+    auto&&  cleanup2 =  Execution::mkFinally (
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
-    });
+    }
+                        );
     return hService != NULL;
 }
 

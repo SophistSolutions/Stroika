@@ -274,7 +274,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            Execution::Finally cleanup { [hThreadSnap] () { ::CloseHandle (hThreadSnap); }};
+            auto&&  cleanup =   Execution::mkFinally ( [hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32 {};
@@ -580,11 +580,7 @@ namespace {
                         DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
                         continue;
                     }
-                    Execution::Finally cleanup {[fd] ()
-                    {
-                        Verify (::close (fd) == 0);
-                    }
-                                               };
+                    auto&&  cleanup =   Execution::mkFinally ([fd] () noexcept { Verify (::close (fd) == 0); });
                     int count = ::read (fd, &psInfo, sizeof (psInfo));
                     if (count != sizeof (psInfo)) {
                         DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
@@ -604,12 +600,8 @@ namespace {
                         isKernelThread = (psInfo.pr_ppid == 0); // default/good guess if we cannot open file
                     }
                     else {
-                        Execution::Finally cleanup {[fd] ()
-                        {
-                            Verify (::close (fd) == 0);
-                        }
-                                                   };
-                        int count = ::read (fd, &psStatus, sizeof (psStatus));
+                        auto&&  cleanup =   Execution::mkFinally ([fd] () noexcept { Verify (::close (fd) == 0); } );
+                        int     count   =   ::read (fd, &psStatus, sizeof (psStatus));
                         if (count != sizeof (psStatus)) {
                             DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
                         }
@@ -2043,11 +2035,7 @@ Again:
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        Execution::Finally cleanup {[hProcess] ()
-                        {
-                            Verify (::CloseHandle (hProcess));
-                        }
-                                                   };
+                        auto&&  cleanup =   Execution::mkFinally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); } );
                         if (grabStaticData) {
                             Optional<String>    processName;
                             Optional<String>    processEXEPath;
