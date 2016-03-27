@@ -488,6 +488,13 @@ namespace   Stroika {
                  */
                 nonvirtual  void    SetThreadName (const Characters::String& threadName);
 
+
+            public:
+                /**
+                 *  @see Characters::ToString ()
+                 */
+                nonvirtual  Characters::String  ToString () const;
+
             public:
                 nonvirtual  bool    operator< (const Thread& rhs) const;
 

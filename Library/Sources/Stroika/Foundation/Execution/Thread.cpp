@@ -814,6 +814,17 @@ void    Thread::SetThreadName (const String& threadName)
     }
 }
 
+Characters::String  Thread::ToString () const
+{
+    StringBuilder sb;
+    sb += L"Thread {";
+    sb += L"id: " + FormatThreadID (GetID ()) + L",";
+    sb += L"name: '" + GetThreadName () + L"',";
+    sb += L"status: " + Characters::ToString (GetStatus ()) + L",";
+    sb += L"}";
+    return sb.str ();
+}
+
 void    Thread::Start ()
 {
     RequireNotNull (fRep_);
@@ -830,7 +841,7 @@ void    Thread::Abort ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"(thread: %s, name: '%s', status: %s)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), Characters::ToString (fRep_->fStatus_.load ()).c_str ());
+    DbgTrace (L"this-thread: ", ToString ().c_str ());
 
     // first try to send abort exception, and then - if force - get serious!
     // goto aborting, unless the previous value was completed, and then leave it completed.
@@ -851,7 +862,7 @@ void    Thread::Interrupt ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"(thread = %s, name='%s', status=%s)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), Characters::ToString (fRep_->fStatus_.load ()).c_str ());
+    DbgTrace (L"this-thread: ", ToString ().c_str ());
 
     Status  cs = fRep_->fStatus_.load ();
     if (cs != Status::eAborting and cs != Status::eCompleted) {
@@ -875,6 +886,8 @@ void    Thread::Abort_Forced_Unsafe ()
 
 void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
+    Debug::TraceContextBumper ctx ("Thread::AbortAndWaitForDone");
+    DbgTrace (L"this-thread: ", ToString ().c_str ());
     Time::DurationSecondsType   endTime =   Time::GetTickCount () + timeout;
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
@@ -920,6 +933,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
     Debug::TraceContextBumper ctx ("Thread::WaitForDoneUntil");
     //DbgTrace ("(timeout = %.2f)", timeout);
+    DbgTrace (L"this-thread: ", ToString ().c_str ());
     if (fRep_ == nullptr) {
         // then its effectively already done.
         return;
@@ -995,7 +1009,6 @@ bool    Thread::IsDone () const
  */
 String Execution::FormatThreadID (Thread::IDType threadID)
 {
-
     Thread::SuppressInterruptionInContext   suppressAborts;
 
     /*
