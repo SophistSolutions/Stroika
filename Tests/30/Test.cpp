@@ -30,8 +30,8 @@ using   Stroika::Foundation::Debug::TraceContextBumper;
 using   Streams::iostream::InputStreamFromStdIStream;
 
 
-namespace   {
 
+namespace   {
 
     //
     // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
