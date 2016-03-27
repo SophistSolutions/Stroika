@@ -186,4 +186,27 @@ namespace   Stroika {
         }
     }
 }
+#if     !qCompilerAndStdLib_constexpr_Buggy
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<Execution::Thread::Status> : EnumNames<Execution::Thread::Status> {
+                static  constexpr   EnumNames<Execution::Thread::Status>    k {
+                    EnumNames<Execution::Thread::Status>::BasicArrayInitializer {
+                        {
+                            { Execution::Thread::Status::eNull, L"Null" },
+                            { Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running" },
+                            { Execution::Thread::Status::eRunning, L"Running" },
+                            { Execution::Thread::Status::eAborting, L"Aborting" },
+                            { Execution::Thread::Status::eCompleted, L"Completed" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<Execution::Thread::Status> (k) {}
+            };
+        }
+    }
+}
+#endif
 #endif  /*_Stroika_Foundation_Execution_Thread_inl_*/

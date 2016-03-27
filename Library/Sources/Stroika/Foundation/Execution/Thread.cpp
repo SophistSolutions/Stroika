@@ -16,6 +16,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/ToString.h"
 #include    "../Containers/Set.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Realtime.h"
@@ -265,6 +266,40 @@ Thread::AbortException::AbortException ()
 
 const   Thread::AbortException  Thread::AbortException::kThe;
 
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
+            template    <>
+            const EnumNames<Execution::Thread::Status>   DefaultNames<Execution::Thread::Status>::k
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+                =
+#endif
+            {
+                EnumNames<Execution::Thread::Status>::BasicArrayInitializer {
+                    {
+                        { Execution::Thread::Status::eNull, L"Null" },
+                        { Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running" },
+                        { Execution::Thread::Status::eRunning, L"Running" },
+                        { Execution::Thread::Status::eAborting, L"Aborting" },
+                        { Execution::Thread::Status::eCompleted, L"Completed" },
+                    }
+                }
+            };
+#else
+            constexpr   EnumNames<Execution::Thread::Status>    DefaultNames<Execution::Thread::Status>::k;
+#endif
+        }
+    }
+}
 
 
 
@@ -795,7 +830,7 @@ void    Thread::Abort ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
+    DbgTrace (L"(thread: %s, name: '%s', status: %s)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), Characters::ToString (fRep_->fStatus_.load ()).c_str ());
 
     // first try to send abort exception, and then - if force - get serious!
     // goto aborting, unless the previous value was completed, and then leave it completed.
@@ -816,7 +851,7 @@ void    Thread::Interrupt ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
+    DbgTrace (L"(thread = %s, name='%s', status=%s)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), Characters::ToString (fRep_->fStatus_.load ()).c_str ());
 
     Status  cs = fRep_->fStatus_.load ();
     if (cs != Status::eAborting and cs != Status::eCompleted) {
