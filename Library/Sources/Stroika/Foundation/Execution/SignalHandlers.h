@@ -282,8 +282,7 @@ namespace   Stroika {
                 Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>>   fDirectHandlers_;
 
             private:
-                //mutable atomic<unsigned int>        fDirectSignalHandlersCache_Lock_ { 0 };
-                mutable unsigned int        fDirectSignalHandlersCache_Lock_ { 0 };
+                mutable atomic<unsigned int>        fDirectSignalHandlersCache_Lock_ { 0 };
                 vector<function<void(SignalID)>>    fDirectSignalHandlersCache_[NSIG];
 
             private:
