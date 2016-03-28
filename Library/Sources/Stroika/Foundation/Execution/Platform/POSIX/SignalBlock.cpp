@@ -26,7 +26,7 @@ using   namespace   Stroika::Foundation::Execution::Platform::POSIX;
  ************* Execution::ScopedBlockCurrentThreadSignal ************************
  ********************************************************************************
  */
-ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
+ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal ()
     : fRestoreMask_ ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
