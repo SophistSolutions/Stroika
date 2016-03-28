@@ -119,7 +119,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
         }
         size_t n = Read (s, e);
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n <= NEltsOf (buf));
+        Assert (0 <= n and n < NEltsOf (buf));
         if (n == 0) {
             break;
         }
@@ -129,6 +129,9 @@ String InputStream<Character>::ReadAll (size_t upTo) const
             result.Append (s, s + n);
         }
     }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Returning %d characters", result.GetLength ());
+#endif
     return result.str ();
 }
 
@@ -155,7 +158,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
             return BLOB ();
         }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Seekable case: sb=%d", sb);
+        DbgTrace ("(should be able to read)sb=%u", sb);
 #endif
         // @todo this isn't crazy worse than SmallStackBuffer, because if sb is the size read and wouldn't
         // fit in a small stack buffer (stack part) - we avoid a second allocation.
@@ -165,9 +168,33 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         //
         Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
         try {
-            size_t n = this->Read (b, b + sb);
+
+            // Even though we've allocated a large enough buffer, the guarnatee of Read () is that it will return
+            // > 0, or less or equal than args buf size, but only 0 means EOF, so must re-read if more out there.
+#if 1
+            size_t  bytesLeft =  sb;
+            Byte*   pi = b;
+            while (bytesLeft > 0) {
+                size_t n = Read (pi, pi + bytesLeft);
+                Assert (n <= bytesLeft);
+                bytesLeft -= n;
+                pi += n;
+                if (n == 0) {
+                    AssertNotReached ();        // @todo decide how to handle this - means stream changed size - doesnt work with this
+                    // algorithm, but not necesarily SB disallowed.
+                    // for now - hack
+                    sb -= bytesLeft;
+                }
+            }
+#else
+            // WRONG
+            size_t n = Read (b, b + sb);
             Assert (n <= sb);
-            return BLOB::Attach (b, b + n);
+#endif
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace ("returning %u bytes", sb);
+#endif
+            return BLOB::Attach (b, b + sb);
         }
         catch (...) {
             delete[] (b);
@@ -179,7 +206,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         vector<Byte>    r;
         for (size_t nEltsLeft = upTo; nEltsLeft != 0; ) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Unseekable case: nEltsLeft=%d", nEltsLeft);
+            DbgTrace ("Unseekable case: nEltsLeft=%u", nEltsLeft);
 #endif
             Byte            buf[64 * 1024];
             Byte*           s           =   std::begin (buf);
@@ -190,7 +217,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
             Assert (s < e);
             size_t          n           =   Read (s, e);
             Assert (0 <= n and n <= nEltsLeft);
-            Assert (0 <= n and n <= NEltsOf (buf));
+            Assert (0 <= n and n < NEltsOf (buf));
             if (n == 0) {
                 break;
             }
