@@ -42,7 +42,6 @@ namespace   Stroika {
                     public:
                         ScopedBlockCurrentThreadSignal ();
                         ScopedBlockCurrentThreadSignal (SignalID signal);
-                        ScopedBlockCurrentThreadSignal () = delete;
                         ScopedBlockCurrentThreadSignal (const ScopedBlockCurrentThreadSignal&) = delete;
                         ~ScopedBlockCurrentThreadSignal ();
 
