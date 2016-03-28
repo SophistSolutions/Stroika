@@ -40,7 +40,7 @@ History
 		</li>
 		<li>Cleanup BlockingQueue test and added example docs</li>
 		<li>Thread::Status now uses DefaultNames<> and supports ToString()</li>
-		<li>Tweak tolerances on performance regtests to hopefully pass on AWS vms</li>
+		<li>Tweak tolerances on performance regtests to hopefully pass on AWS VMs</li>
 	</ul>
 </td>
 </tr>
