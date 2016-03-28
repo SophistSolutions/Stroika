@@ -22,7 +22,25 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a136">v2.0a136x</a><br/>2016-03-??</td>
 <td>
 	<ul>
-		<li>TODO
+		<!--up to date as of 2016-03-28 @ 1pm -->
+		<li>Tweak tolerances on performance regtests to hopefully pass on AWS vms</li>
+		<li>Cleanup BlockingQueue test and added example docs</li>
+		<li>
+			Finally/mkFinally
+			<ul>
+				<li>Multistage rewrite - but for now switch all uses to using Exeuction::mkFinally</li>
+				<li>Gist of change is to allow use with no mallocs/locks</li>
+			</ul>
+		</li>
+		<li>
+			SignalHandler code
+			<ul>
+				<li>Rewrote much SignalHanlder code so safer interlock if signals while updating signal handlers</li>
+				<li>use Platform::POSIX::ScopedBlockCurrentThreadSignal before attempting signal lock in SignalHandlerRegistry::SetSignalHandlers () - to avoid deadlock</li>
+				<li>no arg overload of Platform::POSIX::ScopedBlockCurrentThreadSignal CTOR (all signals) and used that in Execution/SignalHandlers - so no signals on the thread adding/removing cached signal handler callbacks</li>
+			</ul>
+		</li>
+		<li>Thread::Status now usses DefaultNames<> and supports ToString()</li>
 	</ul>
 </td>
 </tr>
