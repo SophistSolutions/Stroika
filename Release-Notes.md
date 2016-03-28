@@ -23,8 +23,6 @@ History
 <td>
 	<ul>
 		<!--up to date as of 2016-03-28 @ 1pm -->
-		<li>Tweak tolerances on performance regtests to hopefully pass on AWS vms</li>
-		<li>Cleanup BlockingQueue test and added example docs</li>
 		<li>
 			Finally/mkFinally
 			<ul>
@@ -40,7 +38,9 @@ History
 				<li>no arg overload of Platform::POSIX::ScopedBlockCurrentThreadSignal CTOR (all signals) and used that in Execution/SignalHandlers - so no signals on the thread adding/removing cached signal handler callbacks</li>
 			</ul>
 		</li>
-		<li>Thread::Status now usses DefaultNames<> and supports ToString()</li>
+		<li>Cleanup BlockingQueue test and added example docs</li>
+		<li>Thread::Status now uses DefaultNames<> and supports ToString()</li>
+		<li>Tweak tolerances on performance regtests to hopefully pass on AWS vms</li>
 	</ul>
 </td>
 </tr>
