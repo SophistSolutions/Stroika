@@ -88,6 +88,8 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Thread is a (unsynchonized) smart pointer referencing a (synchonized) std::thread object, with special feautres, including cancelation
+             *
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
              *  Stroika threads add a number of very useful features to std::threads:
@@ -399,8 +401,9 @@ namespace   Stroika {
                 nonvirtual  void    WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
 
-
             public:
+                /**
+                 */
                 enum    class   Priority {
                     eLowest,
                     eBelowNormal,
@@ -418,7 +421,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    SetThreadPriority (Priority priority = Priority::eNormal);
 
-
 #if     qPlatform_POSIX
             public:
                 static  SignalID        GetSignalUsedForThreadAbort ();
@@ -427,8 +429,10 @@ namespace   Stroika {
                 static  SignalID        sSignalUsedForThreadAbort_;
 #endif
 
-
             public:
+                /**
+                 *  Configuration::DefaultNames<> is defined for this enumeraiton.
+                 */
                 enum    class   Status : uint8_t {
                     eNull,              // null thread object
                     eNotYetRunning,     // created, but start not yet called
@@ -461,7 +465,7 @@ namespace   Stroika {
                 nonvirtual  Status  GetStatus_ () const noexcept;
 
             public:
-                /*
+                /**
                  *  Return true iff WaitForDone () would return immediately
                  *  @todo DOCUMENT RELATIONSHIP WITH GETSTATUS
                  */
@@ -489,7 +493,6 @@ namespace   Stroika {
                  *  @see GetThreadName ();
                  */
                 nonvirtual  void    SetThreadName (const Characters::String& threadName);
-
 
             public:
                 /**
