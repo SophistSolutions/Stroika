@@ -148,7 +148,7 @@ namespace {
         virtual void  MainLoop (const std::function<void()>& startedCB) override
         {
 
-            Execution::Finally cleanup ([this] () {
+            auto&& cleanup  =   Execution::mkFinally ([this] () {
                 /*
                  *  Now - we can shutdown any subsidiary threads, and exit
                  */
@@ -272,7 +272,7 @@ int     main (int argc, const char* argv[])
      *  Setup Logging to the OS logging facility.
      */
 #if     qUseLogger
-    Execution::Finally cleanup ([] () {
+    auto&& cleanup  =   Execution::mkFinally ([] () {
         Logger::ShutdownSingleton ();       // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if     qHas_Syslog
