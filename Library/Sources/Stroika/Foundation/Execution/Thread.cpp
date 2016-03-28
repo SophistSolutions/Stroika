@@ -819,7 +819,9 @@ Characters::String  Thread::ToString () const
     StringBuilder sb;
     sb += L"Thread {";
     sb += L"id: " + FormatThreadID (GetID ()) + L", ";
-    sb += L"name: '" + GetThreadName () + L"', ";
+    if (fRep_ != nullptr) {
+        sb += L"name: '" + GetThreadName () + L"', ";
+    }
     sb += L"status: " + Characters::ToString (GetStatus ());
     sb += L"}";
     return sb.str ();

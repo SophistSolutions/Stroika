@@ -477,6 +477,8 @@ namespace   Stroika {
                  *  to some naming convention.
                  *
                  *  These names should not be counted on for program logic.
+                 *
+                 *  Thread names appear frequently in debug trace messages.
                  */
                 nonvirtual  Characters::String GetThreadName () const;
 
