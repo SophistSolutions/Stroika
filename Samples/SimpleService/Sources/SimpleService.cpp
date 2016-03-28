@@ -51,6 +51,7 @@ using   namespace Stroika::Frameworks::Service;
 
 using   Containers::Sequence;
 using   Characters::String_Constant;
+using   Execution::SignalHandler;
 using   Execution::SignalHandlerRegistry;
 using   Execution::Thread;
 
@@ -250,7 +251,7 @@ int     main (int argc, const char* argv[])
     /*
      *  Setup basic (optional) error handling.
      */
-#if qPlatform_Windows
+#if     qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
     Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
@@ -259,7 +260,7 @@ int     main (int argc, const char* argv[])
     /*
      *  SetStandardCrashHandlerSignals not really needed, but helpful for many applications so you get a decent log message/debugging on crash.
      */
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (_FatalSignalHandler_);
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler { _FatalSignalHandler_, SignalHandler::Type::eDirect });
 
     /*
      *  Ignore SIGPIPE is common practice/helpful in POSIX, but not required by the service manager.
