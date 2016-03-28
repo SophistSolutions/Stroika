@@ -2274,11 +2274,10 @@ SkipCmdLine_:
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
-                    auto&& cleanup  =   Execution::mkFinally ([processToken] ()
-                    {
+                    auto&& cleanup  =   Execution::mkFinally ([processToken] () {
                         Verify (::CloseHandle (processToken));
                     }
-                                               );
+                                                             );
                     DWORD       nlen {};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
