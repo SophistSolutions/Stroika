@@ -265,7 +265,7 @@ namespace   Stroika {
                  *
                  *  \note   These are currently (mostly) unused? Not sure why we have this?
                  */
-                static  Containers::Set<SignalID>    GetStandardTerminationSignals ();
+                static  Containers::Set<SignalID>    _Deprecated_("not sure what this is for - and dont think used") GetStandardTerminationSignals ();
 
             public:
                 /**
@@ -275,8 +275,18 @@ namespace   Stroika {
                  *  The only exception is SIGABRT will be intentionally ignored from this call because it prevents abort()
                  *  from functioning properly. We COULD disable SIGABRT upon receipt of that signal (SIG_DFL) but that
                  *  would be different than other signals handled, raise re-entrancy issues etc. Didn't seem worth while.
+                 *
+                 *  \note   By default these are created as 'unsafe' signal handlers, meaning that they are run
+                 *          on the thread that triggered the error. This is mostly because we (currently) have no other
+                 *          way to capture what thread we were running on at that point.
+                 *
+                 *          This is bad, because we could deadlock in handling the crash. But realistically, we were crashing
+                 *          anyhow, so the better stack trace maybe worth it.
+                 *
+                 *          @todo we may want to come up with some way to capture / pass along extra info to handlers, like
+                 *          the thread which recieved the signal. But for now...
                  */
-                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
+                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = SignalHandler { DefaultCrashSignalHandler, SignalHandler::Type::eDirect }, const Containers::Set<SignalID>& forSignals = GetStandardCrashSignals ());
 
             private:
                 Synchronized<Containers::Mapping<SignalID, Containers::Set<SignalHandler>>>   fDirectHandlers_;
