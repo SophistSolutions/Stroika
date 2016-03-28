@@ -45,6 +45,7 @@ namespace   Stroika {
              *              Thread::SuppressInterruptionInContext suppressThreadInterupts;
              *          in the function body
              */
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"[-Wdeprecated-declarations\"");
             class   _Deprecated_("Finally NOW DEPRECATED - USE mkFinally (soon to be replaced with again Finally, but now function)") Finally {
             public:
                 Finally (const function<void()>& cleanupCodeBlock);
@@ -62,6 +63,7 @@ namespace   Stroika {
             private:
                 function<void()> fCleanupCodeBlock_;
             };
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"[-Wdeprecated-declarations\"");
 
 
             /**
