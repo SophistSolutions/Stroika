@@ -30,6 +30,19 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
     : fRestoreMask_ ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals all signals");
+#endif
+    sigset_t    mySet;
+    Verify (::sigemptyset (&mySet) == 0);
+    Verify (::sigfillset (&mySet) == 0);
+    Verify (::sigemptyset (&fRestoreMask_) == 0);           // Unclear if this emptyset call is needed?
+    Verify (::pthread_sigmask (SIG_BLOCK, &mySet, &fRestoreMask_) == 0);
+}
+
+ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
+    : fRestoreMask_ ()
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
 #endif
     sigset_t    mySet;

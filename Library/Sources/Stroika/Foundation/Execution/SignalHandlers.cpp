@@ -389,7 +389,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
             // Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
 #if     qPlatform_POSIX
             // Can easily deadlock if we try to access this lock while recieving the signal
-            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (signal);
+            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockAllSignals2ThisThread {};
 #endif
 Again:
             auto&&   cleanup    =   mkFinally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
