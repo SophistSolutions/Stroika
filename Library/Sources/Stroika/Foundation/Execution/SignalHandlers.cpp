@@ -17,6 +17,10 @@
 #include    "Common.h"
 #include    "Thread.h"
 
+#if     qPlatform_POSIX
+#include    "SignalHandlers.h"
+#endif
+
 #include    "SignalHandlers.h"
 
 
@@ -383,6 +387,10 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         }
         {
             // Poor man's interlock/mutex, which avoids any memory allocation/stdc++ locks
+#if     qPlatform_POSIX
+            // Can easily deadlock if we try to access this lock while recieving the signal
+            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (signal);
+#endif
 Again:
             auto&&   cleanup    =   mkFinally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
             if (fDirectSignalHandlersCache_Lock_++ == 0) {
