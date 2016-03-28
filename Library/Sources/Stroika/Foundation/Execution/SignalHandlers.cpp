@@ -18,7 +18,7 @@
 #include    "Thread.h"
 
 #if     qPlatform_POSIX
-#include    "SignalHandlers.h"
+#include    "Platform/POSIX/SignalBlock.h"
 #endif
 
 #include    "SignalHandlers.h"
