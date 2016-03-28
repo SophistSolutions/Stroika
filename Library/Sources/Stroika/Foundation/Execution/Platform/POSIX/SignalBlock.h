@@ -32,7 +32,10 @@ namespace   Stroika {
 
 
                     /**
-                     * For the lifetime of this object - save the initial signal block state for the given signal, and then block the given signal.
+                     *  For the lifetime of this object - save the initial signal block state for the given signal, and then block the given signal.
+                     *
+                     *  This is similar to sigblock/sigprocmask to resture (in DTOR), but only applying to the current thread,
+                     *  and it takes a signal as argument, not a set/mask.
                      */
                     class   ScopedBlockCurrentThreadSignal {
                     public:
