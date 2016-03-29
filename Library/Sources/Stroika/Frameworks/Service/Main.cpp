@@ -706,7 +706,6 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::_GetState");
-    DbgTrace ("(timeout = %f)", timeout);
 #endif
     // @todo - maybe not qutie right - but a good approx ... review...
     if (_GetServicePID () > 0) {
