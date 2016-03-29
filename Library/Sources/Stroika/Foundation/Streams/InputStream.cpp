@@ -130,7 +130,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
         }
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Returning %u characters", result.GetLength ());
+    DbgTrace (L"Returning %llu characters", static_cast<unsigned long long> (result.GetLength ()));
 #endif
     return result.str ();
 }
@@ -142,7 +142,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"InputStream<Byte>::ReadAll");
-    DbgTrace (L"(upTo: %u)", upTo);
+    DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
 #endif
     vector<Byte>    r;      // @todo Consider using SmallStackBuffer<>
     if (IsSeekable ()) {
