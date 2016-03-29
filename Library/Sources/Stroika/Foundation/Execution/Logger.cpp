@@ -111,12 +111,12 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("Logger::Rep_::FlushDupsWarning_");
 #endif
+        shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (appender internally threadsafe)
         auto    lastMsgLocked = fLastMsg_.GetReference ();
         if (lastMsgLocked->fRepeatCount_ > 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"fLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
 #endif
-            shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (appender internally threadsafe)
             if (tmp != nullptr) {
                 if (lastMsgLocked->fRepeatCount_ == 1) {
                     tmp->Log (lastMsgLocked->fLastMsgSent_.first, lastMsgLocked->fLastMsgSent_.second);
@@ -266,7 +266,7 @@ void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
 void    Logger::Log_ (Priority logLevel, const String& msg)
 {
     AssertNotNull (fRep_);
-    shared_ptr<IAppenderRep> tmp =   fRep_->fAppender_;   // avoid races and critical sections (between check and invoke)
+    shared_ptr<IAppenderRep> tmp =   fRep_->fAppender_;   // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_->IsPresent ()) {
