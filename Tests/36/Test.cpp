@@ -296,11 +296,11 @@ namespace {
                               };
                 reader.Start ();
                 adder.Start ();
-                Execution::Finally cleanup { [reader, adder] () mutable {
-                        reader.AbortAndWaitForDone ();
-                        adder.AbortAndWaitForDone ();
-                    }
-                };
+                auto&& cleanup  =   Execution::mkFinally ([reader, adder] () mutable {
+                    reader.AbortAndWaitForDone ();
+                    adder.AbortAndWaitForDone ();
+                }
+                                                         );
                 // wait long time cuz of debuggers (esp valgrind) etc
                 adder.WaitForDone (15 * 60);
                 reader.WaitForDone (15 * 60);
