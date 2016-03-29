@@ -17,8 +17,10 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Add reserve() method.
+ *
  *      @todo   Support more flexible CTOR - like SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
-*               using different SIZE value. At same time - same for operator=
+ *              using different SIZE value. At same time - same for operator=
  *
  *  Long-Term TOD:
  *      @todo   Support non-POD type 'T' values properly.

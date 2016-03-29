@@ -80,13 +80,13 @@ namespace   Stroika {
                 , fPointer_ (fBuffer_)
             {
 #if     qDebug
-                memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
-                memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+                ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+                ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
 #if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
-                static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
-                static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
-                static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
+                static_assert (std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
+                static_assert (std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
+                static_assert (std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 #endif
                 GrowToSize (nElements);
 #if     qDebug
@@ -105,8 +105,8 @@ namespace   Stroika {
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 #endif
 #if     qDebug
-                memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
-                memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
+                ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
+                ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
                 GrowToSize (from.fSize_);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -224,8 +224,8 @@ namespace   Stroika {
             template    <typename   T, size_t BUF_SIZE>
             void    SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ ()
             {
-                Assert (memcmp (kGuard1_, fGuard1_, sizeof (kGuard1_)) == 0);
-                Assert (memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);
+                Assert (::memcmp (kGuard1_, fGuard1_, sizeof (kGuard1_)) == 0);
+                Assert (::memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);
             }
 #endif
 
