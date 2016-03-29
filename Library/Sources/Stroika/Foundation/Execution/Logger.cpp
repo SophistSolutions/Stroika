@@ -92,7 +92,9 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     bool                                                                    fBufferingEnabled_              { false };
     Synchronized<IAppenderRepPtr>                                           fAppender_;
     BlockingQueue<pair<Logger::Priority, String>>                           fOutMsgQ_;
-    bool                                                                    fOutQMaybeNeedsFlush_           { true };       // slight optimization of not using buffering
+    // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
+    // race at end of Flush_()
+    bool                                                                    fOutQMaybeNeedsFlush_           { true };       // slight optimization when using buffering
     Synchronized<Memory::Optional<DurationSecondsType>>                     fSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
