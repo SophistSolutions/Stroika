@@ -41,6 +41,9 @@ namespace   Stroika {
             public:
                 nonvirtual  Thread::NativeHandleType    GetNativeHandle ();
 
+            public:
+                nonvirtual  Characters::String  ToString () const;
+
             private:
                 nonvirtual  void    Run_ ();
 

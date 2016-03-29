@@ -473,8 +473,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \req GetStatus () != Status::eNull
-                 *
                  *  Thread name does NOT need to be unique and defaults to '', but can be used on advisory
                  *  basis for debugging. Also - setting the thread name, and then getting it back, may not
                  *  produce the same result. Some OSes may munge the name to make it unique, or conform

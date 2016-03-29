@@ -383,6 +383,17 @@ void    Thread::Rep_::Run_ ()
     }
 }
 
+Characters::String  Thread::Rep_::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"id: " + FormatThreadID (GetID ()) + L", ";
+    sb += L"name: '" + fThreadName_ + L"', ";
+    sb += L"status: " + Characters::ToString (fStatus_);
+    sb += L"}";
+    return sb.str ();
+}
+
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 {
     RequireNotNull (thisThreadRep);
@@ -476,7 +487,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 
             Assert (thisThreadID == incRefCnt->GetID ());   // By NOW we know this is OK
 
-            DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread: %s", incRefCnt->ToString ().c_str ());
             bool    doRun   =   false;
             {
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
@@ -487,7 +498,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             if (doRun) {
                 incRefCnt->Run_ ();
             }
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread: %s", incRefCnt->ToString ().c_str ());
             {
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
@@ -495,7 +506,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         }
         catch (const InterruptException&) {
             SuppressInterruptionInContext   suppressCtx;
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread = %s", FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: %s", incRefCnt->ToString ().c_str ());
             incRefCnt->fStatus_ = Status::eCompleted;
             incRefCnt->fThreadDone_.Set ();
         }
@@ -509,7 +520,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 s_Interrupting_ = false;
             }
 #endif
-            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             {
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
@@ -769,8 +780,12 @@ void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 
 String Thread::GetThreadName () const
 {
-    Require (GetStatus () != Status::eNull);
-    return fRep_->fThreadName_;
+    if (fRep_ == nullptr) {
+        return String {};
+    }
+    else {
+        return fRep_->fThreadName_;
+    }
 }
 
 void    Thread::SetThreadName (const String& threadName)
@@ -816,15 +831,12 @@ void    Thread::SetThreadName (const String& threadName)
 
 Characters::String  Thread::ToString () const
 {
-    StringBuilder sb;
-    sb += L"Thread {";
-    sb += L"id: " + FormatThreadID (GetID ()) + L", ";
-    if (fRep_ != nullptr) {
-        sb += L"name: '" + GetThreadName () + L"', ";
+    if (fRep_ == nullptr) {
+        return L"nullptr";
     }
-    sb += L"status: " + Characters::ToString (GetStatus ());
-    sb += L"}";
-    return sb.str ();
+    else {
+        return fRep_->ToString ();
+    }
 }
 
 void    Thread::Start ()
