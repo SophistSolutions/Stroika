@@ -1393,7 +1393,7 @@ namespace {
         VerifyTestResult (ToString (1.0).StartsWith (L"1"));
         VerifyTestResult (ToString (L"abc") == L"abc");
         VerifyTestResult (ToString (String (L"abc")) == L"abc");
-        VerifyTestResult (ToString (initializer_list<int> { 3, 4, 5 }) == L"{ 3, 4, 5 }");
+        VerifyTestResult (ToString (initializer_list<int> { 3, 4, 5 }) == L"[ 3, 4, 5 ]");
         {
             const   Byte    kSample_[] = { 0x34, 0x55, 0x1f };
             Memory::BLOB b { begin (kSample_), end (kSample_) };
