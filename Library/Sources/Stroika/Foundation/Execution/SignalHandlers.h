@@ -112,6 +112,11 @@ namespace   Stroika {
                 nonvirtual  void operator () (SignalID i) const;
 
             public:
+                /**
+                 */
+                nonvirtual  Characters::String  ToString () const;
+
+            public:
                 nonvirtual  bool operator== (const SignalHandler& rhs) const;
                 nonvirtual  bool operator!= (const SignalHandler& rhs) const;
                 nonvirtual  bool operator< (const SignalHandler& rhs) const;

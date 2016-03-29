@@ -6,7 +6,10 @@
 #include    <condition_variable>
 #include    <mutex>
 
+#include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
+#include    "../Characters/StringBuilder.h"
+#include    "../Characters/ToString.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/BackTrace.h"
 #include    "../Debug/Trace.h"
@@ -65,6 +68,30 @@ using   Time::DurationSecondsType;
 #ifndef qConditionVariableSetSafeFromSignalHandler_
 #define qConditionVariableSetSafeFromSignalHandler_ 1
 #endif
+
+
+
+/*
+ ********************************************************************************
+ *************************** Execution::SignalHandler ***************************
+ ********************************************************************************
+ */
+Characters::String  SignalHandler::ToString () const
+{
+    Characters::StringBuilder sb;
+    sb += L"{";
+    // @todo DefaultNames support
+    if (GetType () == Type::eDirect) {
+        sb += L"type: Direct, ";
+    }
+    else {
+        sb += L"type: Safe, ";
+    }
+    // rough guess what to print...
+    sb += L"function: " + Characters::Format (L"%x", reinterpret_cast<const void*> (static_cast<function<void(SignalID)>> (fCall_).target<void(SignalID)> ()));
+    sb += L"}";
+    return sb.str ();
+}
 
 
 
@@ -329,7 +356,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler
 void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
-    DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
+    DbgTrace (L"(signal: %s, handlers: %s, ....)", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
 
     Set<SignalHandler>  directHandlers;
     Set<SignalHandler>  safeHandlers;
