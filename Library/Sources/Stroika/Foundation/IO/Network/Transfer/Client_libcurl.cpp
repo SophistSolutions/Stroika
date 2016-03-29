@@ -123,7 +123,7 @@ private:
 namespace   {
     wstring mkExceptMsg_ (LibCurlException::CURLcode ccode)
     {
-        return String::FromUTF8 (curl_easy_strerror (static_cast<CURLcode> (ccode))).As<wstring> ();
+        return String::FromUTF8 (::curl_easy_strerror (static_cast<CURLcode> (ccode))).As<wstring> ();
     }
 }
 
@@ -163,10 +163,10 @@ void    LibCurlException::ThrowIfError (CURLcode status)
 Connection_LibCurl::Rep_::~Rep_ ()
 {
     if (fCurlHandle_ != nullptr) {
-        curl_easy_cleanup (fCurlHandle_);
+        ::curl_easy_cleanup (fCurlHandle_);
     }
     if (fSavedHeaders_ != nullptr) {
-        curl_slist_free_all (fSavedHeaders_);
+        ::curl_slist_free_all (fSavedHeaders_);
         fSavedHeaders_ = nullptr;
     }
 }
@@ -219,8 +219,8 @@ size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size
     Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_");
 #endif
     size_t  bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
-    bytes2Copy = min (bytes2Copy, bufSize);
-    memcpy (buffer, Traversal::Iterator2Pointer (begin (fUploadData_)) +  fUploadDataCursor_, bytes2Copy);
+    bytes2Copy = std::min (bytes2Copy, bufSize);
+    ::memcpy (buffer, Traversal::Iterator2Pointer (begin (fUploadData_)) + fUploadDataCursor_, bytes2Copy);
     fUploadDataCursor_ += bytes2Copy;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"bufSize = %d, bytes2Copy=%d", bufSize, bytes2Copy);
@@ -335,17 +335,17 @@ Response    Connection_LibCurl::Rep_::Send (const Request& request)
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH    =   nullptr;
     for (auto i : overrideHeaders) {
-        tmpH = curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
+        tmpH = ::curl_slist_append (tmpH, (i.fKey + String_Constant (L": ") + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));
     if (fSavedHeaders_ != nullptr) {
-        curl_slist_free_all (fSavedHeaders_);
+        ::curl_slist_free_all (fSavedHeaders_);
         fSavedHeaders_ = nullptr;
     }
     fSavedHeaders_ = tmpH;
 
-    LibCurlException::ThrowIfError (:: curl_easy_perform (fCurlHandle_));
+    LibCurlException::ThrowIfError (::curl_easy_perform (fCurlHandle_));
 
     long    resultCode  =   0;
     LibCurlException::ThrowIfError (::curl_easy_getinfo (fCurlHandle_, CURLINFO_RESPONSE_CODE, &resultCode));
