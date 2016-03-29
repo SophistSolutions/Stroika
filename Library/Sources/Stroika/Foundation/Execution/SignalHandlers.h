@@ -270,7 +270,7 @@ namespace   Stroika {
                  *
                  *  \note   These are currently (mostly) unused? Not sure why we have this?
                  */
-                static  Containers::Set<SignalID>    _Deprecated_("not sure what this is for - and dont think used") GetStandardTerminationSignals ();
+                _Deprecated_("not sure what this is for - and dont think used") static  Containers::Set<SignalID>   GetStandardTerminationSignals ();
 
             public:
                 /**
