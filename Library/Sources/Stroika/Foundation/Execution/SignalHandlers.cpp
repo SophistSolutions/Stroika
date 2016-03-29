@@ -154,11 +154,14 @@ public:
                     // @todo - verify std::condition_variable (not sure that is safe in signal handler)
                     // THis is probably OK for now
                     unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-                    fRecievedSig_.wait_for (lk, std::chrono::seconds(100), [this]() {return fWorkAvailable_.load ();});
+                    fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() {return fWorkAvailable_.load ();});
 #else
                     constexpr   DurationSecondsType kLongCheck_  { 1.0f };
                     constexpr   DurationSecondsType kQuickCheck_  { 0.1f };
                     fChangedRecheckTime_.WaitQuietly (fHandlers_->empty () ? kLongCheck_ : kQuickCheck_);   // HACK til we can do condition variable SET from signal handler
+#endif
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
 #endif
                     if (fLastSignalRecieved_ < NSIG) {
 Again:
