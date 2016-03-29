@@ -562,7 +562,8 @@ namespace   Stroika {
              *  from a destructor.
              *
              *  Any blocked Interrupt Exceptions will wait til the next cancelation point to be invoked (so call
-             *  CheckForThreadInterruption to force that).
+             *  CheckForThreadInterruption to force that). The destructor of this suppress (even when count hits zero)
+             *  will not throw.
              */
             class   Thread::SuppressInterruptionInContext {
             public:
