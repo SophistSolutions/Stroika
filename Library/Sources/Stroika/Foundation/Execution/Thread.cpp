@@ -388,8 +388,10 @@ Characters::String  Thread::Rep_::ToString () const
     StringBuilder sb;
     sb += L"{";
     sb += L"id: " + FormatThreadID (GetID ()) + L", ";
-    sb += L"name: '" + fThreadName_ + L"', ";
-    sb += L"status: " + Characters::ToString (fStatus_);
+    if (not fThreadName_.empty ()) {
+        sb += L"name: '" + fThreadName_ + L"', ";
+    }
+    sb += L"status: " + Characters::ToString (fStatus_.load ());
     sb += L"}";
     return sb.str ();
 }
