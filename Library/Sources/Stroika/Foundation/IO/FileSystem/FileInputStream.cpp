@@ -134,7 +134,7 @@ public:
     }
     virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
-        using namespace Streams;
+        using   namespace Streams;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::SeekRead");
         DbgTrace (L"(whence: %d, offset: %lld)", whence, static_cast<long long> (offset));

@@ -238,11 +238,17 @@ Optional<VariantValue>  OptionsFile::Read ()
     try {
         Optional<VariantValue>  r   =   fReader_.Read (MemoryStream<Byte> (ReadRaw ()));
         if (r.IsPresent ()) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
+#endif
             r = fModuleDataUpgrader_ (fModuleNameToFileVersionMapper_ (fModuleName_), *r);
         }
         return r;
     }
     catch (...) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"exception");
+#endif
         // @todo - check different exception cases and for some - like file not found - just no warning...
         fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ ()));
         return Optional<VariantValue> ();

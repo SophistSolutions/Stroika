@@ -106,7 +106,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"InputStream<Character>::ReadAll");
-    DbgTrace (L"(upTo: %u)", upTo);
+    DbgTrace (L"(upTo: %llu)", static_cast<unsigned long long> (upTo));
 #endif
     Characters::StringBuilder result;
     size_t  nEltsLeft = upTo;
@@ -156,13 +156,13 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         size_t sb = static_cast<size_t> (size);
         sb = min (sb, upTo);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Seekable case: expectedSize = %u, reserving %u", size, sb);
+        DbgTrace ("Seekable case: expectedSize = %llu, reserving %llu", static_cast<unsigned long long> (size), static_cast<unsigned long long> (sb));
 #endif
         r.reserve (sb);
     }
     for (size_t nEltsLeft = upTo; nEltsLeft != 0; ) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("nEltsLeft=%u", nEltsLeft);
+        DbgTrace ("nEltsLeft=%llu", static_cast<unsigned long long> (nEltsLeft));
 #endif
         Byte            buf[64 * 1024];
         Byte*           s           =   std::begin (buf);
@@ -188,7 +188,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         }
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("returning %u bytes", r.size ());
+    DbgTrace ("returning %llu bytes", static_cast<unsigned long long> (r.size ()));
 #endif
     return BLOB (r);
 }
