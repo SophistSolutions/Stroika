@@ -115,7 +115,7 @@ Characters::String  SignalHandler::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    sb += L"type: " + Characters::ToString (GetType ());
+    sb += L"type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
     sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (static_cast<function<void(SignalID)>> (fCall_).target<void(SignalID)> ()));
     sb += L"}";
@@ -385,7 +385,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler
 void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers");
-    DbgTrace (L"(signal: %s, handlers: %s, ....)", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
+    DbgTrace (L"(signal: %s, handlers: %s)", SignalToName (signal).c_str (), Characters::ToString (handlers).c_str ());
 
     Set<SignalHandler>  directHandlers;
     Set<SignalHandler>  safeHandlers;
@@ -402,9 +402,6 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         }
     });
     Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"n-Direct-Handlers=%d, nSafeHandlers=%d", directHandlers.size (), safeHandlers.size ());
-#endif
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
 
