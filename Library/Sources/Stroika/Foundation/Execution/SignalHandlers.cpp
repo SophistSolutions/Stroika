@@ -118,12 +118,15 @@ Characters::String  SignalHandler::ToString () const
     sb += L"type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
     Function<void(SignalID)>::STDFUNCTION   stdFuncTarget = static_cast<Function<void(SignalID)>::STDFUNCTION> (fCall_);
-    sb += L"target-type: " + Characters::String::FromNarrowSDKString (stdFuncTarget.target_type ().name ()) + L", ";
     if (stdFuncTarget.target_type () == typeid (void(SignalID))) {
         sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<void(SignalID)> ()));
     }
     else if (stdFuncTarget.target_type () == typeid (Function<void(SignalID)>)) {
         sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (stdFuncTarget.target<Function<void(SignalID)>> ()));
+    }
+    else {
+        // type only/mainly interesting if not one of the above so we're printing nullptr
+        sb += L"target-type: " + Characters::String::FromNarrowSDKString (stdFuncTarget.target_type ().name ());
     }
     sb += L"}";
     return sb.str ();
