@@ -74,7 +74,7 @@ namespace   Stroika {
              *          the start of main (), and doesnt require the complicated inter-depependency managment of the
              *          @ModuleInit code.
              */
-            template <typename T>
+            template    <typename T>
             class   SharedStaticData {
             public:
                 /**

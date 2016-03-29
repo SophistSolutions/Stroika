@@ -18,6 +18,12 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            namespace Private_ {
+                // hack to avoid #include of Thread.h for Thread::SuppressInterruptionInContext
+                bool    SharedStaticData_DTORHelper_ (SpinLock* m, unsigned int* cu);
+            }
+
+
             /*
             ********************************************************************************
             ******************************** SharedStaticData<T> ***************************
@@ -45,22 +51,15 @@ namespace   Stroika {
                     sOnceObj_ = new T ();
                 }
             }
-
             template    <typename T>
             SharedStaticData<T>::~SharedStaticData ()
             {
-#if     qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (sMutex_);
-#else
-                auto    critSec { make_unique_lock (sMutex_) };
-#endif
-                --sCountUses_;
-                if (sCountUses_ == 0) {
+                if (Private_::SharedStaticData_DTORHelper_ (&sMutex_, &sCountUses_)) {
+                    Assert (sCountUses_ == 0);
                     delete sOnceObj_;
                     sOnceObj_ = nullptr;
                 }
             }
-
             template    <typename T>
             T&  SharedStaticData<T>::Get ()
             {
