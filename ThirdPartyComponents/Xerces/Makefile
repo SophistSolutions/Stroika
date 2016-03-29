@@ -50,11 +50,11 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
-CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+#CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 
 #NOT a good solution, but setting CFLAGS arg to configure causes grave disorder
-CC+=$(CFLAGS)
-CXX+=$(CFLAGS)
+#CC+=$(CFLAGS)
+#CXX+=$(CFLAGS)
 endif
 
 
