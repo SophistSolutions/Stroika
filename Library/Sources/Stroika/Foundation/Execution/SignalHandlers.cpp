@@ -71,6 +71,41 @@ using   Time::DurationSecondsType;
 
 
 
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+#if     qCompilerAndStdLib_constexpr_Buggy
+            template    <>
+            const EnumNames<Execution::SignalHandler::Type>   DefaultNames<Execution::SignalHandler::Type>::k
+#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
+                =
+#endif
+            {
+                EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer {
+                    {
+                        { Execution::SignalHandler::Type::eDirect, L"Direct" },
+                        { Execution::SignalHandler::Type::eSafe, L"Safe" },
+                    }
+                }
+            };
+#else
+            constexpr   EnumNames<Execution::SignalHandler::Type>    DefaultNames<Execution::SignalHandler::Type>::k;
+#endif
+        }
+    }
+}
+
+
+
+
+
 /*
  ********************************************************************************
  *************************** Execution::SignalHandler ***************************
@@ -80,13 +115,7 @@ Characters::String  SignalHandler::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
-    // @todo DefaultNames support
-    if (GetType () == Type::eDirect) {
-        sb += L"type: Direct, ";
-    }
-    else {
-        sb += L"type: Safe, ";
-    }
+    sb += L"type: " + Characters::ToString (GetType ());
     // rough guess what to print...
     sb += L"function: " + Characters::Format (L"%x", reinterpret_cast<const void*> (static_cast<function<void(SignalID)>> (fCall_).target<void(SignalID)> ()));
     sb += L"}";
