@@ -81,11 +81,18 @@ public:
 #else
             Execution::ThrowErrNoIfNegative (fFD_ = ::open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"opened fd: %d", fFD_);
+#endif
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER(fileName, FileAccessMode::eRead);
     }
     ~Rep_ ()
     {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::~Rep_");
+        DbgTrace (L"closing %d", fFD_);
+#endif
 #if     qPlatform_Windows
         ::_close (fFD_);
 #else
@@ -105,6 +112,10 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::Read");
+        DbgTrace (L"(nRequested: %llu)", static_cast<unsigned long long> (nRequested));
+#endif
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
 #if     qPlatform_Windows
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
@@ -124,6 +135,10 @@ public:
     virtual Streams::SeekOffsetType    SeekRead (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
     {
         using namespace Streams;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::SeekRead");
+        DbgTrace (L"(whence: %d, offset: %lld)", whence, static_cast<long long> (offset));
+#endif
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         switch (whence) {
             case    Whence::eFromStart: {
