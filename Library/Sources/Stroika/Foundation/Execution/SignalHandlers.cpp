@@ -117,6 +117,7 @@ Characters::String  SignalHandler::ToString () const
     sb += L"{";
     sb += L"type: " + Characters::ToString (GetType ()) + L", ";
     // rough guess what to print...
+    sb += L"target-type: " + Characters::String::FromNarrowSDKString (static_cast<function<void(SignalID)>> (fCall_).target_type ().name ()) + L", ";
     sb += L"target: " + Characters::Format (L"%p", reinterpret_cast<const void*> (static_cast<function<void(SignalID)>> (fCall_).target<void(SignalID)> ()));
     sb += L"}";
     return sb.str ();
