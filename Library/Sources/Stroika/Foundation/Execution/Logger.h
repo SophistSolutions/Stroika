@@ -79,7 +79,9 @@ namespace   Stroika {
              *  this is none.
              *
              *      To use the logger and actually get logging - pick a logger rep, and call
-             *  SetLoggingAppender ();
+             *  SetAppender ();
+             *
+             *  \note   It is legal to have no appender, in which case logging is silently suppressed.
              *
              *      This logging API CANNOT be used before main () has started, or after main () has completed
              *  (because this requires a call to setup a logger).
