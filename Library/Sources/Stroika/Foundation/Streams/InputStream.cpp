@@ -119,7 +119,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
         }
         size_t n = Read (s, e);
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n < NEltsOf (buf));
+        Assert (0 <= n and n <= NEltsOf (buf));
         if (n == 0) {
             break;
         }
@@ -173,7 +173,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         Assert (s < e);
         size_t          n           =   Read (s, e);
         Assert (0 <= n and n <= nEltsLeft);
-        Assert (0 <= n and n < NEltsOf (buf));
+        Assert (0 <= n and n <= NEltsOf (buf));
         if (n == 0) {
             break;
         }
