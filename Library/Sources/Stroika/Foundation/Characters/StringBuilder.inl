@@ -79,6 +79,11 @@ namespace   Stroika {
                 Append (s);
                 return *this;
             }
+            inline  StringBuilder&  StringBuilder::operator+= (const wstring& s)
+            {
+                Append (s);
+                return *this;
+            }
             inline  StringBuilder&  StringBuilder::operator+= (const String& s)
             {
                 Append (s);
@@ -87,6 +92,11 @@ namespace   Stroika {
             inline  StringBuilder&  StringBuilder::operator+= (const Character& c)
             {
                 Append (c);
+                return *this;
+            }
+            inline  StringBuilder&  StringBuilder::operator<< (const wstring& s)
+            {
+                Append (s);
                 return *this;
             }
             inline  StringBuilder&  StringBuilder::operator<< (const String& s)
