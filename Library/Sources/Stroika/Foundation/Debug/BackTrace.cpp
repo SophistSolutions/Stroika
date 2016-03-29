@@ -47,7 +47,7 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
         for (const char* p = syms[j]; *p != '\0'; ++p) {
             symStr += *p;
         }
-        out += symStr + Characters::GetEOL<wchar_t> ();
+        out += symStr + L";" + Characters::GetEOL<wchar_t> ();
     }
     return out;
 #else
