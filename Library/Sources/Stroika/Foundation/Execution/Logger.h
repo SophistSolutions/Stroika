@@ -213,7 +213,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      Log bufffering is DISABLED by default, since it has some cost. But if enabled, Log() calls
+                 *      Log bufffering is DISABLED by default, since it has some cost. But if enabled, Log () calls
                  *  queue an internal message, which another thread wakes up to write. This CAN be critical for performance
                  *  reasons, so the caller can freely log things, and not have their thread blocked.
                  *
@@ -223,11 +223,11 @@ namespace   Stroika {
                  *  \par Example Usage
                  *      \code
                  *              Log ("QUITTING");
-                 *              exit (0);
+                 *              _exit (0);
                  *      \endcode
                  *
-                 *      probably won't get logged. To avoid this issue, call SetBufferingEnabled(false) before quitting, or
-                 *      call Flush ();
+                 *      probably won't get logged. To avoid this issue, call myLogger.Shutdown () (@see ShutdownSingleton)
+                 *      before quitting, or call Flush ();
                  *
                  *      In one application (open-embedded arm linux) I saw a 3ms latency before I added this (2014-05-30).
                  */
