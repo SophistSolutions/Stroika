@@ -53,7 +53,7 @@ namespace   Stroika {
                 String  ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
                 {
                     StringBuilder sb;
-                    sb << L"{";
+                    sb << L"[";
                     bool didFirst { false };
                     for (auto i : t) {
                         if (didFirst) {
@@ -68,7 +68,7 @@ namespace   Stroika {
                     if (didFirst) {
                         sb << L" ";
                     }
-                    sb << L"}";
+                    sb << L"]";
                     return sb.str ();
                 }
 
