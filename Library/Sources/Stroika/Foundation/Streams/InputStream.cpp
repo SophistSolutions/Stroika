@@ -130,7 +130,7 @@ String InputStream<Character>::ReadAll (size_t upTo) const
         }
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Returning %d characters", result.GetLength ());
+    DbgTrace (L"Returning %u characters", result.GetLength ());
 #endif
     return result.str ();
 }
@@ -156,7 +156,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         size_t sb = static_cast<size_t> (size);
         sb = min (sb, upTo);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace ("Seekable case: expectedSize = %d, reserving %d", size, sb);
+        DbgTrace ("Seekable case: expectedSize = %u, reserving %u", size, sb);
 #endif
         r.reserve (sb);
     }
@@ -188,7 +188,7 @@ Memory::BLOB InputStream<Byte>::ReadAll (size_t upTo) const
         }
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("returning %d bytes", r.size ());
+    DbgTrace ("returning %u bytes", r.size ());
 #endif
     return BLOB (r);
 }
