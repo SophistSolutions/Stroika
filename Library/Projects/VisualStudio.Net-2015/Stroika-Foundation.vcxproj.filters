@@ -747,6 +747,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1778,6 +1781,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h">
+      <Filter>Sources\Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
