@@ -14,6 +14,7 @@
 #include    "Finally.h"
 #include    "ModuleInit.h"
 #include    "SpinLock.h"
+#include    "Thread.h"
 
 
 #if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
@@ -37,10 +38,6 @@ namespace   {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-
-
-            //redeclare to avoid having to #include Thread.h
-            void    CheckForThreadInterruption ();
 
 
             /*
@@ -142,7 +139,7 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                    Thread::SuppressInterruptionInContext suppressThreadInterupts;  // @todo fix so compiles w/o
+                    Thread::SuppressInterruptionInContext suppressThreadInterupts;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
@@ -206,7 +203,6 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                    // FIX SO COMPILES WITHOUT #include Thread.h
                     Thread::SuppressInterruptionInContext suppressThreadInterupts;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
