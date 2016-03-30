@@ -977,14 +977,14 @@ Main::State     Main::WindowsService::_GetState () const
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     auto&&  cleanup1 =  Execution::mkFinally (
-    [hSCM] () {
+    [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     auto&&  cleanup2 =  Execution::mkFinally (
-    [hService] () {
+    [hService] () noexcept {
         AssertNotNull (hService);
         ::CloseServiceHandle (hService);
     }

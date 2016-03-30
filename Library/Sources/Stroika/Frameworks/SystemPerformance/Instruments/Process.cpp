@@ -2274,7 +2274,7 @@ SkipCmdLine_:
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
-                    auto&& cleanup  =   Execution::mkFinally ([processToken] () {
+                    auto&& cleanup  =   Execution::mkFinally ([processToken] () noexcept {
                         Verify (::CloseHandle (processToken));
                     }
                                                              );
