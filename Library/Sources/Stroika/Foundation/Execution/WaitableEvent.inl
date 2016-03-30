@@ -140,8 +140,9 @@ namespace   Stroika {
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
-                auto&&  cleanup =   mkFinally (
+                auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
+                    Thread::SuppressInterruptionInContext suppressThreadInterupts;  // @todo fix so compiles w/o
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
@@ -203,8 +204,10 @@ namespace   Stroika {
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
-                auto&&  cleanup =   mkFinally (
+                auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
+                    // FIX SO COMPILES WITHOUT #include Thread.h
+                    Thread::SuppressInterruptionInContext suppressThreadInterupts;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else

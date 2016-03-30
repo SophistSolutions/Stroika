@@ -458,7 +458,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockAllSignals2ThisThread {};
 #endif
 Again:
-            auto&&   cleanup    =   mkFinally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
+            auto&&   cleanup    =   Finally ([this] () noexcept { fDirectSignalHandlersCache_Lock_--; });
             if (fDirectSignalHandlersCache_Lock_++ == 0) {
                 fDirectSignalHandlersCache_[signal] = shs;
             }
@@ -679,7 +679,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          */
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
 Again:
-        auto&&    cleanup   =   mkFinally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
+        auto&&    cleanup   =   Finally ([&SHR] () noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
         if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
             const   vector<function<void(SignalID)>>*  shs  =   &SHR.fDirectSignalHandlersCache_[signal];
             for (auto shi = shs->begin (); shi != shs->end (); ++shi) {

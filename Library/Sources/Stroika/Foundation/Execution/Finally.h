@@ -121,7 +121,7 @@ namespace   Stroika {
              *      auto&& cleanup  =   mkFinally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
              */
             template <typename FUNCTION>
-            auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;
+            auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;          /// DEPRECATED
             template <typename FUNCTION>
             auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
 

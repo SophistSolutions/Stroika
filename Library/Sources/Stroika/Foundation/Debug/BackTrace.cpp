@@ -40,7 +40,7 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
         //DbgTrace ("%d errno", errno); // perror("backtrace_symbols");
         return wstring {};
     }
-    auto&&      cleanup =   Execution::mkFinally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
+    auto&&      cleanup =   Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
     wstring     out;
     for (int j = 0; j < nptrs; j++) {
         wstring symStr;

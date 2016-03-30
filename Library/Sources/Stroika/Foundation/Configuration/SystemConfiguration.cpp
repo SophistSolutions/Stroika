@@ -350,7 +350,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *  need to fix this..????
              *      --LGP 2015-08-21
              */
-            auto&&  cleanup =   Execution::mkFinally ([] () noexcept { ::endutxent (); });
+            auto&&  cleanup =   Execution::Finally ([] () noexcept { ::endutxent (); });
             ::setutxent ();
             for (const utmpx* i = ::getutxent (); i != nullptr; i = ::getutxent ()) {
                 if (i->ut_type == BOOT_TIME) {

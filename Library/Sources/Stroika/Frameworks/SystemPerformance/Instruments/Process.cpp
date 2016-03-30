@@ -274,7 +274,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            auto&&  cleanup =   Execution::mkFinally ( [hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
+            auto&&  cleanup =   Execution::Finally ( [hThreadSnap] () noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32 {};
@@ -580,7 +580,7 @@ namespace {
                         DbgTrace ("Failed to open '%s' (errno %d) - probably innocuous", filename, errno);
                         continue;
                     }
-                    auto&&  cleanup =   Execution::mkFinally ([fd] () noexcept { Verify (::close (fd) == 0); });
+                    auto&&  cleanup =   Execution::Finally ([fd] () noexcept { Verify (::close (fd) == 0); });
                     int count = ::read (fd, &psInfo, sizeof (psInfo));
                     if (count != sizeof (psInfo)) {
                         DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
@@ -600,7 +600,7 @@ namespace {
                         isKernelThread = (psInfo.pr_ppid == 0); // default/good guess if we cannot open file
                     }
                     else {
-                        auto&&  cleanup =   Execution::mkFinally ([fd] () noexcept { Verify (::close (fd) == 0); } );
+                        auto&&  cleanup =   Execution::Finally ([fd] () noexcept { Verify (::close (fd) == 0); } );
                         int     count   =   ::read (fd, &psStatus, sizeof (psStatus));
                         if (count != sizeof (psStatus)) {
                             DbgTrace ("Odd size read returned for '%s' sz=%d, (errno %d) - skipping", filename, count, errno);
@@ -2035,7 +2035,7 @@ Again:
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        auto&&  cleanup =   Execution::mkFinally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); } );
+                        auto&&  cleanup =   Execution::Finally ([hProcess] () noexcept { Verify (::CloseHandle (hProcess)); } );
                         if (grabStaticData) {
                             Optional<String>    processName;
                             Optional<String>    processEXEPath;
@@ -2274,10 +2274,10 @@ SkipCmdLine_:
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
-                    auto&& cleanup  =   Execution::mkFinally ([processToken] () noexcept {
+                    auto&& cleanup  =   Execution::Finally ([processToken] () noexcept {
                         Verify (::CloseHandle (processToken));
                     }
-                                                             );
+                                                           );
                     DWORD       nlen {};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx

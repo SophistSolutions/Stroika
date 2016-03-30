@@ -2912,7 +2912,7 @@ public:
         }
         const char* password = nullptr;
         int     err     = unzOpenCurrentFilePassword (fZipFile_, password);
-        auto&&  cleanup =   Execution::mkFinally ([this] () noexcept { unzCloseCurrentFile (fZipFile_); });
+        auto&&  cleanup =   Execution::Finally ([this] () noexcept { unzCloseCurrentFile (fZipFile_); });
         Streams::MemoryStream<Byte> tmpBuf;
         do {
             Byte    buf [10 * 1024];

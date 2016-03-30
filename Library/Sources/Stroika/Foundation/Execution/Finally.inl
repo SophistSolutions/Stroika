@@ -56,8 +56,9 @@ namespace   Stroika {
             template <typename FUNCTION>
             FinallySentry<FUNCTION>::~FinallySentry ()
             {
-                // no need for IgnoreExceptionsForCall if we do static_assert??
-                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
+                // no need for IgnoreExceptionsForCall if we do static_assert?? Plus, since we assert no-except, it wont do any
+                // good using IgnoreExceptionsForCall () - as we would still std::terminate due to violation of noexcept rules
+                fCleanupCodeBlock_ ();
             }
 
 

@@ -403,7 +403,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     Require (not sKnownBadBeforeMainOrAfterMain_);
 
 #if     qDebug
-    auto&& cleanupCheckMain   =   mkFinally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+    auto&& cleanupCheckMain   =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
 #endif
 
     try {
@@ -426,7 +426,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
         }
-        auto&&  cleanup =   mkFinally (
+        auto&&  cleanup =   Finally (
         [thisThreadID] () noexcept {
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);

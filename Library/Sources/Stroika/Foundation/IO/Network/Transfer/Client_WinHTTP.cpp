@@ -381,7 +381,7 @@ RetryWithNoCERTCheck:
         DWORD          dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
-        auto&&  cleanup =   Execution::mkFinally (
+        auto&&  cleanup =   Execution::Finally (
         [certInfo] () noexcept {
             if (certInfo.lpszSubjectInfo != nullptr) {
                 ::LocalFree (certInfo.lpszSubjectInfo);

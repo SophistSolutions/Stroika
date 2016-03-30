@@ -482,7 +482,7 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                 CLOSE_ (jStderr[1]);
             }
 
-            auto&&  cleanup1    =   Execution::mkFinally (
+            auto&&  cleanup1    =   Execution::Finally (
             [&useSTDIN, &useSTDOUT, &useSTDERR] () noexcept {
                 if (useSTDIN >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
@@ -844,7 +844,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-    auto&&  cleanup =   mkFinally (
+    auto&&  cleanup =   Finally (
     [&processInfo] () noexcept {
         SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
@@ -977,7 +977,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     PROCESS_INFORMATION processInfo {};
     processInfo.hProcess = INVALID_HANDLE_VALUE;
     processInfo.hThread = INVALID_HANDLE_VALUE;
-    auto&&  cleanup =   mkFinally (
+    auto&&  cleanup =   Finally (
     [&processInfo] () noexcept {
         SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
         SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
