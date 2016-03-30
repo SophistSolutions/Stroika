@@ -428,6 +428,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         }
         auto&&  cleanup =   Finally (
         [thisThreadID] () noexcept {
+            Thread::SuppressInterruptionInContext suppressThreadInterupts;  // may not be needed, but safer/harmless
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
