@@ -184,12 +184,23 @@ namespace   Stroika {
                 public:
                     /**
                      *  @see RemoveDirectoryIf
+                     *
+                     *  Remove the given directory. The directory name can be a relative pathname, or absolute.
+                     *  This throws on failure (e.g. because the directory is not found).
+                     *
+                     *  In any case, this will fail if the directory is not removed.
                      */
                     nonvirtual  void        RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
 
                 public:
                     /**
                      *  @see RemoveDirectory
+                     *
+                     *  Remove the given directory. The directory name can be a relative pathname, or absolute.
+                     *  This throws on failure upon fail to delete (depending on the argument 'policy') - but will not fail,
+                     *  and will silently ignore, if the argument directory name is missing.
+                     *
+                     *  In any case, except that the directory was not there to begin with, this will fail if the directory is not removed.
                      */
                     nonvirtual  void        RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy = RemoveDirectoryPolicy::eFailIfNotEmpty);
 
