@@ -18,6 +18,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if 0
             /*
              ********************************************************************************
              ********************************* Execution::Finally ***************************
@@ -36,6 +37,7 @@ namespace   Stroika {
             {
                 IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
             }
+#endif
 
 
             /*
@@ -66,6 +68,17 @@ namespace   Stroika {
              */
             template <typename FUNCTION>
             inline  auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION> {
+                return { std::move (f) };
+            }
+
+
+            /*
+             ********************************************************************************
+             ******************************* Execution::Finally *****************************
+             ********************************************************************************
+             */
+            template <typename FUNCTION>
+            inline  auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION> {
                 return { std::move (f) };
             }
 

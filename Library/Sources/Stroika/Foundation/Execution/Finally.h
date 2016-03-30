@@ -16,6 +16,12 @@
  *  \file
  *
  *      Finally utility - to appoximate C++ try/finally support.
+ *
+ *  TODO:
+ *      @todo   COMPLETE RENAME mkFinally to Finally()
+ *
+ *      @todo   Consider adding optional param to Finally to use non-noexcept function, but auto-noexcept and/or maybe
+ *              alternatively, auto include context to suppress thread exceptions (since thats a common need)
  */
 
 
@@ -25,6 +31,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if 0
             /**
              *  This helpful utility to plug a missing feature from C++11 - to have a block of code run at the end
              *  of a scope - regardless of whether you use normal exit or exception based exit.
@@ -64,6 +71,7 @@ namespace   Stroika {
                 function<void()> fCleanupCodeBlock_;
             };
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#endif
 
 
             /**
@@ -114,6 +122,8 @@ namespace   Stroika {
              */
             template <typename FUNCTION>
             auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;
+            template <typename FUNCTION>
+            auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
 
 
         }
