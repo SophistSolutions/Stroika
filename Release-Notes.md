@@ -19,10 +19,9 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a136">v2.0a136x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a136">v2.0a136</a><br/>2016-03-29</td>
 <td>
 	<ul>
-		<!--up to date as of 2016-03-28 @ 1pm -->
 		<li>
 			Finally/mkFinally
 			<ul>
@@ -36,11 +35,40 @@ History
 				<li>Rewrote much SignalHanlder code so safer interlock if signals while updating signal handlers</li>
 				<li>use Platform::POSIX::ScopedBlockCurrentThreadSignal before attempting signal lock in SignalHandlerRegistry::SetSignalHandlers () - to avoid deadlock</li>
 				<li>no arg overload of Platform::POSIX::ScopedBlockCurrentThreadSignal CTOR (all signals) and used that in Execution/SignalHandlers - so no signals on the thread adding/removing cached signal handler callbacks</li>
+				<li>Deprecated GetStandardTerminationSignals</li>
+				<li>SetStandardCrashHandlerSignals (eDirect)</li>
+				<li>SignalHandler::ToString ()</li>
 			</ul>
 		</li>
+		<li>improved DBGTrace code for InputStream::ReadAll logic; Tightened some assertions; 
+		and fixed important bug (still not perfrect)  on InputStream<Byte>::ReadAll() seekable case;
+		simplified InputStream<Byte>::ReadAll ()</li>
 		<li>Cleanup BlockingQueue test and added example docs</li>
-		<li>Thread::Status now uses DefaultNames<> and supports ToString()</li>
+		<li>Thread::Status now uses DefaultNames<> and supports Thread::ToString(), and used more thoroughly inside DbgTraces inside Thread code</li>
 		<li>Tweak tolerances on performance regtests to hopefully pass on AWS VMs</li>
+		<li>more DbgTrace() calls - cleanups to track down AIX bug; more int-size sensative in printfs/DbgTrace Streams/InputStream</li>
+		<li>minor cleanup to ordering in logger threads to avoid possible deadlock</li>
+		<li>fixed missing StringBuilder operator +/&lt;&lt; overloads</li>
+		<li>add ; separators in Debug/BackTrace</li>
+		<li>make ToString for Iterables - use [ instead of {</li>
+		<li>fixed case where SharedStaticData&lt;T&gt;::~SharedStaticData () could throw (abort exception)</li>
+		<li>re-disable the CFLAGS attempted crap for xerces build (for aix) -didnt work there and broke other builds. Must improve Xerces autoconf!</li>
+		<li>added PerformanceDump-v2.0a136-x86-ReleaseU.txt and PerformanceDump-v2.0a136-linux-gcc-5.2.0-x64.txt</li>
+		<li>Tested (passed regtests) on 
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (release works fully, but DEBUG crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
