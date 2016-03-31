@@ -278,7 +278,7 @@ sub	SetDefaultForCompilerDriver_
 			}
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '5.3') {
 				#This is broken in gcc 5.2
-				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . "-Wno-odr"
+				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . " -Wno-odr"
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
@@ -329,7 +329,7 @@ sub	SetDefaultForCompilerDriver_
 
 		if (!("$^O" eq "aix")) {
 			#helpful to print stack traces in log (not critical, and has performance overhead)
-			$EXTRA_LINKER_ARGS .= "-rdynamic";
+			$EXTRA_LINKER_ARGS .= " -rdynamic";
 		}
 	}
 	elsif ($ApplyReleaseFlags == true) {
