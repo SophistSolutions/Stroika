@@ -188,8 +188,8 @@ namespace {
      *
      *          -- LGP 2006-10-17
      */
-    constexpr size_t    kPipeBufSize    =   256 * 1024;
-    constexpr size_t    kReadBufSize    =   32 * 1024;
+    constexpr   size_t    kPipeBufSize_     =   256 * 1024;
+    constexpr   size_t    kReadBufSize_     =   32 * 1024;
 }
 #endif
 
@@ -201,7 +201,7 @@ namespace {
     void    ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (HANDLE p, Streams::OutputStream<Byte> o)
     {
         RequireNotNull (p);
-        Byte    buf[kReadBufSize];
+        Byte    buf[kReadBufSize_];
 #if     qUsePeekNamedPipe
         DWORD   nBytesAvail {};
 #endif
@@ -616,9 +616,9 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                 Verify (::InitializeSecurityDescriptor (&sd, SECURITY_DESCRIPTOR_REVISION));
                 Verify (::SetSecurityDescriptorDacl (&sd, true, 0, false));
                 SECURITY_ATTRIBUTES sa  =   {   sizeof (SECURITY_ATTRIBUTES), &sd, true };
-                Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize));
-                Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize));
-                Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize));
+                Verify (::CreatePipe (&jStdin[1], &jStdin[0], &sa, kPipeBufSize_));
+                Verify (::CreatePipe (&jStdout[1], &jStdout[0], &sa, kPipeBufSize_));
+                Verify (::CreatePipe (&jStderr[1], &jStderr[0], &sa, kPipeBufSize_));
                 /*
                  *  Make sure the ends of the pipe WE hang onto are not inheritable, because otherwise the READ
                  *  wont return EOF (until the last one is closed).
@@ -789,7 +789,7 @@ DoneWithProcess:
                      *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                      */
                     if (not out.empty ()) {
-                        Byte    buf[kReadBufSize];
+                        Byte    buf[kReadBufSize_];
                         DWORD   nBytesRead  =   0;
                         while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
                             out.Write (buf, buf + nBytesRead);
