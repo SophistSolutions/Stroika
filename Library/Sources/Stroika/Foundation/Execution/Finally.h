@@ -18,8 +18,6 @@
  *      Finally utility - to appoximate C++ try/finally support.
  *
  *  TODO:
- *      @todo   COMPLETE RENAME mkFinally to Finally()
- *
  *      @todo   Consider checking noexcept (f), and avoiding the IgnoreExceptionsForCall
  *
  *      @todo   Consider adding optional parameter to auto include context to suppress thread exceptions (since thats a common need)
@@ -80,8 +78,12 @@ namespace   Stroika {
              *  \note   This automatically suppresses any expressions triggered in the argument function, but its usually best
              *          to pass in a noexcept lambda (future versions may be more efficient in that case).
              *
+             *  \note   Important parts of why this works: use auto so 'type' (size of struct for params) is dynamically calculated,
+             *          and on stack with no memory allocation/indirection; and NAMED rvalue-reference so that its lifetime
+             *          extends to the end of the scope in which its contained.
+             *
              *  EXMAPLE USGE:
-             *      auto&& cleanup  =   mkFinally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+             *      auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
              */
             template <typename FUNCTION>
             auto    Finally (FUNCTION f) -> FinallySentry<FUNCTION>;
