@@ -268,6 +268,24 @@ const   Thread::AbortException  Thread::AbortException::kThe;
 
 
 
+/*
+ ********************************************************************************
+ **************************** Characters::ToString ******************************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Characters {
+            template    <>
+            String  ToString (const thread::id& t)
+            {
+                return Execution::FormatThreadID (t);
+            }
+        }
+    }
+}
+
+
 
 /*
  ********************************************************************************
@@ -425,12 +443,18 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"sRunningThreads_ = %s", Characters::ToString (sRunningThreads_).c_str ());
+#endif
         }
         auto&&  cleanup =   Finally (
         [thisThreadID] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;  // may not be needed, but safer/harmless
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"sRunningThreads_ = %s", Characters::ToString (sRunningThreads_).c_str ());
+#endif
             DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
             Verify (sRunningThreads_.erase (thisThreadID) == 1);         // verify exactly one erased
         }

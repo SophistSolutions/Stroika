@@ -615,6 +615,16 @@ namespace   Stroika {
         }
     }
 }
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Characters {
+            template    <typename T>
+            String  ToString (const T& t);
+            template    <>
+            String  ToString (const thread::id& t);
+        }
+    }
+}
 
 
 
