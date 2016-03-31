@@ -240,12 +240,14 @@ Logger::~Logger ()
 
 void    Logger::ShutdownSingleton ()
 {
+    Debug::TraceContextBumper ctx ("Logger::ShutdownSingleton");
     // @todo Assure done before end of main?? Or try???
     sThe_.Shutdown ();
 }
 
 void    Logger::Shutdown ()
 {
+    Debug::TraceContextBumper ctx ("Logger::Shutdown");
     // @todo FIX to assure all shutdwon properly...
     // But this is OK for now pragmatically
     SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
@@ -313,6 +315,7 @@ void        Logger::SetBufferingEnabled (bool logBufferingEnabled)
 
 void        Logger::Flush ()
 {
+    Debug::TraceContextBumper ctx ("Logger::Flush");
     RequireNotNull (fRep_);
     fRep_->Flush_ ();
 }
