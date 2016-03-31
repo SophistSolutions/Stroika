@@ -89,7 +89,7 @@ namespace   Stroika {
 
             ///// DEPRECATED//////
             template <typename FUNCTION>
-            auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;          /// DEPRECATED
+            _Deprecated_("use Finally")	auto    mkFinally (FUNCTION f) -> FinallySentry<FUNCTION>;          /// DEPRECATED
 
 
         }
