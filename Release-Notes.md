@@ -17,7 +17,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a137">v2.0a137x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a137">v2.0a137</a><br/>2016-03-31</td>
 <td>
 	<ul>
 		<li>
@@ -31,12 +31,14 @@ History
 		</li>
 		<li>Thread::SuppressInterruptionInContext in one spot of Thread::ThreadMain_, and in a couple finally's in WaitableEvent</li>
 		<li>print BackTrace in Assert/Fatal and neaten report in signalhandler</li>
+		<li>added ToString (const thread::id& t); and ifdefed use of that to dump tostring of runnign threads</li>
 		<li>support for Visual Studio.net 2015 Update 2 - but it STILL fails on 64lib lib bug - looks like I may need to debug this</li>
 		<li>minor tweak (static const string_constnat) for ObjectVariantMapper::MakeCommonSerializer_Range_ ()</li>
 		<li>lose a few depecated functions /classes (GetStandardTerminationSignals/ Has_Operator_LessThan)</li>
 		<li>adjusted regression test times (test 47 performance) - for compat with vs2k15 (in vm)</li>
 		<li>Lose qCompilerAndStdLib_deprecatedFeatureMissing and related deprecation macros (just _Deprecated_ now)</li>
-		<li>Tested (passed regtests) on (((((((STILL TESTING)))))))
+		<li>fixed typos in configure code - when appending to EXTRA_LINKER_ARGS include space in case args already there</li>
+		<li>Tested (passed regtests)
 			<ul>
 				<li>vc++2k13</li>
 				<li>vc++2k15 Update 2 (except some crashers in 64 bit code due to MSFT lib bug)</li>
@@ -54,6 +56,8 @@ History
 	</ul>
 </td>
 </tr>
+
+
 
 
 
