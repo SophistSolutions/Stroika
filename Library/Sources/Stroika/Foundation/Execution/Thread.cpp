@@ -277,7 +277,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
             template    <>
-            String  ToString (const thread::id& t)
+            String  ToString (const std::thread::id& t)
             {
                 return Execution::FormatThreadID (t);
             }

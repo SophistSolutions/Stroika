@@ -621,7 +621,7 @@ namespace   Stroika {
             template    <typename T>
             String  ToString (const T& t);
             template    <>
-            String  ToString (const thread::id& t);
+            String  ToString (const std::thread::id& t);
         }
     }
 }
