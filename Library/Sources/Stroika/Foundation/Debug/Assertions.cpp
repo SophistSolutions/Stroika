@@ -6,6 +6,7 @@
 #include    <cassert>
 #include    <cstdlib>
 
+#include    "BackTrace.h"
 #include    "Debugger.h"
 #include    "Trace.h"
 
@@ -48,6 +49,14 @@ namespace   {
                  fileName == nullptr ? "" : fileName,
                  lineNum
                 );
+#endif
+#if     qDefaultTracingOn
+        {
+            wstring tmp { Debug::BackTrace () };
+            if (not tmp.empty ()) {
+                DbgTrace (L"BackTrace: %s", tmp.c_str ());
+            }
+        }
 #endif
         DropIntoDebuggerIfPresent ();
         DbgTrace ("ABORTING...");

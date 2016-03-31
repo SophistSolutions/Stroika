@@ -659,8 +659,13 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_");
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-#if     qDoBacktraceOnFirstPassSignalHandler_
-    DbgTrace (L"BT=%s", Debug::BackTrace ().c_str ());
+#if     qDoBacktraceOnFirstPassSignalHandler_ and qDefaultTracingOn
+    {
+        wstring tmp { Debug::BackTrace () };
+        if (not tmp.empty ()) {
+            DbgTrace (L"BackTrace: %s", tmp.c_str ());
+        }
+    }
 #endif
 
     /*

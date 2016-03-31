@@ -5,6 +5,7 @@
 
 #include    "../Characters/ToString.h"
 
+#include    "BackTrace.h"
 #include    "Debugger.h"
 #include    "Trace.h"
 
@@ -21,6 +22,14 @@ namespace   {
         if (auto exc = current_exception ()) {
             DbgTrace (L"Uncaught exception", Characters::ToString (exc).c_str ());
         }
+#if     qDefaultTracingOn
+        {
+            wstring tmp { Debug::BackTrace () };
+            if (not tmp.empty ()) {
+                DbgTrace (L"BackTrace: %s", tmp.c_str ());
+            }
+        }
+#endif
         Debug::DropIntoDebuggerIfPresent ();
         abort ();
     }
