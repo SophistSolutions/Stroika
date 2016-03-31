@@ -569,6 +569,8 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
             {
                 using   Characters::String_Constant;
+                static  const   String_Constant kLowerBoundLabel_       { L"LowerBound" };
+                static  const   String_Constant kUpperBoundLabel_       { L"UpperBound" };
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     using   ElementType     =   typename RANGE_TYPE::ElementType;
@@ -580,8 +582,8 @@ namespace   Stroika {
                     }
                     else {
                         ToVariantMapperType   valueMapper   { mapper.FromObjectMapper<ElementType> () };
-                        m.Add (String_Constant (L"LowerBound"), mapper.FromObject<ElementType> (valueMapper, actualMember->GetLowerBound ()));
-                        m.Add (String_Constant (L"UpperBound"), mapper.FromObject<ElementType> (valueMapper, actualMember->GetUpperBound ()));
+                        m.Add (kLowerBoundLabel_, mapper.FromObject<ElementType> (valueMapper, actualMember->GetLowerBound ()));
+                        m.Add (kUpperBoundLabel_, mapper.FromObject<ElementType> (valueMapper, actualMember->GetUpperBound ()));
                         return VariantValue (m);
                     }
                 };
@@ -600,19 +602,19 @@ namespace   Stroika {
                             DbgTrace ("Range ('%s') element needs LowerBound and UpperBound", typeid (RANGE_TYPE).name ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs LowerBound and UpperBound")));
                         }
-                        if (not m.ContainsKey (String_Constant (L"LowerBound")))
+                        if (not m.ContainsKey (kLowerBoundLabel_))
                         {
                             DbgTrace ("Range ('%s') needs LowerBound", typeid (RANGE_TYPE).name ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'LowerBound' element")));
                         }
-                        if (not m.ContainsKey (String_Constant (L"UpperBound")))
+                        if (not m.ContainsKey (kUpperBoundLabel_))
                         {
                             DbgTrace ("Range ('%s') needs UpperBound", typeid (RANGE_TYPE).name ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
                         FromVariantMapperType   valueMapper { mapper.ToObjectMapper<ElementType> () };
-                        ElementType             from        { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (String_Constant (L"LowerBound"))) };
-                        ElementType             to =        { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (String_Constant (L"UpperBound"))) };
+                        ElementType             from        { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (kLowerBoundLabel_)) };
+                        ElementType             to          { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (kUpperBoundLabel_)) };
                         * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                     }
                 };
