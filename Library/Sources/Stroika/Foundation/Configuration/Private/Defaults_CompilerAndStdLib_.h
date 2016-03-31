@@ -1998,6 +1998,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *      it generates a warning (C4715) or error message (C2202). If the control path cannot
  *      be reached due to a function that never returns, you can use __declspec(noreturn) to prevent
  *      this warning or error.
+ *
+ *		@todo replace this with [[noreturn]]	
  */
 #if     !defined (_NoReturn_)
 #if     defined(_MSC_VER)
