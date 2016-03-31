@@ -525,27 +525,6 @@ Containers::Set<SignalID>   SignalHandlerRegistry::GetStandardCrashSignals ()
     return results;
 }
 
-Containers::Set<SignalID>    SignalHandlerRegistry::GetStandardTerminationSignals ()
-{
-    Containers::Set<SignalID>   results;
-    results.Add (SIGABRT);
-    results.Add (SIGINT);
-    results.Add (SIGTERM);
-    results.Add (SIGILL);
-    results.Add (SIGFPE);
-    results.Add (SIGSEGV);
-#if     qPlatform_POSIX
-    results.Add (SIGHUP);
-    results.Add (SIGQUIT);
-    results.Add (SIGSYS);
-    results.Add (SIGBUS);
-    results.Add (SIGPIPE);
-    results.Add (SIGXCPU);
-    results.Add (SIGXFSZ);
-#endif
-    return results;
-}
-
 void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handler, const Containers::Set<SignalID>& forSignals)
 {
     for (SignalID s : forSignals) {

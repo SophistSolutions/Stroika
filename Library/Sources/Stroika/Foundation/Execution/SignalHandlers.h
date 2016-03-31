@@ -251,29 +251,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      o   SIGABRT
-                 *      o   SIGILL
-                 *      o   SIGINT
-                 *      o   SIGFPE
-                 *      o   SIGSEGV
-                 *      o   SIGTERM
-                 *      o   SIGBUS      (POSIX ONLY)
-                 *      o   SIGHUP      (POSIX ONLY)
-                 *      o   SIGPIPE     (POSIX ONLY)
-                 *      o   SIGQUIT     (POSIX ONLY)
-                 *      o   SIGSYS      (POSIX ONLY)
-                 *      o   SIGXCPU     (POSIX ONLY)
-                 *      o   SIGXFSZ     (POSIX ONLY)
-                 *
-                 *  These  signals - by default (without any coding) - will generally (depends on OS, and environment) terminate the
-                 *  process.
-                 *
-                 *  \note   These are currently (mostly) unused? Not sure why we have this?
-                 */
-                _Deprecated_("not sure what this is for - and dont think used") static  Containers::Set<SignalID>   GetStandardTerminationSignals ();
-
-            public:
-                /**
                  *  The set of signals given (by default GetStandardCrashSignals) will be set to the given handler
                  *  (by default DefaultCrashSignalHandler).
                  *

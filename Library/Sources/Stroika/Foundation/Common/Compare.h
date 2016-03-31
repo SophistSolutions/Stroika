@@ -38,27 +38,6 @@ namespace   Stroika {
 
 
             namespace Private_ {
-                // @DEPRECATED!!!!!
-                namespace Has_Operator_LessThan_Helper_ {
-                    /*
-                     *  This trick is based on code from
-                     *      http://stackoverflow.com/questions/5768511/using-sfinae-to-check-for-global-operator
-                     */
-                    using       no  =   char;
-                    using       yes =   char[2];
-                    struct any_t {
-                        template<typename T> any_t (T const&);
-                    };
-                    no operator< (any_t const&, any_t const&);
-                    yes& test (bool);
-                    no test (no);
-                    template<typename T>
-                    struct Has_Operator_LessThan_ {
-                        static T const& s;
-                        static T const& t;
-                        static bool const value = sizeof(test (s < t)) == sizeof(yes);
-                    };
-                }
                 namespace Has_Compare_Helper_ {
                     using namespace Configuration;
                     template <typename T>
@@ -73,22 +52,6 @@ namespace   Stroika {
                     };
                 }
             }
-
-
-            /**
-             *  has value member which is true iff 'T' supports the less than operator.
-             *
-             *  TODO REPLACE
-             *          Has_Operator_LessThan<T>::value
-             *  with:
-             *          Configuration::LessThanComparable<T> ()
-             *
-             *  BUT - CANNOT DO until we have vc++ fixed for constexpr functions
-             */
-            template    <typename T>
-struct  _Deprecated_("use has_lt<>") Has_Operator_LessThan :
-            Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
-            };
 
 
             /**
