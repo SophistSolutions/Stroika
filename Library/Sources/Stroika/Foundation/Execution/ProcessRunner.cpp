@@ -73,6 +73,8 @@ namespace {
         struct rlimit fds {};
         if (::getrlimit (RLIMIT_NOFILE, &fds) == 0)
         {
+            Assert (fds.rlim_cur > 5);              // sanity check - no real requirement
+            Assert (fds.rlim_cur < 1 * 1024 * 1024); // ""  (if too big, looping to close all costly)
             return fds.rlim_cur;
         }
         else {
