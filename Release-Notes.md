@@ -21,12 +21,40 @@ History
 <td>
 	<ul>
 		<li>
-			todo
+			Exeuction::Finally
+			<ul>
+				<li>lose obsolete DEPRECATED Exeuction::Finally</li>
+				<li>Decprecated mkFinally()</li>
+				<li>Added new Finally () - essentially same as mkFinally - so net net a rename</li>
+				<li>Re-jiggered and documented future and current noexcept support for Finally (now easier and safer), and related future todo (optional suppress abort)</li>
+			</ul>
 		</li>
-
+		<li>Thread::SuppressInterruptionInContext in one spot of Thread::ThreadMain_, and in a couple finally's in WaitableEvent</li>
+		<li>print BackTrace in Assert/Fatal and neaten report in signalhandler</li>
+		<li>support for Visual Studio.net 2015 Update 2 - but it STILL fails on 64lib lib bug - looks like I may need to debug this</li>
+		<li>minor tweak (static const string_constnat) for ObjectVariantMapper::MakeCommonSerializer_Range_ ()</li>
+		<li>lose a few depecated functions /classes (GetStandardTerminationSignals/ Has_Operator_LessThan)</li>
+		<li>adjusted regression test times (test 47 performance) - for compat with vs2k15 (in vm)</li>
+		<li>Lose qCompilerAndStdLib_deprecatedFeatureMissing and related deprecation macros (just _Deprecated_ now)</li>
+		<li>Tested (passed regtests) on (((((((STILL TESTING)))))))
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 Update 2 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc48</li>
+				<li>gcc49</li>
+				<li>gcc52</li>
+				<li>ppc-AIX/gcc49 (release works fully, but DEBUG crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh gcc 4.8.2)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
+
 
 
 <tr>
