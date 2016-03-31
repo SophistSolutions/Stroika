@@ -75,6 +75,7 @@
 #define _MS_VS_2k15_RC_FULLVER_         190022816
 #define _MS_VS_2k15_RTM_FULLVER_        190023026
 #define _MS_VS_2k15_Update1_FULLVER_    190023506
+#define _MS_VS_2k15_Update2_FULLVER_    190023918
 
 #if      _MSC_VER < _MS_VS_2k13_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
@@ -84,7 +85,7 @@
 #endif
 #if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
-#elif    _MSC_FULL_VER > _MS_VS_2k15_Update1_FULLVER_
+#elif    _MSC_FULL_VER > _MS_VS_2k15_Update2_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
 #endif
 
