@@ -1813,28 +1813,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
-@DESCRIPTION:
-    To test if fixed, set to zero and stroika lib will fail to compile.
-*/
-#ifndef qCompilerAndStdLib_deprecatedFeatureMissing
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_deprecatedFeatureMissing             ((__clang_major__ == 3) && (__clang_minor__ <= 5))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
-#elif   defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_deprecatedFeatureMissing              0
-#endif
-
-#endif
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_string_conversions_Buggy
 @DESCRIPTION:   22.3.3.2.2  string conversions  N
 */
@@ -2031,29 +2009,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-/*
- *  USE _Deprecated_ INSTEAD
- */
-#if     !defined (_DeprecatedFunction_)
-#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
-#define _DeprecatedFunction_(func,MESSAGE) func __attribute__ ((deprecated))
-#elif   qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
-#define _DeprecatedFunction_(func,MESSAGE) __declspec(deprecated) func
-#else
-#define _DeprecatedFunction_(func,MESSAGE) [[deprecated(MESSAGE)]] func
-#endif
-#endif
-#if     !defined (_DeprecatedFunction2_)
-#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
-#define _DeprecatedFunction2_(func,MESSAGE) __declspec(deprecated) func
-#elif   __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
-#define _DeprecatedFunction2_(func,MESSAGE) [[deprecated(MESSAGE)]] func
-#else
-#define _DeprecatedFunction2_(func,MESSAGE) func
-#endif
-#endif
-
-
 
 
 /*
@@ -2073,21 +2028,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 #endif
 
-
-
-/*
- *  USE _Deprecated_ INSTEAD
- */
-#if     !defined (_DeprecatedClass_)
-#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
-// this doesnt work for gcc pre gcc49 easily, so dont bother - 49 supports real [[deprecated]]
-#define _DeprecatedClass_(func,MESSAGE) func
-#elif   qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
-#define _DeprecatedClass_(func,MESSAGE) __declspec(deprecated) func
-#else
-#define _DeprecatedClass_(func,MESSAGE) [[deprecated(MESSAGE)]] func
-#endif
-#endif
 
 
 
