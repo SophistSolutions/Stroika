@@ -138,12 +138,8 @@ namespace {
 
 namespace {
     struct   AppRep_ : Main::IApplicationRep {
-        AppRep_ ()
-        {
-        }
-        virtual ~AppRep_ ()
-        {
-        }
+        AppRep_ () = default;
+        virtual ~AppRep_ () = default;
 
     public:
         virtual void  MainLoop (const std::function<void()>& startedCB) override
@@ -163,10 +159,12 @@ namespace {
              *  In your main loop, first run any setup.
              */
             // INITIALIZE_SOMETHING();
-            fSomeOtherTaskDoingRealWork = Thread ([] () {
+            fSomeOtherTaskDoingRealWork = Thread (
+            [] () {
                 Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
-            });
-            fSomeOtherTaskDoingRealWork.Start ();
+            },
+            Thread::eAutoStart
+                                          );
 
             startedCB ();       // Notify service control mgr that the service has started
 
@@ -273,7 +271,7 @@ int     main (int argc, const char* argv[])
      *  Setup Logging to the OS logging facility.
      */
 #if     qUseLogger
-    auto&& cleanup  =   Execution::mkFinally ([] () {
+    auto&& cleanup  =   Execution::Finally ([] () {
         Logger::ShutdownSingleton ();       // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if     qHas_Syslog

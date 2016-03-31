@@ -495,7 +495,7 @@ namespace   Stroika {
                  *
                  *  It might be written as:
                  *      ...
-                 *      auto&& cleanup  =   Execution::Finally ([this] () noexcept {
+                 *      auto&& cleanup  =   Execution::Finally ([this] () {
                  *      // do your cleanup here
                  *      });
                  *      // INITIALIZE_SOMETHING(); - maybe firing off other threads

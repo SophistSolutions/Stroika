@@ -326,7 +326,7 @@ bool        Logger::GetBufferingEnabled () const
 Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () const
 {
     RequireNotNull (fRep_);
-    return Memory::Optional<Time::DurationSecondsType> (fRep_->fSuppressDuplicatesThreshold_);
+    return fRep_->fSuppressDuplicatesThreshold_.load ();
 }
 
 void    Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
@@ -588,7 +588,7 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
     const   DWORD   kEventID            =   EVENT_Message;
     HANDLE  hEventSource = ::RegisterEventSource (NULL, fEventSourceName_.AsSDKString ().c_str ());
     Verify (hEventSource != NULL);
-    auto&&                      cleanup =   Execution::Finally ([hEventSource] () noexcept { Verify (::DeregisterEventSource (hEventSource)); });
+    auto&&                      cleanup =   Execution::Finally ([hEventSource] () { Verify (::DeregisterEventSource (hEventSource)); });
     SDKString                   tmp = message.AsSDKString ();
     const Characters::SDKChar*  msg = tmp.c_str ();
     Verify (::ReportEvent (
