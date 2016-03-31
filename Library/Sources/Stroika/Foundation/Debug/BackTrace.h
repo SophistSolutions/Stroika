@@ -59,6 +59,7 @@ namespace   Stroika {
              */
             wstring    BackTrace (unsigned int maxFrames = numeric_limits<unsigned int>::max ());
 
+
         }
     }
 }
