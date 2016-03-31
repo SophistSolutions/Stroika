@@ -379,6 +379,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if   defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update5_FULLVER_
+// fixed in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     0
@@ -401,6 +402,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if     defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
+// fixed in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy      0
@@ -415,13 +417,15 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 /*
 @CONFIGVAR:     qCompilerAndStdLib_largeconstexprarray_Buggy
 @DESCRIPTION:   causes internal compiler error
+//// Build Test 28: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)
 */
 #ifndef qCompilerAndStdLib_largeconstexprarray_Buggy
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_largeconstexprarray_Buggy      (_MSC_FULL_VER == _MS_VS_2k15_Update1_FULLVER_)
+// Still broken in _MS_VS_2k15_Update2_FULLVER_
+#define qCompilerAndStdLib_largeconstexprarray_Buggy      (_MS_VS_2k15_Update1_FULLVER_ <= _MSC_FULL_VER and _MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_largeconstexprarray_Buggy      0
 #endif
@@ -864,7 +868,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
-// Fixed in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
