@@ -508,6 +508,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
+// Fixed in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      0
