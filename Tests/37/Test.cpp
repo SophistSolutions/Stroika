@@ -93,19 +93,8 @@ namespace {
         {
             {
                 unsigned int    cnt = 0;
-#if 0
                 {
-                    Finally c (
-                    [&cnt] () {
-                        cnt--;
-                    }
-                    );
-                    cnt++;
-                }
-                VerifyTestResult (cnt == 0);
-#endif
-                {
-                    auto&& c = mkFinally (
+                    auto&& c = Finally (
                     [&cnt] () noexcept {
                         cnt--;
                     }

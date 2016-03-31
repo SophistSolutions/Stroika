@@ -28,7 +28,7 @@ using   Characters::String;
 using   Containers::Sequence;
 using   Execution::BlockingQueue;
 using   Execution::Thread;
-using   Execution::mkFinally;
+using   Execution::Finally;
 using   Execution::SpinLock;
 using   Execution::Synchronized;
 using   Execution::ThreadPool;
@@ -614,7 +614,7 @@ namespace {
             Thread  testThread {[&innerThread] ()
             {
                 innerThread.Start ();
-                auto&&  cleanup =   mkFinally (
+                auto&&  cleanup =   Finally (
                 [&innerThread] () noexcept {
                     Thread::SuppressInterruptionInContext  suppressInterruptions;
                     innerThread.AbortAndWaitForDone ();
@@ -806,8 +806,8 @@ namespace   {
     void    DoRegressionTests_ ()
     {
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        auto&&  cleanupReport   =   mkFinally  (
-        [] () noexcept {
+        auto&&  cleanupReport   =   Finally  (
+        [] () {
             auto runningThreads =   Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {

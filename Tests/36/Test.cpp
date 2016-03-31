@@ -296,11 +296,11 @@ namespace {
                               };
                 reader.Start ();
                 adder.Start ();
-                auto&& cleanup  =   Execution::mkFinally ([&reader, &adder] () noexcept {
+                auto&& cleanup  =   Execution::Finally ([&reader, &adder] () {
                     reader.AbortAndWaitForDone ();
                     adder.AbortAndWaitForDone ();
                 }
-                                                         );
+                                                       );
                 // wait long time cuz of debuggers (esp valgrind) etc
                 adder.WaitForDone (15 * 60);
                 reader.WaitForDone (15 * 60);
@@ -503,7 +503,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        auto&& cleanupReport  =   Execution::mkFinally ([] () noexcept {
+        auto&& cleanupReport  =   Execution::Finally ([] () {
             auto runningThreads =   Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {
