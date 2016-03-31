@@ -18,47 +18,22 @@ namespace   Stroika {
         namespace   Execution {
 
 
-#if 0
-            /*
-             ********************************************************************************
-             ********************************* Execution::Finally ***************************
-             ********************************************************************************
-             */
-            inline  Finally::Finally (const function<void()>& cleanupCodeBlock)
-                : fCleanupCodeBlock_ (cleanupCodeBlock)
-            {
-            }
-            template <typename FUNCTION>
-            inline  Finally::Finally (FUNCTION f, typename is_function<FUNCTION>::type*) :
-                Finally (function<void()>(f))
-            {
-            }
-            inline  Finally::~Finally()
-            {
-                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
-            }
-#endif
-
-
             /*
              ********************************************************************************
              **************************** Execution::FinallySentry **************************
              ********************************************************************************
              */
             template <typename FUNCTION>
-            FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
+            inline  FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
                 : fCleanupCodeBlock_ (move (f))
             {
-#if     !qCompilerAndStdLib_noexcept_Buggy
-                static_assert (noexcept (f), "Finally block cannot throw, so caller must mark lambda argument as noexcept");
-#endif
             }
             template <typename FUNCTION>
-            FinallySentry<FUNCTION>::~FinallySentry ()
+            inline  FinallySentry<FUNCTION>::~FinallySentry ()
             {
-                // no need for IgnoreExceptionsForCall if we do static_assert?? Plus, since we assert no-except, it wont do any
-                // good using IgnoreExceptionsForCall () - as we would still std::terminate due to violation of noexcept rules
-                fCleanupCodeBlock_ ();
+                // consider checking noexcept(f) and not doing the ignore, but that being helpful depends on compiler
+                // analysis, which if done, probably always optimizes this try/catch anyhow
+                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
             }
 
 
