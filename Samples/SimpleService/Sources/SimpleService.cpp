@@ -145,7 +145,8 @@ namespace {
         virtual void  MainLoop (const std::function<void()>& startedCB) override
         {
 
-            auto&& cleanup  =   Execution::mkFinally ([this] () {
+            auto&& cleanup  =   Execution::Finally ([this] () {
+				Thread::SuppressInterruptionInContext	suppressSoWeActuallyShutDownOtherTaskWhenWereBeingShutDown;
                 /*
                  *  Now - we can shutdown any subsidiary threads, and exit
                  */
