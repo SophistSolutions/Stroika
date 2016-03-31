@@ -86,6 +86,22 @@ namespace {
 
 
 
+#if     qPlatform_POSIX
+namespace {
+    pid_t   UseFork_ ()
+    {
+        // we may want to use vfork or some such. But for AIX, it appears best to use f_fork
+        //      https://www.ibm.com/support/knowledgecenter/ssw_aix_72/com.ibm.aix.basetrf1/fork.htm
+        //  -- LGP 2016-03-31
+#if     qPlatform_AIX
+        return ::f_fork ();
+#else
+        return ::fork ();
+#endif
+    }
+}
+#endif
+
 
 #if     qPlatform_Windows
 namespace {
@@ -421,7 +437,7 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
             thisEXECArgv = execArgsPtrBuffer;
         }
 
-        int childPID = ::fork ();
+        int childPID = UseFork_ ();
         Execution::ThrowErrNoIfNegative (childPID);
         if (childPID == 0) {
             try {
@@ -941,7 +957,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     }
     useArgsV.push_back (nullptr);
 
-    pid_t   pid =   Execution::ThrowErrNoIfNegative (::fork ());
+    pid_t   pid =   Execution::ThrowErrNoIfNegative (UseFork_ ());
     if (pid == 0) {
         /*
          * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
