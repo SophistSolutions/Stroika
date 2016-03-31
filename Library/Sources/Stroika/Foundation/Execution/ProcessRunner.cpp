@@ -856,58 +856,6 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         args = tmp;
     }
     return DetachedProcessRunner (exe, args);
-#if 0
-    // OBSOLETED - I THINK RARELY IF EVER USED - 2016-02-01
-#if     qPlatform_Windows
-    PROCESS_INFORMATION processInfo {};
-    processInfo.hProcess = INVALID_HANDLE_VALUE;
-    processInfo.hThread = INVALID_HANDLE_VALUE;
-    auto&&  cleanup =   Finally (
-    [&processInfo] () noexcept {
-        SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
-        SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
-    }
-                        );
-
-    STARTUPINFO startInfo {};
-    startInfo.cb = sizeof (startInfo);
-    startInfo.hStdInput = INVALID_HANDLE_VALUE;
-    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
-    startInfo.hStdError = INVALID_HANDLE_VALUE;
-    startInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-    DWORD   createProcFlags =   0;
-    createProcFlags |= CREATE_NO_WINDOW;
-    createProcFlags |= NORMAL_PRIORITY_CLASS;
-    createProcFlags |= DETACHED_PROCESS;
-    {
-        bool    bInheritHandles     =   true;
-        TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
-        Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), commandLine.AsSDKString ().c_str ());
-        Execution::Platform::Windows::ThrowIfFalseGetLastError (
-            ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
-        );
-    }
-    return processInfo.dwProcessId;
-#elif   qPlatform_POSIX
-    // consider using 'system' here...
-#endif
-
-    // @todo - better job both parsing separate args, and documenting how this is done!!!
-    String              exe;
-    Sequence<String>    args;
-    {
-        Sequence<String> tmp = commandLine.Tokenize (Set<Character> { ' ' });
-        if (tmp.size () == 0) {
-            Execution::Throw (Execution::StringException (String_Constant (L"invalid command argument to DetachedProcessRunner")));
-        }
-        exe = tmp[0];
-        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
-            args.Append (*i);
-        }
-    }
-    return DetachedProcessRunner (exe, args);
-#endif
 }
 
 pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
