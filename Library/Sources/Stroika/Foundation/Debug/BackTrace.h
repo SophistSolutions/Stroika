@@ -44,7 +44,12 @@ namespace   Stroika {
              *        info symbol 0x1b974
              *      ... etc for each symbol returned in []
              *
-             *  \note to get symbols working on Linux, it may be necessary to link with -rdynamic
+             *  \note   to get symbols working on Linux, it may be necessary to link with -rdynamic
+             *          This can be done with the Stroika configure flags:
+             *              --extra-linker-args -rdynamic
+             *          OR
+             *              --apply-default-debug-flags
+             *
              *
              *  \note   BackTrace () Uses no Stroika classes internally (like String, SmallStackBuffer) etc, since
              *          doing so could create deadlocks in the likely use cases where one would want to call this, from
