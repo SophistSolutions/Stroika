@@ -567,8 +567,9 @@ void    Main::RunTilIdleService::_UnInstall ()
 
 void        Main::RunTilIdleService::_RunAsService ()
 {
-    // VERY WEAK TO WRONG IMPL
-    auto appRep = fAppRep_;
+    RequireNotNull (fAppRep_);  // must call Attach_ first
+    // VERY WEAK IMPL
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -583,7 +584,9 @@ void        Main::RunTilIdleService::_RunAsService ()
 
 void    Main::RunTilIdleService::_RunDirectly ()
 {
-    auto appRep = fAppRep_;
+    RequireNotNull (fAppRep_);  // must call Attach_ first
+    // VERY WEAK IMPL
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -597,8 +600,9 @@ void    Main::RunTilIdleService::_RunDirectly ()
 
 void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
-    // VERY WEAK TO WRONG IMPL
-    auto appRep = fAppRep_;
+    RequireNotNull (fAppRep_);  // must call Attach_ first
+    // VERY WEAK IMPL
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -737,8 +741,9 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         Execution::Throw (Execution::StringException (String_Constant { L"Service Already Running" }));
     }
 
+    RequireNotNull (fAppRep_);  // must call Attach_ first
     // VERY WEAK IMPL
-    auto appRep = fAppRep_;
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -769,7 +774,8 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
 
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
 {
-    auto appRep = fAppRep_;
+    RequireNotNull (fAppRep_);  // must call Attach_ first
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
