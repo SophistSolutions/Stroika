@@ -195,17 +195,7 @@ namespace {
             (void)::snprintf (procObjectDir, NEltsOf (procObjectDir), "/proc/%d/object/", pid);
             DIR*       dirIt    { ::opendir (procObjectDir) };
             if (dirIt != nullptr) {
-                struct CLEANUP_ {
-                    DIR*       fDirIt_;
-                    CLEANUP_ (DIR* d) : fDirIt_ (d) {}
-                    ~CLEANUP_ ()
-                    {
-                        if (fDirIt_ != nullptr) {
-                            ::closedir (fDirIt_);
-                        }
-                    }
-                };
-                CLEANUP_ c { dirIt };
+				auto&& cleanup  =   Finally ([dirIt] () noexcept { ::closedir (dirIt); });
                 char    endsWithBuffer[1024];
                 endsWithBuffer[0] = '\0';
                 (void)::snprintf (endsWithBuffer, NEltsOf (endsWithBuffer), ".%lld", static_cast<long long> (inode));
