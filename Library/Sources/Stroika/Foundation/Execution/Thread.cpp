@@ -472,8 +472,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 
 #if     qPlatform_POSIX
             {
-                // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it - and acept aborts after we've marked
-                // reference count as set.
+                // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it -
+                // and accept aborts after we've marked reference count as set.
                 sigset_t    mySet;
                 ::sigemptyset (&mySet);
                 (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
