@@ -194,7 +194,7 @@ shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep
 #endif
 }
 
-Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep)
+Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep)
     : fServiceRep_ (serviceIntegrationRep)
 {
     Require (sTHIS_ == nullptr);    // singleton(ish)

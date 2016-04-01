@@ -184,7 +184,7 @@ namespace   Stroika {
                 /**
                  * Note - besides the obvious, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
-                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
+                explicit Main (const shared_ptr<IApplicationRep>& appRep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
                 Main (const Main&) = delete;
 
             public:
@@ -463,9 +463,9 @@ namespace   Stroika {
              */
             class   Main::IApplicationRep {
             public:
-                IApplicationRep ();
+                IApplicationRep () = default;
                 IApplicationRep (const IApplicationRep&) = delete;
-                virtual ~IApplicationRep ();
+                virtual ~IApplicationRep () = default;
 
             public:
                 nonvirtual  const IApplicationRep& operator= (const IApplicationRep&) = delete;
@@ -534,10 +534,10 @@ namespace   Stroika {
              */
             class   Main::IServiceIntegrationRep {
             public:
-                IServiceIntegrationRep ();
+                IServiceIntegrationRep () = default;
                 IServiceIntegrationRep (const IServiceIntegrationRep&) = delete;
             public:
-                virtual ~IServiceIntegrationRep ();
+                virtual ~IServiceIntegrationRep () = default;
 
             public:
                 nonvirtual  const IServiceIntegrationRep& operator= (const IServiceIntegrationRep&) = delete;
