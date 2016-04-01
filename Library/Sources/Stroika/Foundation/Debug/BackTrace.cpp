@@ -75,7 +75,7 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
             string tmp { beginOfName, endOfName };
             char* realname = abi::__cxa_demangle (tmp.c_str (), 0, 0, &status);
             if  (status == 0) {
-                symStr = narrow2Wide (string {syms[j], beginOfName} + realname + endOfName);
+                symStr = narrow2Wide ((string {static_cast<const char*> (syms[j]), beginOfName} + realname + endOfName).c_str ());
             }
             if (realname != nullptr) {
                 ::free (realname);
