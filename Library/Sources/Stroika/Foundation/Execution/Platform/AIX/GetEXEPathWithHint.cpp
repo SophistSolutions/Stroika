@@ -10,6 +10,7 @@
 #include    <sys/sysmacros.h>
 #include    <sys/types.h>
 #include    <unistd.h>
+#include    <fstream>
 #endif
 
 #include    "../../../Cache/CallerStalenessCache.h"
@@ -31,43 +32,35 @@ using   Characters::String;
 using   Characters::String_Constant;
 
 
-
+//
 // Comment this in to turn on aggressive noisy DbgTrace in this module
+// NB: CURRENTLY safe to turn on (2016-04-01) - but risky if triggered loading with TraceLog file getting its name from
+// calling here...
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//
 
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
+//
+// Comment this in to turn on somewhat noisy timing DbgTrace in this module
+// NB: This timing trace code contains HACK - to NOT report anyhting for processID==getpid () - since
+// that is called early on trying to get the EXE name for this process - before main - for the tracelog
+// and doing DbgTrace calls in response causes grave disorder
+//
 //#define   USE_TIMING_TRACE_IN_THIS_MODULE_       1
-
+//
 
 
 
 
 namespace {
-    SDKString   myProcessRunnerFirstLine_ (const SDKString& cmdLine)
+    bool    IsProcessSafeToLogFor_ (pid_t p)
     {
-        /*
-         *      NOTE - we intentionally use popen here avoid helpful Stroika code like ProcessRunner (), ThrowIfNull, etc,
-         *      so that this code remains low level, and doesnt invoke any tracelog code, which would result in a deadlock/loop....
-         *
-         */
-        FILE*   p = ::popen (cmdLine.c_str (), "r");
-        string  accum;
-        if (p != nullptr) {
-            char    buf[10 * 1024];
-            while (::fgets (buf, NEltsOf (buf), p) != nullptr) {
-                accum += buf;
-                size_t i = accum.rfind ('\n');
-                if (i != -1) {
-                    accum.erase (i);
-                }
-                break;  // minor speed hack since we always use with just one line
-            }
-            int result  =   ::pclose (p);
-            // cannot report to avoid TRACE ;-(
-        }
-        return accum;
+        return p != getpid ();
     }
+}
+
+
+namespace {
     // find %s -xdev -type f -inum %lld -print 2> /dev/null - but much faster.
     // @todo - xdev part. Not only possible speed hack, but also needed for correctness since
     // we could match the wrong inode if we crossed filesystems.
@@ -104,7 +97,7 @@ namespace {
     }
     SDKString   FindPath2Inode_Caching_ (const SDKString& dir, dev_t restrictToDev, ino_t inodeNumber)
     {
-        const   Time::DurationSecondsType   kTimeValidFor_      =   60.0;   // no good way to parameterize
+        const   Time::DurationSecondsType   kTimeValidFor_      =   5 * 60.0;   // no good way to parameterize
         using   KEY = tuple<SDKString, dev_t, ino_t>;
         static  Synchronized<Cache::CallerStalenessCache<KEY, SDKString>>   sCache_;
         Time::DurationSecondsType       noOlderThan = Time::GetTickCount () - kTimeValidFor_;
@@ -124,31 +117,92 @@ namespace {
         }
         return SDKString ();
     }
+    SDKString   GetBlockDeviceFileName2MajorMinorDev_ (int majorDev, int minorDev)
+    {
+        /*
+         *
+         *  if (majorDev != -1 and minorDev != -1) {
+         *      // ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev
+         *      char buf[1024];
+         *      (void)::snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
+         *      SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
+         *      int     beforeFSName     =  devfsline.rfind (' ');
+         *      if (beforeFSName != string::npos) {
+         *          fsBlockName = devfsline.substr (beforeFSName + 1);
+         *      }
+         *  }
+         */
+        // NOTE - this could probably be memoized/cached, as the list of block devices on a machine probably doesn't change much ;-)
+        DIR*       dirIt    { ::opendir ("/dev") };
+        if (dirIt != nullptr) {
+            auto&& cleanup  =   Finally ([dirIt] () noexcept { ::closedir (dirIt); });
+            for (dirent* cur = ::readdir (dirIt); cur != nullptr; cur = ::readdir (dirIt)) {
+                SDKString   filePath = SDKString { "/dev/" } + cur->d_name;
+                struct  stat    s;
+                if (::stat (filePath.c_str (), &s) == 0) {
+                    if (S_ISBLK(s.st_mode) and major (s.st_rdev) == majorDev and minor (s.st_rdev) == minorDev) {
+                        return filePath;
+                    }
+                }
+            }
+        }
+        return SDKString {};
+    }
+    SDKString   GetFSNameForBlockName_ (const SDKString& blockDeviceName)
+    {
+        /*
+         *  What we used to do:
+         *      if (not fsBlockName.empty ()) {
+         *          char buf[1024];
+         *          (void)::snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());    // not - unreliable - could match multiple...
+         *          SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
+         *          int     beforeFSName     =  devfsline.rfind (' ');
+         *          if (beforeFSName != string::npos) {
+         *              return devfsline.substr (beforeFSName + 1);
+         *          }
+         *      }
+         *
+         *  Weak way - but probably better then what we used to do:
+         *      read /etc/filesystem
+         */
+        ifstream    fsFile ("/etc/filesystems");
+        char line[4 * 1024];
+        string  readingFilesystem;
+        string  forDev;
+        while (fsFile.getline (line, NEltsOf (line))) {
+            if (line[0] == '/') {
+                char* p = ::strchr (line, ':');
+                if (p != nullptr) {
+                    *p = '\0';
+                    readingFilesystem = line;
+                    forDev = string {};
+                }
+            }
+            if (not readingFilesystem.empty () and forDev.empty () and ::strstr (line, "dev") != nullptr) {
+                char* p = ::strchr (line, '=');
+                if (p != nullptr) {
+                    p++;
+                    while (*p and isspace (*p)) {
+                        ++p;
+                    }
+                }
+                if (p != nullptr and * p != '\0') {
+                    forDev = p;
+                }
+            }
+            if (blockDeviceName == forDev) {
+                return readingFilesystem;
+            }
+        }
+        return SDKString {};
+    }
     SDKString   FindFSForMajorMinorDev_LowLevel_ (int majorDev, int minorDev)
     {
-        // @todo - this isn't truely safe... Esp df|grep part...
-        string  fsBlockName;
-        if (majorDev != -1 and minorDev != -1) {
-            // ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev
-            char buf[1024];
-            (void)::snprintf (buf, NEltsOf (buf), "ls -l /dev/ | egrep \"^b.*%d, *%d.+$\"", majorDev, minorDev);
-            SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
-            int     beforeFSName     =  devfsline.rfind (' ');
-            if (beforeFSName != string::npos) {
-                fsBlockName = devfsline.substr (beforeFSName + 1);
-            }
-        }
-        string  fsName;
+        SDKString fsBlockName = GetBlockDeviceFileName2MajorMinorDev_ (majorDev, minorDev);
         if (not fsBlockName.empty ()) {
-            char buf[1024];
-            (void)::snprintf (buf, NEltsOf (buf), "df | grep %s", fsBlockName.c_str ());    // not - unreliable - could match multiple...
-            SDKString   devfsline = myProcessRunnerFirstLine_ (buf);
-            int     beforeFSName     =  devfsline.rfind (' ');
-            if (beforeFSName != string::npos) {
-                fsName = devfsline.substr (beforeFSName + 1);
-            }
+            return GetFSNameForBlockName_ (fsBlockName);
         }
-        return fsName;
+        return SDKString {};
     }
     SDKString   FindFSForMajorMinorDev_WithCaching_ (int majorDev, int minorDev)
     {
@@ -169,8 +223,8 @@ namespace {
          *      http://unix.stackexchange.com/questions/109175/how-to-identify-executable-path-with-its-pid-on-aix-5-or-more
          *
          *  This is INSANELY slow and kludgey. If we need to support this, we will need to find a better way.
-         *  We can code all this direclty in C++, without popen, but with a bit of work.
-         *      --
+         *
+         *  In the meantime, I at least rewrote it all without popen, so a bit faster, but still aweful.
          *
          *  NOTE - PART of this I think I can do better/faster with stat!!!
          */
@@ -224,13 +278,17 @@ namespace {
                 if (::stat (o->c_str (), &hintStats) == 0) {
                     if (hintStats.st_ino == inode and hintStats.st_dev == makedev (majorDev, minorDev)) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"CacheHit for hint '%s' (maps to '%s')", hint->c_str (), String::FromSDKString (*o).c_str ());
+                        if (IsProcessSafeToLogFor_ (pid)) {
+                            DbgTrace (L"CacheHit for hint '%s' (maps to '%s')", hint->c_str (), String::FromSDKString (*o).c_str ());
+                        }
 #endif
                         return *o;
                     }
                 }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"CacheMiss for hint '%s'", hint->c_str ());
+                if (IsProcessSafeToLogFor_ (pid)) {
+                    DbgTrace (L"CacheMiss for hint '%s'", hint->c_str ());
+                }
 #endif
             }
         }
@@ -241,7 +299,9 @@ namespace {
         }
         if (hint != nullptr and not exeName.empty ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("Priming cache for hint '%s' (maps to '%s')", hint->c_str (), exeName.c_str ());
+            if (IsProcessSafeToLogFor_ (pid)) {
+                DbgTrace ("Priming cache for hint '%s' (maps to '%s')", hint->c_str (), exeName.c_str ());
+            }
 #endif
             sHintCache_->Add (*hint, exeName);
         }
@@ -261,14 +321,14 @@ namespace {
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/1", 0.1 };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/1", IsProcessSafeToLogFor_ (processID) ? 0.001 : 1000.0 };
 #endif
     return AIX_GET_EXE_PATH_ (processID, nullptr);
 }
 SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, const SDKString& associationHint)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/2", 0.1 };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHintT/2", IsProcessSafeToLogFor_ (processID) ? 0.001 : 1000.0 };
 #endif
     String tmp { String::FromSDKString (associationHint) };
     return AIX_GET_EXE_PATH_ (processID, &tmp);
@@ -286,14 +346,14 @@ SDKString   Execution::Platform::AIX::GetEXEPathWithHintT (pid_t processID, cons
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/1", 0.1 };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/1", IsProcessSafeToLogFor_ (processID) ? 0.001 : 1000.0 };
 #endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, nullptr));
 }
 String   Execution::Platform::AIX::GetEXEPathWithHint (pid_t processID, const String& associationHint)
 {
 #if     USE_TIMING_TRACE_IN_THIS_MODULE_
-    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/2", 0.1 };
+    Debug::TimingTrace ctx { L"Platform::AIX::GetEXEPathWithHint/2", IsProcessSafeToLogFor_ (processID) ? 0.001 : 1000.0 };
 #endif
     return String::FromSDKString (AIX_GET_EXE_PATH_ (processID, &associationHint));
 }
