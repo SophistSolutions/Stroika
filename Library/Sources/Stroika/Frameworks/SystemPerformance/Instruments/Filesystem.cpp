@@ -403,6 +403,9 @@ namespace {
     private:
         Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>    ReadVolumesAndUsageFromProcMountsAndstatvfs_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_AIX_::ReadVolumesAndUsageFromProcMountsAndstatvfs_");
+#endif
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>    result;
             for (MountInfo_ mi : ReadMountInfo_ ()) {
                 MountedFilesystemInfoType  vi;
@@ -667,6 +670,9 @@ namespace {
         };
         Sequence<MountInfo_>    ReadMountInfo_ ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::Filesystem...CapturerWithContext_AIX_::ReadMountInfo_");
+#endif
             /*
              *  @todo See if there is a way to find this info on AIX without ProcessRunner...
              */
