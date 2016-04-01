@@ -51,7 +51,6 @@ namespace   Stroika {
                 Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::Install");
                 GetServiceRep_ ()._Install ();
             }
-
             inline  void    Main::UnInstall ()
             {
                 Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::UnInstall");

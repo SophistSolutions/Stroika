@@ -203,6 +203,7 @@ namespace   Stroika {
                  * Note - besides the obvious, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
                 explicit Main (const shared_ptr<IApplicationRep>& appRep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
+                Main () = delete;
                 Main (const Main&) = delete;
 
             public:
@@ -374,7 +375,7 @@ namespace   Stroika {
                 nonvirtual  IApplicationRep&                GetAppRep_ ();
 
             private:
-                shared_ptr<IServiceIntegrationRep>      fServiceRep_;
+                shared_ptr<IServiceIntegrationRep>      fServiceRep_;        // no need to synchronize because all access to shared_ptr R/O after initialization
             };
 
 
@@ -546,6 +547,8 @@ namespace   Stroika {
 
 
             /**
+             *  \note   These CAN be accessed from multiple threads, and each subclass respecting this API
+             *          must be internally synchonized.
              */
             class   Main::IServiceIntegrationRep {
             public:

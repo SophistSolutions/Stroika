@@ -562,7 +562,6 @@ void    Main::RunTilIdleService::_UnInstall ()
 void        Main::RunTilIdleService::_RunAsService ()
 {
     RequireNotNull (fAppRep_);  // must call Attach_ first
-    // VERY WEAK IMPL
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
@@ -579,7 +578,6 @@ void        Main::RunTilIdleService::_RunAsService ()
 void    Main::RunTilIdleService::_RunDirectly ()
 {
     RequireNotNull (fAppRep_);  // must call Attach_ first
-    // VERY WEAK IMPL
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
@@ -595,7 +593,6 @@ void    Main::RunTilIdleService::_RunDirectly ()
 void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
     RequireNotNull (fAppRep_);  // must call Attach_ first
-    // VERY WEAK IMPL
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
@@ -736,7 +733,6 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     }
 
     RequireNotNull (fAppRep_);  // must call Attach_ first
-    // VERY WEAK IMPL
     shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
@@ -1101,7 +1097,7 @@ void    Main::WindowsService::_RunAsService ()
 
 void    Main::WindowsService::_RunDirectly ()
 {
-    auto appRep = fAppRep_;
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -1266,7 +1262,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
 
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
-    auto appRep = fAppRep_;
+    shared_ptr<IApplicationRep> appRep = fAppRep_;
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
