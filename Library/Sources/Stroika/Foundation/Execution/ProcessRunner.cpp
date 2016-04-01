@@ -458,19 +458,26 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
 
         pid_t childPID  {};
         if (kUseSpawn_) {
-            posix_spawn_file_actions_t* file_actions    =   nullptr;
-
+            posix_spawn_file_actions_t file_actions {};
             /// @see http://stackoverflow.com/questions/13893085/posix-spawnp-and-piping-child-output-to-a-string
             // not quite right - maybe not that close
-            posix_spawn_file_actions_init(&file_actions);
-            posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
-            posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
-            posix_spawn_file_actions_adddup2(&file_actions, jStdout[1], 1);
-            posix_spawn_file_actions_addclose(&file_actions, jStdout[0]);
-            posix_spawn_file_actions_adddup2(&file_actions, jStderr[1], 2);
-            posix_spawn_file_actions_addclose(&file_actions, jStderr[1]);
+            /*
+             *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+             */
+            {
+                int useSTDIN    =   jStdin[0];
+                int useSTDOUT   =   jStdout[1];
+                int useSTDERR   =   jStderr[1];
+                posix_spawn_file_actions_init(&file_actions);
+                posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
+                posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
+                posix_spawn_file_actions_adddup2(&file_actions, jStdout[1], 1);
+                posix_spawn_file_actions_addclose(&file_actions, jStdout[0]);
+                posix_spawn_file_actions_adddup2(&file_actions, jStderr[1], 2);
+                posix_spawn_file_actions_addclose(&file_actions, jStderr[1]);
+            }
             posix_spawnattr_t* attr =   nullptr;
-            int status = ::posix_spawnp (&childPID, thisEXEPath_cstr, file_actions, attr, thisEXECArgv, environ);
+            int status = ::posix_spawnp (&childPID, thisEXEPath_cstr, &file_actions, attr, thisEXECArgv, environ);
             if (status != 0) {
                 errno_ErrorException::Throw (status);
             }
@@ -544,13 +551,16 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
 
             auto&&  cleanup1    =   Execution::Finally (
             [&useSTDIN, &useSTDOUT, &useSTDERR] () noexcept {
-                if (useSTDIN >= 0) {
+                if (useSTDIN >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
-                if (useSTDOUT >= 0) {
+                if (useSTDOUT >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
-                if (useSTDERR >= 0) {
+                if (useSTDERR >= 0)
+                {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
             }
