@@ -92,7 +92,7 @@ namespace   Stroika {
                         std::copy (start, start + roomRequired, fWriteCursor_);
 #endif
                         fWriteCursor_ += roomRequired;
-                        Assert (fReadCursor_ <= fData_.end ());
+                        Assert (fReadCursor_ < fData_.end ());      // < because we wrote at least one byte and that didnt move read cursor
                         Assert (fWriteCursor_ <= fData_.end ());
                     }
                 }
