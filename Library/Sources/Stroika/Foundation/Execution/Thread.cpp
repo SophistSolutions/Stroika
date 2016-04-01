@@ -440,22 +440,17 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {
+            Require (not sKnownBadBeforeMainOrAfterMain_);
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
-            DbgTrace (L"Running thread count up to: %d, adding thread id %s", sRunningThreads_.size () + 1, FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second);      // .second true if inserted, so checking not already there
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"sRunningThreads_ = %s", Characters::ToString (sRunningThreads_).c_str ());
-#endif
         }
         auto&&  cleanup =   Finally (
         [thisThreadID] () noexcept {
             Thread::SuppressInterruptionInContext suppressThreadInterupts;  // may not be needed, but safer/harmless
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"sRunningThreads_ = %s", Characters::ToString (sRunningThreads_).c_str ());
-#endif
-            DbgTrace (L"Running thread count down to: %d, removing thread id %s", sRunningThreads_.size () - 1, FormatThreadID (thisThreadID).c_str ());
+            DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
             Verify (sRunningThreads_.erase (thisThreadID) == 1);         // verify exactly one erased
         }
                             );
