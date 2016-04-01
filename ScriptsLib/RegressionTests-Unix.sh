@@ -70,20 +70,30 @@ fi
 
 
 #test with usual set of valgrind suppressions
-echo -n "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND PURIFY/BLOCK_ALLOC..." >>$TEST_OUT_FILE 2>&1
+echo -n "Run-Tests VALGRIND memcheck PURIFY/BLOCK_ALLOC..."
+echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND memcheck PURIFY/BLOCK_ALLOC..." >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
-VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=1 run-tests >>$TEST_OUT_FILE 2>&1 
+VALGRIND_SUPPRESSIONS="Common-Valgrind.supp"  make CONFIGURATION=ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 #more suppressions, but run on debug build...
-echo -n "Run-Tests VALGRIND gcc-5.2.0-debug-c++17..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
+echo -n "Run-Tests VALGRIND memcheck gcc-5.2.0-debug-c++17..."
+echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND memcheck gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
-VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=1 run-tests >>$TEST_OUT_FILE 2>&1
+VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
+STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+
+#more run helgrind
+echo -n "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..."
+echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
+STAGE_STARTAT_INT=$(date +%s)
+VALGRIND_SUPPRESSIONS="" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
