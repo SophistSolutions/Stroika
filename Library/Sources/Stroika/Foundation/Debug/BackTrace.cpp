@@ -43,10 +43,7 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
     auto&&      cleanup =   Execution::Finally ([syms] () noexcept { if (syms != nullptr) ::free (syms); });
     wstring     out;
     for (int j = 0; j < nptrs; j++) {
-        wstring symStr;
-        for (const char* p = syms[j]; *p != '\0'; ++p) {
-            symStr += *p;
-        }
+        wstring symStr	=	 syms[j];
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
     }
     return out;
