@@ -141,6 +141,24 @@ namespace   Stroika {
              *  Miscelaneous Notes:
              *      o   No need for a --daemonize option for --Run-As-Service, because thats essentially
              *          what the --start command does
+             *
+             *  \par Example Usage
+             *      @see Samples/SimpleService project
+             *      \code
+             *      struct   AppRep_ : Main::IApplicationRep {
+             *          AppRep_ () = default;
+             *          ...
+             *          virtual void  MainLoop (const std::function<void()>& startedCB) override
+             *          {
+             *              .... do your service and wait forever for thread abort
+             *          }
+             *
+             *      };
+             *      ...
+             *      Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
+             *      Main    m (make_shared<AppRep_> ());
+             *      m.Run (args);
+             *      \endcode
              */
             class   Main final {
             public:
@@ -354,9 +372,6 @@ namespace   Stroika {
                 nonvirtual  IServiceIntegrationRep&         GetServiceRep_ ();
                 nonvirtual  const IApplicationRep&          GetAppRep_ () const;
                 nonvirtual  IApplicationRep&                GetAppRep_ ();
-
-            private:
-                static  Main*   sTHIS_;
 
             private:
                 shared_ptr<IServiceIntegrationRep>      fServiceRep_;

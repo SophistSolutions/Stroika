@@ -181,8 +181,6 @@ const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-Main*   Main::sTHIS_    =   nullptr;
-
 shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep ()
 {
 #if     qPlatform_POSIX
@@ -197,8 +195,6 @@ shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep
 Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceIntegrationRep>& serviceIntegrationRep)
     : fServiceRep_ (serviceIntegrationRep)
 {
-    Require (sTHIS_ == nullptr);    // singleton(ish)
-    sTHIS_ = this;
     RequireNotNull (rep);
     RequireNotNull (serviceIntegrationRep);
     serviceIntegrationRep->_Attach (rep);
@@ -206,8 +202,6 @@ Main::Main (const shared_ptr<IApplicationRep>& rep, const shared_ptr<IServiceInt
 
 Main::~Main ()
 {
-    Require (sTHIS_ == this);
-    sTHIS_ = nullptr;
     fServiceRep_->_Attach (nullptr);
 }
 
