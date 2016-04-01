@@ -162,6 +162,15 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Note - unlike operator->, load () returns a copy of the internal data, and only locks while fetching it, so that the
+                 *  lock does not persist while using the result.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      Synchonized<Thread> sharedData;
+                 *      sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesnt maintain lock during wait
+                 *      sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
+                 *      \endcode
                  */
                 nonvirtual  T   load () const;
 
@@ -173,6 +182,7 @@ namespace   Stroika {
             public:
                 /**
                 \\\experimental
+                 *  @see load ()
                  */
                 nonvirtual  const ReadableReference cget () const;
 
@@ -203,6 +213,7 @@ namespace   Stroika {
                 /*
                  *UNCLEAR BUT MAYBE DEPRECATE??? CONFUSING? OR overload const readonly and no-const writable, but with other stuff
                  * like SharedByValue() I found that I accidentally got the wrong one alot.
+                 *  @see load ()
                  */
                 nonvirtual  const WritableReference operator-> () const;
                 nonvirtual  WritableReference operator-> ();
