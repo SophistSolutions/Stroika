@@ -103,6 +103,25 @@ namespace {
 #endif
 
 
+
+
+
+
+#if     qPlatform_POSIX
+#include    <spawn.h>
+namespace {
+    //  https://www.ibm.com/support/knowledgecenter/ssw_aix_53/com.ibm.aix.basetechref/doc/basetrf1/posix_spawn.htm%23posix_spawn
+    //  http://www.systutorials.com/37124/a-posix_spawn-example-in-c-to-create-child-process-on-linux/
+
+    constexpr   bool        kUseSpawn_  =   false;  // 1/2 implemented
+}
+extern char** environ;
+#endif
+
+
+
+
+
 #if     qPlatform_Windows
 namespace {
     class   AutoHANDLE_ {
@@ -437,54 +456,77 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
             thisEXECArgv = execArgsPtrBuffer;
         }
 
-        int childPID = UseFork_ ();
-        Execution::ThrowErrNoIfNegative (childPID);
-        if (childPID == 0) {
-            try {
-                /*
-                 *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
-                 *  this would be bad...
-                 */
-                if (currentDir != nullptr) {
-                    DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"")
-                    (void)::chdir (currentDir);
-                    DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"")
-                }
-                {
-                    /*
-                     *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
-                     */
-                    int useSTDIN    =   jStdin[0];
-                    int useSTDOUT   =   jStdout[1];
-                    int useSTDERR   =   jStderr[1];
-                    ::close (0);
-                    ::close (1);
-                    ::close (2);
-                    ::dup2 (useSTDIN, 0);
-                    ::dup2 (useSTDOUT, 1);
-                    ::dup2 (useSTDERR, 2);
-                    ::close (jStdin[0]);
-                    ::close (jStdin[1]);
-                    ::close (jStdout[0]);
-                    ::close (jStdout[1]);
-                    ::close (jStderr[0]);
-                    ::close (jStderr[1]);
-                }
-                constexpr bool kCloseAllExtraneousFDsInChild_ = true;
-                if (kCloseAllExtraneousFDsInChild_) {
-                    // close all but stdin, stdout, and stderr in child fork
-                    for (int i = 3; i < kMaxFD_; ++i) {
-                        ::close (i);
-                    }
-                }
-                int r   =   ::execvp (thisEXEPath_cstr, thisEXECArgv);
-                ::_exit (EXIT_FAILURE);
-            }
-            catch (...) {
-                ::_exit (EXIT_FAILURE);
+        pid_t childPID  {};
+        if (kUseSpawn_) {
+            posix_spawn_file_actions_t* file_actions    =   nullptr;
+
+            /// @see http://stackoverflow.com/questions/13893085/posix-spawnp-and-piping-child-output-to-a-string
+            // not quite right - maybe not that close
+            posix_spawn_file_actions_init(&file_actions);
+            posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
+            posix_spawn_file_actions_addclose(&file_actions, jStdin[0]);
+            posix_spawn_file_actions_adddup2(&file_actions, jStdout[1], 1);
+            posix_spawn_file_actions_addclose(&file_actions, jStdout[0]);
+            posix_spawn_file_actions_adddup2(&file_actions, jStderr[1], 2);
+            posix_spawn_file_actions_addclose(&file_actions, jStderr[1]);
+            posix_spawnattr_t* attr =   nullptr;
+            int status = ::posix_spawnp (&childPID, thisEXEPath_cstr, file_actions, attr, thisEXECArgv, environ);
+            if (status != 0) {
+                errno_ErrorException::Throw (status);
             }
         }
         else {
+            childPID = UseFork_ ();
+            Execution::ThrowErrNoIfNegative (childPID);
+            if (childPID == 0) {
+                try {
+                    /*
+                     *  In child process. Dont DBGTRACE here, or do anything that could raise an exception. In the child process
+                     *  this would be bad...
+                     */
+                    if (currentDir != nullptr) {
+                        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"")
+                        (void)::chdir (currentDir);
+                        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"")
+                    }
+                    {
+                        /*
+                         *  move arg stdin/out/err to 0/1/2 file-descriptors. Don't bother with variants that can handle errors/exceptions cuz we cannot really here...
+                         */
+                        int useSTDIN    =   jStdin[0];
+                        int useSTDOUT   =   jStdout[1];
+                        int useSTDERR   =   jStderr[1];
+                        ::close (0);
+                        ::close (1);
+                        ::close (2);
+                        ::dup2 (useSTDIN, 0);
+                        ::dup2 (useSTDOUT, 1);
+                        ::dup2 (useSTDERR, 2);
+                        ::close (jStdin[0]);
+                        ::close (jStdin[1]);
+                        ::close (jStdout[0]);
+                        ::close (jStdout[1]);
+                        ::close (jStderr[0]);
+                        ::close (jStderr[1]);
+                    }
+                    constexpr bool kCloseAllExtraneousFDsInChild_ = true;
+                    if (kCloseAllExtraneousFDsInChild_) {
+                        // close all but stdin, stdout, and stderr in child fork
+                        for (int i = 3; i < kMaxFD_; ++i) {
+                            ::close (i);
+                        }
+                    }
+                    int r   =   ::execvp (thisEXEPath_cstr, thisEXECArgv);
+                    ::_exit (EXIT_FAILURE);
+                }
+                catch (...) {
+                    ::_exit (EXIT_FAILURE);
+                }
+            }
+        }
+        // we got here, the spawn succeeded, or the fork succeeded, and we are the parent process
+        Assert (childPID > 0);
+        {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace ("In Parent Fork: child process PID=%d", childPID);
 #endif
