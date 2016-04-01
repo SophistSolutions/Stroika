@@ -412,7 +412,7 @@ void    Main::Restart (Time::DurationSecondsType timeout)
  **************** Service::Main::LoggerServiceWrapper ***************************
  ********************************************************************************
  */
-Main::LoggerServiceWrapper::LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo)
+Main::LoggerServiceWrapper::LoggerServiceWrapper (const shared_ptr<Main::IServiceIntegrationRep>& delegateTo)
     : fDelegateTo_ (delegateTo)
 {
     RequireNotNull (delegateTo);

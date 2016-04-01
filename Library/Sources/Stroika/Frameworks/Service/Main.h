@@ -631,7 +631,7 @@ namespace   Stroika {
              */
             class   Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
             public:
-                LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo);
+                LoggerServiceWrapper (const shared_ptr<Main::IServiceIntegrationRep>& delegateTo);
             protected:
                 virtual void                                        _Attach (const shared_ptr<IApplicationRep>& appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
@@ -646,7 +646,7 @@ namespace   Stroika {
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual pid_t                                       _GetServicePID () const override;
             private:
-                shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_;
+                shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_;  // no need to synchronize because all access to shared_ptr R/O after initialization
             };
 
 
