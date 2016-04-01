@@ -634,28 +634,22 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  ******************* Service::Main::BasicUNIXServiceImpl ************************
  ********************************************************************************
  */
-namespace {
-    Synchronized<Main::BasicUNIXServiceImpl*> sBasicUNIXServiceImpl_CurrApp_;   // @todo FIND a more elegant way to keep track of this
-}
-
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
-    : fAppRep_ ()
-    , fRunThread_ ()
+    : fOurSignalHandler_ ([this] (SignalID signum) { SignalHandler_ (signum); })
+, fAppRep_ ()
+, fRunThread_ ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=0x%x", this);
+    DbgTrace ("Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl: this=%p", this);
 #endif
-    Require (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
 }
 
 Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this=0x%x", this);
+    DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this=%p", this);
 #endif
-    // SHOULD CLEAN THIS CODE UP SO YOU COULD DESTROY AND RECREATE - PROBABLY SHOULD LOSE sCurrApp_
     Require (fAppRep_ == nullptr);
-    Require (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
 }
 
 void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& appRep)
@@ -668,17 +662,10 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
              (fAppRep_ == nullptr and fAppRep_ != appRep)
             );
     if (fAppRep_ != nullptr) {
-        // @todo CLEAR SIGNAL HANDLER
-    }
-    fAppRep_ = appRep;
-    if (appRep == nullptr) {
-        Assert (sBasicUNIXServiceImpl_CurrApp_ == this);
-        sBasicUNIXServiceImpl_CurrApp_ = nullptr;
         SetupSignalHanlders_ (false);
     }
-    else {
-        Assert (sBasicUNIXServiceImpl_CurrApp_ == nullptr);
-        sBasicUNIXServiceImpl_CurrApp_ = this;
+    fAppRep_ = appRep;
+    if (appRep != nullptr) {
         SetupSignalHanlders_ (true);
     }
     fRunThread_.AbortAndWaitForDone ();
@@ -862,16 +849,15 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 
 void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 {
-    static  const   Execution::SignalHandler    kMySigHandler_  =   SignalHandler_;
     if (install) {
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, kMySigHandler_);
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, kMySigHandler_);
-        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, fOurSignalHandler_);
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, fOurSignalHandler_);
+        Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
     else {
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, kMySigHandler_);
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, kMySigHandler_);
-        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, kMySigHandler_);
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGINT, fOurSignalHandler_);
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (SIGTERM, fOurSignalHandler_);
+        Execution::SignalHandlerRegistry::Get ().RemoveSignalHandler (kSIG_ReReadConfiguration, fOurSignalHandler_);
     }
 }
 
@@ -896,15 +882,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM: {
-                auto rwLockedApp = sBasicUNIXServiceImpl_CurrApp_.get ();
-                if (rwLockedApp.load () == nullptr) {
-                    AssertNotReached (); // possibly can avoid by reseting signal handlers above?
-                }
-                else {
-                    Thread  sigHandlerThread2Abort = rwLockedApp.load ()->fRunThread_;
-                    DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
-                    sigHandlerThread2Abort.Abort ();
-                }
+                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
+                fRunThread_.Abort ();
             }
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
@@ -913,14 +892,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
         case    kSIG_ReReadConfiguration:
 #endif
             {
-                auto rwLockedApp = sBasicUNIXServiceImpl_CurrApp_.get ();
-                if (rwLockedApp.load () == nullptr) {
-                    AssertNotReached (); // possibly can avoid by reseting signal handlers above?
-                }
-                else {
-                    AssertNotNull (rwLockedApp.load ()->fAppRep_);  // cuz we null/unnull both ptrs at same time (UGLY!)
-                    rwLockedApp.load ()->fAppRep_->OnReReadConfigurationRequest ();
-                }
+                fAppRep_->OnReReadConfigurationRequest ();
             }
             break;
     }

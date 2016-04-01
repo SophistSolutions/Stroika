@@ -18,6 +18,7 @@
 
 #if     qPlatform_POSIX
 #include    "../../Foundation/Execution/Signals.h"
+#include    "../../Foundation/Execution/SignalHandlers.h"
 #endif
 
 
@@ -771,7 +772,8 @@ namespace   Stroika {
                 static  const   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
 #endif
             private:
-                static  void    SignalHandler_ (SignalID signum);
+                SignalHandlers  fOurSignalHandler_;
+                nonvirtual  void    SignalHandler_ (SignalID signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
             protected:
