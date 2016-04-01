@@ -18,6 +18,7 @@
 #include    "../../../Debug/TimingTrace.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../ErrNoException.h"
+#include    "../../Finally.h"
 
 #include    "GetEXEPathWithHint.h"
 
@@ -76,17 +77,7 @@ namespace {
         if (dirIt == nullptr) {
             return SDKString ();
         }
-        struct CLEANUP_ {
-            DIR*       fDirIt_;
-            CLEANUP_ (DIR* d) : fDirIt_ (d) {}
-            ~CLEANUP_ ()
-            {
-                if (fDirIt_ != nullptr) {
-                    ::closedir (fDirIt_);
-                }
-            }
-        };
-        CLEANUP_ c { dirIt };
+        auto&& cleanup  =   Finally ([dirIt] () noexcept { ::closedir (dirIt); });
         for (dirent* cur = ::readdir (dirIt); cur != nullptr; cur = ::readdir (dirIt)) {
             if (::strcmp (cur->d_name, ".") == 0 or ::strcmp (cur->d_name, "..") == 0) {
                 continue;
