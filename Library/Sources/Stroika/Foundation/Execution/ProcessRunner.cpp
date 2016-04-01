@@ -551,16 +551,13 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
 
             auto&&  cleanup1    =   Execution::Finally (
             [&useSTDIN, &useSTDOUT, &useSTDERR] () noexcept {
-                if (useSTDIN >= 0)
-                {
+                if (useSTDIN >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDIN));
                 }
-                if (useSTDOUT >= 0)
-                {
+                if (useSTDOUT >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDOUT));
                 }
-                if (useSTDERR >= 0)
-                {
+                if (useSTDERR >= 0) {
                     IgnoreExceptionsForCall (CLOSE_ (useSTDERR));
                 }
             }
