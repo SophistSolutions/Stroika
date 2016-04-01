@@ -6,6 +6,9 @@
 #if     qPlatform_Linux
 #include    <execinfo.h>
 #include    <unistd.h>
+#if     defined (__GNUC__)
+#include    <cxxabi.h>
+#endif
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
@@ -52,6 +55,16 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
     wstring     out;
     for (int j = 0; j < nptrs; j++) {
         wstring symStr  =    narrow2Wide (syms[j]);
+#if     defined (__GNUC__)
+        int status = -1;
+        char* realname = abi::__cxa_demangle (syms[j], 0, 0, &status);
+        if  (status == 0) {
+            symStr = narrow2Wide (realname);
+        }
+        if (realname != nullptr) {
+            ::free (realname);
+        }
+#endif
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
     }
     return out;
