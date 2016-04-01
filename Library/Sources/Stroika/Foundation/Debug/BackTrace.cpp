@@ -56,13 +56,30 @@ wstring    Debug::BackTrace (unsigned int maxFrames)
     for (int j = 0; j < nptrs; j++) {
         wstring symStr  =    narrow2Wide (syms[j]);
 #if     defined (__GNUC__)
-        int status = -1;
-        char* realname = abi::__cxa_demangle (syms[j], 0, 0, &status);
-        if  (status == 0) {
-            symStr = narrow2Wide (realname);
+        //
+        // Example output from backtrace_symbols:
+        //      /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/Samples_SimpleService(_ZN7Stroika10Foundation9Execution8Private_8GetBT_wsEv+0x21) [0x7fc677]
+        //
+        //  abi::__cxa_demangle requires just the _ZN7Stroika10Foundation9Execution8Private_8GetBT_wsEv part, so extract it.
+        //
+        const char* beginOfName = ::strchr (syms[j], '(');
+        if (beginOfName != nullptr) {
+            beginOfName++;
         }
-        if (realname != nullptr) {
-            ::free (realname);
+        const char* endOfName = (beginOfName == nullptr) ? nullptr : ::strchr (beginOfName, '+');
+        //if (endOfName == nullptr and beginOfName != nullptr) {
+        //  endOfName = ::strchr (beginOfName, ')');    // maybe no + sometimes?
+        //}
+        if (beginOfName != nullptr and endOfName != nullptr) {
+            int status = -1;
+            string tmp { beginOfName, endOfName };
+            char* realname = abi::__cxa_demangle (tmp.c_str (), 0, 0, &status);
+            if  (status == 0) {
+                symStr = narrow2Wide (string {syms[j], beginOfName} + realname + endOfName);
+            }
+            if (realname != nullptr) {
+                ::free (realname);
+            }
         }
 #endif
         out += symStr + L";" + Characters::GetEOL<wchar_t> ();
