@@ -668,8 +668,8 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
     if (appRep != nullptr) {
         SetupSignalHanlders_ (true);
     }
-    fRunThread_.AbortAndWaitForDone ();
-    fRunThread_ = Execution::Thread ();
+    fRunThread_->AbortAndWaitForDone ();
+    fRunThread_.Store (Execution::Thread ());
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -746,7 +746,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     if (_GetServicePID () !=  Execution::GetCurrentProcessID ()) {
         Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
-    fRunThread_.WaitForDone ();
+    fRunThread_->WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
@@ -761,8 +761,8 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
         , Execution::Thread::eAutoStart
         , kServiceRunThreadName_
     };
-    fRunThread_.WaitForDone ();
-    fRunThread_.ThrowIfDoneWithException ();
+    fRunThread_->WaitForDone ();
+    fRunThread_->ThrowIfDoneWithException ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -882,8 +882,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM: {
-                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Execution::FormatThreadID (sigHandlerThread2Abort.GetID ()).c_str ());
-                fRunThread_.Abort ();
+                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Characters::ToString (sigHandlerThread2Abort).c_str ());
+                fRunThread_->Abort ();
             }
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
@@ -892,6 +892,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
         case    kSIG_ReReadConfiguration:
 #endif
             {
+                DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()");
                 fAppRep_->OnReReadConfigurationRequest ();
             }
             break;

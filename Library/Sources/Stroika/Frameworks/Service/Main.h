@@ -12,6 +12,7 @@
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Process.h"
+#include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/Execution/Thread.h"
 #include    "../../Foundation/Memory/Optional.h"
 #include    "../../Foundation/Streams/OutputStream.h"
@@ -772,7 +773,7 @@ namespace   Stroika {
                 static  const   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
 #endif
             private:
-                SignalHandlers  fOurSignalHandler_;
+                SignalHandlers  fOurSignalHandler_;     // only initialized and then read as consant, so no need to synchronize
                 nonvirtual  void    SignalHandler_ (SignalID signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
@@ -783,8 +784,8 @@ namespace   Stroika {
                 bool    fMustReReadConfig;
 
             private:
-                shared_ptr<IApplicationRep> fAppRep_;
-                Execution::Thread           fRunThread_;
+                Execution::Synchronized<shared_ptr<IApplicationRep>>    fAppRep_;
+                Execution::Synchronized<Execution::Thread>              fRunThread_;
             };
 #endif
 
