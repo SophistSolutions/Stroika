@@ -773,7 +773,7 @@ namespace   Stroika {
                 static  const   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
 #endif
             private:
-                SignalHandlers  fOurSignalHandler_;     // only initialized and then read as consant, so no need to synchronize
+                Execution::SignalHandler  fOurSignalHandler_;     // only initialized and then read as consant, so no need to synchronize
                 nonvirtual  void    SignalHandler_ (SignalID signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation

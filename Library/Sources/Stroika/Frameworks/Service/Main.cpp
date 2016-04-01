@@ -649,7 +649,7 @@ Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace ("Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl: this=%p", this);
 #endif
-    Require (fAppRep_ == nullptr);
+    Require (fAppRep_.load () == nullptr);
 }
 
 void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& appRep)
@@ -658,10 +658,10 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_Attach");
 #endif
     Execution::Thread::SuppressInterruptionInContext  suppressInterruption;       // this must run to completion - it only blocks waiting for subsidiary thread to finish
-    Require ((appRep == nullptr and fAppRep_ != nullptr) or
-             (fAppRep_ == nullptr and fAppRep_ != appRep)
+    Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
+             (fAppRep_.load () == nullptr and fAppRep_.load () != appRep)
             );
-    if (fAppRep_ != nullptr) {
+    if (fAppRep_.load () != nullptr) {
         SetupSignalHanlders_ (false);
     }
     fAppRep_ = appRep;
@@ -669,7 +669,7 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
         SetupSignalHanlders_ (true);
     }
     fRunThread_->AbortAndWaitForDone ();
-    fRunThread_.Store (Execution::Thread ());
+    fRunThread_.store (Execution::Thread ());
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -719,8 +719,8 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
         Execution::Throw (Execution::StringException (String_Constant { L"Service Already Running" }));
     }
 
-    RequireNotNull (fAppRep_);  // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
+    RequireNotNull (appRep);  // must call Attach_ first
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -751,8 +751,8 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
 
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
 {
-    RequireNotNull (fAppRep_);  // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
+    RequireNotNull (appRep);  // must call Attach_ first
     fRunThread_ = Execution::Thread {
         [appRep] ()
         {
@@ -863,7 +863,7 @@ void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ (bool install)
 
 String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_->GetServiceDescription ().fRegistrationName + String_Constant  { L".pid" };
+    return IO::FileSystem::WellKnownLocations::GetRuntimeVariableData () + fAppRep_.load ()->GetServiceDescription ().fRegistrationName + String_Constant  { L".pid" };
 }
 
 void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
@@ -882,7 +882,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM: {
-                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, Characters::ToString (sigHandlerThread2Abort).c_str ());
+                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, fRunThread_->ToString ().c_str ());
                 fRunThread_->Abort ();
             }
             break;
@@ -893,7 +893,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 #endif
             {
                 DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()");
-                fAppRep_->OnReReadConfigurationRequest ();
+                fAppRep_.load ()->OnReReadConfigurationRequest ();
             }
             break;
     }
