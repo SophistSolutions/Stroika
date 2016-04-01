@@ -75,7 +75,7 @@ void        Capturer::AddCaptureSet (const CaptureSet& cs)
     Assert (fCaptureSets_.size () == 1);    // only case we support so far
 }
 
-void    Capturer::ManageRunner_(bool on)
+void    Capturer::ManageRunner_ (bool on)
 {
     bool    threadPoolRunning   =   fThreadPool_.GetTasksCount () != 0;
     if (on) {

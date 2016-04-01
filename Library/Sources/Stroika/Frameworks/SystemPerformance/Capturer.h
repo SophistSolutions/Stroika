@@ -128,10 +128,10 @@ namespace   Stroika {
                 nonvirtual  void    UpdateMeasurementSet_ (const MeasurementSet& ms);
 
             private:
-                Execution::ThreadPool                       fThreadPool_;
                 Collection<CaptureSet>                      fCaptureSets_;
                 Collection<NewMeasurementsCallbackType>     fCallbacks_;
                 MeasurementSet                              fCurrentMeasurementSet_;
+                Execution::ThreadPool                       fThreadPool_;		// Subtle - construct last so auto-destructed first (shuts down threads)
             };
 
 
