@@ -20,17 +20,9 @@ using   namespace   Stroika::Frameworks::SystemPerformance;
 
 /*
  ********************************************************************************
- ***************** SystemPerformance::Capturer **********************************
+ ******************** SystemPerformance::Capturer *******************************
  ********************************************************************************
  */
-Capturer::Capturer ()
-    : fThreadPool_ ()
-    , fCaptureSets_ ()
-    , fCallbacks_ ()
-    , fCurrentMeasurementSet_ ()
-{
-}
-
 MeasurementSet    Capturer::GetMostRecentMeasurements () const
 {
     return fCurrentMeasurementSet_;
@@ -48,12 +40,12 @@ void        Capturer::SetMeasurementsCallbacks (const Collection<NewMeasurements
 
 void        Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
-    fCallbacks_.Add (cb);
+    fCallbacks_->Add (cb);
 }
 
 void        Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
-    fCallbacks_.Remove (cb);
+    fCallbacks_->Remove (cb);
 }
 
 Collection<CaptureSet>   Capturer::GetCaptureSets () const
@@ -64,15 +56,15 @@ Collection<CaptureSet>   Capturer::GetCaptureSets () const
 void      Capturer::SetCaptureSets (const Collection<CaptureSet>& captureSets)
 {
     fCaptureSets_ = captureSets;
-    ManageRunner_ (not fCaptureSets_.empty ());
-    Assert (fCaptureSets_.size () <= 1);    // only case we support so far
+    ManageRunner_ (not fCaptureSets_->empty ());
+    Assert (fCaptureSets_->size () <= 1);    // only case we support so far
 }
 
 void        Capturer::AddCaptureSet (const CaptureSet& cs)
 {
-    fCaptureSets_.Add (cs);
+    fCaptureSets_->Add (cs);
     ManageRunner_ (true);
-    Assert (fCaptureSets_.size () == 1);    // only case we support so far
+    Assert (fCaptureSets_->size () == 1);    // only case we support so far
 }
 
 void    Capturer::ManageRunner_ (bool on)
@@ -100,8 +92,8 @@ void    Capturer::Runner_ ()
     // @todo support more than one capture set.
     while (true) {
         //tmphack a race
-        if (fCaptureSets_.size () >= 1) {
-            CaptureSet cs = *fCaptureSets_.FindFirstThat ([] (CaptureSet) { return true;});
+        if (fCaptureSets_->size () >= 1) {
+            CaptureSet cs = *fCaptureSets_->FindFirstThat ([] (CaptureSet) { return true;});
 
             // @todo fix!!!
             // wrong - period should be from leading edge of last run!!!
@@ -128,7 +120,7 @@ void    Capturer::Runner_ ()
 void    Capturer::UpdateMeasurementSet_ (const MeasurementSet& ms)
 {
     fCurrentMeasurementSet_ = ms;
-    for (auto cb : fCallbacks_) {
+    for (auto cb : fCallbacks_.load ()) {
         cb (ms);
     }
 }

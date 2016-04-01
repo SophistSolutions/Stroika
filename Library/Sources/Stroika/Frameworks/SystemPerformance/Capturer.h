@@ -9,6 +9,7 @@
 #include    "../../Foundation/Containers/Collection.h"
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/Execution/Function.h"
+#include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/Execution/ThreadPool.h"
 #include    "../../Foundation/Time/Duration.h"
 
@@ -67,7 +68,9 @@ namespace   Stroika {
              */
             class   Capturer {
             public:
-                Capturer ();
+                Capturer () = default;
+                Capturer (const Capturer&) = delete;
+                Capturer& operator= (const Capturer&) = delete;
 
             public:
                 /**
@@ -117,7 +120,7 @@ namespace   Stroika {
                 nonvirtual  void        AddCaptureSet (const CaptureSet& cs);
 
             private:
-                nonvirtual  void    ManageRunner_(bool on);
+                nonvirtual  void    ManageRunner_ (bool on);
 
             private:
                 nonvirtual  void    Runner_ ();
@@ -128,10 +131,10 @@ namespace   Stroika {
                 nonvirtual  void    UpdateMeasurementSet_ (const MeasurementSet& ms);
 
             private:
-                Collection<CaptureSet>                      fCaptureSets_;
-                Collection<NewMeasurementsCallbackType>     fCallbacks_;
-                MeasurementSet                              fCurrentMeasurementSet_;
-                Execution::ThreadPool                       fThreadPool_;		// Subtle - construct last so auto-destructed first (shuts down threads)
+                Execution::Synchronized<Collection<CaptureSet>>                     fCaptureSets_;
+                Execution::Synchronized<Collection<NewMeasurementsCallbackType>>    fCallbacks_;
+                Execution::Synchronized<MeasurementSet>                             fCurrentMeasurementSet_;
+                Execution::ThreadPool                                               fThreadPool_;       // Subtle - construct last so auto-destructed first (shuts down threads)
             };
 
 
