@@ -195,7 +195,7 @@ namespace {
             (void)::snprintf (procObjectDir, NEltsOf (procObjectDir), "/proc/%d/object/", pid);
             DIR*       dirIt    { ::opendir (procObjectDir) };
             if (dirIt != nullptr) {
-				auto&& cleanup  =   Finally ([dirIt] () noexcept { ::closedir (dirIt); });
+                auto&& cleanup  =   Finally ([dirIt] () noexcept { ::closedir (dirIt); });
                 char    endsWithBuffer[1024];
                 endsWithBuffer[0] = '\0';
                 (void)::snprintf (endsWithBuffer, NEltsOf (endsWithBuffer), ".%lld", static_cast<long long> (inode));
