@@ -131,7 +131,7 @@ else
 			TIMESTAMP=`date +%s`;\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
 			   if [ -e PerformanceDump.txt ]; then\
-			  mv PerformanceDump.txt ../IntermediateFiles/PerformanceDump.$$ci.txt;\
+			  mv PerformanceDump.txt ../IntermediateFiles/PerformanceDump.$(CONFIGURATION).txt;\
 			   fi;\
 			TIMESTAMP2=`date +%s`;\
 			   EXERESULT=`echo $$EXERESULT | sed 's/ *$$//g'`;\
