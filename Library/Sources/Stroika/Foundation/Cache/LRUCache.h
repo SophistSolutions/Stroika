@@ -132,7 +132,7 @@ namespace   Stroika {
              *  \par Example Usage
              *      \code
              *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
-             *      \encode
+             *      \endcode
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
              *

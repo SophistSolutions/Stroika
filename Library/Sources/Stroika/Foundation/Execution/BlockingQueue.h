@@ -117,7 +117,7 @@ namespace   Stroika {
              *      Verify (counter == expectedValue);
              *      producerThread.WaitForDone ();      // producer already set to run off the end...
              *      consumerThread.AbortAndWaitForDone ();
-             *      \encode
+             *      \endcode
              */
             template    <typename T>
             class   BlockingQueue {

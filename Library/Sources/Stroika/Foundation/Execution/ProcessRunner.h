@@ -130,7 +130,7 @@ namespace   Stroika {
              *  \par Example Usage
              *      \code
              *      String name = Execution::ProcessRunner (L"uname").Run (String ()).Trim ();
-             *      \encode
+             *      \endcode
              */
             class ProcessRunner {
             public:
