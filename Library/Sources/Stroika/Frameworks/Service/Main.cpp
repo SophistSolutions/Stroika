@@ -668,7 +668,7 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
     if (appRep != nullptr) {
         SetupSignalHanlders_ (true);
     }
-    fRunThread_->AbortAndWaitForDone ();
+    fRunThread_.load ().AbortAndWaitForDone ();
     fRunThread_.store (Execution::Thread ());
 }
 
@@ -746,7 +746,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     if (_GetServicePID () !=  Execution::GetCurrentProcessID ()) {
         Execution::Throw (Execution::StringException (Characters::Format (L"Unable to create process ID tracking file %s (race?)", _GetPIDFileName ().c_str ())));
     }
-    fRunThread_->WaitForDone ();
+    fRunThread_.load ().WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
@@ -761,8 +761,9 @@ void    Main::BasicUNIXServiceImpl::_RunDirectly ()
         , Execution::Thread::eAutoStart
         , kServiceRunThreadName_
     };
-    fRunThread_->WaitForDone ();
-    fRunThread_->ThrowIfDoneWithException ();
+    Thread  t   =   fRunThread_.load ();
+    t.WaitForDone ();
+    t.ThrowIfDoneWithException ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -882,8 +883,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
     switch (signum) {
         case    SIGINT:
         case    SIGTERM: {
-                DbgTrace (L"Due to signal %s (%d), calling sigHandlerThread2Abort (thread: %s).Abort", Execution::SignalToName (signum).c_str (), signum, fRunThread_->ToString ().c_str ());
-                fRunThread_->Abort ();
+                DbgTrace (L"Calling sigHandlerThread2Abort (thread: %s).Abort ()", fRunThread_.load ().ToString ().c_str ());
+                fRunThread_.load ().Abort ();
             }
             break;
 #if     qCompilerAndStdLib_constexpr_Buggy
