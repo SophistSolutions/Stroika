@@ -4,6 +4,9 @@ set -E
 trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
+INCLUDE_HELGRIND_TESTS=false
+
+
 PRETTY_II_VERSION=
 
 TEST_OUT_FILE=REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`.OUT
@@ -80,24 +83,32 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 #more suppressions, but run on debug build...
-echo -n "Run-Tests VALGRIND memcheck gcc-5.2.0-debug-c++17..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND memcheck gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
+echo -n "Run-Tests VALGRIND memcheck gcc-5.3.0-debug-c++17..."
+echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND memcheck gcc-5.3.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
 STAGE_STARTAT_INT=$(date +%s)
-VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
+VALGRIND_SUPPRESSIONS="OpenSSL.supp Common-Valgrind.supp BlockAllocation-Valgrind.supp" make CONFIGURATION=gcc-5.3.0-debug-c++17 VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
+
+
 #more run helgrind
-echo -n "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
-STAGE_STARTAT_INT=$(date +%s)
-VALGRIND_SUPPRESSIONS="" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
-STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
+	echo -n "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND helgrind gcc-5.2.0-debug-c++17..." >>$TEST_OUT_FILE 2>&1
+	STAGE_STARTAT_INT=$(date +%s)
+	VALGRIND_SUPPRESSIONS="" make CONFIGURATION=gcc-5.2.0-debug-c++17 VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
+else
+	echo -n "Skipping helgrind test because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS"
+	echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+fi
+
 
 
 
