@@ -793,7 +793,7 @@ sub	WriteConfigFile_
 		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
 	}
 
-	if ($runtimeStackProtectorFlag) {
+	if ($runtimeStackProtectorFlag == true) {
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 	}
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
