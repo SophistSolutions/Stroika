@@ -325,7 +325,8 @@ sub	SetDefaultForCompilerDriver_
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
 				$ENABLE_GLIBCXX_DEBUG = 1;
 			}
-			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
+			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS && !("$^O" eq "aix")) {
+				### sadly - I've only needed this on AIX, and its only missing on AIX
 				$runtimeStackProtectorFlag = true;
 			}
 		}

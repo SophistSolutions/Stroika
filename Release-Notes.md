@@ -17,6 +17,7 @@ History
 
 
   
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a138">v2.0a138x</a><br/>2016-03-??</td>
 <td>
@@ -60,6 +61,8 @@ History
 	</ul>
 </td>
 </tr>
+
+
 
 
 
