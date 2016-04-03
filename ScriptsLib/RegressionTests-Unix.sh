@@ -5,6 +5,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
 : ${INCLUDE_HELGRIND_TESTS:=false}
+: ${CLOBBER_FIRST:=true}
 
 
 PRETTY_II_VERSION=
@@ -34,7 +35,14 @@ for i in `ScriptsLib/GetConfigurations.sh`; do
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
 done
 
-make clobber >>$TEST_OUT_FILE 2>&1
+if [ "$CLOBBER_FIRST" = true ] ; then
+  	echo "   ...make clobber"
+  	echo "   ...make clobber" >>$TEST_OUT_FILE 2>&1
+  	make clobber >>$TEST_OUT_FILE 2>&1
+else
+	echo "   ...Skipping Clobber"
+	echo "   ...Skipping Clobber" >>$TEST_OUT_FILE 2>&1
+fi
 STAGE_STARTAT_INT=$(date +%s)
 echo -n "Make all..."
 echo "$PREFIX_OUT_LABEL" "Make all..."  >>$TEST_OUT_FILE 2>&1
@@ -105,7 +113,7 @@ if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 else
-	echo -n "Skipping helgrind test because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS"
+	echo "Skipping helgrind test because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS"
 	echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 fi
 
