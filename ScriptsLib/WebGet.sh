@@ -17,7 +17,7 @@ if [ "$SRCURL4" == "" ] ; then
 	SRCURL4=$SRCURL1
 fi
 if [ "$SRCURL5" == "" ] ; then
-	SRCURL4=$SRCURL3
+	SRCURL5=$SRCURL3
 fi
 if [ "$SRCURL6" == "" ] ; then
 	SRCURL6=$SRCURL4
