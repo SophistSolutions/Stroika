@@ -64,7 +64,7 @@ namespace   Stroika {
 
 
             /**
-             *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them.
+             *  A key feature of SignalHandler versus function<void(SignalID)> is that you can compare them (@see Function)
              *
              *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
              *  creating another SignalHandler (even with the same arguments) may not compare as equal.
@@ -72,11 +72,9 @@ namespace   Stroika {
              *  Also, signal handlers come with a flag indicating that they are intended to be run in a 'safe' manner
              *  or a direct signal handling manner.
              *
-             *  \note   BEWARE - these are copied during exception handling, which is a dangerous, finicky place.
-             *          Copy must not do operations (like allocate memory) which would be unsafe during signal handling.
-             *
-             *          I THINK Function (based on shared_ptr) is safe with respect to this, but this is probably worth
-             *          double checking.
+             *  \note   BEWARE - these may be copied during invocation, which for 'direct' signal handerls is a
+             *          dangerous, finicky place. Copy must not do operations (like allocate memory) which would be
+             *          unsafe during signal (direct) handling.
              */
             class   SignalHandler {
             public:
@@ -208,6 +206,8 @@ namespace   Stroika {
                  *
                  * Note - if through ANY combination of set/add/remove - you have NO signal handler - this reverts to SIG_DFL, and if you have
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
+                 *
+                 *  \note Setting any 'Safe' signal handlers requires that SafeSignalsManager has been created.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalID signal);
                 nonvirtual  void    SetSignalHandlers (SignalID signal, SignalHandler handler);
@@ -219,6 +219,8 @@ namespace   Stroika {
                  *
                  *  \note - subtlety - if you wish to later call RemoveSignalHandler, save the signalhandler in a static const of type
                  *          SignalHandler, and re-use that value.
+                 *
+                 *  \note Adding any 'Safe' signal handlers requires that SafeSignalsManager has been created.
                  */
                 nonvirtual  void    AddSignalHandler (SignalID signal, SignalHandler handler);
 
