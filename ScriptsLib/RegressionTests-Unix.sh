@@ -36,12 +36,12 @@ for i in `ScriptsLib/GetConfigurations.sh`; do
 done
 
 if [ "$CLOBBER_FIRST" = true ] ; then
-  	echo "   ...make clobber"
-  	echo "   ...make clobber" >>$TEST_OUT_FILE 2>&1
+  	echo "Make clobber"
+  	echo "Make clobber" >>$TEST_OUT_FILE 2>&1
   	make clobber >>$TEST_OUT_FILE 2>&1
 else
-	echo "   ...Skipping Clobber"
-	echo "   ...Skipping Clobber" >>$TEST_OUT_FILE 2>&1
+	echo "Skipping Clobber"
+	echo "Skipping Clobber" >>$TEST_OUT_FILE 2>&1
 fi
 STAGE_STARTAT_INT=$(date +%s)
 echo -n "Make all..."
