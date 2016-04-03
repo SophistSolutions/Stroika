@@ -13,7 +13,11 @@ MULTILIB_CONFIGURE_FLAGS=--disable-multilib
 LANGUAGES_CONFIGURE_FLAGS=--enable-languages=c,c++
 EXTRA_CONFIGURE_FLAGS=
 
+#sometimes realpath (old systems fails if dir doest exist, so create and delete)
+mkdir -p ./BUILD-GCC-$GCC_VERSION
 BUILDDIR=`realpath ./BUILD-GCC-$GCC_VERSION`
+rm -rf ./BUILD-GCC-$GCC_VERSION
+
 
 BLDOUT=$BUILDDIR/BLDOUT.txt
 
