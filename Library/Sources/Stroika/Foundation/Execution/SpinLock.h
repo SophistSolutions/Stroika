@@ -46,12 +46,18 @@ namespace   Stroika {
                 nonvirtual  SpinLock& operator= (const SpinLock&) = delete;
 
             public:
-                nonvirtual  bool    try_lock();
+                /**
+                 */
+                nonvirtual  bool    try_lock ();
 
             public:
+                /**
+                 */
                 nonvirtual  void    lock ();
 
             public:
+                /**
+                 */
                 nonvirtual  void    unlock ();
 
             private:
