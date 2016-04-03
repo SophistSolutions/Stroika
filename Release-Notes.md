@@ -21,12 +21,48 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a138">v2.0a138x</a><br/>2016-03-??</td>
 <td>
 	<ul>
+<!--as of 2016-04-03-11am -->
+
+		<li>Support GCC 5.3 in Defaults_CompilerAndStdLib</li>
+		<li>Various docs cleanups (including Thread, Synchonized)</li>
+		<li>Cleanup DbgTarace qStroika_Foundation_Exection_Thread_SupportThreadStatistics in Thread</li>
+		<li>Synchonized usage in Frameworks/SystemPerformance/Capturer</li>
+		<li>Slightly enlarged timeouts on performance regtest so hopefully wont fail anymore on AWS VMs</li>
+		<li>Formatting of backtrace output on gcc/unix (now using demangle)</li>
 		<li>
-			TODO
+			RegressionTets-Unix.sh and Makefile
+			<ul>
+				<li>gcc 5.3.0 support in regression test, and a few other additions/removals</li>
+				<li>conditionally added helgrind support (but disabeld cuz broken - https://stroika.atlassian.net/browse/STK-471) </li>
+				<li>Attempt to support running valgrind memcheck or helgrind, and changed meaning of VALGRIND= param to tool to use,a nd changed regtests to run memcheck AND one helgrind</li>
+			</ul>
 		</li>
+		<li>
+			Frameworks::Service
+			<ul>
+				<li>Lose unused Main::sTHIS_; and example usage comments</li>
+				<li>Use synchonized to protect instance variables on Main::BasicUNIXServiceImpl</li>
+				<li>Instance/function object for safe signal handler to avoid use of global variable</li>
+				<li>use fRunThread.load() instead of fRunThread_-> in Main::BasicUNIXServiceImpl::_Attach () to avoid deadlock</li>
+				<li>Generally UNIX impl should be more solid/thread/signal safe</li>
+			</ul>
+		</li>
+		<li>
+			ProcessRunner
+			<ul>
+				<li>santiy check asserts on getrlimit results</li>
+				<li>delete old obsolete code (ifdefed)</li>
+				<li>ProcessRunner - use f_fork on AIX</li>
+				<li>Incomplete draft of using spawn instead of fork/exec</li>
+			</ul>
+		</li>
+		<li>Completed rewrite of https://analitiqa.atlassian.net/browse/AII-27 - Execution::Platform::AIX::GetEXEPathWithHintT - still sucks - but at least no popen</li>
 	</ul>
 </td>
 </tr>
+
+
+
 
 
 <tr>
