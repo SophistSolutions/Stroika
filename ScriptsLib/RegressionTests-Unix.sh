@@ -4,7 +4,7 @@ set -E
 trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
-INCLUDE_HELGRIND_TESTS=false
+: ${INCLUDE_HELGRIND_TESTS:=false}
 
 
 PRETTY_II_VERSION=
