@@ -56,7 +56,7 @@
 #if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
-#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 2))
+#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 3))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -595,7 +595,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #if     qCompilerAndStdLib_constexpr_Buggy
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -688,7 +688,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -763,7 +763,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
@@ -951,7 +951,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
