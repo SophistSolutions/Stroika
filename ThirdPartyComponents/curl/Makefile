@@ -17,6 +17,7 @@ DoCreateSymLink=0
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 VERSION=7_47_1
+VERSION_WITH_DASHES=$(shell echo $(VERSION) | sed 's/_/-/g')
 BASENAME=curl-curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -26,7 +27,7 @@ USE_DIRNAME=CURRENT
 
 FETCHURLS=
 FETCHURLS+=https://github.com/bagder/curl/archive/curl-$(VERSION).tar.gz
-FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
+FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION_WITH_DASHES).tar.gz
 
 
 BUILDS_ROOT=../../Builds/
