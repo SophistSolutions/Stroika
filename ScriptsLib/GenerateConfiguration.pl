@@ -45,6 +45,8 @@ my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 
+my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
+
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
@@ -132,6 +134,7 @@ sub	DoHelp_
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
         print("	    --debug-symbols {true|false}					/* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --runtime-stack-check {true|false}				/* gcc -fstack-protector-all */\n");
 		
 	exit ($x);
 }
@@ -321,6 +324,9 @@ sub	SetDefaultForCompilerDriver_
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
 				$ENABLE_GLIBCXX_DEBUG = 1;
+			}
+			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
+				$runtimeStackProtectorFlag = true;
 			}
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
@@ -607,6 +613,14 @@ sub	ParseCommandLine_Remaining_
 			}
 			$INCLUDE_SYMBOLS = $var;
 		}
+		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --runtime-stack-check");
+			}
+			$runtimeStackProtectorFlag = $var;
+		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
 			$onlyGenerateIfCompilerExists = true;
 		}
@@ -778,6 +792,9 @@ sub	WriteConfigFile_
 		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
 	}
 
+	if ($runtimeStackProtectorFlag) {
+		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
+	}
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
 	print (OUT "    <EXTRA_LINKER_ARGS>$EXTRA_LINKER_ARGS</EXTRA_LINKER_ARGS>\n");
 
