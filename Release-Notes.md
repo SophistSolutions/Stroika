@@ -19,23 +19,23 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a138">v2.0a138x</a><br/>2016-03-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a138">v2.0a138</a><br/>2016-04-03</td>
 <td>
 	<ul>
-<!--as of 2016-04-03-11am -->
-
 		<li>Support GCC 5.3 in Defaults_CompilerAndStdLib</li>
+		<li>curl version 7.48.0; and fixed download logic to only grab from mirrors and default download location - not github cuz that names folders differently</li>
 		<li>Various docs cleanups (including Thread, Synchonized)</li>
 		<li>Cleanup DbgTarace qStroika_Foundation_Exection_Thread_SupportThreadStatistics in Thread</li>
 		<li>Synchonized usage in Frameworks/SystemPerformance/Capturer</li>
 		<li>Slightly enlarged timeouts on performance regtest so hopefully wont fail anymore on AWS VMs</li>
 		<li>Formatting of backtrace output on gcc/unix (now using demangle)</li>
+		<li>New configure --runtime-stack-check {true|false} (hit by --apply-default-debug-flags) flag; but sadly doesnt work on AIX (platform where needed most)</li>
 		<li>
 			RegressionTets-Unix.sh and Makefile
 			<ul>
 				<li>gcc 5.3.0 support in regression test, and a few other additions/removals</li>
-				<li>conditionally added helgrind support (but disabeld cuz broken - https://stroika.atlassian.net/browse/STK-471) </li>
-				<li>Attempt to support running valgrind memcheck or helgrind, and changed meaning of VALGRIND= param to tool to use,a nd changed regtests to run memcheck AND one helgrind</li>
+				<li>Conditionally added helgrind support (but disabeld cuz broken - https://stroika.atlassian.net/browse/STK-471) </li>
+				<li>Attempt to support running valgrind memcheck or helgrind, and changed meaning of VALGRIND= param to tool to use, and changed regtests to run memcheck AND one helgrind</li>
 			</ul>
 		</li>
 		<li>
@@ -44,7 +44,7 @@ History
 				<li>Lose unused Main::sTHIS_; and example usage comments</li>
 				<li>Use synchonized to protect instance variables on Main::BasicUNIXServiceImpl</li>
 				<li>Instance/function object for safe signal handler to avoid use of global variable</li>
-				<li>use fRunThread.load() instead of fRunThread_-> in Main::BasicUNIXServiceImpl::_Attach () to avoid deadlock</li>
+				<li>use fRunThread.load () instead of fRunThread_-> in Main::BasicUNIXServiceImpl::_Attach () to avoid deadlock</li>
 				<li>Generally UNIX impl should be more solid/thread/signal safe</li>
 			</ul>
 		</li>
@@ -58,6 +58,22 @@ History
 			</ul>
 		</li>
 		<li>Completed rewrite of https://analitiqa.atlassian.net/browse/AII-27 - Execution::Platform::AIX::GetEXEPathWithHintT - still sucks - but at least no popen</li>
+		<li>Added PerformanceDump-v2.0a138-x86-ReleaseU.txt; PerformanceDump-v2.0a138-linux-gcc-4.9.2-x64.txt; PerformanceDump-v2.0a138-linux-gcc-5.3.0-x64.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k13</li>
+				<li>vc++2k15 Update 2 (except some crashers in 64 bit code due to MSFT lib bug)</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>ppc-AIX-7.1/gcc 4.9 (release works fully, but Configuration=Debug crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile-raspberry-pi</li>
+				<li>valgrind</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
