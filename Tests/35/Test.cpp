@@ -811,7 +811,7 @@ namespace   {
             auto runningThreads =   Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {
-                DbgTrace (L"Exiting main with thread %s running", Execution::ToString (threadID).c_str ());
+                DbgTrace (L"Exiting main with thread %s running", Characters::ToString (threadID).c_str ());
             }
             VerifyTestResult (runningThreads.size () == 0);
         }
