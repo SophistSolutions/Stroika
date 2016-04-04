@@ -529,7 +529,7 @@ namespace {
       return UNZ_OK if there is no problem
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
-    int unzGoToNextFile (unzFile file);
+    int unzGoToNextFile_ (unzFile file);
 
     /*
       Try locate the file szFileName in the zipfile.
@@ -539,7 +539,7 @@ namespace {
       UNZ_OK if the file is found. It becomes the current file.
       UNZ_END_OF_LIST_OF_FILE if the file is not found
     */
-    int unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity);
+    int unzLocateFile_ (unzFile file, const char* szFileName, int iCaseSensitivity);
 
 
     /* ****************************************** */
@@ -633,14 +633,14 @@ namespace {
       note : you can set level parameter as NULL (if you did not want known level,
              but you CANNOT set method parameter as NULL
     */
-    int  unzOpenCurrentFile3 (unzFile file, int* method, int* level, int raw, const char* password);
+    int  unzOpenCurrentFile3_ (unzFile file, int* method, int* level, int raw, const char* password);
 
 
     /*
       Close the file in zip opened with unzOpenCurrentFile
       Return UNZ_CRCERROR if all the file was read but the CRC is not good
     */
-    int  unzCloseCurrentFile (unzFile file);
+    int  unzCloseCurrentFile_ (unzFile file);
 
     /*
      Read bytes from the current file (opened by unzOpenCurrentFile)
@@ -652,7 +652,7 @@ namespace {
      return <0 with error code if there is an error
        (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
-    int unzReadCurrentFile (unzFile file, voidp buf, unsigned len);
+    int unzReadCurrentFile_ (unzFile file, voidp buf, unsigned len);
 
     z_off_t  unztell (unzFile file);
 
@@ -1437,7 +1437,7 @@ namespace {
     /*
       Close a ZipFile opened with unzOpen.
       If there is files inside the .Zip opened with unzOpenCurrentFile (see later),
-        these files MUST be closed with unzCloseCurrentFile before call unzClose.
+        these files MUST be closed with unzCloseCurrentFile_ before call unzClose.
       return UNZ_OK if there is no problem. */
     int  unzClose (unzFile file)
     {
@@ -1447,7 +1447,7 @@ namespace {
         s = (unz64_s*)file;
 
         if (s->pfile_in_zip_read != NULL)
-            unzCloseCurrentFile(file);
+            unzCloseCurrentFile_ (file);
 
         ZCLOSE64(s->z_filefunc, s->filestream);
         TRYFREE(s);
@@ -1483,7 +1483,7 @@ namespace {
     /*
        Translate date/time from Dos format to tm_unz (readable more easilty)
     */
-    void unz64local_DosDateToTmuDate (ZPOS64_T ulDosDate, tm_unz* ptm)
+    void unz64local_DosDateToTmuDate_ (ZPOS64_T ulDosDate, tm_unz* ptm)
     {
         ZPOS64_T uDate;
         uDate = (ZPOS64_T)(ulDosDate >> 16);
@@ -1499,7 +1499,7 @@ namespace {
     /*
       Get Info about the current file in the zipfile, with internal only info
     */
-    int unz64local_GetCurrentFileInfoInternal (unzFile file, unz_file_info64* pfile_info, unz_file_info64_internal* pfile_info_internal, char* szFileName, uLong fileNameBufferSize, void* extraField,  uLong extraFieldBufferSize,  char* szComment,  uLong commentBufferSize)
+    int unz64local_GetCurrentFileInfoInternal_ (unzFile file, unz_file_info64* pfile_info, unz_file_info64_internal* pfile_info_internal, char* szFileName, uLong fileNameBufferSize, void* extraField,  uLong extraFieldBufferSize,  char* szComment,  uLong commentBufferSize)
     {
         unz64_s* s;
         unz_file_info64 file_info;
@@ -1541,7 +1541,7 @@ namespace {
         if (unz64local_getLong(&s->z_filefunc, s->filestream, &file_info.dosDate) != UNZ_OK)
             err = UNZ_ERRNO;
 
-        unz64local_DosDateToTmuDate(file_info.dosDate, &file_info.tmu_date);
+        unz64local_DosDateToTmuDate_ (file_info.dosDate, &file_info.tmu_date);
 
         if (unz64local_getLong(&s->z_filefunc, s->filestream, &file_info.crc) != UNZ_OK)
             err = UNZ_ERRNO;
@@ -1720,14 +1720,14 @@ namespace {
     */
     int unzGetCurrentFileInfo64 (unzFile file,  unz_file_info64* pfile_info, char* szFileName, uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize, char* szComment,  uLong commentBufferSize)
     {
-        return unz64local_GetCurrentFileInfoInternal(file, pfile_info, NULL, szFileName, fileNameBufferSize, extraField, extraFieldBufferSize, szComment, commentBufferSize);
+        return unz64local_GetCurrentFileInfoInternal_ (file, pfile_info, NULL, szFileName, fileNameBufferSize, extraField, extraFieldBufferSize, szComment, commentBufferSize);
     }
 
     int  unzGetCurrentFileInfo (unzFile file, unz_file_info* pfile_info, char* szFileName, uLong fileNameBufferSize, void* extraField, uLong extraFieldBufferSize, char* szComment,  uLong commentBufferSize)
     {
         int err;
         unz_file_info64 file_info64;
-        err = unz64local_GetCurrentFileInfoInternal(file, &file_info64, NULL,
+        err = unz64local_GetCurrentFileInfoInternal_ (file, &file_info64, NULL,
                 szFileName, fileNameBufferSize,
                 extraField, extraFieldBufferSize,
                 szComment, commentBufferSize);
@@ -1770,7 +1770,7 @@ namespace {
         s = (unz64_s*)file;
         s->pos_in_central_dir = s->offset_central_dir;
         s->num_file = 0;
-        err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info,
+        err = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                 &s->cur_file_info_internal,
                 NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok = (err == UNZ_OK);
@@ -1782,7 +1782,7 @@ namespace {
       return UNZ_OK if there is no problem
       return UNZ_END_OF_LIST_OF_FILE if the actual file was the latest.
     */
-    int  unzGoToNextFile (unzFile  file)
+    int  unzGoToNextFile_ (unzFile  file)
     {
         unz64_s* s;
         int err;
@@ -1799,7 +1799,7 @@ namespace {
         s->pos_in_central_dir += SIZECENTRALDIRITEM + s->cur_file_info.size_filename +
                                  s->cur_file_info.size_file_extra + s->cur_file_info.size_file_comment ;
         s->num_file++;
-        err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info,
+        err = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                 &s->cur_file_info_internal,
                 NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok = (err == UNZ_OK);
@@ -1815,7 +1815,7 @@ namespace {
       UNZ_OK if the file is found. It becomes the current file.
       UNZ_END_OF_LIST_OF_FILE if the file is not found
     */
-    int  unzLocateFile (unzFile file, const char* szFileName, int iCaseSensitivity)
+    int  unzLocateFile_ (unzFile file, const char* szFileName, int iCaseSensitivity)
     {
         unz64_s* s;
         int err;
@@ -1856,7 +1856,7 @@ namespace {
                 if (unzStringFileNameCompare(szCurrentFileName,
                                              szFileName, iCaseSensitivity) == 0)
                     return UNZ_OK;
-                err = unzGoToNextFile(file);
+                err = unzGoToNextFile_ (file);
             }
         }
 
@@ -1930,7 +1930,7 @@ namespace {
         s->num_file           = file_pos->num_of_file;
 
         /* set the current file */
-        err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info,
+        err = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                 &s->cur_file_info_internal,
                 NULL, 0, NULL, 0, NULL, 0);
         /* return results */
@@ -2047,7 +2047,7 @@ namespace {
       Open for reading data the current file in the zipfile.
       If there is no error and the file is opened, the return value is UNZ_OK.
     */
-    int  unzOpenCurrentFile3 (unzFile file, int* method, int* level, int raw, const char* password)
+    int  unzOpenCurrentFile3_ (unzFile file, int* method, int* level, int raw, const char* password)
     {
         int err = UNZ_OK;
         uInt iSizeVar;
@@ -2069,7 +2069,7 @@ namespace {
             return UNZ_PARAMERROR;
 
         if (s->pfile_in_zip_read != NULL)
-            unzCloseCurrentFile(file);
+            unzCloseCurrentFile_ (file);
 
         if (unz64local_CheckCurrentFileCoherencyHeader(s, &iSizeVar, &offset_local_extrafield, &size_local_extrafield) != UNZ_OK)
             return UNZ_BADZIPFILE;
@@ -2214,17 +2214,17 @@ namespace {
 
     int  unzOpenCurrentFile (unzFile file)
     {
-        return unzOpenCurrentFile3(file, NULL, NULL, 0, NULL);
+        return unzOpenCurrentFile3_ (file, NULL, NULL, 0, NULL);
     }
 
     int  unzOpenCurrentFilePassword (unzFile file, const char*  password)
     {
-        return unzOpenCurrentFile3(file, NULL, NULL, 0, password);
+        return unzOpenCurrentFile3_ (file, NULL, NULL, 0, password);
     }
 
     int  unzOpenCurrentFile2 (unzFile file, int* method, int* level, int raw)
     {
-        return unzOpenCurrentFile3(file, method, level, raw, NULL);
+        return unzOpenCurrentFile3_ (file, method, level, raw, NULL);
     }
 
     /** Addition for GDAL : START */
@@ -2255,7 +2255,7 @@ namespace {
       return <0 with error code if there is an error
         (UNZ_ERRNO for IO error, or zLib error for uncompress error)
     */
-    int  unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
+    int  unzReadCurrentFile_ (unzFile file, voidp buf, unsigned len)
     {
         int err = UNZ_OK;
         uInt iRead = 0;
@@ -2567,7 +2567,7 @@ namespace {
       Close the file in zip opened with unzOpenCurrentFile
       Return UNZ_CRCERROR if all the file was read but the CRC is not good
     */
-    int unzCloseCurrentFile (unzFile file)
+    int unzCloseCurrentFile_ (unzFile file)
     {
         int err = UNZ_OK;
 
@@ -2675,7 +2675,7 @@ namespace {
 
         s->pos_in_central_dir = pos;
         s->num_file = s->gi.number_entry;      /* hack */
-        err = unz64local_GetCurrentFileInfoInternal(file, &s->cur_file_info,
+        err = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                 &s->cur_file_info_internal,
                 NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok = (err == UNZ_OK);
@@ -2814,7 +2814,7 @@ public:
                 break;
             }
             if ((i + 1) < gi.number_entry) {
-                err = unzGoToNextFile(fZipFile_);
+                err = unzGoToNextFile_ (fZipFile_);
                 if (err != UNZ_OK) {
                     Execution::Throw (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGoToNextFile", err)));
                     break;
@@ -2883,7 +2883,7 @@ public:
                    (uLong)file_info.tmu_date.tm_hour, (uLong)file_info.tmu_date.tm_min,
                    (uLong)file_info.crc, filename_inzip);
             if ((i + 1) < gi.number_entry) {
-                err = unzGoToNextFile(uf);
+                err = unzGoToNextFile_ (uf);
                 if (err != UNZ_OK) {
                     printf("error %d with zipfile in unzGoToNextFile\n", err);
                     break;
@@ -2907,16 +2907,16 @@ public:
     }
     virtual Memory::BLOB    GetData (const String& fileName) const override
     {
-        if (unzLocateFile (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) {
+        if (unzLocateFile_ (fZipFile_, fileName.AsNarrowSDKString ().c_str (), 1) != UNZ_OK) {
             Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' not found", fileName.c_str ())));
         }
         const char* password = nullptr;
         int     err     = unzOpenCurrentFilePassword (fZipFile_, password);
-        auto&&  cleanup =   Execution::Finally ([this] () { unzCloseCurrentFile (fZipFile_); });
+        auto&&  cleanup =   Execution::Finally ([this] () { unzCloseCurrentFile_ (fZipFile_); });
         Streams::MemoryStream<Byte> tmpBuf;
         do {
             Byte    buf [10 * 1024];
-            err = unzReadCurrentFile (fZipFile_, buf, NEltsOf (buf));
+            err = unzReadCurrentFile_ (fZipFile_, buf, NEltsOf (buf));
             if (err < 0) {
                 Execution::Throw (Execution::StringException (Characters::Format (L"File '%s' error %d extracting", fileName.c_str (), err)));
             }
