@@ -378,7 +378,7 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
                 threadsToShutdown.Add (ti.fThread);
 #if     qDefaultTracingOn
                 if (not ti.fThread.IsDone ()) {
-                    threadsNotAlreadyDone.Add (Execution::FormatThreadID (ti.fThread.GetID ()));
+                    threadsNotAlreadyDone.Add (Characters::ToString (ti.fThread.GetID ()));
                 }
 #endif
             }

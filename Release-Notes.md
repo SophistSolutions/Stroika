@@ -21,6 +21,7 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
+		<li><em>warning - not backward compatible</em> Execution::FormatThreadID now returns string (ASCII); so use Characters::ToString (IDType) instead</li>
 	</ul>
 </td>
 </tr>
@@ -223,7 +224,7 @@ History
 		<li>Threads
 			<ul>
 				<li>define and use Thread::AbortException::kThe and Thread::InterruptException::kThe to avoid problems constructing them (copyies strings) during abort, so abort in abort</li>
-				<li>dicmetne that Execution::FormatThreadID () is not a cancelation point and force with Thread::SuppressInterruptionInContext</li>
+				<li>document that Execution::FormatThreadID () is not a cancelation point and force with Thread::SuppressInterruptionInContext</li>
 				<li>document that Trace::EmitTraceMEssage is not a cancelation point; include Thread::SuppressInterruptionInContext</li>
 			</ul>
 		</li>

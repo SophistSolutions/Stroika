@@ -279,7 +279,7 @@ namespace   Stroika {
             template    <>
             String  ToString (const std::thread::id& t)
             {
-                return Execution::FormatThreadID (t);
+                return String::FromAscii (Execution::FormatThreadID (t));
             }
         }
     }
@@ -405,7 +405,7 @@ Characters::String  Thread::Rep_::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-    sb += L"id: " + FormatThreadID (GetID ()) + L", ";
+    sb += L"id: " + Characters::ToString (GetID ()) + L", ";
     if (not fThreadName_.empty ()) {
         sb += L"name: '" + fThreadName_ + L"', ";
     }
@@ -815,7 +815,7 @@ void    Thread::SetThreadName (const String& threadName)
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
         TraceContextBumper  ctx ("Execution::Thread::SetThreadName");
-        DbgTrace (L"(thisThreadID=%s, threadName = '%s')", FormatThreadID (GetID ()).c_str (), threadName.c_str ());
+        DbgTrace (L"(thisThreadID=%s, threadName = '%s')", Characters::ToString (GetID ()).c_str (), threadName.c_str ());
         fRep_->fThreadName_ = threadName.As<wstring> ();
 #if     qSupportSetThreadNameDebuggerCall_
 #if     qPlatform_Windows
@@ -865,7 +865,7 @@ void    Thread::Start ()
 {
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
-    DbgTrace (L"Thread::Start: (thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
+    DbgTrace (L"Thread::Start: (thread = %s, name='%s')", Characters::ToString (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
     fRep_->fOK2StartEvent_.Set ();
 }
 
@@ -1043,7 +1043,7 @@ bool    Thread::IsDone () const
  **************************** Execution::FormatThreadID *************************
  ********************************************************************************
  */
-String Execution::FormatThreadID (Thread::IDType threadID)
+string Execution::FormatThreadID (Thread::IDType threadID)
 {
     Thread::SuppressInterruptionInContext   suppressAborts;
 
@@ -1051,7 +1051,7 @@ String Execution::FormatThreadID (Thread::IDType threadID)
      *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
      *  way we usually format a thread ID (hex, fixed width). So do that, so thread IDs look more consistent.
      */
-    wstringstream   out;
+    stringstream   out;
     out << threadID;
 
 #if     qPlatform_Windows
@@ -1067,7 +1067,7 @@ String Execution::FormatThreadID (Thread::IDType threadID)
     if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
         uint64_t   threadIDInt =   0;
         out >> threadIDInt;
-        return Characters::Format (L"0x%016llx", threadIDInt);
+        return Characters::CString::Format ("0x%016llx", threadIDInt);
     }
     else {
         uint32_t    threadIDInt =   0;
@@ -1082,10 +1082,10 @@ String Execution::FormatThreadID (Thread::IDType threadID)
         constexpr   bool    kUse16BitThreadIDsIfTheyFit_ { false };
         const   bool    kUse16Bit_ = kUse16BitThreadIDsIfTheyFit_ and threadIDInt <= 0xffff;
         if (kUse16Bit_) {
-            return Characters::CString::Format (L"0x%04x", threadIDInt);
+            return Characters::CString::Format ("0x%04x", threadIDInt);
         }
         else {
-            return Characters::CString::Format (L"0x%08x", threadIDInt);
+            return Characters::CString::Format ("0x%08x", threadIDInt);
         }
     }
 }

@@ -583,8 +583,12 @@ namespace   Stroika {
              *  Represent the thread ID for display - typically as an integer.
              *
              *  \note this function is NOT a cancelation point
+             *
+             *  \note   this returns an ASCII string (not using String class library) so easier to use from code expecting no cancelation
+             *
+             *  @see Characters::ToString (Thread::IDType threadID)
              */
-            Characters::String     FormatThreadID (Thread::IDType threadID);
+            string     FormatThreadID (Thread::IDType threadID);
 
 
             /**
