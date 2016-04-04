@@ -6,7 +6,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 : ${INCLUDE_HELGRIND_TESTS:=false}
 : ${CLOBBER_FIRST:=true}
-: ${PARALELLMAKEFLAG:=-j3}
+: ${PARALELLMAKEFLAG:=-j2}
 
 
 TEST_OUT_FILE=REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`.OUT
@@ -42,8 +42,8 @@ else
 	echo "Skipping Clobber" >>$TEST_OUT_FILE 2>&1
 fi
 STAGE_STARTAT_INT=$(date +%s)
-echo -n "Make all..."
-echo "$PREFIX_OUT_LABEL" "Make all..."  >>$TEST_OUT_FILE 2>&1
+echo -n "Make all ($PARALELLMAKEFLAG)..."
+echo "$PREFIX_OUT_LABEL" "Make all ($PARALELLMAKEFLAG)..."  >>$TEST_OUT_FILE 2>&1
 make all $PARALELLMAKEFLAG >>$TEST_OUT_FILE 2>&1
 STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
