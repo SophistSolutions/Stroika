@@ -19,6 +19,17 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a140">v2.0a140</a><br/>2016-04-04</td>
+<td>
+	<ul>
+		<li><em>Quick minor release (little tested)</em></li>
+	</ul>
+</td>
+</tr>
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a139">v2.0a139</a><br/>2016-04-04</td>
 <td>
 	<ul>
