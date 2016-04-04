@@ -1596,7 +1596,7 @@ namespace   {
             Test_SimpleStringConCat1_<wstring>, L"wstring",
             Test_SimpleStringConCat1_<String>, L"String",
             2380000,
-            2.5,
+            3.2,	// so high cuz AWS vm running Release-memleak config
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1708,7 +1708,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.36,
+            0.39,		// so high cuz AWS vm running Release-memleak config
             &failedTests
         );
         Tester (
