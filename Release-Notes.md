@@ -16,12 +16,15 @@ History
 
 
 
+
+
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a139">v2.0a139x</a><br/>2016-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a139">v2.0a139</a><br/>2016-04-04</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li><em>Quick minor release (little tested) to adjust timeouts on performance regtest for HealthFrame release</em></li>
 		<li><em>warning - not backward compatible</em> Execution::FormatThreadID now returns string (ASCII); so use Characters::ToString (IDType) instead</li>
+		<li>lose deprecated mkFinally</li>
 	</ul>
 </td>
 </tr>
