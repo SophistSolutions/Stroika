@@ -327,7 +327,7 @@ namespace   Stroika {
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const Function<void()>& runnable)
+Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Configuration>& configuration)
     : fRunnable_ (runnable)
     , fThread_ ()
     , fStatus_ (Status::eNotYetRunning)
@@ -692,14 +692,32 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
 #if     qPlatform_POSIX
 SignalID        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
 #endif
+namespace {
+    Synchronized<Thread::Configuration> sDefaultConfiguration_;
+}
 
 Thread::Thread ()
     : fRep_ ()
 {
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name)
-    : fRep_ (make_shared<Rep_> (fun2CallOnce))
+namespace {
+    Thread::Configuration   CombineCFGs_ (const Memory::Optional<Thread::Configuration>& cfg)
+    {
+        Thread::Configuration   result = Thread::GetDefaultConfiguration ();
+        if (cfg) {
+            if (cfg->fStackSize) {
+                result.fStackSize = *cfg->fStackSize;
+            }
+            if (cfg->fStackGuard) {
+                result.fStackSize = *cfg->fStackGuard;
+            }
+        }
+        return result;
+    }
+}
+Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
+    : fRep_ (make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration)))
 {
     Rep_::DoCreate (&fRep_);
     if (name) {
@@ -707,10 +725,20 @@ Thread::Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Cha
     }
 }
 
-Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name)
-    : Thread (fun2CallOnce, name)
+Thread::Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
+    : Thread (fun2CallOnce, name, configuration)
 {
     Start ();
+}
+
+Thread::Configuration   Thread::GetDefaultConfiguration ()
+{
+    return sDefaultConfiguration_.load ();
+}
+
+void    Thread::SetDefaultConfiguration (const Configuration& config)
+{
+    sDefaultConfiguration_.store (config);
 }
 
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics

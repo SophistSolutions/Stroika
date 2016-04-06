@@ -219,6 +219,42 @@ namespace   Stroika {
                 using   NativeHandleType    =   std::thread::native_handle_type;
 
             public:
+                /**
+                 *  \brief  EXPERIMENTAL SUPPORT FOR THREAD STACK (and maybe other) settings
+                 *
+                 *  @todo COULD add things like CPU afinity, or thread prority.
+                 *
+                 *  These configuration describe how Stroika will construct new Stroika Thread objects.
+                 */
+                struct  Configuration {
+                    /**
+                     *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
+                     */
+                    Memory::Optional<size_t>        fStackSize;
+
+                    /**
+                     *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
+                     *
+                     *      \note   NYI - see &&&& - probably avialble for POSIX, but not sure for windoze threads
+                     *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
+                     *              Peryaps for windows just add to end of stacksize
+                     */
+                    Memory::Optional<size_t>        fStackGuard;
+                };
+
+            public:
+                /**
+                 *  Return the global default configuration for Thread object construction.
+                 */
+                static  Configuration   GetDefaultConfiguration ();
+
+            public:
+                /**
+                 *  @see GetDefaultConfiguration
+                 */
+                static  void            SetDefaultConfiguration (const Configuration& config);
+
+            public:
                 enum    AutoStartFlag { eAutoStart };
 
             public:
@@ -231,14 +267,21 @@ namespace   Stroika {
                  *
                  *  fun2CallOnce is called precisely once by this thread CTOR, but called in
                  *  another thread with the arg 'arg'.
+                 *
+                 *  \note   about the 'configuration' parameter. If missing (or parts missing) - the whole are parts from from
+                 *          the static GetDefaultConfiguration () function. If defaults are missing there too, the OS / system defaults
+                 *          are relied upon.
+                 *
+                 *          It's not expected one would need to use this often, but when you need it you need it early - before the thread has
+                 *          been constructed (generally) - or at least before started (sucks swapping stacks out on a running thread ;-))
                  */
                 Thread ();
-                Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
-                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {});
+                Thread (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {});
+                Thread (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {});
                 template <typename FUNCTION>
-                Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
                 template <typename FUNCTION>
-                Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+                Thread (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String> {}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration> {}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
             public:
                 /**
@@ -491,6 +534,47 @@ namespace   Stroika {
                  *  @see GetThreadName ();
                  */
                 nonvirtual  void    SetThreadName (const Characters::String& threadName);
+
+            public:
+                /**
+                 *
+                 */
+                struct  ConfigurationStatus : Configuration {
+                    /**
+                     *  Stack starts at base, and grows towards limit - could be up or down.
+                     */
+                    Memory::Optional<const Memory::Byte*>       fStackBase;
+
+                    /**
+                     *  @see fStackBase
+                     */
+                    Memory::Optional<const Memory::Byte*>       fStackLimit;
+
+                    /**
+                     *  @see fStackBase, fStackLimit
+                     */
+                    Memory::Optional<const Memory::Byte*>       fCurrentStackAt;
+
+                    /**
+                     *  Return current stack used, if available
+                     */
+                    Memory::Optional<size_t>    GetStackUsed () const;
+
+                    /**
+                     *  Return current stack available, if available
+                     */
+                    Memory::Optional<size_t>    GetStackAvailable () const;
+                };
+
+            public:
+                /**
+                 *  Return a snapshot of the current stack settings - configured - and dynamic. Much/most of this
+                 *  may not be available on your system.
+                 *
+                 *  \note   @todo - IMPLEMENT ON SOME SYSTEM ;-) Not sure if/where we can do this. Tricky...
+                 *  \note   NYI - see https://stroika.atlassian.net/browse/STK-475
+                 */
+                nonvirtual  ConfigurationStatus GetConfigurationStatus () const;
 
             public:
                 /**
