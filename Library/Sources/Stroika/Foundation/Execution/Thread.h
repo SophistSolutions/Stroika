@@ -592,8 +592,8 @@ namespace   Stroika {
 
 
             /**
-             *  Our thread abort mechanism only throws at certain 'signalable' (alertable) spots in the code -
-             *  like sleeps, most reads, etc.
+             *  Our thread interuption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
+             *  spots in the code - like sleeps, most reads, etc.
              *  This function will also trigger a throw if called inside a thread which is being aborted.
              *
              *  Any call to this routine is a 'cancelation point'.
