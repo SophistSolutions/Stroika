@@ -386,12 +386,15 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         }
 #endif
 
-        if (fOptions_.fMaxAutomaticRedirects  == 0) {
+        if (fOptions_.fMaxAutomaticRedirects == 0) {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 0L));
         }
         else  {
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 1L));
             LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS , fOptions_.fMaxAutomaticRedirects));
+            // violate dejure standard but follow defacto standard and only senisble behavior
+            // https://curl.haxx.se/libcurl/c/CURLOPT_POSTREDIR.html
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_POSTREDIR, CURL_REDIR_POST_301)); // could have used CURL_REDIR_POST_ALL?
         }
 
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
