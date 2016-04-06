@@ -661,15 +661,9 @@ void    Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& 
     Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
              (fAppRep_.load () == nullptr and fAppRep_.load () != appRep)
             );
-    if (fAppRep_.load () != nullptr) {
-        SetupSignalHanlders_ (false);
-    }
-    fAppRep_ = appRep;
-    if (appRep != nullptr) {
-        SetupSignalHanlders_ (true);
-    }
     fRunThread_.load ().AbortAndWaitForDone ();
     fRunThread_.store (Execution::Thread ());
+    fAppRep_ = appRep;
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -720,6 +714,16 @@ void    Main::BasicUNIXServiceImpl::_RunAsService ()
     }
 
     shared_ptr<IApplicationRep> appRep = fAppRep_;
+    RequireNotNull (appRep);
+
+    auto&&  cleanupSigHanders =   Execution::Finally (
+    [this] () noexcept {
+        Thread::SuppressInterruptionInContext suppressThreadInterupts;
+        SetupSignalHanlders_ (false);
+    }
+                                  );
+    SetupSignalHanlders_ (true);
+
     RequireNotNull (appRep);  // must call Attach_ first
     fRunThread_ = Execution::Thread {
         [appRep] ()
