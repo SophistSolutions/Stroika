@@ -455,9 +455,10 @@ namespace   Stroika {
                         bool    fSupportSessionCookies                          { true };
 
                         /**
-                         *  Set to 0 to disable automatic redirects.
+                         *  Set to 0 to disable automatic redirects. 10 is a reasonable number if you allow auto-redirects (windows default).
+                         *  Disabled by default because curl and WinHTTP disable by default (they must have thought this out better than me).
                          */
-                        unsigned int    fMaxAutomaticRedirects                  { 10 };
+                        unsigned int    fMaxAutomaticRedirects                  { 0 };
 
                         /**
                          */
