@@ -64,7 +64,7 @@ namespace   Stroika {
                         return *fPort_;
                     }
                     else {
-                        return GetDefaultPortForScheme (fProtocol_).Value (defaultValue);
+                        return GetDefaultPortForScheme (GetSchemeValue ()).Value (defaultValue);
                     }
                 }
                 inline  Memory::Optional<URL::PortType>     URL::GetPortNumber () const
@@ -75,9 +75,9 @@ namespace   Stroika {
                 {
                     fPort_ = portNum;
                 }
-                inline  URL::SchemeType  URL::GetScheme () const
+                inline  Optional<URL::SchemeType>  URL::GetScheme () const
                 {
-                    return fProtocol_;
+                    return fScheme_;
                 }
                 inline  String  URL::GetHost () const
                 {

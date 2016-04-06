@@ -69,10 +69,12 @@ namespace   {
  */
 Optional<uint16_t>     Network::GetDefaultPortForScheme (const String& proto)
 {
+    static  const   String_Constant kHTTPScheme_    { L"http" };
+    static  const   String_Constant kHTTPSScheme_   { L"https" };
     // From http://www.iana.org/assignments/port-numbers
     //if (proto == String ())                     {   return 80; }
-    if (proto == String_Constant (L"http"))     {   return 80; }
-    if (proto == String_Constant (L"https"))    {   return 443; }
+    if (proto == kHTTPScheme_)                  {   return 80; }
+    if (proto == kHTTPSScheme_)                 {   return 443; }
     if (proto == String_Constant (L"ldap"))     {   return 389; }
     if (proto == String_Constant (L"ldaps"))    {   return 636; }
     if (proto == String_Constant (L"ftp"))      {   return 21; }
@@ -90,7 +92,7 @@ Optional<uint16_t>     Network::GetDefaultPortForScheme (const String& proto)
  ********************************************************************************
  */
 URL::URL ()
-    : fProtocol_ ()
+    : fScheme_ ()
     , fHost_ ()
     , fPort_ ()
     , fRelPath_ ()
@@ -145,16 +147,20 @@ URL URL::Parse (const String& w, ParseOptions po)
         size_t  slashshash   =   w.Find (L"//");    // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t  e   =   w.find (':');
         if (e != String::kBadIndex and (slashshash == String::kBadIndex or e < slashshash)) {
-            result.fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
+            result.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
             hostNameStart = e + 1;
         }
         else if (flexibleURLParsingMode) {
-            result.fProtocol_ = String_Constant (L"http");
+            // NO - leave blank, so
+            // caller parsing can see its missing.
+            // result.fScheme_ = String_Constant (L"http");
         }
         else {
             Execution::Throw (Execution::StringException (L"URL missing scheme"));
         }
-        ValidateScheme_ (result.fProtocol_);
+        if (result.fScheme_) {
+            ValidateScheme_ (*result.fScheme_);
+        }
     }
 
     size_t i    =   0;
@@ -238,7 +244,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 }
 
 URL::URL (const SchemeType& scheme, const String& host, const Optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (NormalizeScheme_ (scheme))
+    : fScheme_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
     , fPort_ (portNumber)
     , fRelPath_ (relPath)
@@ -247,11 +253,11 @@ URL::URL (const SchemeType& scheme, const String& host, const Optional<PortType>
 {
     Require (not relPath.StartsWith (String_Constant (L"/")));
     Require (not query.StartsWith (String_Constant (L"?")));
-    ValidateScheme_ (fProtocol_);
+    ValidateScheme_ (*fScheme_);
 }
 
 URL::URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (NormalizeScheme_ (scheme))
+    : fScheme_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
     , fPort_ ()
     , fRelPath_ (relPath)
@@ -260,7 +266,7 @@ URL::URL (const SchemeType& scheme, const String& host, const String& relPath, c
 {
     Require (not relPath.StartsWith (String_Constant (L"/")));
     Require (not query.StartsWith (String_Constant (L"?")));
-    ValidateScheme_ (fProtocol_);
+    ValidateScheme_ (*fScheme_);
 }
 
 URL URL::ParseHostRelativeURL_ (const String& w)
@@ -312,8 +318,8 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
     {
         size_t  e   =   w.find (':');
         if (e != String::kBadIndex) {
-            url.fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
-            ValidateScheme_ (url.fProtocol_);
+            url.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
+            ValidateScheme_ (*url.fScheme_);
         }
     }
 
@@ -392,30 +398,34 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 
 void    URL::SetScheme (const SchemeType& scheme)
 {
-    fProtocol_ = NormalizeScheme_ (scheme);
-    ValidateScheme_ (fProtocol_);
+    fScheme_ = NormalizeScheme_ (scheme);
+    ValidateScheme_ (*fScheme_);
 }
 
 bool    URL::IsSecure () const
 {
+    SchemeType scheme = GetSchemeValue ();
     // should be large list of items - and maybe do something to assure case matching handled properly, if needed?
-    return fProtocol_ == String_Constant (L"https") or fProtocol_ == String_Constant (L"ftps") or fProtocol_ == String_Constant (L"ldaps");
+    return scheme == String_Constant (L"https") or scheme == String_Constant (L"ftps") or scheme == String_Constant (L"ldaps");
+}
+
+URL::SchemeType  URL::GetSchemeValue () const
+{
+    static  const   String_Constant kHTTPScheme_    { L"http" };
+    return fScheme_.Value (kHTTPScheme_);
 }
 
 String URL::GetFullURL () const
 {
     String result;
 
-    if (fProtocol_.empty ()) {
-        result += String_Constant (L"http:");
-    }
-    else {
-        result += fProtocol_ + String_Constant (L":");
-    }
+    SchemeType  scheme = GetSchemeValue ();
+
+    result += scheme + String_Constant (L":");
 
     if (not fHost_.empty ()) {
         result += String_Constant (L"//") + fHost_;
-        if (fPort_.IsPresent () and fPort_ != GetDefaultPortForScheme (fProtocol_)) {
+        if (fPort_.IsPresent () and fPort_ != GetDefaultPortForScheme (scheme)) {
             result += Format (L":%d", *fPort_);
         }
         result += String_Constant (L"/");
@@ -449,7 +459,7 @@ String  URL::GetHostRelPathDir () const
 
 void    URL::clear ()
 {
-    fProtocol_.clear ();
+    fScheme_.clear ();
     fHost_.clear ();
     fRelPath_.clear ();
     fQuery_.clear ();
@@ -460,7 +470,7 @@ void    URL::clear ()
 
 bool    URL::empty () const
 {
-    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_.IsMissing ();
+    return fScheme_.IsMissing () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_.IsMissing ();
 }
 
 bool    URL::Equals (const URL& rhs) const
@@ -470,7 +480,7 @@ bool    URL::Equals (const URL& rhs) const
 #endif
 
     // No need to compare this case-insensatively, because we tolower the schema on construction
-    if (fProtocol_ != rhs.fProtocol_) {
+    if (fScheme_ != rhs.fScheme_) {
         Ensure (referenceEquals == false);
         return false;
     }

@@ -143,6 +143,8 @@ namespace   Stroika {
                      *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
                      *
                      *  AKA PROTOCOL.
+                     *
+                     *  \note schemes cannot include a ':' character
                      */
                     using   SchemeType  =   String;
 
@@ -281,7 +283,13 @@ namespace   Stroika {
                     /**
                      *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
                      */
-                    nonvirtual  SchemeType  GetScheme () const;
+                    nonvirtual  Memory::Optional<SchemeType>  GetScheme () const;
+
+                public:
+                    /**
+                     *  @see GetScheme, but defaults to (typically) to http. Roughly equivilent to GetScheme ().Value (L"https") - except that we might take other info into acocunt to select another default scheme
+                     */
+                    nonvirtual  SchemeType  GetSchemeValue () const;
 
                 public:
                     /**
@@ -357,7 +365,7 @@ namespace   Stroika {
                     nonvirtual  void    SetFragment (const String& frag);
 
                 private:
-                    String              fProtocol_;
+                    Optional<String>    fScheme_;       // aka protocol
                     String              fHost_;
                     Optional<PortType>  fPort_;
                     String              fRelPath_;
