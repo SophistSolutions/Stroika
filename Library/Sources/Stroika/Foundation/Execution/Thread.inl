@@ -112,7 +112,7 @@ namespace   Stroika {
             }
             template    <typename FUNCTION>
             inline  Thread::Thread (FUNCTION f, AutoStartFlag flag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*) :
-                Thread (Function<void()>(f), flag, namem configuration)
+                Thread (Function<void()>(f), flag, name, configuration)
             {
             }
 #if     qPlatform_POSIX
