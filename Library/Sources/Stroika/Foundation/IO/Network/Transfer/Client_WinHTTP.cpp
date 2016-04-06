@@ -144,7 +144,7 @@ namespace   {
         DWORD   error   =   GetLastError ();
         if (error == ERROR_INSUFFICIENT_BUFFER) {
             SmallStackBuffer<wchar_t>   buf (size + 1);
-            memset (buf, 0, buf.GetSize ());
+            (void)::memset (buf, 0, buf.GetSize ());
             ThrowIfFalseGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
             return buf.begin ();
         }
@@ -242,12 +242,11 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
     }
 
     AssureHasSessionHandle_ (userAgent);
-    Assert (fSessionHandle_.get () != nullptr);
+    Assert (fSessionHandle_ != nullptr);
     AssureHasConnectionHandle_ ();
-    Assert (fConnectionHandle_.get () != nullptr);
+    Assert (fConnectionHandle_ != nullptr);
 
     bool    useSecureHTTP   =   fURL_.IsSecure ();
-
 
     AutoWinHINTERNET_   hRequest (
         ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePath ().c_str (),
@@ -482,7 +481,7 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
         fConnectionHandle_.reset ();
         fSessionHandle_.reset ();
     }
-    if (fSessionHandle_.get () == nullptr) {
+    if (fSessionHandle_ == nullptr) {
         fSessionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
         if (fOptions_.fMaxAutomaticRedirects  == 0) {
@@ -500,8 +499,8 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
 
 void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
-    RequireNotNull (fSessionHandle_.get ());
-    if (fConnectionHandle_.get () == nullptr) {
+    RequireNotNull (fSessionHandle_);
+    if (fConnectionHandle_ == nullptr) {
         fConnectionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetPortValue (), 0));
     }
 }
