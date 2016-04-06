@@ -379,6 +379,12 @@ namespace   Stroika {
                      */
                     nonvirtual  String  GetHostRelURLString () const;
 
+                public:
+                    /**
+                     *  For debugging purposes: don't count on the format.
+                     */
+                    nonvirtual  String  ToString () const;
+
                 private:
                     Optional<String>    fScheme_;       // aka protocol
                     String              fHost_;

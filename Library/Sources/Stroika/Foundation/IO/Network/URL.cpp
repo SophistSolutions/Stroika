@@ -530,6 +530,13 @@ String  URL::GetHostRelURLString () const
     return result;
 }
 
+String  URL::ToString () const
+{
+    // @todo not sure if this should include 'default scheme' or not. Probably no, but do for now
+    return GetFullURL ();
+}
+
+
 
 
 #if 0
