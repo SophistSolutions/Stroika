@@ -248,6 +248,7 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
 
     bool    useSecureHTTP   =   fURL_.IsSecure ();
 
+
     AutoWinHINTERNET_   hRequest (
         ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePath ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
@@ -267,6 +268,14 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
             | SECURITY_FLAG_IGNORE_CERT_WRONG_USAGE
             ;
         Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_SECURITY_FLAGS, &dwOptions, sizeof (dwOptions)));
+    }
+    if (not fOptions_.fSupportSessionCookies) {
+        /*
+         *  From https://msdn.microsoft.com/en-us/library/windows/desktop/aa384066(v=vs.85).aspx
+         *      Be aware that this feature should only be passed to WinHttpSetOption on request handles after the request handle is created with WinHttpOpenRequest, and before the request is sent with WinHttpSendRequest.
+         */
+        DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
+        Verify (::WinHttpSetOption (hRequest, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
     }
 
     bool    sslExceptionProblem =   false;
@@ -476,10 +485,6 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
     if (fSessionHandle_.get () == nullptr) {
         fSessionHandle_ = make_shared<AutoWinHINTERNET_> (::WinHttpOpen (userAgent.c_str (), WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
         fSessionHandle_UserAgent_ = userAgent;
-        if (not fOptions_.fSupportSessionCookies) {
-            DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
-            Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
-        }
         if (fOptions_.fMaxAutomaticRedirects  == 0) {
             DWORD          dwOptions   = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
             Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_REDIRECT_POLICY , &dwOptions, sizeof (dwOptions)));
@@ -490,7 +495,6 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
             // According to https://msdn.microsoft.com/en-us/library/windows/desktop/aa384066%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396,
             // WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS is obsolete
         }
-
     }
 }
 
