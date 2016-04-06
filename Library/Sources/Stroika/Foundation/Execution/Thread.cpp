@@ -279,7 +279,7 @@ namespace   Stroika {
             template    <>
             String  ToString (const std::thread::id& t)
             {
-                return String::FromAscii (Execution::FormatThreadID (t));
+                return String::FromAscii (Execution::FormatThreadID_A (t));
             }
         }
     }
@@ -1040,10 +1040,10 @@ bool    Thread::IsDone () const
 
 /*
  ********************************************************************************
- **************************** Execution::FormatThreadID *************************
+ ************************** Execution::FormatThreadID_A *************************
  ********************************************************************************
  */
-string Execution::FormatThreadID (Thread::IDType threadID)
+string Execution::FormatThreadID_A (Thread::IDType threadID)
 {
     Thread::SuppressInterruptionInContext   suppressAborts;
 

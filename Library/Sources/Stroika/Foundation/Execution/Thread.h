@@ -588,7 +588,7 @@ namespace   Stroika {
              *
              *  @see Characters::ToString (Thread::IDType threadID)
              */
-            string     FormatThreadID (Thread::IDType threadID);
+            string     FormatThreadID_A (Thread::IDType threadID);
 
 
             /**
