@@ -448,15 +448,20 @@ namespace   Stroika {
 
                         /**
                          */
-                        bool    fAssumeLowestCommonDenominatorHTTPServer    { false };
+                        bool    fAssumeLowestCommonDenominatorHTTPServer        { false };
 
                         /**
                          */
-                        bool    fSupportSessionCookies                      { true };
+                        bool    fSupportSessionCookies                          { true };
+
+                        /**
+                         *  Set to 0 to disable automatic redirects.
+                         */
+                        unsigned int    fMaxAutomaticRedirects                  { 10 };
 
                         /**
                          */
-                        String  fUserAgent                                  { Characters::String_Constant { L"Stroika/2.0" } };
+                        String  fUserAgent                                      { Characters::String_Constant { L"Stroika/2.0" } };
                     };
 
 

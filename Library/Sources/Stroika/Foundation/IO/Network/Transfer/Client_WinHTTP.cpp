@@ -480,6 +480,17 @@ void    Connection_WinHTTP::Rep_::AssureHasSessionHandle_ (const String& userAge
             DWORD          dwOptions   = WINHTTP_DISABLE_COOKIES;
             Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_DISABLE_FEATURE, &dwOptions, sizeof (dwOptions)));
         }
+        if (fOptions_.fMaxAutomaticRedirects  == 0) {
+            DWORD          dwOptions   = WINHTTP_OPTION_REDIRECT_POLICY_NEVER;
+            Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_REDIRECT_POLICY , &dwOptions, sizeof (dwOptions)));
+        }
+        else  {
+            DWORD          dwOptions   = WINHTTP_OPTION_REDIRECT_POLICY_DISALLOW_HTTPS_TO_HTTP; // sb WINHTTP_OPTION_REDIRECT_POLICY_ALWAYS?
+            Verify (::WinHttpSetOption (*fSessionHandle_, WINHTTP_OPTION_REDIRECT_POLICY , &dwOptions, sizeof (dwOptions)));
+            // According to https://msdn.microsoft.com/en-us/library/windows/desktop/aa384066%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396,
+            // WINHTTP_OPTION_MAX_HTTP_AUTOMATIC_REDIRECTS is obsolete
+        }
+
     }
 }
 

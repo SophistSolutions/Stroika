@@ -386,6 +386,14 @@ void    Connection_LibCurl::Rep_::MakeHandleIfNeeded_ ()
         }
 #endif
 
+        if (fOptions_.fMaxAutomaticRedirects  == 0) {
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 0L));
+        }
+        else  {
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_FOLLOWLOCATION, 1L));
+            LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_MAXREDIRS , fOptions_.fMaxAutomaticRedirects));
+        }
+
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READFUNCTION, s_RequestPayloadReadHandler_));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_READDATA, this));
         LibCurlException::ThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_WRITEFUNCTION, s_ResponseWriteHandler_));
