@@ -296,6 +296,7 @@ namespace   Stroika {
                      *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
                      *  But other violations in teh format of a protocol generate exceptions.
                      */
+                    nonvirtual  void    SetScheme (const Optional<SchemeType>& scheme);
                     nonvirtual  void    SetScheme (const SchemeType& scheme);
 
                 public:

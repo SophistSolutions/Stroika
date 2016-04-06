@@ -87,6 +87,15 @@ namespace   Stroika {
                 {
                     fHost_ = host;
                 }
+                inline  void    URL::SetScheme (const Optional<SchemeType>& scheme)
+                {
+                    if (scheme) {
+                        SetScheme (*scheme);    //validates value
+                    }
+                    else {
+                        fScheme_.clear ();
+                    }
+                }
                 inline  String  URL::GetHostRelativePath () const
                 {
                     return fRelPath_;
