@@ -306,6 +306,8 @@ namespace   Stroika {
                      *  Note this does NOT contain the '/' separating the hostname from the relative path,
                      *  so it typically doesnt start with a '/', but frequently contains them. It MAY legally
                      *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesnt specifically prohibit this.
+                     *
+                     *  \note   This does not include the query string, if any.
                      */
                     nonvirtual  String  GetHostRelativePath () const;
 
@@ -333,6 +335,7 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  \note   This returns an empty string if no query.
                      */
                     nonvirtual  String  GetQueryString () const;
 
