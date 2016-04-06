@@ -190,7 +190,8 @@ namespace {
             }
             {
                 URL url { URL::Parse (L"localhost", URL::eFlexiblyAsUI) };
-                VerifyTestResult (url.GetScheme () == L"http");
+                VerifyTestResult (url.GetScheme ().IsMissing ());
+                VerifyTestResult (url.GetSchemeValue () == L"http");
                 VerifyTestResult (url.GetHost () == L"localhost");
                 VerifyTestResult (url.GetPortValue () == 80);
                 VerifyTestResult (url.GetHostRelativePath () == L"");
@@ -215,7 +216,8 @@ namespace {
                 }
                 {
                     URL url { URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                    VerifyTestResult (url.GetScheme () == L"http");
+                    VerifyTestResult (url.GetScheme ().IsMissing ());
+                    VerifyTestResult (url.GetSchemeValue () == L"http");
                     VerifyTestResult (url.GetHost () == L"www.cwi.nl");
                     VerifyTestResult (url.GetPortValue () == 80);
                     VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");   // python includes leading / - we dont
@@ -226,7 +228,8 @@ namespace {
             }
             {
                 URL url { URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI) };
-                VerifyTestResult (url.GetScheme () == L"http");
+                VerifyTestResult (url.GetScheme ().IsMissing ());
+                VerifyTestResult (url.GetSchemeValue () == L"http");
                 VerifyTestResult (url.GetHost () == L"www.cwi.nl");
                 VerifyTestResult (url.GetPortValue () == 8080);
                 VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
