@@ -530,6 +530,15 @@ String  URL::GetHostRelURLString () const
     return result;
 }
 
+String  URL::GetHostRelativePathPlusQuery () const
+{
+    String  result  =   GetHostRelativePath ();
+    if (not fQuery_.empty ()) {
+        result += String_Constant (L"?") + fQuery_;
+    }
+    return result;
+}
+
 String  URL::ToString () const
 {
     // @todo not sure if this should include 'default scheme' or not. Probably no, but do for now

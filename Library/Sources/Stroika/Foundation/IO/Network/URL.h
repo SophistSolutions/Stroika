@@ -376,8 +376,22 @@ namespace   Stroika {
                      *  \note   terrible name but I can think of no better
                      *
                      *  @see GetHostRelativePath ()
+                     *  @see GetHostRelativePathPlusQuery ()
                      */
                     nonvirtual  String  GetHostRelURLString () const;
+
+                public:
+                    /**
+                     *   This is the host relative path, plus any optional query(string) plus any optional fragment
+                     *      path[?query]
+                     *  This path does NOT include the leading / seperator
+                     *
+                     *  \note   terrible name but I can think of no better
+                     *
+                     *  @see GetHostRelURLString ()
+                     *  @see GetHostRelativePath ()
+                     */
+                    nonvirtual  String  GetHostRelativePathPlusQuery () const;
 
                 public:
                     /**
