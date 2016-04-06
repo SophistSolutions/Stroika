@@ -249,7 +249,7 @@ Response    Connection_WinHTTP::Rep_::Send (const Request& request)
     bool    useSecureHTTP   =   fURL_.IsSecure ();
 
     AutoWinHINTERNET_   hRequest (
-        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePath ().c_str (),
+        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePathPlusQuery ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
                               useSecureHTTP ? WINHTTP_FLAG_SECURE : 0
