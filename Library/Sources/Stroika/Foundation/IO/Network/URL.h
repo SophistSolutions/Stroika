@@ -317,6 +317,8 @@ namespace   Stroika {
                      *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesnt specifically prohibit this.
                      *
                      *  \note   This does not include the query string, if any.
+                     *
+                     *  @see GetHostRelURLString ()
                      */
                     nonvirtual  String  GetHostRelativePath () const;
 
@@ -364,6 +366,18 @@ namespace   Stroika {
                      *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
                     nonvirtual  void    SetFragment (const String& frag);
+
+                public:
+                    /**
+                     *   This is the host relative path, plus any optional query(string) plus any optional fragment
+                     *      path[?query][#fragment]
+                     *  This path does NOT include the leading / seperator
+                     *
+                     *  \note   terrible name but I can think of no better
+                     *
+                     *  @see GetHostRelativePath ()
+                     */
+                    nonvirtual  String  GetHostRelURLString () const;
 
                 private:
                     Optional<String>    fScheme_;       // aka protocol

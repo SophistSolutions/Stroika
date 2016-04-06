@@ -517,6 +517,21 @@ bool    URL::Equals (const URL& rhs) const
 #endif
 }
 
+String  URL::GetHostRelURLString () const
+{
+    String  result  =   GetHostRelativePath ();
+    if (not fQuery_.empty ()) {
+        result += String_Constant (L"?") + fQuery_;
+    }
+
+    if (not fFragment_.empty ()) {
+        result += String_Constant (L"#") + fFragment_;
+    }
+    return result;
+}
+
+
+
 #if 0
 HRESULT hr  =   ::CoInternetParseUrl (url.c_str (), ParseAction, dwParseFlags, pwzResult, cchResult, pcchResult, dwReserved);
 
