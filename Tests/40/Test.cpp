@@ -36,6 +36,16 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
+namespace {
+    const   Connection::Options kDefaultTestOptions_ = [] ()
+    {
+        Connection::Options o;
+        o.fMaxAutomaticRedirects = 1;
+        return o;
+    } ();
+}
+
+
 
 
 namespace {
@@ -83,7 +93,7 @@ namespace {
             Debug::TraceContextBumper ctx ("{}::Test_1_SimpleConnnectionTests_");
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -95,10 +105,10 @@ namespace {
             }
 
 #if     qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if     qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -219,7 +229,7 @@ namespace {
             Debug::TraceContextBumper ctx ("{}::Test_2_SimpleFetch_httpbin_");
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -231,10 +241,10 @@ namespace {
             }
 
 #if     qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if     qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -271,7 +281,7 @@ namespace {
             Debug::TraceContextBumper ctx ("{}::Test3_TextStreamResponse_");
             using namespace Private_;
             try {
-                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (); });
+                DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return CreateConnection (kDefaultTestOptions_); });
             }
             catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasFeature_LibCurl && !qHasFeature_WinHTTP
@@ -283,10 +293,10 @@ namespace {
             }
 
 #if     qHasFeature_LibCurl
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (kDefaultTestOptions_); });
 #endif
 #if     qHasFeature_WinHTTP
-            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+            DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (kDefaultTestOptions_); });
 #endif
         }
     }
@@ -305,7 +315,7 @@ namespace {
         namespace Private_ {
             void    T1_get_ ()
             {
-                Connection  c   =   IO::Network::Transfer::CreateConnection ();
+                Connection  c   =   IO::Network::Transfer::CreateConnection (kDefaultTestOptions_);
                 c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response    r   =   c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
@@ -368,7 +378,7 @@ namespace {
         void    DoTests_ ()
         {
             Debug::TraceContextBumper ctx ("{}::Test_5_SSLCertCheckTests_");
-            Connection::Options o;
+            Connection::Options o = kDefaultTestOptions_;
             try {
                 o.fFailConnectionIfSSLCertificateInvalid = true;
                 Private_::T1_get_ (o);
