@@ -5,6 +5,9 @@
 
 #include    <mutex>
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String_Constant.h"
@@ -99,7 +102,11 @@ int main (int argc, const char* argv[])
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Exception - terminating...\n");
+#else
         cerr << "Exception - terminating..." << endl;
+#endif
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

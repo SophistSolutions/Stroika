@@ -5,6 +5,9 @@
 
 #include    <cstdlib>
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Characters/String_Constant.h"
 #include    "Stroika/Foundation/Characters/ToString.h"
@@ -211,9 +214,16 @@ namespace {
     void    ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            (void)::fprintf (stderr, "Error: %s\n\n", e.fMessage.AsUTF8 ().c_str ());
+#else
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
             cerr << endl;
+#endif
         }
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		fprintf (stderr, "USAGE NOT SUPPORTED IF qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
+#else
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
             cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
@@ -234,6 +244,7 @@ namespace {
         cerr << "\t--help                  /* Print this help. */ " << endl;
         cerr << endl << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual service process" << endl;
         cerr << endl;
+#endif
     }
 }
 
@@ -294,7 +305,11 @@ int     main (int argc, const char* argv[])
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
-        cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "Warning: RunTilIdleService not really done correctly yet - no notion of idle\n");
+#else
+		cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
+#endif
         serviceIntegrationRep = make_shared<Main::RunTilIdleService> ();
     }
 #if     qUseLogger
@@ -311,7 +326,11 @@ int     main (int argc, const char* argv[])
      */
     try {
         if (Execution::MatchesCommandLineArgument (args, L"status")) {
-            cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+			printf ("%s", m.GetServiceStatusMessage ().AsUTF8<string> ().c_str ());
+#else
+			cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+#endif
             return EXIT_SUCCESS;
         }
         else if (Execution::MatchesCommandLineArgument (args, L"help")) {
@@ -328,25 +347,16 @@ int     main (int argc, const char* argv[])
     catch (const Execution::InvalidCommandLineArgument& e) {
         ShowUsage_ (m, e);
     }
-    catch (const Execution::StringException& e) {
-#if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
-#endif
-        cerr << "FAILED: " << e.As<String> ().AsNarrowSDKString () << endl;
-        return EXIT_FAILURE;
-    }
-    catch (const std::exception& e) {
-#if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
-#endif
-        cerr << "FAILED: " << e.what () << endl;
-        return EXIT_FAILURE;
-    }
     catch (...) {
+		String	exceptMsg = Characters::ToString (current_exception ());
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"Unknown Exception...");
+        Logger::Get ().Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
 #endif
-        cerr << "Exception - terminating..." << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "FAILED: %s\n", exceptMsg.AsNarrowSDKString ().c_str ());
+#else
+		cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
+#endif
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

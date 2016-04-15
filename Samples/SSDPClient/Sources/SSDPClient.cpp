@@ -5,6 +5,9 @@
 
 #include    <mutex>
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -32,9 +35,26 @@ namespace {
 namespace {
     void    DoListening_ (Listener* l)
     {
-        cout << "Listening..." << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "Listening...\n");
+#else
+		cout << "Listening..." << endl;
+#endif
         l->AddOnFoundCallback ([](const SSDP::Advertisement & d) {
             lock_guard<mutex> critSection (kStdOutMutex_);
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            (void)::printf ("\tFound device (NOTIFY):\n");
+            (void)::printf ("\t\tUSN:      %s\n", d.fUSN.AsUTF8 ().c_str ());
+            if (d.fAlive.IsPresent ()) {
+                (void)::printf ("\t\tAlive:    %s\n", (*d.fAlive ? "true" : "false"));
+            }
+            (void)::printf ("\t\tST:       %s\n", d.fTarget.AsUTF8 ().c_str ());
+            (void)::printf ("\t\tLocation: %s\n", d.fLocation.AsUTF8 ().c_str ());
+            if (not d.fServer.empty ()) {
+                (void)::printf ("\t\tServer:   %s\n", d.fServer.AsUTF8 ().c_str ());
+            }
+            (void)::printf ("\n");
+#else
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             if (d.fAlive.IsPresent ()) {
@@ -46,6 +66,7 @@ namespace {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
             }
             cout << endl;
+#endif
         });
         l->Start ();
     }
@@ -54,9 +75,23 @@ namespace {
 namespace {
     void    DoSearching_ (Search* searcher, const String& searchFor)
     {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::printf ("Searching for '%s...\n", searchFor.AsUTF8 ().c_str ());
+#else
         cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
+#endif
         searcher->AddOnFoundCallback ([](const SSDP::Advertisement & d) {
             lock_guard<mutex> critSection (kStdOutMutex_);
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            (void)::printf ("\tFound device (MATCHED SEARCH):\n");
+            (void)::printf ("\t\tUSN:      %s\n", d.fUSN.AsUTF8 ().c_str ());
+            (void)::printf ("\t\tLocation: %s\n", d.fLocation.AsUTF8 ().c_str ());
+            (void)::printf ("\t\tST:       %s\n", d.fTarget.AsUTF8 ().c_str ());
+            if (not d.fServer.empty ()) {
+                (void)::printf ("\t\tServer:   %s\n", d.fServer.AsUTF8 ().c_str ());
+            }
+            (void)::printf ("\n");
+#else
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
@@ -65,6 +100,7 @@ namespace {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
             }
             cout << endl;
+#endif
         });
         searcher->Start (searchFor);
     }
@@ -89,13 +125,21 @@ int main (int argc, const char* argv[])
                 searchFor = *argi;
             }
             else {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::fprintf (stderr, "Expected arg to -s\n");
+#else
                 cerr << "Expected arg to -s" << endl;
+#endif
                 return EXIT_FAILURE;
             }
         }
     }
     if (not listen and searchFor.IsMissing ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "Usage: SSDPClient [-l] [-s SEARCHFOR]\n");
+#else
+		cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+#endif
         return EXIT_FAILURE;
     }
 
@@ -114,12 +158,20 @@ int main (int argc, const char* argv[])
             WaitableEvent (WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
         }
         else {
-            cerr << "Specify -l to listen or -s STRING to search" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+			(void)::fprintf (stderr, "Specify -l to listen or -s STRING to search\n");
+#else
+			cerr << "Specify -l to listen or -s STRING to search" << endl;
+#endif
             return EXIT_FAILURE;
         }
     }
     catch (...) {
-        cerr << "Exception - terminating..." << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "Exception - terminating...\n");
+#else
+		cerr << "Exception - terminating..." << endl;
+#endif
         return EXIT_FAILURE;
     }
 

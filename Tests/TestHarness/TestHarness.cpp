@@ -3,9 +3,14 @@
  */
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#else
 #include    <iostream>
+#endif
 
 #include    "Stroika/Foundation/Characters/CodePage.h"
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Debugger.h"
@@ -34,7 +39,11 @@ namespace   {
         if (functionName == nullptr) {
             functionName = "";
         }
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "FAILED: %s; %s; %s; %s:%d\n", assertCategory, assertionText, functionName, fileName, lineNum);
+#else
         cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
+#endif
         DbgTrace ("FAILED: %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
 
         Debug::DropIntoDebuggerIfPresent ();
@@ -47,12 +56,19 @@ namespace   {
     }
     void    _FatalErrorHandler_ (const Characters::SDKChar* msg)
     {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qTargetPlatformSDKUseswchar_t
+        fprintf(stderr, "FAILED: %s\n",  Characters::WideStringToNarrowSDKString (msg).c_str ());
+#else
+        fprintf(stderr, "FAILED: %s\n",  msg);
+#endif
+#else
 #if     qTargetPlatformSDKUseswchar_t
         cerr << "FAILED: " <<  Characters::WideStringToNarrowSDKString (msg) << endl;
 #else
         cerr << "FAILED: " <<  msg << endl;
 #endif
-        DbgTrace (SDKSTR ("FAILED: %s"), msg);
+#endif
         Debug::DropIntoDebuggerIfPresent ();
 #if     qCompilerAndStdLib_StdExitBuggy
         _exit (EXIT_FAILURE);
@@ -62,7 +78,10 @@ namespace   {
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#else
         cerr << "FAILED: SIGNAL= " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
+#endif
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
 #if     qCompilerAndStdLib_StdExitBuggy
@@ -91,29 +110,23 @@ void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
         (*regressionTest) ();
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::printf ("Succeeded\n");
+#else
         cout << "Succeeded" << endl;
+#endif
         DbgTrace (L"Succeeded");
     }
-#if 1
-    catch (const Execution::StringException& e) {
-        cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
-        cout << "Failed" << endl;
-        DbgTrace (L"FAILED: REGRESSION TEST (Execution::StringException): '%s", e.As<wstring> ().c_str ());
-        Debug::DropIntoDebuggerIfPresent ();
-        exit (EXIT_FAILURE);
-    }
-#endif
-    catch (const std::exception& e) {
-        cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
-        cout << "Failed" << endl;
-        Debug::DropIntoDebuggerIfPresent ();
-        DbgTrace ("FAILED: REGRESSION TEST (std::exception): '%s", e.what ());
-        exit (EXIT_FAILURE);
-    }
     catch (...) {
-        cerr << "FAILED: REGRESSION TEST EXCEPTION" << endl;
+        auto exc = current_exception ();
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "FAILED: REGRESSION TEST DUE TO EXCEPTION: '%s\n", Characters::ToString (exc).AsNarrowSDKString ().c_str ());
+        (void)::printf ("Failed\n");
+#else
+        cerr << "FAILED: REGRESSION TEST DUE TO EXCEPTION: '" << Characters::ToString (exc).AsNarrowSDKString () << endl;
         cout << "Failed" << endl;
-        DbgTrace (L"FAILED: REGRESSION TEST EXCEPTION");
+#endif
+        DbgTrace (L"FAILED: REGRESSION TEST (Execution::StringException): '%s", Characters::ToString (exc).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
         exit (EXIT_FAILURE);
     }

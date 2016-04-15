@@ -4,6 +4,9 @@
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
@@ -72,7 +75,11 @@ int main (int argc, const char* argv[])
 #endif
     }
     catch (...) {
-        cerr << "Exception - terminating..." << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		(void)::fprintf (stderr, "Exception - terminating...\n");
+#else
+		cerr << "Exception - terminating..." << endl;
+#endif
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;

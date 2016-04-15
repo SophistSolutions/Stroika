@@ -5,6 +5,9 @@
 
 #include    <fstream>
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Characters/SDKString.h"
 #include    "Stroika/Foundation/Characters/CString/Utilities.h"
@@ -23,7 +26,7 @@ using   Execution::StringException;
 
 const   wchar_t kOpenCodeTag[]  =   L"<%";
 const   wchar_t kCloseCodeTag[] =   L"%>";
-const   wchar_t kMagicWriteChar =   '=';    // if first char after open tag - treat as synonmym for fResponse.write ()
+const   wchar_t kMagicWriteChar =   '=';    // if first char after open tag - treat as synonym for fResponse.write ()
 
 
 
@@ -38,10 +41,6 @@ public:
     {
     }
 
-    ~CompilerApp ()
-    {
-    }
-
 public:
     nonvirtual  void    Run (int argc, const SDKChar* argv[])
     {
@@ -49,13 +48,21 @@ public:
             fstream in;
             in.open (fInputFile.c_str (), ios_base::in);
             if (!in) {
-                cerr << "Error opening input file- aborting" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+				(void)::fprintf (stderr, "Error opening input file- aborting\n");
+#else
+				cerr << "Error opening input file- aborting" << endl;
+#endif
                 return;
             }
             fstream out;
             out.open (fOutputFile.c_str (), ios_base::out);
             if (!out) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+				(void)::fprintf (stderr, "Error opening output file- aborting\n");
+#else
                 cerr << "Error opening output file- aborting" << endl;
+#endif
                 return;
             }
             ProcessFile_ (in, out);
@@ -65,10 +72,17 @@ public:
 private:
     nonvirtual  void    Usage_ ()
     {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n");
+        (void)::fprintf (stderr, "\twhere [options]can be:\n");
+        (void)::fprintf (stderr, "\t\t-help to print out this message\n");
+        (void)::fprintf (stderr, "\t\t-n X set FormGenerator functioname to X\n");
+#else
         cerr << "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n";
         cerr << "\twhere [options]can be:\n";
         cerr << "\t\t-help to print out this message\n";
         cerr << "\t\t-n X set FormGenerator functioname to X\n";
+#endif
     }
 
 private:
@@ -97,7 +111,11 @@ private:
                             gettingName = true;
                             break;
                         default: {
-                                cerr << "Unknown argument '" << argi << "'\n";
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                                (void)::fprintf (stderr, "Unknown argument '%s'\n", String::FromSDKString (argi).AsNarrowSDKString ().c_str ());
+#else
+                                cerr << "Unknown argument '" << String::FromSDKString (argi).AsNarrowSDKString () << "'\n";
+#endif
                                 Usage_ ();
                                 return false;
                             }
@@ -118,7 +136,11 @@ private:
                             fOutputFile = argi;
                             break;
                         default:
-                            cerr << "Too many files" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+							(void)::fprintf (stderr, "Too many files\n");
+#else
+							cerr << "Too many files" << endl;
+#endif
                             Usage_ ();
                             return false;
                     }
@@ -127,7 +149,11 @@ private:
             }
         }
         if (fileCount < 2) {
-            cerr << "Not enuf files specified.";
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+			(void)::fprintf (stderr, "Not enuf files specified.\n");
+#else
+			cerr << "Not enuf files specified." << endl;
+#endif
             Usage_ ();
             return false;
         }
@@ -149,7 +175,11 @@ private:
 
                 if (static_cast<size_t> (orig.end () - i) >= ::wcslen (kOpenCodeTag) and wstring (i, i + ::wcslen (kOpenCodeTag)) == kOpenCodeTag) {
                     if (inCode) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                        (void)::fprintf (stderr, "ERROR: Open inside context of open\n");
+#else
                         cerr << "ERROR: Open inside context of open" << endl;
+#endif
                         return;
                     }
                     inCode = true;
@@ -165,7 +195,11 @@ private:
                 }
                 else if (static_cast<size_t> (orig.end () - i) >= ::wcslen (kCloseCodeTag) and wstring (i, i + ::wcslen (kCloseCodeTag)) == kCloseCodeTag) {
                     if (not inCode) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                        (void)fprintf (stderr, "ERROR: Close CODE inside context of closed\n");
+#else
                         cerr << "ERROR: Close CODE inside context of closed" << endl;
+#endif
                         return;
                     }
                     i += ::wcslen (kCloseCodeTag);

@@ -9,6 +9,9 @@
 #include    <fstream>
 #include    <mutex>
 #include    <sstream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Configuration/StroikaVersion.h"
 
@@ -18,6 +21,7 @@
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
 #include    "Stroika/Foundation/Characters/StringBuilder.h"
 #endif
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Set.h"
@@ -127,10 +131,18 @@ namespace {
     ostream&    GetOutStream_ ()
     {
         static  shared_ptr<ostream> out2File;
-        if (not sShowOutput_ and out2File.get () == nullptr) {
+        if (not sShowOutput_ and out2File == nullptr) {
             out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        if (out2File == nullptr) {
+			(void)::fprintf (stderr, "Forcing use of output to file due to qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
+            out2File.reset (new ofstream (kDefaultPerfOutFile_));
+        }
+        ostream&    outTo = *out2File;
+#else
         ostream&    outTo = (sShowOutput_ ? cout : *out2File);
+#endif
         return outTo;
     }
 }
@@ -1814,16 +1826,13 @@ int     main (int argc, const char* argv[])
             }
         }
     }
-    catch (const Execution::StringException& e) {
-        cerr << "Usage: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
-        exit (EXIT_FAILURE);
-    }
-    catch (const std::exception& e) {
-        cerr << "Usage: '" << e.what () << endl;
-        exit (EXIT_FAILURE);
-    }
     catch (...) {
-        cerr << "Usage:" << endl;
+        auto exc = current_exception ();
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Usage: %s\n", Characters::ToString (exc).AsNarrowSDKString ().c_str ());
+#else
+        cerr << "Usage: " << Characters::ToString (exc).AsNarrowSDKString () << endl;
+#endif
         exit (EXIT_FAILURE);
     }
 

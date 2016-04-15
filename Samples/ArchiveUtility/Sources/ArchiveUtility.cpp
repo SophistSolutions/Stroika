@@ -4,6 +4,9 @@
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
 #include    <iostream>
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include	<cstdio>
+#endif
 
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
@@ -47,6 +50,16 @@ namespace {
     };
     void    Usage_ ()
     {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Usage: ArchiveUtility (--help | -h) | ((--list | --create | --extract |--update) ARCHIVENAME [--outputDirectory D] [FILES])\n");
+        (void)::fprintf (stderr, "    --help prints this help\n");
+        (void)::fprintf (stderr, "    -h prints this help\n");
+        (void)::fprintf (stderr, "    --list prints all the files in the argument archive\n");
+        (void)::fprintf (stderr, "    --create creates the argument ARHCIVE and adds the argument FILES to it\n");
+        (void)::fprintf (stderr, "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory (defaulting to .)\n");
+        (void)::fprintf (stderr, "    --update adds to the argument ARHCIVE and adds the argument FILES to it\n");
+        (void)::fprintf (stderr, "    ARCHIVENAME can be the single character - to designate stdin\n"); // NYI
+#else
         cerr << "Usage: ArchiveUtility (--help | -h) | ((--list | --create | --extract |--update) ARCHIVENAME [--outputDirectory D] [FILES])" << endl;
         cerr << "    --help prints this help" << endl;
         cerr << "    -h prints this help" << endl;
@@ -55,6 +68,7 @@ namespace {
         cerr << "    --extract extracts all the files from the argument ARHCIVE and to the output directory specified by --ouptutDirectory (defaulting to .)" << endl;
         cerr << "    --update adds to the argument ARHCIVE and adds the argument FILES to it" << endl;
         cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
+#endif
     }
     // Emits errors to stderr, and Usage, etc, if needed, and Optional<> IsMissing()
     Optional<Options_>  ParseOptions_ (int argc, const char* argv[])
@@ -89,12 +103,20 @@ namespace {
             // else more cases todo
         }
         if (not archiveName) {
-            cerr << "Missing name of archive" << endl;
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+			(void)::fprintf (stderr, "Missing name of archive\n");
+#else
+			cerr << "Missing name of archive" << endl;
+#endif
             Usage_ ();
             return Optional<Options_> {};
         }
         if (not operation) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            (void)::fprintf (stderr, "Missing operation\n");
+#else
             cerr << "Missing operation" << endl;
+#endif
             Usage_ ();
             return Optional<Options_> {};
         }
@@ -130,7 +152,11 @@ namespace {
     void    ListArchive_ (const String& archiveName)
     {
         for (String i : OpenArchive_ (archiveName).GetContainedFiles ()) {
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            printf ("%s\n", i.AsNarrowSDKString ().c_str ());
+#else
             cout << i.AsNarrowSDKString () << endl;
+#endif
         }
     }
     void    ExtractArchive_ (const String& archiveName, const String& toDirectory)
@@ -177,12 +203,13 @@ int     main (int argc, const char* argv[])
             }
             // rest NYI
         }
-        catch (const Execution::StringException& e) {
-            cerr << "Exception: " << e.As<String> ().AsNarrowSDKString () << " - terminating..." << endl;
-            return EXIT_FAILURE;
-        }
         catch (...) {
-            cerr << "Exception - terminating..." << endl;
+			String	exceptMsg = Characters::ToString (current_exception ());
+#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+			(void)::fprintf (stderr, "Exception: %s - terminating...\n", exceptMsg.AsNarrowSDKString ().c_str ());
+#else
+			cerr << "Exception: " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
+#endif
             return EXIT_FAILURE;
         }
     }
