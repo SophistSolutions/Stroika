@@ -9,3 +9,4 @@ StroikaDevRoot.*
 *.opensdf
 *.suo
 REGRESSION-TESTS*.OUT
+*.VC.db
