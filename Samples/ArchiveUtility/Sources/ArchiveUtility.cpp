@@ -8,6 +8,7 @@
 #include	<cstdio>
 #endif
 
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/DataExchange/ArchiveReader.h"
