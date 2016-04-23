@@ -1645,7 +1645,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<StringBuilder> ([](const StringBuilder & w) {return w.As<String> ();});}  , L"StringBuilder",
         248000 ,
-        .18,
+        .22,
         &failedTests
         );
 #endif
@@ -1720,7 +1720,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.39,       // so high cuz AWS vm running Release-memleak config
+            0.42,
             &failedTests
         );
         Tester (
