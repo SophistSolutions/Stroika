@@ -18,10 +18,46 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a141">v2.0a141x</a><br/>2016-04-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a141">v2.0a141</a><br/>2016-04-22</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>coding convention docs (_A name suffix), and renamed FormatThread to FormatThread_A</li>
+		<li>draft of Thread GetDefaultConfiguration and passing in Configuraiton object, and GetConfigurationStatus  - https://stroika.atlassian.net/browse/STK-475 and https://stroika.atlassian.net/browse/STK-474;</li>
+		<li>Transfer fucntion (curl/winhttp) support fOptions_.fMaxAutomaticRedirects and default to 0, and handle in curl/winhttp implementations; fixed io transer network connection regtest to use fMaxAutomaticRedirects = 1, since many of them use redirects</li>
+		<li>fixed use of :WinHttpSetOption WINHTTP_DISABLE_COOKIES</li>
+		<li>
+			URL class
+			<ul>
+				<li>NOT backward compat change - URL::GetScheme() now returns optional - and eFlexiblyAsUI doesnt fill in scheme by default - but many places use new GetSchemeValue () - which populates with the default; and fixed regression tests</li>
+				<li>added new utility URL::GetHostRelURLString () - badly named but needed;</li>
+				<li>URL::ToString</li>
+				<li>URL::GetHostRelativePathPlusQuery</li>
+			</ul>
+		</li>
+		<li>fixed Network/Transfer/Client_WinHTTP to pass fURL_.GetHostRelativePathPlusQuery () instead of fURL_.GetHostRelativePath () - curl code was already fine</li>
+		<li>Attempt at fixing CTRLC issue with services - while not running - install signal handler LATER - just around the actual run as service</li>
+		<li>
+			VS2k15
+			<ul>
+				<li>define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy - last importnat bug (with workaround) for ms vs 2k15, and applied (cruddy but workable) workaround</li>
+				<li>NEW PerformanceDump-v2.0a141-x86-vs2k15-ReleaseU.txt</li>
+				<li>Switching all my development to using VS2k15 instead of VS2k13. Ran final release testing with VS2k13 also - for this release, but probably soon abanodon vs2k13</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>vc++2k13 (probably last release to support/test this)</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>ppc-AIX-7.1/gcc 4.9 (release works fully, but Configuration=Debug crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>valgrind (memcheck only; helgrind still broken)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
