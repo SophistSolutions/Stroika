@@ -1287,7 +1287,7 @@ eq_result
 #if     defined (_MSC_VER)
 /*
  * @see https://connect.microsoft.com/VisualStudio/feedback/details/1651009/64bit-compiles-break-cout-library
- *		noted discovered workaround (stdio stderr, isntead of cerr)
+ *      noted discovered workaround (stdio stderr, isntead of cerr)
  */
 // still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_) && qPlatform_Win64
