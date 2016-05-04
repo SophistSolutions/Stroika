@@ -124,8 +124,19 @@ namespace {
     set<Thread::IDType> sRunningThreads_;               // protected by sThreadSupportStatsMutex_
 
     struct AllThreadsDeadDetector_ {
-        AllThreadsDeadDetector_ ()  { Require (sRunningThreads_.empty ()); }
-        ~AllThreadsDeadDetector_ () { Require (sRunningThreads_.empty ()); }
+        AllThreadsDeadDetector_ ()
+        {
+            Require (sRunningThreads_.empty ());
+        }
+        ~AllThreadsDeadDetector_ ()
+        {
+#if qDebug
+            if (not sRunningThreads_.empty ()) {
+                DbgTrace(L"Threads %s running", Characters::ToString (Thread::GetStatistics ().fRunningThreads).c_str ());
+                Require(sRunningThreads_.empty ());
+            }
+#endif
+        }
     };
     AllThreadsDeadDetector_   sAllThreadsDeadDetector_;
 }
