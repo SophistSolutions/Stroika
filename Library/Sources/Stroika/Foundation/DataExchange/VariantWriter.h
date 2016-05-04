@@ -56,13 +56,23 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note - to use std::ostream - use
-                 *      Read (BinaryOutputStreamFromOStreamAdapter (some_ostream));
                  */
                 nonvirtual  void    Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out);
                 nonvirtual  void    Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out);
                 nonvirtual  void    Write (const VariantValue& v, ostream& out);
                 nonvirtual  void    Write (const VariantValue& v, wostream& out);
+
+            public:
+                /**
+                 *  Take the given variant value, and convert it to JSON, and return that JSON as a BLOB.
+                 */
+                nonvirtual  Memory::BLOB    WriteAsBLOB (const VariantValue& v);
+
+            public:
+                /**
+                 *  Take the given variant value, and convert it to JSON, and return that JSON as a String.
+                 */
+                nonvirtual  String  WriteAsString (const VariantValue& v);
 
             protected:
                 nonvirtual  _IRep&          _GetRep ();

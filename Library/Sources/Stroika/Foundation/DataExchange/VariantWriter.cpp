@@ -5,6 +5,8 @@
 
 #include    "../Characters/Format.h"
 #include    "../Streams/iostream/OutputStreamFromStdOStream.h"
+#include    "../Streams/MemoryStream.h"
+#include    "../Streams/TextReader.h"
 
 #include    "VariantWriter.h"
 
@@ -29,7 +31,17 @@ void    VariantWriter::Write (const VariantValue& v, ostream& out)
 
 void    VariantWriter::Write (const VariantValue& v, wostream& out)
 {
-    AssertNotImplemented ();    // just because we never implemented
     Write (v, OutputStreamFromStdOStream<Characters::Character> (out));
 }
 
+Memory::BLOB    VariantWriter::WriteAsBLOB (const VariantValue& v)
+{
+    Streams::MemoryStream<Memory::Byte> buf;
+    Write(v, buf);
+    return buf.As<Memory::BLOB>();
+}
+
+String  VariantWriter::WriteAsString (const VariantValue& v)
+{
+    return Streams::TextReader (WriteAsBLOB (v)).ReadAll ();
+}
