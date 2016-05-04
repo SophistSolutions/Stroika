@@ -5,8 +5,8 @@
 
 #include    <mutex>
 #include    <iostream>
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#include	<cstdio>
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include    <cstdio>
 #endif
 
 #include    "Stroika/Foundation/Characters/Format.h"
@@ -102,10 +102,11 @@ int main (int argc, const char* argv[])
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-        (void)::fprintf (stderr, "Exception - terminating...\n");
+        String  exceptMsg = Characters::ToString(current_exception());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf(stderr, "Exception - %s - terminating...\n", exceptMsg.AsNarrowSDKString().c_str());
 #else
-        cerr << "Exception - terminating..." << endl;
+        cerr << "Exception - " << exceptMsg.AsNarrowSDKString() << " - terminating..." << endl;
 #endif
         return EXIT_FAILURE;
     }

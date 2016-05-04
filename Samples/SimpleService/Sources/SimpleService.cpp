@@ -5,8 +5,8 @@
 
 #include    <cstdlib>
 #include    <iostream>
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#include	<cstdio>
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include    <cstdio>
 #endif
 
 #include    "Stroika/Foundation/Characters/String_Constant.h"
@@ -214,15 +214,15 @@ namespace {
     void    ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
             (void)::fprintf (stderr, "Error: %s\n\n", e.fMessage.AsUTF8 ().c_str ());
 #else
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
             cerr << endl;
 #endif
         }
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		fprintf (stderr, "USAGE NOT SUPPORTED IF qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        fprintf (stderr, "USAGE NOT SUPPORTED IF qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
 #else
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
         if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
@@ -253,6 +253,12 @@ namespace {
 
 int     main (int argc, const char* argv[])
 {
+#if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+    auto&&  cleanupReport = Execution::Finally([]() {
+        DbgTrace(L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str());
+    });
+#endif
+
     /*
      *  This allows for safe signals to be managed in a threadsafe way
      */
@@ -305,10 +311,10 @@ int     main (int argc, const char* argv[])
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		(void)::fprintf (stderr, "Warning: RunTilIdleService not really done correctly yet - no notion of idle\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Warning: RunTilIdleService not really done correctly yet - no notion of idle\n");
 #else
-		cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
+        cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
 #endif
         serviceIntegrationRep = make_shared<Main::RunTilIdleService> ();
     }
@@ -326,10 +332,10 @@ int     main (int argc, const char* argv[])
      */
     try {
         if (Execution::MatchesCommandLineArgument (args, L"status")) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-			printf ("%s", m.GetServiceStatusMessage ().AsUTF8<string> ().c_str ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            printf ("%s", m.GetServiceStatusMessage ().AsUTF8<string> ().c_str ());
 #else
-			cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+            cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
 #endif
             return EXIT_SUCCESS;
         }
@@ -348,14 +354,14 @@ int     main (int argc, const char* argv[])
         ShowUsage_ (m, e);
     }
     catch (...) {
-		String	exceptMsg = Characters::ToString (current_exception ());
+        String  exceptMsg = Characters::ToString (current_exception ());
 #if     qUseLogger
         Logger::Get ().Log (Logger::Priority::eError, L"%s", exceptMsg.c_str ());
 #endif
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		(void)::fprintf (stderr, "FAILED: %s\n", exceptMsg.AsNarrowSDKString ().c_str ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "FAILED: %s\n", exceptMsg.AsNarrowSDKString ().c_str ());
 #else
-		cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
+        cerr << "FAILED: " << exceptMsg.AsNarrowSDKString () << endl;
 #endif
         return EXIT_FAILURE;
     }

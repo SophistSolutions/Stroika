@@ -3,8 +3,8 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#include	<cstdio>
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include    <cstdio>
 #else
 #include    <iostream>
 #endif
@@ -83,10 +83,10 @@ int     main (int argc, const char* argv[])
                 run.Add (*argi);
             }
             else {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-				(void)::fprintf (stderr, "Expected arg to -r\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::fprintf (stderr, "Expected arg to -r\n");
 #else
-				cerr << "Expected arg to -r" << endl;
+                cerr << "Expected arg to -r" << endl;
 #endif
                 return EXIT_FAILURE;
             }
@@ -97,8 +97,8 @@ int     main (int argc, const char* argv[])
                 runFor = Characters::String2Float<Time::DurationSecondsType> (*argi);
             }
             else {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-				(void)::fprintf (stderr, "Expected arg to -t\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::fprintf (stderr, "Expected arg to -t\n");
 #else
                 cerr << "Expected arg to -t" << endl;
                 return EXIT_FAILURE;
@@ -111,8 +111,8 @@ int     main (int argc, const char* argv[])
                 captureInterval = Characters::String2Float<Time::DurationSecondsType> (*argi);
             }
             else {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-				(void)::fprintf (stderr, "Expected arg to -c\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::fprintf (stderr, "Expected arg to -c\n");
 #else
                 cerr << "Expected arg to -c" << endl;
 #endif
@@ -121,8 +121,8 @@ int     main (int argc, const char* argv[])
         }
     }
     if (printUsage) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		(void)::fprintf (stderr, "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*\n");
         (void)::fprintf (stderr, "    --help prints this help\n");
         (void)::fprintf (stderr, "    -h prints this help\n");
         (void)::fprintf (stderr, "    -o prints instrument results (with newlines stripped)\n");
@@ -131,7 +131,7 @@ int     main (int argc, const char* argv[])
         (void)::fprintf (stderr, "    -t time to run for (if zero run each matching instrument once)\n");
         (void)::fprintf (stderr, "    -c time interval between captures\n");
 #else
-		cerr << "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
+        cerr << "Usage: SystemPerformanceClient [--help] [-h] [-l] [-f] [-r RUN-INSTRUMENT]*" << endl;
         cerr << "    --help prints this help" << endl;
         cerr << "    -h prints this help" << endl;
         cerr << "    -o prints instrument results (with newlines stripped)" << endl;
@@ -145,13 +145,13 @@ int     main (int argc, const char* argv[])
 
     try {
         if (printNames) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
             (void)::printf ("Instrument:\n");
 #else
             cout << "Instrument:" << endl;
 #endif
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
                 (void)::printf ("  %s\n", i.fInstrumentName.GetPrintName ().AsNarrowSDKString ().c_str ());
 #else
                 cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
@@ -182,13 +182,13 @@ int     main (int argc, const char* argv[])
                 capturer.AddCaptureSet (cs);
             }
             capturer.AddMeasurementsCallback ([oneLineMode] (MeasurementSet ms) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-				(void)::printf ("    Measured-At: %s\n", ms.fMeasuredAt.Format ().AsNarrowSDKString ().c_str ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::printf ("    Measured-At: %s\n", ms.fMeasuredAt.Format ().AsNarrowSDKString ().c_str ());
 #else
-				cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+                cout << "    Measured-At: " << ms.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
 #endif
                 for (Measurement mi : ms.fMeasurements) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
                     (void)::printf ("    %s: %s\n", mi.fType.GetPrintName ().AsNarrowSDKString ().c_str (), Serialize_ (mi.fValue, oneLineMode).c_str ());
 #else
                     cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
@@ -203,10 +203,10 @@ int     main (int argc, const char* argv[])
             /*
              * Demo NOT using capturer
              */
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-			(void)::printf ("Results for each instrument:\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+            (void)::printf ("Results for each instrument:\n");
 #else
-			cout << "Results for each instrument:" << endl;
+            cout << "Results for each instrument:" << endl;
 #endif
             for (Instrument i : SystemPerformance::GetAllInstruments ()) {
                 if (not run.empty ()) {
@@ -214,28 +214,28 @@ int     main (int argc, const char* argv[])
                         continue;
                     }
                 }
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-				(void)::printf ("  %s\n", i.fInstrumentName.GetPrintName ().AsNarrowSDKString ().c_str ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                (void)::printf ("  %s\n", i.fInstrumentName.GetPrintName ().AsNarrowSDKString ().c_str ());
 #else
-				cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
+                cout << "  " << i.fInstrumentName.GetPrintName ().AsNarrowSDKString () << endl;
 #endif
                 Execution::Sleep (captureInterval);
                 MeasurementSet m = i.Capture ();
                 if (m.fMeasurements.empty ()) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
                     (void)::printf ("    NO DATA\n");
 #else
                     cout << "    NO DATA" << endl;
 #endif
                 }
                 else {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-					(void)::printf ("    Measured-At: %s\n", m.fMeasuredAt.Format ().AsNarrowSDKString ().c_str ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+                    (void)::printf ("    Measured-At: %s\n", m.fMeasuredAt.Format ().AsNarrowSDKString ().c_str ());
 #else
-					cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
+                    cout << "    Measured-At: " << m.fMeasuredAt.Format ().AsNarrowSDKString () << endl;
 #endif
                     for (Measurement mi : m.fMeasurements) {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
                         (void)::printf ("    %s: %s\n", mi.fType.GetPrintName ().AsNarrowSDKString ().c_str (), Serialize_ (mi.fValue, oneLineMode).c_str ());
 #else
                         cout << "    " << mi.fType.GetPrintName ().AsNarrowSDKString () << ": " << Serialize_ (mi.fValue, oneLineMode) << endl;
@@ -246,8 +246,8 @@ int     main (int argc, const char* argv[])
         }
     }
     catch (...) {
-		String	exceptMsg = Characters::ToString (current_exception ());
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        String  exceptMsg = Characters::ToString (current_exception ());
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
         (void)::fprintf (stderr, "Exception - %s - terminating...\n", exceptMsg.AsNarrowSDKString ().c_str ());
 #else
         cerr << "Exception - " << exceptMsg.AsNarrowSDKString () << " - terminating..." << endl;
