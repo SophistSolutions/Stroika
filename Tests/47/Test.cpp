@@ -9,8 +9,8 @@
 #include    <fstream>
 #include    <mutex>
 #include    <sstream>
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#include	<cstdio>
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include    <cstdio>
 #endif
 
 #include    "Stroika/Foundation/Configuration/StroikaVersion.h"
@@ -134,9 +134,9 @@ namespace {
         if (not sShowOutput_ and out2File == nullptr) {
             out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
         if (out2File == nullptr) {
-			(void)::fprintf (stderr, "Forcing use of output to file due to qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
+            (void)::fprintf (stderr, "Forcing use of output to file due to qCompilerAndStdLib_COutCErrStartupCrasher_Buggy\n");
             out2File.reset (new ofstream (kDefaultPerfOutFile_));
         }
         ostream&    outTo = *out2File;
@@ -1828,7 +1828,7 @@ int     main (int argc, const char* argv[])
     }
     catch (...) {
         auto exc = current_exception ();
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
         (void)::fprintf (stderr, "Usage: %s\n", Characters::ToString (exc).AsNarrowSDKString ().c_str ());
 #else
         cerr << "Usage: " << Characters::ToString (exc).AsNarrowSDKString () << endl;
