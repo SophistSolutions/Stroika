@@ -3,8 +3,8 @@
  */
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#include	<cstdio>
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#include    <cstdio>
 #else
 #include    <iostream>
 #endif
@@ -39,8 +39,8 @@ namespace   {
         if (functionName == nullptr) {
             functionName = "";
         }
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		(void)::fprintf (stderr, "FAILED: %s; %s; %s; %s:%d\n", assertCategory, assertionText, functionName, fileName, lineNum);
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::fprintf (stderr, "FAILED: %s; %s; %s; %s:%d\n", assertCategory, assertionText, functionName, fileName, lineNum);
 #else
         cerr << "FAILED: " << assertCategory << "; " << assertionText << ";" << functionName << ";" << fileName << ": " << lineNum << endl;
 #endif
@@ -56,7 +56,7 @@ namespace   {
     }
     void    _FatalErrorHandler_ (const Characters::SDKChar* msg)
     {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
 #if     qTargetPlatformSDKUseswchar_t
         fprintf(stderr, "FAILED: %s\n",  Characters::WideStringToNarrowSDKString (msg).c_str ());
 #else
@@ -78,7 +78,7 @@ namespace   {
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
 #else
         cerr << "FAILED: SIGNAL= " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
 #endif
@@ -110,8 +110,8 @@ void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
         (*regressionTest) ();
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-		(void)::printf ("Succeeded\n");
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+        (void)::printf ("Succeeded\n");
 #else
         cout << "Succeeded" << endl;
 #endif
@@ -119,7 +119,7 @@ void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
     }
     catch (...) {
         auto exc = current_exception ();
-#if		qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
         (void)::fprintf (stderr, "FAILED: REGRESSION TEST DUE TO EXCEPTION: '%s\n", Characters::ToString (exc).AsNarrowSDKString ().c_str ());
         (void)::printf ("Failed\n");
 #else
