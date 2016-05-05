@@ -439,8 +439,8 @@ void    Main::LoggerServiceWrapper::_Install ()
         fDelegateTo_->_Install ();
     }
     catch (...) {
-        // @todo - capture useful message
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to install - aborting...");
+        String  exceptMsg = Characters::ToString(current_exception());
+        Logger::Get().Log(Logger::Priority::eError, L"Failed to install - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
 }
@@ -452,8 +452,8 @@ void    Main::LoggerServiceWrapper::_UnInstall ()
         fDelegateTo_->_UnInstall ();
     }
     catch (...) {
-        // @todo - capture useful message
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to uninstall - aborting...");
+        String  exceptMsg = Characters::ToString (current_exception ());
+        Logger::Get ().Log (Logger::Priority::eError, L"Failed to uninstall - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
 }
@@ -465,7 +465,8 @@ void    Main::LoggerServiceWrapper::_RunAsService ()
         fDelegateTo_->_RunAsService ();
     }
     catch (...) {
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
+        String  exceptMsg = Characters::ToString (current_exception ());
+        Logger::Get ().Log (Logger::Priority::eError, L"Exception running service - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
     Logger::Get ().Log (Logger::Priority::eNotice, L"Service stopped normally");
@@ -478,7 +479,8 @@ void    Main::LoggerServiceWrapper::_RunDirectly ()
         fDelegateTo_->_RunDirectly ();
     }
     catch (...) {
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Exception running service directly - aborting...");
+        String  exceptMsg = Characters::ToString (current_exception ());
+        Logger::Get ().Log (Logger::Priority::eError, L"Exception running service service - %s - aborting...", exceptMsg.c_str ());
         Execution::ReThrow ();
     }
     Logger::Get ().Log (Logger::Priority::eNotice, L"Service stopped normally");
@@ -919,10 +921,9 @@ Main::WindowsService*       Main::WindowsService::s_SvcRunningTHIS_ =   nullptr;
 
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
-    , fServiceStatusHandle_ (nullptr)
-    , fServiceStatus_ ()
+    , fServiceStatusHandle_ { nullptr }
+    , fServiceStatus_ {}
 {
-    memset (&fServiceStatus_, 0, sizeof (fServiceStatus_));
     fServiceStatus_.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
     fServiceStatus_.dwCurrentState = SERVICE_STOPPED;
     fServiceStatus_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
@@ -954,14 +955,14 @@ Main::State     Main::WindowsService::_GetState () const
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_GetState");
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != nullptr);
     auto&&  cleanup1 =  Execution::Finally (
     [hSCM] () noexcept {
         AssertNotNull (hSCM);
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != nullptr);
     auto&&  cleanup2 =  Execution::Finally (
     [hService] () noexcept {
         AssertNotNull (hService);
@@ -1255,7 +1256,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());   //tmphack - as
     fServiceStatus_.dwWin32ExitCode = 0;
 
-    //Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
+    //Logger::Get ().Log (Logger::Priority::eInfo, "Service stopped");
     SetServiceStatus_ (SERVICE_STOPPED);
 }
 
