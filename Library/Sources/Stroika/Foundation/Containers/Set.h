@@ -162,8 +162,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 */
+                */
                 nonvirtual  bool    Contains (ArgByValueType<T> item) const;
+
+            public:
+                /**
+                 *  Checks if each element of this set is contained in the argument set. This is NOT proper subset, but
+                 *  allows for equality.
+                 */
+                nonvirtual  bool    IsSubsetOf (const Set<T>& superset) const;
 
             public:
                 /**

@@ -91,6 +91,16 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Contains (item);
             }
             template    <typename T, typename TRAITS>
+            bool    Set<T, TRAITS>::IsSubsetOf (const Set<T>& superset) const
+            {
+                for (auto i : *this) {
+                    if (not superset.Contains (i)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            template    <typename T, typename TRAITS>
             inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (item);
