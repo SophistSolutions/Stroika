@@ -218,6 +218,12 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  @see Characters::ToString ()
+                     */
+                    nonvirtual  String  ToString () const;
+
+                public:
+                    /**
                      *  \req not empty ()
                      *
                      *  Return true iff the given address is a localhost IP address (typically 127.0.0.1, but can be anything

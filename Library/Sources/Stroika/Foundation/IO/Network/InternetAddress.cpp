@@ -348,6 +348,11 @@ bool    InternetAddress::Equals (const InternetAddress& rhs) const
     return Compare (rhs) == 0;
 }
 
+String  InternetAddress::ToString () const
+{
+    return As<String> ();
+}
+
 int InternetAddress::Compare (const InternetAddress& rhs) const
 {
     if (fAddressFamily_ != rhs.fAddressFamily_) {
