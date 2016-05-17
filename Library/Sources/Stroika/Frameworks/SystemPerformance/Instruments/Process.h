@@ -182,16 +182,26 @@ namespace   Stroika {
                         /**
                          *      Percent of a single CPU time used (summed over user / system) and average over this
                          *      collection interval.
+                         *
+                         *  @deprecated as of 2016-05-17
                          */
                         Optional<DurationSecondsType>       fPercentCPUTime;
 
                         /**
-                          *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
-                          *     the total (user + system) usage of the process since it started.
-                          *
-                          *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
-                          *     this number would be 6 (2 * 3).
-                          */
+                         *  Average CPU time used / second over this collection interval. This when available - is logically
+                         *  fTotalCPUTimeEverUsed-PREV.fTotalCPUTimeEverUsed)/measurement_time;
+                         *
+                         *  So - if you have two cores running constantly, this returns 2.0;
+                         */
+                        Optional<DurationSecondsType>       fAverageCPUTimeUsed;
+
+                        /**
+                        *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
+                        *     the total (user + system) usage of the process since it started.
+                        *
+                        *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
+                        *     this number would be 6 (2 * 3).
+                        */
                         Optional<DurationSecondsType>       fTotalCPUTimeEverUsed;
 
                         /**
