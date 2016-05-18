@@ -609,7 +609,6 @@ Global
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-32|x64.Build.0 = Release-U-32|x64
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
-		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.Build.0 = Release-U-64|x64
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.ActiveCfg = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.Build.0 = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|x64.ActiveCfg = Release-U-32|Win32
@@ -637,7 +636,6 @@ Global
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|Win32.ActiveCfg = Release-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|Win32.Build.0 = Release-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|x64.ActiveCfg = Release-U-32|Win32
-		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-U-64|x64.Build.0 = Release-U-32|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

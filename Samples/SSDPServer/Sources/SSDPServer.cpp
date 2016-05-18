@@ -11,6 +11,7 @@
 
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/String_Constant.h"
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
@@ -102,9 +103,9 @@ int main (int argc, const char* argv[])
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
-        String  exceptMsg = Characters::ToString(current_exception());
+        String  exceptMsg = Characters::ToString (current_exception ());
 #if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-        (void)::fprintf(stderr, "Exception - %s - terminating...\n", exceptMsg.AsNarrowSDKString().c_str());
+        (void)::fprintf(stderr, "Exception - %s - terminating...\n", exceptMsg.AsNarrowSDKString ().c_str());
 #else
         cerr << "Exception - " << exceptMsg.AsNarrowSDKString() << " - terminating..." << endl;
 #endif

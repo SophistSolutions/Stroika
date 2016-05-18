@@ -9,6 +9,7 @@
 #include    <cstdio>
 #endif
 
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/Memory/Optional.h"

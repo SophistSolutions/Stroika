@@ -2151,275 +2151,278 @@ Again:
                             processInfo.fPercentCPUTime = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
                             processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                         }
-                        else {
-                            /*
-                             *  Considered something like:
-                             *      if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
-                             *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
-                             *      }
-                             *
-                             *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
-                             *  it started SOMETIME during this capture, but we dont know when (so we dont know the divisor).
-                             */
-                        }
                     }
-
-                    // So next time we can compute 'diffs'
-                    newContextStats.Add (pid, PerfStats_ { now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes });
-
-                    results.Add (pid, processInfo);
+                    else {
+                        /*
+                         *  Considered something like:
+                         *      if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
+                         *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
+                         *      }
+                         *
+                         *  But cannot do, because we do capture_() once at CTOR, so if we get here and havent seen this process before
+                         *  it started SOMETIME during this capture, but we dont know when (so we dont know the divisor).
+                         */
+                    }
                 }
-                fLastCapturedAt = now;
-                fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
-                if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
-                    fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
-                }
-                return results;
+
+                // So next time we can compute 'diffs'
+                newContextStats.Add (pid, PerfStats_ { now, processInfo.fTotalCPUTimeEverUsed, processInfo.fCombinedIOReadBytes, processInfo.fCombinedIOWriteBytes });
+
+                results.Add (pid, processInfo);
             }
-            Set<pid_t>  GetAllProcessIDs_ () {
-                DWORD aProcesses[10 * 1024];
-                DWORD cbNeeded;
+            fLastCapturedAt = now;
+            fPostponeCaptureUntil_ = now + fMinimumAveragingInterval_;
+            if (fOptions_.fCachePolicy == CachePolicy::eOmitUnchangedValues) {
+                fStaticSuppressedAgain = Set<pid_t> (results.Keys ());
+            }
+            return results;
+        }
+        Set<pid_t>  GetAllProcessIDs_ ()
+        {
+            DWORD aProcesses[10 * 1024];
+            DWORD cbNeeded;
 
-                Set<pid_t> result;
-                if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
-                    AssertNotReached ();
-                    return result;
-                }
-
-                // Calculate how many process identifiers were returned.
-                DWORD   cProcesses = cbNeeded / sizeof (DWORD);
-                for (DWORD i = 0; i < cProcesses; ++i) {
-                    result.Add (aProcesses[i]);
-                }
+            Set<pid_t> result;
+            if (not ::EnumProcesses (aProcesses, sizeof (aProcesses), &cbNeeded)) {
+                AssertNotReached ();
                 return result;
             }
-            void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processName, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName) {
-                RequireNotNull (hProcess);
-                RequireNotNull (processEXEPath);
-                RequireNotNull (parentProcessID);
-                //CANBENULL (cmdLine);
-                RequireNotNull (userName);
-                HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
-                DWORD       cbNeeded    {};
-                if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
-                    TCHAR moduleFullPath[MAX_PATH];
-                    moduleFullPath[0] = '\0';
-                    if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
-                        *processEXEPath =  String::FromSDKString (moduleFullPath);
-                    }
-                    if (processName != nullptr) {
-                        TCHAR moduleBaseName[MAX_PATH];
-                        moduleBaseName[0] = '\0';
-                        if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (NEltsOf (moduleBaseName))) != 0) {
-                            *processName =  String::FromSDKString (moduleBaseName);
-                        }
-                    }
-                }
-                if (cmdLine != nullptr) {
-                    if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, processEXEPath->Value ())) {
-                        cmdLine = nullptr;
-                    }
-                }
-                {
-                    const   ULONG   ProcessBasicInformation  = 0;
-                    static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
-                    if (NtQueryInformationProcess) {
-                        ULONG_PTR pbi[6];
-                        ULONG ulSize = 0;
-                        if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
-                            *parentProcessID =  static_cast<pid_t> (pbi[5]);
 
-                            if (cmdLine != nullptr) {
-                                // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
-                                void*   pebAddress = GetPebAddress_ (hProcess);
-                                if (pebAddress != nullptr) {
-                                    void*   rtlUserProcParamsAddress {};
-#ifdef  _WIN64
-                                    const int kUserProcParamsOffset_ = 0x20;
-                                    const int kCmdLineOffset_ = 112;
-#else
-                                    const int kUserProcParamsOffset_ = 0x10;
-                                    const int kCmdLineOffset_ = 0x40;
-#endif
-                                    /* get the address of ProcessParameters */
-                                    if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
-                                        goto SkipCmdLine_;
-                                    }
-                                    UNICODE_STRING commandLine;
-
-                                    /* read the CommandLine UNICODE_STRING structure */
-                                    if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
-                                        goto SkipCmdLine_;
-                                    }
-                                    {
-                                        size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
-                                        Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
-                                        /* read the command line */
-                                        if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
-                                            goto SkipCmdLine_;
-                                        }
-                                        commandLineContents[strLen] = 0;
-                                        *cmdLine = commandLineContents.begin ();
-                                    }
-SkipCmdLine_:
-                                    ;
-                                }
-
-                            }
-                        }
-                    }
-                }
-                {
-                    /*
-                     *  This can fail for a variety of reasons - mostly lack of security access. Capture the data if we can, and just don't
-                     *  if we cannot.
-                     */
-                    HANDLE processToken = 0;
-                    if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
-                        auto&& cleanup  =   Execution::Finally ([processToken] () noexcept {
-                            Verify (::CloseHandle (processToken));
-                        }
-                                                               );
-                        DWORD       nlen {};
-                        // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
-                        //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
-                        //          TokenUser
-                        //              The buffer receives a TOKEN_USER structure that contains the user account of the token.
-                        Byte        tokenUserBuf[1024];
-                        TOKEN_USER* tokenUser = reinterpret_cast<TOKEN_USER*> (begin (tokenUserBuf));
-                        if (::GetTokenInformation (processToken, TokenUser, tokenUser, sizeof (tokenUserBuf), &nlen) != 0) {
-                            Assert (nlen >= sizeof (TOKEN_USER));
-                            // @todo not sure we need this IgnoreExceptionsForCall
-                            *userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid);
-                            //IgnoreExceptionsForCall (*userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid));
-                        }
-                    }
-                }
+            // Calculate how many process identifiers were returned.
+            DWORD   cProcesses = cbNeeded / sizeof (DWORD);
+            for (DWORD i = 0; i < cProcesses; ++i) {
+                result.Add (aProcesses[i]);
             }
-        };
-    };
-#endif
-
-
-
-
-
-
-
-
-
-
-    namespace {
-        struct  CapturerWithContext_
-            : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_AIX
-            , CapturerWithContext_AIX_
-#elif   qPlatform_Linux
-            , CapturerWithContext_Linux_
-#elif   qPlatform_Windows
-            , CapturerWithContext_Windows_
-#endif
+            return result;
+        }
+        void    LookupProcessPath_ (pid_t pid, HANDLE hProcess, Optional<String>* processName, Optional<String>* processEXEPath, Optional<pid_t>* parentProcessID, Optional<String>* cmdLine, Optional<String>* userName)
         {
-#if     qPlatform_AIX
-            using inherited = CapturerWithContext_AIX_;
-#elif   qPlatform_Linux
-            using inherited = CapturerWithContext_Linux_;
-#elif   qPlatform_Windows
-            using inherited = CapturerWithContext_Windows_;
-#endif
-            CapturerWithContext_ (const Options& options)
-                : inherited (options)
-            {
-            }
-
-            ProcessMapType capture ()
-            {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture");
-#endif
-                return inherited::capture ();
-            }
-        };
-    }
-
-
-    const   MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType { String_Constant { L"Process-Details" } };
-
-
-
-
-
-
-    namespace {
-        class   MyCapturer_ : public Instrument::ICapturer {
-            CapturerWithContext_ fCaptureContext;
-        public:
-            MyCapturer_ (const CapturerWithContext_& ctx)
-                : fCaptureContext (ctx)
-            {
-            }
-            virtual MeasurementSet  Capture () override
-            {
-                MeasurementSet  results;
-                Measurement     m { kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
-                results.fMeasurements.Add (m);
-                return results;
-            }
-            nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
-            {
-                DurationSecondsType    before = fCaptureContext.fLastCapturedAt;
-                Info rawMeasurement = fCaptureContext.capture ();
-                if (outMeasuredAt != nullptr) {
-                    *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt);
+            RequireNotNull (hProcess);
+            RequireNotNull (processEXEPath);
+            RequireNotNull (parentProcessID);
+            //CANBENULL (cmdLine);
+            RequireNotNull (userName);
+            HMODULE     hMod        {};    // note no need to free handles returned by EnumProcessModules () accorind to man-page for EnumProcessModules
+            DWORD       cbNeeded    {};
+            if (::EnumProcessModules (hProcess, &hMod, sizeof (hMod), &cbNeeded)) {
+                TCHAR moduleFullPath[MAX_PATH];
+                moduleFullPath[0] = '\0';
+                if (::GetModuleFileNameEx (hProcess, hMod, moduleFullPath, static_cast<DWORD> (NEltsOf (moduleFullPath))) != 0) {
+                    *processEXEPath =  String::FromSDKString (moduleFullPath);
                 }
-                return rawMeasurement;
+                if (processName != nullptr) {
+                    TCHAR moduleBaseName[MAX_PATH];
+                    moduleBaseName[0] = '\0';
+                    if (::GetModuleBaseName (hProcess, hMod, moduleBaseName, static_cast<DWORD> (NEltsOf (moduleBaseName))) != 0) {
+                        *processName =  String::FromSDKString (moduleBaseName);
+                    }
+                }
             }
-            virtual unique_ptr<ICapturer>   Clone () const override
+            if (cmdLine != nullptr) {
+                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, processEXEPath->Value ())) {
+                    cmdLine = nullptr;
+                }
+            }
             {
-#if     qCompilerAndStdLib_make_unique_Buggy
-                return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+                const   ULONG   ProcessBasicInformation  = 0;
+                static  LONG    (WINAPI * NtQueryInformationProcess)(HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) =  (LONG    (WINAPI*)(HANDLE , ULONG , PVOID , ULONG , PULONG ))::GetProcAddress (::LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+                if (NtQueryInformationProcess) {
+                    ULONG_PTR pbi[6];
+                    ULONG ulSize = 0;
+                    if (NtQueryInformationProcess (hProcess, ProcessBasicInformation,  &pbi, sizeof (pbi), &ulSize) >= 0 && ulSize == sizeof(pbi)) {
+                        *parentProcessID =  static_cast<pid_t> (pbi[5]);
+
+                        if (cmdLine != nullptr) {
+                            // Cribbed from http://windows-config.googlecode.com/svn-history/r59/trunk/doc/cmdline/cmdline.cpp
+                            void*   pebAddress = GetPebAddress_ (hProcess);
+                            if (pebAddress != nullptr) {
+                                void*   rtlUserProcParamsAddress {};
+#ifdef  _WIN64
+                                const int kUserProcParamsOffset_ = 0x20;
+                                const int kCmdLineOffset_ = 112;
 #else
-                return make_unique<MyCapturer_> (fCaptureContext);
+                                const int kUserProcParamsOffset_ = 0x10;
+                                const int kCmdLineOffset_ = 0x40;
 #endif
+                                /* get the address of ProcessParameters */
+                                if (not ::ReadProcessMemory(hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof(PVOID), NULL)) {
+                                    goto SkipCmdLine_;
+                                }
+                                UNICODE_STRING commandLine;
+
+                                /* read the CommandLine UNICODE_STRING structure */
+                                if (not ::ReadProcessMemory (hProcess, (PCHAR)rtlUserProcParamsAddress + kCmdLineOffset_,  &commandLine, sizeof(commandLine), NULL)) {
+                                    goto SkipCmdLine_;
+                                }
+                                {
+                                    size_t  strLen = commandLine.Length / sizeof (WCHAR);   // length field in bytes
+                                    Memory::SmallStackBuffer<WCHAR> commandLineContents (strLen + 1);
+                                    /* read the command line */
+                                    if (not ReadProcessMemory(hProcess, commandLine.Buffer, commandLineContents.begin (), commandLine.Length, NULL)) {
+                                        goto SkipCmdLine_;
+                                    }
+                                    commandLineContents[strLen] = 0;
+                                    *cmdLine = commandLineContents.begin ();
+                                }
+SkipCmdLine_:
+                                ;
+                            }
+
+                        }
+                    }
+                }
             }
-        };
-    }
-
-
-
-
-    /*
-     ********************************************************************************
-     ******************* Instruments::Process::GetInstrument ************************
-     ********************************************************************************
-     */
-    Instrument          SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
-    {
-        return Instrument (
-                   InstrumentNameType (String_Constant { L"Process" }),
-#if     qCompilerAndStdLib_make_unique_Buggy
-                   Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
-#else
-                   Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
+            {
+                /*
+                 *  This can fail for a variety of reasons - mostly lack of security access. Capture the data if we can, and just don't
+                 *  if we cannot.
+                 */
+                HANDLE processToken = 0;
+                if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0)  {
+                    auto&& cleanup  =   Execution::Finally ([processToken] () noexcept {
+                        Verify (::CloseHandle (processToken));
+                    }
+                                                           );
+                    DWORD       nlen {};
+                    // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
+                    //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
+                    //          TokenUser
+                    //              The buffer receives a TOKEN_USER structure that contains the user account of the token.
+                    Byte        tokenUserBuf[1024];
+                    TOKEN_USER* tokenUser = reinterpret_cast<TOKEN_USER*> (begin (tokenUserBuf));
+                    if (::GetTokenInformation (processToken, TokenUser, tokenUser, sizeof (tokenUserBuf), &nlen) != 0) {
+                        Assert (nlen >= sizeof (TOKEN_USER));
+                        // @todo not sure we need this IgnoreExceptionsForCall
+                        *userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid);
+                        //IgnoreExceptionsForCall (*userName = Execution::Platform::Windows::SID22UserName (tokenUser->User.Sid));
+                    }
+                }
+            }
+        }
+    };
+};
 #endif
-        {kProcessMapMeasurement},
-        GetObjectVariantMapper ()
-               );
-    }
 
 
 
 
-    /*
-     ********************************************************************************
-     ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
-     ********************************************************************************
-     */
-    template    <>
-    Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+
+
+
+
+
+
+namespace {
+    struct  CapturerWithContext_
+        : Debug::AssertExternallySynchronizedLock
+#if     qPlatform_AIX
+        , CapturerWithContext_AIX_
+#elif   qPlatform_Linux
+        , CapturerWithContext_Linux_
+#elif   qPlatform_Windows
+        , CapturerWithContext_Windows_
+#endif
     {
-        MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
-        AssertNotNull (myCap);
-        return myCap->Capture_Raw (measurementTimeOut);
-    }
+#if     qPlatform_AIX
+        using inherited = CapturerWithContext_AIX_;
+#elif   qPlatform_Linux
+        using inherited = CapturerWithContext_Linux_;
+#elif   qPlatform_Windows
+        using inherited = CapturerWithContext_Windows_;
+#endif
+        CapturerWithContext_ (const Options& options)
+            : inherited (options)
+        {
+        }
+
+        ProcessMapType capture ()
+        {
+            lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Instruments::ProcessDetails capture");
+#endif
+            return inherited::capture ();
+        }
+    };
+}
+
+
+const   MeasurementType SystemPerformance::Instruments::Process::kProcessMapMeasurement = MeasurementType { String_Constant { L"Process-Details" } };
+
+
+
+
+
+
+namespace {
+    class   MyCapturer_ : public Instrument::ICapturer {
+        CapturerWithContext_ fCaptureContext;
+    public:
+        MyCapturer_ (const CapturerWithContext_& ctx)
+            : fCaptureContext (ctx)
+        {
+        }
+        virtual MeasurementSet  Capture () override
+        {
+            MeasurementSet  results;
+            Measurement     m { kProcessMapMeasurement, GetObjectVariantMapper ().FromObject (Capture_Raw (&results.fMeasuredAt))};
+            results.fMeasurements.Add (m);
+            return results;
+        }
+        nonvirtual Info  Capture_Raw (Range<DurationSecondsType>* outMeasuredAt)
+        {
+            DurationSecondsType    before = fCaptureContext.fLastCapturedAt;
+            Info rawMeasurement = fCaptureContext.capture ();
+            if (outMeasuredAt != nullptr) {
+                *outMeasuredAt = Range<DurationSecondsType> (before, fCaptureContext.fLastCapturedAt);
+            }
+            return rawMeasurement;
+        }
+        virtual unique_ptr<ICapturer>   Clone () const override
+        {
+#if     qCompilerAndStdLib_make_unique_Buggy
+            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
+#else
+            return make_unique<MyCapturer_> (fCaptureContext);
+#endif
+        }
+    };
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ******************* Instruments::Process::GetInstrument ************************
+ ********************************************************************************
+ */
+Instrument          SystemPerformance::Instruments::Process::GetInstrument (const Options& options)
+{
+    return Instrument (
+               InstrumentNameType (String_Constant { L"Process" }),
+#if     qCompilerAndStdLib_make_unique_Buggy
+               Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
+#else
+               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
+#endif
+    {kProcessMapMeasurement},
+    GetObjectVariantMapper ()
+           );
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ********* SystemPerformance::Instrument::CaptureOneMeasurement *****************
+ ********************************************************************************
+ */
+template    <>
+Instruments::Process::Info   SystemPerformance::Instrument::CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut)
+{
+    MyCapturer_*    myCap = dynamic_cast<MyCapturer_*> (fCapFun_.get ());
+    AssertNotNull (myCap);
+    return myCap->Capture_Raw (measurementTimeOut);
+}
