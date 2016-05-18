@@ -177,6 +177,7 @@ namespace   Stroika {
                 VariantValue (Mapping<String, VariantValue>&& val);
                 VariantValue (const vector<VariantValue>& val);
                 VariantValue (const Sequence<VariantValue>& val);
+                VariantValue (const Traversal::Iterable<VariantValue>& val);
                 VariantValue (Sequence<VariantValue>&& val);
                 VariantValue (const VariantValue& src) = default;
                 VariantValue (VariantValue&& src);

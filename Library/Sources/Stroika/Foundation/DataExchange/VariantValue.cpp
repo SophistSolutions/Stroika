@@ -210,7 +210,12 @@ VariantValue::VariantValue (Mapping<String, VariantValue>&& val)
 }
 
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
-    : fVal_ { MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val) }
+    : fVal_{ MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val) }
+{
+}
+
+VariantValue::VariantValue (const Traversal::Iterable<VariantValue>& val)
+    : fVal_{ MakeSharedPtr_<TIRep_<Sequence<VariantValue>>> (val) }
 {
 }
 
