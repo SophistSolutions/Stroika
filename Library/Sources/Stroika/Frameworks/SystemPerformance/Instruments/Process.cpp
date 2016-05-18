@@ -1704,14 +1704,14 @@ namespace {
             }
             ProcessType::TCPStats   stats;
             bool    didSkip = false;
-            for (String i : ReadFileStrings_ (fullPath)) {      // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+            for (String i : TextReader (FileInputStream::mk (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) {      // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;
                 }
                 Sequence<String>    splits = i.Tokenize (Set<Character> {' '});
                 if (splits.size () >= 4) {
-                    int st = String2Int (splits[3]);
+                    int st = HexString2Int (splits[3]);
                     /*
                      *  The enum in ./include/net/tcp_states.h is hopefully (apparently) the same as that in netinet/tcp.h
                      */
