@@ -1703,7 +1703,12 @@ namespace {
                 return Optional<ProcessType::TCPStats> ();
             }
             ProcessType::TCPStats   stats;
-            for (String i : ReadFileStrings_ (fullPath).Skip (1)) {
+            bool    didSkip = false;
+            for (String i : ReadFileStrings_ (fullPath)) {      // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+                if (not didSkip) {
+                    didSkip = true;
+                    continue;
+                }
                 Sequence<String>    splits = i.Tokenize (Set<Character> {' '});
                 if (splits.size () >= 4) {
                     int st = String2Int (splits[3]);
