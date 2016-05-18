@@ -1704,7 +1704,7 @@ namespace {
             }
             ProcessType::TCPStats   stats;
             for (String i : ReadFileStrings_ (fullPath).Skip (1)) {
-                Sequence<String>    splits = i.Tokenize (' ');
+                Sequence<String>    splits = i.Tokenize (Set<Character> {' '});
                 if (splits.size () >= 4) {
                     int st = String2Int (splits[3]);
                     /*
