@@ -9,6 +9,7 @@
 #include    <sys/procfs.h>
 #elif   qPlatform_Linux
 #include    <sys/sysinfo.h>
+#include    <netinet/tcp.h>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #include    <psapi.h>
@@ -1708,23 +1709,8 @@ namespace {
                 if (splits.size () >= 4) {
                     int st = String2Int (splits[3]);
                     /*
-                     *  the enum in ./include/net/tcp_states.h in
+                     *  The enum in ./include/net/tcp_states.h is hopefully (apparently) the same as that in netinet/tcp.h
                      */
-                    enum {
-                        TCP_ESTABLISHED = 1,
-                        TCP_SYN_SENT,
-                        TCP_SYN_RECV,
-                        TCP_FIN_WAIT1,
-                        TCP_FIN_WAIT2,
-                        TCP_TIME_WAIT,
-                        TCP_CLOSE,
-                        TCP_CLOSE_WAIT,
-                        TCP_LAST_ACK,
-                        TCP_LISTEN,
-                        TCP_CLOSING,    /* Now a valid state */
-
-                        TCP_MAX_STATES  /* Leave at the end! */
-                    };
                     if (st == TCP_ESTABLISHED) {
                         stats.fEstablished++;
                     }
