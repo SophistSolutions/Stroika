@@ -243,6 +243,18 @@ namespace   Stroika {
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
                         Optional<double>        fCombinedIOWriteBytes;
+
+                        /**
+                         *  Where available, check the number of TCP streams associated with this process - and
+                         *  separately count established, listening, and other (usually shutting down)
+                         *  TCP streams.
+                         */
+                        struct  TCPStats {
+                            unsigned int    fEstablished    {};
+                            unsigned int    fListening      {};
+                            unsigned int    fOther          {};
+                        };
+                        Optional<TCPStats>  fTCPStats;
                     };
 
 
@@ -304,6 +316,7 @@ namespace   Stroika {
                         bool                            fCaptureEnvironmentVariables    { true };
                         bool                            fCaptureCurrentWorkingDirectory { true };
                         bool                            fCaptureRoot                    { true };
+                        bool                            fCaptureTCPStatistics           { false };
                         Optional<Set<pid_t>>            fRestrictToPIDs;
                         Optional<Set<pid_t>>            fOmitPIDs;
                         CachePolicy                     fCachePolicy                    { CachePolicy::eIncludeAllRequestedValues };

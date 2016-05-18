@@ -371,6 +371,13 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<DurationSecondsType>> ();
         mapper.AddCommonType<Optional<Mapping<String, String>>> ();
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+
+
+        mapper.AddClass<ProcessType::TCPStats> (initializer_list<StructureFieldInfo> {
+            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fEstablished), String_Constant (L"Established") },
+            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fListening), String_Constant (L"Listening") },
+            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType::TCPStats, fOther), String_Constant (L"Other") },
+        });
         mapper.AddClass<ProcessType> (initializer_list<StructureFieldInfo> {
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fKernelProcess), String_Constant (L"Kernel-Process"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fParentProcessID), String_Constant (L"Parent-Process-ID"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -399,6 +406,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), String_Constant (L"Combined-IO-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadBytes), String_Constant (L"Combined-IO-Read-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteBytes), String_Constant (L"Combined-IO-Write-Bytes"), StructureFieldInfo::NullFieldHandling::eOmit },
+            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTCPStats), String_Constant (L"TCP-Stats"), StructureFieldInfo::NullFieldHandling::eOmit },
         });
         DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         mapper.AddCommonType<ProcessMapType> ();
@@ -1086,6 +1094,7 @@ namespace {
             static  const   String_Constant kStatFilename_      { L"stat" };
             static  const   String_Constant kStatusFilename_    { L"status" };
             static  const   String_Constant kIOFilename_        { L"io" };
+            static  const   String_Constant kNetTCPFilename_    { L"net/tcp" };
 
             ProcessMapType  results;
 
@@ -1226,6 +1235,10 @@ namespace {
 #endif
                     }
                     catch (...) {
+                    }
+
+                    if (fOptions_.fCaptureTCPStatistics) {
+                        IgnoreExceptionsForCall (processDetails.fTCPStats = ReadTCPStats_ (processDirPath + kNetTCPFilename_));
                     }
 
                     if (grabStaticData) {
@@ -1669,6 +1682,61 @@ namespace {
                 }
             }
             return result;
+        }
+        Optional<ProcessType::TCPStats> ReadTCPStats_ (const String& fullPath)
+        {
+            /**
+             *  root@q7imx6:/opt/BLKQCL# cat /proc/3431/net/tcp
+             *      sl  local_address rem_address   st tx_queue rx_queue tr tm->when retrnsmt   uid  timeout inode
+             *      0: 00000000:1F90 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 12925 1 e4bc8de0 300 0 0 2 -1
+             *      1: 00000000:0050 00000000:0000 0A 00000000:00000000 00:00000000 00000000     0        0 6059 1 e466d720 300 0 0 2 -1
+             */
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_");
+            DbgTrace (L"fullPath=%s", fullPath.c_str ());
+#endif
+
+            if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Skipping read cuz no access");
+#endif
+                return Optional<ProcessType::TCPStats> ();
+            }
+            ProcessType::TCPStats   stats;
+            for (String i : ReadFileStrings_ (fullPath).Skip (1)) {
+                Sequence<String>    splits = i.Split (' ');
+                if (splits.size () >= 4) {
+                    int st = String2Int (splits[3]);
+                    /*
+                     *  the enum in ./include/net/tcp_states.h in
+                     */
+                    enum {
+                        TCP_ESTABLISHED = 1,
+                        TCP_SYN_SENT,
+                        TCP_SYN_RECV,
+                        TCP_FIN_WAIT1,
+                        TCP_FIN_WAIT2,
+                        TCP_TIME_WAIT,
+                        TCP_CLOSE,
+                        TCP_CLOSE_WAIT,
+                        TCP_LAST_ACK,
+                        TCP_LISTEN,
+                        TCP_CLOSING,    /* Now a valid state */
+
+                        TCP_MAX_STATES  /* Leave at the end! */
+                    };
+                    if (st == TCP_ESTABLISHED) {
+                        stats.fEstablished++;
+                    }
+                    else if (st == TCP_LISTEN) {
+                        stats.fListening++;
+                    }
+                    else  {
+                        stats.fOther++;
+                    }
+                }
+            }
+            return stats;
         }
         Optional<MemorySizeType>   ReadPrivateBytes_ (const String& fullPath)
         {
