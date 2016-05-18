@@ -731,11 +731,6 @@ DateTime    Time::operator- (const DateTime& lhs, const Duration& rhs)
     return lhs.Add (-rhs);
 }
 
-Duration    Time::operator- (const DateTime& lhs, const DateTime& rhs)
-{
-    // Define in .cpp file to avoid #include Duration in DateTime.h
-    return lhs.Difference (rhs);
-}
 
 
 
