@@ -1113,6 +1113,17 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("reading for pid = %d", pid);
 #endif
+                    if (fOptions_.fRestrictToPIDs) {
+                        if (not fOptions_.fRestrictToPIDs->Contains (pid)) {
+                            continue;
+                        }
+                    }
+                    if (fOptions_.fOmitPIDs) {
+                        if (fOptions_.fOmitPIDs->Contains (pid)) {
+                            continue;
+                        }
+                    }
+
                     String      processDirPath  =   IO::FileSystem::AssureDirectoryPathSlashTerminated (String_Constant (L"/proc/") + dir);
                     bool        grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
 
@@ -2033,6 +2044,16 @@ Again:
 #endif
 
             for (pid_t pid : allPids) {
+                if (fOptions_.fRestrictToPIDs) {
+                    if (not fOptions_.fRestrictToPIDs->Contains (pid)) {
+                        continue;
+                    }
+                }
+                if (fOptions_.fOmitPIDs) {
+                    if (fOptions_.fOmitPIDs->Contains (pid)) {
+                        continue;
+                    }
+                }
                 ProcessType     processInfo;
                 bool            grabStaticData  =   fOptions_.fCachePolicy == CachePolicy::eIncludeAllRequestedValues or not fStaticSuppressedAgain.Contains (pid);
                 {
