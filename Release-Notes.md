@@ -18,6 +18,54 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a142">v2.0a142</a><br/>2016-05-18</td>
+<td>
+	<ul>
+		<li>small cleanups to samples - Characters::ToString(current_exception()), and added InternetAddress::ToString ()</li>
+		<li>Improved error messages in ~AllThreadsDeadDetector_ for failure case</li>
+		<li>Added helpers VariantWriter::WriteAsBLOB () and VariantWriter::WriteAsString ()</li>
+		<li>minor mostly cosmetic and exception handling cleanusp to Frameworks::Service code</li>
+		<li>Set&lt;T, TRAITS&gt;::IsSubsetOf ()</li>
+		<li>VariantValue takes optional iterable of VariantValue</li>
+		<li>added Time::operator- (const DateTime& lhs, const DateTime& rhs)</li>
+		<li>
+			SystemPerformance/Instruments/Process
+			<ul>
+				<li>deprecated PercentCPUTime and instead defined AverageCPUTimeUsed</li>
+				<li>respect fRestrictToPIDs and fOmitPIDs</li>
+				<li>support fCaptureTCPStatistics (default off) for Linux</li>
+			</ul>
+		</li>
+		<li>NEW new PerformanceDump-v2.0a142-linux-gcc-5.3.0-x64.txt and PerformanceDump-v2.0a142-x86-vs2k15-ReleaseU.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>valgrind (memcheck only; helgrind still broken)</li>
+			</ul>
+		</li>
+		<li>De-Supporting configurations
+			<ul>
+				<li>vc++2k13 (probably last release to support/test this)</li>
+				<li>ppc-AIX-7.1/gcc 4.9 (release works fully, but Configuration=Debug crashes linker unless you disable Xerces)</li>
+				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a141">v2.0a141</a><br/>2016-04-22</td>
 <td>
 	<ul>
