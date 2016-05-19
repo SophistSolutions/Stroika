@@ -17,6 +17,21 @@ History
 
 
 
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a143">v2.0a143x</a><br/>2016-05-??</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a142">v2.0a142</a><br/>2016-05-18</td>
 <td>
@@ -43,7 +58,6 @@ History
 				<li>gcc 4.8</li>
 				<li>gcc 4.9</li>
 				<li>gcc 5.3</li>
-				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
 				<li>clang++3.5 (ubuntu)</li>
 				<li>clang++3.6 (ubuntu)</li>
 				<li>valgrind (memcheck only; helgrind still broken)</li>
@@ -51,7 +65,7 @@ History
 		</li>
 		<li>De-Supporting configurations
 			<ul>
-				<li>vc++2k13 (probably last release to support/test this)</li>
+				<li>vc++2k13</li>
 				<li>ppc-AIX-7.1/gcc 4.9 (release works fully, but Configuration=Debug crashes linker unless you disable Xerces)</li>
 				<li>Centos 5 (scl enable devtoolset-2 sh & use custom build of gcc 5.3.0)</li>
 			</ul>
@@ -65,12 +79,14 @@ History
 
 
 
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a141">v2.0a141</a><br/>2016-04-22</td>
 <td>
 	<ul>
 		<li>coding convention docs (_A name suffix), and renamed FormatThread to FormatThread_A</li>
-		<li>draft of Thread GetDefaultConfiguration and passing in Configuraiton object, and GetConfigurationStatus  - https://stroika.atlassian.net/browse/STK-475 and https://stroika.atlassian.net/browse/STK-474;</li>
+		<li>draft of Thread GetDefaultConfiguration and passing in Configuration object, and GetConfigurationStatus  - https://stroika.atlassian.net/browse/STK-475 and https://stroika.atlassian.net/browse/STK-474;</li>
 		<li>Transfer fucntion (curl/winhttp) support fOptions_.fMaxAutomaticRedirects and default to 0, and handle in curl/winhttp implementations; fixed io transer network connection regtest to use fMaxAutomaticRedirects = 1, since many of them use redirects</li>
 		<li>fixed use of :WinHttpSetOption WINHTTP_DISABLE_COOKIES</li>
 		<li>
