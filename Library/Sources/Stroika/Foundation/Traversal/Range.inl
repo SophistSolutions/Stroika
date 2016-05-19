@@ -72,17 +72,10 @@ namespace   Stroika {
              RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
-#if     qCompilerAndStdLib_constexpr_Buggy
-            template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kLowerBound   =   MIN;
-            template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kUpperBound   =   MAX;
-#else
             template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             constexpr T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kLowerBound;
             template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             constexpr T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kUpperBound;
-#endif
 
 
             /*
@@ -90,17 +83,10 @@ namespace   Stroika {
              ****************** RangeTraits::DefaultRangeTraits<T> **************************
              ********************************************************************************
              */
-#if     qCompilerAndStdLib_constexpr_Buggy
-            template    <typename T>
-            const T RangeTraits::DefaultRangeTraits<T>::kLowerBound     =   numeric_limits<T>::lowest ();
-            template    <typename T>
-            const T RangeTraits::DefaultRangeTraits<T>::kUpperBound     =   numeric_limits<T>::max ();
-#else
             template    <typename T>
             constexpr T RangeTraits::DefaultRangeTraits<T>::kLowerBound;
             template    <typename T>
             constexpr T RangeTraits::DefaultRangeTraits<T>::kUpperBound;
-#endif
 
 
             /*
@@ -109,7 +95,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-#if     !qCompilerAndStdLib_constexpr_Buggy && !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
             constexpr
 #endif
             inline  Range<T, TRAITS>::Range ()
@@ -128,18 +114,12 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename T2, typename TRAITS2>
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            inline  Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
+            constexpr   inline  Range<T, TRAITS>::Range (const Range<T2, TRAITS>& src)
                 : Range (src.GetLowerBound (), src.GetUpperBound (), src.GetLowerBoundOpenness (), src.GetUpperBoundOpenness ())
             {
             }
             template    <typename T, typename TRAITS>
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
+            constexpr   inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
 #if     qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy
                 : fBegin_ (begin)
                 , fEnd_ (end)
@@ -156,10 +136,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            inline  Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
+            constexpr   inline  Range<T, TRAITS>::Range (Openness lhsOpen, Openness rhsOpen)
                 : fBegin_ (TRAITS::kUpperBound)
                 , fEnd_ (TRAITS::kLowerBound)
                 , fBeginOpenness_ (lhsOpen)
@@ -170,16 +147,13 @@ namespace   Stroika {
 #endif
             }
             template    <typename T, typename TRAITS>
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            inline  Range<T, TRAITS>::Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen)
+            constexpr   inline  Range<T, TRAITS>::Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen)
                 : fBegin_ (begin)
                 , fEnd_ (end)
                 , fBeginOpenness_ (lhsOpen)
                 , fEndOpenness_ (rhsOpen)
             {
-#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
                 Require (TRAITS::kLowerBound <= begin);
                 Require (begin <= end);
@@ -312,7 +286,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  constexpr   Range<T, TRAITS>    Range<T, TRAITS>::Closure () const
             {
-#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
 #endif
                 return Range<T, TRAITS> (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
@@ -525,7 +499,6 @@ namespace   Stroika {
         }
     }
 }
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -544,5 +517,4 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif /* _Stroika_Foundation_Traversal_Range_inl_ */

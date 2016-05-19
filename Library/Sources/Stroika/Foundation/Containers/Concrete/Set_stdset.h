@@ -84,9 +84,6 @@ namespace   Stroika {
                     nonvirtual  Set_stdset<T, TRAITS>& operator= (const Set_stdset<T, TRAITS>& rhs);
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

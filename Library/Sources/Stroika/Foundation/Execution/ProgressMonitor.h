@@ -96,9 +96,6 @@ namespace   Stroika {
                 using   ChangedCallbackType =   Execution::Function<void(const ProgressMonitor& progressMonitor)>;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 class IRep_;
 
             public:

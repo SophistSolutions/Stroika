@@ -141,15 +141,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Association<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Association<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
-#endif
 
             public:
                 /**

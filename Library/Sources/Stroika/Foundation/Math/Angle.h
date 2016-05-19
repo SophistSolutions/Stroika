@@ -28,22 +28,24 @@ namespace   Stroika {
                 };
 
             public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Angle ();
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);
+                /**
+                 */
+                constexpr   Angle ();
+                constexpr   Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);
 
             public:
+                /**
+                 */
                 nonvirtual  constexpr double  AsRadians () const;
 
             public:
+                /**
+                 */
                 nonvirtual  constexpr double  AsDegrees () const;
 
             public:
+                /**
+                 */
                 nonvirtual  constexpr double  AsGradians () const;
 
             public:

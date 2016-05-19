@@ -283,9 +283,6 @@ namespace   Stroika {
                 nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  IRep_;
 
             private:
@@ -307,9 +304,6 @@ namespace   Stroika {
                 SharedRepImpl_<IRep_>   fVal_;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 template    <typename T>
                 struct  TIRep_;
             };

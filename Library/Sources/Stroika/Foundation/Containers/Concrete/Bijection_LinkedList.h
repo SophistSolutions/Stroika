@@ -52,9 +52,6 @@ namespace   Stroika {
                     nonvirtual  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

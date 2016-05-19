@@ -55,9 +55,6 @@ namespace   Stroika {
                     nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

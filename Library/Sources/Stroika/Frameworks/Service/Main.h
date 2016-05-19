@@ -770,11 +770,8 @@ namespace   Stroika {
                  *              SignalHandler () directly on this class.
                  */
             public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 static  constexpr   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
-#else
-                static  const   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
-#endif
+
             private:
                 Execution::SignalHandler  fOurSignalHandler_;     // only initialized and then read as consant, so no need to synchronize
                 nonvirtual  void    SignalHandler_ (SignalID signum);

@@ -114,14 +114,6 @@ namespace {
     {
         wchar_t*        e   = nullptr;
         const wchar_t*  cst = s.c_str ();
-#if     qCompilerAndStdLib_strtof_NAN_ETC_Buggy
-        if (s == L"INF" or s == L"+INF" or s == L"INFINITY" or s == L"+INFINITY") {
-            return numeric_limits<RETURN_TYPE>::infinity ();
-        }
-        if (s == L"-INF" or s == L"-INFINITY") {
-            return -numeric_limits<RETURN_TYPE>::infinity ();
-        }
-#endif
         RETURN_TYPE  d = F (cst, &e);
         // if trailing crap - return nan
         if (*e != '\0') {

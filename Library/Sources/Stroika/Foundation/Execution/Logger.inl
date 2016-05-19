@@ -56,7 +56,6 @@ namespace   Stroika {
         }
     }
 }
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -81,6 +80,5 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif  /*_Stroika_Foundation_Execution_Logger_inl_*/
 

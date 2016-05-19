@@ -85,9 +85,6 @@ namespace   Stroika {
                     nonvirtual  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

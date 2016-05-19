@@ -53,9 +53,6 @@ namespace   Stroika {
                     nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s) = default;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

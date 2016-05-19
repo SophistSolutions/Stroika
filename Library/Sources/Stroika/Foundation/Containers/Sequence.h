@@ -236,15 +236,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs) = default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Sequence<T>& operator= (Sequence<T>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  Sequence<T>& operator= (Sequence<T>&& rhs) = default;
-#endif
 
             public:
                 /**

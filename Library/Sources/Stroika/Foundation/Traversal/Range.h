@@ -133,13 +133,8 @@ namespace   Stroika {
                  */
                 template    <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-#if     qCompilerAndStdLib_constexpr_Buggy
-                    static  const T kLowerBound;
-                    static  const T kUpperBound;
-#else
                     static  constexpr T kLowerBound    =   MIN;
                     static  constexpr T kUpperBound    =   MAX;
-#endif
                 };
 
 
@@ -162,13 +157,8 @@ namespace   Stroika {
                     is_arithmetic<T>::value,
                 ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T {} - T {}), Private_::UnsignedDifferenceType_<T> >
                 >::type {
-#if     qCompilerAndStdLib_constexpr_Buggy
-                    static  const T kLowerBound;
-                    static  const T kUpperBound;
-#else
                     static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
                     static  constexpr T kUpperBound    =   numeric_limits<T>::max ();
-#endif
                 };
 
 
@@ -233,28 +223,16 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy && !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy
                 constexpr
 #endif
                 explicit Range ();
                 template    <typename T2, typename TRAITS2>
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit Range (const Range<T2, TRAITS>& src);
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit Range (const T& begin, const T& end);
+                constexpr   explicit Range (const Range<T2, TRAITS>& src);
+                constexpr   explicit Range (const T& begin, const T& end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit Range (Openness lhsOpen, Openness rhsOpen);
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen);
+                constexpr   explicit Range (Openness lhsOpen, Openness rhsOpen);
+                constexpr   explicit Range (const T& begin, const T& end, Openness lhsOpen, Openness rhsOpen);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
             public:

@@ -6,11 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     !qCompilerAndStdLib_constexpr_Buggy
 #include    <limits>
-#else
-#include    <cfloat>
-#endif
 
 
 
@@ -66,12 +62,8 @@ namespace   Stroika {
 
 
             /**
-            */
-#if     !qCompilerAndStdLib_constexpr_Buggy
+             */
             constexpr   DurationSecondsType kInfinite   =   std::numeric_limits<DurationSecondsType>::max ();
-#else
-            const   DurationSecondsType kInfinite       =   DBL_MAX;
-#endif
 
 
         }

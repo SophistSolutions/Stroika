@@ -306,26 +306,7 @@ namespace   Stroika {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if     qCompilerAndStdLib_constexpr_Buggy
-            template    <>
-            const EnumNames<Execution::Thread::Status>   DefaultNames<Execution::Thread::Status>::k
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-                =
-#endif
-            {
-                EnumNames<Execution::Thread::Status>::BasicArrayInitializer {
-                    {
-                        { Execution::Thread::Status::eNull, L"Null" },
-                        { Execution::Thread::Status::eNotYetRunning, L"Not-Yet-Running" },
-                        { Execution::Thread::Status::eRunning, L"Running" },
-                        { Execution::Thread::Status::eAborting, L"Aborting" },
-                        { Execution::Thread::Status::eCompleted, L"Completed" },
-                    }
-                }
-            };
-#else
             constexpr   EnumNames<Execution::Thread::Status>    DefaultNames<Execution::Thread::Status>::k;
-#endif
         }
     }
 }

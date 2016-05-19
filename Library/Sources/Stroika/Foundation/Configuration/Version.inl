@@ -23,11 +23,7 @@ namespace   Stroika {
              *********************************** Version ************************************
              ********************************************************************************
              */
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            Version::Version ()
+            inline  constexpr   Version::Version ()
                 : fMajorVer (0)
                 , fMinorVer (0)
                 , fVerStage (VersionStage::eSTART)
@@ -35,11 +31,7 @@ namespace   Stroika {
                 , fFinalBuild (0)
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            Version::Version (FullVersionType fullVersionNumber)
+            inline  constexpr   Version::Version (FullVersionType fullVersionNumber)
                 : fMajorVer ((fullVersionNumber >> 25) & 0x8f)
                 , fMinorVer ((fullVersionNumber >> 17) & 0xff)
                 , fVerStage (static_cast<VersionStage> ((fullVersionNumber >> 9) & 0xff))
@@ -47,11 +39,7 @@ namespace   Stroika {
                 , fFinalBuild (fullVersionNumber & 1)
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            Version::Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild)
+            inline  constexpr   Version::Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild)
                 : fMajorVer (majorVer)
                 , fMinorVer (minorVer)
                 , fVerStage (verStage)
@@ -59,67 +47,35 @@ namespace   Stroika {
                 , fFinalBuild (finalBuild)
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            FullVersionType  Version::AsFullVersionNum () const
+            inline  constexpr   FullVersionType  Version::AsFullVersionNum () const
             {
                 return Stroika_Make_FULL_VERSION (fMajorVer, fMinorVer, ((uint8_t)fVerStage), fVerSubStage, static_cast<int> (fFinalBuild));
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            int Version::Compare (const Version& rhs) const
+            inline  constexpr   int Version::Compare (const Version& rhs) const
             {
                 return make_signed<FullVersionType>::type (AsFullVersionNum ()) - make_signed<FullVersionType>::type (rhs.AsFullVersionNum ());
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator< (const Version& rhs) const
+            inline  constexpr   bool    Version::operator< (const Version& rhs) const
             {
                 return Compare (rhs) < 0;
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator<= (const Version& rhs) const
+            inline  constexpr   bool    Version::operator<= (const Version& rhs) const
             {
                 return Compare (rhs) <= 0;
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator> (const Version& rhs) const
+            inline  constexpr   bool    Version::operator> (const Version& rhs) const
             {
                 return Compare (rhs) > 0;
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator>= (const Version& rhs) const
+            inline  constexpr   bool    Version::operator>= (const Version& rhs) const
             {
                 return Compare (rhs) >= 0;
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator== (const Version& rhs) const
+            inline  constexpr   bool    Version::operator== (const Version& rhs) const
             {
                 return Compare (rhs) == 0;
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            bool    Version::operator!= (const Version& rhs) const
+            inline  constexpr   bool    Version::operator!= (const Version& rhs) const
             {
                 return Compare (rhs) != 0;
             }

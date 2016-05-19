@@ -22,20 +22,11 @@ namespace   Stroika {
              ************************************ TimeOfDay *********************************
              ********************************************************************************
              */
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            TimeOfDay::TimeOfDay ()
+            inline  constexpr   TimeOfDay::TimeOfDay ()
                 : fTime_ (-1)
             {
             }
-
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            TimeOfDay::TimeOfDay (uint32_t t)
+            inline  constexpr   TimeOfDay::TimeOfDay (uint32_t t)
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
             }

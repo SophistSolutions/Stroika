@@ -24,7 +24,7 @@ namespace   Stroika {
              *************************** Configuration::GetEndianness ***********************
              ********************************************************************************
              */
-#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
             namespace   Private_ {
                 union   EndianTester_ {
                     uint32_t    sdat;
@@ -35,7 +35,7 @@ namespace   Stroika {
 #endif
             inline  constexpr   Endian  GetEndianness ()
             {
-#if     qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
+#if     !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
                 return
                     (Private_::kMix_.cdat[0] == 4) ?
                     Endian::eLittleByte :                   // aka little endian

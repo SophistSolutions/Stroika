@@ -401,15 +401,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  String& operator= (const String& rhs) = default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  String& operator= (String&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  String& operator= (String&& newString) = default;
-#endif
 
             public:
                 /**
@@ -894,11 +886,6 @@ namespace   Stroika {
                 nonvirtual  Containers::Sequence<String>  Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
 
             public:
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                inline  static  bool    DefaultTrimArg_ (Character c)               {       return c.IsWhitespace ();       }
-#endif
-            public:
-#if     !qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 /**
                  * String LTrim () scans the characters form the left to right, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
@@ -906,6 +893,8 @@ namespace   Stroika {
                  * applied to - just returns the trimmed string.
                  */
                 nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+            public:
                 /**
                  * String RTrim () scans the characters form the right to left, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
@@ -918,15 +907,12 @@ namespace   Stroika {
                  *      \endcode
                  */
                 nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+            public:
                 /**
                  * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
                  */
                 nonvirtual  String  Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-#else
-                nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
-                nonvirtual  String  RTrim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
-                nonvirtual  String  Trim (bool (*shouldBeTrimmmed) (Character) = DefaultTrimArg_) const;
-#endif
 
             public:
                 /**
@@ -1079,11 +1065,7 @@ namespace   Stroika {
                 /**
                  *  basic_string alias for npos = kBadIndex
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT (size_t, npos, kBadIndex);
-#else
                 static  constexpr size_t    npos   = kBadIndex;
-#endif
 
             public:
                 /**

@@ -34,9 +34,6 @@ namespace   Stroika {
                         WindowsResourceManager (HMODULE hModule);
 
                     private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                    public:
-#endif
                         class   IRep_;
                     };
 

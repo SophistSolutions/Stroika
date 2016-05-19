@@ -23,28 +23,14 @@ namespace   Stroika {
              *************************************** Date ***********************************
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_constexpr_Buggy
             inline  constexpr Date::Date ()
                 : fJulianDateRep_ (kEmptyJulianRep)
             {
             }
-#else
-            inline  Date::Date ()
-                : fJulianDateRep_ (kEmptyJulianRep)
-            {
-            }
-#endif
-#if     !qCompilerAndStdLib_constexpr_Buggy
             inline  constexpr Date::Date (JulianRepType julianRep)
                 : fJulianDateRep_ (julianRep)
             {
             }
-#else
-            inline  Date::Date (JulianRepType julianRep)
-                : fJulianDateRep_ (julianRep)
-            {
-            }
-#endif
             inline  constexpr   Date::JulianRepType Date::GetJulianRep () const
             {
                 return fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_;
@@ -113,7 +99,7 @@ namespace   Stroika {
             }
 
 
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
             namespace Private_ {
 
 
@@ -141,7 +127,7 @@ namespace   Stroika {
 
     }
 }
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Date_ModuleData_>    _Stroika_Foundation_Time_Date_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }

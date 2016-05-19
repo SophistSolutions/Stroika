@@ -28,10 +28,6 @@ namespace   Stroika {
                  ********************** Math::ReBin::DataDescriptorBase *************************
                  ********************************************************************************
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy
-                template    <typename X_TYPE, typename VALUE_TYPE>
-                const VALUE_TYPE DataDescriptorBase<X_TYPE, VALUE_TYPE>::kNullValue = 0;
-#endif
                 template    <typename X_TYPE, typename VALUE_TYPE>
                 inline  bool    DataDescriptorBase<X_TYPE, VALUE_TYPE>::RangeElementsNearlyEqual (XType lhs, XType rhs)
                 {

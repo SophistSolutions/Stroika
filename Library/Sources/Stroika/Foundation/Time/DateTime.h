@@ -147,20 +147,11 @@ namespace   Stroika {
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                DateTime () noexcept;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                DateTime (const Date& d) noexcept;
+                constexpr   DateTime () noexcept;
+                constexpr   DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown) noexcept;
+                constexpr   DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz = Timezone::eUnknown) noexcept;
 
             public:
                 /**
@@ -240,7 +231,7 @@ namespace   Stroika {
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const       DateTime&   kMin;
 #else
                 static  constexpr   DateTime    kMin    {   Date::kMin, TimeOfDay::kMin  };
@@ -250,7 +241,7 @@ namespace   Stroika {
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const   DateTime&    kMax;
 #else
                 static  constexpr   DateTime    kMax    {   Date::kMax, TimeOfDay::kMax  };

@@ -25,7 +25,6 @@ namespace   Stroika {
              ********************************** GetEOL **************************************
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_constexpr_Buggy
             template    <>
             inline  constexpr const char*       GetEOL ()
             {
@@ -48,30 +47,6 @@ namespace   Stroika {
                 AssertNotImplemented ();
 #endif
             }
-#else
-            template    <>
-            inline  const char*     GetEOL ()
-            {
-#if     qPlatform_Windows
-                return "\r\n";
-#elif   qPlatform_POSIX
-                return "\n";
-#else
-                AssertNotImplemented ();
-#endif
-            }
-            template    <>
-            inline  const wchar_t*  GetEOL ()
-            {
-#if     qPlatform_Windows
-                return L"\r\n";
-#elif   qPlatform_POSIX
-                return L"\n";
-#else
-                AssertNotImplemented ();
-#endif
-            }
-#endif
 
 
             /*

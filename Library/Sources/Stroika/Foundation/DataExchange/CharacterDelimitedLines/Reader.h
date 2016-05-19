@@ -48,9 +48,6 @@ namespace   Stroika {
                     using   inherited   =   DataExchange::VariantReader;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 public:

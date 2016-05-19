@@ -23,49 +23,32 @@ namespace   Stroika {
              ********************************** DateTime ************************************
              ********************************************************************************
              */
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            DateTime::DateTime () noexcept
-                :
-                fTimezone_ (Timezone::eUnknown)
+            inline  constexpr   DateTime::DateTime () noexcept
+                : fTimezone_ (Timezone::eUnknown)
                 , fDate_ ()
                 , fTimeOfDay_ ()
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            DateTime::DateTime (const Date& d) noexcept
-                :
-                fTimezone_ (Timezone::eUnknown)
+            inline  constexpr   DateTime::DateTime (const Date& d) noexcept
+                : fTimezone_ (Timezone::eUnknown)
                 , fDate_ (d)
                 , fTimeOfDay_ ()
             {
             }
             inline  DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
-                :
-                fTimezone_ (dt.GetTimezone ())
+                : fTimezone_ (dt.GetTimezone ())
                 , fDate_ (updateDate)
                 , fTimeOfDay_ (dt.GetTimeOfDay ())
             {
             }
             inline  DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
-                :
-                fTimezone_ (dt.GetTimezone ())
+                : fTimezone_ (dt.GetTimezone ())
                 , fDate_ (dt.GetDate ())
                 , fTimeOfDay_ (updateTOD)
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz) noexcept
-                :
-                fTimezone_ (tz)
+            inline  constexpr   DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz) noexcept
+                : fTimezone_ (tz)
                 , fDate_ (date)
                 , fTimeOfDay_ (timeOfDay)
             {

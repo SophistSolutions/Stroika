@@ -144,18 +144,12 @@ namespace   Stroika {
                 nonvirtual  Optional<RETURNTYPE>  IfAs () const;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  IRep_;
 
             private:
                 shared_ptr<IRep_>   fVal_;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 template    <typename T>
                 struct  TIRep_;
             };

@@ -677,11 +677,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Iterable<T> Take (size_t nItems) const;
 
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-            private:
-                inline  static  bool    DefaultCompareLessArg_ (const T& lhs, const T& rhs)               {       return lhs < rhs;       }
-#endif
-
             public:
                 /**
                  *  EXPERIMENTAL
@@ -698,11 +693,7 @@ namespace   Stroika {
                  *  See:
                  */
                 nonvirtual  Iterable<T> OrderBy (const function<bool(T, T)>& compare =
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                                                     DefaultCompareLessArg_
-#else
                                                      [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
-#endif
                                                 ) const;
 
             public:
@@ -778,11 +769,7 @@ namespace   Stroika {
                  */
                 template    <typename   RESULT_TYPE = T>
                 nonvirtual  RESULT_TYPE Median (const function<bool(T, T)>& compare =
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                                                    DefaultCompareLessArg_
-#else
                                                     [] (const T& lhs, const T& rhs) -> bool { return lhs < rhs; }
-#endif
 #if     qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
                                                     , RESULT_TYPE ignored = {}
 #endif

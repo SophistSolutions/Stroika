@@ -31,21 +31,7 @@ namespace   Stroika {
                     // standard HTTP headers one might want to access/retrieve
                     namespace   HeaderName {
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-                        extern  const   wchar_t kContentType[13];
-                        extern  const   wchar_t kContentLength[15];
-                        extern  const   wchar_t kConnection[11];
-                        extern  const   wchar_t kServer[7];
-                        extern  const   wchar_t kDate[5];
-                        extern  const   wchar_t kLastModified[14];
-                        extern  const   wchar_t kUserAgent[11];
-                        extern  const   wchar_t kSOAPAction[11];
-                        extern  const   wchar_t kAcceptEncoding[16];
-                        extern  const   wchar_t kExpect[7];
-                        extern  const   wchar_t kTransferEncoding[18];
-                        extern  const   wchar_t kAccessControlAllowOrigin[28];
-                        extern  const   wchar_t kAccessControlAllowHeaders[29];
-#else
+
                         constexpr   wchar_t kContentType[]                  =   L"Content-Type";
                         constexpr   wchar_t kContentLength[]                =   L"Content-Length";
                         constexpr   wchar_t kConnection[]                   =   L"Connection";
@@ -59,8 +45,6 @@ namespace   Stroika {
                         constexpr   wchar_t kTransferEncoding[]             =   L"Transfer-Encoding";
                         constexpr   wchar_t kAccessControlAllowOrigin[]     =   L"Access-Control-Allow-Origin";
                         constexpr   wchar_t kAccessControlAllowHeaders[]    =   L"Access-Control-Allow-Headers";
-#endif
-
 
 
                     }

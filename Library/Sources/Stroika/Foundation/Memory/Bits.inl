@@ -27,7 +27,7 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             inline  constexpr   INT_TYPE    Bit (unsigned int bitNumber)
             {
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy || qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (bitNumber < CHAR_BIT * sizeof (INT_TYPE));
 #endif
                 return (static_cast<INT_TYPE> (1) << bitNumber);
@@ -47,7 +47,7 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             inline  constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits)
             {
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy || qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (nBits >= 1);
                 Require (offset < (CHAR_BIT * sizeof (INT_TYPE)));
                 Require ((nBits - 1 + offset) < (CHAR_BIT * sizeof (INT_TYPE)));
@@ -64,7 +64,7 @@ namespace   Stroika {
             template    <typename INT_TYPE>
             inline  constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
             {
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy || qCompilerAndStdLib_constexpr_Buggy
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (nBits >= 1);
                 Require (offset < (CHAR_BIT * sizeof (INT_TYPE)));
                 Require ((nBits - 1 + offset) < (CHAR_BIT * sizeof (INT_TYPE)));

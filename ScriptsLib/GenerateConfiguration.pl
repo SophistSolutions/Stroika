@@ -104,7 +104,7 @@ sub	DoHelp_
     my $x = shift(@_);
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
-        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015 (or -2013)) - usually auto-detected */\n");
+        print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
@@ -197,26 +197,6 @@ sub	SetInitialDefaults_
 				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
 			}
 		}
-
-		# try vs 2k13
-		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
-			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 12.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2013';
-			}
-			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 12.0/VC") {
-				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2013';
-			}
-			#autodetect ATLMFC (Express verison missing it)
-			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 12.0/VC/atlmfc") {
-				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
-			}
-			else  {
-				$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
-			}
-		}
-
 	}
 
 	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {

@@ -62,26 +62,16 @@
 
 #elif     defined (_MSC_VER)
 
-#define _MS_VS_2k13_VER_                1800
-// _MSC_FULL_VER value - see http://msdn.microsoft.com/en-us/library/b0084kay.aspx - so far unused
-#define _MS_VS_2k13_FULLVER_            180021005
-#define _MS_VS_2k13_Update1_FULLVER_    180021005
-#define _MS_VS_2k13_Update2_FULLVER_    180030501
-#define _MS_VS_2k13_Update3_FULLVER_    180030723
-#define _MS_VS_2k13_Update4_FULLVER_    180031101
-#define _MS_VS_2k13_Update5_FULLVER_    180040629
-
 #define _MS_VS_2k15_VER_                1900
-#define _MS_VS_2k15_RC_FULLVER_         190022816
 #define _MS_VS_2k15_RTM_FULLVER_        190023026
 #define _MS_VS_2k15_Update1_FULLVER_    190023506
 #define _MS_VS_2k15_Update2_FULLVER_    190023918
 
-#if      _MSC_VER < _MS_VS_2k13_VER_
-#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
+#if      _MSC_VER < _MS_VS_2k15_VER_
+#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
 #endif
-#if      _MSC_VER ==_MS_VS_2k13_VER_ && (_MSC_FULL_VER < _MS_VS_2k13_Update5_FULLVER_)
-#pragma message ("Warning: Stroika requires update 5 if using Microsoft Visual Studio.net 2013")
+#if      _MSC_VER ==_MS_VS_2k15_VER_ && (_MSC_FULL_VER < _MS_VS_2k15_Update2_FULLVER_)
+#pragma message ("Warning: Stroika requires update 2 or later if using Microsoft Visual Studio.net 2015")
 #endif
 #if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
@@ -137,55 +127,6 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
-@DESCRIPTION:   <p>Using tmput on Release, and 64bit builds core dumps. Just started. Not sure why.
-            But using narrow string succeeds so workaround.
-
-            Crashes in Test46 (performance regtest)
-            </p>
-
-    APPEARS FIXED IN MSVC2k15 RTM
-*/
-#ifndef qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
-
-#if     defined (_MSC_VER)
-// Still broken in _MS_VS_2k13_Update4_FULLVER_
-// Still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy     0
-#endif
-
-#endif
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
-@DESCRIPTION:
-    const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
-    istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
-    ErroniousReportFailWhenDateBefore1900
-
-    >>> TO TEST IF FIXED - RUN TIME REGRESSION TESTS (Foundation::Time - currently #44) <<<
-
-    VERIFIED FIXED in VS 2k15 RTM
-*/
-#ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
-
-#if   defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     0
-#endif
-
-#endif
-
-
-
 
 
 /*
@@ -205,59 +146,6 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
-@DESCRIPTION:
-
-    >>> TO TEST IF FIXED - RUN TIME REGRESSION TESTS (Foundation::Time - currently #44) <<<
-*/
-#ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-// VERIFIED fixed in VS 2k15 RTM
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-    crazy bug - regression - with VC2k13
-    Maybe same thing...
-*/
-#ifndef qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_FULL_VER < _MS_VS_2k13_Update2_FULLVER_)
-#else
-#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy   0
-#endif
-
-#endif
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_StdExitBuggy
-*/
-#ifndef qCompilerAndStdLib_StdExitBuggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_StdExitBuggy  (_MSC_FULL_VER < _MS_VS_2k15_RTM_FULLVER_)
-#else
-#define qCompilerAndStdLib_StdExitBuggy   0
-#endif
-
-#endif
-
 
 
 
@@ -272,7 +160,6 @@
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
@@ -304,22 +191,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
-/*
-  Example output:
-       1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(80): error C2143: syntax error : missing ';' before 'Stroika::Foundation::Memory::Byte'
-*/
-#ifndef qCompilerAndStdLib_alignas_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_alignas_Buggy      (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_alignas_Buggy      0
-#endif
-
-#endif
-
-
 
 
 /*
@@ -337,31 +208,12 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
-#endif
-
-#endif
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_Buggy
-@DESCRIPTION:   NYI for VS2k13, but expected soon
-*/
-#ifndef qCompilerAndStdLib_constexpr_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
-// Fixed (ish) in _MS_VS_2k15_RTM_FULLVER_
-#define qCompilerAndStdLib_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_Buggy      0
 #endif
 
 #endif
@@ -392,26 +244,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
-/*
-1>e:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\interface.cpp(87): error C2799: 'k': an object of const-qualified class type without a user-provided default constructor must be initialized
-1>  e:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\interface.cpp(87): note: see declaration of 'k'
-1>  e:\sandbox\stroikadev\library\sources\stroika\foundation\configuration\enumeration.h(173): note: see declaration of 'Stroika::Foundation::Configuration::EnumNames<Stroika::Foundation::IO::Network::Interface::Status>::EnumNames'
-2>------ Build started: Project: Test10, Configuration: Debug-U-32 Win32 ------
-*/
-#ifndef qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-
-#if     defined (_MSC_VER)
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// fixed in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
-#else
-#define qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy      0
-#endif
-
-#endif
-
-
-
 
 
 /*
@@ -422,7 +254,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_largeconstexprarray_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_largeconstexprarray_Buggy      (_MS_VS_2k15_Update1_FULLVER_ <= _MSC_FULL_VER and _MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -431,6 +262,9 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 #endif
+
+
+
 
 
 
@@ -451,10 +285,11 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      0
 #endif
 
 #endif
+
 
 
 /*
@@ -471,7 +306,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_constexpr_arrays_Buggy      (_MSC_FULL_VER < _MS_VS_2k15_Update1_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_arrays_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_arrays_Buggy      0
 #endif
 
 #endif
@@ -538,6 +373,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+
 /*
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): error C3256: 'kUpperBound': variable use does not produce a constant expression
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\range.inl(163): note: while compiling class template member function 'Stroika::Foundation::Traversal::Range<Stroika::Foundation::Time::Date,Stroika::Foundation::Time::Private_::DateRangeTraitsType_>::Range(Stroika::Foundation::Traversal::Openness,Stroika::Foundation::Traversal::Openness)'
@@ -552,10 +389,11 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      0
 #endif
 
 #endif
+
 
 
 
@@ -568,12 +406,11 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RC_FULLVER_ (((MAYBE WORKS BUT TRY OFF FOR NOW - NEWER ISSUES)
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      0
 #endif
 
 #endif
@@ -592,9 +429,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      1
-#elif   defined (__GNUC__)
+#if     defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -634,9 +469,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      1
-#elif   defined (__GNUC__)
+#if     defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
 #else
 #define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      0
@@ -655,9 +488,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       1
-#elif   defined (_MSC_VER)
+#if     defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -683,6 +514,10 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
+// See if this captures the issue better -- LGP 2016-05-19
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy      (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
+
+#if 0
 #if     defined (__clang__)
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11)
 #elif   defined (__GNUC__)
@@ -694,7 +529,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    qCompilerAndStdLib_constexpr_Buggy
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
+#endif
 #endif
 
 #endif
@@ -752,15 +588,15 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 * NOTE sure if this is a bug or my misunderstanding.
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      1
-#elif   defined (__clang__)
+#if     defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
@@ -822,20 +658,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 
 
-#ifndef qCompilerAndStdLib_strtof_NAN_ETC_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_strtof_NAN_ETC_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_strtof_NAN_ETC_Buggy   0
-#endif
-
-#endif
-
-
-
-
 
 
 
@@ -866,7 +688,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
 
 #if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -1044,32 +865,6 @@ Compiling regtests for Median/OrderBy...
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
-@DESCRIPTION:
-    BUILDING REGTESTS:
-22>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(77): error C2975: 'MIN' : invalid template argument for 'Stroika::Foundation::Traversal::RangeTraits::ExplicitDiscreteRangeTraits', expected compile-time constant expression
-22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(53) : see declaration of 'MIN'
-22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(123) : see reference to class template instantiation 'Stroika::Foundation::Traversal::RangeTraits::DefaultDiscreteRangeTraits_Integral<T>' being compiled
-22>          with
-22>          [
-22>              T=int
-22>          ]
-22>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\discreterange.h(141) : see reference to class template instantiation 'Stroika::Foundation::Traversal::RangeTraits::DefaultDiscreteRangeTraits<T>' being compiled
-*/
-#ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
-
-#if     defined (_MSC_VER)
-// Still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          qCompilerAndStdLib_constexpr_Buggy
-#else
-#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy          0
-#endif
-
-#endif
-
-
-
 
 
 /*
@@ -1084,7 +879,6 @@ Compiling regtests for Median/OrderBy...
 
 #if   defined (_MSC_VER)
 // Still broken in _MS_VS_2k13_Update4_FULLVER_
-// Still broken in _MS_VS_2k15_RC_FULLVER_
 // Still broken in _MS_VS_2k15_RTM_FULLVER_
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -1099,24 +893,6 @@ Compiling regtests for Median/OrderBy...
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_noexcept_Buggy
-@DESCRIPTION:   Defined 0 if the compiler supports noexcept
-*/
-#ifndef qCompilerAndStdLib_noexcept_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_noexcept_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_noexcept_Buggy       0
-#endif
-
-#endif
-
-
-
-
 
 
 /**
@@ -1127,8 +903,8 @@ Compiling regtests for Median/OrderBy...
 #ifndef qCompilerAndStdLib_make_unique_lock_IsSlow
 
 #if     defined (_MSC_VER)
-// ASSUME still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_make_unique_lock_IsSlow      (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
+// @todo - retest???? - untested in a while
+#define qCompilerAndStdLib_make_unique_lock_IsSlow      0
 #else
 #define qCompilerAndStdLib_make_unique_lock_IsSlow      0
 #endif
@@ -1141,57 +917,6 @@ Compiling regtests for Median/OrderBy...
 
 
 
-
-
-//@CONFIGVAR:     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-// Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr
-// verus std::shared_ptr<> stuff (now I'm getting rid of) over the std::shared_ptr<>
-//
-// At least two obvious (but not great) workarounds.
-//      o   make the class public
-//      o   use custom deleter
-//
-// Also - usually (always) assigning ptr to temporary variable of the right type is usually
-// a workaround (for case when you have private REP of a an accessible base type, and its
-// the temporary shared_ptr<> constructed for the exact private type (which will they get CTOR copied to
-// other class)
-//
-// maybe using FRIENDS will work?
-//
-// Anyhow - based on experimentationw with gcc, and 'common sense' - this should be defined to work - I will
-// assume its either a bug with the VS implementation of the compiler or the template itself.
-//
-// Example compiler output for error from vc++12 (so if you see this sort of thing - apply this ifdef/fix):
-//      1>c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(713): error C2248: 'Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_' : cannot access private class declared in class 'Stroika::Foundation::Streams::BasicBinaryOutputStream'
-//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.cpp(22) : see declaration of 'Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_'
-//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.h(47) : see declaration of 'Stroika::Foundation::Streams::BasicBinaryOutputStream'
-//      1>          c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(487) : see reference to function template instantiation 'void std::shared_ptr<_Ty>::_Resetp<_Ux>(_Ux *)' being compiled
-//      1>          with
-//      1>          [
-//      1>              _Ty=Stroika::Foundation::Streams::BinaryOutputStream::_IRep,
-//      1>              _Ux=Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_
-//      1>          ]
-//      1>          c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(487) : see reference to function template instantiation 'void std::shared_ptr<_Ty>::_Resetp<_Ux>(_Ux *)' being compiled
-//      1>          with
-//      1>          [
-//      1>              _Ty=Stroika::Foundation::Streams::BinaryOutputStream::_IRep,
-//      1>              _Ux=Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_
-//      1>          ]
-//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.cpp(139) : see reference to function template instantiation
-//
-//
-#ifndef qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RC_FULLVER_
-// FIXED in _MS_VS_2k15_RTM_FULLVER_
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
-#else
-#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy        0
-#endif
-
-#endif
 
 
 
@@ -1301,49 +1026,6 @@ eq_result
 
 
 
-#ifndef qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RC_FULLVER_
-// appears fixed in _MS_VS_2k15_RTM_FULLVER_
-#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_RC_FULLVER_)
-#else
-#define qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy        0
-#endif
-
-#endif
-
-
-
-
-
-
-/*
- *EXAMPLE:
-48>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\bijection_linkedlist.inl(213): error C2039: 'Equals' : is not a member of 'Stroika::Foundation::Common::DefaultEqualsComparer<`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType,_Ty2>'
-48>          with
-48>          [
-48>              _Ty2=std::shared_ptr<int>
-48>          ]
-48>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\concrete\bijection_linkedlist.inl(210) : while compiling class template member function 'bool Stroika::Foundation::Containers::Concrete::Bijection_LinkedList<DOMAIN_TYPE,RANGE_TYPE,TRAITS>::Rep_::Lookup(`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType,Stroika::Foundation::Memory::Optional<Stroika::Foundation::Characters::String,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<T>> *) const'
-48>          with
-48>          [
-48>              DOMAIN_TYPE=`anonymous-namespace'::Test_JSONReadWriteFile_::ScanKindType
-48>  ,            RANGE_TYPE=Stroika::Foundation::Characters::String
-*/
-#ifndef qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy        0
-#endif
-
-#endif
-
-
-
-
 
 
 //
@@ -1362,8 +1044,8 @@ eq_result
 #ifndef qCompilerAndStdLib_DotTemplateDisambiguator_Buggy
 
 #if     defined (_MSC_VER)
-// first broken in _MS_VS_2k15_RC_FULLVER_
-#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RC_FULLVER_ || _MSC_FULL_VER == _MS_VS_2k15_RTM_FULLVER_)
+// first broken in _MS_VS_2k15_RTM_FULLVER_
+#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RTM_FULLVER_)
 #else
 #define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        0
 #endif
@@ -1467,27 +1149,6 @@ eq_result
 
 
 
-/*
-     thread_local AbortFlagType_             s_Aborting_ (false);
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(88): error C2146: syntax error : missing ';' before identifier 'AbortFlagType_'
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(88): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(89): error C2146: syntax error : missing ';' before identifier 'AbortSuppressCountType_'
-c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.cpp(89): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-*/
-#ifndef qCompilerAndStdLib_thread_local_keyword_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_thread_local_keyword_Buggy       (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_thread_local_keyword_Buggy       0
-#endif
-
-#endif
-
-
-
-
 
 
 #ifndef qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
@@ -1495,7 +1156,7 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #if     defined (__clang__)
 #define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ <= 5))
 #else
-#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   qCompilerAndStdLib_thread_local_keyword_Buggy
+#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   0
 #endif
 
 #endif
@@ -1523,51 +1184,6 @@ c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\thread.c
 #endif
 
 
-
-// @todo - investigate this better
-/*
-
-// NO LONGER CRASHES as of _MS_VS_2k13_Update2_FULLVER_ - investigate error message. Could be my bug?
-// -- LGP 2014-05-25
-
-19>c:\sandbox\stroika\devroot\tests\testcommon\commontests_set.h(159): error C2248: 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>::SortedSet'
-                    : cannot access protected member declared in class 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>'
-19>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\sortedset.h(110) : see declaration of 'Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>::SortedSet'
-19>          c:\sandbox\stroika\devroot\tests\testcommon\commontests_set.h(182) : see reference to function template instantiation 'void CommonTests::SetTests::Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER,USING_BASESET_CONTAINER,TEST_FUNCTION>(TEST_FUNCTION)' being compiled
-19>          with
-19>          [
-19>              USING_SET_CONTAINER=Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>
-19>  ,            USING_BASESET_CONTAINER=Stroika::Foundation::Containers::SortedSet<Stroika::SimpleClassWithoutComparisonOperators,SimpleClassWithoutComparisonOperators_SETTRAITS>
-19>  ,            TEST_FUNCTION=`anonymous-namespace'::RunTests_::<lambda_9202cc4e8657f58007ab10c1a185f58f>
-19>          ]
-*/
-#ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
-#endif
-
-#endif
-
-
-
-
-// Doesnt crash but values appear as NANs - but not always ;-(
-// See output in RegTest44
-#ifndef qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug   0
-#endif
-
-#endif
 
 
 
@@ -1638,58 +1254,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
-@DESCRIPTION:   See also qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-
-#if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
-                static  SHARED_IMLP  DefaultElementCopier_ (const T& t);
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = DefaultElementCopier_) noexcept;
-#else
-                SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); }) noexcept;
-#endif
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(78): error C2226: syntax error : unexpected type 'SHARED_IMLP'
-1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(82) : see reference to class template instantiation 'Stroika::Foundation::Memory::SharedByValue_CopyByFunction<T,SHARED_IMLP>' being compiled
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\sharedbyvalue.h(78): error C2143: syntax error : missing ')' before '{'
-
-*/
-#ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   0
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-@DESCRIPTION:   See also qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
-
-        nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2062: type 'bool' unexpected
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2143: syntax error : missing ')' before '{'
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(750): error C2059: syntax error : ')'
-*/
-#ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    0
-#endif
-
-#endif
-
 
 
 
@@ -1752,63 +1316,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-@DESCRIPTION:
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  String& operator= (String && rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
-                nonvirtual  String& operator= (String && newString) = default;
-#endif
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.h(396): error C2610: 'Stroika::Foundation::Characters::String &Stroika::Foundation::Characters::String::operator =(Stroika::Foundation::Characters::String &&)' : is not a special member function which can be defaulted
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(226): error C2264: 'Stroika::Foundation::Characters::String::operator =' : error in function definition or declaration; function not called
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.inl(269): error C2264: 'Stroika::Foundation::Characters::String::operator =' : error in function definition or declaration; function not called
-*/
-#ifndef qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        (_MSC_FULL_VER <= _MS_VS_2k13_Update5_FULLVER_)
-#else
-#define qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy        0
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
-@DESCRIPTION:
-            template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon = (10000 * numeric_limits<T>::epsilon ()));
-1>  ProgressMonitor.cpp
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\math\common.h(89): error C2064: term does not evaluate to a function taking 0 arguments
-
-
-    ///// VERIFY WE CAN DELETE THIS DEFINE AS OF 2014-08-08
-*/
-#ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      qCompilerAndStdLib_constexpr_Buggy
-#else
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
-#endif
-
-#endif
-
-
-
-
 /*
 @CONFIGVAR:     qDecoratedNameLengthExceeded_Buggy
 @DESCRIPTION:
@@ -1819,7 +1326,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 #if     defined (_MSC_VER)
 // still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RC_FULLVER_
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still borken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -1922,26 +1428,11 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
 // easy enough to disable ;-)
-#if     defined (_MSC_VER) && (_MSC_VER == _MS_VS_2k13_VER_ || _MSC_VER == _MS_VS_2k15_VER_)
+#if     defined (_MSC_VER) && (_MSC_VER == _MS_VS_2k15_VER_)
 #define _ALLOW_KEYWORD_MACROS
 #endif
 
 
-
-
-
-#if     qCompilerAndStdLib_noexcept_Buggy
-#define noexcept    throw ()
-#endif
-
-
-
-
-
-#if     qCompilerAndStdLib_constexpr_Buggy
-// This works as an adequate workaround pretty often
-#define constexpr   const
-#endif
 
 
 
@@ -1957,16 +1448,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-
-
-
-#if     qCompilerAndStdLib_thread_local_keyword_Buggy
-#if     defined (__GNUC__)
-#define thread_local    __thread
-#else
-#define thread_local    __declspec(thread)
-#endif
-#endif
 
 
 
@@ -2074,13 +1555,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *  work pefrectly - since it doesnt create a name of the desired type, but its usually
  *  pretty close.
  */
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
-    enum  { NAME = static_cast<TYPE> (VALUE) };
-#else
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     static  constexpr TYPE NAME = VALUE;
-#endif
 
 
 

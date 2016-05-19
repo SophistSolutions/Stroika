@@ -174,11 +174,7 @@ namespace   Stroika {
 
             private:
                 // Nothing too important about this constant, but not so long as to be hard to read
-#if     qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT (size_t, kMaxContextNameLen_, 80);
-#else
                 static  constexpr size_t    kMaxContextNameLen_   { 80 };
-#endif
             private:
                 wchar_t                                     fSavedContextName_[kMaxContextNameLen_];
                 Emitter::TraceLastBufferedWriteTokenType    fLastWriteToken_;           // used to COMBINE items into a single line if they happen quickly enuf

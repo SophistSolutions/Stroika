@@ -51,9 +51,6 @@ namespace   Stroika {
                     nonvirtual  Collection_stdforward_list<T>&  operator= (const Collection_stdforward_list<T>& collection);
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

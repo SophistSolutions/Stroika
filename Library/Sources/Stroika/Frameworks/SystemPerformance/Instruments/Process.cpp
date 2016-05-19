@@ -312,28 +312,7 @@ namespace {
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if     qCompilerAndStdLib_constexpr_Buggy
-            // NO IDEA WHY EnumName<RunStatus> needed, but required on about all compilers - gcc5.2, vs2k13, clang35/35, and more???
-            // https://stroika.atlassian.net/browse/STK-441
-            template    <>
-            const EnumNames<ProcessType::RunStatus>   Configuration::DefaultNames<ProcessType::RunStatus>::k
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-                =
-#endif
-            {
-                EnumNames<ProcessType::RunStatus>::BasicArrayInitializer {
-                    EnumName<ProcessType::RunStatus>
-                    { ProcessType::RunStatus::eRunning, L"Running" },
-                    { ProcessType::RunStatus::eSleeping, L"Sleeping" },
-                    { ProcessType::RunStatus::eWaitingOnDisk, L"WaitingOnDisk" },
-                    { ProcessType::RunStatus::eWaitingOnPaging, L"WaitingOnPaging" },
-                    { ProcessType::RunStatus::eZombie, L"Zombie" },
-                    { ProcessType::RunStatus::eSuspended, L"Suspended" },
-                }
-            };
-#else
             constexpr   EnumNames<ProcessType::RunStatus>   DefaultNames<ProcessType::RunStatus>::k;
-#endif
         }
     }
 }

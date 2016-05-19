@@ -53,11 +53,7 @@ namespace   Stroika {
                      *  this will be zero (if we accumulate by adding - the default).
                      */
                 public:
-#if     qCompilerAndStdLib_constexpr_Buggy
-                    static const ValueType kNullValue;
-#else
                     static constexpr ValueType kNullValue { 0 };
-#endif
 
                 public:
                     static  bool    RangeElementsNearlyEqual (XType lhs, XType rhs);

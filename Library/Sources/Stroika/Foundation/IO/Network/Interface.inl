@@ -37,7 +37,6 @@ namespace   Stroika {
         }
     }
 }
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -71,5 +70,4 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif  /*_Stroika_Foundation_IO_Network_Interface_inl_*/

@@ -82,15 +82,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS>&& rhs) = default;
-#endif
 
             public:
                 /**

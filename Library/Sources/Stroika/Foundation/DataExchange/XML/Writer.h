@@ -62,9 +62,6 @@ namespace   Stroika {
                     using   inherited   =   DataExchange::VariantWriter;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 public:

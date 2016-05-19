@@ -65,11 +65,7 @@ namespace   Stroika {
                 return (SIZE_OF_ARRAY);
             }
 // after testing - do this - cuz otherwise use in constant array arg wont work
-#if     !qCompilerAndStdLib_constexpr_Buggy
 #define NEltsOf(X)      Stroika::Foundation::Memory::NEltsOf_REAL_(X)
-#else
-#define NEltsOf(X)      (sizeof((X))/sizeof((X)[0]))
-#endif
 
 
             /**

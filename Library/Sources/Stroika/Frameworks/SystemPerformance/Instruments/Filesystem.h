@@ -323,7 +323,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -346,5 +345,4 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif  /*_Stroika_Framework_SystemPerformance_Instruments_Filesystem_h_*/

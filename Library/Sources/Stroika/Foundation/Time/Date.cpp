@@ -208,7 +208,7 @@ Date::FormatException::FormatException ()
 
 
 
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 /*
  ********************************************************************************
  ************************* Private_::Date_ModuleData_ ***************************
@@ -228,15 +228,13 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif
 
-#if     !qCompilerAndStdLib_constexpr_Buggy
 constexpr   Date::JulianRepType    Date::kMinJulianRep;
 constexpr   Date::JulianRepType    Date::kEmptyJulianRep;
-#endif
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
     : fJulianDateRep_ (jday_ (month, day, year))
@@ -335,23 +333,10 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when {};
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
-#if     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
-    if ((state & ios::failbit) and when.tm_year >= 1752 and when.tm_year < 1900) {
-        // ignore fail bit
-        state = ios::goodbit;
-    }
-#endif
     if (state & ios::failbit) {
         Execution::Throw (FormatException ());
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
-#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
-    // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
-    // -- LGP 2011-10-09
-    if (not (-200 <= when.tm_year and when.tm_year < 200)) {
-        when.tm_year -= 1900;
-    }
-#endif
 #if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
@@ -494,18 +479,10 @@ String Date::Format (const locale& l, const String& formatPattern) const
 
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     tm when =   Date2TM_ (*this);
-#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
-    const time_put<char>& tmput = use_facet <time_put<char>> (l);
-    ostringstream oss;
-    string  pattern = formatPattern.AsNarrowSDKString ();
-    tmput.put (oss, oss, ' ', &when, pattern.c_str (), pattern.c_str () + pattern.length ());
-    return String::FromNarrowString (oss.str (), l);
-#else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     wostringstream oss;
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
-#endif
 }
 
 #if     qPlatform_Windows

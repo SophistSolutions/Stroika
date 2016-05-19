@@ -29,14 +29,6 @@ namespace   Stroika {
             {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
-#if     qCompilerAndStdLib_constexpr_Buggy
-            namespace Private_ {
-                struct  FileAccessModeData {
-                    FileAccessModeData ();
-                    Configuration::EnumNames<FileAccessMode>    fFileAccessModeConfigNames;
-                };
-            }
-#endif
 #if     qSUPPORT_LEGACY_Stroika_Enum_Names
             constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
             {
@@ -58,22 +50,6 @@ namespace   Stroika {
 
 
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::Private_::FileAccessModeData> _Stroika_Foundation_IO_FileAccessModeData_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
-}
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   IO {
-            inline  constexpr   Configuration::EnumNames<FileAccessMode>    Get_FileAccessMode_BWA ()
-            {
-                return Execution::ModuleInitializer<Private_::FileAccessModeData>::Actual ().fFileAccessModeConfigNames;
-            }
-        }
-    }
-}
-#endif
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -94,5 +70,4 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif  /*_Stroika_Foundation_IO_FileAccessMode_inl_*/

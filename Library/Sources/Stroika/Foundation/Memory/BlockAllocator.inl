@@ -87,10 +87,6 @@ namespace   Stroika {
 
             namespace   Private_ {
 
-#if     qCompilerAndStdLib_constexpr_Buggy
-#define BlockAllocation_Private_AdjustSizeForPool_(n)\
-    (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*))
-#else
                 // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
                 inline    constexpr size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
                 {
@@ -98,7 +94,6 @@ namespace   Stroika {
                     //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
                     return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
                 }
-#endif
 
 
                 /*
@@ -299,9 +294,7 @@ namespace   Stroika {
             inline  void*   BlockAllocator<T>::Allocate (size_t n)
             {
                 using Private_::BlockAllocationPool_;
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
-#endif
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
@@ -315,9 +308,7 @@ namespace   Stroika {
             inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept
             {
                 using Private_::BlockAllocationPool_;
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
-#endif
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
                     BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
@@ -330,9 +321,7 @@ namespace   Stroika {
             void    BlockAllocator<T>::Compact ()
             {
                 using Private_::BlockAllocationPool_;
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
-#endif
 #if     qAllowBlockAllocation
                 BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif

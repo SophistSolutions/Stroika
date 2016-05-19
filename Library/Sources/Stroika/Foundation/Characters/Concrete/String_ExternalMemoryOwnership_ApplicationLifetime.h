@@ -77,9 +77,6 @@ namespace   Stroika {
                     nonvirtual  String_ExternalMemoryOwnership_ApplicationLifetime& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime& s) = default;
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   MyRep_;
                 };
 

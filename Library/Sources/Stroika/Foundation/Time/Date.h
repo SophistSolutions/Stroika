@@ -218,18 +218,10 @@ namespace   Stroika {
                 using   JulianRepType       =   unsigned int;
 
             public:
-#if     qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kMinJulianRep, 2361222);  // This number corresponds to 1752-09-14
-#else
                 static  constexpr JulianRepType    kMinJulianRep   = 2361222;       // This number corresponds to 1752-09-14
-#endif
 
             public:
-#if     qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT(JulianRepType, kEmptyJulianRep, UINT_MAX);
-#else
                 static  constexpr JulianRepType    kEmptyJulianRep   = UINT_MAX;
-#endif
 
             public:
                 class   FormatException;
@@ -237,16 +229,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr Date ();
-#else
-                Date ();
-#endif
-#if     !qCompilerAndStdLib_constexpr_Buggy
+                constexpr   Date ();
                 explicit constexpr Date (JulianRepType julianRep);
-#else
-                explicit Date (JulianRepType julianRep);
-#endif
                 explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
@@ -283,7 +267,7 @@ namespace   Stroika {
                  *  Date::kMin is the first date this Date class supports representing.
                  *  Defined constexpr if compiler supports.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const  Date&        kMin;
 #else
                 static  constexpr   Date    kMin    { Date::JulianRepType (Date::kMinJulianRep) };
@@ -292,7 +276,7 @@ namespace   Stroika {
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const Date&         kMax;
 #else
                 static  constexpr   Date    kMax   { JulianRepType (UINT_MAX - 1) };

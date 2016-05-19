@@ -232,15 +232,9 @@ namespace   Stroika {
                 nonvirtual  Characters::String  ToString () const;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 class   MyRunnable_;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  TPInfo_ {
                     Thread                      fThread;
                     shared_ptr<MyRunnable_>     fRunnable;

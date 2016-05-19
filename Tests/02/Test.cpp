@@ -1245,17 +1245,13 @@ namespace {
             VerifyTestResult (out.str () == L"hi mom");
             out += L".";
             VerifyTestResult (out.str () == L"hi mom.");
-#if     !qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy
             VerifyTestResult (static_cast<String> (out) == L"hi mom.");
-#endif
             VerifyTestResult (out.As<String> () == L"hi mom.");
             VerifyTestResult (out.As<wstring> () == L"hi mom.");
         }
         {
             StringBuilder out { L"x" };
-#if     !qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy
             VerifyTestResult (static_cast<String> (out) == L"x");
-#endif
             VerifyTestResult (out.As<String> () == L"x");
         }
     }

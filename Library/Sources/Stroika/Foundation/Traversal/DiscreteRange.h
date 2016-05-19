@@ -50,10 +50,6 @@
 
 
 
-#if     qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
-#include    <climits>
-#endif
-
 
 
 namespace   Stroika {
@@ -88,45 +84,9 @@ namespace   Stroika {
 
                 /**
                  */
-#if     !qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
                 template    <typename T>
                 struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), typename make_unsigned < decltype (T() - T()) >::type > {
                 };
-#else
-                template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
-                        };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<char>  : ExplicitDiscreteRangeTraits < char, CHAR_MIN, CHAR_MAX, char, unsigned char> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<unsigned char>  : ExplicitDiscreteRangeTraits < unsigned char, 0, UCHAR_MAX, unsigned char, unsigned char> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<short>  : ExplicitDiscreteRangeTraits < short, SHRT_MIN, SHRT_MAX, short, unsigned short> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<unsigned short>  : ExplicitDiscreteRangeTraits < unsigned short, 0, USHRT_MAX, unsigned short, unsigned short> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<int>  : ExplicitDiscreteRangeTraits < int, INT_MIN, INT_MAX, int, unsigned int> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<unsigned int>  : ExplicitDiscreteRangeTraits < unsigned int, 0, UINT_MAX, unsigned int, unsigned int> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<long>  : ExplicitDiscreteRangeTraits < long, LONG_MIN, LONG_MAX, long, unsigned long> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<unsigned long>  : ExplicitDiscreteRangeTraits < unsigned long, 0, ULONG_MAX, unsigned long, unsigned long> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<long long>  : ExplicitDiscreteRangeTraits < long long, LLONG_MIN, LLONG_MAX, long long, unsigned long long> {
-                };
-                template    <>
-                struct  DefaultDiscreteRangeTraits_Integral<unsigned long long>  : ExplicitDiscreteRangeTraits < unsigned long long, 0, ULLONG_MAX, unsigned long long, unsigned long long> {
-                };
-#endif
 
 
                 /**
@@ -178,9 +138,6 @@ namespace   Stroika {
                 using   UnsignedDifferenceType      =   typename inherited::UnsignedDifferenceType;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct   MyIteratorRep_;
 
             public:
@@ -255,9 +212,6 @@ namespace   Stroika {
                 Iterator<T> end () const;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  MyIterable_;
             };
 

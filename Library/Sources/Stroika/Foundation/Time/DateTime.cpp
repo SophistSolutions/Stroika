@@ -317,13 +317,6 @@ DateTime    DateTime::Parse (const String& rep, const locale& l)
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm  when {};
     tmget.get_date (itbegin, itend, iss, state, &when);
-#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
-    // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
-    // -- LGP 2011-10-09
-    if (not (-200 <= when.tm_year and when.tm_year < 200)) {
-        when.tm_year -= 1900;
-    }
-#endif
     return DateTime (when);
 }
 
@@ -333,16 +326,6 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) {
         return DateTime ();
     }
-#if     qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
-    {
-        static  bool    sDidOnce_ = false;
-        if (not sDidOnce_) {
-            DATE        d {};
-            ::VarDateFromStr(CComBSTR(L"7/26/1972 12:00:00 AM"), 1024, 0, &d);
-            sDidOnce_ = true;
-        }
-    }
-#endif
     DATE        d {};
     try {
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, 0, &d));

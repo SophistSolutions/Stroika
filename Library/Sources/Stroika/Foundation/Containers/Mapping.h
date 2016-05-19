@@ -174,15 +174,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) =   default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
-#endif
 
             public:
                 /**
@@ -371,19 +363,10 @@ namespace   Stroika {
                 nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                inline  static  bool    DefaultAccumulateArg_ (ArgByValueType<ValueType> l, ArgByValueType<ValueType> r)               {        return l + r;       }
-#endif
-
-            public:
                 /**
                  *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                nonvirtual  void    Accumulate (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newValue, const function<ValueType(ArgByValueType<ValueType>, ArgByValueType<ValueType>)>& f = DefaultAccumulateArg_, ValueType initialValue = {})
-#else
                 nonvirtual  void    Accumulate (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newValue, const function<ValueType(ArgByValueType<ValueType>, ArgByValueType<ValueType>)>& f = [] (ArgByValueType<ValueType> l, ArgByValueType<ValueType> r) -> ValueType { return l + r; }, ValueType initialValue = {})
-#endif
                 {
                     Add (key, f (LookupValue (key, initialValue), newValue));
                 }

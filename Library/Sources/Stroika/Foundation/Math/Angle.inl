@@ -24,19 +24,11 @@ namespace   Stroika {
              *********************************** Math::Angle ********************************
              ********************************************************************************
              */
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            Angle::Angle ()
+            inline  constexpr   Angle::Angle ()
                 : fAngleInRadians_ { 0 }
             {
             }
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            Angle::Angle (double angle, AngleFormat angleFormat)
+            inline  constexpr   Angle::Angle (double angle, AngleFormat angleFormat)
                 : fAngleInRadians_ {
                 (angleFormat == AngleFormat::eRadians)
                 ? angle

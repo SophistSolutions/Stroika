@@ -105,11 +105,7 @@ namespace   Stroika {
                 /**
                  * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy
-                DEFINE_CONSTEXPR_CONSTANT(uint32_t, kMaxSecondsPerDay, 60 * 60 * 24);
-#else
                 static  constexpr   uint32_t    kMaxSecondsPerDay = 60 * 60 * 24;       // nb: 86400: wont fit in uint16_t
-#endif
 
             public:
                 /**
@@ -119,14 +115,8 @@ namespace   Stroika {
                  *  For the TimeOfDay, we allow out of range values and pin/accumulate. But you can still never have a time of day >= kMaxSecondsPerDay.
                  *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                TimeOfDay ();
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit TimeOfDay (uint32_t t);
+                constexpr   TimeOfDay ();
+                constexpr   explicit TimeOfDay (uint32_t t);
                 explicit TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
 
             public:
@@ -158,7 +148,7 @@ namespace   Stroika {
                 /**
                  *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const       TimeOfDay   kMin;
 #else
                 static  constexpr   TimeOfDay   kMin { 0 };
@@ -169,7 +159,7 @@ namespace   Stroika {
                  *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
                  *  not like 'end' - one past the last legal value.
                  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
                 static  const       TimeOfDay   kMax;
 #else
                 static  constexpr   TimeOfDay   kMax { kMaxSecondsPerDay - 1 };

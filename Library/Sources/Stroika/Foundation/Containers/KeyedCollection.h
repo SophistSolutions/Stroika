@@ -172,15 +172,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (const KeyedCollection<KEY_TYPE, T, TRAITS>& rhs);
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (KeyedCollection<KEY_TYPE, T, TRAITS>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  KeyedCollection<KEY_TYPE, T, TRAITS>& operator= (KeyedCollection<KEY_TYPE, T, TRAITS>&& rhs) = default;
-#endif
 
             public:
                 /**

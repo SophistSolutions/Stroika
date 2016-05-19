@@ -38,14 +38,10 @@ namespace   Stroika {
                 using   Characters::String;
 
 
-#if     !qCompilerAndStdLib_constexpr_Buggy
 #if     qPlatform_Windows
                 constexpr   wchar_t   kPathComponentSeperator =   '\\';
 #elif   qPlatform_POSIX
                 constexpr   wchar_t   kPathComponentSeperator =   '/';
-#endif
-#else
-                extern  const   wchar_t   kPathComponentSeperator;
 #endif
 
 

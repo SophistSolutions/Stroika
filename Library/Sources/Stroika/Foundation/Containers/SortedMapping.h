@@ -88,15 +88,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
-#endif
 
             public:
                 /**

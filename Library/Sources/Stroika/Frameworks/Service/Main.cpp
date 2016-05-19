@@ -894,12 +894,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
                 fRunThread_.load ().Abort ();
             }
             break;
-#if     qCompilerAndStdLib_constexpr_Buggy
-        case    SIGHUP:
-#else
-        case    kSIG_ReReadConfiguration:
-#endif
-            {
+        case    kSIG_ReReadConfiguration: {
                 DbgTrace ("Invoking fAppRep->OnReReadConfigurationRequest ()");
                 fAppRep_.load ()->OnReReadConfigurationRequest ();
             }

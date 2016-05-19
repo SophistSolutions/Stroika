@@ -81,23 +81,7 @@ using   Time::DurationSecondsType;
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
-#if     qCompilerAndStdLib_constexpr_Buggy
-            template    <>
-            const EnumNames<Execution::SignalHandler::Type>   DefaultNames<Execution::SignalHandler::Type>::k
-#if     qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy
-                =
-#endif
-            {
-                EnumNames<Execution::SignalHandler::Type>::BasicArrayInitializer {
-                    {
-                        { Execution::SignalHandler::Type::eDirect, L"Direct" },
-                        { Execution::SignalHandler::Type::eSafe, L"Safe" },
-                    }
-                }
-            };
-#else
             constexpr   EnumNames<Execution::SignalHandler::Type>    DefaultNames<Execution::SignalHandler::Type>::k;
-#endif
         }
     }
 }

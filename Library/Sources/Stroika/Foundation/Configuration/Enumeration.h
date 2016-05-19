@@ -169,9 +169,7 @@ namespace   Stroika {
 #endif
 
                 constexpr EnumNames (const EnumNames& src) = default;
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 constexpr EnumNames (EnumNames&& src) = default;
-#endif
                 constexpr EnumNames (const BasicArrayInitializer& init);
                 EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames);
                 template     <size_t N>
@@ -212,11 +210,7 @@ namespace   Stroika {
                  *
                  *  @see GetName ();
                  */
-                nonvirtual
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                const wchar_t*  PeekName (ENUM_TYPE e) const;
+                nonvirtual  constexpr   const wchar_t*  PeekName (ENUM_TYPE e) const;
 
             public:
                 /**
@@ -242,7 +236,7 @@ namespace   Stroika {
                 template    <typename   NOT_FOUND_EXCEPTION>
                 nonvirtual  ENUM_TYPE  GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
 
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
             private:
                 nonvirtual  constexpr   void    RequireItemsOrderedByEnumValue_ () const;
 #endif

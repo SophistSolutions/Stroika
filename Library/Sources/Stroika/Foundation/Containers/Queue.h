@@ -144,15 +144,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  Queue<T>& operator= (const Queue<T>& rhs) = default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  Queue<T>& operator= (Queue<T>&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  Queue<T>& operator= (Queue<T>&& rhs) = default;
-#endif
 
             public:
                 /**

@@ -231,7 +231,7 @@ TimeOfDay::FormatException::FormatException ()
  *********************************** TimeOfDay **********************************
  ********************************************************************************
  */
-#if     qCompilerAndStdLib_constexpr_Buggy || qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
+#if     qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 const   TimeOfDay   TimeOfDay::kMin =   TimeOfDay (0);
 const   TimeOfDay   TimeOfDay::kMax =   TimeOfDay (kMaxSecondsPerDay - 1);
 #endif
@@ -473,20 +473,11 @@ String  TimeOfDay::Format (const locale& l, const String& formatPattern) const
     when.tm_hour = GetHours ();
     when.tm_min = GetMinutes ();
     when.tm_sec = GetSeconds ();
-#if     qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy
-    const time_put<char>& tmput = use_facet <time_put<char>> (l);
-    string  pattern = formatPattern.AsNarrowSDKString ();
-    ostringstream oss;
-    //oss.imbue (l);        // not sure if/why needed/not/needed
-    tmput.put (oss, oss, ' ', &when, pattern.c_str (), pattern.c_str () + pattern.length ());
-    return String::FromNarrowString (oss.str (), l);
-#else
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     wostringstream oss;
     //oss.imbue (l);        // not sure if/why needed/not/needed
     tmput.put (oss, oss, ' ', &when, formatPattern.c_str (), formatPattern.c_str () + formatPattern.length ());
     return oss.str ();
-#endif
 }
 
 #if     qPlatform_Windows

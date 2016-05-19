@@ -85,9 +85,7 @@ namespace   Stroika {
             template <typename T>
             struct  ComparerWithEquals : ComparerWithEqualsOptionally<T> {
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 static_assert(Configuration::EqualityComparable<T> (), "T must be EqualityComparable");
-#endif
             };
 
 
@@ -101,9 +99,7 @@ namespace   Stroika {
             struct  ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
                 using   ElementType     =   T;
 
-#if     !qCompilerAndStdLib_constexpr_Buggy
                 static_assert(Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
-#endif
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
 
                 /**
@@ -158,11 +154,7 @@ namespace   Stroika {
              *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
              */
             template    < typename T, typename SFINAE = typename conditional <
-#if     qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy
-                              (Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or is_enum<T>::value,
-#else
                               (Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value),
-#endif
                               ComparerWithEquals<T>,
                               typename conditional <
                                   Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value,

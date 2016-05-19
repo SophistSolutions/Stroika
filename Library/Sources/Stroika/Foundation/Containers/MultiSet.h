@@ -136,9 +136,6 @@ namespace   Stroika {
                 using   CounterType  =   typename TraitsType::CounterType;
 
             protected:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 class   _IRep;
 
             protected:
@@ -167,15 +164,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
-#if     qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy
-                nonvirtual  MultiSet& operator= (MultiSet&& rhs)
-                {
-                    inherited::operator= (move (rhs));
-                    return *this;
-                }
-#else
                 nonvirtual  MultiSet& operator= (MultiSet&& rhs) = default;
-#endif
 
             public:
                 /**
@@ -376,28 +365,16 @@ namespace   Stroika {
 
             private:
                 struct  ElementsIteratorHelperContext_;
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  ElementsIteratorHelper_;
 
             protected:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  _ElementsIterableHelper;
 
             private:
                 struct  UniqueElementsIteratorHelperContext_;
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  UniqueElementsIteratorHelper_;
 
             protected:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  _UniqueElementsHelper;
             };
 

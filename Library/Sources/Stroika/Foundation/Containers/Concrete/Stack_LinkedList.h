@@ -55,9 +55,6 @@ namespace   Stroika {
                     nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);
 
                 private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
                     class   Rep_;
 
                 private:

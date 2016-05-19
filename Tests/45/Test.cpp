@@ -248,7 +248,7 @@ namespace   {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         catch (...) {
-            VerifyTestResult (false);   // check qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy or qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
+            VerifyTestResult (false);
         }
         {
             Date    d;

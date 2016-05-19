@@ -67,26 +67,15 @@ namespace   Stroika {
             public:
                 /**
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Version ();
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                explicit Version (FullVersionType fullVersionNumber);
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
-
+                constexpr   Version ();
+                constexpr   explicit Version (FullVersionType fullVersionNumber);
+                constexpr   Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
 
             public:
                 /**
                  *  FromWin32Version4DoTString may throw if it detects an ill-formatted version string.
                  */
                 static  Version FromWin32Version4DotString (const Characters::String& win32Version4DotString);
-
 
             public:
                 /**
@@ -102,54 +91,36 @@ namespace   Stroika {
                 bool            fFinalBuild;
 
             public:
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  FullVersionType         AsFullVersionNum () const;
+                /**
+                 */
+                nonvirtual  constexpr   FullVersionType AsFullVersionNum () const;
 
             public:
+                /**
+                 */
                 nonvirtual  Characters::String      AsWin32Version4DotString () const;
 
             public:
+                /**
+                 */
                 nonvirtual  Characters::String      AsPrettyVersionString () const;
 
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  int Compare (const Version& rhs) const;
+                nonvirtual  constexpr   int Compare (const Version& rhs) const;
 
             public:
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator< (const Version& rhs) const;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator<= (const Version& rhs) const;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator> (const Version& rhs) const;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator>= (const Version& rhs) const;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator== (const Version& rhs) const;
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                nonvirtual  bool    operator!= (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator< (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator<= (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator> (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator>= (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator== (const Version& rhs) const;
+                nonvirtual  constexpr   bool    operator!= (const Version& rhs) const;
             };
 
 

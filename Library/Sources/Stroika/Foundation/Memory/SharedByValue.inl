@@ -24,13 +24,6 @@ namespace   Stroika {
             ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
             ********************************************************************************
             */
-#if     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
-            template    <typename   T, typename SHARED_IMLP>
-            SHARED_IMLP  SharedByValue_CopyByFunction<T, SHARED_IMLP>::DefaultElementCopier_ (const T& t)
-            {
-                return SHARED_IMLP (new T (t));
-            }
-#endif
             template    <typename   T, typename SHARED_IMLP>
             inline  SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
                 :

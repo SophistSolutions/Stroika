@@ -104,11 +104,7 @@ namespace   {
         }
         Logger::Get ().Flush ();
 #endif
-#if     qCompilerAndStdLib_StdExitBuggy
-        _exit (EXIT_FAILURE);
-#else
         std::_Exit (EXIT_FAILURE);  // skip
-#endif
     }
     void    _FatalSignalHandler_ (Execution::SignalID signal)
     {
@@ -119,11 +115,7 @@ namespace   {
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Backtrace: %s", Debug::BackTrace ().c_str ());
         Logger::Get ().Flush ();
 #endif
-#if     qCompilerAndStdLib_StdExitBuggy
-        _exit (EXIT_FAILURE);
-#else
         std::_Exit (EXIT_FAILURE);  // skip
-#endif
     }
 }
 

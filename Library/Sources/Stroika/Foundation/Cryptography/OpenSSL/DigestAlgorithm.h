@@ -78,7 +78,6 @@ namespace   Stroika {
  */
 //#include    "DigestAlgorithm.inl"
 #if     qHasFeature_OpenSSL
-#if     !qCompilerAndStdLib_constexpr_Buggy
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
@@ -100,6 +99,5 @@ namespace Stroika {
         }
     }
 }
-#endif
 #endif
 #endif  /*_Stroika_Foundation_Cryptography_OpenSSL_DigestAlgorithm_h_*/

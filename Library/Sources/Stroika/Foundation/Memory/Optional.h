@@ -84,11 +84,8 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
-#if     !qCompilerAndStdLib_alignas_Buggy
-                    alignas(alignment_of<T>)
-#endif
-                    Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
-                    T*              fValue_ { nullptr };
+                    alignas(alignment_of<T>)    Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
+                    T*                                          fValue_ { nullptr };
 
                     StorageType ();
                     StorageType (T* p);
@@ -154,11 +151,7 @@ namespace   Stroika {
              *
              *      @todo make this a typealias when we have c++ impls with c++17 version
              */
-#if     qCompilerAndStdLib_constexpr_Buggy
-            const nullopt_t nullopt {1};
-#else
             constexpr nullopt_t nullopt {1};
-#endif
 
 
             /**
@@ -284,14 +277,8 @@ namespace   Stroika {
                  *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
                  *  derefrence and copy. Experiemental cuz could mess up type deducation of Optional<T>...
                  */
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Optional ();
-#if     !qCompilerAndStdLib_constexpr_Buggy
-                constexpr
-#endif
-                Optional (nullopt_t);
+                constexpr   Optional ();
+                constexpr   Optional (nullopt_t);
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
@@ -399,11 +386,6 @@ namespace   Stroika {
                 template    <typename   CONVERTABLE_TO_TYPE = T>
                 nonvirtual  void    CopyToIf (CONVERTABLE_TO_TYPE* to) const;
 
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-            private:
-                inline  static  T    DefaultAccumulateIfArg_ (const T& lhs, const T& rhs)            {       return lhs + rhs;       };
-#endif
-
             public:
                 /**
                  *  EXPERIEMNTAL - 2015-04-24
@@ -426,11 +408,7 @@ namespace   Stroika {
                  *
                  *      \note   ITS CONFUSING direction of iftest for this versus CopyToIf
                  */
-#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
-                nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = DefaultAccumulateIfArg_);
-#else
                 nonvirtual void     AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op = [] (T lhs, T rhs) { return lhs + rhs; });
-#endif
 
             private:
                 /*

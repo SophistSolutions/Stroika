@@ -96,32 +96,24 @@ namespace   Stroika {
                     *oi = i;
                     ++oi;
                 }
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
             template     <typename ENUM_TYPE>
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
+            inline  constexpr   EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
                 : fEnumNames_ (init)
             {
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
             template     <typename ENUM_TYPE>
             template     <size_t N>
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
+            inline  constexpr   EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
                 RequireItemsOrderedByEnumValue_ ();
 #endif
             }
@@ -146,11 +138,7 @@ namespace   Stroika {
                 return fEnumNames_.size ();
             }
             template     <typename ENUM_TYPE>
-            inline
-#if     !qCompilerAndStdLib_constexpr_Buggy
-            constexpr
-#endif
-            const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
+            inline  constexpr   const wchar_t*  EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
             {
 #if     qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 return e == ENUM_TYPE::eEND ? nullptr : fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
@@ -214,7 +202,7 @@ namespace   Stroika {
                 }
                 return *tmp;
             }
-#if     qDebug && (qCompilerAndStdLib_constexpr_Buggy || !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
+#if     qDebug && (!qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy)
             template     <typename ENUM_TYPE>
             inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {

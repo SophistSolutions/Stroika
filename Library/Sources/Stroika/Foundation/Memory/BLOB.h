@@ -289,9 +289,6 @@ namespace   Stroika {
                 nonvirtual  BLOB    operator+ (const BLOB& rhs) const;
 
             private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
                 struct  BasicRep_;
                 struct  ZeroRep_ ;
                 struct  AdoptRep_ ;
