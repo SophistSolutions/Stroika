@@ -147,7 +147,6 @@ namespace {
     public:
         virtual void  MainLoop (const std::function<void()>& startedCB) override
         {
-
             auto&& cleanup  =   Execution::Finally ([this] () {
                 Thread::SuppressInterruptionInContext   suppressSoWeActuallyShutDownOtherTaskWhenWereBeingShutDown;
                 /*
