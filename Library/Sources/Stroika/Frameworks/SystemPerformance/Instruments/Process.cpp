@@ -400,7 +400,6 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPrivateWorkingSetSize), String_Constant (L"Private-Working-Set-Size"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fTotalCPUTimeEverUsed), String_Constant (L"Total-CPUTime-Ever-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fAverageCPUTimeUsed), String_Constant (L"Average-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
-            { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fPercentCPUTime), String_Constant (L"Percent-CPUTime-Used"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fThreadCount), String_Constant (L"Thread-Count"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOReadRate), String_Constant (L"Combined-IO-Read-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
             { Stroika_Foundation_DataExchange_StructFieldMetaInfo (ProcessType, fCombinedIOWriteRate), String_Constant (L"Combined-IO-Write-Rate"), StructureFieldInfo::NullFieldHandling::eOmit },
@@ -819,7 +818,6 @@ namespace {
                         processDetails.fCombinedIOWriteRate =   (procBuf[i].outBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
                     }
                     if (p->fTotalCPUTimeEverUsed) {
-                        processDetails.fPercentCPUTime = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
                         processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                     }
                 }
@@ -1201,7 +1199,6 @@ namespace {
                         processDetails.fTotalCPUTimeEverUsed = (double (stats.utime) + double (stats.stime)) / kClockTick_;
                         if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                             if (p->fTotalCPUTimeEverUsed) {
-                                processDetails.fPercentCPUTime = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
                                 processDetails.fAverageCPUTimeUsed = (*processDetails.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                             }
                         }
@@ -2208,7 +2205,6 @@ Again:
                         processInfo.fCombinedIOWriteRate = *o;
                     }
                     if (auto o = pctProcessorTime_ByPID.Lookup (instanceVal)) {
-                        processInfo.fPercentCPUTime = *o;
                         processInfo.fAverageCPUTimeUsed = *o * 100.0;
                     }
                     if (grabStaticData) {
@@ -2218,7 +2214,7 @@ Again:
                     }
                 }
 #endif
-                if (processInfo.fCombinedIOReadRate.IsMissing () or processInfo.fCombinedIOWriteRate.IsMissing () or processInfo.fPercentCPUTime.IsMissing ()) {
+                if (processInfo.fCombinedIOReadRate.IsMissing () or processInfo.fCombinedIOWriteRate.IsMissing () or processInfo.fAverageCPUTimeUsed.IsMissing ()) {
                     if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate =   (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
@@ -2227,7 +2223,6 @@ Again:
                             processInfo.fCombinedIOWriteRate =   (*processInfo.fCombinedIOWriteBytes - *p->fCombinedIOWriteBytes) / (now - p->fCapturedAt);
                         }
                         if (p->fTotalCPUTimeEverUsed and processInfo.fTotalCPUTimeEverUsed) {
-                            processInfo.fPercentCPUTime = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) * 100.0 / (now - p->fCapturedAt);
                             processInfo.fAverageCPUTimeUsed = (*processInfo.fTotalCPUTimeEverUsed - *p->fTotalCPUTimeEverUsed) / (now - p->fCapturedAt);
                         }
                     }

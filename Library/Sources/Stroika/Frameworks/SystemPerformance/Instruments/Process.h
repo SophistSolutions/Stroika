@@ -180,14 +180,6 @@ namespace   Stroika {
                         Optional<MemorySizeType>    fPrivateWorkingSetSize;
 
                         /**
-                         *      Percent of a single CPU time used (summed over user / system) and average over this
-                         *      collection interval.
-                         *
-                         *  @deprecated as of 2016-05-17
-                         */
-                        Optional<DurationSecondsType>       fPercentCPUTime;
-
-                        /**
                          *  Average CPU time used / second over this collection interval. This when available - is logically
                          *  fTotalCPUTimeEverUsed-PREV.fTotalCPUTimeEverUsed)/measurement_time;
                          *
