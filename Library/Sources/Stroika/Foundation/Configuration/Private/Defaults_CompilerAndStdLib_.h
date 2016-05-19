@@ -511,27 +511,33 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
     The issue is really
             warning: use of this statement in a constexpr function is a C++14
     for require lines at the start of constexp functions
+
+*** FOR GCC 5.3 we get:
+troika::Foundation::Configuration::EnumNames<Stroika::Foundation::Execution::Thread::Status>::BasicArrayInitializer{std::__cxx1998::__array_traits<std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>, 5ul>::_Type{std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>{(Stroika::Foundation::Execution::Thread::Status)0u, ((const wchar_t*)"N\000\000\000u\000\000\000l\000\000\000l\000\000\000\000\000\000")}, std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>{(Stroika::Foundation::Execution::Thread::Status)1u, ((const wchar_t*)"N\000\000\000o\000\000\000t\000\000\000-\000\000\000Y\000\000\000e\000\000\000t\000\000\000-\000\000\000R\000\000\000u\000\000\000n\000\000\000n\000\000\000i\000\000\000n\000\000\000g\000\000\000\000\000\000")}, std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>{(Stroika::Foundation::Execution::Thread::Status)2u, ((const wchar_t*)"R\000\000\000u\000\000\000n\000\000\000n\000\000\000i\000\000\000n\000\000\000g\000\000\000\000\000\000")}, std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>{(Stroika::Foundation::Execution::Thread::Status)3u, ((const wchar_t*)"A\000\000\000b\000\000\000o\000\000\000r\000\000\000t\000\000\000i\000\000\000n\000\000\000g\000\000\000\000\000\000")}, std::pair<Stroika::Foundation::Execution::Thread::Status, const wchar_t*>{(Stroika::Foundation::Execution::Thread::Status)4u, ((const wchar_t*)"C\000\000\000o\000\000\000m\000\000\000p\000\000\000l\000\000\000e\000\000\000t\000\000\000e\000\000\000d\000\000\000\000\000\000")}}})’
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Configuration/../Characters/../Configuration/Enumeration.inl:108:49: error: ‘constexpr void Stroika::Foundation::Configuration::EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_() const [with ENUM_TYPE = Stroika::Foundation::Execution::Thread::Status]’ called in a constant expression
+RequireItemsOrderedByEnumValue_ ();
+^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Configuration/../Characters/../Configuration/Enumeration.inl:207:41: note: ‘constexpr void Stroika::Foundation::Configuration::EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_() const [with ENUM_TYPE = Stroika::Foundation::Execution::Thread::Status]’ is not usable as a constexpr function because:
+inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
+^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Configuration/../Characters/../Configuration/Enumeration.inl:207:41: sorry, unimplemented: unexpected AST of kind loop_expr
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Configuration/../Characters/../Configuration/Enumeration.inl:207: confused by earlier errors, bailing out
+
 */
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
-// See if this captures the issue better -- LGP 2016-05-19
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy      (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
-
-#if 0
-#if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11)
-#elif   defined (__GNUC__)
+#if     __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    1
+#elif    defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    ((__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))) || (__cplusplus <= kStrokia_Foundation_Configuration_cplusplus_11))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
-// Still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
 #endif
-#endif
+
 
 #endif
 
