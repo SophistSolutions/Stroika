@@ -57,6 +57,11 @@ namespace   Stroika {
                  */
                 struct  BootInformation {
                     Time::DateTime  fBootedAt;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
@@ -91,8 +96,20 @@ namespace   Stroika {
                      *  MHz, and cache size, and particular numerical model numbers. Possibly also add 'bogomips'?
                      */
                     struct  CoreDetails {
-                        unsigned int    fSocketID   {};         // /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
-                        String          fModelName  {};         // /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
+                        /**
+                         *  /proc/cpuinfo 'physical id' - use to tell numper of sockets. Each distinct socketID is a different socket
+                         */
+                        unsigned int    fSocketID   {};
+
+                        /**
+                         *  /proc/cpuinfo 'model name' field - a semi-standardized representation of what you want to know about a CPU chip
+                         */
+                        String          fModelName  {};
+
+                        /**
+                         *  @see Characters::ToString ();
+                         */
+                        nonvirtual  String  ToString () const;
                     };
 
                 public:
@@ -103,6 +120,12 @@ namespace   Stroika {
                      *  Note that these are 'logical cores' and may not be physical cores.
                      */
                     Containers::Sequence<CoreDetails>   fCores;
+
+                public:
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
@@ -123,6 +146,11 @@ namespace   Stroika {
                      *  Size in bytes
                      */
                     uint64_t    fTotalVirtualRAM {};
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
@@ -166,18 +194,27 @@ namespace   Stroika {
                     unsigned int    fBits { 32 };
 
                     /**
+                     *
+                     *  \note   Configuration::DefaultNames<> supported
                      */
                     enum class InstallerTechnology {
                         eRPM,
                         eMSI,
                         eDPKG,
+                        Stroika_Define_Enum_Bounds(eRPM, eDPKG)
                     };
+
                     /**
                      *  Some UNIX systems use rpm (redhat, and many others), and others use dpkg (debian based).
                      *  Windows uses MSI.
                      *  But there are a wide variety of other choices (portage, ports, etc).
                      */
                     Foundation::Memory::Optional<InstallerTechnology> fPreferedInstallerTechnology;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
@@ -193,6 +230,11 @@ namespace   Stroika {
                      *  to the result of 'gethostname' (man 2 hostname).
                      */
                     String  fHostname;
+
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual  String  ToString () const;
                 };
 
 
@@ -201,6 +243,11 @@ namespace   Stroika {
                 Memory          fMemory;
                 OperatingSystem fOperatingSystem;
                 ComputerNames   fComputerNames;
+
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual  String  ToString () const;
             };
 
 

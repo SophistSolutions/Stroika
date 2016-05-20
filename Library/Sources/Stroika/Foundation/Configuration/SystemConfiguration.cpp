@@ -20,6 +20,7 @@
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Characters/String2Int.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
 #if     qPlatform_POSIX
@@ -56,12 +57,170 @@ using   namespace   Stroika::Foundation::Time;
 
 using   Characters::String_Constant;
 using   Characters::SDKChar;
+using   Characters::StringBuilder;
 using   Memory::Byte;
 using   Memory::Optional;
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            constexpr   EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology>    DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ***************** SystemConfiguration::BootInformation *************************
+ ********************************************************************************
+ */
+String  SystemConfiguration::BootInformation::ToString () const
+{
+
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"fBootedAt: " + Characters::ToString (fBootedAt);
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+
+/*
+ ********************************************************************************
+ ***************** SystemConfiguration::CPU::CoreDetails ************************
+ ********************************************************************************
+ */
+String  SystemConfiguration::CPU::CoreDetails::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Booted-At: " + Characters::ToString (fSocketID) + L", ";
+    sb += L"Model-Name: " + Characters::ToString (fModelName);
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************** SystemConfiguration::CPU ****************************
+ ********************************************************************************
+ */
+String  SystemConfiguration::CPU::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Cores: " + Characters::ToString (fCores);
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+/*
+ ********************************************************************************
+ ************************** SystemConfiguration::Memory *************************
+ ********************************************************************************
+ */
+String  SystemConfiguration::Memory::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Page-Size: " + Characters::ToString (fPageSize) + L", ";
+    sb += L"Total-Physical-RAM: " + Characters::ToString (fTotalPhysicalRAM) + L", ";
+    sb += L"Total-Virtual-RAM: " + Characters::ToString (fTotalVirtualRAM);
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+/*
+ ********************************************************************************
+ ********************** SystemConfiguration::ComputerNames **********************
+ ********************************************************************************
+ */
+String  SystemConfiguration::ComputerNames::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Hostname: " + Characters::ToString (fHostname) + L", ";
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+/*
+ ********************************************************************************
+ ********************* SystemConfiguration::OperatingSystem *********************
+ ********************************************************************************
+ */
+String  SystemConfiguration::OperatingSystem::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Token-Name: " + Characters::ToString (fTokenName) + L", ";
+    sb += L"Short-Pretty-Name: " + Characters::ToString (fShortPrettyName) + L", ";
+    sb += L"Pretty-Name-With-Major-Version: " + Characters::ToString (fPrettyNameWithMajorVersion) + L", ";
+    sb += L"Major-Minor-Version-String: " + Characters::ToString (fMajorMinorVersionString) + L", ";
+    sb += L"RFC1945-Compat-Product-Token-With-Version: " + Characters::ToString (fRFC1945CompatProductTokenWithVersion) + L", ";
+    sb += L"fBits: " + Characters::ToString (fBits) + L", ";
+    if (fPreferedInstallerTechnology) {
+        sb += L"Prefered-Installer-Technology: " + Characters::ToString (*fPreferedInstallerTechnology) + L", ";
+    }
+    sb += L"fShortPrettyName: " + Characters::ToString (fShortPrettyName) + L", ";
+    sb += L"}";
+    return sb.str ();
+};
+
+
+
+/*
+ ********************************************************************************
+ ******************************* SystemConfiguration ****************************
+ ********************************************************************************
+ */
+String  SystemConfiguration::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    sb += L"Boot-Information: " + Characters::ToString (fBootInformation) + L", ";
+    sb += L"CPU: " + Characters::ToString (fCPU) + L", ";
+    sb += L"Memory: " + Characters::ToString (fMemory) + L", ";
+    sb += L"Operating-System: " + Characters::ToString (fOperatingSystem) + L", ";
+    sb += L"Computer-Names: " + Characters::ToString (fComputerNames) + L", ";
+    sb += L"}";
+    return sb.str ();
+};
+
+
 
 
 
