@@ -22,7 +22,51 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a143">v2.0a143x</a><br/>2016-05-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Quick (ish) release with small fixes, and modest testing</li>
+		<li>DEPRECATED DEFINE_CONSTEXPR_CONSTANT</li>
+		<li>Configuration::SystemConfiguration
+			<ul>
+				<li>Fixed windows and Linux Configuration::GetSystemConfiguration_CPU () - to return right # logical and physical (socket) cores</li>
+				<li>Linux (embedded old linux) fix so returns right number of logical cores</li>
+				<li>ToString support, and added to regtest so does toString of result</li>
+			</ul>
+		</li>
+		<li>Lose all support for VisualStudio.Net-2013
+			<ul>
+				<li>Lose all project files</li>
+				<li>Lose version defines (_MS_VS_2k13_VER_, _MS_VS_2k13_FULLVER_, _MS_VS_2k13_Update1_FULLVER_ etc)</li>
+				<li>Lose all bug defines (and their workarounds) that ONLY applied to VS2k13
+					<ul>
+						<li>qCompilerAndStdLib_LocaleTM_time_put_crash_sometimes_Buggy</li>
+						<li>qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy</li>
+						<li>qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy</li>
+						<li>qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy</li>
+						<li>qCompilerAndStdLib_StdExitBuggy</li>
+						<li>qCompilerAndStdLib_alignas_Buggy</li>
+						<li>qCompilerAndStdLib_constexpr_Buggy</li>
+						<li>qCompilerAndStdLib_const_Array_Init_wo_UserDefined_Buggy</li>
+						<li>qCompilerAndStdLib_strtof_NAN_ETC_Buggy</li>
+						<li>qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy</li>
+						<li>qCompilerAndStdLib_noexcept_Buggy</li>
+						<li>qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy</li>
+						<li>qCompilerAndStdLib_StaticCastInvokesExplicitConversionOperator_Buggy</li>
+						<li>qCompilerAndStdLib_hasEqualDoesntMatchStrongEnums_Buggy</li>
+						<li>qCompilerAndStdLib_thread_local_keyword_Buggy</li>
+						<li>qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug</li>
+						<li>qCompilerAndStdLib_stdinitializer_of_double_in_ranged_for_Bug</li>
+						<li>qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy</li>
+						<li>qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy</li>
+						<li>qCompilerAndStdLib_DefaultedAssignementOpOfRValueReference_Buggy</li>
+						<li>qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy</li>
+						<li>qCompilerAndStdLib_noexcept_Buggy</li>
+						<li>qCompilerAndStdLib_constexpr_Buggy</li>
+						<li>qCompilerAndStdLib_thread_local_keyword_Buggy</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>updated building Stroika docs</li>
+		<li>Lose deprecated Frameworks/SystemPerformance/Instruments/Process fPercentCPUTime</li>
 	</ul>
 </td>
 </tr>
