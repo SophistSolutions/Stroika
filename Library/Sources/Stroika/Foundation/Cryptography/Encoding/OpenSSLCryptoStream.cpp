@@ -101,7 +101,7 @@ namespace {
 #if     qHasFeature_OpenSSL
 class   OpenSSLInputStream::IRep_ : public InputStream<Byte>::_IRep, private InOutStrmCommon_ {
 private:
-    DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
+                static  constexpr size_t    kInBufSize_ = 10 * 1024;
 
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, Direction d, const InputStream<Byte>& realIn)
