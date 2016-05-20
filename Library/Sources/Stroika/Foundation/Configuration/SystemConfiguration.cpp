@@ -729,7 +729,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             }
         }
         if (currentProcessorID) {
-            String  useModelName = useModelName.Value ();
+            String  useModelName = foundProcessor.Value ();
             currentModelName.CopyToIf (&useModelName);  // currentModelName takes precedence but I doubt both present
             result.fCores.Append (CPU::CoreDetails { currentSocketID.Value (), useModelName });
         }
