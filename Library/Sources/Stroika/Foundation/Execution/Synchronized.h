@@ -125,6 +125,22 @@ namespace   Stroika {
              *      \code
              *      Synchronized<String,Synchronized_Traits<timed_recursive_mutex>> n;
              *      \endcode
+             *
+             *  or to read-modify-update in place
+             *      \code
+             *      //nb: lock lasts til end of enclosing scope
+             *      auto    lockedConfigData = fConfig_.get ();
+             *      lockedConfigData->SomeValueChanged = 1;
+             *      \endcode
+             *
+             *  or to read-modify-update with explicit temporary
+             *      \code
+             *      //nb: lock lasts til end of enclosing scope
+             *      auto    lockedConfigData = fConfig_.get ();
+             *      T       value = lockedConfigData;
+             *      value.SomeValueChanged = 1;
+             *      lockedConfigData.store (value);
+             *      \endcode
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
