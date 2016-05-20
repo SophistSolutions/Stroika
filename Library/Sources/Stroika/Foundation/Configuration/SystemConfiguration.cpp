@@ -21,6 +21,7 @@
 #include    "../Characters/StringBuilder.h"
 #include    "../Characters/String2Int.h"
 #include    "../Characters/StringBuilder.h"
+#include    "../Characters/ToString.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
 #if     qPlatform_POSIX
@@ -113,16 +114,16 @@ String  SystemConfiguration::BootInformation::ToString () const
  ***************** SystemConfiguration::CPU::CoreDetails ************************
  ********************************************************************************
  */
+
 String  SystemConfiguration::CPU::CoreDetails::ToString () const
 {
     StringBuilder sb;
     sb += L"{";
-    sb += L"Booted-At: " + Characters::ToString (fSocketID) + L", ";
+    sb += L"Socket-ID: " + Characters::ToString (fSocketID) + L", ";
     sb += L"Model-Name: " + Characters::ToString (fModelName);
     sb += L"}";
     return sb.str ();
-};
-
+}
 
 
 
@@ -470,7 +471,6 @@ unsigned int    SystemConfiguration::CPU::GetNumberOfSockets () const
  ************* Configuration::GetSystemConfiguration_BootInformation ************
  ********************************************************************************
  */
-
 SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootInformation ()
 {
     SystemConfiguration::BootInformation    result;
@@ -544,6 +544,8 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
  */
 SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 {
+    // @todo - basically all these implementations assume same # logical cores per physical CPU socket
+    // @todo - no API to capture (maybe not useful) # physical cores
     using CPU = SystemConfiguration::CPU;
     CPU result;
 #if     qPlatform_AIX
@@ -716,15 +718,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             if (line.Trim ().empty ()) {
                 // ends each socket
                 if (currentProcessorID) {
-                    CPU::CoreDetails    coreDetails;
-                    coreDetails.fSocketID = currentSocketID.Value ();
-                    if (foundProcessor) {
-                        coreDetails.fModelName = *foundProcessor;
-                    }
-                    if (currentModelName) { // currentModelName takes precedence but I doubt both present
-                        coreDetails.fModelName = *currentModelName;
-                    }
-                    result.fCores.Append (coreDetails);
+                    String  useModelName = useModelName.Value ();
+                    currentModelName.CopyToIf (&useModelName);  // currentModelName takes precedence but I doubt both present
+                    result.fCores.Append (CPU::CoreDetails { currentSocketID.Value (), useModelName });
                 }
                 // intentionally dont clear foundProcessor cuz occurs once it appears
                 currentProcessorID.clear ();
@@ -733,56 +729,111 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             }
         }
         if (currentProcessorID) {
-            CPU::CoreDetails    coreDetails;
-            coreDetails.fSocketID = currentSocketID.Value ();
-            if (foundProcessor) {
-                coreDetails.fModelName = *foundProcessor;
-            }
-            if (currentModelName) { // currentModelName takes precedence but I doubt both present
-                coreDetails.fModelName = *currentModelName;
-            }
-            result.fCores.Append (coreDetails);
+            String  useModelName = useModelName.Value ();
+            currentModelName.CopyToIf (&useModelName);  // currentModelName takes precedence but I doubt both present
+            result.fCores.Append (CPU::CoreDetails { currentSocketID.Value (), useModelName });
         }
     }
 #elif   qPlatform_Windows
-    SYSTEM_INFO sysInfo;        // GetNativeSystemInfo cannot fail so no need to initialize data
-    ::GetNativeSystemInfo (&sysInfo);
-    //unclear if this is count of logical or physical cores, or how to compute the other.
-    //@todo - fix as above for POSIX... maybe ask Sterl? But for now KISS
-    //
-    // Can use https://msdn.microsoft.com/en-us/library/hskdteyh%28v=vs.90%29.aspx?f=255&MSPPError=-2147217396
-    //  __cpuid
-    // to find this information (at least modelname string.
-    //
+    /*
+     *  Based on https://msdn.microsoft.com/en-us/library/ms683194?f=255&MSPPError=-2147217396
+     *
+     *  I deleted code to capture NUMA nodes, and processor caches, and dont currently use number of physical cores, but could
+     *  get that from original code.
+     */
+    DWORD logicalProcessorCount = 0;
+    DWORD processorCoreCount = 0;
+    DWORD processorPackageCount = 0;
+    {
+        auto countSetBits = []  (ULONG_PTR bitMask) -> DWORD {
+            DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+            DWORD bitSetCount = 0;
+            ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
+            for (DWORD i = 0; i <= LSHIFT; ++i)
+            {
+                bitSetCount += ((bitMask & bitTest) ? 1 : 0);
+                bitTest /= 2;
+            }
+            return bitSetCount;
+        };
+        typedef BOOL (WINAPI * LPFN_GLPI)(PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD);
+        LPFN_GLPI glpi = (LPFN_GLPI) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "GetLogicalProcessorInformation");
+        AssertNotNull (glpi);   // assume at least OS WinXP...
+        Memory::SmallStackBuffer<Byte>  buffer (sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        DWORD   returnLength = 0;
+        while (true) {
+            DWORD   rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
+            if (FALSE == rc) {
+                if (GetLastError () == ERROR_INSUFFICIENT_BUFFER) {
+                    buffer.GrowToSize (returnLength);
+                }
+                else {
+                    Execution::Platform::Windows::ThrowIfNot_NO_ERROR (rc);
+                }
+            }
+            else {
+                break;
+            }
+        }
+        PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ());
+        DWORD byteOffset = 0;
+        while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength) {
+            switch (ptr->Relationship) {
+                case RelationNumaNode:
+                    break;
+                case RelationProcessorCore:
+                    processorCoreCount++;
+                    // A hyperthreaded core supplies more than one logical processor.
+                    logicalProcessorCount += countSetBits (ptr->ProcessorMask);
+                    break;
+                case RelationCache:
+                    break;
+                case RelationProcessorPackage:
+                    // Logical processors share a physical package.
+                    processorPackageCount++;
+                    break;
+                default:
+                    DbgTrace ("Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
+                    break;
+            }
+            byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+            ptr++;
+        }
+    }
 
     static  const   String  kProcessorType_ = [] () {
-        int CPUInfo[4] = { -1};
+        int CPUInfo[4] = { -1 };
         char CPUBrandString[0x40];
         // Get the information associated with each extended ID.
-        __cpuid (CPUInfo, 0x80000000);
+        ::__cpuid (CPUInfo, 0x80000000);
         uint32_t nExIds = CPUInfo[0];
         for (uint32_t i = 0x80000000; i <= nExIds; ++i)  {
-            __cpuid (CPUInfo, i);
+            ::__cpuid (CPUInfo, i);
             // Interpret CPU brand string
             if  (i == 0x80000002)
-                memcpy (CPUBrandString, CPUInfo, sizeof(CPUInfo));
+                (void)::memcpy (CPUBrandString, CPUInfo, sizeof(CPUInfo));
             else if  (i == 0x80000003)
-                memcpy (CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
+                (void)::memcpy (CPUBrandString + 16, CPUInfo, sizeof(CPUInfo));
             else if  (i == 0x80000004)
-                memcpy (CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
+                (void)::memcpy (CPUBrandString + 32, CPUInfo, sizeof(CPUInfo));
         }
         return String::FromAscii (CPUBrandString);
     } ();
 
-    for (DWORD i = 0; i < sysInfo.dwNumberOfProcessors; ++i) {
-        // @todo understand if MSFT compiler bug or my confusion that since we have object wtih initializers why cannot use
-        // aggregate uninform initialization?
-        CPU::CoreDetails    tmp;
-        tmp.fSocketID = static_cast<unsigned int> (i);
-        tmp.fModelName = kProcessorType_;
-        result.fCores.Append (tmp);
-        //result.fCores.Append (CPU::CoreDetails { static_cast<unsigned int> (i), kProcessorType_ });
+#if     qDebug
+    {
+        SYSTEM_INFO     sysInfo {};        // GetNativeSystemInfo cannot fail so no need to initialize data
+        ::GetNativeSystemInfo (&sysInfo);
+        Assert (sysInfo.dwNumberOfProcessors == logicalProcessorCount);
     }
+#endif
+    for (unsigned int socketNum = 0; socketNum < processorPackageCount; ++socketNum) {
+        unsigned int    logProcessorsPerSocket      =   logicalProcessorCount / processorPackageCount;
+        for (DWORD i = 0; i < logProcessorsPerSocket; ++i) {
+            result.fCores.Append (CPU::CoreDetails { socketNum, kProcessorType_ });
+        }
+    }
+
 #endif
     return result;
 }
@@ -1266,7 +1317,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
             LPFN_ISWOW64PROCESS fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
             if (NULL != fnIsWow64Process) {
                 BOOL    isWOW64 = false;
-                (void)fnIsWow64Process (GetCurrentProcess(), &isWOW64);
+                (void)fnIsWow64Process (::GetCurrentProcess (), &isWOW64);
                 if (isWOW64) {
                     tmp.fBits = 64;
                 }

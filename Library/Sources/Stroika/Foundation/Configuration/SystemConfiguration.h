@@ -25,9 +25,6 @@
  *              but we could use a placeholder for #physical cores, maybe. MSFT has this. Not sure its sueful. Document
  *              why/why not depnding on what we decide.
  *
- *      @todo   Quite incomplete, but hopefully usable implementation. Implment the rest of the attributes provided.
- *              some using linux /procfs, etc.
- *
  *      @todo   Review API provide, and document relationship with sysconf/etc (idea is simpler, and a bit more portable,
  *              but just subset).
  *
@@ -107,6 +104,10 @@ namespace   Stroika {
                         String          fModelName  {};
 
                         /**
+                         */
+                        CoreDetails (unsigned int socketID = {}, const String& modelName = String {});
+
+                        /**
                          *  @see Characters::ToString ();
                          */
                         nonvirtual  String  ToString () const;
@@ -117,7 +118,8 @@ namespace   Stroika {
                      *  A computer may have multiple CPUCores, and in principle they can differ.
                      *  The number of filled 'cpu sockets' is fCPUs.length ().
                      *
-                     *  Note that these are 'logical cores' and may not be physical cores.
+                     *  \note These are 'logical cores' and may not be physical cores.
+                     *  \note We have no way to capture physical cores (per socket). Not sure that is helpful/needed.
                      */
                     Containers::Sequence<CoreDetails>   fCores;
 

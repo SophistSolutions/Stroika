@@ -15,6 +15,17 @@ namespace   Stroika {
         namespace   Configuration {
 
 
+            /*
+             ********************************************************************************
+             **************** SystemConfiguration::CPU::CoreDetails *************************
+             ********************************************************************************
+             */
+            inline  SystemConfiguration::CPU::CoreDetails::CoreDetails (unsigned int socketID, const String& modelName)
+                : fSocketID (socketID)
+                , fModelName (modelName)
+            {
+            }
+
 
             /*
              ********************************************************************************
