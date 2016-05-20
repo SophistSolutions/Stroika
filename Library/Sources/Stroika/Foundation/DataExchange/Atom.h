@@ -46,7 +46,7 @@ namespace   Stroika {
              */
             struct  AtomManager_Default {
                 typedef ptrdiff_t   AtomInternalType;
-                DEFINE_CONSTEXPR_CONSTANT (AtomInternalType, kEmpty, -1);
+                static  constexpr AtomInternalType    kEmpty = -1;
                 static  AtomInternalType    Intern (const String& s);
                 static  String              Extract (AtomInternalType atomI);
             };
@@ -91,7 +91,7 @@ namespace   Stroika {
              *      This fits perfectly. You can use:
              *          struct  AtomManager_Concepts {
              *              typedef ConceptKey  AtomInternalType;
-             *              DEFINE_CONSTEXPR_CONSTANT (Concept, kEmpty, ConceptKey());
+             *              static  constexpr Concept    kEmpty = ConceptKey();
              *              static  AtomInternalType    Intern (const String& s);
              *              static  String  Extract (AtomInternalType atomI);
              *          };

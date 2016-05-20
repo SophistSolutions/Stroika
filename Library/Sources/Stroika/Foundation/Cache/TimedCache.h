@@ -109,7 +109,7 @@ namespace   Stroika {
 #else
                     using   StatsType   =   Stats_Null;
 #endif
-                    DEFINE_CONSTEXPR_CONSTANT(bool, kTrackReadAccess, TRACK_READ_ACCESS)
+                    static  constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
 
                     /**
                      */

@@ -57,7 +57,7 @@ namespace   Stroika {
 
                     /**
                      */
-                    DEFINE_CONSTEXPR_CONSTANT(Bijection_InjectivityViolationPolicy, InjectivityViolationPolicy, Bijection_InjectivityViolationPolicy::eAssertionError);
+                    static  constexpr Bijection_InjectivityViolationPolicy    InjectivityViolationPolicy = Bijection_InjectivityViolationPolicy::eAssertionError;
                 };
 
 

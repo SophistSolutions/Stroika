@@ -89,7 +89,7 @@ namespace   Stroika {
                     DataStructureImplType_      fData_;
 
                 private:
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
+                    static  constexpr size_t    kNotFound_ = (size_t) - 1;
 
                     nonvirtual  size_t  Find_ (CountedValue<T>& item) const;
 

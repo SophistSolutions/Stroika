@@ -31,7 +31,7 @@ namespace   Stroika {
 
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                     struct BufferedStringRepBlock_ {
-                        DEFINE_CONSTEXPR_CONSTANT (size_t, kNElts, 16);
+                        static  constexpr size_t    kNElts = 16;
                         wchar_t data[kNElts];
                     };
 #endif

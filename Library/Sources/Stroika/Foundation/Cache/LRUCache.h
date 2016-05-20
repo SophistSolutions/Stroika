@@ -90,9 +90,9 @@ namespace   Stroika {
                     /**
                      *  HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
                      */
-                    DEFINE_CONSTEXPR_CONSTANT(size_t, kHashTableSize, HASH_TABLE_SIZE);
+                    static  constexpr size_t kHashTableSize = HASH_TABLE_SIZE;
 
-                    static_assert (HASH_TABLE_SIZE >= 1, "HASH_TABLE_SIZE template parameter must be >= 1");
+                    static_assert (kHashTableSize >= 1, "HASH_TABLE_SIZE template parameter must be >= 1");
 
 
                     //tmphack - SHOUDL do smarter defaults!!!!

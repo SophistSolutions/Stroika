@@ -52,10 +52,9 @@ namespace   {
 
     public:
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-        DEFINE_CONSTEXPR_CONSTANT (size_t, kOptimizedForStringsLenLessOrEqualTo, Concrete::Private::BufferedStringRepBlock_::kNElts);
-
+        static  constexpr size_t kOptimizedForStringsLenLessOrEqualTo = Concrete::Private::BufferedStringRepBlock_::kNElts;
 #else
-        DEFINE_CONSTEXPR_CONSTANT (size_t, kOptimizedForStringsLenLessOrEqualTo, 0);
+        static  constexpr size_t kOptimizedForStringsLenLessOrEqualTo = 0;
 #endif
 
     public:
