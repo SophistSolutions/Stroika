@@ -4,8 +4,10 @@
 //  TEST    Foundation::Configuration
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Configuration/Endian.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
+#include    "Stroika/Foundation/Configuration/SystemConfiguration.h"
 #include    "Stroika/Foundation/Configuration/Version.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -88,12 +90,31 @@ namespace   {
 }
 
 
+
+
+
+namespace   {
+    namespace Test4_SystemConfigruation_ {
+        void    DoAll ()
+        {
+            using   namespace Configuration;
+            SystemConfiguration sc = GetSystemConfiguration ();
+            DbgTrace (L"systemConfig=%s", Characters::ToString (sc).c_str ());
+        }
+    }
+}
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Version_ ();
         Test2_EnumNames_ ();
         Test3_Endian_ ();
+        Test4_SystemConfigruation_::DoAll ();
     }
 }
 
