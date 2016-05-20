@@ -57,6 +57,7 @@ using   namespace   Stroika::Foundation::Time;
 using   Characters::String_Constant;
 using   Characters::SDKChar;
 using   Memory::Byte;
+using   Memory::Optional;
 
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -442,31 +443,145 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         using   Streams::TextReader;
         using   IO::FileSystem::FileInputStream;
         using   Characters::String2Int;
-        const   String_Constant kProcCPUInfoFileName_ { L"/proc/cpuinfo" };
-
-        CPU::CoreDetails    coreDetails;
+        const   String_Constant kProcCPUInfoFileName_{ L"/proc/cpuinfo" };
+        /*
+        * Example 1:
+        *
+        *       #uname -a && cat /proc/cpuinfo
+        *       Linux lewis-UbuntuDevVM3 3.19.0-58-generic #64-Ubuntu SMP Thu Mar 17 18:30:04 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+        *       processor   : 0
+        *       vendor_id   : GenuineIntel
+        *       cpu family  : 6
+        *       model       : 60
+        *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+        *       stepping    : 3
+        *       cpu MHz     : 2793.309
+        *       cache size  : 6144 KB
+        *       physical id : 0
+        *       siblings    : 2
+        *       core id     : 0
+        *       cpu cores   : 2
+        *       apicid      : 0
+        *       initial apicid  : 0
+        *       fpu     : yes
+        *       fpu_exception   : yes
+        *       cpuid level : 13
+        *       wp      : yes
+        *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
+        *       bugs        :
+        *       bogomips    : 5586.61
+        *       clflush size    : 64
+        *       cache_alignment : 64
+        *       address sizes   : 39 bits physical, 48 bits virtual
+        *       power management:
+        *
+        *       processor   : 1
+        *       vendor_id   : GenuineIntel
+        *       cpu family  : 6
+        *       model       : 60
+        *       model name  : Intel(R) Core(TM) i7-4810MQ CPU @ 2.80GHz
+        *       stepping    : 3
+        *       cpu MHz     : 2793.309
+        *       cache size  : 6144 KB
+        *       physical id : 0
+        *       siblings    : 2
+        *       core id     : 1
+        *       cpu cores   : 2
+        *       apicid      : 1
+        *       initial apicid  : 1
+        *       fpu     : yes
+        *       fpu_exception   : yes
+        *       cpuid level : 13
+        *       wp      : yes
+        *       flags       : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 movbe popcnt aes xsave avx rdrand lahf_lm abm
+        *       bugs        :
+        *       bogomips    : 5586.61
+        *       clflush size    : 64
+        *       cache_alignment : 64
+        *       address sizes   : 39 bits physical, 48 bits virtual
+        *       power management:
+        *
+        * Example 2:
+        *
+        *       root@q7imx6:/opt/BLKQCL# uname -a
+        *       Linux q7imx6 3.0.35.Q7_IMX6-14.03.01 #2 SMP PREEMPT Thu May 5 01:12:05 UTC 2016 armv7l GNU/Linux
+        *       root@q7imx6:/opt/BLKQCL# cat /proc/cpuinfo
+        *       Processor       : ARMv7 Processor rev 10 (v7l)
+        *       processor       : 0
+        *       BogoMIPS        : 1988.28
+        *
+        *       processor       : 1
+        *       BogoMIPS        : 1988.28
+        *
+        *       Features        : swp half thumb fastmult vfp edsp neon vfpv3
+        *       CPU implementer : 0x41
+        *       CPU architecture: 7
+        *       CPU variant     : 0x2
+        *       CPU part        : 0xc09
+        *       CPU revision    : 10
+        *
+        *       Hardware        : MSC Q7-IMX6 Module
+        *       Revision        : 63000
+        *       Serial          : 0000000000000000
+        */
         // Note - /procfs files always unseekable
+        Optional<String>        foundProcessor;
+        Optional<unsigned int>  currentProcessorID;
+        Optional<String>        currentModelName;
+        Optional<unsigned int>  currentSocketID;
         for (String line : TextReader (FileInputStream::mk (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
-            static  const   String_Constant kModelNameLabel_ { L"model name	: " };
-            //static    const   String_Constant kProcessorIDLabel_ { L"processor    : " };
-            static  const   String_Constant kSocketIDLabel_ { L"physical id	: " };          // a bit of a guess?
-            if (line.StartsWith (kModelNameLabel_)) {
-                coreDetails.fModelName = line.SubString (kModelNameLabel_.length ()).Trim ();
-            }
-            else if (line.StartsWith (kSocketIDLabel_)) {
-                unsigned int socketID = String2Int<unsigned int> (line.SubString (kSocketIDLabel_.length ()).Trim ());
-                coreDetails.fSocketID = socketID;
+            static  const   String_Constant kOldProcessorLabel_ { L"Processor" };
+            static  const   String_Constant kProcessorIDLabel_{ L"processor" };
+            static  const   String_Constant kModelNameLabel_{ L"model name" };
+            static  const   String_Constant kSocketIDLabel_{ L"physical id" };          // a bit of a guess?
+            Sequence<String> lineTokens = line.Tokenize (Set<Character> { ':' });
+            if (not lineTokens.empty ()) {
+                String  firstTrimedToken = lineTokens[0].Trim ();
+                size_t  afterColon = line.Find (':') + 1;
+                if (firstTrimedToken == kOldProcessorLabel_) {
+                    foundProcessor = line.SubString (afterColon).Trim ();
+                }
+                else if (firstTrimedToken == kProcessorIDLabel_) {
+                    currentProcessorID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                }
+                else if (firstTrimedToken == kModelNameLabel_) {
+                    currentModelName = line.SubString (afterColon).Trim ();
+                }
+                else if (firstTrimedToken == kSocketIDLabel_) {
+                    currentSocketID = String2Int<unsigned int> (line.SubString (afterColon).Trim ());
+                }
             }
             if (line.Trim ().empty ()) {
                 // ends each socket
-                result.fCores.Append (coreDetails);
-                coreDetails = CPU::CoreDetails ();
+                if (currentProcessorID) {
+                    CPU::CoreDetails    coreDetails;
+                    coreDetails.fSocketID = currentSocketID.Value ();
+                    if (foundProcessor) {
+                        coreDetails.fModelName = *foundProcessor;
+                    }
+                    if (currentModelName) { // currentModelName takes precedence but I doubt both present
+                        coreDetails.fModelName = *currentModelName;
+                    }
+                    result.fCores.Append (coreDetails);
+                }
+                // intentionally dont clear foundProcessor cuz occurs once it appears
+                currentProcessorID.clear ();
+                currentModelName.clear ();
+                currentSocketID.clear ();
             }
         }
-        if (coreDetails.fSocketID != 0 or not coreDetails.fModelName.empty ()) {
+        if (currentProcessorID) {
+            CPU::CoreDetails    coreDetails;
+            coreDetails.fSocketID = currentSocketID.Value ();
+            if (foundProcessor) {
+                coreDetails.fModelName = *foundProcessor;
+            }
+            if (currentModelName) { // currentModelName takes precedence but I doubt both present
+                coreDetails.fModelName = *currentModelName;
+            }
             result.fCores.Append (coreDetails);
         }
     }
