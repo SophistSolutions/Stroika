@@ -95,10 +95,9 @@ namespace   Stroika {
                             eSuspended,         //  T is traced or stopped (on a signal)
                             Stroika_Define_Enum_Bounds(eRunning, eSuspended)
                         };
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-                        static  const Configuration::EnumNames<RunStatus>   Stroika_Enum_Names(RunStatus);
-#endif
 
+                        /**
+                         */
                         Optional<RunStatus>         fRunStatus;
 
                         /**

@@ -317,9 +317,6 @@ namespace   Stroika {
     }
 }
 
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-const EnumNames<ProcessType::RunStatus>   ProcessType::Stroika_Enum_Names(RunStatus)    =   DefaultNames<ProcessType::RunStatus>::k;
-#endif
 
 
 

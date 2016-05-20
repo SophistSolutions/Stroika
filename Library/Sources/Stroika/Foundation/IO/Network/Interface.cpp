@@ -98,19 +98,6 @@ namespace   Stroika {
 
 
 
-/*
- ********************************************************************************
- **************************** Network::Interface ********************************
- ********************************************************************************
- */
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-const Configuration::EnumNames<Interface::Status>   Interface::Stroika_Enum_Names(Status) = Configuration::DefaultNames<Interface::Status>::k;
-
-const Configuration::EnumNames<Interface::Type>   Interface::Stroika_Enum_Names(Type) = Configuration::DefaultNames<Interface::Type>::k;
-#endif
-
-
-
 #if     qPlatform_Linux
 // Hack for centos5 support:
 //      Overload with linux version so other one wins, but this gets called if other doesnt exist

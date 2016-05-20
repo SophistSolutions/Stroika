@@ -112,21 +112,6 @@ namespace   Stroika {
                                             eCOUNT      =   eEND - eSTART,
 
 
-            /**
-             *  \def Stroika_Enum_Names
-             *
-             *  \note   DEPRECATED - Configuration::DefaultNames<ENUMNAME> instead!!!
-             */
-// NB: Stroika itself works fine either way, but for legacy code using Stroika_Enum_Names() leave this around for one release...
-//#define qSUPPORT_LEGACY_Stroika_Enum_Names   0
-#ifndef qSUPPORT_LEGACY_Stroika_Enum_Names
-#define qSUPPORT_LEGACY_Stroika_Enum_Names   1
-#endif
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-#define Stroika_Enum_Names(ENUMNAME)\
-    ENUMNAME##_EnumNames
-#endif
-
 
             /**
              */

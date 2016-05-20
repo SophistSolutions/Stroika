@@ -29,19 +29,6 @@ namespace   Stroika {
             {
                 return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
             }
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-            constexpr   Configuration::EnumNames<FileAccessMode>    Stroika_Enum_Names(FileAccessMode)
-            {
-                Configuration::EnumNames<FileAccessMode>::BasicArrayInitializer {
-                    {
-                        { FileAccessMode::eNoAccess, L"No-Access" },
-                        { FileAccessMode::eRead, L"Read" },
-                        { FileAccessMode::eWrite, L"Write" },
-                        { FileAccessMode::eReadWrite, L"Read-Write" },
-                    }
-                }
-            };
-#endif
 
 
         }

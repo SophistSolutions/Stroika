@@ -87,24 +87,6 @@ namespace   Stroika {
                     };
 
 
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-                    // @todo OBSOLETE - DEPRECATE SOON
-                    constexpr   Configuration::EnumNames<BlockDeviceKind>    Stroika_Enum_Names(BlockDeviceKind)
-                    {
-                        Configuration::EnumNames<BlockDeviceKind>::BasicArrayInitializer {
-                            {
-                                { BlockDeviceKind::eRemovableDisk, L"Removable-Disk" },
-                                { BlockDeviceKind::eLocalDisk, L"Local-Disk" },
-                                { BlockDeviceKind::eNetworkDrive, L"Network-Drive" },
-                                { BlockDeviceKind::eTemporaryFiles, L"Temporary-Files" },
-                                { BlockDeviceKind::eReadOnlyEjectable, L"Read-Only-Ejectable" },
-                                { BlockDeviceKind::eSystemInformation, L"System-Information" },
-                            }
-                        }
-                    };
-#endif
-
-
                     /**
                      *  IOStats represents the # of bytes (fBytesTransfered) and total number of transfers
                      *  (fTotalTransfers) during the given capture interval. It is NOT cummulative.

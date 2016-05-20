@@ -65,18 +65,6 @@ namespace   Stroika {
 
                 Stroika_Define_Enum_Bounds(eOpen, eClosed)
             };
-#if     qSUPPORT_LEGACY_Stroika_Enum_Names
-            // @todo Stroika_Enum_Names(Openness) probably to be obsoleted by Configuration::DefaultNames<>
-            constexpr   Configuration::EnumNames<Openness>    Stroika_Enum_Names(Openness)
-            {
-                Configuration::EnumNames<Openness>::BasicArrayInitializer {
-                    {
-                        { Openness::eOpen, L"Open" },
-                        { Openness::eClosed, L"Closed" },
-                    }
-                }
-            };
-#endif
 
 
             /**
