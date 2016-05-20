@@ -228,7 +228,7 @@ namespace {
                 catch (const HTTP::Exception& e) {
                     if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout) {
                         // Ignore/Eat
-                        DbgTrace (L"Ingored");
+                        DbgTrace (L"Ignored");
                     }
                     else {
                         Execution::ReThrow ();
