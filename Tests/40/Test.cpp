@@ -211,16 +211,28 @@ namespace {
             }
             void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
-                {
-                    T1_httpbin_SimpleGET_ (factory ());
-                    T2_httpbin_SimplePOST_ (factory ());
+                // Ignore some server-side errors, because this service we use (http://httpbin.org/) sometimes fails
+                try {
+                    {
+                        T1_httpbin_SimpleGET_ (factory ());
+                        T2_httpbin_SimplePOST_ (factory ());
+                    }
+                    {
+                        // Connection re-use
+                        Connection conn = factory ();
+                        T1_httpbin_SimpleGET_ (conn);
+                        T2_httpbin_SimplePOST_ (conn);
+                        T3_httpbin_SimplePUT_ (conn);
+                    }
                 }
-                {
-                    // Connection re-use
-                    Connection conn = factory ();
-                    T1_httpbin_SimpleGET_ (conn);
-                    T2_httpbin_SimplePOST_ (conn);
-                    T3_httpbin_SimplePUT_ (conn);
+                catch (const HTTP::Exception& e) {
+                    if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout) {
+                        // Ignore/Eat
+                        DbgTrace (L"Ingored");
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
                 }
             }
         }
