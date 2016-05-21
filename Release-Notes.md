@@ -19,7 +19,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a143">v2.0a143x</a><br/>2016-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a143">v2.0a143</a><br/>2016-05-20</td>
 <td>
 	<ul>
 		<li>Quick (ish) release with small fixes, and modest testing</li>
@@ -67,6 +67,18 @@ History
 		</li>
 		<li>updated building Stroika docs</li>
 		<li>Lose deprecated Frameworks/SystemPerformance/Instruments/Process fPercentCPUTime</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck only; helgrind still broken)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
