@@ -210,7 +210,13 @@ namespace {
             MBAPHeaderIsh_  requestHeader {};
             size_t  n   =   in.ReadAll (reinterpret_cast<Byte*> (&requestHeader), reinterpret_cast<Byte*> (&requestHeader + 1));
             if (n != sizeof (requestHeader)) {
-                return; //  if not zero should log error - and maybe throw/return /send to remote side error code?
+                if (n == 0) {
+                    break;  // just EOF
+                }
+                else {
+                    // Bad packet - incomplete header - so closing connection
+                    return; // NEED TO LOG ERROR
+                }
             }
             requestHeader = FromNetwork_ (requestHeader);
 
@@ -343,8 +349,16 @@ namespace {
                     }
                     break;
                 default: {
-                        DbgTrace (L"UNREGONIZED FunctionCode SO CLOSING CONNECTION");
-                        return; //  should log error - and maybe throw/return /send to remote side error code?
+                        DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - so echo ILLEGAL_FUNCTION code");
+                        MBAPHeaderIsh_ responseHeader   =   requestHeader;
+                        responseHeader.fFunctionCode |= 0x80;   // set high bit
+                        MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (responseHeader);
+                        out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                        uint8_t    exceptionCode    =   static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
+                        out.Write (reinterpret_cast<const Byte*> (&exceptionCode), reinterpret_cast<const Byte*> (&exceptionCode + 1));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"Sent UNREGONIZED_FUNCTION response: header=%s, and exceptionCode=%d", Characters::ToString (responseHeader).c_str (), exceptionCode);
+#endif
                     }
             }
             out.Flush ();   // since buffering output, be sure to flush after each response!
