@@ -106,7 +106,7 @@ namespace   Stroika {
             /**
              *  \par Example Usage
              *      \code
-             *      vector<int> v = DiscreteRange<int> (1,10).As<vector<int>> ();
+             *      vector<int> v = DiscreteRange<int> (1,10).Elements ().As<vector<int>> ();
              *      // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
              *      \endcode
              *

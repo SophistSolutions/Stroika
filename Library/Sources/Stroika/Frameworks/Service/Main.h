@@ -26,8 +26,7 @@
 
 /**
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *              (note - basic functionality works on linux - start/stop/restart etc), but nothing on windoze yet.
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
  *
