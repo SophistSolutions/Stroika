@@ -9,6 +9,7 @@ VPATH		=	$(SrcDir) $(StroikaLibDir)
 
 
 SubDirs=	\
+		Modbus\
 		Service\
 		SystemPerformance\
 		WebServer\

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -1037,6 +1037,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 		..\Unix\Makefile-Foundation-IO-FileSystem = ..\Unix\Makefile-Foundation-IO-FileSystem
 		..\Unix\Makefile-Foundation-IO-Network = ..\Unix\Makefile-Foundation-IO-Network
 		..\Unix\Makefile-Foundation-IO-Network-HTTP = ..\Unix\Makefile-Foundation-IO-Network-HTTP
+		..\Unix\Makefile-Foundation-IO-Network-SOAP = ..\Unix\Makefile-Foundation-IO-Network-SOAP
 		..\Unix\Makefile-Foundation-IO-Network-Transfer = ..\Unix\Makefile-Foundation-IO-Network-Transfer
 		..\Unix\Makefile-Foundation-Linguistics = ..\Unix\Makefile-Foundation-Linguistics
 		..\Unix\Makefile-Foundation-Math = ..\Unix\Makefile-Foundation-Math
@@ -1046,6 +1047,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 		..\Unix\Makefile-Foundation-Time = ..\Unix\Makefile-Foundation-Time
 		..\Unix\Makefile-Foundation-Traversal = ..\Unix\Makefile-Foundation-Traversal
 		..\Unix\Makefile-Frameworks = ..\Unix\Makefile-Frameworks
+		..\Unix\Makefile-Frameworks-Modbus = ..\Unix\Makefile-Frameworks-Modbus
 		..\Unix\Makefile-Frameworks-Service = ..\Unix\Makefile-Frameworks-Service
 		..\Unix\Makefile-Frameworks-SystemPerformance = ..\Unix\Makefile-Frameworks-SystemPerformance
 		..\Unix\Makefile-Frameworks-SystemPerformance-Instruments = ..\Unix\Makefile-Frameworks-SystemPerformance-Instruments
@@ -1058,6 +1060,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 		..\Unix\SharedBuildRules-Default.mk = ..\Unix\SharedBuildRules-Default.mk
 		..\Unix\SharedMakeVariables-Default.mk = ..\Unix\SharedMakeVariables-Default.mk
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-Modbus", "Stroika-Frameworks-Modbus.vcxproj", "{17CE653D-28FF-4F04-8007-579A0C708DC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1360,6 +1364,42 @@ Global
 		{A6C00B9D-8B7F-4C43-A043-1127387E712D}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
 		{A6C00B9D-8B7F-4C43-A043-1127387E712D}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
 		{A6C00B9D-8B7F-4C43-A043-1127387E712D}.Release-U-64|x64.Build.0 = Release-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-A-32|Win32.ActiveCfg = Debug-A-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-A-32|Win32.Build.0 = Debug-A-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-A-32|x64.ActiveCfg = Debug-A-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-A-32|x64.Build.0 = Debug-A-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-32|Win32.ActiveCfg = Debug-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-32|Win32.Build.0 = Debug-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-32|x64.ActiveCfg = Debug-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-32|x64.Build.0 = Debug-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-64|Win32.ActiveCfg = Debug-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-64|Win32.Build.0 = Debug-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-64|x64.ActiveCfg = Debug-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Debug-U-64|x64.Build.0 = Debug-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-A-32|Win32.ActiveCfg = Release-A-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-A-32|x64.Build.0 = Release-A-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-DbgMemLeaks-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-DbgMemLeaks-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-DbgMemLeaks-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-DbgMemLeaks-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-32|Win32.ActiveCfg = Release-Logging-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-32|Win32.Build.0 = Release-Logging-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-32|x64.ActiveCfg = Release-Logging-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-32|x64.Build.0 = Release-Logging-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-64|Win32.ActiveCfg = Release-Logging-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-64|Win32.Build.0 = Release-Logging-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-64|x64.ActiveCfg = Release-Logging-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-Logging-U-64|x64.Build.0 = Release-Logging-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-32|x64.ActiveCfg = Release-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-32|x64.Build.0 = Release-U-32|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|Win32.Build.0 = Release-U-64|Win32
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
+		{17CE653D-28FF-4F04-8007-579A0C708DC1}.Release-U-64|x64.Build.0 = Release-U-64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

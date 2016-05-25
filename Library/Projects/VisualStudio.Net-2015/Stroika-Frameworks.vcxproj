@@ -83,6 +83,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <ProjectReference Include="Stroika-Frameworks-Modbus.vcxproj">
+      <Project>{17ce653d-28ff-4f04-8007-579a0c708dc1}</Project>
+    </ProjectReference>
     <ProjectReference Include="Stroika-Frameworks-Service.vcxproj">
       <Project>{76c03e61-1308-4973-abda-2e83210a5b52}</Project>
       <Private>true</Private>
@@ -90,6 +93,9 @@
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="Stroika-Frameworks-SystemPerformance.vcxproj">
+      <Project>{a6c00b9d-8b7f-4c43-a043-1127387e712d}</Project>
     </ProjectReference>
     <ProjectReference Include="Stroika-Frameworks-UPnP.vcxproj">
       <Project>{3add4c32-1d77-47a2-9f23-83908a2446f6}</Project>
