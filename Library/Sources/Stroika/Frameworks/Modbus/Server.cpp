@@ -12,6 +12,7 @@
 #include    "../../Foundation/IO/Network/Listener.h"
 #include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/IO/Network/SocketStream.h"
+#include    "../../Foundation/Memory/Bits.h"
 #include    "../../Foundation/Memory/BLOB.h"
 #include    "../../Foundation/Streams/BufferedOutputStream.h"
 #include    "../../Foundation/Traversal/DiscreteRange.h"
@@ -227,6 +228,67 @@ namespace {
 
             Memory::BLOB    requestPayload = in.ReadAll (requestHeader.GetPayloadLength ());
             switch (requestHeader.fFunctionCode) {
+                case FunctionCodeType_::kReadCoils_: {
+                        /*
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 15
+                         */
+                        uint16_t    startingAddress =   checkedReadHelper (requestPayload, 0x7d0).first;
+                        uint16_t    quantity        =   checkedReadHelper (requestPayload, 0x7d0).second;
+                        uint16_t    endAddress      =   startingAddress + quantity;
+                        size_t      quantityBytes   =   (quantity + 7) / 8;
+                        SmallStackBuffer<uint16_t>  results { quantityBytes };
+                        (void)::memset (results.begin (), 0, quantityBytes);  // for now - fill zeros for values not returned by backend
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"Processing kReadCoils_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+#endif
+                        for (auto i : serviceHandler->ReadCoils (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
+                            Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
+                            if (i.fValue) {
+                                results[(i.fKey - startingAddress) / 8] |= Memory::Bit ((i.fKey - startingAddress) % 8);
+                            }
+                        }
+                        {
+                            // Response ready - format, toNetwork, and write
+                            uint8_t responseLen =   static_cast<uint8_t> (quantityBytes);    // OK cuz validated in checkedReadHelper (and converted to bytes)
+                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
+                            out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                            out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+#endif
+                        }
+                    }
+                    break;
+                case FunctionCodeType_::kReadHoldingResisters_: {
+                        /*
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 15
+                         */
+                        uint16_t    startingAddress =   checkedReadHelper (requestPayload, 0x7d).first;
+                        uint16_t    quantity        =   checkedReadHelper (requestPayload, 0x7d).second;
+                        uint16_t    endAddress      =   startingAddress + quantity;
+                        SmallStackBuffer<uint16_t>  results { quantity };
+                        (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));  // for now - fill zeros for values not returned by backend
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"Processing kReadHoldingResisters_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+#endif
+                        for (auto i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
+                            Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
+                            results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
+                        }
+                        {
+                            // Response ready - format, toNetwork, and write
+                            uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
+                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
+                            out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                            out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+#endif
+                        }
+                    }
+                    break;
                 case FunctionCodeType_::kReadInputResister_: {
                         /*
                          *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16
@@ -237,7 +299,7 @@ namespace {
                         SmallStackBuffer<uint16_t>  results { quantity };
                         (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));  // for now - fill zeros for values not returned by backend
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-						DbgTrace (L"Processing kReadInputResister_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kReadInputResister_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
                         for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
@@ -246,12 +308,12 @@ namespace {
                         {
                             // Response ready - format, toNetwork, and write
                             uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
-							MBAPHeaderIsh_  networkResponseHeader	= ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
-							out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
+                            out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
                             out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-						DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+                            DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
 #endif
                         }
                     }
