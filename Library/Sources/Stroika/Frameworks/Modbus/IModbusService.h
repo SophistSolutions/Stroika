@@ -67,14 +67,14 @@ namespace   Stroika {
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf page 49
              */
             enum class ExceptionCode : uint8_t {
-                ILLEGAL_FUNCTION  = 1,
-                ILLEGAL_DATA_ADDRESS  = 2,
-                ILLEGAL_DATA_VALUE   = 3,
-                SLAVE_DEVICE_FAILURE  = 4,
-                ACKNOWLEDGE  = 5,
-                SLAVE_DEVICE_BUSY  = 6,
-                MEMORY_PARITY_ERROR  = 8,
-                GATEWAY_PATH_UNAVAILABLE   = 0xa,
+                ILLEGAL_FUNCTION                        = 1,
+                ILLEGAL_DATA_ADDRESS                    = 2,
+                ILLEGAL_DATA_VALUE                      = 3,
+                SLAVE_DEVICE_FAILURE                    = 4,
+                ACKNOWLEDGE                             = 5,
+                SLAVE_DEVICE_BUSY                       = 6,
+                MEMORY_PARITY_ERROR                     = 8,
+                GATEWAY_PATH_UNAVAILABLE                = 0xa,
                 GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND = 0xb,
             };
 
@@ -101,10 +101,12 @@ namespace   Stroika {
                 using   SetRegisterNames    =   Containers::Set<typename MODBUS_REGISTER_DESCRIPTOR::NameType>;
 
                 /**
+                 *  Coils are boolean valued. OK to return any subset of argument coils. Illegal to return any not specified in argument list.
                  */
                 virtual RegisterValuesMapping<CoilsDescriptorType>  ReadCoils (const SetRegisterNames<CoilsDescriptorType>& names) = 0;
 
                 /**
+                 *  Coils are boolean valued.
                  */
                 virtual void    WriteCoils (const RegisterValuesMapping<CoilsDescriptorType>& values) = 0;
 

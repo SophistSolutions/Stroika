@@ -6,6 +6,7 @@
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/StringBuilder.h"
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/Configuration/Endian.h"
 #include    "../../Foundation/Debug/Trace.h"
 #include    "../../Foundation/IO/Network/Listener.h"
@@ -32,6 +33,17 @@ using   namespace   Stroika::Foundation::Traversal;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Modbus;
+
+
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 
 
@@ -237,7 +249,7 @@ namespace {
                     }
                     break;
                 default: {
-                        DbgTrace (L"UNREGONIZED PACKET SO CLOSING CONNECTION");
+                        DbgTrace (L"UNREGONIZED FunctionCode SO CLOSING CONNECTION");
                         return; //  should log error - and maybe throw/return /send to remote side error code?
                     }
             }
@@ -267,7 +279,9 @@ Execution::Thread   Modbus::MakeModbusTCPServerThread (shared_ptr<IModbusService
     return Thread {
         [onModbusConnection, options] ()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
+#endif
             Listener l { SocketAddress { Network::V4::kAddrAny, options.fListenPort.Value (502) }, onModbusConnection };
             WaitableEvent { WaitableEvent::eAutoReset } .Wait ();   // forever (til thread abort)
         },
