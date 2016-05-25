@@ -291,6 +291,7 @@ sub MakeUnixDirs {
 
 		mkSymLink ("$stkRoot/Library/Projects/Unix/Makefile-Frameworks", "$intermediateFiles$activeConfiguration/Library/Frameworks/Makefile");
 
+		mkDirWithLinks("Frameworks/Modbus", "Makefile-Frameworks-Modbus");
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
 		mkDirWithLinks("Frameworks/UPnP", "Makefile-Frameworks-UPnP");
 		mkDirWithLinks2("Frameworks/UPnP/SSDP", "Makefile-Frameworks-UPnP-SSDP");
