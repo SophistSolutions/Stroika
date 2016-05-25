@@ -176,12 +176,14 @@ namespace {
             /*
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
              */
-            if (requestPayload.size () != 4) {
+            if (requestPayload.size () != 4)
+            {
                 Throw (StringException (L"bad params")); //  should log error - and maybe throw/return /send to remote side error code?
             }
             uint16_t    startingAddress =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
             uint16_t    quantity        =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2));    // allowed 1..0x7d
-            if (not (0 < quantity and quantity <= maxSecondValue)) {
+            if (not (0 < quantity and quantity <= maxSecondValue))
+            {
                 Throw (StringException (L"bad params")); //  should log error - and maybe throw/return /send to remote side error code?
             }
             return pair<uint16_t, uint16_t> { startingAddress,  quantity };
@@ -217,18 +219,18 @@ namespace {
                         /*
                          *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16
                          */
-                        uint16_t    startingAddress =	checkedReadHelper (requestPayload, 0x7d).first;
-                        uint16_t    quantity        =	checkedReadHelper (requestPayload, 0x7d).second;
+                        uint16_t    startingAddress =   checkedReadHelper (requestPayload, 0x7d).first;
+                        uint16_t    quantity        =   checkedReadHelper (requestPayload, 0x7d).second;
                         uint16_t    endAddress      =   startingAddress + quantity;
                         SmallStackBuffer<uint16_t>  results { quantity };
-                        (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));	// for now - fill zeros for values not returned by backend
+                        (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));  // for now - fill zeros for values not returned by backend
                         for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
                             results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t responseLen =   static_cast<uint8_t> (quantity);	// OK cuz validated in checkedReadHelper
+                            uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
                             out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
                         }
