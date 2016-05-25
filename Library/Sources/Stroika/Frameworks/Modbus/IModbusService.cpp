@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Characters/Format.h"
+
 #include    "IModbusService.h"
 
 
@@ -13,3 +15,21 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Modbus;
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************ Frameworks::Modbus::Exception *************************
+ ********************************************************************************
+ */
+Modbus::Exception::Exception (ExceptionCode exceptionCode)
+    :  StringException (Characters::Format (L"Modbus Exception: %d", exceptionCode))
+    , fExceptionCode (exceptionCode)
+{
+}

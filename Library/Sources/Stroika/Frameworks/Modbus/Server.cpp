@@ -251,7 +251,11 @@ namespace {
 
 
 
-
+/*
+ ********************************************************************************
+ *********** Frameworks::Modbus::MakeModbusTCPServerThread **********************
+ ********************************************************************************
+ */
 Execution::Thread   Modbus::MakeModbusTCPServerThread (shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
 {
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately

@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Containers/Mapping.h"
 #include    "../../Foundation/Containers/Set.h"
+#include    "../../Foundation/Execution/StringException.h"
 
 
 
@@ -61,6 +62,30 @@ namespace   Stroika {
              */
             using   HoldingRegisterDescriptorType   =   ModbusRegisterDescriptor<uint16_t, uint16_t>;
 
+
+            /**
+             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf page 49
+             */
+            enum class ExceptionCode : uint8_t {
+                ILLEGAL_FUNCTION  = 1,
+                ILLEGAL_DATA_ADDRESS  = 2,
+                ILLEGAL_DATA_VALUE   = 3,
+                SLAVE_DEVICE_FAILURE  = 4,
+                ACKNOWLEDGE  = 5,
+                SLAVE_DEVICE_BUSY  = 6,
+                MEMORY_PARITY_ERROR  = 8,
+                GATEWAY_PATH_UNAVAILABLE   = 0xa,
+                GATEWAY_TARGET_DEVICE_FAILED_TO_RESPOND = 0xb,
+            };
+
+
+            /**
+             */
+            struct Exception : Execution::StringException {
+                Exception (ExceptionCode exceptionCode);
+
+                ExceptionCode   fExceptionCode;
+            };
 
 
             /**
