@@ -236,6 +236,9 @@ namespace {
                         uint16_t    endAddress      =   startingAddress + quantity;
                         SmallStackBuffer<uint16_t>  results { quantity };
                         (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));  // for now - fill zeros for values not returned by backend
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+						DbgTrace (L"Processing kReadInputResister_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
+#endif
                         for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
                             results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
@@ -243,8 +246,13 @@ namespace {
                         {
                             // Response ready - format, toNetwork, and write
                             uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
+							MBAPHeaderIsh_  networkResponseHeader	= ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
+							out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
                             out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+						DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+#endif
                         }
                     }
                     break;
