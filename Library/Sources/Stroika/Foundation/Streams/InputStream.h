@@ -224,6 +224,18 @@ namespace   Stroika {
 
             public:
                 /**
+                 * shorthand for declaring
+                 *  POD_TYPE    tmp;
+                 *  ReadAll ((Byte*)&tmp, (Byte*)(&tmp+1));
+                 *  return tmp;
+                 *
+                 *      @todo REDO EXCEPTIONS FOR PARTIAL READS/EOF, and UPDATE WITH EXAMPLES.
+                 */
+                template    <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual  POD_TYPE ReadPOD () const;
+
+            public:
+                /**
                  * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
                  * it encounters as part of the read line.
                  *

@@ -148,6 +148,25 @@ namespace   Stroika {
                 return _GetRep ()->Read (offset, intoStart, intoEnd);
             }
             template    <typename ELEMENT_TYPE>
+            template    <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline    POD_TYPE InputStream<ELEMENT_TYPE>::ReadPOD () const
+            {
+                POD_TYPE    tmp;    // intentionally don't zero-int
+                size_t  n = ReadAll (reinterpret_cast<Byte*> (&tmp), reinterpret_cast<Byte*> (&tmp + 1));
+                if (n == sizeof (tmp)) {
+                    return tmp;
+                }
+                else {
+                    if (n == 0) {
+                        Execution::Throw (Execution::StringException (Characters::String_Constant { L"EOF Reading POD from Stream" }));
+
+                    }
+                    else {
+                        Execution::Throw (Execution::StringException (Characters::String_Constant { L"EOF (partial read) Reading POD from Stream" }));
+                    }
+                }
+            }
+            template    <typename ELEMENT_TYPE>
             size_t  InputStream<ELEMENT_TYPE>::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
             {
                 RequireNotNull (intoStart);

@@ -176,6 +176,15 @@ namespace   Stroika {
 
             public:
                 /**
+                 * shorthand for declaring
+                 *  POD_TYPE    tmp;
+                 *  Write ((Byte*)&tmp, (Byte*)(&tmp+1));
+                 */
+                template    <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Memory::Byte>::value>::type>
+                nonvirtual  void WritePOD (const POD_TYPE& p) const;
+
+            public:
+                /**
                  *  \brief forces any data contained in this stream to be written.
                  *
                  *  Forces any data contained in this stream to be written.
