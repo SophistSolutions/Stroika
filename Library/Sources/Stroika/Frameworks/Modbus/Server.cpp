@@ -325,7 +325,7 @@ namespace {
                         uint16_t    outputAddress   =   checkedReadHelper (requestPayload, 0xff00).first;
                         uint16_t    value           =   checkedReadHelper (requestPayload, 0xff00).second;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"Processing kReadInputResister_ (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
+                        DbgTrace (L"Processing kWriteSingleCoil (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
 #endif
                         serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::NameType>> { {outputAddress, value } });
                         {
