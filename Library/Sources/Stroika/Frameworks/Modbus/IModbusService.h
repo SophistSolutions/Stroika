@@ -53,6 +53,12 @@ namespace   Stroika {
 
             /**
              *  From http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf page 8
+             *      Discretes Input       Single bit      Read-Only      ThiThis type of data can be provided by an I/O system
+             */
+            using   DiscreteInputDescriptorType =   ModbusRegisterDescriptor<uint16_t, bool>;
+
+            /**
+             *  From http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf page 8
              *      Input Registers     16-bit word     Read-Only       This type of data can be provided by an I/O system
              */
             using   InputRegisterDescriptorType =   ModbusRegisterDescriptor<uint16_t, uint16_t>;
@@ -109,6 +115,10 @@ namespace   Stroika {
                  *  Coils are boolean valued.
                  */
                 virtual void    WriteCoils (const RegisterValuesMapping<CoilsDescriptorType>& values) = 0;
+
+                /**
+                 */
+                virtual RegisterValuesMapping<DiscreteInputDescriptorType>  ReadDiscreteInput (const SetRegisterNames<DiscreteInputDescriptorType>& names) = 0;
 
                 /**
                  */
