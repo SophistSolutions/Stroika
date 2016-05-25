@@ -78,7 +78,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\Modbus\Server.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\Service\ReadMe.md" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\Modbus\IModbusService.cpp" />

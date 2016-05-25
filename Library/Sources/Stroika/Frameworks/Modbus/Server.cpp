@@ -40,10 +40,10 @@ using   namespace   Stroika::Frameworks::Modbus;
  */
 namespace {
     enum    FunctionCodeType_   :   uint8_t {
-        kReadCoils_                 =    1,
-        kReadHoldingResisters_      =    3,
+        kReadCoils_                 =   1,
+        kReadHoldingResisters_      =   3,
         kReadInputResister_         =   4,
-        kWriteSingleCoil            =    5,
+        kWriteSingleCoil            =   5,
     };
 }
 
@@ -83,6 +83,8 @@ namespace {
     static_assert (offsetof (MBAPHeaderIsh_, fFunctionCode) == 7, "");
 
 }
+
+
 
 namespace {
     /*
@@ -170,6 +172,21 @@ namespace {
         InputStream<Byte>   in  =   socketStream;
         OutputStream<Byte>  out =   BufferedOutputStream<Byte> { socketStream };    // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
 
+        auto    checkedReadHelper = [] (const Memory::BLOB & requestPayload, uint16_t maxSecondValue) ->pair<uint16_t, uint16_t> {
+            /*
+             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16 (etc)
+             */
+            if (requestPayload.size () != 4) {
+                Throw (StringException (L"bad params")); //  should log error - and maybe throw/return /send to remote side error code?
+            }
+            uint16_t    startingAddress =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
+            uint16_t    quantity        =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2));    // allowed 1..0x7d
+            if (not (0 < quantity and quantity <= maxSecondValue)) {
+                Throw (StringException (L"bad params")); //  should log error - and maybe throw/return /send to remote side error code?
+            }
+            return pair<uint16_t, uint16_t> { startingAddress,  quantity };
+        };
+
         /*
          *  I believe (must re-read docs more carefully) - we can recieve multiple requests on a single connection, and just close the connection
          *  on our first bad packet.
@@ -186,13 +203,12 @@ namespace {
              * Perform minimal validation and - for now - abandon conneciton - but soon bettter error handling (see above)
              */
             if (requestHeader.fProtocolID != 0) {
-                // PUT LOGGER INTO OPTIONS OBJET
-                return;
+                Throw (StringException (L"bad protocol")); //  should log error - and maybe throw/return /send to remote side error code?
             }
             if (requestHeader.fLength < 2) {
                 // PUT LOGGER INTO OPTIONS OBJET
                 // Error cuz we full ehader I know of requires 2 bytes at least
-                return;
+                Throw (StringException (L"bad request length")); //  should log error - and maybe throw/return /send to remote side error code?
             }
 
             Memory::BLOB    requestPayload = in.ReadAll (requestHeader.GetPayloadLength ());
@@ -201,25 +217,18 @@ namespace {
                         /*
                          *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16
                          */
-                        if (requestPayload.size () != 4) {
-                            return; //  should log error - and maybe throw/return /send to remote side error code?
-                        }
-                        uint16_t    startingAddress =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
-                        uint16_t    quantity        =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2));    // allowed 1..0x7d
-                        if (not (0 < quantity and quantity <= 0x7d)) {
-                            return; //  should log error - and maybe throw/return /send to remote side error code?
-                        }
+                        uint16_t    startingAddress =	checkedReadHelper (requestPayload, 0x7d).first;
+                        uint16_t    quantity        =	checkedReadHelper (requestPayload, 0x7d).second;
                         uint16_t    endAddress      =   startingAddress + quantity;
-                        // for now - fill zeros for values not returned by backend
                         SmallStackBuffer<uint16_t>  results { quantity };
-                        (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));
+                        (void)::memset (results.begin (), 0, quantity * sizeof(uint16_t));	// for now - fill zeros for values not returned by backend
                         for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
                             Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
                             results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t responseLen =   quantity;
+                            uint8_t responseLen =   static_cast<uint8_t> (quantity);	// OK cuz validated in checkedReadHelper
                             out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
                         }
@@ -230,7 +239,7 @@ namespace {
                         return; //  should log error - and maybe throw/return /send to remote side error code?
                     }
             }
-			out.Flush ();	// since buffering output, be sure to flush after each response!
+            out.Flush ();   // since buffering output, be sure to flush after each response!
         }
     }
 }
