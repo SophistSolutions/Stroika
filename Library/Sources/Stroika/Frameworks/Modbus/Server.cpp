@@ -250,7 +250,7 @@ namespace {
                         {
                             // Response ready - format, toNetwork, and write
                             uint8_t responseLen =   static_cast<uint8_t> (quantityBytes);    // OK cuz validated in checkedReadHelper (and converted to bytes)
-                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
+                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
                             out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
                             out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
@@ -314,6 +314,30 @@ namespace {
                             out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+#endif
+                        }
+                    }
+                    break;
+                case FunctionCodeType_::kWriteSingleCoil: {
+                        /*
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 17
+                         */
+                        uint16_t    outputAddress   =   checkedReadHelper (requestPayload, 0xff00).first;
+                        uint16_t    value           =   checkedReadHelper (requestPayload, 0xff00).second;
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                        DbgTrace (L"Processing kReadInputResister_ (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
+#endif
+                        serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::NameType>> { {outputAddress, value } });
+                        {
+                            // Response ready - format, toNetwork, and write
+                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (requestHeader);
+                            out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                            uint16_t    outputAddressNBO    =   ToNetwork_ (outputAddress);
+                            out.Write (reinterpret_cast<const Byte*> (&outputAddressNBO), reinterpret_cast<const Byte*> (&outputAddressNBO + 1));
+                            uint16_t    valueNBO    =   ToNetwork_ (value);
+                            out.Write (reinterpret_cast<const Byte*> (&valueNBO), reinterpret_cast<const Byte*> (&valueNBO + 1));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                            DbgTrace (L"Sent response: header=%s", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str ());
 #endif
                         }
                     }
