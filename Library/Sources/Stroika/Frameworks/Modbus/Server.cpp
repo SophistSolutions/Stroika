@@ -107,31 +107,19 @@ namespace {
      */
     uint16_t    FromNetwork_ (uint16_t v)
     {
-        return Configuration::EndianConverter (v, Configuration::GetEndianness (), Configuration::Endian::eBig);
+        return Configuration::EndianConverter (v, Configuration::Endian::eBig, Configuration::GetEndianness ());
     }
     MBAPHeaderIsh_  FromNetwork_ (const MBAPHeaderIsh_& v)
     {
-        return MBAPHeaderIsh_ {
-            FromNetwork_ (v.fTransactionID),
-            FromNetwork_ (v.fProtocolID),
-            FromNetwork_ (v.fLength),
-            v.fUnitID,
-            v.fFunctionCode,
-        };
+        return MBAPHeaderIsh_ { FromNetwork_ (v.fTransactionID), FromNetwork_ (v.fProtocolID), FromNetwork_ (v.fLength), v.fUnitID, v.fFunctionCode };
     }
     uint16_t    ToNetwork_ (uint16_t v)
     {
-        return Configuration::EndianConverter (v, Configuration::Endian::eBig, Configuration::GetEndianness ());
+        return Configuration::EndianConverter (v, Configuration::GetEndianness (), Configuration::Endian::eBig);
     }
     MBAPHeaderIsh_  ToNetwork_ (const MBAPHeaderIsh_& v)
     {
-        return MBAPHeaderIsh_ {
-            ToNetwork_ (v.fTransactionID),
-            ToNetwork_ (v.fProtocolID),
-            ToNetwork_ (v.fLength),
-            v.fUnitID,
-            v.fFunctionCode,
-        };
+        return MBAPHeaderIsh_ { ToNetwork_ (v.fTransactionID), ToNetwork_ (v.fProtocolID), ToNetwork_ (v.fLength), v.fUnitID, v.fFunctionCode };
     }
 }
 
@@ -184,6 +172,11 @@ namespace {
     void    ConnectionHandler_ (const Socket& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
     {
         TraceContextBumper ctx ("Modbus-Connection");
+#if qDebug
+        if (auto p = connectionSocket.GetPeerAddress ()) {
+            //@todo -- DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
+        }
+#endif
         SocketStream        socketStream { connectionSocket };
         InputStream<Byte>   in  =   BufferedInputStream<Byte> { socketStream };     // not important, but a good idea, to avoid excessive kernel calls
         OutputStream<Byte>  out =   BufferedOutputStream<Byte> { socketStream };    // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
@@ -227,12 +220,11 @@ namespace {
                  * Perform minimal validation and - for now - abandon conneciton - but soon bettter error handling (see above)
                  */
                 if (requestHeader.fProtocolID != 0) {
-                    Throw (StringException (L"bad protocol")); //  should log error - and maybe throw/return /send to remote side error code?
+                    Throw (StringException (L"bad protocol"));
                 }
                 if (requestHeader.fLength < 2) {
-                    // PUT LOGGER INTO OPTIONS OBJET
-                    // Error cuz we full ehader I know of requires 2 bytes at least
-                    Throw (StringException (L"Illegal short MBAP request length")); //  should log error - and maybe throw/return /send to remote side error code?
+                    // Error cuz each full header I know of requires 2 bytes at least
+                    Throw (StringException (L"Illegal short MBAP request length"));
                 }
 
                 Memory::BLOB    requestPayload = in.ReadAll (requestHeader.GetPayloadLength ());
@@ -259,12 +251,12 @@ namespace {
                             {
                                 // Response ready - format, toNetwork, and write
                                 uint8_t responseLen =   static_cast<uint8_t> (quantityBytes);    // OK cuz validated in checkedReadHelper (and converted to bytes)
-                                MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
-                                out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
-                                out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                                MBAPHeaderIsh_  responseHeader   = MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode };
+                                out.WritePOD (ToNetwork_ (responseHeader));
+                                out.WritePOD (responseLen);
                                 out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (networkResponseHeader).c_str (), responseLen);
 #endif
                             }
                         }
@@ -291,12 +283,12 @@ namespace {
                             {
                                 // Response ready - format, toNetwork, and write
                                 uint8_t responseLen =   static_cast<uint8_t> (quantityBytes);    // OK cuz validated in checkedReadHelper (and converted to bytes)
-                                MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
-                                out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
-                                out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                                MBAPHeaderIsh_  responseHeader   = MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode };
+                                out.WritePOD (ToNetwork_ (responseHeader));
+                                out.WritePOD (responseLen);
                                 out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
                             }
                         }
@@ -320,12 +312,12 @@ namespace {
                             {
                                 // Response ready - format, toNetwork, and write
                                 uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
-                                MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
-                                out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
-                                out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                                MBAPHeaderIsh_  responseHeader   = MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode };
+                                out.WritePOD (ToNetwork_ (responseHeader));
+                                out.WritePOD (responseLen);
                                 out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
                             }
                         }
@@ -349,12 +341,12 @@ namespace {
                             {
                                 // Response ready - format, toNetwork, and write
                                 uint8_t responseLen =   static_cast<uint8_t> (quantity);    // OK cuz validated in checkedReadHelper
-                                MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode });
-                                out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
-                                out.Write (reinterpret_cast<const Byte*> (&responseLen), reinterpret_cast<const Byte*> (&responseLen + 1));
+                                MBAPHeaderIsh_  responseHeader   = MBAPHeaderIsh_ { requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (2 + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode };
+                                out.WritePOD (ToNetwork_ (responseHeader));
+                                out.WritePOD (responseLen);
                                 out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str (), responseLen);
+                                DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
                             }
                         }
@@ -371,14 +363,11 @@ namespace {
                             serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>> { {outputAddress, value == 0 ? false : true } });
                             {
                                 // Response ready - format, toNetwork, and write
-                                MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (requestHeader);
-                                out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
-                                uint16_t    outputAddressNBO    =   ToNetwork_ (outputAddress);
-                                out.Write (reinterpret_cast<const Byte*> (&outputAddressNBO), reinterpret_cast<const Byte*> (&outputAddressNBO + 1));
-                                uint16_t    valueNBO    =   ToNetwork_ (value);
-                                out.Write (reinterpret_cast<const Byte*> (&valueNBO), reinterpret_cast<const Byte*> (&valueNBO + 1));
+                                out.WritePOD (requestHeader);
+                                out.WritePOD (ToNetwork_ (outputAddress));
+                                out.WritePOD (ToNetwork_ (value));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                                DbgTrace (L"Sent response: header=%s", Characters::ToString (FromNetwork_ (networkResponseHeader)).c_str ());
+                                DbgTrace (L"Sent response: header=%s", Characters::ToString (requestHeader).c_str ());
 #endif
                             }
                         }
@@ -387,8 +376,7 @@ namespace {
                             DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - so echo ILLEGAL_FUNCTION code");
                             MBAPHeaderIsh_ responseHeader   =   requestHeader;
                             responseHeader.fFunctionCode |= 0x80;   // set high bit
-                            MBAPHeaderIsh_  networkResponseHeader   = ToNetwork_ (responseHeader);
-                            out.Write (reinterpret_cast<const Byte*> (&networkResponseHeader), reinterpret_cast<const Byte*> (&networkResponseHeader + 1));
+                            out.WritePOD (ToNetwork_ (responseHeader));
                             uint8_t    exceptionCode    =   static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
                             out.Write (reinterpret_cast<const Byte*> (&exceptionCode), reinterpret_cast<const Byte*> (&exceptionCode + 1));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -404,6 +392,7 @@ namespace {
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::Priority::eWarning, L"ModbusTCP connection ended abnormally: %s", Characters::ToString (current_exception ()).c_str ());
             }
+            ReThrow ();
         }
     }
 }
@@ -418,7 +407,7 @@ namespace {
  *********** Frameworks::Modbus::MakeModbusTCPServerThread **********************
  ********************************************************************************
  */
-Execution::Thread   Modbus::MakeModbusTCPServerThread (shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
+Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
     auto onModbusConnection = [serviceHandler, options] (const Socket & s) {

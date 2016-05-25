@@ -40,7 +40,7 @@ namespace   Stroika {
             /*
              *  DRAFT API
              */
-            Execution::Thread   MakeModbusTCPServerThread (shared_ptr<IModbusService> serviceHandler, const ServerOptions& options = ServerOptions {});
+            Execution::Thread   MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions {});
 
 
         }
