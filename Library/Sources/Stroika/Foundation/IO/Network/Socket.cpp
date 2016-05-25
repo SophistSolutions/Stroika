@@ -238,6 +238,16 @@ AGAIN:
                 return Socket::Attach (r);
 #endif
             }
+            virtual Optional<IO::Network::SocketAddress>    GetPeerAddress () const override
+            {
+                struct sockaddr_storage radr;
+                socklen_t len = sizeof (radr);
+                if (getpeername (static_cast<int> (fSD_), (struct sockaddr*)&radr, &len) == 0) {
+                    IO::Network::SocketAddress sa {radr};
+                    return sa;
+                }
+                return Optional<IO::Network::SocketAddress> {};
+            }
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
             {
                 DbgTrace (L"Joining multicast group for address %s on interface %s", iaddr.As<String> ().c_str (), onInterface.As<String> ().c_str ());

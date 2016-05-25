@@ -97,6 +97,10 @@ namespace   Stroika {
                 {
                     fRep_->SetLinger (linger);
                 }
+                inline  Optional<IO::Network::SocketAddress>    Socket::GetPeerAddress () const
+                {
+                    return fRep_->GetPeerAddress ();
+                }
                 inline  void    Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
                 {
                     fRep_->JoinMulticastGroup (iaddr, onInterface);
