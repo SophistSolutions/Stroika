@@ -151,6 +151,7 @@ namespace   Stroika {
             template    <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline    POD_TYPE InputStream<ELEMENT_TYPE>::ReadPOD () const
             {
+                static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE    tmp;    // intentionally don't zero-int
                 size_t  n = ReadAll (reinterpret_cast<Byte*> (&tmp), reinterpret_cast<Byte*> (&tmp + 1));
                 if (n == sizeof (tmp)) {
