@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Thread.h"
 #include    "../../Foundation/Memory/Optional.h"
 
@@ -32,7 +33,8 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation;
 
             struct ServerOptions {
-                Memory::Optional<uint16_t>  fListenPort;        // By spec, defaults to 502
+                Memory::Optional<uint16_t>              fListenPort;        // By spec, defaults to 502
+                Memory::Optional<Execution::Logger*>    fLogger;
             };
 
             /*
