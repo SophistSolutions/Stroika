@@ -35,7 +35,7 @@ string  Characters::CString::FormatV (const char* format, va_list argsList)
 #if     qSupportValgrindQuirks
     // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
     // -- LGP 2012-05-19
-    memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
+    (void)::memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
 #endif
 #if     __STDC_WANT_SECURE_LIB__
     while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argsList) < 0) {
@@ -129,7 +129,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 #if     qSupportValgrindQuirks
     // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
     // -- LGP 2012-05-19
-    memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
+    (void)::memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
 #endif
 
     // SUBTLE: va_list looks like it is passed by value, but its not really,
