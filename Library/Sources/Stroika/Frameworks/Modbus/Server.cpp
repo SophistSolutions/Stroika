@@ -213,7 +213,7 @@ namespace {
              *  on our first bad packet.
              */
             while (true) {
-                MBAPHeaderIsh_  requestHeader {};
+                MBAPHeaderIsh_  requestHeader;  // intentionally dont initialize since either all read, or we throw
                 size_t  n   =   in.ReadAll (reinterpret_cast<Byte*> (&requestHeader), reinterpret_cast<Byte*> (&requestHeader + 1));
                 if (n != sizeof (requestHeader)) {
                     if (n == 0) {
@@ -397,6 +397,9 @@ namespace {
                 }
                 out.Flush ();   // since buffering output, be sure to flush after each response!
             }
+        }
+        catch (const Execution::Thread::InterruptException&) {
+            ReThrow (); // no warning needed
         }
         catch (...) {
             // Anytime we leave the loop due to an exception, thats worth a log note
