@@ -197,7 +197,7 @@ namespace {
             if (requestPayload.size () != 4)
             {
                 DbgTrace (L"requestPayload=%s", Characters::ToString (requestPayload).c_str ());
-                Throw (StringException (L"Invalid payload length (expected 4)"));
+                Throw (StringException (Characters::Format (L"Invalid payload length (got %d, expected 4)", requestPayload.size ())));
             }
             uint16_t    startingAddress =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 0));
             uint16_t    quantity        =   FromNetwork_ (*reinterpret_cast<const uint16_t*> (requestPayload.begin () + 2));    // allowed 1..maxSecondValue
