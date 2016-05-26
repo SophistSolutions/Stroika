@@ -251,10 +251,10 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Processing kReadCoils_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                            for (auto i : serviceHandler->ReadCoils (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
+                            for (auto i : serviceHandler->ReadCoils (DiscreteRange<uint16_t> { startingAddress + 1, endAddress + 1 } .Elements ().As <IModbusService::SetRegisterNames<CoilsDescriptorType>> ())) {
+                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);    // IModbusService must respect this!
                                 if (i.fValue) {
-                                    results[(i.fKey - startingAddress) / 8] |= Memory::Bit ((i.fKey - startingAddress) % 8);
+                                    results[(i.fKey - 1 - startingAddress) / 8] |= Memory::Bit ((i.fKey - 1 - startingAddress) % 8);
                                 }
                             }
                             {
@@ -283,10 +283,10 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Processing kReadDiscreteInputs_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                            for (auto i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
+                            for (auto i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t> { startingAddress + 1, endAddress + 1 } .Elements ().As <IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
+                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);        // IModbusService must respect this!
                                 if (i.fValue) {
-                                    results[(i.fKey - startingAddress) / 8] |= Memory::Bit ((i.fKey - startingAddress) % 8);
+                                    results[(i.fKey - 1 - startingAddress) / 8] |= Memory::Bit ((i.fKey - 1 - startingAddress) % 8);
                                 }
                             }
                             {
@@ -314,9 +314,9 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Processing kReadHoldingResisters_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                            for (auto i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
-                                results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
+                            for (auto i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t> { startingAddress + 1, endAddress + 1 } .Elements ().As <IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
+                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);        // IModbusService must respect this!
+                                results[i.fKey - 1 - startingAddress] = ToNetwork_ (i.fValue);
                             }
                             {
                                 // Response ready - format, toNetwork, and write
@@ -343,9 +343,9 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Processing kReadInputRegister_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
-                            for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress, endAddress } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey and i.fKey < endAddress);        // IModbusService must respect this!
-                                results[i.fKey - startingAddress] = ToNetwork_ (i.fValue);
+                            for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { startingAddress + 1, endAddress + 1 } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
+                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);        // IModbusService must respect this!
+                                results[i.fKey - 1 - startingAddress] = ToNetwork_ (i.fValue);
                             }
                             {
                                 // Response ready - format, toNetwork, and write
@@ -369,7 +369,7 @@ namespace {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Processing kWriteSingleCoil (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
 #endif
-                            serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>> { {outputAddress, value == 0 ? false : true } });
+                            serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>> { {outputAddress + 1, value == 0 ? false : true } });
                             {
                                 // Response ready - format, toNetwork, and write
                                 out.WritePOD (requestHeader);

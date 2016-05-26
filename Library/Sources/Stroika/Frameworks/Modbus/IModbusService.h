@@ -33,7 +33,15 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
 
-
+            /**
+             *
+             *  \note   in the Modbus documentation and GUI (of ModScan64) - they list register/coil #s as 1 based,
+             *          but the wire protocol uses zero based.
+             *
+             *      The numbers used here - NameType - are all the PUBLIC numbers, not the wire protocol numbers.
+             *
+             *      The Stroika wire protocol encoder/decoder does the mapping.
+             */
             template    <typename ID_TYPE, typename VALUE_TYPE>
             struct ModbusRegisterDescriptor {
                 /*
