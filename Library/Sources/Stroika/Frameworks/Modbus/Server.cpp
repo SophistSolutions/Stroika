@@ -425,7 +425,7 @@ Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusS
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }
-            Listener l { SocketAddress { Network::V4::kAddrAny, usingPortNumber }, onModbusConnection };
+            Listener l { SocketAddress { Network::V4::kAddrAny, usingPortNumber }, options.fBindFlags.Value (), onModbusConnection };
             WaitableEvent { WaitableEvent::eAutoReset } .Wait ();   // forever (til thread abort)
         },
         String_Constant { L"Modbus-Listener"}

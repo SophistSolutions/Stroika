@@ -35,6 +35,7 @@ namespace   Stroika {
             struct ServerOptions {
                 Memory::Optional<uint16_t>              fListenPort;        // By spec, defaults to 502
                 Memory::Optional<Execution::Logger*>    fLogger;
+                Memory::Optional<Socket::BindFlags>     fBindFlags;
             };
 
             /*
