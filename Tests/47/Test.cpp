@@ -1541,7 +1541,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             26900,
-            .92,
+            .97,
             &failedTests
         );
 #endif
@@ -1720,7 +1720,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.43,
+            0.47,
             &failedTests
         );
         Tester (
