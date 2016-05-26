@@ -172,11 +172,22 @@ namespace {
     void    ConnectionHandler_ (const Socket& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
     {
         TraceContextBumper ctx ("Modbus-Connection");
-#if qDebug
+#if     qDefaultTracingOn
+        static  atomic<uint32_t>        sConnectionNumber_;
+        uint32_t    thisModbusConnectionNumber = ++sConnectionNumber_;
+        DbgTrace ("Starting modbus connection %d", thisModbusConnectionNumber);
+        auto&& cleanup  =   Execution::Finally ([thisModbusConnectionNumber] () {
+            DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
+        });
+
+#endif
+#if     qDebug
         if (auto p = connectionSocket.GetPeerAddress ()) {
             //@todo -- DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
         }
 #endif
+
+
         SocketStream        socketStream { connectionSocket };
         InputStream<Byte>   in  =   BufferedInputStream<Byte> { socketStream };     // not important, but a good idea, to avoid excessive kernel calls
         OutputStream<Byte>  out =   BufferedOutputStream<Byte> { socketStream };    // critical so we dont write multiple packets - at least some apps assume whole thing comes in one packet
@@ -409,14 +420,23 @@ namespace {
  */
 Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
+    shared_ptr<Execution::ThreadPool>       usingThreadPool = options.fThreadPool;
+    if (usingThreadPool == nullptr) {
+        usingThreadPool = make_shared<Execution::ThreadPool> (1);
+    }
+
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
-    auto onModbusConnection = [serviceHandler, options] (const Socket & s) {
+    auto onModbusConnection = [serviceHandler, options, usingThreadPool] (const Socket & s) {
         // @todo - use ThreadPools - and run connection in threadpool
-        static  atomic<uint32_t>        sConnectionNumber_;
+        //static  atomic<uint32_t>        sConnectionNumber_;
+#if 1
+        usingThreadPool->AddTask ([serviceHandler, options, s]  () { ConnectionHandler_ (s, serviceHandler, options); });
+#else
         Thread ([serviceHandler, options, s]  () { ConnectionHandler_ (s, serviceHandler, options); }, Thread::eAutoStart, Format (L"Modbus Connection %d", sConnectionNumber_++));
+#endif
     };
     return Thread {
-        [onModbusConnection, options] ()
+        [onModbusConnection, options, usingThreadPool] ()
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
@@ -425,6 +445,12 @@ Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusS
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }
+
+            auto&& cleanup  =   Execution::Finally ([usingThreadPool] () {
+                Thread::SuppressInterruptionInContext suppress; // so subsidiary threads cleanup
+                usingThreadPool->AbortAndWaitForDone ();
+            });
+
             Listener l { SocketAddress { Network::V4::kAddrAny, usingPortNumber }, options.fBindFlags.Value (), onModbusConnection };
             WaitableEvent { WaitableEvent::eAutoReset } .Wait ();   // forever (til thread abort)
         },

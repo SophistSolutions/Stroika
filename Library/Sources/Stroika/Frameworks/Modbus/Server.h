@@ -8,6 +8,8 @@
 
 #include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Thread.h"
+#include    "../../Foundation/Execution/ThreadPool.h"
+#include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/Memory/Optional.h"
 
 #include    "IModbusService.h"
@@ -32,14 +34,14 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
 
-            struct ServerOptions {
+            struct  ServerOptions {
                 Memory::Optional<uint16_t>              fListenPort;        // By spec, defaults to 502
                 Memory::Optional<Execution::Logger*>    fLogger;
                 Memory::Optional<Socket::BindFlags>     fBindFlags;
+                shared_ptr<Execution::ThreadPool>       fThreadPool;        // tp specify size, provide your own threadpool
             };
 
             /*
-             *  DRAFT API
              */
             Execution::Thread   MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions {});
 
