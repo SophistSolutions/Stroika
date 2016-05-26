@@ -42,22 +42,36 @@ namespace   Stroika {
                  *  By spec, defaults to 502
                  */
                 Memory::Optional<uint16_t>                          fListenPort;
+
+                /**
+                 *  Logger to write interesting messages to.
+                 */
                 Memory::Optional<Execution::Logger*>                fLogger;
+
                 /**
                  *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
                  */
                 Memory::Optional<IO::Network::Socket::BindFlags>    fBindFlags;
+
                 /**
-                 *  to specify size, provide your own threadpool
+                 *  To specify size, provide your own threadpool
                  */
                 shared_ptr<Execution::ThreadPool>                   fThreadPool;
+
                 /**
-                 *  defaults to true iff argument fThreadPool null
+                 *  defaults to true iff argument fThreadPool null.
+                 *
+                 *  \note   Either let this class or caller must shutdown threadpool before exiting app.
                  */
                 Memory::Optional<bool>                              fShutdownThreadPool;
             };
 
             /**
+             *  Construct a Modbus TCP Listener which will listen for Modbus connections, run them using
+             *  the optionally provided thread pool (and other configuration options) and send actual handler
+             *  requests to the argument IModbusService handler.
+             *
+             *  \req serviceHandler != nullptr
              */
             Execution::Thread   MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions {});
 

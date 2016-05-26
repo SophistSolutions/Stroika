@@ -79,6 +79,12 @@ namespace   Stroika {
 
             /**
              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf page 49
+             *
+             *  \note   These really don't appear to capture any application logic or application notion of failure,
+             *          and principally deal with communications failure.
+             *
+             *          SLAVE_DEVICE_FAILURE may be the only exception, which is somewhat of a blanket - server failed -
+             *          HTTP 503 like - (or so it appears).
              */
             enum class ExceptionCode : uint8_t {
                 ILLEGAL_FUNCTION                        = 1,
@@ -125,18 +131,22 @@ namespace   Stroika {
                 virtual void    WriteCoils (const RegisterValuesMapping<CoilsDescriptorType>& values) = 0;
 
                 /**
+                 *  DiscreteInput values are boolean valued.
                  */
                 virtual RegisterValuesMapping<DiscreteInputDescriptorType>  ReadDiscreteInput (const SetRegisterNames<DiscreteInputDescriptorType>& names) = 0;
 
                 /**
+                 *  InputRegister values are boolean uint16_t, and are read-only.
                  */
                 virtual RegisterValuesMapping<InputRegisterDescriptorType>  ReadInputRegisters (const SetRegisterNames<InputRegisterDescriptorType>& names) = 0;
 
                 /**
+                 *  HoldingRegister values are boolean uint16_t, and are read-write.
                  */
                 virtual RegisterValuesMapping<HoldingRegisterDescriptorType>    ReadHoldingRegisters (const SetRegisterNames<HoldingRegisterDescriptorType>& names) = 0;
 
                 /**
+                 *  HoldingRegister values are boolean uint16_t, and are read-write.
                  */
                 virtual void    WriteHoldingRegisters (const RegisterValuesMapping<HoldingRegisterDescriptorType>& values) = 0;
             };
