@@ -20,14 +20,43 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a144">v2.0a144x</a><br/>2016-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a144">v2.0a144</a><br/>2016-05-26</td>
 <td>
 	<ul>
-		<li>TODO</li>
-
+		<li>IO::Socket
+			<ul>
+				<li>SockAddr ToString support</li>
+				<li>Socket::GetPeerAddress</li>
+			</ul>
+		</li>
+		<li>Modbus TCP
+			<ul>
+				<li>New Modbus Framework</li>
+				<li>Supports a handful of messages (needed for BlockEng) - and full serverside (but no client/proxy support)</li>
+			</ul>
+		</li>
+		<li>Streams
+			<ul>
+				<li>Added Streams::EOFException</li>
+				<li>Added OutputStream<ELEMENT_TYPE>::WritePOD () and InputStream<ELEMENT_TYPE>::ReadPOD ()</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck only; helgrind still broken)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
+
 
 
 
