@@ -418,11 +418,10 @@ namespace {
  */
 Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options)
 {
-    shared_ptr<Execution::ThreadPool>       usingThreadPool = options.fThreadPool;
-    bool                                    weOwnPool { false };
+    shared_ptr<Execution::ThreadPool>       usingThreadPool =   options.fThreadPool;
+    bool                                    shutdownPool    =   options.fShutdownThreadPool.Value (options.fThreadPool == nullptr);
     if (usingThreadPool == nullptr) {
         usingThreadPool = make_shared<Execution::ThreadPool> (1);
-        weOwnPool = true;
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
@@ -430,7 +429,7 @@ Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusS
         usingThreadPool->AddTask ([serviceHandler, options, s]  () { ConnectionHandler_ (s, serviceHandler, options); });
     };
     return Thread {
-        [onModbusConnection, options, usingThreadPool, weOwnPool] ()
+        [onModbusConnection, options, usingThreadPool, shutdownPool] ()
         {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
@@ -440,8 +439,8 @@ Execution::Thread   Modbus::MakeModbusTCPServerThread (const shared_ptr<IModbusS
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }
 
-            auto&& cleanup  =   Execution::Finally ([usingThreadPool, weOwnPool] () {
-                if (weOwnPool) {
+            auto&& cleanup  =   Execution::Finally ([usingThreadPool, shutdownPool] () {
+                if (shutdownPool) {
                     // we should only do this if WE constructed the threadpool.
                     // If someone else did and passed it in - their job to cleanup (it could be running other tasks!)
                     Thread::SuppressInterruptionInContext suppress; // so subsidiary threads cleanup

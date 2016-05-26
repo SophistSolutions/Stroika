@@ -38,10 +38,23 @@ namespace   Stroika {
             /**
              */
             struct  ServerOptions {
-                Memory::Optional<uint16_t>                          fListenPort;        // By spec, defaults to 502
+                /**
+                 *  By spec, defaults to 502
+                 */
+                Memory::Optional<uint16_t>                          fListenPort;
                 Memory::Optional<Execution::Logger*>                fLogger;
+                /**
+                 *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
+                 */
                 Memory::Optional<IO::Network::Socket::BindFlags>    fBindFlags;
-                shared_ptr<Execution::ThreadPool>                   fThreadPool;        // tp specify size, provide your own threadpool
+                /**
+                 *  to specify size, provide your own threadpool
+                 */
+                shared_ptr<Execution::ThreadPool>                   fThreadPool;
+                /**
+                 *  defaults to true iff argument fThreadPool null
+                 */
+                Memory::Optional<bool>                              fShutdownThreadPool;
             };
 
             /**
