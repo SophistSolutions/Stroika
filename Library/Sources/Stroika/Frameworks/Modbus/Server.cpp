@@ -179,11 +179,10 @@ namespace {
         auto&& cleanup  =   Execution::Finally ([thisModbusConnectionNumber] () {
             DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
         });
-
 #endif
 #if     qDebug
         if (auto p = connectionSocket.GetPeerAddress ()) {
-            //@todo -- DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
+            DbgTrace (L"Starting connection from peer: %s", Characters::ToString (*p).c_str ());
         }
 #endif
 

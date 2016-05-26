@@ -34,14 +34,17 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
 
+
+            /**
+             */
             struct  ServerOptions {
-                Memory::Optional<uint16_t>              fListenPort;        // By spec, defaults to 502
-                Memory::Optional<Execution::Logger*>    fLogger;
-                Memory::Optional<Socket::BindFlags>     fBindFlags;
-                shared_ptr<Execution::ThreadPool>       fThreadPool;        // tp specify size, provide your own threadpool
+                Memory::Optional<uint16_t>                          fListenPort;        // By spec, defaults to 502
+                Memory::Optional<Execution::Logger*>                fLogger;
+                Memory::Optional<IO::Network::Socket::BindFlags>    fBindFlags;
+                shared_ptr<Execution::ThreadPool>                   fThreadPool;        // tp specify size, provide your own threadpool
             };
 
-            /*
+            /**
              */
             Execution::Thread   MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions {});
 

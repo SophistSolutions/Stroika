@@ -103,6 +103,12 @@ namespace   Stroika {
                     template    <typename T>
                     nonvirtual  T   As () const;
 
+                public:
+                    /**
+                     *  @see Characters::ToString ()
+                     */
+                    nonvirtual  String  ToString () const;
+
                 private:
                     sockaddr_storage    fSocketAddress_;
                 };
