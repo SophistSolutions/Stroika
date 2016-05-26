@@ -13,6 +13,7 @@ SubDirs	=	\
 
 
 Objs	=	\
+	$(ObjDir)EOFException.o\
 	$(ObjDir)InputStream.o\
 	$(ObjDir)OutputStream.o\
 	$(ObjDir)MemoryStream.o\

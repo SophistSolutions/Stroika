@@ -750,6 +750,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.cpp">
+      <Filter>Sources\Streams</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1782,6 +1785,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2702,6 +2708,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
 </Project>
