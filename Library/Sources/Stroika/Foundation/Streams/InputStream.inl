@@ -14,6 +14,7 @@
 
 #include    "../Debug/Assertions.h"
 #include    "../Memory/BLOB.h"
+#include    "EOFException.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -153,18 +154,12 @@ namespace   Stroika {
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE    tmp;    // intentionally don't zero-int
-                size_t  n = ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1));
+                size_t      n       { ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1)) };
                 if (n == sizeof (tmp)) {
                     return tmp;
                 }
                 else {
-                    if (n == 0) {
-                        Execution::Throw (Execution::StringException (Characters::String_Constant { L"EOF Reading POD from Stream" }));
-
-                    }
-                    else {
-                        Execution::Throw (Execution::StringException (Characters::String_Constant { L"EOF (partial read) Reading POD from Stream" }));
-                    }
+                    Execution::Throw ((n == 0) ? EOFException::kEOFException : EOFException (true));
                 }
             }
             template    <typename ELEMENT_TYPE>

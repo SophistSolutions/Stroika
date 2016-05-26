@@ -283,6 +283,9 @@ namespace   Stroika {
                  *
                  *      Note - in the special case for ReadAll () - where you pass in upTo==0, or a zero sized buffer (intoEnd-intoStart)
                  *      ReadAll () will return 0 elements, and you cannot tell if it was EOF or not.
+                 *
+                 *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
+                 *  @see ReadPOD()
                  */
                 template    <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if <is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual  Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
