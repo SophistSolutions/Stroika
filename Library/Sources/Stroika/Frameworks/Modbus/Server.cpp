@@ -385,7 +385,7 @@ namespace {
                         }
                         break;
                     default: {
-                            DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - so echo ILLEGAL_FUNCTION code");
+                            DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - %d - so echo ILLEGAL_FUNCTION code", Characters::ToString (requestHeader.fFunctionCode).c_str ());
                             MBAPHeaderIsh_ responseHeader   =   requestHeader;
                             responseHeader.fFunctionCode |= 0x80;   // set high bit
                             out.WritePOD (ToNetwork_ (responseHeader));
