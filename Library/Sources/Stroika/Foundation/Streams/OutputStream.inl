@@ -156,7 +156,7 @@ namespace   Stroika {
             inline  void    OutputStream<ELEMENT_TYPE>::WritePOD (const POD_TYPE& p) const
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
-                Write (reinterpret_cast<const Byte*> (&p), reinterpret_cast<const Byte*> (&p + 1));
+                Write (reinterpret_cast<const Memory::Byte*> (&p), reinterpret_cast<const Memory::Byte*> (&p + 1));
             }
             template    <typename ELEMENT_TYPE>
             inline  void    OutputStream<ELEMENT_TYPE>::Flush () const

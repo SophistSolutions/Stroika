@@ -153,7 +153,7 @@ namespace   Stroika {
             {
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE    tmp;    // intentionally don't zero-int
-                size_t  n = ReadAll (reinterpret_cast<Byte*> (&tmp), reinterpret_cast<Byte*> (&tmp + 1));
+                size_t  n = ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1));
                 if (n == sizeof (tmp)) {
                     return tmp;
                 }
