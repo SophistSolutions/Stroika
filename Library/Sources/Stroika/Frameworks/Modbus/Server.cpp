@@ -75,11 +75,11 @@ namespace {
      *  Plus always seems used with following function code. So go with the flow, and add the word ish to the name.
      */
     struct MBAPHeaderIsh_ {
-        alignas(2)  uint16_t    fTransactionID;
-        alignas(2)  uint16_t    fProtocolID;
-        alignas(2)  uint16_t    fLength;
-        alignas(1)  uint8_t     fUnitID;
-        alignas(1)  uint8_t     fFunctionCode;
+        alignas(2)  uint16_t            fTransactionID;
+        alignas(2)  uint16_t            fProtocolID;
+        alignas(2)  uint16_t            fLength;
+        alignas(1)  uint8_t             fUnitID;
+        alignas(1)  FunctionCodeType_   fFunctionCode;
 
         size_t  GetPayloadLength () const
         {
@@ -386,8 +386,11 @@ namespace {
                         break;
                     default: {
                             DbgTrace (L"UNREGONIZED FunctionCode (nyi probably) - %d - so echo ILLEGAL_FUNCTION code", Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                            if (options.fLogger) {
+                                options.fLogger.value ()->Log (Logger::Priority::eWarning, L"ModbusTCP unrecognized function code '%s'- rejected as ILLEGAL_FUNCTION", Characters::ToString (requestHeader.fFunctionCode).c_str ());
+                            }
                             MBAPHeaderIsh_ responseHeader   =   requestHeader;
-                            responseHeader.fFunctionCode |= 0x80;   // set high bit
+                            responseHeader.fFunctionCode = static_cast<FunctionCodeType_> (responseHeader.fFunctionCode | 0x80);   // set high bit
                             out.WritePOD (ToNetwork_ (responseHeader));
                             uint8_t    exceptionCode    =   static_cast<uint8_t> (ExceptionCode::ILLEGAL_FUNCTION);
                             out.Write (reinterpret_cast<const Byte*> (&exceptionCode), reinterpret_cast<const Byte*> (&exceptionCode + 1));
