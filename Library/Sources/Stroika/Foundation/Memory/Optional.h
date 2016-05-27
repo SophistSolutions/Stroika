@@ -9,6 +9,7 @@
 #include    <mutex>
 
 #include    "../Common/Compare.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Configuration/Common.h"
 #include    "../Debug/AssertExternallySynchronizedLock.h"
 #include    "BlockAllocated.h"
@@ -296,7 +297,7 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < not std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
+                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
                 explicit Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
