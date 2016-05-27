@@ -271,17 +271,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Constructor overload taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
-                 *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
-                 *  derefrence and copy.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      float*  d1  =   nullptr;
-                 *      double* d2  =   nullptr;
-                 *      Assert (Optional<double> { d1 }.IsMissing ());
-                 *      Assert (Optional<double> { d2 }.IsMissing ());
-                 *      \endcode
                  */
                 constexpr   Optional ();
                 constexpr   Optional (nullopt_t);
@@ -293,8 +282,6 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < not std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
-                explicit Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
                 ~Optional ();
@@ -306,6 +293,28 @@ namespace   Stroika {
                 nonvirtual  Optional& operator= (T&& rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
                 nonvirtual  Optional& operator= (Optional&& rhs);
+
+            public:
+                /**
+                 *  'Constructor' taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
+                 *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
+                 *  derefrence and copy.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      float*  d1  =   nullptr;
+                 *      double* d2  =   nullptr;
+                 *      Assert (Optional<double>::OptionalFromNullable (d1).IsMissing ());
+                 *      Assert (Optional<double>::OptionalFromNullable (d2).IsMissing ());
+                 *      \endcode
+                 *
+                 *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
+                 *          URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
+                 *          VerifyTestResult (url.GetScheme () == L"dyn");
+                 *          // wchar_t* overload is optional gets STRING with value "d";
+                 */
+                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
+                static  Optional<T, TRAITS>  OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
                 /**

@@ -253,14 +253,6 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
-            inline  Optional<T, TRAITS>::Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
-            {
-                if (from != nullptr) {
-                    fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from));
-                }
-            }
-            template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::~Optional ()
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
@@ -363,6 +355,13 @@ namespace   Stroika {
                 return *this;
             }
 #endif
+            template    <typename T, typename TRAITS>
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS> Optional<T, TRAITS>::OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
+            {
+                return from == nullptr ? Optional<T, TRAITS> {} :
+                       Optional<T, TRAITS> {*from};
+            }
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
             {
@@ -573,7 +572,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
             inline  bool    operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T, TRAITS> (rhs)) < 0;
+                return lhs.Compare (rhs) < 0;
             }
 
 
@@ -590,7 +589,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
             inline  bool    operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (Optional<T, TRAITS> (rhs)) <= 0;
+                return lhs.Compare (rhs) <= 0;
             }
 
 

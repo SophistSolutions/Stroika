@@ -91,8 +91,8 @@ namespace   {
         {
             float*  d1  =   nullptr;
             double* d2  =   nullptr;
-            VerifyTestResult (Optional<double> { d1 } .IsMissing ());
-            VerifyTestResult (Optional<double> { d2 } .IsMissing ());
+            VerifyTestResult (Optional<double>::OptionalFromNullable (d1).IsMissing ());
+            VerifyTestResult (Optional<double>::OptionalFromNullable (d2).IsMissing ());
         }
     }
     void    Test2_SharedByValue ()
