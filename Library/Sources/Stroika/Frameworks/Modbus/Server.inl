@@ -34,7 +34,7 @@ namespace   Stroika {
                 const VT* arr = reinterpret_cast<const VT*> (&s);
                 for (size_t i = 0; i < kNElts_; ++i) {
                     // high order addressed elements first - big endian (@todo - is there a better way to byte swap if needed - in general case)?
-                    update->Add (baseRegister + i - 1, arr[(Configuration::GetEndianness () == Configuration::Endian::eBig) ? (kNElts_ -  i - 1) : i]);
+                    update->Add (baseRegister + i, arr[(Configuration::GetEndianness () == Configuration::Endian::eBig) ? (kNElts_ -  i - 1) : i]);
                 }
             }
 
