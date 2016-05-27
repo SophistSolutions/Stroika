@@ -287,7 +287,8 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-                explicit Optional (const T* from);
+                template    <typename   EXPLICIT_T>
+                explicit Optional (const EXPLICIT_T* from);
 
             public:
                 ~Optional ();

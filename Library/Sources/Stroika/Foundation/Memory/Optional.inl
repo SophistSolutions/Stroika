@@ -263,10 +263,11 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (const T* from)
+            template    <typename   EXPLICIT_T>
+            inline  Optional<T, TRAITS>::Optional (const EXPLICIT_T* from)
             {
                 if (from != nullptr) {
-                    fStorage_.fValue_ = fStorage_.alloc (*from);
+                    fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from));
                 }
             }
             template    <typename T, typename TRAITS>
