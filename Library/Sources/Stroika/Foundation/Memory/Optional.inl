@@ -356,11 +356,11 @@ namespace   Stroika {
             }
 #endif
             template    <typename T, typename TRAITS>
-            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
+            template    <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS> Optional<T, TRAITS>::OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
             {
                 return from == nullptr ? Optional<T, TRAITS> {} :
-                       Optional<T, TRAITS> {*from};
+                       Optional<T, TRAITS> { *from };
             }
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
