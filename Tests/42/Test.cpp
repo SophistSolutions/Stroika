@@ -96,7 +96,7 @@ namespace {
             uint32_t srcBinData[] = { 3, 5, 19, 2 };
             double  resultData[4];
             ReBin (begin (srcBinData), end (srcBinData), begin (resultData), end (resultData));
-            for (int i = 0; i < NEltsOf(srcBinData); ++i) {
+            for (size_t i = 0; i < NEltsOf(srcBinData); ++i) {
                 VerifyTestResult (srcBinData[i] == resultData[i]);
             }
         }
