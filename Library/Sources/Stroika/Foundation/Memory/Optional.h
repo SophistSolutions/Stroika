@@ -283,9 +283,9 @@ namespace   Stroika {
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
+                template    < typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 Optional (const Optional<T2, TRAITS2>& from);
-                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
+                template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < not std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
                 template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
