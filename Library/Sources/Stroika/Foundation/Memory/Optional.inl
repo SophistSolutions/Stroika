@@ -258,28 +258,6 @@ namespace   Stroika {
                 lock_guard<AssertExternallySynchronizedLock> critSec { *this };
                 fStorage_.destroy ();
             }
-#if 0
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
-            {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                if (fStorage_.peek () == &rhs) {
-                    // No need to copy in this case and would be bad to try
-                    //  Optional<T> x;
-                    //  x = *x;
-                }
-                else {
-                    if (fStorage_.peek () == nullptr) {
-                        fStorage_.fValue_ = fStorage_.alloc (rhs);
-                    }
-                    else {
-                        *fStorage_.fValue_ = rhs;
-                    }
-                }
-                return *this;
-            }
-#endif
-#if 0
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (nullopt_t)
             {
@@ -287,7 +265,6 @@ namespace   Stroika {
                 clear_ ();
                 return *this;
             }
-#endif
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T&& rhs)
             {
@@ -334,27 +311,6 @@ namespace   Stroika {
                 }
                 return *this;
             }
-#if 0
-            template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T* rhs)
-            {
-                lock_guard<AssertExternallySynchronizedLock> critSec { *this };
-                if (fStorage_.fValue_ != rhs) {
-                    if (rhs == nullptr) {
-                        clear_ ();
-                    }
-                    else {
-                        if (fStorage_.fValue_ == nullptr) {
-                            fStorage_.fValue_ = fStorage_.alloc (*rhs);
-                        }
-                        else {
-                            *fStorage_.fValue_ = *rhs;
-                        }
-                    }
-                }
-                return *this;
-            }
-#endif
             template    <typename T, typename TRAITS>
             template    <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS> Optional<T, TRAITS>::OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
@@ -589,7 +545,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
             inline  bool    operator<= (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs)
             {
-                return lhs.Compare (rhs) <= 0;
+                return lhs.Compare (Optional<T, TRAITS> { rhs }) <= 0;
             }
 
 
@@ -601,7 +557,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    operator== (const Optional<T, TRAITS>& lhs, T rhs)
             {
-                return lhs.Equals (rhs);
+                return lhs.Equals (Optional<T, TRAITS> { rhs });
             }
             template    <typename T, typename TRAITS>
             inline  bool    operator== (T lhs, const Optional<T, TRAITS>& rhs)

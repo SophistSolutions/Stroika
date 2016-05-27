@@ -24,7 +24,7 @@
  *
  *  TODO:
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (nullopt_t and typenmae U U&&;
+ *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (typename U U&&;
  *
  *      @todo   Add appropriate constexpr code. Now that we have DIRECTCONSTRUCTION we can use
  *              constexpr for some more constructors. But we must carefully use enable_if for this because
@@ -289,7 +289,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                //nonvirtual  Optional& operator= (nullopt_t);
+                nonvirtual  Optional& operator= (nullopt_t);
                 nonvirtual  Optional& operator= (T&& rhs);
                 nonvirtual  Optional& operator= (const Optional& rhs);
                 nonvirtual  Optional& operator= (Optional&& rhs);
