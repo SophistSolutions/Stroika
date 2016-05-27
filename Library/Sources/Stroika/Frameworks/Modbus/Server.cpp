@@ -287,9 +287,10 @@ namespace {
                             DbgTrace (L"Processing kReadDiscreteInputs_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
                             for (auto i : serviceHandler->ReadDiscreteInput (DiscreteRange<uint16_t> { zeroToOneBased (startingAddress), zeroToOneBased (endAddress) } .Elements ().As <IModbusService::SetRegisterNames<DiscreteInputDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);        // IModbusService must respect this!
-                                if (i.fValue) {
-                                    results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
+                                if (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress) {
+                                    if (i.fValue) {
+                                        results[(oneBasedToZeroBased (i.fKey) - startingAddress) / 8] |= Memory::Bit ((oneBasedToZeroBased (i.fKey) - startingAddress) % 8);
+                                    }
                                 }
                             }
                             {
@@ -318,8 +319,9 @@ namespace {
                             DbgTrace (L"Processing kReadHoldingResisters_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
                             for (auto i : serviceHandler->ReadHoldingRegisters (DiscreteRange<uint16_t> { zeroToOneBased (startingAddress), zeroToOneBased (endAddress) } .Elements ().As <IModbusService::SetRegisterNames<HoldingRegisterDescriptorType>> ())) {
-                                Require (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress);        // IModbusService must respect this!
-                                results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
+                                if (startingAddress <= i.fKey - 1 and i.fKey - 1 < endAddress) {
+                                    results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
+                                }
                             }
                             {
                                 // Response ready - format, toNetwork, and write
@@ -347,8 +349,9 @@ namespace {
                             DbgTrace (L"Processing kReadInputRegister_ (%d,%d) message with request-header=%s", startingAddress, quantity, Characters::ToString (requestHeader).c_str ());
 #endif
                             for (auto i : serviceHandler->ReadInputRegisters (DiscreteRange<uint16_t> { zeroToOneBased (startingAddress), zeroToOneBased (endAddress) } .Elements ().As <IModbusService::SetRegisterNames<InputRegisterDescriptorType>> ())) {
-                                Require (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) < endAddress);        // IModbusService must respect this!
-                                results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
+                                if (startingAddress <= oneBasedToZeroBased (i.fKey) and oneBasedToZeroBased (i.fKey) < endAddress) {
+                                    results[oneBasedToZeroBased (i.fKey) - startingAddress] = ToNetwork_ (i.fValue);
+                                }
                             }
                             {
                                 // Response ready - format, toNetwork, and write

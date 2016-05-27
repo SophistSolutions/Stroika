@@ -111,6 +111,11 @@ namespace   Stroika {
             /**
              *  Users of this module simple subclass this interface, and provide answers to reads and writes, and
              *  then can invoke the server object with this, to create a quickie Modbus TCP server.
+             *
+             *  \note   Many of these APIs return uint16_t, but logically try to return other larger things like floats.
+             *          So the ReadInputRegisters () and ReadHoldingRegisters () APIs may return mappings outside
+             *          the strict range prescribed by their argument 'names'. Those returned values may or may not
+             *          be transported over the wire, depending on the caller request.
              */
             struct      IModbusService {
                 virtual ~IModbusService () = default;
