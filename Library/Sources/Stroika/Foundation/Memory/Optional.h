@@ -274,8 +274,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Variant taking const T* is exerpimental. Idea is arg can be null, and means missing, and if non null,
-                 *  derefrence and copy. Experiemental cuz could mess up type deducation of Optional<T>...
+                 *  Constructor orload taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
+                 *  with code that uses null-pointers to mean nothing. Here nullptr means missing, and if non null,
+                 *  derefrence and copy.
                  */
                 constexpr   Optional ();
                 constexpr   Optional (nullopt_t);
@@ -287,8 +288,8 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-                template    <typename   EXPLICIT_T>
-                explicit Optional (const EXPLICIT_T* from);
+                template    < typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T*>::value && std::is_same<T, typename std::common_type<T, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T*>::type>::value >::type >
+                explicit Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
                 ~Optional ();
@@ -467,6 +468,9 @@ namespace   Stroika {
                  *  This is really just syntactic sugar equivalent to peek () - except that it requires
                  *  not-null - but more convenient since it allows the use of an optional to
                  *  syntactically mirror dereferencing a pointer.
+                 *
+                 *  Another important difference is that it CHECKS lifetime/locking rules using
+                 *  @Debug::AssertExternallySynchronizedLock in debug builds.
                  */
                 nonvirtual  MutableHolder_  operator-> ();
                 nonvirtual  ConstHolder_    operator-> () const;
@@ -543,7 +547,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             bool    operator< (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-            template    <typename T, typename TRAITS, typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
+            template    <typename T, typename TRAITS, typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T>
             bool    operator< (const Optional<T, TRAITS>& lhs, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T& rhs);
 
             /**

@@ -263,8 +263,8 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename   EXPLICIT_T>
-            inline  Optional<T, TRAITS>::Optional (const EXPLICIT_T* from)
+            template    <typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE>
+            inline  Optional<T, TRAITS>::Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
             {
                 if (from != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from));
