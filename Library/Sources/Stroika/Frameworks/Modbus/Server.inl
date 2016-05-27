@@ -20,7 +20,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** Modbus::SplitSrcAcrossOutputs ********************
+             *************************** Modbus::SplitSrcAcrossOutputs **********************
              ********************************************************************************
              */
             template    <typename MODBUS_REGISTER_DESCRIPTOR, typename SRC_TYPE>
