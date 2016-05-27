@@ -275,7 +275,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Constructor orload taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
-                 *  with code that uses null-pointers to mean nothing. Here nullptr means missing, and if non null,
+                 *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
                  *  derefrence and copy.
                  */
                 constexpr   Optional ();
@@ -288,7 +288,7 @@ namespace   Stroika {
                 template    < typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, T2>::value && !std::is_same<T, typename std::common_type<T, T2>::type>::value >::type >
                 explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
                 Optional (Optional&& from);
-                template    < typename   RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<T, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T*>::value && std::is_same<T, typename std::common_type<T, const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T*>::type>::value >::type >
+                template    < typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if < std::is_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type >
                 explicit Optional (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
             public:
