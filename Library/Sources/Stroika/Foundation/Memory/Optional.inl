@@ -360,7 +360,7 @@ namespace   Stroika {
             inline  Optional<T, TRAITS> Optional<T, TRAITS>::OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from)
             {
                 return from == nullptr ? Optional<T, TRAITS> {} :
-                       Optional<T, TRAITS> { *from };
+                       Optional<T, TRAITS> { static_cast<T> ( *from ) };
             }
             template    <typename T, typename TRAITS>
             inline  void    Optional<T, TRAITS>::clear ()
