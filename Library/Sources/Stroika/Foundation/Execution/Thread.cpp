@@ -589,6 +589,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
         // SEE https://stroika.atlassian.net/browse/STK-477
         // saw triggered on UNIX, gcc48, 2015-04-03 running regtests
         // saw triggered on Windows, using MSVC2k15. But very rare
+        // saw triggered on UNIX, gcc48, 2016-05-26 running regtests
     }
     if (*fTLSInterruptFlag_ /*fStatus_ == Status::eAborting*/) {
 #if     qPlatform_POSIX
