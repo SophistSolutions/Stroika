@@ -274,9 +274,17 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Constructor orload taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
+                 *  Constructor overload taking const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* is to allow easier interoperability
                  *  with code that uses null-pointers to mean 'is-missing': nullptr means missing, and if non null,
                  *  derefrence and copy.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      float*  d1  =   nullptr;
+                 *      double* d2  =   nullptr;
+                 *      Assert (Optional<double> { d1 }.IsMissing ());
+                 *      Assert (Optional<double> { d2 }.IsMissing ());
+                 *      \endcode
                  */
                 constexpr   Optional ();
                 constexpr   Optional (nullopt_t);
