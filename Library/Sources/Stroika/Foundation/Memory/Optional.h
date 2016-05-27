@@ -142,7 +142,7 @@ namespace   Stroika {
              *      @todo make this a typealias when we have c++ impls with c++17 version
              */
             struct  nullopt_t {
-                constexpr nullopt_t(int) {}
+                constexpr explicit nullopt_t (int) {}
             };
 
 
