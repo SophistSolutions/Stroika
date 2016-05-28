@@ -19,10 +19,37 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a145">v2.0a145x</a><br/>2016-05-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a145">v2.0a145</a><br/>2016-05-27</td>
 <td>
 	<ul>
-		<li>todo</li>
+		<li>Optional
+			<ul>
+				<li>Gave up on Optional&lt;T&gt; (T*) - instead - Optional&lt;T&gt;::OptionalFromNullable</li>
+				<li>More misc cleanups - nullopt_t, op=, etc.</li>
+			</ul>
+		</li>
+		<li>Modbus TCP
+			<ul>
+				<li>added Modbus::SplitSrcAcrossOutputs</li>
+				<li>relax restrictions on returned values from APIs so we can return things outside the range of request - and handle that on the server side</li>
+			</ul>
+		</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>valgrind (memcheck only; helgrind still broken)</li>
+			</ul>
+		</li>
+		<li>SKIPPED
+			<ul>
+				<li>cross-compile 2 raspberry-pi {skipped remote make run-tests}</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
