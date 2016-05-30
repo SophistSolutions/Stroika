@@ -17,7 +17,7 @@
 #endif
 
 #if     qStroika_FeatureSupported_Valgrind
-#include    "helgrind.h"
+#include    "valgrind/helgrind.h"
 #endif
 
 

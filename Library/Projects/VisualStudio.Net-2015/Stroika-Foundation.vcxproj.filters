@@ -1788,6 +1788,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.h">
       <Filter>Sources\Streams</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2711,6 +2714,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
 </Project>
