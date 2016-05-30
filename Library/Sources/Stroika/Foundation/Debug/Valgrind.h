@@ -9,9 +9,24 @@
 
 
 /**
+ *  \brief  Include this file VERY EARLY ON - before including stuff like <cstdio> -
+ *          to allow use of Valgrind (some features)
+ *
  *  Note - this is NOT required for use of valgrind memcheck() - at least as of v2.0a145. But it does
  *  help in getting clean results with valgrind tool helgrind.
+ *
+ *  This module is VERY careful not to include unneded files - and includes just the minimal required to make
+ *  the valgrind family of tools work IFF you preconfigure (./configure) qStroika_FeatureSupported_Valgrind to
+ *  be a predefined C++ macro define.
+ *
+ *
+ *  TODO:
+ *      @todo
+ *
  */
+
+
+
 #ifndef qStroika_FeatureSupported_Valgrind
 #define qStroika_FeatureSupported_Valgrind  0
 #endif

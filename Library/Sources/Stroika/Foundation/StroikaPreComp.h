@@ -14,7 +14,12 @@ namespace   Stroika {
 }
 #endif
 
-// Must be included before libg++ stuff - for shared_ptr etc
+/*
+ *  @see Valgrind.h header for more details. But this should be SAFE and REQUIRED
+ *  to include very early on.
+ *
+ *  Must be included before libg++ stuff (e.g. <shared_ptr>)
+ */
 #include    "Debug/Valgrind.h"
 
 #endif  /*_Stroika_Foundation_StroikaPreComp_h_*/
