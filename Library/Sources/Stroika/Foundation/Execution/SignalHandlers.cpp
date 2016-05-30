@@ -136,6 +136,10 @@ class   SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 public:
     Rep_ ()
     {
+#if     qStroika_FeatureSupported_Valgrind
+        VALGRIND_HG_DISABLE_CHECKING (&fIncomingSignalCounts_, sizeof(fIncomingSignalCounts_)); // helgrind doesnt seem to understand std::atomic
+        VALGRIND_HG_DISABLE_CHECKING (&fLastSignalRecieved_, sizeof(fLastSignalRecieved_));     // helgrind doesnt seem to understand std::atomic
+#endif
         fBlockingQueuePusherThread_ = Thread {
             [this] ()
             {
