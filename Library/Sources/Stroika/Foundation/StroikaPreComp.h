@@ -15,6 +15,6 @@ namespace   Stroika {
 #endif
 
 // Must be included before libg++ stuff - for shared_ptr etc
-#include	"Debug/Valgrind.h"
+#include    "Debug/Valgrind.h"
 
 #endif  /*_Stroika_Foundation_StroikaPreComp_h_*/

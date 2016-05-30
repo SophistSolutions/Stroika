@@ -23,11 +23,11 @@
 
 #if     qStroika_FeatureSupported_Valgrind
 /*
- *	See https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug.html
+ *  See https://gcc.gnu.org/onlinedocs/libstdc++/manual/debug.html
  */
-#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(A)	ANNOTATE_HAPPENS_BEFORE(A)
-#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(A)	ANNOTATE_HAPPENS_AFTER(A)
-#enidf
+#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_BEFORE(A)  ANNOTATE_HAPPENS_BEFORE(A)
+#define _GLIBCXX_SYNCHRONIZATION_HAPPENS_AFTER(A)   ANNOTATE_HAPPENS_AFTER(A)
+#endif
 
 
 /**
