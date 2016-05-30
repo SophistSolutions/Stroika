@@ -58,7 +58,7 @@ help:
 	@echo "    clobber:"
 	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
 	@echo "    tests:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=1] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind, as can VALGRIND_SUPPRESSIONS=)"
+	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=helgrind] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind, as can VALGRIND_SUPPRESSIONS=)"
 
 
 all:		tests 
