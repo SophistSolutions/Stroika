@@ -454,6 +454,10 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          */
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
         incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
+#if     qStroika_FeatureSupported_Valgrind
+        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSAbortFlag_, sizeof(*incRefCnt->fTLSAbortFlag_));           // helgrind doesnt seem to understand std::atomic
+        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSInterruptFlag_, sizeof(*incRefCnt->fTLSInterruptFlag_));   // ''
+#endif
 
         try {
             // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
@@ -662,12 +666,9 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
             }
             break;
     }
-    // this got disabled a year ago, but probably should still be there as an assert --LGP 2016-03-15
-#if 1
     // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
     Require (rep->fStatus_ == Status::eCompleted);
-#endif
 }
 #endif
 
