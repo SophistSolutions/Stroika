@@ -15,6 +15,7 @@
 #include    <vector>
 
 #include    "../Debug/Assertions.h"
+#include    "../Debug/Valgrind.h"
 #include    "../Execution/Common.h"
 
 #include    "Common.h"
@@ -203,6 +204,9 @@ namespace   Stroika {
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
+#if     qStroika_FeatureSupported_Valgrind
+                VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
+#endif
                 Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
             }
             template    <size_t SIZE>

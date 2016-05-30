@@ -107,6 +107,7 @@ sub	DoHelp_
         print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
+        print("	    --valgrind { enable|disable|default }			/* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -447,6 +448,22 @@ sub	ParseCommandLine_Remaining_
 			}
 			elsif ($var eq "disable") {
 				push (@useExtraCDefines, '#define qAllowBlockAllocation 0');
+			}
+			elsif ($var eq "default") {
+			}
+			else  {
+                print ("UNRECOGNIZED block-allocation ARG: $var\n");
+                DoHelp_ (1);
+			}
+		}
+		elsif ((lc ($var) eq "-valgrind") or (lc ($var) eq "--valgrind")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 1');
+			}
+			elsif ($var eq "disable") {
+				push (@useExtraCDefines, '#define qStroika_FeatureSupported_Valgrind 0');
 			}
 			elsif ($var eq "default") {
 			}
