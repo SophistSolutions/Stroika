@@ -197,9 +197,6 @@ namespace   Stroika {
                  * treat this as a linked list, and make head point to next member
                  */
                 sNextLink_ = (*(void**)sNextLink_);
-#if     qStroika_FeatureSupported_Valgrind
-                VALGRIND_HG_CLEAN_MEMORY (result, SIZE);
-#endif
                 return result;
             }
             template    <size_t SIZE>
@@ -207,10 +204,10 @@ namespace   Stroika {
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
+                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
 #if     qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
 #endif
-                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
             }
             template    <size_t SIZE>
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
