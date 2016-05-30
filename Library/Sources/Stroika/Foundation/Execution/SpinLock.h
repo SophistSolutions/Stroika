@@ -42,6 +42,11 @@ namespace   Stroika {
                 SpinLock ();
                 SpinLock (const SpinLock&) = delete;
 
+#if     qStroika_FeatureSupported_Valgrind
+            public:
+                ~SpinLock ();
+#endif
+
             public:
                 nonvirtual  SpinLock& operator= (const SpinLock&) = delete;
 
