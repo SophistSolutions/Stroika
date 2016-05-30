@@ -18,6 +18,7 @@
 
 #if     qStroika_FeatureSupported_Valgrind
 #include    "valgrind/helgrind.h"
+#include    "valgrind/memcheck.h"
 #endif
 
 
