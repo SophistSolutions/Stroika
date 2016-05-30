@@ -28,6 +28,7 @@ namespace   Stroika {
 #endif
             {
 #if     qStroika_FeatureSupported_Valgrind
+                VALGRIND_HG_DISABLE_CHECKING (&fLock_, sizeof(fLock_)); // helgrind doesnt seem to understand std::atomic
                 VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
 #endif
 #if     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
@@ -38,6 +39,7 @@ namespace   Stroika {
             inline  SpinLock::~SpinLock ()
             {
                 VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+                VALGRIND_HG_ENABLE_CHECKING (&fLock_, sizeof(fLock_));
             }
 #endif
             inline  bool    SpinLock::try_lock ()
