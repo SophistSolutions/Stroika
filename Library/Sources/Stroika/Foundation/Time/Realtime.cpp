@@ -74,9 +74,6 @@ namespace {
 DurationSecondsType Stroika::Foundation::Time::GetTickCount () noexcept
 {
     static  const   DurationSecondsType kFirstTC_   =   GetTickCount_ ();
-#if     qStroika_FeatureSupported_Valgrind
-    // I Think it may be a bug that helgrind doesnt recognize g++ magic statics
-    VALGRIND_HG_DISABLE_CHECKING (&kFirstTC_, sizeof(kFirstTC_));
-#endif
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind (kFirstTC_);       // I Think it may be a bug that helgrind doesnt recognize g++ magic statics
     return GetTickCount_ () - kFirstTC_;
 }

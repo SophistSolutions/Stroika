@@ -453,11 +453,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          */
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
         incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
-#if     qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSAbortFlag_, sizeof (*incRefCnt->fTLSAbortFlag_));          // helgrind doesnt seem to understand std::atomic
-        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSInterruptFlag_, sizeof (*incRefCnt->fTLSInterruptFlag_));  // ''
-        VALGRIND_HG_DISABLE_CHECKING (&incRefCnt->fStatus_, sizeof (incRefCnt->fStatus_));                      // ''
-#endif
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (*incRefCnt->fTLSAbortFlag_);
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (*incRefCnt->fTLSInterruptFlag_);
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (incRefCnt->fStatus_);
 
         try {
             // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID

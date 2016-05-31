@@ -45,6 +45,26 @@
 #endif
 
 
+
+/*
+ *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind () on variables Helgrind should
+ *  ignore.
+ *
+ *  There are many classes of 'bugs' with helgrind that we can most easily avoid by just ignoring those variables.
+ *      >   std::atomic
+ *      >   magic statics
+ *
+ *
+ */
+#if     qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)     \
+    VALGRIND_HG_DISABLE_CHECKING (&(X), sizeof (X))
+#else
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)
+#endif
+
+
+
 /**
  *  \file
  *
