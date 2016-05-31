@@ -455,8 +455,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
         incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
 #if     qStroika_FeatureSupported_Valgrind
-        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSAbortFlag_, sizeof(*incRefCnt->fTLSAbortFlag_));           // helgrind doesnt seem to understand std::atomic
-        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSInterruptFlag_, sizeof(*incRefCnt->fTLSInterruptFlag_));   // ''
+        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSAbortFlag_, sizeof (*incRefCnt->fTLSAbortFlag_));          // helgrind doesnt seem to understand std::atomic
+        VALGRIND_HG_DISABLE_CHECKING (incRefCnt->fTLSInterruptFlag_, sizeof (*incRefCnt->fTLSInterruptFlag_));  // ''
+        VALGRIND_HG_DISABLE_CHECKING (&incRefCnt->fStatus_, sizeof (incRefCnt->fStatus_));                      // ''
 #endif
 
         try {

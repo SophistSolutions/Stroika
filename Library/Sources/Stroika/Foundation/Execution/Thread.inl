@@ -77,7 +77,7 @@ namespace   Stroika {
                 InteruptFlagType_*      fTLSAbortFlag_ {};          // Can only be set properly within the MAINPROC of the thread
                 InteruptFlagType_*      fTLSInterruptFlag_ {};      // ""
                 std::thread             fThread_;
-                std::atomic<Status>     fStatus_;
+                atomic<Status>          fStatus_;
                 WaitableEvent           fRefCountBumpedEvent_;
                 WaitableEvent           fOK2StartEvent_;
                 WaitableEvent           fThreadDone_;
