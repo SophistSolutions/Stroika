@@ -7,6 +7,7 @@
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Characters/ToString.h"
+#include    "../Execution/Finally.h"
 #include    "../Memory/BlockAllocated.h"
 
 #include    "Common.h"
@@ -72,6 +73,10 @@ public:
                 Assert (fCurTask_ != nullptr);
                 Assert (fNextTask_ == nullptr);
             }
+            auto&&  cleanup =   Execution::Finally ([this] () {
+                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                fCurTask_ = nullptr;
+            });
             try {
                 // Use lock to access fCurTask_, but dont hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType    task2Run;
@@ -80,19 +85,11 @@ public:
                     task2Run = fCurTask_;
                 }
                 task2Run ();
-                {
-                    auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                    fCurTask_ = nullptr;
-                }
             }
             catch (const Thread::AbortException&) {
-                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                fCurTask_ = nullptr;
                 throw;  // cancel this thread
             }
             catch (...) {
-                auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
-                fCurTask_ = nullptr;
                 // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
             }
         }
