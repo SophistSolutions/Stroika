@@ -73,8 +73,17 @@ public:
                 Assert (fNextTask_ == nullptr);
             }
             try {
-                fCurTask_ ();
-                fCurTask_ = nullptr;
+                // Use lock to access fCurTask_, but dont hold the lock during run, so others can call getcurrenttask
+                ThreadPool::TaskType    task2Run;
+                {
+                    auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                    task2Run = fCurTask_;
+                }
+                task2Run ();
+                {
+                    auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
+                    fCurTask_ = nullptr;
+                }
             }
             catch (const Thread::AbortException&) {
                 auto    critSec { make_unique_lock (fCurTaskUpdateCritSection_) };
