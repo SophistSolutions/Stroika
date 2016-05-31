@@ -351,11 +351,10 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 
     (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {
-        (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the
-        // thread has started...
+        (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
     }
     catch (...) {
-        //???
+        AssertNotReached ();
         Execution::ReThrow ();
     }
 }
