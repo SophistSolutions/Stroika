@@ -27,6 +27,9 @@ namespace   {
         Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             bool    called  =   false;
+#if     qStroika_FeatureSupported_Valgrind
+            VALGRIND_HG_DISABLE_CHECKING (&called, sizeof(called)); // helgrind doesnt know signal handler must have returend by end of sleep.
+#endif
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
             Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
