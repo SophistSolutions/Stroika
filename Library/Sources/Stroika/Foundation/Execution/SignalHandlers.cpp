@@ -136,7 +136,7 @@ class   SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 public:
     Rep_ ()
     {
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fIncomingSignalCounts);
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fIncomingSignalCounts_);
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fLastSignalRecieved_);
         fBlockingQueuePusherThread_ = Thread {
             [this] ()
