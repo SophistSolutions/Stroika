@@ -71,6 +71,13 @@ namespace   Stroika {
              *  the optionally provided thread pool (and other configuration options) and send actual handler
              *  requests to the argument IModbusService handler.
              *
+             *  Supported Function Codes:
+             *      o   kReadCoils              (#1)
+             *      o   ReadDiscreteInputs      (#2)
+             *      o   ReadHoldingResisters    (#3)
+             *      o   ReadInputRegister       (#4)
+             *      o   WriteSingleCoil         (#5)
+             *
              *  \req serviceHandler != nullptr
              */
             Execution::Thread   MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions {});

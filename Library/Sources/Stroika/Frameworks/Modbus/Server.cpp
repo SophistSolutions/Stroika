@@ -58,7 +58,7 @@ namespace {
         kReadDiscreteInputs_        =   2,
         kReadHoldingResisters_      =   3,
         kReadInputRegister_         =   4,
-        kWriteSingleCoil            =   5,
+        kWriteSingleCoil_           =   5,
     };
 }
 
@@ -142,7 +142,7 @@ namespace Stroika {
                         return L"Read-Holding-Resisters_";
                     case FunctionCodeType_::kReadInputRegister_:
                         return L"Read-Input-Register_";
-                    case FunctionCodeType_::kWriteSingleCoil:
+                    case FunctionCodeType_::kWriteSingleCoil_:
                         return L"WriteSingleCoil";
                 }
                 return Format (L"%d", f);
@@ -366,14 +366,14 @@ namespace {
                             }
                         }
                         break;
-                    case FunctionCodeType_::kWriteSingleCoil: {
+                    case FunctionCodeType_::kWriteSingleCoil_: {
                             /*
                              *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 17
                              */
                             uint16_t    outputAddress   =   checkedReadHelper (requestPayload, 0xff00).first;
                             uint16_t    value           =   checkedReadHelper (requestPayload, 0xff00).second;
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                            DbgTrace (L"Processing kWriteSingleCoil (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
+                            DbgTrace (L"Processing kWriteSingleCoil_ (%d,%d) message with request-header=%s", outputAddress, value, Characters::ToString (requestHeader).c_str ());
 #endif
                             serviceHandler->WriteCoils (initializer_list<KeyValuePair<CoilsDescriptorType::NameType, CoilsDescriptorType::ValueType>> { {zeroToOneBased (outputAddress), value == 0 ? false : true } });
                             {
