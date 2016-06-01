@@ -1,0 +1,15 @@
+{
+   <insert_a_suppression_name_here>
+   Helgrind:Race
+   fun:mempcpy
+   fun:_dl_allocate_tls_init
+   fun:get_cached_stack
+   fun:allocate_stack
+   fun:pthread_create@@GLIBC_2.2.5
+   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZNSt6thread15_M_start_threadESt10shared_ptrINS_10_Impl_baseEE
+   fun:thread<Stroika::Foundation::Execution::Thread::Rep_::DoCreate(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_>*)::<lambda()> >
+   fun:_ZN7Stroika10Foundation9Execution6Thread4Rep_8DoCreateEPSt10shared_ptrIS3_E
+   fun:_ZN7Stroika10Foundation9Execution6ThreadC1ERKNS1_8FunctionIFvvEEERKNS0_6Memory8OptionalINS0_10Characters6StringENS8_31Optional_Traits_Inplace_StorageISB_EEEERKNS9_INS2_13ConfigurationENSC_ISH_EEEE
+}
+

@@ -105,7 +105,7 @@ if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
 	echo -n "Run-Tests VALGRIND=helgrind ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC ..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND=helgrind ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	VALGRIND_SUPPRESSIONS="" make CONFIGURATION=ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
+	VALGRIND_SUPPRESSIONS="Common-Helgrind.supp" make CONFIGURATION=ReleaseConfig_With_VALGRIND_PURIFY_NO_BLOCK_ALLOC VALGRIND=helgrind run-tests >>$TEST_OUT_FILE 2>&1
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
