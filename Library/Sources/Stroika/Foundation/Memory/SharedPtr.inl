@@ -176,7 +176,18 @@ namespace   Stroika {
                         }
                         fCountHolder_ = nullptr;
                     }
-
+#if     qStroika_FeatureSupported_Valgrind
+                    // See http://valgrind.org/docs/manual/hg-manual.html section 7.5
+                    inline  void    ValgrindAnnotateGotLockZeroCaseClearing ()
+                    {
+                        ANNOTATE_HAPPENS_AFTER(&fCountHolder_->fCount);
+                        ANNOTATE_HAPPENS_BEFORE_FORGET_ALL(&fCountHolder_->fCount);
+                    }
+                    inline  void    ValgrindAnnotateNotGotZeroCase ()
+                    {
+                        ANNOTATE_HAPPENS_BEFORE(&fCountHolder_->fCount);
+                    }
+#endif
                 private:
                     template    <typename T2>
                     friend  class   Envelope_;
@@ -284,10 +295,19 @@ namespace   Stroika {
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
                     if (fEnvelope_.GetPtr () != nullptr) {
                         if (fEnvelope_.Decrement ()) {
+#if     qStroika_FeatureSupported_Valgrind
+                            fEnvelope_.ValgrindAnnotateGotLockZeroCaseClearing ();
+#endif
                             fEnvelope_.DoDeleteCounter ();
                             delete fEnvelope_.GetPtr ();
                             fEnvelope_.SetPtr (nullptr);
                         }
+#if     qStroika_FeatureSupported_Valgrind
+                        else {
+                            fEnvelope_.ValgrindAnnotateNotGotZeroCase ();
+                        }
+#endif
+
                     }
                     fEnvelope_ = rhs.fEnvelope_;
                     if (fEnvelope_.GetPtr () != nullptr) {
@@ -303,10 +323,18 @@ namespace   Stroika {
                 if (rhs.fEnvelope_.GetPtr () != fEnvelope_.GetPtr ()) {
                     if (fEnvelope_.GetPtr () != nullptr) {
                         if (fEnvelope_.Decrement ()) {
+#if     qStroika_FeatureSupported_Valgrind
+                            fEnvelope_.ValgrindAnnotateGotLockZeroCaseClearing ();
+#endif
                             fEnvelope_.DoDeleteCounter ();
                             delete fEnvelope_.GetPtr ();
                             fEnvelope_.SetPtr (nullptr);
                         }
+#if     qStroika_FeatureSupported_Valgrind
+                        else {
+                            fEnvelope_.ValgrindAnnotateNotGotZeroCase ();
+                        }
+#endif
                     }
                     fEnvelope_ = std::move (rhs.fEnvelope_);        // no need to bump refcounts - moved from one to another
                     Assert (rhs.fEnvelope_.GetPtr () == nullptr);   // NB: we ONLY gaurantee this if not self-moving
@@ -318,9 +346,17 @@ namespace   Stroika {
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     if (fEnvelope_.Decrement ()) {
+#if     qStroika_FeatureSupported_Valgrind
+                        fEnvelope_.ValgrindAnnotateGotLockZeroCaseClearing ();
+#endif
                         fEnvelope_.DoDeleteCounter ();
                         delete fEnvelope_.GetPtr ();
                     }
+#if     qStroika_FeatureSupported_Valgrind
+                    else {
+                        fEnvelope_.ValgrindAnnotateNotGotZeroCase ();
+                    }
+#endif
                 }
             }
             template    <typename T>
@@ -360,10 +396,18 @@ namespace   Stroika {
             {
                 if (fEnvelope_.GetPtr () != nullptr) {
                     if (fEnvelope_.Decrement ()) {
+#if     qStroika_FeatureSupported_Valgrind
+                        fEnvelope_.ValgrindAnnotateGotLockZeroCaseClearing ();
+#endif
                         fEnvelope_.DoDeleteCounter ();
                         delete fEnvelope_.GetPtr ();
                         fEnvelope_.SetPtr (nullptr);
                     }
+#if     qStroika_FeatureSupported_Valgrind
+                    else {
+                        fEnvelope_.ValgrindAnnotateNotGotZeroCase ();
+                    }
+#endif
                 }
             }
             template    <typename T>
