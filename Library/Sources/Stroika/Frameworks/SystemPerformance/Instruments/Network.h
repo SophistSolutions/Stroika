@@ -20,6 +20,9 @@
  *  \file
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *  TODO:
+ *      @todo   https://stroika.atlassian.net/browse/STK-479 - Add (elaborated) TCPStats - like we have in Process TCPStats
  */
 
 

@@ -239,6 +239,8 @@ namespace   Stroika {
                          *  Where available, check the number of TCP streams associated with this process - and
                          *  separately count established, listening, and other (usually shutting down)
                          *  TCP streams.
+                         *
+                         *  \note   @todo https://stroika.atlassian.net/browse/STK-478  - fTCPStats for whole computer not process
                          */
                         struct  TCPStats {
                             unsigned int    fEstablished    {};
