@@ -18,6 +18,30 @@ History
 
 
 
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a146">v2.0a146</a><br/>2016-06-01</td>
+<td>
+	<ul>
+		<li>Quick release - so no regression tests completed (and helgrind regtest still not clean).</li>
+		<li>Valgrind - Helgrind work
+			<ul>
+				<li>qStroika_FeatureSupported_Valgrind and VALGRIND_HG_CLEAN_MEMORY support - https://stroika.atlassian.net/browse/STK-471</li>
+				<li>Common-Helgrind.supp.</li>
+				<li>Enabled running Helgrind in the normal release process Regression tests (still a few regression warnings, but all tests pass)</li>
+			</ul>
+		</li>
+		<li>fixed slight data race in ThreadPool code - detected by helgrind, and other related minor ThreadPool cleanups</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a145">v2.0a145</a><br/>2016-05-27</td>
 <td>
