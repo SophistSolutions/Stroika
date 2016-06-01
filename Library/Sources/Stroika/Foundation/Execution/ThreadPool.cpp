@@ -118,11 +118,6 @@ private:
  ********************************************************************************
  */
 ThreadPool::ThreadPool (unsigned int nThreads)
-    : fCriticalSection_ ()
-    , fAborted_ (false)
-    , fThreads_ ()
-    , fPendingTasks_ ()
-    , fTasksMaybeAdded_ (WaitableEvent::eAutoReset)
 {
     SetPoolSize (nThreads);
 }
@@ -398,12 +393,12 @@ void    ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         }
     }
 }
-
 void    ThreadPool::Abort ()
 {
     Debug::TraceContextBumper ctx ("ThreadPool::Abort");
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting...
     DbgTrace (L"this-status: %s", ToString ().c_str ());
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_);   // disable cuz - see below
     fAborted_ = true;   // No race, because fAborted never 'unset'
     // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
