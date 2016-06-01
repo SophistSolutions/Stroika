@@ -180,12 +180,14 @@ namespace   Stroika {
                     // See http://valgrind.org/docs/manual/hg-manual.html section 7.5
                     inline  void    ValgrindAnnotateGotLockZeroCaseClearing ()
                     {
-                        ANNOTATE_HAPPENS_AFTER(&fCountHolder_->fCount);
-                        ANNOTATE_HAPPENS_BEFORE_FORGET_ALL(&fCountHolder_->fCount);
+                        RequireNotNull (fCountHolder_);
+                        ANNOTATE_HAPPENS_AFTER (&fCountHolder_->fCount);
+                        ANNOTATE_HAPPENS_BEFORE_FORGET_ALL (&fCountHolder_->fCount);
                     }
                     inline  void    ValgrindAnnotateNotGotZeroCase ()
                     {
-                        ANNOTATE_HAPPENS_BEFORE(&fCountHolder_->fCount);
+                        RequireNotNull (fCountHolder_);
+                        ANNOTATE_HAPPENS_BEFORE (&fCountHolder_->fCount);
                     }
 #endif
                 private:
