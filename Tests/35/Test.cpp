@@ -703,6 +703,8 @@ namespace {
         t2.Start ();
         t1.Start ();
         WaitableEvent::WaitForAll (Sequence<WaitableEvent*> ({&we1, &we2}));
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (w1Fired);     // tecnically a race
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (w2Fired);     // tecnically a race
         VerifyTestResult (w1Fired and w2Fired);
         // They capture so must wait for them to complete
         t1.AbortAndWaitForDone ();
