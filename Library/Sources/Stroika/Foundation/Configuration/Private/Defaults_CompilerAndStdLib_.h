@@ -1554,22 +1554,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-/*
- *  NB: we can lose these macros once all our compilers support the new C++ syntax.
- *
- *  Also note - the bug workaround - enum  { NAME = static_cast<TYPE> (VALUE) } - doesn't
- *  work pefrectly - since it doesnt create a name of the desired type, but its usually
- *  pretty close.
- *
- *      &&&& DEPRECATED &&& AS OF 2016-05-20 - v2.0a143
- */
-#define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
-    static  constexpr TYPE NAME = VALUE;
-
-
-
-
-
 
 #if     qCompilerAndStdLib_shared_mutex_module_Buggy
 namespace std {

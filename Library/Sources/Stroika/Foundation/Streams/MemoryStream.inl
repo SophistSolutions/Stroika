@@ -210,7 +210,7 @@ namespace   Stroika {
 
             private:
                 // @todo - COULD redo using
-                //      DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
+                //      constexpr size_t  USE_BUFFER_BYTES = 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep);
                 //      Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
                 // Or Stroika chunked array code
 
