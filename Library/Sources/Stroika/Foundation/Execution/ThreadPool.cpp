@@ -125,7 +125,7 @@ ThreadPool::ThreadPool (unsigned int nThreads)
 ThreadPool::~ThreadPool ()
 {
     try {
-        this->AbortAndWaitForDone ();
+        AbortAndWaitForDone ();
     }
     catch (...) {
         DbgTrace ("Ignore exception in destroying thread pool ** probably bad thing...");
