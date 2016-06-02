@@ -228,6 +228,16 @@ namespace   {
 
 int     main (int argc, const char* argv[])
 {
+	struct foo {
+	 const Mapping<int,int> cx;
+	};
+	foo bar;
+	foo ddd = bar;
+	if (auto i = ddd.cx.Lookup (1)) {
+		int j = *i;
+	}
+	
+
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
