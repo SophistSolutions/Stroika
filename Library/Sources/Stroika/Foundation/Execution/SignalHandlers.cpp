@@ -218,6 +218,7 @@ public:
     ~Rep_ ()
     {
         Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_);		// For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext  suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
         tell2Wake_ ();
