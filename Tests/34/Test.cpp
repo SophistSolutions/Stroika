@@ -45,6 +45,7 @@ namespace   {
         {
             bool    called  =   false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}, SignalHandler::Type::eDirect));
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
@@ -61,6 +62,7 @@ namespace   {
         {
             bool    called  =   false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
+            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
             ::raise (SIGINT);
             Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
             VerifyTestResult (called);
