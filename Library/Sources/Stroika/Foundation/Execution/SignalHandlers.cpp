@@ -133,6 +133,35 @@ DISABLE_COMPILER_MSC_WARNING_START(4351)
  *      we cannot since that code allocates memory, and could deadlock.
  */
 class   SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+private:
+    void    waitForNextSig_ ()
+    {
+        // USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one waits()
+#if     qConditionVariableSetSafeFromSignalHandler_
+        // @todo - verify std::condition_variable (not sure that is safe in signal handler)
+        // THis is probably OK for now
+        unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() {return fWorkAvailable_.load ();});
+#else
+        constexpr   DurationSecondsType kLongCheck_  { 1.0f };
+        constexpr   DurationSecondsType kQuickCheck_  { 0.1f };
+        fChangedRecheckTime_.WaitQuietly (fHandlers_->empty () ? kLongCheck_ : kQuickCheck_);   // HACK til we can do condition variable SET from signal handler
+#endif
+    }
+    void    tell2Wake_ ()
+    {
+        // USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one signals ()
+#if     qConditionVariableSetSafeFromSignalHandler_
+        fRecievedSig_.notify_one ();
+        {
+            std::lock_guard<std::mutex> lk(fRecievedSig_NotSureWhatMutexFor_);
+            fWorkAvailable_ = true;
+        }
+        fRecievedSig_.notify_one ();
+#else
+        fChangedRecheckTime_.Set ();
+#endif
+    }
 public:
     Rep_ ()
     {
@@ -146,16 +175,7 @@ public:
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
                     CheckForThreadInterruption ();
-#if     qConditionVariableSetSafeFromSignalHandler_
-                    // @todo - verify std::condition_variable (not sure that is safe in signal handler)
-                    // THis is probably OK for now
-                    unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-                    fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() {return fWorkAvailable_.load ();});
-#else
-                    constexpr   DurationSecondsType kLongCheck_  { 1.0f };
-                    constexpr   DurationSecondsType kQuickCheck_  { 0.1f };
-                    fChangedRecheckTime_.WaitQuietly (fHandlers_->empty () ? kLongCheck_ : kQuickCheck_);   // HACK til we can do condition variable SET from signal handler
-#endif
+                    waitForNextSig_ ();
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
 #endif
@@ -200,16 +220,7 @@ public:
         Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_");
         Thread::SuppressInterruptionInContext  suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
-#if     qConditionVariableSetSafeFromSignalHandler_
-        fRecievedSig_.notify_one ();
-        {
-            std::lock_guard<std::mutex> lk(fRecievedSig_NotSureWhatMutexFor_);
-            fWorkAvailable_ = true;
-        }
-        fRecievedSig_.notify_one ();
-#else
-        fChangedRecheckTime_.Set ();
-#endif
+        tell2Wake_ ();
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
 public:
@@ -224,14 +235,7 @@ public:
         if (fHanlderAvailable_[signal]) {
             fIncomingSignalCounts_[signal]++;
             fLastSignalRecieved_ = signal;      // used as a quick check
-#if     qConditionVariableSetSafeFromSignalHandler_
-            fRecievedSig_.notify_one ();
-            {
-                lock_guard<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-                fWorkAvailable_ = true;
-            }
-            fRecievedSig_.notify_one ();
-#endif
+            tell2Wake_ ();
         }
     }
 public:
