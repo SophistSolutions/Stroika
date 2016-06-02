@@ -118,6 +118,13 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
  ********************************** WaitableEvent *******************************
  ********************************************************************************
  */
+#if     qDebug || qStroika_FeatureSupported_Valgrind
+WaitableEvent::~WaitableEvent ()
+{
+    Assert (fExtraWaitableEvents_.empty ());    // Cannot kill a waitable event while its being waited on by others
+}
+#endif
+
 void    WaitableEvent::Set ()
 {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_

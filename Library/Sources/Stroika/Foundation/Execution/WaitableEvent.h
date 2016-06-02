@@ -120,6 +120,16 @@ namespace   Stroika {
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
+                /**
+                 *
+                 */
+#if     qDebug || qStroika_FeatureSupported_Valgrind
+                ~WaitableEvent ();
+#else
+                ~WaitableEvent () = default;
+#endif
+
+            public:
                 nonvirtual  WaitableEvent& operator= (const WaitableEvent&) = delete;
 
             public:
@@ -260,13 +270,13 @@ namespace   Stroika {
 
             private:
                 struct WE_ {
-                    static  constexpr   bool    kTIMEOUTBoolResult { false };
+                    static  constexpr   bool    kTIMEOUTBoolResult          { false };
 
                     ResetType                   fResetType;
-                    mutex                       fMutex;
-                    condition_variable          fConditionVariable;
-                    bool                        fTriggered = false;
-                    Time::DurationSecondsType   fThreadAbortCheckFrequency = 0.5;
+                    mutex                       fMutex                      {};
+                    condition_variable          fConditionVariable          {};
+                    bool                        fTriggered                  { false };
+                    Time::DurationSecondsType   fThreadAbortCheckFrequency  { 0.5 };
 
                     WE_ (ResetType resetType);
                     nonvirtual  void    Reset ();
