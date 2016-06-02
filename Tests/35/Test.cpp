@@ -568,6 +568,7 @@ namespace {
             String { L"Consumer" }
         };
         Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (counter);
         while (counter != expectedValue and Time::GetTickCount () < killAt) {
             Execution::Sleep (.5);
         }
