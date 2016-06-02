@@ -58,9 +58,11 @@ help:
 	@$(ECHO) "    clobber:"
 	@$(ECHO) "    project-files:          -    builds project files for things like visual studio.net etc"
 	@$(ECHO) "    tests:"
-	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=memcheck or helgrind, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
-	@$(ECHO) "									 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-OpenSSL.supp Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\" make VALGRIND=memcheck run-tests"
-	@$(ECHO) "                                   OR VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\" make VALGRIND=helgrind run-tests"
+	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost;"
+	@$(ECHO) "                                 [VALGRIND=memcheck or helgrind, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\""
+	@$(ECHO) "                                 OR VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\""
+	@$(ECHO) "                                 EG: VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\" make VALGRIND=helgrind run-tests"
 
 
 all:		tests 
