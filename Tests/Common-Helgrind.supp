@@ -26,4 +26,12 @@
    fun:_ZN7Stroika10Foundation9Execution21SignalHandlerRegistry23FirstPassSignalHandler_Ei
    ...
 }
-
+{
+   ERRANT_WARNIGN_CUZ_ONLY_CHANGED_IN_THREADS_WHICH_COMPLETED for regtest Foundation::Execution::Threads
+   Helgrind:Race
+   fun:PingBackAndForthWithSimpleTimeouts_
+   fun:RegressionTest3_WaitableEvents_
+   fun:_ZN12_GLOBAL__N_118DoRegressionTests_Ev
+   fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
+   fun:main
+}
