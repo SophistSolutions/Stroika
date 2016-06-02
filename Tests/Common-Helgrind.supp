@@ -12,12 +12,18 @@
    fun:_ZN7Stroika10Foundation9Execution6Thread4Rep_8DoCreateEPSt10shared_ptrIS3_E
    fun:_ZN7Stroika10Foundation9Execution6ThreadC1ERKNS1_8FunctionIFvvEEERKNS0_6Memory8OptionalINS0_10Characters6StringENS8_31Optional_Traits_Inplace_StorageISB_EEEERKNS9_INS2_13ConfigurationENSC_ISH_EEEE
 }
-
 {
    POSIX_ALLOWS_STDCPP_DOCS_FOR_NOTIFY_ONE_USE_THIS_AS_EXAMPLE_SO_THINK_OK
    Helgrind:Misc
    ...
    fun:_ZNSt18condition_variable10notify_oneEv
+   ...
+}
+{
+   https://stroika.atlassian.net/browse/STK-483
+   Helgrind:Race
+   ...
+   fun:_ZN7Stroika10Foundation9Execution21SignalHandlerRegistry23FirstPassSignalHandler_Ei
    ...
 }
 
