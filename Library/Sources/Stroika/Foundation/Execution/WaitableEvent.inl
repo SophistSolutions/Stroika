@@ -48,6 +48,7 @@ namespace   Stroika {
             inline  WaitableEvent::WE_::WE_ (ResetType resetType)
                 : fResetType (resetType)
             {
+                Stroika_Foundation_Debug_ValgrindDisableHelgrind (fTriggered);  // @see https://stroika.atlassian.net/browse/STK-484
             }
             inline  void    WaitableEvent::WE_::Reset ()
             {
@@ -164,7 +165,7 @@ namespace   Stroika {
                     we->WaitUntil (timeoutAt);
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         WaitableEvent*  we2Test =   *i;
-                        if (we2Test->fWE_.fTriggered) {
+                        if (we2Test->fWE_.PeekIsSet ()) {
                             if (we2Test->fWE_.fResetType == eAutoReset) {
                                 we2Test->fWE_.Reset ();
                             }
@@ -230,7 +231,7 @@ namespace   Stroika {
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         WaitableEvent*  we2Test =   *i;
                         RequireNotNull (we2Test);
-                        if (not we2Test->fWE_.fTriggered) {
+                        if (not we2Test->fWE_.PeekIsSet ()) {
                             anyStillWaiting = true;
                         }
                     }
@@ -242,7 +243,7 @@ namespace   Stroika {
                             WaitableEvent*  we2Test =   *i;
                             RequireNotNull (we2Test);
                             if (we2Test->fWE_.fResetType == eAutoReset) {
-                                Assert (we2Test->fWE_.fTriggered);  // we probably need some mechanism to assure this is true but we currently have no enforcement of this!
+                                Assert (we2Test->fWE_.PeekIsSet ());  // we probably need some mechanism to assure this is true but we currently have no enforcement of this!
                                 we2Test->fWE_.Reset ();
                             }
                         }
