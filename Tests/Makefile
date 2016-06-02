@@ -50,15 +50,17 @@ endif
 
 
 help:
-	@echo "Help for making Stroika"
-	@echo "Targets"
-	@echo "    all:                    -    builds everything"
-	@echo "    check:                  -    checks everything built properly"
-	@echo "    clean:"
-	@echo "    clobber:"
-	@echo "    project-files:          -    builds project files for things like visual studio.net etc"
-	@echo "    tests:"
-	@echo "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=helgrind] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind, as can VALGRIND_SUPPRESSIONS=)"
+	@$(ECHO) "Help for making Stroika"
+	@$(ECHO) "Targets"
+	@$(ECHO) "    all:                    -    builds everything"
+	@$(ECHO) "    check:                  -    checks everything built properly"
+	@$(ECHO) "    clean:"
+	@$(ECHO) "    clobber:"
+	@$(ECHO) "    project-files:          -    builds project files for things like visual studio.net etc"
+	@$(ECHO) "    tests:"
+	@$(ECHO) "    run-tests:              -    [REMOTE=] - eg. REMOTE=lewis@localhost; [VALGRIND=memcheck or helgrind, etc] to run with valgrind (EXTRA_VALGRIND_OPTIONS= can be used with valgrind)"
+	@$(ECHO) "									 OR VALGRIND_SUPPRESSIONS=\"Valgrind-MemCheck-OpenSSL.supp Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp\" make VALGRIND=memcheck run-tests"
+	@$(ECHO) "                                   OR VALGRIND_SUPPRESSIONS=\"Valgrind-Helgrind-Common.supp\" make VALGRIND=helgrind run-tests"
 
 
 all:		tests 
