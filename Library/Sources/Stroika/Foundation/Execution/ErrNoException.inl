@@ -17,7 +17,11 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            //  class   errno_ErrorException
+			/*
+			 ********************************************************************************
+			 ******************************* errno_ErrorException ***************************
+			 ********************************************************************************
+			 */
             inline  errno_ErrorException::operator errno_t () const
             {
                 return fError;
@@ -28,6 +32,11 @@ namespace   Stroika {
             }
 
 
+			/*
+			 ********************************************************************************
+			 ***************************** ThrowErrNoIfNegative *****************************
+			 ********************************************************************************
+			 */
             template    <typename INT_TYPE>
             inline  INT_TYPE    ThrowErrNoIfNegative (INT_TYPE returnCode)
             {
@@ -36,6 +45,13 @@ namespace   Stroika {
                 }
                 return returnCode;
             }
+
+
+			/*
+			 ********************************************************************************
+			 ***************************** ThrowErrNoIfNull *********************************
+			 ********************************************************************************
+			 */
             inline  void        ThrowErrNoIfNull (void* returnCode)
             {
                 if (returnCode == nullptr) {
@@ -44,11 +60,15 @@ namespace   Stroika {
             }
 
 
-#if     qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
+			/*
+			 ********************************************************************************
+			 ************************ Handle_ErrNoResultInteruption *************************
+			 ********************************************************************************
+			 */
             template    <typename CALL>
-            auto    Handle_ErrNoResultInteruption (CALL call)  -> decltype (call)
+            auto    Handle_ErrNoResultInteruption (CALL call)  -> decltype (call ())
             {
-                auto    ret;
+				decltype (call ())    ret;	// intentionally uninitialized since alway set at least once before read
                 do {
                     ret = call ();
                     Execution::CheckForThreadInterruption ();
@@ -56,32 +76,33 @@ namespace   Stroika {
                 while (ret < 0 and errno == EINTR);
                 return ThrowErrNoIfNegative (ret);
             }
-#else
-            template    <typename CALL>
-            int Handle_ErrNoResultInteruption (CALL call)
-            {
-                int ret;
-                do {
-                    ret = call ();
-                    Execution::CheckForThreadInterruption ();
-                }
-                while (ret < 0 and errno == EINTR);
-                return ThrowErrNoIfNegative (ret);
-            }
-#endif
 
+
+			/*
+			 ********************************************************************************
+			 *************************************** Throw **********************************
+			 ********************************************************************************
+			 */
             template    <>
             inline  void    _NoReturn_  Throw (const errno_ErrorException& e2Throw)
             {
                 // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
                 errno_ErrorException::Throw (e2Throw);
             }
+
+
+			/*
+			 ********************************************************************************
+			 ****************************** ThrowIfError_errno_t ****************************
+			 ********************************************************************************
+			 */
             inline  void    ThrowIfError_errno_t (errno_t e)
             {
                 if (e != 0) {
                     errno_ErrorException::Throw (e);
                 }
             }
+
 
         }
     }

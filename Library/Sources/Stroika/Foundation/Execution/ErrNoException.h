@@ -35,11 +35,15 @@ namespace   Stroika {
             using   Characters::SDKString;
 
 
-#if     !qCompilerAndStdLib_Supports_errno_t
+#if     qCompilerAndStdLib_Supports_errno_t
+            using   errno_t     =   ::errno_t;
+#else
             using   errno_t     =   int;
 #endif
 
 
+            /**
+             */
             class   errno_ErrorException : public StringException {
             public:
                 explicit errno_ErrorException (errno_t e);
@@ -70,17 +74,10 @@ namespace   Stroika {
 
             void        ThrowErrNoIfNull (void* returnCode);
 
-#ifndef qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
-#define qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction 0
-#endif
-#if     qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
+			/**
+			 */
             template    <typename CALL>
-            auto    Handle_ErrNoResultInteruption (CALL call) -> decltype (call);
-#else
-            template    <typename CALL>
-            int     Handle_ErrNoResultInteruption (CALL call);
-#endif
-
+            auto    Handle_ErrNoResultInteruption (CALL call) -> decltype (call ());
 
             // Just pre-declare Throw><> template here so we can specailize
             template    <typename T>
