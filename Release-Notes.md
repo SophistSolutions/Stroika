@@ -22,10 +22,39 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a147">v2.0a147x</a><br/>2016-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a147">v2.0a147</a><br/>2016-06-03</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>SignalHandler
+			<ul>
+				<li>refactor SafeSignalsManager::Rep_ () code for its condition variable usage (small change)</li>
+			</ul>
+		</li>
+		<li>Helgrind support - https://stroika.atlassian.net/browse/STK-471
+			<ul>
+				<li>qStroika_FeatureSupported_Valgrind</li>
+				<li>Got all issues cleared up with helgrind - and now clean bill of health (with various caveats opened as bug reports in JIRA)</li>
+				<li>Many small changes - mostly annotations and supression file entries - esp to SignalHandler, and WaitablEvent, and regression tests</li>
+			</ul>
+		</li>
+		<li>lose deprecated DEFINE_CONSTEXPR_CONSTANT()</li>
+		<li>Draft of new ModuleGetterSetter&lt;T,IMPL&gt;</li>
+		<li>Small cleanups/enhamcents to ErrNoException module: Always define errno_t in that Execution namespace, 
+		and lose qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction because Handle_ErrNoResultInteruption fixed.
+		</li>
+		<li>fixed several modbus bugs (really mostly returning wrong payload size and returing uint16s for coils and discrete registers) - reported by Chad@blcok - and improved diagnostics (ifdefed)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>clang++3.5 (ubuntu)</li>
+				<li>clang++3.6 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
