@@ -74,8 +74,8 @@ namespace   Stroika {
 
             void        ThrowErrNoIfNull (void* returnCode);
 
-			/**
-			 */
+            /**
+             */
             template    <typename CALL>
             auto    Handle_ErrNoResultInteruption (CALL call) -> decltype (call ());
 
