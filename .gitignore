@@ -11,3 +11,4 @@ StroikaDevRoot.*
 *.suo
 REGRESSION-TESTS*.OUT
 *.VC.db
+*.vs
