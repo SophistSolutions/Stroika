@@ -103,7 +103,7 @@ DataExchange::BadFormatException::BadFormatException (const String& details, con
 {
 }
 
-
+const   DataExchange::BadFormatException    DataExchange::BadFormatException::kThe;
 
 
 

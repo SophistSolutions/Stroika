@@ -34,6 +34,11 @@ namespace   Stroika {
             public:
                 nonvirtual  void    GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
 
+            public:
+                /**
+                 */
+                static  const   BadFormatException  kThe;
+
             private:
                 Memory::Optional<unsigned int>  fLineNumber_;
                 Memory::Optional<unsigned int>  fColumnNumber_;

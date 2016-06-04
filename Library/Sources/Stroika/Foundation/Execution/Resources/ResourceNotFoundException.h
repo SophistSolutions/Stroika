@@ -23,6 +23,11 @@ namespace   Stroika {
             class   ResourceNotFoundException : public StringException {
             public:
                 ResourceNotFoundException ();
+
+            public:
+                /**
+                 */
+                static  const   ResourceNotFoundException   kThe;
             };
 
 

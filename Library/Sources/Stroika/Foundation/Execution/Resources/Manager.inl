@@ -10,19 +10,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
 
-                // class Manager::_IRep
-                inline  Manager::_IRep::~_IRep ()
-                {
-                }
 
-                // class Manager
-                inline Manager::Manager (_SharedRep rep)
+                /*
+                 ********************************************************************************
+                 ************************************* Manager **********************************
+                 ********************************************************************************
+                 */
+                inline Manager::Manager (const shared_ptr<_IRep>& rep)
                     : fRep_ (rep)
                 {
                 }
@@ -34,6 +33,7 @@ namespace   Stroika {
                 {
                     return Accessor (start, end);
                 }
+
 
             }
         }

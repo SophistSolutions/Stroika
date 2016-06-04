@@ -50,11 +50,13 @@ using   Stroika::Foundation::Time::Duration;
 void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
 {
     if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
+        // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
+        // inside 'main' lifetime
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         // only thing Throw() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
-        Throw (TimeOutException ());
+        Throw (TimeOutException::kThe);
 #else
-        throw (TimeOutException ());
+        throw (TimeOutException::kThe);
 #endif
     }
 }
@@ -96,7 +98,7 @@ bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutA
              *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
              *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
              *
-             *      Throw (TimeOutException ());
+             *      Throw (TimeOutException::kThe);
              */
         }
     }

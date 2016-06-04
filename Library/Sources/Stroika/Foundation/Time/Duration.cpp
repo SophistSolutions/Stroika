@@ -41,6 +41,7 @@ Duration::FormatException::FormatException ()
 {
 }
 
+const   Duration::FormatException   Duration::FormatException::kThe;
 
 
 
@@ -478,7 +479,7 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
         i = SkipWhitespace_ (i + 1, s.end ());
     }
     else {
-        Execution::Throw (FormatException ());
+        Execution::Throw (FormatException::kThe);
     }
     bool    timePart    =   false;
     while (i != s.end ()) {
@@ -490,10 +491,10 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
         string::const_iterator  firstDigitI =   i;
         string::const_iterator  lastDigitI  =   FindFirstNonDigitOrDot_ (i, s.end ());
         if (lastDigitI == s.end ()) {
-            Execution::Throw (FormatException ());
+            Execution::Throw (FormatException::kThe);
         }
         if (firstDigitI == lastDigitI) {
-            Execution::Throw (FormatException ());
+            Execution::Throw (FormatException::kThe);
         }
         /*
          *  According to http://en.wikipedia.org/wiki/ISO_8601

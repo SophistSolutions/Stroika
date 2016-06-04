@@ -30,6 +30,12 @@ namespace   Stroika {
             public:
                 TimeOutException ();
                 TimeOutException (const Characters::String& message);
+
+            public:
+                /**
+                 *  CAN be used when there is no message argument.
+                 */
+                static  const   TimeOutException    kThe;
             };
 
 

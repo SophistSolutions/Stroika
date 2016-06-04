@@ -31,19 +31,18 @@ namespace   Stroika {
                 protected:
                     class _IRep {
                     public:
-                        virtual ~_IRep ();
+                        virtual ~_IRep () = default;
                         virtual Accessor    ReadResource (const Name& name) const   =   0;
                     };
-                    using   _SharedRep      =   shared_ptr<_IRep>;
 
                 protected:
                     static Accessor _mkAccessor (const Byte* start, const Byte* end);
 
                 protected:
-                    explicit Manager (_SharedRep rep);
+                    explicit Manager (const shared_ptr<_IRep>& rep);
 
                 private:
-                    _SharedRep  fRep_;
+                    shared_ptr<_IRep>  fRep_;
 
                 public:
                     // throws if not found

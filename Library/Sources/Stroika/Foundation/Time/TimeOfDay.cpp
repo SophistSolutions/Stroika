@@ -217,9 +217,10 @@ namespace   {
  ********************************************************************************
  */
 TimeOfDay::FormatException::FormatException ()
-    : StringException (String_Constant (L"Invalid Time Format"))
+    : StringException (String_Constant { L"Invalid Time Format" })
 {
 }
+const   TimeOfDay::FormatException  TimeOfDay::FormatException::kThe;
 
 
 
@@ -358,7 +359,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
 #endif
 
     if (state & ios::failbit) {
-        Execution::Throw (FormatException ());
+        Execution::Throw (FormatException::kThe);
     }
     return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
 }
@@ -384,7 +385,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, LCID lcid)
             ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (newRep.c_str ()), lcid, VAR_TIMEVALUEONLY, &d));
         }
         else {
-            Execution::Throw (FormatException ());
+            Execution::Throw (FormatException::kThe);
         }
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)

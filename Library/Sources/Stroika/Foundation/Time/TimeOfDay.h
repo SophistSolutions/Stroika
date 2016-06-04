@@ -260,6 +260,11 @@ namespace   Stroika {
             class   TimeOfDay::FormatException : public Execution::StringException {
             public:
                 FormatException ();
+
+            public:
+                /**
+                 */
+                static  const   FormatException kThe;
             };
 
 

@@ -126,7 +126,7 @@ namespace   Stroika {
                     if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
                         Throw (Thread::AbortException::kThe);
                     }
-                    Throw (UserCanceledException ());
+                    Throw (UserCanceledException::kThe);
                 }
             }
             inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)

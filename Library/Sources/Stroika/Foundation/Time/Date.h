@@ -405,6 +405,11 @@ namespace   Stroika {
             class   Date::FormatException : public Execution::StringException {
             public:
                 FormatException ();
+
+            public:
+                /**
+                 */
+                static  const   FormatException kThe;
             };
 
 

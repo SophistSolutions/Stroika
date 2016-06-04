@@ -200,10 +200,13 @@ namespace {
  ************************** Date::FormatException *******************************
  ********************************************************************************
  */
+const   Date::FormatException   Date::FormatException::kThe;
+
 Date::FormatException::FormatException ()
     : StringException (String_Constant (L"Invalid Date Format"))
 {
 }
+
 
 
 
@@ -334,7 +337,7 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
     tm when {};
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
     if (state & ios::failbit) {
-        Execution::Throw (FormatException ());
+        Execution::Throw (FormatException::kThe);
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
 #if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
@@ -354,7 +357,7 @@ Date    Date::Parse (const String& rep, LCID lcid)
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
     }
     catch (...) {
-        Execution::Throw (FormatException ());
+        Execution::Throw (FormatException::kThe);
     }
     // SHOULD CHECK ERR RESULT (not sure if/when this can fail - so do a Verify for now)
     SYSTEMTIME  sysTime {};

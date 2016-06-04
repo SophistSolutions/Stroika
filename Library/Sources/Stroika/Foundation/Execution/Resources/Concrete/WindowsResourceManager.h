@@ -34,7 +34,7 @@ namespace   Stroika {
                         WindowsResourceManager (HMODULE hModule);
 
                     private:
-                        class   IRep_;
+                        class   Rep_;
                     };
 
 

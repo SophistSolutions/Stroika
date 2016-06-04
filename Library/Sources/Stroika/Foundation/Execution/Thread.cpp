@@ -489,7 +489,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
              *  and then check if refcount==1 (so nobody owns this and we're not started yet).
              *      while (not incRefCnt->fOK2StartEvent_.WaitQuietly (5)) {
              *          if (incRefCnt.unique ()) {
-             *               Execution::Throw (InterruptException ());
+             *               Execution::Throw (InterruptException::kThe);
              *          }
              *      }
              *
@@ -999,7 +999,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (timeoutAt < Time::GetTickCount ()) {
-        Throw (TimeOutException ());
+        Throw (TimeOutException::kThe);
     }
     bool    doWait  =   false;
     /*

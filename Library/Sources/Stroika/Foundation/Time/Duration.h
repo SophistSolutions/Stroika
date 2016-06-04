@@ -335,6 +335,9 @@ namespace   Stroika {
             class   Duration::FormatException : public Execution::StringException {
             public:
                 FormatException ();
+
+            public:
+                static  const   FormatException kThe;
             };
 
 

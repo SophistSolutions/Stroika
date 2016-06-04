@@ -20,6 +20,8 @@ using   Characters::String_Constant;
  ********************************* TimeOutException *****************************
  ********************************************************************************
  */
+const   TimeOutException    TimeOutException::kThe;
+
 TimeOutException::TimeOutException ()
     : StringException (String_Constant (L"Timeout Expired"))
 {

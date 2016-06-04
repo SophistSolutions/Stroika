@@ -22,11 +22,11 @@ using   namespace   Stroika::Foundation::Execution::Resources::Concrete;
 
 
 
-class    WindowsResourceManager::IRep_ : public Manager::_IRep {
+class    WindowsResourceManager::Rep_ : public Manager::_IRep {
 private:
     HMODULE fModule_;
 public:
-    IRep_ (HMODULE hModule)
+    Rep_ (HMODULE hModule)
         : fModule_ (hModule)
     {
     }
@@ -42,10 +42,8 @@ public:
                 return Manager::_mkAccessor (start, start + ::SizeofResource (fModule_, hres));
             }
         }
-        Throw (ResourceNotFoundException ());
+        Throw (ResourceNotFoundException::kThe);
     }
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (IRep_);
 };
 
 
@@ -57,6 +55,6 @@ public:
 ********************************************************************************
 */
 WindowsResourceManager::WindowsResourceManager (HMODULE hModule)
-    : Manager (_SharedRep (new IRep_ (hModule)))
+    : Manager (make_shared<Rep_> (hModule))
 {
 }

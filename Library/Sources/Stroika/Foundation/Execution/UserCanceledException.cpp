@@ -12,6 +12,13 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
+/*
+ ********************************************************************************
+ *************************** UserCanceledException ******************************
+ ********************************************************************************
+ */
+const   UserCanceledException   UserCanceledException::kThe;
+
 
 
 /*

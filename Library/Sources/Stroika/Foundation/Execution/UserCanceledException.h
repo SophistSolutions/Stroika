@@ -15,8 +15,12 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            // mostly treat the same as SilentException
+            /**
+             *  mostly treat the same as SilentException
+             */
             class   UserCanceledException : public SilentException {
+            public:
+                static  const   UserCanceledException   kThe;
             };
 
 
