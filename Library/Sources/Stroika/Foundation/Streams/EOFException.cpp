@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Streams;
  *************************** Streams::EOFException ******************************
  ********************************************************************************
  */
-const   EOFException    EOFException::kEOFException;
+const   EOFException    EOFException::kThe;
 
 EOFException::EOFException (bool partialReadCompleted)
     : StringException (partialReadCompleted ? Characters::String_Constant { L"Premature End-Of-Stream (partial read)" } : Characters::String_Constant { L"Premature End-Of-Stream" })

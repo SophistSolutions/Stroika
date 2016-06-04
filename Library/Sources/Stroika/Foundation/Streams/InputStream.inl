@@ -159,7 +159,7 @@ namespace   Stroika {
                     return tmp;
                 }
                 else {
-                    Execution::Throw ((n == 0) ? EOFException::kEOFException : EOFException (true));
+                    Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));
                 }
             }
             template    <typename ELEMENT_TYPE>

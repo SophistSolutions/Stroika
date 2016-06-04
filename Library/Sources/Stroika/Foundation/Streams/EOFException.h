@@ -38,7 +38,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  const   EOFException    kEOFException;
+                static  const   EOFException    kThe;
 
             private:
                 bool    fPartialReadCompleted_ { false };
