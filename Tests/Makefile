@@ -99,8 +99,6 @@ endif
 
 
 project-files:
-	@echo "Building VisualStudio.Net-2013 project files..."
-	@cd Projects/VisualStudio.Net-2013 && perl BuildProjectsFiles.pl
 	@echo "Building VisualStudio.Net-2015 project files..."
 	@cd Projects/VisualStudio.Net-2015 && perl BuildProjectsFiles.pl
 
