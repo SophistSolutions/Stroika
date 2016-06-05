@@ -56,7 +56,7 @@
 #if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
-#if     __GNUC__ > 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ > 3))
+#if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 1))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -430,7 +430,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
 #if     defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -488,7 +488,9 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
-#if     defined (_MSC_VER)
+#if     defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1))
+#elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -778,7 +780,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
