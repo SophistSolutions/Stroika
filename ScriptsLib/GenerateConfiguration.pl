@@ -164,13 +164,13 @@ sub     IsClangPlusPlus_
 sub     GetGCCVersion_
 {
     my $x = shift(@_);
-	return trim (`$x --version | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
+	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
 }
 
 sub     GetClangVersion_
 {
     my $x = shift(@_);
-	return trim (`$x --version | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+	return trim (`($x --version 2>/dev/null) | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
 }
 
 ### Initial defaults before looking at command-line arguments
@@ -834,8 +834,8 @@ mkdir ($configurationFiles);
 
 my $generate = true;
 if ($onlyGenerateIfCompilerExists) {
-	if (trim (`./HasCompiler.sh $COMPILER_DRIVER_CPlusPlus`) eq "0") {
-		my $generate = false;
+	if (trim (`./ScriptsLib/HasCompiler.sh $COMPILER_DRIVER_CPlusPlus`) eq "0") {
+		$generate = false;
 	}
 }
 
