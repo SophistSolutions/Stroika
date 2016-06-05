@@ -1,7 +1,9 @@
 #!/bin/bash
 
 #GCC_VERSION=4.9.3
-GCC_VERSION=5.3.0
+#GCC_VERSION=5.3.0
+#GCC_VERSION=6.1.0
+GCC_VERSION=${GCC_VERSION-5.3.0}
 INSTALL_DIR=$HOME/gcc-$GCC_VERSION
 
 #unset this to take longer, but be safer about build
