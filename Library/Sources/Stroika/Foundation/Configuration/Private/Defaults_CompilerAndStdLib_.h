@@ -953,7 +953,7 @@ eq_result
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (6 <= __clang_minor__ and __clang_minor__ <= 8))
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 8))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
