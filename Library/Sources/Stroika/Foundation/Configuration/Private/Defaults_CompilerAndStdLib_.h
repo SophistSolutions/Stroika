@@ -161,7 +161,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_make_unique_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 5)
+#define qCompilerAndStdLib_make_unique_Buggy				(__GNUC__ < 5)
 #else
 #define qCompilerAndStdLib_make_unique_Buggy                0
 #endif
