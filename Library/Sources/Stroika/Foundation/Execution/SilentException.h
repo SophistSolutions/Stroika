@@ -15,7 +15,9 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            // Throw this when an error has already been reported - so that it isn't reported again
+            /**
+             * Throw this when an error has already been reported - so that it isn't reported again
+             */
             class   SilentException {
             public:
                 static  const   SilentException kThe;
