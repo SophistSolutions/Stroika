@@ -44,7 +44,7 @@
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 5))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.5")
 #endif
-#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 6))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 7))
 #pragma message ("Info: Stroika untested with this version of clang++")
 #endif
 
@@ -605,7 +605,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
@@ -654,10 +654,12 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 */
 #ifndef qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
 
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
+#if     defined (__clang__)
+#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       ((__clang_major__ == 3) && (__clang_minor__ == 7))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
-#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy      0
+#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       0
 #endif
 
 #endif
@@ -700,6 +702,8 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+#elif   __clang__
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   ((__clang_major__ == 3) && (__clang_minor__ == 7))
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
 #endif
@@ -711,13 +715,14 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 
 
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 */
 #ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 
-#if     defined (__GNUC__)
+#if     __clang__
+#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     0
@@ -778,7 +783,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #else
@@ -801,9 +806,11 @@ Compiling regtests for Median/OrderBy...
 ../../../Tests/46/Test.cpp:781:13:   required from here
 /usr/include/c++/5/bits/predefined_ops.h:123:31: error: invalid type argument of unary ‘*’ (have ‘int’)
 */
-#ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
+#ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Bugg
 
-#if     defined (__GNUC__)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__clang_major__ == 3) && (__clang_minor__ == 7))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
 #else
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       0
@@ -1000,7 +1007,7 @@ eq_result
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 7))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
