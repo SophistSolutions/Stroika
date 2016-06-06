@@ -150,29 +150,6 @@
 
 
 
-/*
-@DESCRIPTION:   Just annowing warning workaround
-1>c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(210): warning C4996: 'std::_Uninitialized_copy_n': Function call with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
-1>  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(190): note: see declaration of 'std::_Uninitialized_copy_n'
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\containers\externallysynchronizeddatastructures\array.inl(215): note: see reference to function template instantiation '_FwdIt std::uninitialized_copy_n<T*,size_t,T*>(_InIt,_Diff,_FwdIt)' being compiled
-*/
-#ifndef qCompilerAndStdLib_uninitialized_copy_n_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_uninitialized_copy_n_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
-#else
-#define qCompilerAndStdLib_uninitialized_copy_n_Buggy   0
-#endif
-
-#endif
-
-
-
-
-
 
 
 /*
@@ -218,26 +195,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #endif
 
-
-
-
-
-
-/*
-2>c:\sandbox\stroika\devroot\library\sources\stroika\frameworks\systemperformance\instruments\../../../Foundation/DataExchange/ObjectVariantMapper.h(371): error C2589: '::' : illegal token on right side of '::'
-2>c:\sandbox\stroika\devroot\library\sources\stroika\frameworks\systemperformance\instruments\../../../Foundation/DataExchange/ObjectVariantMapper.h(371): error C2059: syntax error : '::'
-*/
-#ifndef qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy
-
-#if   defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update5_FULLVER_
-// fixed in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
-#else
-#define qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy     0
-#endif
-
-#endif
 
 
 
@@ -290,45 +247,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 #endif
 
-
-
-/*
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\memory\smallstackbuffer.h(128): error C4579: 'Stroika::Foundation::Memory::SmallStackBuffer<wchar_t,2048>::kGuard1_': in-class initialization for type 'const Stroika::Foundation::Memory::Byte [8]' is not yet implemented; static member will remain uninitialized at runtime but use in constant-expressions is supported
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\stringbuilder.h(180): note: see reference to class template instantiation 'Stroika::Foundation::Memory::SmallStackBuffer<wchar_t,2048>' being compiled
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\memory\smallstackbuffer.h(128): error C2131: expression did not evaluate to a constant
-                static  constexpr   Byte    kGuard1_[8]  =   { 0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55, };
-*/
-#ifndef qCompilerAndStdLib_constexpr_arrays_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broekn in _MS_VS_2k15_Update1_FULLVER_
-// Fixed in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_constexpr_arrays_Buggy      (_MSC_FULL_VER < _MS_VS_2k15_Update1_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_arrays_Buggy      0
-#endif
-
-#endif
-
-
-
-
-/*
- *  http://stackoverflow.com/questions/8102125/is-local-static-variable-initialization-thread-safe-in-c11
-*/
-#ifndef qCompilerAndStdLib_static_initialization_threadsafety_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// still broekn in _MS_VS_2k15_Update1_FULLVER_
-// Fixed in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_static_initialization_threadsafety_Buggy      (_MSC_FULL_VER < _MS_VS_2k15_Update1_FULLVER_)
-#else
-#define qCompilerAndStdLib_static_initialization_threadsafety_Buggy      0
-#endif
-
-#endif
 
 
 
@@ -552,14 +470,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 */
 #ifndef qCompilerAndStdLib_shared_mutex_module_Buggy
 
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// Fixed in _MS_VS_2k15_RTM_FULLVER_
-// Fixed in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_shared_mutex_module_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
-#else
 #define qCompilerAndStdLib_shared_mutex_module_Buggy      (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
-#endif
 
 #endif
 
@@ -605,7 +516,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ & __clang_minor__ <= 8)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
@@ -1037,35 +948,6 @@ eq_result
 
 #endif
 
-
-
-
-
-
-
-//
-// Without .template in one place gcc48 barfs, and with it vs 2k.net 2015 barfs. As near as I can tell
-// gcc is right, but I'm uncertain.
-//
-//  -- LGP 2015-05-18
-/*
-47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2143: syntax error: missing ';' before '&'
-47>  c:\sandbox\stroikadev\tests\46\test.cpp(1312): note: see reference to function template instantiation 'Stroika::Foundation::DataExchange::ObjectVariantMapper::TypeMappingDetails Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey<`anonymous-namespace'::Test_JSONReadWriteFile_::SpectrumType,double,double>(void)' being compiled
-47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2461: 'Stroika::Foundation::DataExchange::ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey::<lambda_8ffbcf425fc80a60fcc9f2e3e4588588>': constructor syntax missing formal parameters
-47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2238: unexpected token(s) preceding ';'
-47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
-47>c:\sandbox\stroikadev\library\sources\stroika\foundation\dataexchange\objectvariantmapper.inl(541): error C2143: syntax error: missing ',' before '&'
-*/
-#ifndef qCompilerAndStdLib_DotTemplateDisambiguator_Buggy
-
-#if     defined (_MSC_VER)
-// first broken in _MS_VS_2k15_RTM_FULLVER_
-#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        (_MSC_FULL_VER == _MS_VS_2k15_RTM_FULLVER_)
-#else
-#define qCompilerAndStdLib_DotTemplateDisambiguator_Buggy        0
-#endif
-
-#endif
 
 
 

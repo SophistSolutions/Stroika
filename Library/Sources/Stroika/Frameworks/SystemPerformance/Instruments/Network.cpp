@@ -752,17 +752,9 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
         mapper.AddCommonType<Optional<uint64_t>> ();
         mapper.AddCommonType<Optional<double>> ();
         mapper.AddCommonType<Optional<String>> ();
-#if     qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> (Configuration::DefaultNames<Interface::Type>::k));
-#else
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
-#endif
         mapper.AddCommonType<Optional<Interface::Type>> ();
-#if     qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> (Configuration::DefaultNames<Interface::Status>::k));
-#else
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
-#endif
         mapper.AddCommonType<Set<Interface::Status>> ();
         mapper.AddCommonType<Optional<Set<Interface::Status>>> ();
         DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04

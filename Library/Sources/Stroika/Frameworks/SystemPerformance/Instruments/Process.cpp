@@ -332,11 +332,7 @@ ObjectVariantMapper Instruments::Process::GetObjectVariantMapper ()
     using   StructureFieldInfo = ObjectVariantMapper::StructFieldInfo;
     static  const   ObjectVariantMapper sMapper_ = [] () -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-#if     qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy
-        mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> (Configuration::DefaultNames<ProcessType::RunStatus>::k));
-#else
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<ProcessType::RunStatus> ());
-#endif
         mapper.AddCommonType<Optional<String>> ();
         mapper.AddCommonType<Optional<ProcessType::RunStatus>> ();
         mapper.AddCommonType<Optional<pid_t>> ();
