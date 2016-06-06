@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Execution;
  ******************************** SilentException *******************************
  ********************************************************************************
  */
-const   SilentException SilentException::kThe;
+const   SilentException SilentException::kThe   {};
 
 
 
