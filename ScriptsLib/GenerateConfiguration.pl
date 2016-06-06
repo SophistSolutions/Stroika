@@ -167,10 +167,17 @@ sub     GetGCCVersion_
 	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
 }
 
+
 sub     GetClangVersion_
 {
-    my $x = shift(@_);
-	return trim (`($x --version 2>/dev/null) | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+    my $x = trim(shift(@_));
+    my $ver = trim (`($x --version 2>/dev/null) | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+    if ($ver * 1 != 0) {
+	return $ver;
+    }
+    $ver = trim(`($x --version 2>/dev/null) | head -1 | awk '{print \$3}'`);
+    $ver = $ver * 1;
+    return $ver;
 }
 
 ### Initial defaults before looking at command-line arguments
@@ -271,7 +278,7 @@ sub	SetDefaultForCompilerDriver_
 			if ('3.6' le $clangVer) {
 				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG36Plus;
 			}
-			if ('3.6' le $clangVer and $clangVer le '3.7') {
+			if ('3.6' le $clangVer and $clangVer lt '3.9') {
 				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_CLANG36EXTRA;
 			}
 		}
