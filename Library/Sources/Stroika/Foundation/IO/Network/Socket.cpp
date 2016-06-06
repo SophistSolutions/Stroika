@@ -377,7 +377,7 @@ Socket::Socket (SocketKind socketKind)
 #else
     AssertNotImplemented ();
 #endif
-    fRep_ = std::move (make_shared<REALSOCKET_::Rep_> (sfd));
+    fRep_ = make_shared<REALSOCKET_::Rep_> (sfd);
 }
 
 Socket::Socket (const shared_ptr<_Rep>& rep)

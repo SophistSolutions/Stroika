@@ -77,12 +77,12 @@ namespace   Stroika {
                     {
                     }
                     SharedByValueCaptureRepType (const SharedByValueCaptureRepType& cap)
-                        : fCap_ (move (cap.get ()->Clone ()))
+                        : fCap_ (cap.get ()->Clone ())
                     {
                     }
                     SharedByValueCaptureRepType& operator= (const SharedByValueCaptureRepType& cap)
                     {
-                        fCap_ = move (cap.get ()->Clone ());
+                        fCap_ = cap.get ()->Clone ();
                         return *this;
                     }
                 };
