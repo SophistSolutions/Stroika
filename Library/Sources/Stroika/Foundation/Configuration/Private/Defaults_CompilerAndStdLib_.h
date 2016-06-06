@@ -283,7 +283,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #elif   defined (__clang__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
+#define qCompilerAndStdLib_is_trivially_copyable_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
 // broken in gcc49, and works in gcc52. Untested in gcc50/51
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
