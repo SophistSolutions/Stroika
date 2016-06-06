@@ -41,6 +41,8 @@
 #if     defined (__clang__)
 
 // Must check CLANG first, since CLANG also defines GCC
+// see
+//      clang++-3.8 -dM -E - < /dev/null
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 5))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.5")
 #endif
@@ -347,8 +349,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
@@ -370,7 +372,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
 
-#if   defined (__GNUC__)
+#if   !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      0
@@ -387,7 +389,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
 #else
 #define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      0
@@ -406,7 +408,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1))
 #elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
@@ -448,7 +450,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 #if     __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    1
-#elif    defined (__GNUC__)
+#elif    !defined (__clang__) && defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
@@ -495,7 +497,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 */
 #ifndef qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
 
-#if     (defined (__GNUC__) && !defined (__clang__)) && qPlatform_AIX
+#if     !defined (__clang__) && defined (__GNUC__) && qPlatform_AIX
 #define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      1
 #else
 #define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      0
@@ -528,7 +530,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 #ifndef qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #else
 #define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      0
@@ -669,7 +671,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 */
 #ifndef qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     0
@@ -689,14 +691,18 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 @CONFIGVAR:     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 @DESCRIPTION:   <p>Defined true if the compiler generates errors for static assertions in functions
             which should never be expanded. Such functions/static_assertions CAN be handy to make it
-            more obvious of type mismatches with As<> etc templates.</p>
+            more obvious of type mismatches with As<> etc templates.
+
+
+    *** NOTE - this is so widely broken in clang/gcc - this maybe my misunderstanding. Review...
+</p>
 */
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
@@ -957,7 +963,7 @@ eq_result
 
 #ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        0
