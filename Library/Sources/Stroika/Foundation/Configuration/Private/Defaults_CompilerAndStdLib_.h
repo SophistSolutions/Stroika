@@ -44,7 +44,7 @@
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 5))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.5")
 #endif
-#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 7))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 8))
 #pragma message ("Info: Stroika untested with this version of clang++")
 #endif
 
@@ -605,7 +605,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ & __clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #else
@@ -703,7 +703,7 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
 #elif   __clang__
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   ((__clang_major__ == 3) && (__clang_minor__ == 7))
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   0
 #endif
@@ -783,7 +783,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 5 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #else
@@ -1007,7 +1007,7 @@ eq_result
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 7))
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (7 <= __clang_minor__ and __clang_minor__ <= 8))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
