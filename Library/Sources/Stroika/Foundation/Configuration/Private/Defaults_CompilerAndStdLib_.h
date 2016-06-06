@@ -117,7 +117,7 @@
 */
 #ifndef qCompilerAndStdLib_LocaleTM_put_Buggy
 
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_LocaleTM_put_Buggy     0
@@ -160,10 +160,10 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_make_unique_Buggy
 
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_make_unique_Buggy    0
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 5)
 #else
-#define qCompilerAndStdLib_make_unique_Buggy    1
+#define qCompilerAndStdLib_make_unique_Buggy                0
 #endif
 
 #endif
@@ -282,7 +282,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
-#elif   defined (__GNUC__)
+#elif   !defined (__clang__) && defined (__GNUC__)
 // broken in gcc49, and works in gcc52. Untested in gcc50/51
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
@@ -633,7 +633,7 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 */
 #ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 
-#if     __clang__
+#if     defined (__clang__)
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
@@ -977,7 +977,7 @@ eq_result
 
 #ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
 
-#if     defined (__GNUC__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       0
@@ -1019,7 +1019,7 @@ eq_result
 */
 #ifndef qCompilerAndStdLib_GCC_48_OptimizerBug
 
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 8))
 #else
 #define qCompilerAndStdLib_GCC_48_OptimizerBug     0
@@ -1078,7 +1078,7 @@ eq_result
  */
 #ifndef qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
 
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ == 9))
 #else
 #define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        0
@@ -1123,7 +1123,7 @@ eq_result
 */
 #if     !defined (qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy)
 
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      0
@@ -1146,7 +1146,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     !defined (__clang__) && defined (__GNUC__)
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      0
@@ -1167,7 +1167,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #ifndef qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 
-#if     defined (__GNUC__)
+#if     defined (__clang__) || defined (__GNUC__)
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   1
 #else
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   0
@@ -1185,7 +1185,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 */
 #ifndef qCompilerAndStdLib_Support__func__
 
-#if     defined (__GNUC__)
+#if     defined (__clang__) || defined (__GNUC__)
 #define qCompilerAndStdLib_Support__func__   1
 #else
 #define qCompilerAndStdLib_Support__func__   0
@@ -1342,7 +1342,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 // doesnt seem any portable way todo this, and not defined in C++ language
-#if     defined (__GNUC__)
+#if     defined (__clang__) || defined (__GNUC__)
 #define dont_inline    __attribute__((noinline))
 #else
 #define dont_inline    __declspec(noinline)
