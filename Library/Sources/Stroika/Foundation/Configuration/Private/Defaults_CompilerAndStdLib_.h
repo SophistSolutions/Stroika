@@ -923,12 +923,37 @@ eq_result
       Stroika::SimpleClassWithoutComparisonOperators, Stroika::Foundation::Containers::Bijection_DefaultTraits<Stroika::SimpleClassWithoutComparisonOperators, Stroika::SimpleClassWithoutComparisonOperators,
       MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_> >' requested here
         auto testFunc = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
+
+
+ * OR WITH CLANG error messages look like:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/4.9/../../../../include/c++/4.9/bits/stl_pair.h:215:24: error: invalid operands to binary expression ('const Stroika::SimpleClassWithoutComparisonOperators' and
+      'const Stroika::SimpleClassWithoutComparisonOperators')
+    { return __x.first == __y.first && __x.second == __y.second; }
+             ~~~~~~~~~ ^  ~~~~~~~~~
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Containers/DefaultTraits/../../Configuration/Concepts.h:103:64: note: in instantiation of function template specialization
+      'std::operator==<Stroika::SimpleClassWithoutComparisonOperators, Stroika::SimpleClassWithoutComparisonOperators>' requested here
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(eq, (x == x));
+                                                               ^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Containers/DefaultTraits/../../Configuration/Concepts.h:82:55: note: expanded from macro 'STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS'
+            static auto check(const X& x) -> decltype(XTEST);\
+                                                      ^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Containers/DefaultTraits/../../Configuration/Concepts.h:103:13: note: while substituting deduced template arguments into function template 'check'
+      [with X = std::pair<Stroika::SimpleClassWithoutComparisonOperators, Stroika::SimpleClassWithoutComparisonOperators>]
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(eq, (x == x));
+            ^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Containers/DefaultTraits/../../Configuration/Concepts.h:84:35: note: expanded from macro 'STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS'
+            using type = decltype(check(declval<T>()));\
+                                  ^
+/media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Library/Sources/Stroika/Foundation/Containers/DefaultTraits/../../Configuration/Concepts.h:103:13: note: in instantiation of template class
+      'Stroika::Foundation::Configuration::Private_::eq_result_impl<std::pair<Stroika::SimpleClassWithoutComparisonOperators, Stroika::SimpleClassWithoutComparisonOperators> >' requested here
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(eq, (x == x));
+ *
  *
  */
 #ifndef qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (7 <= __clang_minor__ and __clang_minor__ <= 8))
+#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__clang_major__ == 3 && (6 <= __clang_minor__ and __clang_minor__ <= 8))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
