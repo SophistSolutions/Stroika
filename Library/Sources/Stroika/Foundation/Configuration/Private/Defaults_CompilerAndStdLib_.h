@@ -161,7 +161,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_make_unique_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_make_unique_Buggy				(__GNUC__ < 5)
+#define qCompilerAndStdLib_make_unique_Buggy                (__GNUC__ < 5)
 #else
 #define qCompilerAndStdLib_make_unique_Buggy                0
 #endif
@@ -349,7 +349,9 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
 
-#if     !defined (__clang__) && defined (__GNUC__)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
