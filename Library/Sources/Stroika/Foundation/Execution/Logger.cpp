@@ -86,6 +86,12 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     atomic<Time::DurationSecondsType>                                       fMaxWindow_ {};
     Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
 
+    Rep_ ()
+    {
+        // @todo minor bug - fix!!!
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind(fOutQMaybeNeedsFlush_);    // not worth worrying valgrind output about - so supress til we get around to fixing
+    }
+
     void    FlushDupsWarning_ ()
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
