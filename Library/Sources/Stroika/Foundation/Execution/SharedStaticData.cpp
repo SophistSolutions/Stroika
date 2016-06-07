@@ -26,7 +26,7 @@ bool    Execution::Private_::SharedStaticData_DTORHelper_ (SpinLock* m, unsigned
     auto    critSec { make_unique_lock (*m) };
 #endif
     --(*cu);
-    if ((*cu) == 0) {
+    if (*cu == 0) {
         return true;
     }
     return false;

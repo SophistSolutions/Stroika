@@ -98,7 +98,7 @@ namespace   Stroika {
                 nonvirtual  const T&  Get () const;
 
             private:
-                static  SpinLock        sMutex_;    // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time
+                static  SpinLock        sMutex_;    // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
                 static  unsigned int    sCountUses_;
                 static T*               sOnceObj_;
             };
