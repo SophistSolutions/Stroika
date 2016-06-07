@@ -312,14 +312,14 @@ shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegist
 
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::CTOR");
     Require (sTheRep_ == nullptr);
     sTheRep_ = make_shared<SignalHandlerRegistry::SafeSignalsManager::Rep_> ();
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
-    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR");
+    Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::DTOR");
     SignalHandlerRegistry::SafeSignalsManager::sTheRep_.reset ();   // this will wait for shutdown of safe processing thread to shut down
 }
 
