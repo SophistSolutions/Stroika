@@ -134,6 +134,7 @@ ThreadPool::~ThreadPool ()
 
 unsigned int    ThreadPool::GetPoolSize () const
 {
+    auto    critSec { make_unique_lock (fCriticalSection_) };
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
