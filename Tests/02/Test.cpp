@@ -1279,6 +1279,7 @@ namespace {
 namespace {
     void    Test44_LocaleUNICODEConversions_ ()
     {
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
         auto testRoundtrip = [] (const char* localName, const string & localMBString, const wstring & wideStr) {
             bool initializedLocale = false;
             try {
@@ -1295,6 +1296,7 @@ namespace {
         //testRoundtrip ("en_US.utf8", u8"z\u00df\u6c34\U0001d10b", L"zß水𝄋");
         testRoundtrip ("C", "fred", L"fred");
         testRoundtrip ("en_US.utf8", "\x7a\xc3\x9f\xe6\xb0\xb4\xf0\x9d\x84\x8b", L"zß水𝄋");
+#endif
     }
 }
 
