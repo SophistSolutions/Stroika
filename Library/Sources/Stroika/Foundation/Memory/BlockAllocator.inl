@@ -103,7 +103,7 @@ namespace   Stroika {
                 */
                 constexpr   size_t  kTargetMallocSize_   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
 
-                inline    /*constexpr*/ size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
+                inline    constexpr     size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
                     return std::max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
                 }
@@ -116,6 +116,7 @@ namespace   Stroika {
                     Require (sz >= sizeof (void*));
 
                     const       size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (sz);
+                    Assert (kChunks >= 1);
 
                     /*
                      * Please note that the following line is NOT a memory leak. Please look at the
@@ -123,7 +124,7 @@ namespace   Stroika {
                      * How does qAllowBlockAllocation affect memory leaks?"
                      */
 #if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-                    void**  newLinks    =   (void**)malloc (kChunks * sz);
+                    void**  newLinks    =   (void**)::malloc (kChunks * sz);
                     Execution::ThrowIfNull (newLinks);
 #else
                     void**  newLinks    =   (void**)new char [kChunks * sz];
@@ -220,6 +221,7 @@ namespace   Stroika {
 
                 // step one: put all the links into a single, sorted vector
                 const   size_t  kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
+                Assert (kChunks >= 1);
                 std::vector<void*> links;
                 try {
                     links.reserve (kChunks * 2);
@@ -263,7 +265,7 @@ namespace   Stroika {
                     if (canDelete) {
                         links.erase (links.begin () + index, links.begin () + index + kChunks);
 #if     qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-                        free ((void*)deleteCandidate);
+                        ::free ((void*)deleteCandidate);
 #else
                         delete static_cast<Byte*> ((void*)deleteCandidate);
 #endif

@@ -81,7 +81,7 @@ void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** s
         (*(void**)p) = *staticNextLinkP;
         * staticNextLinkP = p;
     }
-    catch (const Execution::Thread::AbortException&) {
+    catch (const Execution::Thread::InterruptException&) {
         Execution::Thread::SuppressInterruptionInContext  suppressContext;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
