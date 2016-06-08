@@ -48,7 +48,7 @@ namespace   Stroika {
 #endif
                 ++sCountUses_;
                 if (sCountUses_ == 1) {
-                    sOnceObj_ = new T ();
+                    sOnceObj_ = new T {};
                 }
 #if     qDebug
                 Stroika_Foundation_Debug_ValgrindDisableHelgrind (sCountUses_);     // beacuse use in asserts - read there - safe/OK even without lock
