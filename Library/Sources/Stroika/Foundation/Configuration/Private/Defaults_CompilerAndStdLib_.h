@@ -730,7 +730,7 @@ Compiling regtests for Median/OrderBy...
 #ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Bugg
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__clang_major__ == 3) && (__clang_minor__ == 7))
+#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
 #else
@@ -1196,7 +1196,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and__clang_minor__ <= 8)))
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8)))
 #else
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   0
 #endif
