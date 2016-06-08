@@ -74,14 +74,16 @@ namespace   Stroika {
             void    UsePlatformDefaultLocaleAsDefaultLocale ();
 
 
+#if     !qCompilerAndStdLib_Locale_Buggy
             /**
              *  \brief  List all installed locale names (names which can be passed to std::locale::CTOR)
              *
              *  I'm quite surprised this appears so hard to to in stdC++. I must be missing something...
+             *
+             *  @todo NYI really - hacked
              */
             vector<Characters::String>    GetAvailableLocales ();
 
-#if     !qCompilerAndStdLib_Locale_Buggy
             /**
              *  \brief  Not all systems appear to follow the same naming conventions for locales, so help lookup
              *

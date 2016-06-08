@@ -1190,8 +1190,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 /*
 @CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 *
-*	Looking at returned string object from locale - its got a bogus length. And hten the DTOR for that string causes crash. Just dont
-*	use this til debugged.
+*   Looking at returned string object from locale - its got a bogus length. And hten the DTOR for that string causes crash. Just dont
+*   use this til debugged.
 */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 

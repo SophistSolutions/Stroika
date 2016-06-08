@@ -48,6 +48,7 @@ void    Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
 
 
 
+#if     !qCompilerAndStdLib_Locale_Buggy
 
 /*
 ********************************************************************************
@@ -73,13 +74,14 @@ BOOL CALLBACK EnumLocalesProc(LPTSTR lpLocaleString)
 #endif
 vector<Characters::String>    Configuration::GetAvailableLocales ()
 {
+    // @todo
     // horrible!!!! - see TOOD
     vector<Characters::String>  result;
     result.reserve (10);
     IgnoreExceptionsForCall (result.push_back (FindLocaleName (String_Constant { L"en" }, String_Constant { L"us" })));
     return result;
 }
-
+#endif
 
 
 
