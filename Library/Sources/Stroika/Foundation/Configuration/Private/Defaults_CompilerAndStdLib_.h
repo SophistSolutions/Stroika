@@ -140,7 +140,7 @@
 #if   qPlatform_AIX
 #define qCompilerAndStdLib_Locale_Buggy             1
 #else
-#define qCompilerAndStdLib_Locale_Buggy             0
+#define qCompilerAndStdLib_Locale_Buggy             qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 #endif
 
 #endif
@@ -1179,6 +1179,26 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug      0
+#endif
+
+#endif
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
+*
+*	Looking at returned string object from locale - its got a bogus length. And hten the DTOR for that string causes crash. Just dont
+*	use this til debugged.
+*/
+#ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 == __clang_minor__ )))
+#else
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   0
 #endif
 
 #endif

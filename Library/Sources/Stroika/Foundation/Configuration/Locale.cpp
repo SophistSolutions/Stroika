@@ -89,6 +89,7 @@ vector<Characters::String>    Configuration::GetAvailableLocales ()
 *************************** Configuration::FindLocaleName **********************
 ********************************************************************************
 */
+#if     !qCompilerAndStdLib_Locale_Buggy
 Characters::String    Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     using   Characters::String;
@@ -153,3 +154,4 @@ locale    Configuration::FindNamedLocale (const Characters::String& iso2LetterLa
 {
     return locale (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ());
 }
+#endif

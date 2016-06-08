@@ -81,7 +81,7 @@ namespace   Stroika {
              */
             vector<Characters::String>    GetAvailableLocales ();
 
-
+#if     !qCompilerAndStdLib_Locale_Buggy
             /**
              *  \brief  Not all systems appear to follow the same naming conventions for locales, so help lookup
              *
@@ -100,6 +100,7 @@ namespace   Stroika {
              *  an exception.
              */
             locale    FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode);
+#endif
 
 
             /**
