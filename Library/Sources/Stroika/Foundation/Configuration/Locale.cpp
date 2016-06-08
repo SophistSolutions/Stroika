@@ -105,7 +105,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
     //  --LGP 2013-03-02
     //
     // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
-    static  set<String> part1 {
+    set<String> part1 {
         iso2LetterLanguageCode,
         iso2LetterLanguageCode.ToLowerCase (),
         iso2LetterLanguageCode.ToUpperCase (),
@@ -116,7 +116,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
         String_Constant { L"." },
         String_Constant { L" " },
     };
-    static  set<String> part3 {
+    set<String> part3 {
         iso2LetterTerritoryCode,
         iso2LetterTerritoryCode.ToLowerCase (),
         iso2LetterTerritoryCode.ToUpperCase (),
