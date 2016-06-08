@@ -572,7 +572,7 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #ifndef qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       ((__clang_major__ == 3) && (__clang_minor__ == 7))
+#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
@@ -1196,7 +1196,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 == __clang_minor__ )))
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and__clang_minor__ <= 8)))
 #else
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy   0
 #endif
