@@ -400,9 +400,17 @@ namespace   Stroika {
          *          and GCC 4.9 on ubuntu its about 3% faster (not enough to be significant). This requires more testing
          *          though.
          *
+         *  \note   As of 2016-06-09, and version v2.0a148, it appears on windows/VS2k13, SharedPtr is about 10% faster,
+         *          and GCC 5.3 on ubuntu its a wash. For now - switch so we default to shared_ptr on gcc and SharedPtr using
+         *          vs2k15
+         *
          */
 #ifndef     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+#if         defined (_MSC_VER)
 #define     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr    1
+#else
+#define     qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr    0
+#endif
 #endif
 
 
