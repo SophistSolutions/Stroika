@@ -25,9 +25,54 @@ History
 <td>
 	<ul>
 		<li>TODO</li>
+
+		<!-- all as of 2016-06-09 10am-->
+
+		<li>https://stroika.atlassian.net/browse/STK-444 - preallocating nul byte on strings (for thread safety)</li>
+
+		<li>ThreadPool::GetPoolSize () needs auto    critSec { make_unique_lock (fCriticalSection_) }; to access - event readonly - fThreads - beacuse it can be written by another thread at the same time</li>
+		<li>Target compilers supported changes
+			<ul>
+				<li>Add gcc 6.1</li>
+				<li>Add clang++3.7 (required new define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy for clang++ 3.7 and improved ifdefs for !qCompilerAndStdLib_Locale_Buggy)</li>
+				<li>Add clang++3.8</li>
+			</ul>
+		</li>
+		<li>Valgrind Helgrind
+			<ul>
+				<li>silence helgrind warning on minor bug (still bug and added @todo but minor)</li>
+				<li>Stroika_Foundation_Debug_ValgrindDisableHelgrind on 2 vars in Foundation/Execution/SharedStaticData</li>
+			</ul>
+			and SIMPLIFIED qCompilerAndStdLib_shared_mutex_module_Buggy
+		</li>
+		<li>renamed EOFException::kEOFException -> EOFException::kThe, etc. Coding convention docs about kthe </li>
+		<li>Silenced some (safe) compiler warnings</li>
+		<li>fixed bug with Configuration::FindLocaleName - part1 and part3 cannot be static</li>
+		<li>fixed qCompilerAndStdLib_make_unique_Buggy bug define gcc</li>
+		<li>Lose deprecated bug workarounds
+			<ul>
+				<li>qCompilerAndStdLib_uninitialized_copy_n_Buggy</li>
+				<li>qCompilerAndStdLib_DefaultArgOfStaticTemplateMember_Buggy</li>
+				<li>qCompilerAndStdLib_constexpr_arrays_Buggy</li>
+				<li>qCompilerAndStdLib_static_initialization_threadsafety_Buggy</li>
+				<li>qCompilerAndStdLib_DotTemplateDisambiguator_Buggy</li>
+			</ul>
+			and SIMPLIFIED qCompilerAndStdLib_shared_mutex_module_Buggy
+		</li>
+		<li>Small cleanups to BlockAllocation: assertions, handle delete with interupt execptions as well as abort execptions, and other minor changes</li>
+		<li>Reggression Tests and new compilers supported
+			<ul>
+				<li>fix BuildGCC.sh script so uses GCC_VERSION as default (so can eb passed in as env var) and documetning tested 4.8, 4.9.3, 5.3.0, and 6.1.0</li>
+				<li>fixed execute permission and reuqire bash not just sh - to run HasCompiler - so regtest conf builder only does ones for compilers we have installed.</li>
+				<li>fixed compiler bug defines to support gcc 6.1, clang3-7. 3.8 and added tehse to regtested (and 48 now my private buold)</li>
+			</ul>
+		</li>
+		<li>small inline cleanups (various modules)</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 
