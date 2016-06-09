@@ -62,6 +62,20 @@ namespace   Stroika {
             }
 
 
+            inline  size_t    ReserveSpeedTweekAddNCapacity (size_t cSize, size_t cCapacity, size_t n, size_t kMinChunk)
+            {
+                size_t  size        { cSize + n };
+                size_t  capacity    { cCapacity };
+                if (size >= capacity) {
+                    size *= 6;
+                    size /= 5;
+                    size = Stroika::Foundation::Math::RoundUpTo (size, kMinChunk);
+                    return size;
+                }
+                return static_cast<size_t> (-1);
+            }
+
+
             template    <typename   CONTAINER>
             inline  size_t    ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t kMinChunk)
             {

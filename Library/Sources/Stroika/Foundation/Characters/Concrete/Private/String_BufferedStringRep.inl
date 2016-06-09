@@ -56,17 +56,24 @@ namespace   Stroika {
                     }
                     inline  void    BufferedStringRep::_Rep::reserve (size_t newCapacity)
                     {
-                        if (_GetLength () > newCapacity) {
-                            // ignore and return
+                        // capacity includes nul-term, so
+                        //Require (newCapacity > _GetLength ());
+                        if (fCapacity_ != 0) {
+                            Require (newCapacity > _GetLength ());
                         }
                         // Force capacity to match request... even if 'unwise'
+
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                        if (newCapacity < BufferedStringRepBlock_::kNElts) {
+                            newCapacity = BufferedStringRepBlock_::kNElts;
+                        }
+#endif
                         if (fCapacity_ != newCapacity) {
-                            size_t      len     =   _GetLength ();
+                            size_t      len     =   fCapacity_ == 0 ? 0 : _GetLength ();
                             wchar_t*    newBuf  =   nullptr;
-                            if (newCapacity != 0) {
+                            {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                                 if (newCapacity <= BufferedStringRepBlock_::kNElts) {
-                                    newCapacity = BufferedStringRepBlock_::kNElts;
                                     static_assert (sizeof (BufferedStringRepBlock_) == sizeof (wchar_t) * BufferedStringRepBlock_::kNElts, "sizes should match");
                                     newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_>::Allocate (sizeof (BufferedStringRepBlock_)));
                                 }
@@ -74,8 +81,11 @@ namespace   Stroika {
                                 if (newBuf == nullptr) {
                                     newBuf = new wchar_t [newCapacity];
                                 }
-                                if (len != 0) {
-                                    (void)::memcpy (newBuf, _fStart, len * sizeof (wchar_t));
+                                if (_fStart == nullptr) {
+                                    newBuf[0] = '\0';
+                                }
+                                else {
+                                    (void)::memcpy (newBuf, _fStart, (len + 1) * sizeof (wchar_t));     // copy data + nul-term
                                 }
                             }
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
@@ -101,15 +111,18 @@ namespace   Stroika {
 #else
                         const   size_t  kChunkSize_  =   32;
 #endif
-                        size_t          len         =   _GetLength ();
-                        if (newCapacity == 0 and len == 0) {
-                            reserve (0);
+                        size_t          len         =   fCapacity_ == 0 ? 0 : _GetLength ();
+                        newCapacity = max (newCapacity, len + 1);
+                        if (newCapacity == 1) {
+                            reserve (1);
                         }
                         else {
                             ptrdiff_t   n2Add   =   static_cast<ptrdiff_t> (newCapacity) - static_cast<ptrdiff_t> (len);
                             if (n2Add > 0) {
-                                // Could be more efficent inlining the reserve code here - cuz we can avoid the call to length()
-                                Containers::ReserveSpeedTweekAddN (*this, static_cast<size_t> (n2Add), kChunkSize_);
+                                size_t  size    =   Containers::ReserveSpeedTweekAddNCapacity (len, capacity (), static_cast<size_t> (n2Add), kChunkSize_);
+                                if (size != -1) {
+                                    reserve (size);
+                                }
                             }
                         }
                     }
@@ -118,24 +131,26 @@ namespace   Stroika {
                         , fCapacity_ (0)
                     {
                         size_t  len     =   end - start;
-                        ReserveAtLeast_ (len);
+                        ReserveAtLeast_ (len + 1);
                         if (len != 0) {
                             AssertNotNull (_PeekStart ());
                             (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
                             _fEnd = _fStart + len;
                         }
+                        _PeekStart ()[len] = '\0';  // CTOR now initializes nul-terminated and rest preserves
                     }
                     inline     BufferedStringRep::_Rep:: _Rep (const wchar_t* start, const wchar_t* end, size_t reserve)
                         : inherited (nullptr, nullptr)
                         , fCapacity_ (0)
                     {
                         size_t  len     =   end - start;
-                        ReserveAtLeast_ (max (len, reserve));
+                        ReserveAtLeast_ (max (len, reserve) + 1);
                         if (len != 0) {
                             AssertNotNull (_PeekStart ());
                             (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
                             _fEnd = _fStart + len;
                         }
+                        _PeekStart ()[len] = '\0';  // CTOR now initializes nul-terminated and rest preserves
                     }
                     //theory not tested- but inlined because its important this be fast, it it sb instantiated only in each of the 3 or 4 final DTORs
                     inline  BufferedStringRep::_Rep::~_Rep ()

@@ -63,12 +63,14 @@ namespace   Stroika {
             inline  void    String::_IRep::_SetData (const wchar_t* start, const wchar_t* end)
             {
                 Require (_fStart <= _fEnd);
+                Require (*end == '\0');
                 _fStart = start;
                 _fEnd = end;
             }
             inline     size_t  String::_IRep::_GetLength () const
             {
                 Assert (_fStart <= _fEnd);
+                Assert (*_fEnd == '\0');
                 return _fEnd - _fStart;
             }
             inline     Character   String::_IRep::_GetAt (size_t index) const
@@ -86,10 +88,10 @@ namespace   Stroika {
 
 
             /*
-            ********************************************************************************
-            ************************************* String ***********************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ************************************* String ***********************************
+             ********************************************************************************
+             */
             inline  String::String (const String& from) noexcept
                 :
                 inherited (from)

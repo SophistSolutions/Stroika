@@ -32,7 +32,9 @@ namespace   Stroika {
                     /**
                      *  This is a utility class to implement most of the basic String::_IRep functionality.
                      *  This implements functions that change the string, but dont GROW it,
-                     *  since we don't know in general we can (thats left to subtypes)
+                     *  since we don't know in general we can (thats left to subtypes).
+                     *
+                     *  \note   This class always assure nul-terminated, and so 'capacity' always at least one greater than length.
                      *
                      *  @todo Explain queer wrapper class cuz protected
                      */
@@ -71,6 +73,11 @@ namespace   Stroika {
 
                         public:
                             nonvirtual  size_t  size () const;
+
+                        private:
+                            /**
+                             *  Capacity INCLUDES null char
+                             */
                             nonvirtual  size_t  capacity () const;
                             nonvirtual  void    reserve (size_t newCapacity);
 

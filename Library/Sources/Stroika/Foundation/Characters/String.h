@@ -448,7 +448,6 @@ namespace   Stroika {
             private:
                 static  _SharedPtrIRep  mkEmpty_ ();
                 static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
-                static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen);
                 static  _SharedPtrIRep  mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
 
             public:
@@ -1213,7 +1212,10 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                // PROTECTED INLINE UTILITY
+                /*
+                 *  PROTECTED INLINE UTILITY
+                 *  \req *end == nul
+                 */
                 nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
             protected:
                 // PROTECTED INLINE UTILITY
@@ -1243,8 +1245,16 @@ namespace   Stroika {
                 nonvirtual  pair<const Character*, const Character*> GetData () const;
 
             public:
-                // return nullptr if its not already NUL-terminated
-                virtual const wchar_t*      c_str_peek () const noexcept;
+                /*
+                 *  Return a pointer to mostly standard (wide, nul-terminated) C string,
+                 *  whose lifetime extends to the next non-const call on this rep.
+                 *
+                 *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
+                 *  always have str[len] == 0;
+                 *
+                 *  \note before Stroika v2.0a148 - return nullptr if its not already NUL-terminated
+                 */
+                virtual const wchar_t*      c_str_peek () const noexcept = 0;
 
             public:
                 /*

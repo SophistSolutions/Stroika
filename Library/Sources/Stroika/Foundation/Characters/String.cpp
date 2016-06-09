@@ -91,7 +91,9 @@ namespace   {
 
 
 
-
+#if 0
+//cannot do (except for special case at end) as of Stroika v2.0a148 - because we enforce that strings pre-nul-terminated for thread safety reasons (so cannot
+// do in const c_str() method - and have unsynchonzied).
 namespace   {
     struct String_Substring_ : public String {
         class   MyRep_ : public _IRep {
@@ -121,7 +123,7 @@ namespace   {
         };
     };
 }
-
+#endif
 
 
 
@@ -234,12 +236,6 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
 {
     return _FindFirstThat (doToElement, suggestedOwner);
 }
-
-const wchar_t*  String::_IRep::c_str_peek () const  noexcept
-{
-    return nullptr;
-}
-
 
 
 
@@ -452,18 +448,17 @@ String  String::FromAscii (const string& from)
 
 String::_SharedPtrIRep  String::mkEmpty_ ()
 {
-    static  _SharedPtrIRep s_   =   mk_ (nullptr, nullptr, 1);  // so room for NUL-char
+    static  const   wchar_t kEmptyStr_[1] = {};
+    static  _SharedPtrIRep s_   =   mk_ (std::begin (kEmptyStr_), std::begin (kEmptyStr_));
     return s_;
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
 {
+    RequireNotNull (start);
+    RequireNotNull (end);
+    Require (start <= end);
     return MakeSharedPtr<String_BufferedArray_Rep_> (start, end);
-}
-
-String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end, size_t reserveLen)
-{
-    return MakeSharedPtr<String_BufferedArray_Rep_> (start, end, reserveLen);
 }
 
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
@@ -1247,6 +1242,8 @@ const wchar_t*  String::c_str_ () const
      */
     _SafeReadRepAccessor    accessor { this };
     const   wchar_t*        result = accessor._ConstGetRep ().c_str_peek ();
+    AssertNotNull (result);
+#if 0
     if (result == nullptr) {
         pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
         _SharedPtrIRep tmp = mk_(reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
@@ -1254,6 +1251,7 @@ const wchar_t*  String::c_str_ () const
         *REALTHIS = String (move (tmp));
         result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ();
     }
+#endif
     Ensure (result != nullptr);
     return result;
 }

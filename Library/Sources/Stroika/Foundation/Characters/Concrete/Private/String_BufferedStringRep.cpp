@@ -49,22 +49,15 @@ void    BufferedStringRep ::_Rep::InsertAt (const Character* srcStart, const Cha
 
 void        BufferedStringRep ::_Rep::SetLength_ (size_t newLength)
 {
-    if (newLength < capacity ()) {
-        // We COULD shrink the capacity at this point, but not critical right now...
-    }
-    else {
-        ReserveAtLeast_ (newLength);
-    }
+    ReserveAtLeast_ (newLength + 1);
     _fEnd = _fStart + newLength;    // we don't bother doing anything to added/removed characters
+    _PeekStart ()[newLength]  = '\0';
     Ensure (_GetLength () == newLength);
 }
 
 const wchar_t*  BufferedStringRep ::_Rep::c_str_peek () const noexcept
 {
     size_t  len =   _GetLength ();
-    if (len < fCapacity_) {
-        const_cast<wchar_t*> (_fStart)[len] = '\0';     // Cheaper to always set than to check, and maybe set
-        return _fStart;
-    }
-    return nullptr;
+    Ensure (_fStart[len] == '\0')
+    return _fStart;
 }
