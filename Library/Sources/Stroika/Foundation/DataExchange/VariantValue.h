@@ -67,9 +67,8 @@ namespace   Stroika {
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
              *
-             *      Empirically, this was slightly faster in the performance regression test.
+             *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
-//#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   1
 #ifndef qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
 #define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif

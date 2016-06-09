@@ -96,6 +96,8 @@ namespace   Stroika {
             /**
              *  You can configure this to always use shared_ptr using ./configure, but by default
              *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
+             *
+             *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr

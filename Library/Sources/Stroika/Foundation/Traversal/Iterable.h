@@ -80,16 +80,12 @@ namespace   Stroika {
 
             /**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
-             *  can be configured (at compile time) to use one or the other, but not both.
-             *
-             *  Note - main reason Stroika SharedPtr<> faster is that we aren't using make_shared. It's possible
-             *  that might be a better strategy? -- LGP 2014-04-19
-             *
-             *  \note We've added a MakeShared template to accomodate this differnce, so retest performance soon,
-             *  both on windows and GCC/UNIX.
+             *  at one time, and on some systems.
              *
              *  You can configure this to always use shared_ptr using ./configure, but by default
              *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
+             *
+             *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
 #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr   qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
