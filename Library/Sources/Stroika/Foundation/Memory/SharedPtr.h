@@ -85,12 +85,6 @@ namespace   Stroika {
 
 
             namespace   Private_ {
-// I think qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ is no longer needed
-// -- LGP 2014-03-02
-#ifndef qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
-#define qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_     0
-#endif
-
                 template    <typename   T>
                 class   Envelope_;
             }
@@ -363,11 +357,6 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  SharedPtr<T>    shared_from_this ();
-
-#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
-            private:
-                T*  fPtr_;
-#endif
 
             private:
                 template    <typename T2>

@@ -281,9 +281,6 @@ namespace   Stroika {
                     return  Envelope_ (nullptr, nullptr);
                 }
                 else {
-#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
-                    from->fPtr_ = from;
-#endif
                     return  Envelope_ (from, from);
                 }
             }
@@ -510,30 +507,16 @@ namespace   Stroika {
             template    <typename   T>
             constexpr   inline  enable_shared_from_this<T>::enable_shared_from_this ()
                 : ReferenceCounterContainerType_ (false)
-#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
-                  // only initialized for assertion in shared_from_this()
-                , fPtr_ (nullptr)
-#endif
             {
             }
             template    <typename   T>
             constexpr   inline  enable_shared_from_this<T>::enable_shared_from_this (const enable_shared_from_this& /*src*/)
                 : ReferenceCounterContainerType_ (false)
-#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_ && qDebug
-                  // only initialized for assertion in shared_from_this()
-                , fPtr_ (nullptr)
-#endif
             {
             }
             template    <typename   T>
             inline  SharedPtr<T> enable_shared_from_this<T>::shared_from_this ()
             {
-#if     qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_
-                // If this assertion fails, its almost certainly because... See todo above - I see thy this doesnt fail
-                // for std::shared_ptr<>>
-                AssertNotNull (fPtr_);
-                return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (fPtr_, this)));
-#else
                 /*
                  *  The Constructor for SharedPtr<T> expects a T*. However, enable_shared_from_this doesn't
                  *  own a T*. But recall, the ONLY legal way to use this enable_shared_from_this is:
@@ -549,7 +532,6 @@ namespace   Stroika {
                  */
                 T*      ptr =   static_cast<T*> (this);
                 return (SharedPtr<T> (typename SharedPtr<T>::Envelope_ (ptr, this)));
-#endif
             }
 
 
