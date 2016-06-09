@@ -1716,7 +1716,7 @@ namespace {
             while (r) {
                 char buf[1024];
                 buf [0] = '\0';
-                if (r.getline (buf, sizeof(buf))) {
+                if (r.getline (buf, sizeof (buf))) {
                     // I think always in KB
                     const char kPrivate1Lbl_ [] = "Private_Clean:";
                     const char kPrivate2Lbl_ [] = "Private_Dirty:";
