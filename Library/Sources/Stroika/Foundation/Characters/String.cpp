@@ -62,8 +62,8 @@ namespace   {
             : inherited (start, end)
         {
         }
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
-            : inherited (start, end, reserve)
+        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
+            : inherited (start, end, reserveExtraCharacters)
         {
         }
         virtual  _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
@@ -464,8 +464,7 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start, const wchar_t* end)
 String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
 {
     size_t  len1        =   end1 - start1;
-    size_t  totalLen    =   len1 + (end2 - start2);
-    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, totalLen);
+    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
 }
@@ -533,7 +532,7 @@ String    String::InsertAt (const Character* from, const Character* to, size_t a
     }
     _SafeReadRepAccessor copyAccessor { this };
     pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (d.second - d.first) + (to - from));
+    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
     sRep->InsertAt (from, to, at);
     return String (move (sRep));
 }

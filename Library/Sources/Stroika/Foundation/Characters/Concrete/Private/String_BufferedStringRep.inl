@@ -50,11 +50,7 @@ namespace   Stroika {
                     {
                         return _GetLength ();
                     }
-                    inline  size_t  BufferedStringRep::_Rep::capacity () const
-                    {
-                        return fCapacity_;
-                    }
-                    inline  void    BufferedStringRep::_Rep::reserve (size_t newCapacity)
+                    inline  void    BufferedStringRep::_Rep::reserve_ (size_t newCapacity)
                     {
                         // capacity includes nul-term, so
                         //Require (newCapacity > _GetLength ());
@@ -109,19 +105,19 @@ namespace   Stroika {
                         // then we can never allocate BufferedStringRepBlock_ blocks! Or at least not when we call reserveatleast
                         const   size_t  kChunkSize_  =   (newCapacity < BufferedStringRepBlock_::kNElts) ? BufferedStringRepBlock_::kNElts : 32;
 #else
-                        const   size_t  kChunkSize_  =   32;
+                        constexpr   size_t  kChunkSize_  =   32;
 #endif
                         size_t          len         =   fCapacity_ == 0 ? 0 : _GetLength ();
                         newCapacity = max (newCapacity, len + 1);
                         if (newCapacity == 1) {
-                            reserve (1);
+                            reserve_ (1);
                         }
                         else {
                             ptrdiff_t   n2Add   =   static_cast<ptrdiff_t> (newCapacity) - static_cast<ptrdiff_t> (len);
                             if (n2Add > 0) {
-                                size_t  size    =   Containers::ReserveSpeedTweekAddNCapacity (len, capacity (), static_cast<size_t> (n2Add), kChunkSize_);
+                                size_t  size    =   Containers::ReserveSpeedTweekAddNCapacity (len, fCapacity_, static_cast<size_t> (n2Add), kChunkSize_);
                                 if (size != -1) {
-                                    reserve (size);
+                                    reserve_ (size);
                                 }
                             }
                         }
@@ -139,12 +135,12 @@ namespace   Stroika {
                         }
                         _PeekStart ()[len] = '\0';  // CTOR now initializes nul-terminated and rest preserves
                     }
-                    inline     BufferedStringRep::_Rep:: _Rep (const wchar_t* start, const wchar_t* end, size_t reserve)
+                    inline     BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
                         : inherited (nullptr, nullptr)
                         , fCapacity_ (0)
                     {
                         size_t  len     =   end - start;
-                        ReserveAtLeast_ (max (len, reserve) + 1);
+                        ReserveAtLeast_ (len + reserveExtraCharacters + 1);
                         if (len != 0) {
                             AssertNotNull (_PeekStart ());
                             (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));

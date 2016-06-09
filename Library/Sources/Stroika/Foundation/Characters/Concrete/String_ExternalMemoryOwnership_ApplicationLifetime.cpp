@@ -40,10 +40,6 @@ namespace   {
             : inherited (start, end)
         {
         }
-        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
-            : inherited (start, end, reserve)
-        {
-        }
         virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we

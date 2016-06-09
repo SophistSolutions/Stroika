@@ -272,13 +272,11 @@ namespace   Stroika {
              *
              *  EOS Handling:
              *      The Stroika String class does support having embedded NUL-characters. It also supports
-             *      returning wchar_t* strings which are NUL-terminated. But - Stroika generally does NOT
-             *      maintain strings internally as NUL-terminated (generally). It may add a performance
-             *      overhead when you call the c_str() method to force a NUL-character termination.
-             *      See String::c_str ().
+             *      returning wchar_t* strings which are NUL-terminated. In order to provide NUL-terminated
+             *      strings through the cost c_str () API, Stroika may maintain strings internally as NUL-terminted
+             *      wchar_t* (or at least retains the ability to as needed).
              *
-             *      Also note that some subclasses of String (e.g. future String_stdwstring) may not support
-             *      internal NUL-characters, if their underling implementation doesn't allow for that.
+             *      See String::c_str ().
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *                              with caveats!
@@ -291,7 +289,6 @@ namespace   Stroika {
              *                              But if another thread modifies this String object, that might not be usefully long.
              *
              *                              You can always copy a 'shared' String to a copy no other thread is modifying, and call c_str() on that.
-             *
              *
              *      @see   Concrete::String_BufferedArray
              *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
@@ -1212,19 +1209,30 @@ namespace   Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                /*
+                /**
                  *  PROTECTED INLINE UTILITY
-                 *  \req *end == nul
+                 *  \req *end == '\0'
+                 *
+                 *  So allocated storage MUST always contain space for the terminating NUL-character.
                  */
                 nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
+
             protected:
-                // PROTECTED INLINE UTILITY
+                /**
+                 *  PROTECTED INLINE UTILITY
+                 */
                 nonvirtual     size_t  _GetLength () const;
+
             protected:
-                // PROTECTED INLINE UTILITY
+                /**
+                 *  PROTECTED INLINE UTILITY
+                 */
                 nonvirtual     Character   _GetAt (size_t index) const;
+
             protected:
-                // PROTECTED INLINE UTILITY
+                /**
+                 *  PROTECTED INLINE UTILITY
+                 */
                 nonvirtual     const Character*    _Peek () const;
 
                 // Overrides for Iterable<Character>
@@ -1266,7 +1274,7 @@ namespace   Stroika {
 
             protected:
                 const wchar_t*  _fStart;
-                const wchar_t*  _fEnd;
+                const wchar_t*  _fEnd;          // NOT - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
 
             private:
                 friend  class   String;

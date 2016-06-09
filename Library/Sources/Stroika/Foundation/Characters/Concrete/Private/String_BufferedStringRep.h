@@ -37,6 +37,8 @@ namespace   Stroika {
                      *  \note   This class always assure nul-terminated, and so 'capacity' always at least one greater than length.
                      *
                      *  @todo Explain queer wrapper class cuz protected
+                     *
+                     *  @todo fCapacity_ initialized to zero then corrected - confusing... - cleanup
                      */
                     struct  BufferedStringRep : String {
                         struct  _Rep : public _IRep {
@@ -51,8 +53,12 @@ namespace   Stroika {
                             nonvirtual  _Rep& operator= (const _Rep&) = delete;
 
                         protected:
+                            /**
+                             *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
+                             */
                             _Rep (const wchar_t* start, const wchar_t* end);
-                            _Rep (const wchar_t* start, const wchar_t* end, size_t reserve);
+                            _Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters);
+
                         public:
                             ~_Rep ();
 
@@ -78,14 +84,13 @@ namespace   Stroika {
                             /**
                              *  Capacity INCLUDES null char
                              */
-                            nonvirtual  size_t  capacity () const;
-                            nonvirtual  void    reserve (size_t newCapacity);
+                            nonvirtual  void    reserve_ (size_t newCapacity);
 
                         private:
                             nonvirtual  void    ReserveAtLeast_ (size_t newCapacity);
 
                         private:
-                            size_t      fCapacity_;
+                            size_t      fCapacity_; // includes INCLUDES nul/EOS char
                         };
                     };
 
