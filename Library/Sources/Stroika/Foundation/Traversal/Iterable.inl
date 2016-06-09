@@ -30,13 +30,13 @@ namespace   Stroika {
              */
 #if     qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
             template    <typename SHARED_T, typename... ARGS_TYPE>
-            inline  Memory::SharedPtr<SHARED_T> IterableBase::MakeSharedPtr (ARGS_TYPE&& ... args)
+            inline  Memory::SharedPtr<SHARED_T>     IterableBase::MakeSharedPtr (ARGS_TYPE&& ... args)
             {
                 return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
             }
 #else
             template    <typename SHARED_T, typename... ARGS_TYPE>
-            inline  <SHARED_T>    IterableBase::MakeSharedPtr (ARGS_TYPE&& ... args)
+            inline  shared_ptr<SHARED_T>    IterableBase::MakeSharedPtr (ARGS_TYPE&& ... args)
             {
                 return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
             }
