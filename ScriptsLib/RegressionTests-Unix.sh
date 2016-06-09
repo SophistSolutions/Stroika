@@ -65,7 +65,7 @@ echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
 ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 	STAGE_STARTAT_INT=$(date +%s)
-	make run-tests CONFIGURATION=raspberrypi-gcc-4.9 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+	make run-tests CONFIGURATION=raspberrypi-gcc-5 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
@@ -135,7 +135,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 
-#OK - 5 return and oen about rasppi build..
+#OK - 5 return and oen about raspberrypi build..
 TOTAL_WARNINGS_EXPECTED=6
 
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
