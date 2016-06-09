@@ -165,8 +165,8 @@ private:
 public:
     Rep_ ()
     {
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fIncomingSignalCounts_);
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fLastSignalRecieved_);
+        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
+        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
         fBlockingQueuePusherThread_ = Thread {
             [this] ()
             {
@@ -351,7 +351,7 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 #endif
     Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR");
 
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind(fDirectSignalHandlersCache_Lock_);     // This is disabled due to helgrinds not supporting std::atomic -- LGP 2016-06-01
+    Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(fDirectSignalHandlersCache_Lock_);
     Stroika_Foundation_Debug_ValgrindDisableHelgrind(fDirectSignalHandlersCache_);          // This is disabled on purpose, because we intentionally have no locks - and just read optimistically carefully. No locks cuz read from signal handler
 }
 

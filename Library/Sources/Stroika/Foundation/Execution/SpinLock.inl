@@ -28,7 +28,7 @@ namespace   Stroika {
 #endif
             {
 #if     qStroika_FeatureSupported_Valgrind
-                Stroika_Foundation_Debug_ValgrindDisableHelgrind (fLock_);
+                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLock_);
                 VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
 #endif
 #if     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy

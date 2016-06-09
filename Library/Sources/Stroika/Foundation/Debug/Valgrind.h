@@ -70,6 +70,14 @@
 
 
 
+
+/**
+ *  If the current implementation of helgrind doesnt recognize std::atomic being atomic, disable warnings about those variables
+ */
+#define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X)     \
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)
+
+
 #if     defined (__cplusplus)
 namespace   Stroika {
     namespace   Foundation {
