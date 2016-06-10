@@ -230,6 +230,9 @@ size_t  Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size
 
 size_t  Connection_LibCurl::Rep_::s_ResponseWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
+#if     qStroika_FeatureSupported_Valgrind
+    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb);  // Handle OpenSSL if not built with purify
+#endif
     return reinterpret_cast<Rep_*> (userP)->ResponseWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
@@ -241,6 +244,9 @@ size_t  Connection_LibCurl::Rep_::ResponseWriteHandler_ (const Byte* ptr, size_t
 
 size_t  Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size_t size, size_t nmemb, void* userP)
 {
+#if     qStroika_FeatureSupported_Valgrind
+    VALGRIND_MAKE_MEM_DEFINED (ptr, size * nmemb);  // Handle OpenSSL if not built with purify
+#endif
     return reinterpret_cast<Rep_*> (userP)->ResponseHeaderWriteHandler_ (reinterpret_cast<const Byte*> (ptr), size * nmemb);
 }
 
