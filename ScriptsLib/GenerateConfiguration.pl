@@ -40,6 +40,7 @@ my $LIBFEATUREFLAG_UseSystem = "use-system";
 my $LIBFEATUREFLAG_No = "no";
 
 
+my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
@@ -129,7 +130,7 @@ sub	DoHelp_
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
-        print("	    --lto {ARG}                                     /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
+        print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
         print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
         print("	    --apply-default-debug-flags                     /*  */\n");
         print("	    --apply-default-release-flags                   /*  */\n");
@@ -587,7 +588,6 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$RANLIB = $var;
 		}
-
 		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -599,8 +599,21 @@ sub	ParseCommandLine_Remaining_
 			$EXTRA_LINKER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
-			$EXTRA_COMPILER_ARGS .= " -flto";
-			$EXTRA_LINKER_ARGS .= " -flto";
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "enable") {
+				$ENABLE_LTO = 1;
+			}
+			elsif ($var eq "disable") {
+				$ENABLE_LTO = 0;
+			}
+			elsif ($var eq "default") {
+				$ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
+			}
+			else  {
+                print ("UNRECOGNIZED assertions ARG: $var\n");
+                DoHelp_ (1);
+			}
 		}
 		elsif ((lc ($var) eq "-cross-compiling") or (lc ($var) eq "--cross-compiling")) {
 			$i++;
@@ -728,6 +741,10 @@ ParseCommandLine_ ();
 
 sub PostProcessOptions_ ()
 {
+	if ($ENABLE_LTO == true) {
+		$EXTRA_COMPILER_ARGS .= " -flto";
+		$EXTRA_LINKER_ARGS .= " -flto";
+	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		if ($CrossCompiling eq "false") {
 			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;

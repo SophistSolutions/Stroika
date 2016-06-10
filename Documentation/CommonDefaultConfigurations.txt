@@ -5,7 +5,7 @@ make default-configuration
 configure DefaultConfiguration --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc'
-configure DefaultConfiguration --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto
+configure DefaultConfiguration --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc' --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto enable
 configure DefaultConfiguration --assertions enable --trace2file enable --cppstd-version-flag '--std=c++14'
 configure DefaultConfiguration --assertions enable --trace2file enable --cppstd-version-flag '--std=c++14' --block-allocation disable
 configure DefaultConfiguration --assertions disable --trace2file disable -cpp-optimize-flag "-O2" --cppstd-version-flag '--std=c++14'
@@ -13,8 +13,8 @@ configure DefaultConfiguration --assertions disable --trace2file disable --cpp-o
 configure DefaultConfiguration --assertions enable --trace2file enable --cpp-optimize-flag -O2
 configure DefaultConfiguration --assertions disable --trace2file enable --cpp-optimize-flag -O2
 configure DefaultConfiguration --assertions disable --trace2file enable --cpp-optimize-flag -O2 --Xerces no --OpenSSL no
-configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto
-configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --pg --lto
+configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --lto enable
+configure DefaultConfiguration --assertions disable --trace2file disable --cpp-optimize-flag -O3 --pg --lto enable
 
 #to test with valgrind
 configure DefaultConfiguration --openssl-extraargs purify --block-allocation disable
