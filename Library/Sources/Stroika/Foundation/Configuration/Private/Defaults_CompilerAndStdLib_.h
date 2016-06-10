@@ -835,15 +835,15 @@ Compiling regtests for Median/OrderBy...
  *  This works, and as near as I can tell, its just a compiler 'misfeature' with that make_unique_lock is slightly slower.
  *
  *  Tell that this is slow by running/comparing performance regtests with and without.
- *		Test:
- *			time Builds/Release-U-32/Test47/Test47 -x 1
+ *      Test:
+ *          time Builds/Release-U-32/Test47/Test47 -x 1
  *
- *			Run test several time and average realtime results.
+ *          Run test several time and average realtime results.
  *
- *			Run same test on UNIX and Windows.
+ *          Run same test on UNIX and Windows.
  *
- *		\note	Tiny improvement found 2016-06-09 - v2.0a148x - with setting '1' on gcc 5.3-release, and even more tiny improvement
- *				for vs2k15 (Release-U-32). But for now - take the improvement
+ *      \note   Tiny improvement found 2016-06-09 - v2.0a148x - with setting '1' on gcc 5.3-release, and even more tiny improvement
+ *              for vs2k15 (Release-U-32). But for now - take the improvement
  */
 #ifndef qCompilerAndStdLib_make_unique_lock_IsSlow
 
