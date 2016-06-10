@@ -332,6 +332,11 @@ sub	SetDefaultForCompilerDriver_
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 0;
 		}
+		if ($ENABLE_LTO == DEFAULT_BOOL_OPTIONS) {
+			if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+				$ENABLE_LTO = 1;
+			}
+		}
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ($COPTIMIZE_FLAGS eq "") {
 				$COPTIMIZE_FLAGS = "-O3";
