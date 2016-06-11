@@ -84,7 +84,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <>
-            inline  void    _NoReturn_  Throw (const errno_ErrorException& e2Throw)
+            [[noreturn]]	inline  void	Throw (const errno_ErrorException& e2Throw)
             {
                 // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
                 errno_ErrorException::Throw (e2Throw);

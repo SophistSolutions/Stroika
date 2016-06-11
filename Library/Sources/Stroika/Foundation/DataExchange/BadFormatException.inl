@@ -39,7 +39,7 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            void    _NoReturn_  Throw (const DataExchange::BadFormatException& e2Throw);
+            [[noreturn]]	void    Throw (const DataExchange::BadFormatException& e2Throw);
         }
 
 

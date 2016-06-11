@@ -63,7 +63,7 @@ namespace   Stroika {
             }
 
             template    <>
-            inline  void    _NoReturn_  Throw (const Platform::Windows::Exception& e2Throw)
+            [[noreturn]]	inline  void    Throw (const Platform::Windows::Exception& e2Throw)
             {
                 // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
                 Platform::Windows::Exception::Throw (e2Throw);

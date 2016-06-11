@@ -37,9 +37,9 @@ namespace   Stroika {
 
             // Just pre-declare Throw<> template here so we can specailize
             template    <typename T>
-            void     _NoReturn_ Throw (const T& e2Throw);
+            [[noreturn]]	void	Throw (const T& e2Throw);
             template    <>
-            void    _NoReturn_  Throw (const IO::FileFormatException& e2Throw);
+            [[noreturn]]	void	Throw (const IO::FileFormatException& e2Throw);
 
 
         }

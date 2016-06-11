@@ -39,7 +39,7 @@ namespace   Stroika {
 
 
             /**
-             *  This is only meant for debugging. If true, then the overloads to DoThrow will also include a call
+             *  This is only meant for debugging. If true, then the overloads to Throw will also include a call
              *  to BackTrace, so its easier to track in TraceLogs where an exception is thrown from (helpful when you dont
              *  have a debugger).
              */
@@ -61,22 +61,22 @@ namespace   Stroika {
              *  so as to get is specialization.
              */
             template    <typename T>
-            void     _NoReturn_ Throw (const T& e2Throw);
+            [[noreturn]]	void     Throw (const T& e2Throw);
             template    <typename T>
-            void    _NoReturn_  Throw (const T& e2Throw, const char* traceMsg);
+            [[noreturn]]	void    Throw (const T& e2Throw, const char* traceMsg);
             template    <typename T>
-            void    _NoReturn_  Throw (const T& e2Throw, const wchar_t* traceMsg);
+            [[noreturn]]	void    Throw (const T& e2Throw, const wchar_t* traceMsg);
 
 
             /**
              *  Just a regular C++ rethrow, but with a DbgTrace message...
              */
-            void    _NoReturn_  ReThrow ();
-            void    _NoReturn_  ReThrow (const exception_ptr& e);
-            void    _NoReturn_  ReThrow (const char* traceMsg);
-            void    _NoReturn_  ReThrow (const exception_ptr& e, const char* traceMsg);
-            void    _NoReturn_  ReThrow (const wchar_t* traceMsg);
-            void    _NoReturn_  ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
+            [[noreturn]]	void    ReThrow ();
+            [[noreturn]]	void    ReThrow (const exception_ptr& e);
+            [[noreturn]]	void    ReThrow (const char* traceMsg);
+            [[noreturn]]	void    ReThrow (const exception_ptr& e, const char* traceMsg);
+            [[noreturn]]	void    ReThrow (const wchar_t* traceMsg);
+            [[noreturn]]	void	ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
 
             /**

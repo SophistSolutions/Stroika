@@ -31,7 +31,7 @@ const   SilentException SilentException::kThe   {};
  ********************************************************************************
  */
 template    <>
-void    _NoReturn_  Execution::Throw (const SilentException& e2Throw)
+[[noreturn]]	void	Execution::Throw (const SilentException& e2Throw)
 {
     DbgTrace (SDKSTR ("Throwing SilentException"));
     throw e2Throw;

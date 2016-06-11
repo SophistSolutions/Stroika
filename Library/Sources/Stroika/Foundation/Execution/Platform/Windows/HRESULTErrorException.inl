@@ -47,7 +47,7 @@ namespace   Stroika {
 
 
             template    <>
-            inline  void    _NoReturn_  Throw (const Platform::Windows::HRESULTErrorException& e2Throw)
+            [[noreturn]]	inline  void    Throw (const Platform::Windows::HRESULTErrorException& e2Throw)
             {
                 DbgTrace ("Throwing Platform::Windows::HRESULTErrorException: HRESULT = 0x%x", static_cast<HRESULT> (e2Throw));
                 throw e2Throw;

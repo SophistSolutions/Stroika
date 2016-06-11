@@ -666,7 +666,7 @@ namespace   Stroika {
 
                 /**
                  */
-                void    _NoReturn_  ThrowUnRecognizedStartElt (const Name& name);
+                [[noreturn]]	void    ThrowUnRecognizedStartElt (const Name& name);
 
 
             }

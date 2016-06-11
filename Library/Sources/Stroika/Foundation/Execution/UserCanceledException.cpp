@@ -27,7 +27,7 @@ const   UserCanceledException   UserCanceledException::kThe     {};
  ********************************************************************************
  */
 template    <>
-void    _NoReturn_  Execution::Throw (const UserCanceledException& e2Throw)
+[[noreturn]]	void    Execution::Throw (const UserCanceledException& e2Throw)
 {
     DbgTrace (SDKSTR ("Throwing UserCanceledException"));
     throw e2Throw;

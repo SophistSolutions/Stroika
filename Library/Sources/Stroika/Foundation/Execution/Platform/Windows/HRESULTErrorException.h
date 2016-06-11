@@ -51,7 +51,7 @@ namespace   Stroika {
 
 
             template    <>
-            void    _NoReturn_  Throw (const Platform::Windows::HRESULTErrorException& e2Throw);
+            [[noreturn]]	void    Throw (const Platform::Windows::HRESULTErrorException& e2Throw);
 
 
             template<>
