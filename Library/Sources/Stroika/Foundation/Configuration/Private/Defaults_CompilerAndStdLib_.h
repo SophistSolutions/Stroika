@@ -1440,6 +1440,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *   The Standard C++ mechanism of commenting out unused parameters isn't good enuf
  *   in the case where the parameters might be used conditionally. This hack is
  *   to shutup compiler warnings in those cases.
+ *
+ *      @todo eventually (when compilers support it) switch to using [[maybe_unused]] - http://en.cppreference.com/w/cpp/language/attributes
  */
 #if     !defined (Arg_Unused)
 #define Arg_Unused(x)   ((void) &x)
