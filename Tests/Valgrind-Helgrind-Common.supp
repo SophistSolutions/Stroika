@@ -6,8 +6,6 @@
    fun:allocate_stack
    fun:pthread_create@@GLIBC_*
    ...
-   fun:_ZNSt6thread15_M_start_threadESt10shared_ptrINS_10_Impl_baseEEPFvvE
-   ...
    fun:main
 }
 {
