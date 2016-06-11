@@ -268,8 +268,8 @@ sub	SetDefaultForCompilerDriver_
 			if ("$^O" eq "aix") {
 				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC_AIX;
 			}
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '5.3') {
-				#This is broken in gcc 5.2
+			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '6') {
+				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
 				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . " -Wno-odr"
 			}
 		}
