@@ -71,7 +71,6 @@ namespace   Stroika {
             {
                 return ReadableReference (&fDelegate_, &fLock_);
             }
-
             template    <typename   T, typename TRAITS>
             inline auto  Synchronized<T, TRAITS>::get () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
