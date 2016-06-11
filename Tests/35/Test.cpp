@@ -749,7 +749,9 @@ namespace {
         t2.Start ();
         t1.WaitForDone ();
         t2.WaitForDone ();
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind_START (sum);
         VerifyTestResult (sum == 0);
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind_END (sum);
     }
 }
 

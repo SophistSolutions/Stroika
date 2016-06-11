@@ -69,6 +69,33 @@
 
 
 
+/**
+ *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind_START/Stroika_Foundation_Debug_ValgrindDisableHelgrind_END
+ *  to ignore a particular variable in a range of code.
+ *
+ *  EXAMPLE:
+ *      int var = 1;
+ *      .... thread 1 writes;
+ *      .... thread 2 writes; // all with locks
+ *      wait til thread 1/2 done;
+ *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(var);
+ *      read var;   // helgrind doesnt know the thread completion is essentially a barrier
+ *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
+ */
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X)     \
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind(X)
+
+#if     qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X)     \
+    VALGRIND_HG_ENABLE_CHECKING (&(X), sizeof (X))
+#else
+#define Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(X)
+#endif
+
+
+
+
+
 
 /**
  *  If the current implementation of helgrind doesnt recognize std::atomic being atomic, disable warnings about those variables
