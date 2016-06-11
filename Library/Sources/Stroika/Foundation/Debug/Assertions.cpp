@@ -90,7 +90,7 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-noreturn\"");
 // Cannot figure out how to disable this warning? -- LGP 2014-01-04
 //DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wenabled-by-default\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-[[noreturn]]	void    Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+[[noreturn]]    void    Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 {
     static  bool    s_InTrap    =   false;
     if (s_InTrap) {

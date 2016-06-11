@@ -112,7 +112,7 @@ const   DataExchange::BadFormatException    DataExchange::BadFormatException::kT
 
 
 template    <>
-[[noreturn]]	void    Execution::Throw (const DataExchange::BadFormatException& e2Throw)
+[[noreturn]]    void    Execution::Throw (const DataExchange::BadFormatException& e2Throw)
 {
 #if     qDefaultTracingOn
     Memory::Optional<unsigned int>  lineNum;

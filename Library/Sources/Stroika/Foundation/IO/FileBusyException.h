@@ -38,7 +38,7 @@ namespace   Stroika {
 
 
             template    <>
-            [[noreturn]]	inline  void	Throw (const IO::FileBusyException& e2Throw);
+            [[noreturn]]    inline  void    Throw (const IO::FileBusyException& e2Throw);
 
 
         }

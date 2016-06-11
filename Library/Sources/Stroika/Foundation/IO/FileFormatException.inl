@@ -22,7 +22,7 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            [[noreturn]]	inline  void    Throw (const IO::FileFormatException& e2Throw)
+            [[noreturn]]    inline  void    Throw (const IO::FileFormatException& e2Throw)
             {
                 DbgTrace ("Throwing FileFormatException: fFileName = '%s'", e2Throw.GetFileName ().c_str ());
                 throw e2Throw;

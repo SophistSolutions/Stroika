@@ -119,7 +119,7 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            [[noreturn]]	inline  void    Throw (const Time::TimeOfDay::FormatException& e2Throw)
+            [[noreturn]]    inline  void    Throw (const Time::TimeOfDay::FormatException& e2Throw)
             {
                 DbgTrace (L"Throwing TimeOfDay::FormatException");
                 throw e2Throw;

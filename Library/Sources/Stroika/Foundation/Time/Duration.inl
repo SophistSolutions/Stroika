@@ -90,7 +90,7 @@ namespace   Stroika {
 
         namespace   Execution {
             template    <>
-            [[noreturn]]	inline  void    Throw (const Time::Duration::FormatException& e2Throw)
+            [[noreturn]]    inline  void    Throw (const Time::Duration::FormatException& e2Throw)
             {
                 DbgTrace (L"Throwing Duration::FormatException");
                 throw e2Throw;

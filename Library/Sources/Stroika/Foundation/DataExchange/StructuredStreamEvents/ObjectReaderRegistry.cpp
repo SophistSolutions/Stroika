@@ -272,7 +272,7 @@ shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::Read
  ****************** StructuredStreamEvents::ThrowUnRecognizedStartElt ***********
  ********************************************************************************
  */
-[[noreturn]]	void    StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+[[noreturn]]    void    StructuredStreamEvents::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
 {
     Execution::Throw (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }

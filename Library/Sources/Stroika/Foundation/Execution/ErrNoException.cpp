@@ -68,7 +68,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     return buf;
 }
 
-[[noreturn]]	void    errno_ErrorException::Throw (Execution::errno_t error)
+[[noreturn]]    void    errno_ErrorException::Throw (Execution::errno_t error)
 {
     //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
     switch (error) {

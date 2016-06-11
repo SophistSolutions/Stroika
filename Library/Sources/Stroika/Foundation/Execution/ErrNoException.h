@@ -57,7 +57,7 @@ namespace   Stroika {
             public:
                 // throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is
                 // as good a fit.
-                [[noreturn]]	static  void    Throw (errno_t error);
+                [[noreturn]]    static  void    Throw (errno_t error);
 
             private:
                 errno_t fError;
@@ -81,9 +81,9 @@ namespace   Stroika {
 
             // Just pre-declare Throw><> template here so we can specailize
             template    <typename T>
-            [[noreturn]]	void	Throw (const T& e2Throw);
+            [[noreturn]]    void    Throw (const T& e2Throw);
             template    <>
-            [[noreturn]]	void	Throw (const errno_ErrorException& e2Throw);
+            [[noreturn]]    void    Throw (const errno_ErrorException& e2Throw);
 
 
             /*

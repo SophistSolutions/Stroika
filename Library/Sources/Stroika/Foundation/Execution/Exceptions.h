@@ -61,22 +61,22 @@ namespace   Stroika {
              *  so as to get is specialization.
              */
             template    <typename T>
-            [[noreturn]]	void     Throw (const T& e2Throw);
+            [[noreturn]]    void     Throw (const T& e2Throw);
             template    <typename T>
-            [[noreturn]]	void    Throw (const T& e2Throw, const char* traceMsg);
+            [[noreturn]]    void    Throw (const T& e2Throw, const char* traceMsg);
             template    <typename T>
-            [[noreturn]]	void    Throw (const T& e2Throw, const wchar_t* traceMsg);
+            [[noreturn]]    void    Throw (const T& e2Throw, const wchar_t* traceMsg);
 
 
             /**
              *  Just a regular C++ rethrow, but with a DbgTrace message...
              */
-            [[noreturn]]	void    ReThrow ();
-            [[noreturn]]	void    ReThrow (const exception_ptr& e);
-            [[noreturn]]	void    ReThrow (const char* traceMsg);
-            [[noreturn]]	void    ReThrow (const exception_ptr& e, const char* traceMsg);
-            [[noreturn]]	void    ReThrow (const wchar_t* traceMsg);
-            [[noreturn]]	void	ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
+            [[noreturn]]    void    ReThrow ();
+            [[noreturn]]    void    ReThrow (const exception_ptr& e);
+            [[noreturn]]    void    ReThrow (const char* traceMsg);
+            [[noreturn]]    void    ReThrow (const exception_ptr& e, const char* traceMsg);
+            [[noreturn]]    void    ReThrow (const wchar_t* traceMsg);
+            [[noreturn]]    void    ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
 
             /**

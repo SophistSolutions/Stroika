@@ -67,7 +67,7 @@ namespace   Stroika {
             Characters::String StringException::As () const;
 
             template    <>
-            [[noreturn]]	void    Throw (const StringException& e2Throw);
+            [[noreturn]]    void    Throw (const StringException& e2Throw);
 
 
         }
