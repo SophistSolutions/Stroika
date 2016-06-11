@@ -1449,34 +1449,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 
-/*
- *   Sometimes its handy to mark a function as not actually returning (because of throws or other reasons)
- *   This can allow the compiler to occasionally better optimize, but mostly avoid spurious warnings.
- *
- *  From http://msdn.microsoft.com/en-us/library/k6ktzx3s(v=vs.80).aspx
- *      This __declspec attribute tells the compiler that a function does not return. As a consequence,
- *      the compiler knows that the code following a call to a __declspec(noreturn) function is unreachable.
- *
- *      If the compiler finds a function with a control path that does not return a value,
- *      it generates a warning (C4715) or error message (C2202). If the control path cannot
- *      be reached due to a function that never returns, you can use __declspec(noreturn) to prevent
- *      this warning or error.
- *
- *      @todo replace this with [[noreturn]]
- */
-#if     !defined (_NoReturn_)
-#if     defined(_MSC_VER)
-#define _NoReturn_  __declspec(noreturn)
-#elif   defined (__GNUG__ )
-#define _NoReturn_  __attribute__((noreturn))
-#else
-#define _NoReturn_
-#endif
-#endif
-
-
-
-
 
 /*
  *   Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
