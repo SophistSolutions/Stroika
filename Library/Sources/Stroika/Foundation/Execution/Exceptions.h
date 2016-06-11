@@ -61,9 +61,9 @@ namespace   Stroika {
              *  so as to get is specialization.
              */
             template    <typename T>
-            [[noreturn]]    void     Throw (const T& e2Throw);
+            [[noreturn]]    void	Throw (const T& e2Throw);
             template    <typename T>
-            [[noreturn]]    void    Throw (const T& e2Throw, const char* traceMsg);
+            [[noreturn]]    void	Throw (const T& e2Throw, const char* traceMsg);
             template    <typename T>
             [[noreturn]]    void    Throw (const T& e2Throw, const wchar_t* traceMsg);
 
