@@ -76,9 +76,9 @@ namespace   Stroika {
                  *  Helper detail class for analyzing and tuning cache statistics.
                  */
                 struct  Stats_Basic {
-                    Stats_Basic ();
-                    size_t      fCachedCollected_Hits;
-                    size_t      fCachedCollected_Misses;
+                    Stats_Basic () = default;
+                    size_t      fCachedCollected_Hits   {};
+                    size_t      fCachedCollected_Misses {};
 
                     nonvirtual  void    IncrementHits ();
                     nonvirtual  void    IncrementMisses ();

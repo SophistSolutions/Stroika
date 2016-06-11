@@ -23,11 +23,6 @@ namespace   Stroika {
              ************************ TimedCacheSupport::Stats_Basic ************************
              ********************************************************************************
              */
-            inline  TimedCacheSupport::Stats_Basic::Stats_Basic ()
-                : fCachedCollected_Hits (0)
-                , fCachedCollected_Misses (0)
-            {
-            }
             inline  void    TimedCacheSupport::Stats_Basic::IncrementHits ()
             {
                 fCachedCollected_Hits++;
