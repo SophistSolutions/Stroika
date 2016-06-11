@@ -62,10 +62,9 @@ namespace   Stroika {
              *      \endcode
              */
             template    <typename   MUTEX, typename ...ARGS>
-            inline  std::unique_lock<MUTEX>   make_unique_lock (MUTEX& m, ARGS&& ...args)
-            {
+            inline  auto   make_unique_lock (MUTEX&& m, ARGS&& ...args) ->  std::unique_lock<typename std::remove_reference<MUTEX>::type> {
                 using   namespace   std;
-                return unique_lock<MUTEX> (m, forward<ARGS> (args)...);
+                return unique_lock<typename remove_reference<MUTEX>::type> (forward<MUTEX> (m), forward<ARGS> (args)...);
             }
 
 
