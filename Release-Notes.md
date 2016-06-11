@@ -24,12 +24,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a148">v2.0a148x</a><br/>2016-06-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
-
-		<!-- all as of 2016-06-09 10am-->
-
 		<li>https://stroika.atlassian.net/browse/STK-444 - preallocating nul byte on strings (for thread safety)</li>
-
 		<li>ThreadPool::GetPoolSize () needs auto    critSec { make_unique_lock (fCriticalSection_) }; to access - event readonly - fThreads - beacuse it can be written by another thread at the same time</li>
 		<li>Target compilers supported changes
 			<ul>
@@ -38,17 +33,24 @@ History
 				<li>Add clang++3.8</li>
 			</ul>
 		</li>
+		<li>configure --lto now requires arg - enable/disable; and configure --apply-release-flags now sets --lto enable by default if using gcc</li>
+		<li>changed qCompilerAndStdLib_make_unique_lock_IsSlow from 0 to 1 - tested on gcc 5.3 and msvc2k15u2 and all have slight make_unique_lock penalty - so use fast way internally</li>
+		<li>Changed qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr so only defaults to 1 on VS (windows) and else 0 (using shared_ptr)</li>
 		<li>Valgrind Helgrind
 			<ul>
 				<li>silence helgrind warning on minor bug (still bug and added @todo but minor)</li>
 				<li>Stroika_Foundation_Debug_ValgrindDisableHelgrind on 2 vars in Foundation/Execution/SharedStaticData</li>
+				<li>Stroika_Foundation_Debug_ValgrindDisableHelgrind in SharedPtr</li>
+				<li>use new Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic - just to better document when/where/why valgrind/helgrind suppressions</li>
 			</ul>
 			and SIMPLIFIED qCompilerAndStdLib_shared_mutex_module_Buggy
 		</li>
+		<li>Lose OpenSSL.supp (just test with PURIFY mode OpenSSL- no many suppressions to be useful)</li>
 		<li>renamed EOFException::kEOFException -> EOFException::kThe, etc. Coding convention docs about kthe </li>
 		<li>Silenced some (safe) compiler warnings</li>
 		<li>fixed bug with Configuration::FindLocaleName - part1 and part3 cannot be static</li>
 		<li>fixed qCompilerAndStdLib_make_unique_Buggy bug define gcc</li>
+		<li>https://stroika.atlassian.net/browse/STK-188 - lose qStroika_Foundation_Memory_NeedPtrStoredInEnableSharedFromThis_</li>
 		<li>Lose deprecated bug workarounds
 			<ul>
 				<li>qCompilerAndStdLib_uninitialized_copy_n_Buggy</li>
