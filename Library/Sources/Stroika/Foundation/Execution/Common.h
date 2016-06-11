@@ -79,6 +79,7 @@ namespace   Stroika {
 #define MACRO_LOCK_GUARD_CONTEXT(theMutex)\
     std::lock_guard<decltype(theMutex)> critSec { theMutex };
 
+
         }
     }
 }
