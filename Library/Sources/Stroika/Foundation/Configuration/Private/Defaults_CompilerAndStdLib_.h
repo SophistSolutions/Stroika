@@ -632,6 +632,33 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 
 
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+
+Compiling  $StroikaRoot/Tests/43/../TestHarness/TestHarness.cpp...
+/home/lewis/Sandbox/StroikaDev/Tests/43/Test.cpp:66:41: warning: moving a temporary object prevents copy elision [-Wpessimizing-move]
+Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+*/
+#ifndef qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8))
+#else
+#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy     0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
 */

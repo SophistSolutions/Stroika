@@ -55,6 +55,9 @@ namespace   {
             VerifyTestResult (x == 3);
         }
         auto testOptionalOfThingNotCopyable = [] () {
+#if     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+            DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"Wpessimizing-move\"");
+#endif
             struct NotCopyable {
                 NotCopyable () {}
                 NotCopyable (const NotCopyable&&) {}    // but is moveable!
@@ -65,6 +68,9 @@ namespace   {
             VerifyTestResult (n1.IsMissing ());
             Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
             VerifyTestResult (n2.IsPresent ());
+#if     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+            DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"Wpessimizing-move\"");
+#endif
         };
         testOptionalOfThingNotCopyable ();
         {
