@@ -21,7 +21,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a148">v2.0a148x</a><br/>2016-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a148">v2.0a148</a><br/>2016-06-10</td>
 <td>
 	<ul>
 		<li>https://stroika.atlassian.net/browse/STK-444 - preallocating nul byte on strings (for thread safety)</li>
@@ -70,9 +70,24 @@ History
 			</ul>
 		</li>
 		<li>small inline cleanups (various modules)</li>
+		<li>Tested (passed regtests) (*prev to release - retesting - will re-release if issue*)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
+
+
 
 
 
