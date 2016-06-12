@@ -448,8 +448,8 @@ String  String::FromAscii (const string& from)
 
 String::_SharedPtrIRep  String::mkEmpty_ ()
 {
-    static  const   wchar_t kEmptyStr_[1] = {};
-    static  _SharedPtrIRep s_   =   mk_ (std::begin (kEmptyStr_), std::begin (kEmptyStr_));
+    static  constexpr	wchar_t			kEmptyStr_[1] = {};
+    static  const		_SharedPtrIRep	s_   =   mk_ (std::begin (kEmptyStr_), std::begin (kEmptyStr_));
     return s_;
 }
 
