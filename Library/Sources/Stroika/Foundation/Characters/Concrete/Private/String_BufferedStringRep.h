@@ -56,14 +56,13 @@ namespace   Stroika {
                             /**
                              *  The argument wchar_t* strings MAY or MAY NOT be nul-terminated
                              */
-                            _Rep (const wchar_t* start, const wchar_t* end);
-                            _Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters);
+                            _Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters = 0);
 
                         public:
                             ~_Rep ();
 
                         public:
-                            nonvirtual     void            InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
+                            nonvirtual     void     InsertAt (const Character* srcStart, const Character* srcEnd, size_t index);
 
                         public:
                             virtual     const wchar_t*  c_str_peek () const noexcept override;
@@ -79,6 +78,11 @@ namespace   Stroika {
 
                         public:
                             nonvirtual  size_t  size () const;
+
+                        private:
+                            /**
+                             */
+                            static  size_t  ReserveAtLeastTargetCapacity_ (size_t targetNewSize, size_t existingCapacity);
 
                         private:
                             /**

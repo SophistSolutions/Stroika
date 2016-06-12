@@ -52,24 +52,17 @@ namespace   Stroika {
                     }
                     inline  void    BufferedStringRep::_Rep::reserve_ (size_t newCapacity)
                     {
-                        // capacity includes nul-term, so
-                        //Require (newCapacity > _GetLength ());
-                        if (fCapacity_ != 0) {
-                            Require (newCapacity > _GetLength ());
-                        }
-                        // Force capacity to match request... even if 'unwise'
-
+                        Require (newCapacity > 0);  // always must be nul-terminated
+                        Require (newCapacity > _GetLength ());
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                        if (newCapacity < BufferedStringRepBlock_::kNElts) {
-                            newCapacity = BufferedStringRepBlock_::kNElts;
-                        }
+                        Require (newCapacity >= BufferedStringRepBlock_::kNElts);
 #endif
                         if (fCapacity_ != newCapacity) {
-                            size_t      len     =   fCapacity_ == 0 ? 0 : _GetLength ();
+                            size_t      len     =   _GetLength ();
                             wchar_t*    newBuf  =   nullptr;
                             {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                                if (newCapacity <= BufferedStringRepBlock_::kNElts) {
+                                if (newCapacity == BufferedStringRepBlock_::kNElts) {
                                     static_assert (sizeof (BufferedStringRepBlock_) == sizeof (wchar_t) * BufferedStringRepBlock_::kNElts, "sizes should match");
                                     newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_>::Allocate (sizeof (BufferedStringRepBlock_)));
                                 }
@@ -77,12 +70,7 @@ namespace   Stroika {
                                 if (newBuf == nullptr) {
                                     newBuf = new wchar_t [newCapacity];
                                 }
-                                if (_fStart == nullptr) {
-                                    newBuf[0] = '\0';
-                                }
-                                else {
-                                    (void)::memcpy (newBuf, _fStart, (len + 1) * sizeof (wchar_t));     // copy data + nul-term
-                                }
+                                (void)::memcpy (newBuf, _fStart, (len + 1) * sizeof (wchar_t));     // copy data + nul-term
                             }
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                             if (fCapacity_ == BufferedStringRepBlock_::kNElts) {
@@ -103,43 +91,39 @@ namespace   Stroika {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         // ANY size for kChunkSize would be legal/reasonable, but if we use a size < BufferedStringRepBlock_::kNElts,
                         // then we can never allocate BufferedStringRepBlock_ blocks! Or at least not when we call reserveatleast
-                        const   size_t  kChunkSize_  =   (newCapacity < BufferedStringRepBlock_::kNElts) ? BufferedStringRepBlock_::kNElts : 32;
+                        const       size_t  kChunkSize_  =   (newCapacity < BufferedStringRepBlock_::kNElts) ? BufferedStringRepBlock_::kNElts : 32;
 #else
                         constexpr   size_t  kChunkSize_  =   32;
 #endif
                         size_t          len         =   fCapacity_ == 0 ? 0 : _GetLength ();
                         reserve_ (Containers::ReserveSpeedTweekAdjustCapacity (max (newCapacity, len + 1), kChunkSize_));
                     }
-                    inline   BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end)
-                        : inherited (nullptr, nullptr)
-                        , fCapacity_ (0)
-                    {
-                        size_t  len     =   end - start;
-                        ReserveAtLeast_ (len + 1);
-                        if (len != 0) {
-                            AssertNotNull (_PeekStart ());
-                            (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
-                            _fEnd = _fStart + len;
-                        }
-                        _PeekStart ()[len] = '\0';  // CTOR now initializes nul-terminated and rest preserves
-                    }
                     inline     BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
                         : inherited (nullptr, nullptr)
-                        , fCapacity_ (0)
                     {
-                        size_t  len     =   end - start;
-                        ReserveAtLeast_ (len + reserveExtraCharacters + 1);
-                        if (len != 0) {
-                            AssertNotNull (_PeekStart ());
-                            (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
-                            _fEnd = _fStart + len;
+                        size_t      len         =   end - start;
+                        size_t      capacity    =   (Containers::ReserveSpeedTweekAdjustCapacity (len + 1 + reserveExtraCharacters));
+                        wchar_t*    newBuf      =   nullptr;
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                        Assert (capacity >= BufferedStringRepBlock_::kNElts);
+                        if (capacity == BufferedStringRepBlock_::kNElts) {
+                            static_assert (sizeof (BufferedStringRepBlock_) == sizeof (wchar_t) * BufferedStringRepBlock_::kNElts, "sizes should match");
+                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_>::Allocate (sizeof (BufferedStringRepBlock_)));
                         }
-                        _PeekStart ()[len] = '\0';  // CTOR now initializes nul-terminated and rest preserves
+#endif
+                        if (newBuf == nullptr) {
+                            newBuf = new wchar_t [capacity];
+                        }
+                        (void)::memcpy (newBuf, start, len * sizeof (wchar_t));
+                        newBuf[len] = '\0';
+                        fCapacity_ = capacity;
+                        _SetData (newBuf, newBuf + len);
                     }
                     //theory not tested- but inlined because its important this be fast, it it sb instantiated only in each of the 3 or 4 final DTORs
                     inline  BufferedStringRep::_Rep::~_Rep ()
                     {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                        Assert (fCapacity_ >= BufferedStringRepBlock_::kNElts);
                         if (fCapacity_ == BufferedStringRepBlock_::kNElts) {
                             Memory::BlockAllocator<BufferedStringRepBlock_>::Deallocate (_PeekStart ());
                             return;
