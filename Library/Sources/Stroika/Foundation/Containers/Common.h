@@ -65,7 +65,7 @@ namespace   Stroika {
 
             /**
              */
-            size_t    ReserveSpeedTweekAddNCapacity (size_t cSize, size_t cCapacity, size_t n, size_t kMinChunk);
+            size_t    ReserveSpeedTweekAdjustCapacity (size_t targetCapacity, size_t minChunk = 16);
 
 
             /**

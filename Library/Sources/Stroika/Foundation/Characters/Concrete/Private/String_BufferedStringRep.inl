@@ -108,19 +108,7 @@ namespace   Stroika {
                         constexpr   size_t  kChunkSize_  =   32;
 #endif
                         size_t          len         =   fCapacity_ == 0 ? 0 : _GetLength ();
-                        newCapacity = max (newCapacity, len + 1);
-                        if (newCapacity == 1) {
-                            reserve_ (1);
-                        }
-                        else {
-                            ptrdiff_t   n2Add   =   static_cast<ptrdiff_t> (newCapacity) - static_cast<ptrdiff_t> (len);
-                            if (n2Add > 0) {
-                                size_t  size    =   Containers::ReserveSpeedTweekAddNCapacity (len, fCapacity_, static_cast<size_t> (n2Add), kChunkSize_);
-                                if (size != -1) {
-                                    reserve_ (size);
-                                }
-                            }
-                        }
+                        reserve_ (Containers::ReserveSpeedTweekAdjustCapacity (max (newCapacity, len + 1), kChunkSize_));
                     }
                     inline   BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end)
                         : inherited (nullptr, nullptr)
