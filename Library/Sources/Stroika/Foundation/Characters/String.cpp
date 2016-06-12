@@ -51,13 +51,6 @@ namespace   {
         using   inherited   =   Concrete::Private::BufferedStringRep::_Rep;
 
     public:
-#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-        static  constexpr size_t kOptimizedForStringsLenLessOrEqualTo = Concrete::Private::BufferedStringRepBlock_::kNElts;
-#else
-        static  constexpr size_t kOptimizedForStringsLenLessOrEqualTo = 0;
-#endif
-
-    public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
             : inherited (start, end)
         {

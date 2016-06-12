@@ -45,7 +45,11 @@ namespace   Stroika {
                         private:
                             using   inherited   =   String::_IRep;
 
-                        protected:
+                        private:
+	                        static  constexpr size_t    kNElts1_ = 16;
+	                        static  constexpr size_t    kNElts2_ = 32;
+
+						protected:
                             _Rep () = delete;
                             _Rep (const _Rep&) = delete;
 
