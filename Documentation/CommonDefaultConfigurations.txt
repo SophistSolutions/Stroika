@@ -2,6 +2,8 @@
 
 make default-configuration
 
+make default-configurations DEFAULT_CONFIGURATION_ARGS='--openssl use --OpenSSL-ExtraArgs purify --block-allocation disable --valgrind enable'
+
 configure DefaultConfiguration --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver '/home/lewis/gcc-5.2.0/bin/x86_64-unknown-linux-gnu-gcc'
