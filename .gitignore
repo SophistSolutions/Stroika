@@ -9,6 +9,6 @@ StroikaDevRoot.*
 *.opensdf
 *.opendb
 *.suo
-REGRESSION-TESTS*.OUT
+REGRESSION-TESTS*x.OUT
 *.VC.db
 *.vs
