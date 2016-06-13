@@ -155,8 +155,8 @@ namespace   Stroika {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         Assert (fCapacity_ >= kNElts1_);
 #endif
-#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         switch (fCapacity_) {
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                             case kNElts1_: {
                                     Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
                                 }

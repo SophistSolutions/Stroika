@@ -1109,9 +1109,6 @@ namespace   Stroika {
                  */
                 nonvirtual  const wchar_t*  c_str () const;
 
-            private:
-                nonvirtual  const wchar_t*  c_str_ () const;
-
             public:
                 /**
                  * need more overloads

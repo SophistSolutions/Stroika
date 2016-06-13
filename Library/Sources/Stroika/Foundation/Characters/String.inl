@@ -506,14 +506,10 @@ namespace   Stroika {
             }
             inline  const wchar_t*  String::c_str () const
             {
-                // Since this is intrinsically un-threadsafe anyhow, dont bother making a threadsafe
-                // copy (_SafeReadRepAccessor) of the shared_ptr
-                if (const wchar_t* result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ()) {
-                    return result;
-                }
-                else {
-                    return c_str_ ();
-                }
+                const wchar_t* result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ();
+                EnsureNotNull (result);
+                Ensure (result[GetLength ()] == '\0');
+                return result;
             }
             inline  size_t String::find (wchar_t c, size_t startAt) const
             {

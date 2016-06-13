@@ -1224,30 +1224,6 @@ void    String::AsASCII (string* into) const
     }
 }
 
-const wchar_t*  String::c_str_ () const
-{
-    // @todo https://stroika.atlassian.net/browse/STK-444
-    //
-    /*
-     *  NOTE: This function is INTRINSICALLY un-threadsafe, so don't even bother to try with threadsafety.
-     *  Access to this envelope MUST be externally synchronized or the returned bare pointer is doo-doo.
-     */
-    _SafeReadRepAccessor    accessor { this };
-    const   wchar_t*        result = accessor._ConstGetRep ().c_str_peek ();
-    AssertNotNull (result);
-#if 0
-    if (result == nullptr) {
-        pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
-        _SharedPtrIRep tmp = mk_(reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), d.second - d.first + 1);
-        String* REALTHIS    =   const_cast<String*> (this);
-        *REALTHIS = String (move (tmp));
-        result = _SafeReadRepAccessor { this } ._ConstGetRep ().c_str_peek ();
-    }
-#endif
-    Ensure (result != nullptr);
-    return result;
-}
-
 void    String::erase (size_t from, size_t count)
 {
     // https://stroika.atlassian.net/browse/STK-445
