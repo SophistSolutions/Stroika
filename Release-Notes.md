@@ -20,13 +20,19 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a148">v2.0a149x</a><br/>2016-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a149">v2.0a149</a><br/>2016-06-13</td>
 <td>
 	<ul>
 		<li>workaround qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy</li>
 		<li>new macros Stroika_Foundation_Debug_ValgrindDisableHelgrind_START and Stroika_Foundation_Debug_ValgrindDisableHelgrind_END to temporarily disable heglrind warnings and test case for them</li>
 		<li>replace use of (losing) _NoReturn_ with [[noreturn]]</li>
 		<li>Improved make_unique_lock for rvalue-refs</li>
+		<li>Ran performace tests (PerformanceDump-v2.0a149-x86-vs2k15-ReleaseU.txt and PerformanceDump-v2.0a149-linux-gcc-6.1.0-x64.txt) 
+		and there were regressions, so worked to (mostlly) fix them.
+		</li>
+		<li>Various speedups/cleanups to string code - relating to https://stroika.atlassian.net/browse/STK-444 fix earlier and StringBuffer reserve code. Got back most of the lost speed</li>
+		<li>renamed test HistoricalPerformanceRegressionTestResults</li>
+		<li>ScriptsLib/RegressionTests-Unix.sh now writes to Tests/HistoricalRegressionTestResults</li>
 		<li>Tested (passed regtests) (*prev to release - retesting - will re-release if issue*)
 			<ul>
 				<li>vc++2k15 Update 2</li>
@@ -36,8 +42,12 @@ History
 				<li>gcc 6.1</li>
 				<li>clang++3.7 (ubuntu)</li>
 				<li>clang++3.8 (ubuntu)</li>
-				<li>cross-compile 2 raspberry-pi</li>
 				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
+		<li>SKIPPED
+			<ul>
+				<li>cross-compile 2 raspberry-pi {skipped remote make run-tests}</li>
 			</ul>
 		</li>
 	</ul>
