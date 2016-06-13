@@ -9,7 +9,8 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 : ${PARALELLMAKEFLAG:=-j2}
 
 
-TEST_OUT_FILE=REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`.OUT
+mkdir -p Tests/HistoricalRegressionTestResults
+TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`.OUT
 
 PREFIX_OUT_LABEL=")))-"
 
