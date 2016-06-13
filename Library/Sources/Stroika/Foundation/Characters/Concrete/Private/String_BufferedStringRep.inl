@@ -30,7 +30,7 @@ namespace   Stroika {
 
 
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-					template	<size_t		SZ>
+                    template    <size_t     SZ>
                     struct BufferedStringRepBlock_ {
                         static  constexpr size_t    kNElts = SZ;
                         wchar_t data[kNElts];
@@ -60,71 +60,89 @@ namespace   Stroika {
 #endif
                         if (fCapacity_ != newCapacity) {
                             size_t      len     =   _GetLength ();
+                            Assert (len <= newCapacity);
                             wchar_t*    newBuf  =   nullptr;
                             {
+                                switch (newCapacity) {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                                if (newCapacity == kNElts1_) {
-                                    static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
-                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
-                                }
-                                else if (newCapacity == kNElts2_) {
-                                    static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
-                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
-                                }
+                                    case    kNElts1_:
+                                        static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
+                                        newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
+                                        break;
+                                    case    kNElts2_:
+                                        static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
+                                        newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
+                                        break;
 #endif
-                                if (newBuf == nullptr) {
-                                    newBuf = new wchar_t [newCapacity];
+                                    default:
+                                        newBuf = new wchar_t [newCapacity];
                                 }
                                 (void)::memcpy (newBuf, _fStart, (len + 1) * sizeof (wchar_t));     // copy data + nul-term
                             }
+                            switch (fCapacity_) {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                            if (fCapacity_ == kNElts1_) {
-                                Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
-                            }
-                            else if (fCapacity_ == kNElts2_) {
-                                Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
-                            }
-                            else {
-                                delete[] _PeekStart ();
-                            }
-#else
-                            delete[] _PeekStart ();
+                                case    kNElts1_:
+                                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
+                                    break;
+                                case    kNElts2_:
+                                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
+                                    break;
 #endif
+                                default:
+                                    delete[] _PeekStart ();
+                                    break;
+                            }
                             _SetData (newBuf, newBuf + len);
                             fCapacity_ = newCapacity;
                         }
                     }
-                    inline  void    BufferedStringRep::_Rep::ReserveAtLeast_ (size_t newCapacity)
+                    inline  size_t  BufferedStringRep::_Rep::AdjustCapacity_ (size_t initialCapacity)
                     {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
-                        // ANY size for kChunkSize would be legal/reasonable, but if we use a size < BufferedStringRepBlock_::kNElts,
-                        // then we can never allocate BufferedStringRepBlock_ blocks! Or at least not when we call reserveatleast
-                        const       size_t  kChunkSize_  =   (newCapacity < kNElts1_) ? kNElts1_ : 32;
-#else
-                        constexpr   size_t  kChunkSize_  =   32;
+                        if (initialCapacity <= kNElts1_) {
+                            return kNElts1_;
+                        }
+                        else if (initialCapacity <= kNElts2_) {
+                            return kNElts2_;
+                        }
 #endif
+                        constexpr   size_t  kChunkSize_  =   32;
+                        return Containers::ReserveSpeedTweekAdjustCapacity (initialCapacity, kChunkSize_);
+                    }
+                    inline  void    BufferedStringRep::_Rep::ReserveAtLeast_ (size_t newCapacity)
+                    {
                         size_t          len         =   _GetLength ();
-                        reserve_ (Containers::ReserveSpeedTweekAdjustCapacity (max (newCapacity, len + 1), kChunkSize_));
+                        size_t          newCap      =   max (newCapacity, len + 1);
+                        if (newCap > fCapacity_) {
+                            reserve_ (AdjustCapacity_ (newCap));
+                        }
                     }
                     inline     BufferedStringRep::_Rep::_Rep (const wchar_t* start, const wchar_t* end, size_t reserveExtraCharacters)
                         : inherited (nullptr, nullptr)
                     {
                         size_t      len         =   end - start;
-                        size_t      capacity    =   (Containers::ReserveSpeedTweekAdjustCapacity (len + 1 + reserveExtraCharacters));
+                        size_t      capacity    =   AdjustCapacity_ (len + 1 + reserveExtraCharacters);
                         wchar_t*    newBuf      =   nullptr;
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         Assert (capacity >= kNElts1_ or capacity >= kNElts2_);
-                        if (capacity == kNElts1_) {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
-                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
-                        }
-                        else if (capacity == kNElts2_) {
-                            static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
-                            newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
-                        }
 #endif
-                        if (newBuf == nullptr) {
-                            newBuf = new wchar_t [capacity];
+                        switch (capacity) {
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                            case    kNElts1_: {
+                                    static_assert (sizeof (BufferedStringRepBlock_<kNElts1_>) == sizeof (wchar_t) * kNElts1_, "sizes should match");
+                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts1_>)));
+                                }
+                                break;
+                            case    kNElts2_: {
+                                    static_assert (sizeof (BufferedStringRepBlock_<kNElts2_>) == sizeof (wchar_t) * kNElts2_, "sizes should match");
+                                    newBuf = reinterpret_cast<wchar_t*> (Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Allocate (sizeof (BufferedStringRepBlock_<kNElts2_>)));
+                                }
+                                break;
+#endif
+                            default: {
+                                    newBuf = new wchar_t [capacity];
+                                }
+                                break;
                         }
                         (void)::memcpy (newBuf, start, len * sizeof (wchar_t));
                         newBuf[len] = '\0';
@@ -136,16 +154,23 @@ namespace   Stroika {
                     {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         Assert (fCapacity_ >= kNElts1_);
-                        if (fCapacity_ == kNElts1_) {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
-                            return;
-                        }
-                        else if (fCapacity_ == kNElts2_) {
-                            Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
-                            return;
-                        }
 #endif
-                        delete[] _PeekStart ();
+#if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
+                        switch (fCapacity_) {
+                            case kNElts1_: {
+                                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts1_>>::Deallocate (_PeekStart ());
+                                }
+                                break;
+                            case kNElts2_: {
+                                    Memory::BlockAllocator<BufferedStringRepBlock_<kNElts2_>>::Deallocate (_PeekStart ());
+                                }
+                                break;
+#endif
+                            default: {
+                                    delete[] _PeekStart ();
+                                }
+                                break;
+                        }
                     }
 
 

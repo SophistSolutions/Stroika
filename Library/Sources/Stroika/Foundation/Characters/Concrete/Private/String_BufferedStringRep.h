@@ -46,10 +46,10 @@ namespace   Stroika {
                             using   inherited   =   String::_IRep;
 
                         private:
-	                        static  constexpr size_t    kNElts1_ = 16;
-	                        static  constexpr size_t    kNElts2_ = 32;
+                            static  constexpr size_t    kNElts1_ = 16;
+                            static  constexpr size_t    kNElts2_ = 32;
 
-						protected:
+                        protected:
                             _Rep () = delete;
                             _Rep (const _Rep&) = delete;
 
@@ -93,6 +93,9 @@ namespace   Stroika {
                              *  Capacity INCLUDES null char
                              */
                             nonvirtual  void    reserve_ (size_t newCapacity);
+
+                        private:
+                            static  size_t      AdjustCapacity_ (size_t initialCapacity);
 
                         private:
                             nonvirtual  void    ReserveAtLeast_ (size_t newCapacity);
