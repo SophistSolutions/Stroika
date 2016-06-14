@@ -146,6 +146,7 @@ namespace {
         VerifyTestResult (Math::Mean (vector<int> ({5, 3, 1})) == 3);
         VerifyTestResult (Math::Median (vector<int> ({1, 3, 5})) == 3);
         VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
+        VerifyTestResult (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
     }
 
 }

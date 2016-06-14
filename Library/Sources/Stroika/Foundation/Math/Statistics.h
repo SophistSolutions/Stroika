@@ -64,7 +64,6 @@ namespace   Stroika {
             auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type;
 
 
-
         }
     }
 }
