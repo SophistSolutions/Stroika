@@ -18,6 +18,21 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a150">v2.0a150x</a><br/>2016-06-???</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a149">v2.0a149</a><br/>2016-06-13</td>
@@ -33,7 +48,7 @@ History
 		<li>Various speedups/cleanups to string code - relating to https://stroika.atlassian.net/browse/STK-444 fix earlier and StringBuffer reserve code. Got back most of the lost speed</li>
 		<li>renamed test HistoricalPerformanceRegressionTestResults</li>
 		<li>ScriptsLib/RegressionTests-Unix.sh now writes to Tests/HistoricalRegressionTestResults</li>
-		<li>Tested (passed regtests) (*prev to release - retesting - will re-release if issue*)
+		<li>Tested (passed regtests)
 			<ul>
 				<li>vc++2k15 Update 2</li>
 				<li>gcc 4.8</li>
@@ -110,7 +125,7 @@ History
 			</ul>
 		</li>
 		<li>small inline cleanups (various modules)</li>
-		<li>Tested (passed regtests) (*prev to release - retesting - will re-release if issue*)
+		<li>Tested (passed regtests)
 			<ul>
 				<li>vc++2k15 Update 2</li>
 				<li>gcc 4.8</li>
