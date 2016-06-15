@@ -30,8 +30,8 @@ namespace   Stroika {
             RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end)
             {
                 Require (start != end);
-                unsigned int        cnt     =   1;
-                RESULT_TYPE         result  =   *start++;
+                unsigned int        cnt     {};
+                RESULT_TYPE         result  {};
                 for (ITERATOR_OF_T i = start; i != end; ++i) {
                     result += *i;
                     cnt++;
