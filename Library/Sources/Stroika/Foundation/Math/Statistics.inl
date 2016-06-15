@@ -57,11 +57,8 @@ namespace   Stroika {
             {
                 Require (start != end);
                 // sloppy impl, but workable
-                size_t  size    =   distance (start, end);
-                Memory::SmallStackBuffer<RESULT_TYPE>   tmp (0);      // copy cuz data modified
-                for (ITERATOR_OF_T i = start; i != end; ++i) {
-                    tmp.push_back (*i);
-                }
+                Memory::SmallStackBuffer<RESULT_TYPE>   tmp     { start, end };      // copy cuz data modified
+                size_t                                  size    =   distance (start, end);
                 if ((size % 2) == 0) {
                     Assert (size >= 2); // cuz require at start >=1 and since even
                     // @todo MAYBE faster to just use std::sort () - or two partial sorts? TEST
