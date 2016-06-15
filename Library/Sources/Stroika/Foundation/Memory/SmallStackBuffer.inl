@@ -94,6 +94,16 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T, size_t BUF_SIZE>
+            template    <typename ITERATOR_OF_T>
+            SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
+                : SmallStackBuffer (distance (start, end))
+            {
+                T*  outI    =   this->begin ();
+                for (ITERATOR_OF_T i = start; i != end; ++i, ++outI) {
+                    *outI = *i;
+                }
+            }
+            template    <typename   T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
                 : fSize_ (0)
                   //, fBuffer_ (),

@@ -66,9 +66,19 @@ namespace   Stroika {
                  */
                 using   value_type      =   T;
 
+            public:
+                using   iterator        =   T* ;
+                using   const_iterator  =   const T* ;
+
+            public:
+                using   reference        =   T& ;
+                using   const_reference  =   const T& ;
+
             public :
                 explicit SmallStackBuffer (size_t nElements);
                 SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
+                template    <typename ITERATOR_OF_T>
+                SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
                 SmallStackBuffer () = delete;
                 ~SmallStackBuffer ();
 
@@ -80,14 +90,6 @@ namespace   Stroika {
                  */
                 nonvirtual  operator const T* () const;
                 nonvirtual  operator T* ();
-
-            public:
-                using   iterator        =   T* ;
-                using   const_iterator  =   const T* ;
-
-            public:
-                using   reference        =   T& ;
-                using   const_reference  =   const T& ;
 
             public:
                 /**
