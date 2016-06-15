@@ -19,10 +19,25 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a150">v2.0a150x</a><br/>2016-06-???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a150">v2.0a150</a><br/>2016-06-15</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Fixed bug with Math::Median (on even # of buckets), and enhanced template to support RETURN_TYPE, and other enhamcents</li>
+		<li>SmallStackBuffer<> has type value_type, and CTOR taking PTR,PTR</li>
+		<li>wrap valgrind include macor exclusion with cplusplus or stdc - so not included for msvc RC compiler etc</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
