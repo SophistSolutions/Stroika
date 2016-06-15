@@ -10,7 +10,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
 mkdir -p Tests/HistoricalRegressionTestResults
-TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`.OUT
+TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-`cat STROIKA_VERSION | xargs`-OUTPUT.txt
 
 PREFIX_OUT_LABEL=")))-"
 
