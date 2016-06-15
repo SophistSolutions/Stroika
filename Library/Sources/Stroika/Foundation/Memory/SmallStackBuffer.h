@@ -61,6 +61,11 @@ namespace   Stroika {
              */
             template    < typename   T, size_t BUF_SIZE = ((4096 / sizeof(T)) == 0 ? 1 : (4096 / sizeof(T))) >
             class   SmallStackBuffer {
+            public:
+                /**
+                 */
+                using   value_type      =   T;
+
             public :
                 explicit SmallStackBuffer (size_t nElements);
                 SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
