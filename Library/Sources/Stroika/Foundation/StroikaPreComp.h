@@ -20,6 +20,8 @@ namespace   Stroika {
  *
  *  Must be included before libg++ stuff (e.g. <shared_ptr>)
  */
+#if     defined (__cplusplus) || defined (__STDC__)
 #include    "Debug/Valgrind.h"
+#endif
 
 #endif  /*_Stroika_Foundation_StroikaPreComp_h_*/
