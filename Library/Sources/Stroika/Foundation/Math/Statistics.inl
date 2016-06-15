@@ -63,7 +63,7 @@ namespace   Stroika {
                     Assert (size >= 2); // cuz require at start >=1 and since even
                     // @todo MAYBE faster to just use std::sort () - or two partial sorts? TEST
                     sort (tmp.begin (), tmp.end ());
-                    return (tmp[size / 2] + tmp[size / 2 - 1]) / static_cast<T> (2);
+                    return (tmp[size / 2] + tmp[size / 2 - 1]) / static_cast<RESULT_TYPE> (2);
                 }
                 else {
                     nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
