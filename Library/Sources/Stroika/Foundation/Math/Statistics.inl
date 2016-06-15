@@ -24,23 +24,24 @@ namespace   Stroika {
              ************************************ Mean **************************************
              ********************************************************************************
              */
-            template    <typename   ITERATOR_OF_T>
-            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type {
+            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE>
+            RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end)
+            {
                 Require (start != end);
-                using T =   typename    remove_reference<typename remove_cv<decltype (*start)>::type>::type;
                 unsigned int        cnt     =   1;
-                auto                result  =   *start++;
-                for (ITERATOR_OF_T i = start; i != end; ++i)
-                {
+                RESULT_TYPE         result  =   *start++;
+                for (ITERATOR_OF_T i = start; i != end; ++i) {
                     result += *i;
                     cnt++;
                 }
                 return result / cnt;
             }
-            template    <typename   CONTAINER_OF_T>
-            auto    Mean (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type {
+            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE>
+            inline  RESULT_TYPE     Mean (const CONTAINER_OF_T& container)
+            {
                 Require (not container.empty ());
-                return Mean (begin (container), end (container));
+                using   ITERATOR_TYPE   =   decltype (begin (container));
+                return Mean<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
             }
 
 
@@ -49,19 +50,18 @@ namespace   Stroika {
              ********************************** Median **************************************
              ********************************************************************************
              */
-            template    <typename   ITERATOR_OF_T>
-            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type {
+            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE>
+            RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end)
+            {
                 Require (start != end);
                 // sloppy impl, but workable
                 using T =   typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
                 size_t  size    =   distance (start, end);
                 Memory::SmallStackBuffer<T>   tmp (0);      // copy cuz data modified
-                for (ITERATOR_OF_T i = start; i != end; ++i)
-                {
+                for (ITERATOR_OF_T i = start; i != end; ++i) {
                     tmp.push_back (*i);
                 }
-                if ((size % 2) == 0)
-                {
+                if ((size % 2) == 0) {
                     Assert (size >= 2); // cuz require at start >=1 and since even
                     // @todo MAYBE faster to just use std::sort () - or two partial sorts? TEST
                     sort (tmp.begin (), tmp.end ());
@@ -72,10 +72,12 @@ namespace   Stroika {
                     return tmp[size / 2];
                 }
             }
-            template    <typename   CONTAINER_OF_T>
-            auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type {
+            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE>
+            inline  RESULT_TYPE     Median (const CONTAINER_OF_T& container)
+            {
                 Require (not container.empty ());
-                return Median (begin (container), end (container));
+                using   ITERATOR_TYPE   =   decltype (begin (container));
+                return Median<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
             }
 
 

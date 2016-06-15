@@ -16,6 +16,8 @@
  *  TODO:
  *      @todo   Look at http://www.informit.com/guides/content.aspx?g=cplusplus&seqNum=290
  *
+ *      @todo   Consider something like  typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type for RESULT_TYPE
+ *
  *      @todo   Math statuiscs utilities:
  *              Mean()
  *              Mode()
@@ -48,20 +50,20 @@ namespace   Stroika {
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template    <typename   ITERATOR_OF_T>
-            auto    Mean (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
-            template    <typename   CONTAINER_OF_T>
-            auto    Mean (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type;
+            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE = typename typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            RESULT_TYPE     Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
+            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+            RESULT_TYPE     Mean (const CONTAINER_OF_T& container);
 
 
             /**
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template    <typename   ITERATOR_OF_T>
-            auto    Median (ITERATOR_OF_T start, ITERATOR_OF_T end) -> typename remove_cv<typename remove_reference<decltype (*start)>::type>::type;
-            template    <typename   CONTAINER_OF_T>
-            auto    Median (const CONTAINER_OF_T& container) -> typename remove_cv<typename remove_reference<decltype (*container.begin ())>::type>::type;
+            template    <typename   ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            RESULT_TYPE     Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
+            template    <typename   CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+            RESULT_TYPE     Median (const CONTAINER_OF_T& container);
 
 
         }
