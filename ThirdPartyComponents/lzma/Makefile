@@ -18,11 +18,14 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 DoCreateSymLink=0
 
 
-# From:		http://www.7-zip.org/sdk.html
+#
+# CHECK FOR UPDATED VERSIONS http://www.7-zip.org/sdk.html
+#
 
 
 
-VERSION=1512
+VERSION=1602
+#VERSION=1512
 BASENAME=lzma$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).7z
 
