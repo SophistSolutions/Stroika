@@ -9,8 +9,13 @@
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
-#VERSION=1.0.2e
-VERSION=1.0.2g
+
+#
+# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
+#
+
+#VERSION=1.0.2g
+VERSION=1.0.2h
 
 #appears needed for 1.0.2d
 ifeq ($(VERSION),1.0.2d)
