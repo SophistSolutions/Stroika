@@ -18,6 +18,9 @@ EXTRACTED_DIRNAME=$(BASENAME)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
+#
+# CHECK FOR UPDATED VERSIONS http://xerces.apache.org/xerces-c/
+#
 
 FETCHURLS=
 FETCHURLS+=http://mirror.sdunix.com/apache//xerces/c/3/sources/$(BASENAME).tar.gz

@@ -25,6 +25,10 @@ EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
+#
+# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
+#
+
 FETCHURLS=
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
