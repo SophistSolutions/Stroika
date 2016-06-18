@@ -5,6 +5,7 @@
 
 #include    "../Characters/Format.h"
 #include    "../Streams/iostream/InputStreamFromStdIStream.h"
+#include    "../Streams/TextReader.h"
 
 #include    "VariantReader.h"
 
@@ -23,6 +24,11 @@ using   Streams::iostream::InputStreamFromStdIStream;
  *********************** DataExchange::VariantReader ****************************
  ********************************************************************************
  */
+VariantValue    VariantReader::Read (const Traversal::Iterable<Characters::Character>& in)
+{
+    return Read (Streams::TextReader (in));
+}
+
 VariantValue    VariantReader::Read (const Memory::BLOB& in)
 {
     return Read (in.As<Streams::InputStream<Memory::Byte>> ());

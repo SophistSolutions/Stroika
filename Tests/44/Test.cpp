@@ -211,10 +211,15 @@ namespace   {
 
         void    T1_ ()
         {
+            using   Characters::Character;
+            using   Characters::String;
             {
-                Traversal::Iterable<Characters::Character>  s = Characters::String (L"This");
+                Traversal::Iterable<Character>  s = String (L"This");
                 TextReader tr {s};
                 VerifyTestResult (tr.ReadAll () == L"This");
+            }
+            {
+                VerifyTestResult ((TextReader { String (L"hello world") } .ReadAll () == L"hello world"));
             }
         }
 

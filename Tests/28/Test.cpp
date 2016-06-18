@@ -940,6 +940,35 @@ namespace {
 
 
 
+
+namespace   {
+    namespace   ValueReaderReadFromString {
+
+        void    T1_ ()
+        {
+            using   Characters::Character;
+            using   Characters::String;
+
+            auto roundTripCheck = [] (const VariantValue & vv) {
+                String          inputAsJSON     =   JSON::Writer ().WriteAsString (vv);
+                VariantValue    v               =   JSON::Reader ().Read (inputAsJSON);
+                VerifyTestResult (v == vv);
+            };
+            roundTripCheck (VariantValue (3));
+            roundTripCheck (VariantValue (L"x"));
+            roundTripCheck (VariantValue (Mapping<String, VariantValue> { pair<String, VariantValue> {L"a", 3}, pair<String, VariantValue> {L"n", L"34"} }));
+        }
+
+        void    Tests_ ()
+        {
+            T1_ ();
+        }
+    }
+}
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -951,6 +980,9 @@ namespace   {
         GENERIC_SERIALIZE_DESERIALIZE_::DoAll_();
 
         Test3_VariantValue ();
+
+        ValueReaderReadFromString::Tests_ ();
+
     }
 }
 

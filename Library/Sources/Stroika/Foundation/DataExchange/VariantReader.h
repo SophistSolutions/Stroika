@@ -66,6 +66,7 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  VariantValue    Read (const Traversal::Iterable<Characters::Character>& in);
                 nonvirtual  VariantValue    Read (const Memory::BLOB& in);
                 nonvirtual  VariantValue    Read (const Streams::InputStream<Memory::Byte>& in);
                 nonvirtual  VariantValue    Read (const Streams::InputStream<Characters::Character>& in);

@@ -64,6 +64,11 @@ namespace   Stroika {
              *      for (String line : TextReader (FileInputStream::mk (L"/tmp/foo")).ReadLines ()) {
              *      }
              *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *      Assert (TextReader { String (L"hello world") }.ReadAll () == L"hello world");
+             *      \endcode
              */
             class   TextReader : public InputStream<Character> {
             private:
