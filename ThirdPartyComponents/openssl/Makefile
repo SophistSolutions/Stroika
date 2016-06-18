@@ -17,6 +17,9 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 #VERSION=1.0.2g
 VERSION=1.0.2h
 
+#https://www.openssl.org/source/openssl-1.1.0-pre5.tar.gz
+#VERSION=1.1.0-pre5
+
 #appears needed for 1.0.2d
 ifeq ($(VERSION),1.0.2d)
 BAD_TARFILE_BUG_WORKAROUND_=i
