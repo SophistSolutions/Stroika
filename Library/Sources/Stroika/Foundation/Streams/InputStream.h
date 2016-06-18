@@ -335,12 +335,15 @@ namespace   Stroika {
                 virtual SeekOffsetType      GetReadOffset () const                                     =   0;
 
             public:
+                /*
+                 *  \req IsSeekable ()
+                 */
                 virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset)      =   0;
 
             public:
                 /**
-                 *  Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *  bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
+                 *  Pointer must refer to valid memory at least 1 ELEMENT_TYPE long, and cannot be nullptr.
+                 *  bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of ELEMENT_TYPE elements read.
                  *  BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *  without prejudice about how much more is available.
                  *

@@ -77,9 +77,11 @@ namespace   Stroika {
                 TextReader (const Memory::BLOB& src);
                 TextReader (const InputStream<Memory::Byte>& src);
                 TextReader (const InputStream<Character>& src);
+                TextReader (const Traversal::Iterable<Character>& src);
 
             private:
-                class   Rep_;
+                class   BinaryStreamRep_;
+                class   IterableAdapterStreamRep_;
             };
 
 

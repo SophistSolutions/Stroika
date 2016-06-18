@@ -26,9 +26,9 @@ using   Memory::Byte;
 
 
 
-class   TextReader::Rep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
+class   TextReader::BinaryStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
 public:
-    Rep_ (const InputStream<Byte>& src)
+    BinaryStreamRep_ (const InputStream<Byte>& src)
         : fSource_ (src)
         , fTmpHackTextRemaining_ ()
         , fOffset_ (0)
@@ -142,17 +142,69 @@ private:
 
 
 
+
+class   TextReader::IterableAdapterStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
+public:
+    IterableAdapterStreamRep_ (const Traversal::Iterable<Character>& src)
+        : fSource_ (src)
+        , fSrcIter_ (fSource_.begin ())
+    {
+    }
+
+protected:
+    virtual bool    IsSeekable () const override
+    {
+        return false;
+    }
+    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    {
+        Require (intoEnd - intoStart >= 1);
+        Assert (offset == nullptr); // @todo 'offset' param NYI
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        Character*  outI    =   intoStart;
+        for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, outI++) {
+            *outI = *fSrcIter_;
+            fOffset_++;
+        }
+        return outI - intoStart;
+    }
+    virtual SeekOffsetType  GetReadOffset () const override
+    {
+        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+        return fOffset_;
+    }
+    virtual SeekOffsetType  SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    {
+        RequireNotReached ();   // not seekable
+        return 0;
+    }
+
+private:
+    Traversal::Iterable<Character>  fSource_;
+    Traversal::Iterator<Character>  fSrcIter_;
+    size_t                          fOffset_ {};
+};
+
+
+
+
+
 /*
  ********************************************************************************
  ******************************* Streams::TextReader ****************************
  ********************************************************************************
  */
 TextReader::TextReader (const InputStream<Byte>& src)
-    : InputStream<Character> (make_shared<Rep_> (src))
+    : InputStream<Character> (make_shared<BinaryStreamRep_> (src))
 {
 }
 
 TextReader::TextReader (const Memory::BLOB& src)
     : TextReader (src.As<InputStream<Byte>> ())
+{
+}
+
+TextReader::TextReader (const Traversal::Iterable<Character>& src)
+    : InputStream<Character> (make_shared<IterableAdapterStreamRep_> (src))
 {
 }

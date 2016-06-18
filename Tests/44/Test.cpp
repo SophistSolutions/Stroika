@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/iostream/OutputStreamFromStdOStream.h"
 #include    "Stroika/Foundation/Streams/OutputStream.h"
+#include    "Stroika/Foundation/Streams/TextReader.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -206,6 +207,31 @@ namespace   {
 
 
 namespace   {
+    namespace   TextReaderFromIterableAndString {
+
+        void    T1_ ()
+        {
+            {
+                Traversal::Iterable<Characters::Character>  s = Characters::String (L"This");
+                TextReader tr {s};
+                VerifyTestResult (tr.ReadAll () == L"This");
+            }
+        }
+
+        void    Tests_ ()
+        {
+            T1_ ();
+        }
+    }
+}
+
+
+
+
+
+
+
+namespace   {
     void    DoRegressionTests_ ()
     {
         BasicBinaryInputStream_::Tests_ ();
@@ -213,6 +239,7 @@ namespace   {
         BasicBinaryInputOutputStream_::Tests_ ();
         BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
         TestBasicTextOutputStream_::Tests_ ();
+        TextReaderFromIterableAndString::Tests_ ();
     }
 }
 
