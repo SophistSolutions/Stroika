@@ -56,19 +56,19 @@ namespace   Stroika {
             RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end)
             {
                 Require (start != end);
-                // sloppy impl, but workable
                 Memory::SmallStackBuffer<RESULT_TYPE>   tmp     { start, end };      // copy cuz data modified
                 size_t                                  size    =   distance (start, end);
+                nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
+                RESULT_TYPE     result { tmp[size / 2] };
                 if ((size % 2) == 0) {
                     Assert (size >= 2); // cuz require at start >=1 and since even
-                    // @todo MAYBE faster to just use std::sort () - or two partial sorts? TEST
-                    sort (tmp.begin (), tmp.end ());
-                    return (tmp[size / 2] + tmp[size / 2 - 1]) / static_cast<RESULT_TYPE> (2);
+                    // NB: Could use sort instead of nth_element, and some on the web suggest faster, but sort is nlogn, and nth_elemnet is O(n) (even
+                    // when you do it twice.
+                    nth_element (tmp.begin (), tmp.begin () + size / 2 - 1, tmp.end ());
+                    result += tmp[size / 2 - 1];
+                    result /= static_cast<RESULT_TYPE> (2);
                 }
-                else {
-                    nth_element (tmp.begin (), tmp.begin () + size / 2, tmp.end ());
-                    return tmp[size / 2];
-                }
+                return result;
             }
             template    <typename   CONTAINER_OF_T, typename RESULT_TYPE>
             inline  RESULT_TYPE     Median (const CONTAINER_OF_T& container)
