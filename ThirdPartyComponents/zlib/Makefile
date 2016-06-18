@@ -13,6 +13,10 @@ EXTRACTED_DIRNAME=$(BASENAME)
 SLINKDIRNAME=$(BASENAME)
 USE_DIRNAME=CURRENT
 
+#
+# CHECK FOR UPDATED VERSIONS http://zlib.net/
+#
+
 FETCHURLS=
 FETCHURLS+=http://zlib.net/zlib-$(VERSION).tar.gz
 FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?download
