@@ -49,17 +49,18 @@ using   Memory::BLOB;
 namespace {
     struct  InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, Direction d)
-            : fCTX_ ()
+            : fCTX_ (::EVP_CIPHER_CTX_new ())
             , fFinalCalled_ (false)
         {
-            ::EVP_CIPHER_CTX_init (&fCTX_);
-            cryptoParams.fInitializer (&fCTX_, d);
+            ::EVP_CIPHER_CTX_init (fCTX_);
+            cryptoParams.fInitializer (fCTX_, d);
         }
         InOutStrmCommon_ (const InOutStrmCommon_&) = delete;
         InOutStrmCommon_& operator= (const InOutStrmCommon_&) = delete;
         ~InOutStrmCommon_ ()
         {
-            Verify (::EVP_CIPHER_CTX_cleanup (&fCTX_) == 1);
+            Verify (::EVP_CIPHER_CTX_cleanup (fCTX_) == 1);
+            ::EVP_CIPHER_CTX_free (fCTX_);
         }
         static  constexpr   size_t _GetMinOutBufSize (size_t n)
         {
@@ -70,7 +71,7 @@ namespace {
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherUpdate (fCTX_, outBufStart, &outLen, data2ProcessStart, static_cast<int> (data2ProcessEnd - data2ProcessStart)));
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
@@ -84,13 +85,13 @@ namespace {
                 return 0;   // not an error - just zero more bytes
             }
             int outLen = 0;
-            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen));
+            Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherFinal_ex (fCTX_, outBufStart, &outLen));
             fFinalCalled_ = true;
             Ensure (outLen >= 0);
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
         }
-        EVP_CIPHER_CTX  fCTX_;
+        EVP_CIPHER_CTX* fCTX_;
         bool            fFinalCalled_;
     };
 }
