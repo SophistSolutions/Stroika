@@ -195,7 +195,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "done"
 ifeq (false,$(CrossCompiling))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
-	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null;
+	@($(MAKE) --directory CURRENT --no-print-directory -s rehash 2>&1) > /dev/null || true;
 	@($(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1);
 	@$(ECHO) "done"
 endif
