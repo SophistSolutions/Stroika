@@ -101,11 +101,11 @@ namespace   Stroika {
                 nonvirtual  void    Set (const T& v);
 
             private:
-                Execution::Synchronized<Memory::Optional<IMPL>>   fIndirect_;
+                Synchronized<Memory::Optional<IMPL>>   fIndirect_;
 
             private:
                 // Force IMPL CTOR out of line
-                nonvirtual  void    DoInitOutOfLine_ (typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
+                nonvirtual  void    DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
             };
 
 

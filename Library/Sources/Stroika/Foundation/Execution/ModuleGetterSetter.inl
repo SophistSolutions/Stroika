@@ -24,7 +24,7 @@ namespace   Stroika {
             template    <typename T, typename IMPL>
             inline  T       ModuleGetterSetter<T, IMPL>::Get ()
             {
-                typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
+                typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
                 if (l->IsMissing ()) {
                     DoInitOutOfLine_ (&l);
                 }
@@ -33,14 +33,14 @@ namespace   Stroika {
             template    <typename T, typename IMPL>
             inline  void    ModuleGetterSetter<T, IMPL>::Set (const T& v)
             {
-                typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
+                typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
                 if (l->IsMissing ()) {
                     DoInitOutOfLine_ (&l);
                 }
                 l.rwref ()->Set (v);
             }
             template    <typename T, typename IMPL>
-            dont_inline void    ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)
+            dont_inline void    ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)
             {
                 RequireNotNull (ref);
                 Require (ref->load ().IsMissing ());
