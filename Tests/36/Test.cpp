@@ -418,6 +418,14 @@ namespace {
                     VerifyTestResult (tmp->find ('z') == string::npos);
                     VerifyTestResult (tmp->find ('x') == 0);
                 }
+                {
+                    static  Synchronized<String>    tmp { L"x" };
+                    auto    critSec { Execution::make_unique_lock (tmp) };    // make sure explicit locks work too
+                    String a { tmp };
+                    VerifyTestResult (a == L"x");
+                    VerifyTestResult (tmp->find ('z') == string::npos);
+                    VerifyTestResult (tmp->find ('x') == 0);
+                }
             }
             template <typename INTISH_TYPE>
             void    DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
