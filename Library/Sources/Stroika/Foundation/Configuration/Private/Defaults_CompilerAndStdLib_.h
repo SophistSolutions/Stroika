@@ -493,7 +493,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_deprecated_attribute_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_deprecated_attribute_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+#define qCompilerAndStdLib_deprecated_attribute_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update1_FULLVER_)
 #else
 #define qCompilerAndStdLib_deprecated_attribute_Buggy    __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
 #endif
