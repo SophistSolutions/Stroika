@@ -43,6 +43,14 @@ namespace   Stroika {
         namespace   Execution {
 
 
+// @todo EXPERIMEMTING WITH NEW RESTRICTIONS -- LGP 2016-06-22
+//#define qSupportSyncronizedOpArrowBackwardCompat_ 0
+#ifndef qSupportSyncronizedOpArrowBackwardCompat_
+#define qSupportSyncronizedOpArrowBackwardCompat_   1
+#endif
+
+
+
             /**
             ***** SCRAP NOTES - SOME OF THIS TEXT APPLIES TO NEW SYNCHO... CLEANUP
 
@@ -156,6 +164,9 @@ namespace   Stroika {
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
             public:
+                using   element_type = T;
+
+            public:
                 using   MutexType = typename TRAITS::MutexType;
 
             public:
@@ -208,16 +219,22 @@ namespace   Stroika {
 
             public:
                 /**
-                \\\experimental
-                 *  @see load ()
+                 *  \brief  get a read-only smart pointer to the underlying Synchronized<> object, holding the readlock the whole
+                 *          time the temporary exists.
                  */
                 nonvirtual  const ReadableReference cget () const;
 
             public:
                 /**
-                \\\experimental
+                 *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
+                 *          time the temporary exists.
                  */
-                nonvirtual  WritableReference get ();
+                nonvirtual  WritableReference rwget ();
+
+            public:
+                /**
+                 */
+                nonvirtual  _Deprecated_("use rwget") WritableReference get ()  { return rwget (); }
 
             public:
                 /**
@@ -236,14 +253,16 @@ namespace   Stroika {
                 nonvirtual  const WritableReference GetReference () const;
                 nonvirtual  WritableReference GetReference ();
 
+#if     qSupportSyncronizedOpArrowBackwardCompat_
             public:
                 /*
                  *UNCLEAR BUT MAYBE DEPRECATE??? CONFUSING? OR overload const readonly and no-const writable, but with other stuff
                  * like SharedByValue() I found that I accidentally got the wrong one alot.
                  *  @see load ()
                  */
-                nonvirtual  const ReadableReference operator-> () const;
-                nonvirtual  WritableReference operator-> ();
+                nonvirtual  _Deprecated_("use cget") const ReadableReference operator-> () const;
+                nonvirtual  _Deprecated_("use rwget") WritableReference operator-> ();
+#endif
 
             public:
                 /**
@@ -262,7 +281,8 @@ namespace   Stroika {
 
 
             /**
-            * @todo KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
+             * @todo KEY TODO IS MAKE READABLE REFERENCE USE shared_lock iff available
+             *          https://stroika.atlassian.net/browse/STK-491
              */
             template    <typename   T, typename TRAITS>
             class  Synchronized<T, TRAITS>::ReadableReference {
@@ -276,18 +296,27 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<Optional<xxx>>>).
+                 *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
+                 *          more clear.
                  */
                 nonvirtual  const T* operator-> () const;
+            public:
+                /**
+                 */
+                nonvirtual  const T&    cref () const;
 
             public:
                 /**
+                 *  \brief  alias for cref () - but allows often simpler short-hand. Use explicit .cref() if you run into ambiguities.
                  */
                 nonvirtual  operator const T& () const;
 
             public:
                 /**
+                 *  \brief  more or less identical to cref () - except return value is value, not reference.
                  */
-                nonvirtual  T   load () const;
+                nonvirtual      T   load () const;
 
             protected:
                 const T*                fT;
@@ -305,14 +334,29 @@ namespace   Stroika {
                 WritableReference (T* t, MutexType* m);
                 WritableReference (const WritableReference& src) = delete;      // must move because both src and dest cannot have the unique lock
                 WritableReference (WritableReference&& src);
-                const WritableReference& operator= (const WritableReference& rhs) = delete;
-                const WritableReference& operator= (T rhs);
+                nonvirtual  WritableReference& operator= (const WritableReference& rhs) = delete;
+                nonvirtual  const WritableReference& operator= (T rhs);
 
             public:
                 /**
+                 *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<Optional<xxx>>>).
+                 *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
+                 *          more clear.
                  */
                 nonvirtual  T* operator-> ();
                 nonvirtual  const T* operator-> () const;
+
+            public:
+                /**
+                 *  Get readable and writable reference to the underlying object.
+                 *
+                 *  \note   We experimented with overloading just ref() with const and non const versions, but the trouble with this
+                 *          is that from the caller, its not obvious which version you are getting, and it often matters alot, so
+                 *          this appeared - though less convenient - less confusing.
+                 *
+                 *          We can always add (back) a ref () - so overloaded - method.
+                 */
+                nonvirtual  T&  rwref ();
 
             public:
                 /**

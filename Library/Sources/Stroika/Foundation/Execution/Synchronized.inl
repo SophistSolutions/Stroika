@@ -72,7 +72,7 @@ namespace   Stroika {
                 return ReadableReference (&fDelegate_, &fLock_);
             }
             template    <typename   T, typename TRAITS>
-            inline auto  Synchronized<T, TRAITS>::get () -> WritableReference {
+            inline auto  Synchronized<T, TRAITS>::rwget () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
             }
             template    <typename   T, typename TRAITS>
@@ -85,6 +85,7 @@ namespace   Stroika {
             inline  auto    Synchronized<T, TRAITS>::GetReference () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
             }
+#if     qSupportSyncronizedOpArrowBackwardCompat_
             template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::operator-> () const -> const ReadableReference
             {
@@ -94,6 +95,7 @@ namespace   Stroika {
             inline  auto Synchronized<T, TRAITS>::operator-> () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
             }
+#endif
             template    <typename   T, typename TRAITS>
             inline  void    Synchronized<T, TRAITS>::lock ()
             {
@@ -131,6 +133,12 @@ namespace   Stroika {
             {
                 EnsureNotNull (fT);
                 return fT;
+            }
+            template    <typename   T, typename TRAITS>
+            inline  const T& Synchronized<T, TRAITS>::ReadableReference::cref () const
+            {
+                EnsureNotNull (fT);
+                return *fT;
             }
             template    <typename   T, typename TRAITS>
             inline  Synchronized<T, TRAITS>::ReadableReference::operator const T& () const
@@ -180,6 +188,13 @@ namespace   Stroika {
             inline  const T* Synchronized<T, TRAITS>::WritableReference::operator-> () const
             {
                 return ReadableReference::operator-> ();
+            }
+            template    <typename   T, typename TRAITS>
+            inline  T& Synchronized<T, TRAITS>::WritableReference::rwref ()
+            {
+                // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
+                EnsureNotNull (this->fT);
+                return *const_cast<T*> (this->fT);
             }
             template    <typename   T, typename TRAITS>
             inline  void    Synchronized<T, TRAITS>::WritableReference::store (const T& v)
