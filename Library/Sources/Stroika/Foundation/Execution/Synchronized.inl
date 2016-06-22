@@ -127,7 +127,7 @@ namespace   Stroika {
                 src.fT = nullptr;
             }
             template    <typename   T, typename TRAITS>
-            inline  auto Synchronized<T, TRAITS>::ReadableReference::operator-> () const -> _ConstOperatorArrowReturnType
+            inline  const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
             {
                 EnsureNotNull (fT);
                 return fT;
