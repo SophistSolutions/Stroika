@@ -1422,6 +1422,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 
 // doesnt seem any portable way todo this, and not defined in C++ language
+// Note - this doesn't appear in http://en.cppreference.com/w/cpp/language/attributes - as of 2016-06-22
 #if     defined (__clang__) || defined (__GNUC__)
 #define dont_inline    __attribute__((noinline))
 #else
