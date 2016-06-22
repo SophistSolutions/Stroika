@@ -119,6 +119,8 @@ namespace   Stroika {
                  *  but just see if a value is present.
                  *
                  *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
+                 *
+                 *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
                  */
                 nonvirtual  Memory::Optional<VALUE>   Lookup (KEY k, TimeStampType staleIfOlderThan);
                 nonvirtual  VALUE   Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE()>& cacheFiller);
