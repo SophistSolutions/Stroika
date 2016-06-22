@@ -415,16 +415,16 @@ namespace {
                     Synchronized<String>    tmp { L"x" };
                     String a { tmp };
                     VerifyTestResult (a == L"x");
-                    VerifyTestResult (tmp->find ('z') == string::npos);
-                    VerifyTestResult (tmp->find ('x') == 0);
+                    VerifyTestResult (tmp.cget ()->find ('z') == string::npos);
+                    VerifyTestResult (tmp.cget ()->find ('x') == 0);
                 }
                 {
                     static  Synchronized<String>    tmp { L"x" };
                     auto    critSec { Execution::make_unique_lock (tmp) };    // make sure explicit locks work too
                     String a { tmp };
                     VerifyTestResult (a == L"x");
-                    VerifyTestResult (tmp->find ('z') == string::npos);
-                    VerifyTestResult (tmp->find ('x') == 0);
+                    VerifyTestResult (tmp.cget ()->find ('z') == string::npos);
+                    VerifyTestResult (tmp.cget ()->find ('x') == 0);
                 }
             }
             template <typename INTISH_TYPE>
@@ -465,7 +465,7 @@ namespace {
                     // Fails cuz no synchonization
                     DoInterlocktest_<intish_object1> ([] (intish_object1 * i) {(i->fVal)++;} , [] (intish_object1 * i) {(i->fVal)--;});
                 }
-                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {((*i)->fVal)++;} , [] (Synchronized<intish_object1>* i) {((*i)->fVal)--;});
+                DoInterlocktest_<Synchronized<intish_object1>> ([] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)++;} , [] (Synchronized<intish_object1>* i) {(i->rwget ()->fVal)--;});
             }
         }
         void    DoIt ()
