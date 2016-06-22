@@ -8,6 +8,7 @@
 #include    "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
 
@@ -19,6 +20,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
+using   Execution::ModuleGetterSetter;
 
 
 
@@ -82,6 +84,59 @@ namespace {
 
 
 
+namespace   {
+    struct  MyData_ {
+        bool        fEnabled = false;
+        DateTime    fLastSynchronizedAt;
+    };
+    struct  ModuleGetterSetter_Implementation_MyData_ {
+        ModuleGetterSetter_Implementation_MyData_ ()
+            : fOptionsFile_ {
+            L"MyModule",
+            [] () -> ObjectVariantMapper {
+                ObjectVariantMapper mapper;
+                mapper.AddClass<MyData_> ({
+                    ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled), L"Enabled" },
+                    ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt), L"Last-Synchronized-At" },
+                });
+                return mapper;
+            } ()
+            , OptionsFile::kDefaultUpgrader
+            , [] (const String & moduleName, const String & fileSuffix) -> String {
+                // for regression tests write to /tmp
+                return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName + fileSuffix;
+            }
+        }
+        , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+        {
+            Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+        }
+        MyData_   Get ()
+        {
+            return fActualCurrentConfigData_;
+        }
+        void    Set (const MyData_& v)
+        {
+            fActualCurrentConfigData_ = v;
+            fOptionsFile_.Write (v);
+        }
+    private:
+        OptionsFile     fOptionsFile_;
+        MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchonized
+    };
+
+    ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_>  sModuleConfiguration_;
+
+    void    Test3_ModuleGetterSetter_ ()
+    {
+        if (sModuleConfiguration_.Get ().fEnabled) {
+            auto n = sModuleConfiguration_.Get ();
+            sModuleConfiguration_.Set (n);
+        }
+    }
+}
+
+
 
 
 
@@ -90,6 +145,7 @@ namespace   {
     {
         Test1_Atom_ ();
         Test2_OptionsFile_ ();
+        Test3_ModuleGetterSetter_ ();
     }
 }
 

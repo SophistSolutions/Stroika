@@ -35,6 +35,60 @@ namespace   Stroika {
              *      o   Simple API - get/set
              *      o   auto intrindically threadsafe
              *      o   Init underling object on first access, so easy to declare globally (static init) and less worry about running before main
+             *      o   IMPL need not worry about thread safety. Just init on CTOR, and implement Get/Set methods.
+             *
+             *  \par Example Usage
+             *      \code
+             *          struct  MyData_ {
+             *              bool        fEnabled = false;
+             *              DateTime    fLastSynchronizedAt;
+             *          };
+             *          struct  ModuleGetterSetter_Implementation_MyData_ {
+             *              ModuleGetterSetter_Implementation_MyData_ ()
+             *                  : fOptionsFile_ {
+             *                      L"MyModule",
+             *                      [] () -> ObjectVariantMapper {
+             *                          ObjectVariantMapper mapper;
+             *                          mapper.AddClass<MyData_> ({
+             *                              ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled), L"Enabled" },
+             *                              ObjectVariantMapper::StructFieldInfo { Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt), L"Last-Synchronized-At" },
+             *                          });
+             *                          return mapper;
+             *                      } ()
+             *                  }
+             *                  , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+             *                  {
+             *                      Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+             *                  }
+             *                  MyData_   Get ()
+             *                  {
+             *                      return fActualCurrentConfigData_;
+             *                  }
+             *                  void    Set (const MyData_& v)
+             *                  {
+             *                      fActualCurrentConfigData_ = v;
+             *                      fOptionsFile_.Write (v);
+             *                  }
+             *              private:
+             *                  OptionsFile     fOptionsFile_;
+             *                  MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchonized
+             *          };
+             *
+             *          using   Execution::ModuleGetterSetter;
+             *          ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_>  sModuleConfiguration_;
+             *
+             *          void    TestUse_ ()
+             *          {
+             *              if (sModuleConfiguration_.Get ().fEnabled) {
+             *                  auto n = sModuleConfiguration_.Get ();
+             *                  sModuleConfiguration_.Set (n);
+             *              }
+             *          }
+             *      \endcode
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
+
              */
             template    <typename T, typename IMPL>
             struct  ModuleGetterSetter {

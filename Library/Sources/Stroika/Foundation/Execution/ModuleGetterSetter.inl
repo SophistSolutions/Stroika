@@ -37,9 +37,12 @@ namespace   Stroika {
                 if (l->IsMissing ()) {
                     l = IMPL {};
                 }
-                auto aaa = l.operator-> ();
-                auto bbb = aaa->operator-> ();
-                bbb->Set (v);
+#if 1
+                // @todo - understand why this .operator-> nonsense is needed???
+                l->operator-> ()->Set (v);
+#else
+                l->Set (v);
+#endif
             }
 
 
