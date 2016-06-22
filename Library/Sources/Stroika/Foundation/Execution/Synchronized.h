@@ -231,7 +231,7 @@ namespace   Stroika {
                  * like SharedByValue() I found that I accidentally got the wrong one alot.
                  *  @see load ()
                  */
-                nonvirtual  const WritableReference operator-> () const;
+                nonvirtual  const ReadableReference operator-> () const;
                 nonvirtual  WritableReference operator-> ();
 
             public:
