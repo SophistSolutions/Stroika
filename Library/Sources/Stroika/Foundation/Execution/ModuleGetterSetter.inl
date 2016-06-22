@@ -50,6 +50,7 @@ namespace   Stroika {
                 RequireNotNull (ref);
                 Require (ref->load ().IsMissing ());
                 *ref = IMPL {};
+                Ensure (ref->load ().IsPresent ());
             }
 
 
