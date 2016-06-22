@@ -290,7 +290,7 @@ namespace   {
     struct  data_ {};
     void    RegressionTest4_Synchronized_ ()
     {
-        //template <typename T> using Synchonized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
+        //template <typename T> using Synchronized = Synchronized<T, Synchronized_Traits<T,recursive_mutex>>;
         using namespace Execution;
         using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
         using syncofint = Synchronized<int, Synchronized_Traits<recursive_mutex>>;

@@ -122,7 +122,7 @@ namespace   {
         }
     private:
         OptionsFile     fOptionsFile_;
-        MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchonized
+        MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchronized
     };
 
     ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_>  sModuleConfiguration_;

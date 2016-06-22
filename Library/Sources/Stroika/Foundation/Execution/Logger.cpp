@@ -470,7 +470,7 @@ public:
         fWriter_->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
 private:
-    Synchronized<TextWriter>    fWriter_;   // All Stroika-provided appenders must be internally synchonized
+    Synchronized<TextWriter>    fWriter_;   // All Stroika-provided appenders must be internally synchronized
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>& out)
@@ -509,7 +509,7 @@ public:
         fOut_.Log (logLevel, message);
     }
 private:
-    StreamAppender    fOut_;        // no need to synchronize since our Logger::StreamAppender class is internally synchonized
+    StreamAppender    fOut_;        // no need to synchronize since our Logger::StreamAppender class is internally synchronized
 };
 
 Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)

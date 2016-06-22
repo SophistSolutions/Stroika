@@ -24,7 +24,7 @@
  *
  *  \file
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchonized - for envelope!
+ *      @todo   https://stroika.atlassian.net/browse/STK-461 - wrap Thread class as Debug::AssertExternallySynchronized - for envelope!
  *
  *      @todo   Probably no longer need siginterrupt () calls, since we DONT set SA_RESTART in our call to sigaction().
  *
@@ -88,7 +88,7 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Thread is a (unsynchonized) smart pointer referencing a (synchonized) std::thread object, with special feautres, including cancelation
+             *  \brief  Thread is a (unsynchronized) smart pointer referencing a (synchonized) std::thread object, with special feautres, including cancelation
              *
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,

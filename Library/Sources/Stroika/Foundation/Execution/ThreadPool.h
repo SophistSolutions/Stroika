@@ -25,7 +25,7 @@
  *
  *  TODO:
  *
- *      @todo   See if I can simplify use of critical sections with Synchonized!!!
+ *      @todo   See if I can simplify use of critical sections with Synchronized!!!
  *
  *      @todo   Just got rid of some fCriticalSection_ use - review - maybe can get rid of ALL of it!
  *

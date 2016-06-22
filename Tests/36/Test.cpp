@@ -271,7 +271,7 @@ namespace   {
 
 
 namespace {
-    namespace Test3_SynchonizedOptional_ {
+    namespace Test3_SynchronizedOptional_ {
         void    DoIt_ ()
         {
             using   namespace   Memory;
@@ -395,7 +395,7 @@ namespace {
 
 
 namespace {
-    namespace   Test7_nuSynchonized_ {
+    namespace   Test7_Synchronized_ {
         namespace Private_ {
             void    TestBasics_ ()
             {
@@ -473,7 +473,7 @@ namespace {
 
 
 namespace {
-    namespace   Test8_AssertExternallySynchonized_ {
+    namespace   Test8_AssertExternallySynchronized_ {
         namespace Private_ {
             void    TestBasics_ ()
             {
@@ -514,12 +514,12 @@ namespace   {
 #endif
         AssignAndIterateAtSameTimeTest_1_::DoIt ();
         IterateWhileMutatingContainer_Test_2_::DoIt ();
-        Test3_SynchonizedOptional_::DoIt_ ();
+        Test3_SynchronizedOptional_::DoIt_ ();
         Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ();
         Test5_SetSpecificSyncMethods::DoIt ();
         Test6_OverloadsWithSyncMethods_::DoIt ();
-        Test7_nuSynchonized_::DoIt ();
-        Test8_AssertExternallySynchonized_::DoIt ();
+        Test7_Synchronized_::DoIt ();
+        Test8_AssertExternallySynchronized_::DoIt ();
     }
 }
 

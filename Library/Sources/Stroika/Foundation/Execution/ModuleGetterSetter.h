@@ -29,7 +29,7 @@ namespace   Stroika {
 
 
             /**
-             *  \breif  Helper to define synchonized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
+             *  \breif  Helper to define synchronized, lazy constructed, module initialization (intended to work with DataExchange::OptionFile)
              *
              * Features:
              *      o   Simple API - get/set
@@ -71,7 +71,7 @@ namespace   Stroika {
              *                  }
              *              private:
              *                  OptionsFile     fOptionsFile_;
-             *                  MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchonized
+             *                  MyData_         fActualCurrentConfigData_;      // automatically initialized just in time, and externally synchronized
              *          };
              *
              *          using   Execution::ModuleGetterSetter;

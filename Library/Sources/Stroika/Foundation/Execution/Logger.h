@@ -152,7 +152,7 @@ namespace   Stroika {
                 /**
                  *  Note - all Stroika provided appenders are internally synchronized.
                  *
-                 *  However, user-defined appenders are assumed internally synchonized (threadsafe).
+                 *  However, user-defined appenders are assumed internally synchronized (threadsafe).
                  */
                 nonvirtual  void            SetAppender (const IAppenderRepPtr& rep);
 
