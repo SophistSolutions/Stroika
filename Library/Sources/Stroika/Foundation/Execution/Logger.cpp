@@ -138,12 +138,12 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     {
         Debug::TraceContextBumper ctx ("Logger::Rep_::UpdateBookkeepingThread_");
         {
-            auto bktLck =      fBookkeepingThread_.get ();
+            auto bktLck =      fBookkeepingThread_.rwget ();
             bktLck->AbortAndWaitForDone ();
             bktLck.store (Thread ());  // so null
         }
 
-        Time::DurationSecondsType       suppressDuplicatesThreshold =   fSuppressDuplicatesThreshold_->Value (0);
+        Time::DurationSecondsType       suppressDuplicatesThreshold =   fSuppressDuplicatesThreshold_.cget ()->Value (0);
         bool                            suppressDuplicates          =   suppressDuplicatesThreshold > 0;
         static const String_Constant    kThreadName_ { L"Logger Bookkeeping" };
         if (suppressDuplicates or fBufferingEnabled_) {
@@ -257,7 +257,7 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
     shared_ptr<IAppenderRep> tmp =   fRep_->fAppender_;   // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
-        if (fRep_->fSuppressDuplicatesThreshold_->IsPresent ()) {
+        if (fRep_->fSuppressDuplicatesThreshold_.cget ()->IsPresent ()) {
             auto    lastMsgLocked = fRep_->fLastMsg_.GetReference ();
             if (p == lastMsgLocked->fLastMsgSent_) {
                 lastMsgLocked->fRepeatCount_++;
@@ -350,6 +350,7 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
 {
     Require (suppressionTimeWindow > 0);
     RequireNotNull (fRep_);
+    using   CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_)::element_type;
     fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ()));   // doesn't need to be synchronized
     va_list     argsList;
     va_start (argsList, format);
@@ -357,12 +358,12 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
     va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_->Lookup (pair<Priority, String> { logLevel, msg }, fRep_->fMsgSentMaybeSuppressed_->Ago (suppressionTimeWindow), false)) {
+        if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String> { logLevel, msg }, CacheType::Ago (suppressionTimeWindow), false)) {
             DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
         }
         else {
             Log_ (logLevel, msg);
-            fRep_->fMsgSentMaybeSuppressed_->Add (pair<Priority, String> { logLevel, msg }, true);
+            fRep_->fMsgSentMaybeSuppressed_.rwget ()->Add (pair<Priority, String> { logLevel, msg }, true);
         }
     }
     else {
@@ -373,7 +374,7 @@ void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressi
      *  can become.
      */
     constexpr   double  kCleanupFactor_ { 2.0 };
-    fRep_->fMsgSentMaybeSuppressed_->ClearOlderThan (fRep_->fMsgSentMaybeSuppressed_->Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
+    fRep_->fMsgSentMaybeSuppressed_.rwget ()->ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
 }
 
 
@@ -467,7 +468,7 @@ public:
     void    Log (Priority logLevel, const String& message)
     {
         //@todo tmphack - write date and write logLevel??? and use TextStream API that does \r or \r\n as appropriate
-        fWriter_->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
+        fWriter_.rwget ()->Write (Characters::Format (L"[%5s][%16s] %s\n", Configuration::DefaultNames<Logger::Priority>::k.GetName (logLevel), Time::DateTime::Now ().Format ().c_str (), message.c_str ()));
     }
 private:
     Synchronized<TextWriter>    fWriter_;   // All Stroika-provided appenders must be internally synchronized

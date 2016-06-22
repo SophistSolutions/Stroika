@@ -186,7 +186,7 @@ Again:
                                 DbgTrace (L"fIncomingSignalCounts_[%d] = %d", i, fIncomingSignalCounts_[i].load ());
                                 fIncomingSignalCounts_[i]--;
                                 Debug::TraceContextBumper trcCtx2 ("Invoking SAFE signal handlers");
-                                for (SignalHandler sh : fHandlers_->LookupValue (i)) {
+                                for (SignalHandler sh : fHandlers_.rwget ()->LookupValue (i)) {
                                     Assert (sh.GetType () == SignalHandler::Type::eSafe);
                                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                                 }
@@ -242,17 +242,17 @@ public:
 public:
     Set<SignalID>   GetHandledSignals () const
     {
-        return fHandlers_->Keys ();
+        return fHandlers_.cget ()->Keys ();
     }
 public:
     Set<SignalHandler>  GetSignalHandlers (SignalID signal) const
     {
-        return fHandlers_->LookupValue (signal);
+        return fHandlers_.cget ()->LookupValue (signal);
     }
 public:
     void    Remove (SignalID signal)
     {
-        fHandlers_->Remove (signal);
+        fHandlers_.rwget ()->Remove (signal);
         PopulateSafeSignalHandlersCache_ (signal);
 #if     !qConditionVariableSetSafeFromSignalHandler_
         fChangedRecheckTime_.Set ();
@@ -261,7 +261,7 @@ public:
 public:
     void    Add  (SignalID signal, const Containers::Set<SignalHandler>& safeHandlers)
     {
-        fHandlers_->Add (signal, safeHandlers);
+        fHandlers_.rwget ()->Add (signal, safeHandlers);
         PopulateSafeSignalHandlersCache_ (signal);
 #if     !qConditionVariableSetSafeFromSignalHandler_
         fChangedRecheckTime_.Set ();
@@ -272,7 +272,7 @@ private:
     void    PopulateSafeSignalHandlersCache_ (SignalID signal)
     {
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fHanlderAvailable_)));
-        fHanlderAvailable_[signal] = fHandlers_->Lookup (signal).IsPresent ();
+        fHanlderAvailable_[signal] = fHandlers_.rwget ()->Lookup (signal).IsPresent ();
     }
 
 private:
@@ -363,7 +363,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
-    Set<SignalID>   result  =   fDirectHandlers_->Keys ();
+    Set<SignalID>   result  =   fDirectHandlers_.cget ()->Keys ();
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
         result += tmp->GetHandledSignals ();
     }
@@ -372,7 +372,7 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 
 Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
-    Set<SignalHandler>  result  =   fDirectHandlers_->LookupValue (signal);
+    Set<SignalHandler>  result  =   fDirectHandlers_.cget ()->LookupValue (signal);
     if (shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_) {
         result += tmp->GetSignalHandlers (signal);
     }
@@ -432,7 +432,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     };
 
     {
-        auto l = fDirectHandlers_.get ();
+        auto l = fDirectHandlers_.rwget ();
         if (directHandlers.empty ()) {
             l->Remove (signal);
         }

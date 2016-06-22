@@ -82,7 +82,7 @@ void    IOWaitDispatcher::clear ()
 
 Set<Socket> IOWaitDispatcher::GetSockets () const
 {
-    return Set<Socket> (fSocketFDBijection_->Preimage ());
+    return Set<Socket> (fSocketFDBijection_.cget ()->Preimage ());
 }
 
 void       IOWaitDispatcher::SetSockets (const Set<Socket>& s)
@@ -122,7 +122,7 @@ void    IOWaitDispatcher::Startthread_ ()
             lock_guard<mutex>   l { fCallingHandlers_ };
             /// @todo MUST INTERSECT etls2send with set of items waiting on...
             for (FileDescriptorType fdi : fElts2Send_) {
-                Optional<Socket>    si   =  fSocketFDBijection_->InverseLookup (fdi);
+                Optional<Socket>    si   =  fSocketFDBijection_.cget ()->InverseLookup (fdi);
                 if (si) {
                     fHandler_ (*si);
                 }

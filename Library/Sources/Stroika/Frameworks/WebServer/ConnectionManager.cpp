@@ -142,7 +142,7 @@ void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 
 void    ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 {
-    fActiveConnections_->push_back (conn);
+    fActiveConnections_.rwget ()->push_back (conn);
 }
 
 void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)

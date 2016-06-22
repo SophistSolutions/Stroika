@@ -37,7 +37,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType timeout)
             {
-                fQueue_->AddTail (e);
+                fQueue_.rwget ()->AddTail (e);
                 fDataAvailable_.Set ();
             }
             template    <typename T>
@@ -45,7 +45,7 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ();
+                    Memory::Optional<T> tmp = fQueue_.rwget ()->RemoveHeadIf ();
                     if (tmp.IsPresent ()) {
                         return *tmp;
                     }
@@ -57,7 +57,7 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    if (Memory::Optional<T> tmp = fQueue_->RemoveHeadIf ()) {
+                    if (Memory::Optional<T> tmp = fQueue_.rwget ()->RemoveHeadIf ()) {
                         return tmp;
                     }
                     if (not fDataAvailable_.WaitUntilQuietly (waitTil)) {
@@ -68,17 +68,17 @@ namespace   Stroika {
             template    <typename T>
             inline  Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
-                return fQueue_->HeadIf ();
+                return fQueue_.cget ()->HeadIf ();
             }
             template    <typename T>
             inline  bool    BlockingQueue<T>::empty () const
             {
-                return fQueue_->empty ();
+                return fQueue_.cget ()->empty ();
             }
             template    <typename T>
             inline  size_t      BlockingQueue<T>::GetLength () const
             {
-                return fQueue_->GetLength ();
+                return fQueue_.cget ()->GetLength ();
             }
             template    <typename T>
             inline  size_t      BlockingQueue<T>::length () const

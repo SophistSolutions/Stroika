@@ -60,7 +60,7 @@ namespace   Stroika {
              *                  {
              *                      Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
              *                  }
-             *                  MyData_   Get ()
+             *                  MyData_   Get () const
              *                  {
              *                      return fActualCurrentConfigData_;
              *                  }

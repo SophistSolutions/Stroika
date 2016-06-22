@@ -40,12 +40,12 @@ void        Capturer::SetMeasurementsCallbacks (const Collection<NewMeasurements
 
 void        Capturer::AddMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
-    fCallbacks_->Add (cb);
+    fCallbacks_.rwget ()->Add (cb);
 }
 
 void        Capturer::RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb)
 {
-    fCallbacks_->Remove (cb);
+    fCallbacks_.rwget ()->Remove (cb);
 }
 
 Collection<CaptureSet>   Capturer::GetCaptureSets () const
@@ -56,13 +56,13 @@ Collection<CaptureSet>   Capturer::GetCaptureSets () const
 void      Capturer::SetCaptureSets (const Collection<CaptureSet>& captureSets)
 {
     fCaptureSets_ = captureSets;
-    ManageRunner_ (not fCaptureSets_->empty ());
+    ManageRunner_ (not fCaptureSets_.cget ()->empty ());
     Assert (fCaptureSets_->size () <= 1);    // only case we support so far
 }
 
 void        Capturer::AddCaptureSet (const CaptureSet& cs)
 {
-    fCaptureSets_->Add (cs);
+    fCaptureSets_.rwget ()->Add (cs);
     ManageRunner_ (true);
     Assert (fCaptureSets_->size () == 1);    // only case we support so far
 }
@@ -92,8 +92,8 @@ void    Capturer::Runner_ ()
     // @todo support more than one capture set.
     while (true) {
         //tmphack a race
-        if (fCaptureSets_->size () >= 1) {
-            CaptureSet cs = *fCaptureSets_->FindFirstThat ([] (CaptureSet) { return true;});
+        if (fCaptureSets_.cget ()->size () >= 1) {
+            CaptureSet cs = *fCaptureSets_.cget ()->FindFirstThat ([] (CaptureSet) { return true;});
 
             // @todo fix!!!
             // wrong - period should be from leading edge of last run!!!

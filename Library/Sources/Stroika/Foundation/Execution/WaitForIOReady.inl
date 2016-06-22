@@ -33,7 +33,7 @@ namespace   Stroika {
             }
             inline  void    WaitForIOReady::Add (FileDescriptorType fd)
             {
-                fFDs_->Add (fd);
+                fFDs_.rwget ()->Add (fd);
             }
             inline  void    WaitForIOReady::Add (Socket s)
             {
@@ -41,7 +41,7 @@ namespace   Stroika {
             }
             inline  void    WaitForIOReady::AddAll (const Set<FileDescriptorType>& fds)
             {
-                fFDs_->AddAll (fds);
+                fFDs_.rwget ()->AddAll (fds);
             }
             inline  void    WaitForIOReady::AddAll (const Set<Socket>& s)
             {
@@ -49,11 +49,11 @@ namespace   Stroika {
                 for (Socket si : s) {
                     fds.Add (cvt_ (si.GetNativeSocket ()));
                 }
-                fFDs_->AddAll (fds);
+                fFDs_.rwget ()->AddAll (fds);
             }
             inline  void    WaitForIOReady::Remove (FileDescriptorType fd)
             {
-                fFDs_->Remove (fd);
+                fFDs_.rwget ()->Remove (fd);
             }
             inline  void    WaitForIOReady::Remove (Socket s)
             {
@@ -61,7 +61,7 @@ namespace   Stroika {
             }
             inline  void    WaitForIOReady::RemoveAll (const Set<FileDescriptorType>& fds)
             {
-                fFDs_->RemoveAll (fds);
+                fFDs_.rwget ()->RemoveAll (fds);
             }
             inline  void    WaitForIOReady::RemoveAll (const Set<Socket>& s)
             {
@@ -69,7 +69,7 @@ namespace   Stroika {
                 for (Socket si : s) {
                     fds.Add (cvt_ (si.GetNativeSocket ()));
                 }
-                fFDs_->RemoveAll (fds);
+                fFDs_.rwget ()->RemoveAll (fds);
             }
             inline  auto WaitForIOReady::GetDescriptors () const -> Set<FileDescriptorType> {
                 return fFDs_;
@@ -88,7 +88,7 @@ namespace   Stroika {
             }
             inline  void        WaitForIOReady::clear ()
             {
-                fFDs_->clear ();
+                fFDs_.rwget ()->clear ();
             }
             inline  auto     WaitForIOReady::Wait (Time::DurationSecondsType waitFor) -> Set<FileDescriptorType> {
                 return WaitUntil (waitFor + Time::GetTickCount ());
