@@ -22,20 +22,20 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename IMPL>
-            T       ModuleGetterSetter<T, IMPL>::Get ()
-            {
-                auto l = fIndirect_.get ();
-                if (l->IsMissing ()) {
-                    l = IMPL {};
-                }
-                return l.load ().Value ().Get ();
-            }
-            template    <typename T, typename IMPL>
-            void    ModuleGetterSetter<T, IMPL>::Set (const T& v)
+            inline  T       ModuleGetterSetter<T, IMPL>::Get ()
             {
                 typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.get ();
                 if (l->IsMissing ()) {
-                    l = IMPL {};
+                    DoInitOutOfLine_ (&l);
+                }
+                return l.load ()->Get ();
+            }
+            template    <typename T, typename IMPL>
+            inline  void    ModuleGetterSetter<T, IMPL>::Set (const T& v)
+            {
+                typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.get ();
+                if (l->IsMissing ()) {
+                    DoInitOutOfLine_ (&l);
                 }
 #if 1
                 // @todo - understand why this .operator-> nonsense is needed???
@@ -43,6 +43,13 @@ namespace   Stroika {
 #else
                 l->Set (v);
 #endif
+            }
+            template    <typename T, typename IMPL>
+            dont_inline void    ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)
+            {
+                RequireNotNull (ref);
+                Require (ref->load ().IsMissing ());
+                *ref = IMPL {};
             }
 
 

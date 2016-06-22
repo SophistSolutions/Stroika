@@ -102,6 +102,10 @@ namespace   Stroika {
 
             private:
                 Execution::Synchronized<Memory::Optional<IMPL>>   fIndirect_;
+
+            private:
+                // Force IMPL CTOR out of line
+                nonvirtual  void    DoInitOutOfLine_ (typename Execution::Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
             };
 
 
