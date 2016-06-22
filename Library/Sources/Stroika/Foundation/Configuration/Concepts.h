@@ -117,6 +117,11 @@ namespace   Stroika {
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(begin, std::begin (x));
 
             /**
+             *  use has_operatorarrow<T>::value
+             */
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS(operatorarrow, (x.operator-> ()));
+
+            /**
              *  Would like to use constexpr function (as with c++14 concepts) - but cannot due to weakness in constexpr support (absence) for vs2k13
              */
             namespace Private_ {

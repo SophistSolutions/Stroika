@@ -12,6 +12,7 @@
 #endif
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Debug/Assertions.h"         // while RequireNotNull etc in headers --LGP 2015-06-11
 
 #include    "Common.h"
@@ -274,10 +275,21 @@ namespace   Stroika {
                 ReadableReference (ReadableReference&& src);
                 const ReadableReference& operator= (const ReadableReference& rhs) = delete;
 
+            protected:
+                /*
+                 *  Due to http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
+                 *      131) If the value returned by the operator-> function has class type, this may result in
+                 *      selecting and calling another operator->
+                 *      function. The process repeats until an operator-> function returns a value of non-class type.
+                 *
+                 *  So operator-> chaining works.
+                 */
+                using _ConstOperatorArrowReturnType = typename conditional<Configuration::has_operatorarrow<T>::value, T, const T*>::type;
+
             public:
                 /**
                  */
-                nonvirtual  const T* operator-> () const;
+                nonvirtual  _ConstOperatorArrowReturnType operator-> () const;
 
             public:
                 /**
