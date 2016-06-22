@@ -57,14 +57,14 @@ void      Capturer::SetCaptureSets (const Collection<CaptureSet>& captureSets)
 {
     fCaptureSets_ = captureSets;
     ManageRunner_ (not fCaptureSets_.cget ()->empty ());
-    Assert (fCaptureSets_->size () <= 1);    // only case we support so far
+    Assert (fCaptureSets_.cget ()->size () <= 1);    // only case we support so far
 }
 
 void        Capturer::AddCaptureSet (const CaptureSet& cs)
 {
     fCaptureSets_.rwget ()->Add (cs);
     ManageRunner_ (true);
-    Assert (fCaptureSets_->size () == 1);    // only case we support so far
+    Assert (fCaptureSets_.cget ()->size () == 1);    // only case we support so far
 }
 
 void    Capturer::ManageRunner_ (bool on)
