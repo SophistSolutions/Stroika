@@ -160,6 +160,12 @@ namespace   Stroika {
              *          n.store (a);
              *      }
              *      \endcode
+             *
+             *
+             *  \note   We consider supporting operator-> for Synchonized<> - and overloading on const to see if we use a Read Lock or a Write lock.
+             *          The problem is - that IF its called through a non-const object, it will select the non-const (write lock) even though all that
+             *          was needed was the read lock! So this paradigm - though more terse and clear - just encourages inefficient coding (so we
+             *          have no read locks - all locks write locks).
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
