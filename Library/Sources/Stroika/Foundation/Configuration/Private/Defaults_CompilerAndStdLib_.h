@@ -98,8 +98,6 @@
 
 
 
-
-
 /*
  *******************************************************************
  *******************************************************************
@@ -274,6 +272,9 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+
+
 /*
 */
 #ifndef qCompilerAndStdLib_is_trivially_copyable_Buggy
@@ -429,6 +430,22 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+/*
+ * Crazy man!  - https://connect.microsoft.com/VisualStudio/feedback/details/763051/a-value-of-predefined-macro-cplusplus-is-still-199711l
+ */
+#ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+#else
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      0
+#endif
+
+#endif
+
+
+
+
 
 
 /*
@@ -452,7 +469,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 */
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
-#if     __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
+#if     !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    1
 #elif    !defined (__clang__) && defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
@@ -471,12 +488,32 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 
 
+/**
+ */
+#ifndef qCompilerAndStdLib_deprecated_attribute_Buggy
+
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_deprecated_attribute_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+#else
+#define qCompilerAndStdLib_deprecated_attribute_Buggy    __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
+#endif
+
+#endif
+
+
+
+
+
 
 /*
 */
 #ifndef qCompilerAndStdLib_shared_mutex_module_Buggy
 
-#define qCompilerAndStdLib_shared_mutex_module_Buggy      (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
+#if   defined (_MSC_VER)
+#define qCompilerAndStdLib_shared_mutex_module_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
+#else
+#define qCompilerAndStdLib_shared_mutex_module_Buggy    (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
+#endif
 
 #endif
 
@@ -1357,6 +1394,20 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *******************************************************************
  */
 
+
+
+// When MSFT fixes qCompilerAndStdLib_cplusplus_macro_value_Buggy move back to the top of the file
+#if     !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_11
+
+#pragma message ("Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)")
+
+#endif
+
+
+
+
+
+
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 // Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
 // and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
@@ -1481,10 +1532,10 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *      void     CheckFileAccess(int);
  */
 #if     !defined (_Deprecated_)
-#if     __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
-#define _Deprecated_(MESSAGE) [[deprecated(MESSAGE)]]
-#else
+#if     qCompilerAndStdLib_deprecated_attribute_Buggy
 #define _Deprecated_(MESSAGE)
+#else
+#define _Deprecated_(MESSAGE) [[deprecated(MESSAGE)]]
 #endif
 #endif
 
