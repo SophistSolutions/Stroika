@@ -25,10 +25,44 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a151">v2.0a151x</a><br/>2016-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a151">v2.0a151</a><br/>2016-06-??doing-trial-relase</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>https://stroika.atlassian.net/browse/STK-436 - Each Configuration file should have a comment at the head saying how to run (args) configure</li>
+		<li>Discovered MSFT has qCompilerAndStdLib_cplusplus_macro_value_Buggy! so had been disabling shared_lock stuff for a while!!! - fixed many bug defines in headers accordingly! Sigh... Must retest carefully</li>
+		<li>Cleaned up checked in valgrind supressions. Many no longer needed (due to compiler/os/upgrade most likely)</li>
+		<li>ThirdPartyComponents updates
+			<ul>
+				<li>libcurl 7.49.1</li>
+				<li>lzma SDK 1602</li>
+				<li>openssl 1.0.2h, and progress towards supporting openssl 1.1 (beta) - but still too broken (windows build) to worry. Must do some restructure of my use code too NYI</li>
+			</ul>
+		</li>
+		<li>fixed qCompilerAndStdLib_deprecated_attribute_Buggy for _MSC_FULL_VER? so no DEPRECATED works right on MSVC</li>
+		<li>Synchronized&lt&gt;
+			<ul>
+				<li>docs and regtest for explicit lock on synchonized object</li>
+				<li>https://stroika.atlassian.net/browse/STK-489 - DEPRECATED operator-> () in Synchonized - and force explicit use of cget or rwget() on synchonized to get reference, or load to get a copy.  For synchonized objects - these distrinctions just matter. Still experimental, but buetter documetned and I think clearer</li>
+			</ul>
+		</li>
+		<li>TextReader() now takes overload CTOR with Iterable&lt;Character&gt;</li>
+		<li>VariantReader now takes overlaod on Read method of Iterable&lt;Character&gt; (aka string) - and added regtest cases for this</li>
+		<li>Math::Median always uses just nth_element (not sort) for speed</li>
+		<li>Added docs for ModuleGetterSetter and regression test sample/test code, and code cleanups</li>
+		<li>PerformanceDump-v2.0a151-linux-gcc-6.1.0-x64.txt and PerformanceDump-v2.0a151-x86-vs2k15-ReleaseU.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 2</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
