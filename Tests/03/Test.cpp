@@ -46,9 +46,12 @@ namespace   {
          *          1.2.96.9 (in hex 0x1.0x2.0x60.0x9)
          *      So Release 3.0 would be (in decimal place separated octets):
          *          3.0.160.1  (in hex 0x3.0x0.0xa0.0x1)
+         *      So Release 3.0.1 would be (in decimal place separated octets):
+         *          3.0.160.3  (in hex 0x3.0x0.0xa0.0x3)
          */
         verifier (Version (1, 2, VersionStage::Beta, 4, true), L"1.2b4", L"1.2.96.9");
         verifier (Version (3, 0, VersionStage::Release, 0, true), L"3.0", L"3.0.160.1");
+        verifier (Version (3, 0, VersionStage::Release, 1, true), L"3.0.1", L"3.0.160.3");
     }
 }
 

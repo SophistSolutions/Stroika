@@ -34,7 +34,7 @@ namespace   Stroika {
             /**
              *  Format
              *      |MAJOR|MINOR|STAGE|SubStage|Final|
-             *      32    24    16    13        1     0
+             *      32    24    16    13       1     0
              * width    8     8     3      12     1
              *
              *  \note   When looking at a Binary32BitFullVersionType as bytes,
@@ -57,11 +57,14 @@ namespace   Stroika {
              *  So Release 3.0 would be (in decimal place separated octets):
              *      3.0.160.1  (in hex 0x3.0x0.0xa0.0x1)
              *
+             *  So Release 3.0.1 would be (in decimal place separated octets):
+             *      3.0.160.3  (in hex 0x3.0x0.0xa0.0x3)
+             *
              *  \note
              *      Format UNTIL Stroika v2.0a151
              *          |MAJOR|MINOR|STAGE|SubStage|Final|
-             *        32    25    17    9        1    0
-             *   width    7     8     8      8       1
+             *          32    25    17    9        1     0
+             *     width    7     8     8      8      1
              */
             using   Binary32BitFullVersionType     =   uint32_t;
 #endif
