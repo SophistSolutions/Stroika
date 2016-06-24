@@ -25,15 +25,30 @@ using   namespace   Stroika::Foundation;
 namespace   {
     void    Test1_Version_ ()
     {
-        const   Configuration::Version  kTestVersion_ =
-            Configuration::Version (1, 0, Configuration::VersionStage::Alpha, 1, false
-                                   )
-            ;
-        VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
-        VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString (L"1.0a1x"));
-        VerifyTestResult (Configuration::Version (1, 0, Configuration::VersionStage::Release, 0) == Configuration::Version::FromPrettyVersionString (L"1.0"));
-        VerifyTestResult (Configuration::Version (1, 0, Configuration::VersionStage::Release, 1) == Configuration::Version::FromPrettyVersionString (L"1.0.1"));
-        VerifyTestResult (Configuration::Version (2, 0, Configuration::VersionStage::Beta, 3) == Configuration::Version::FromPrettyVersionString (L"2.0b3"));
+        using   namespace   Configuration;
+        {
+            constexpr   Version  kTestVersion_ =    Version (1, 0, VersionStage::Alpha, 1, false);
+            VerifyTestResult (kTestVersion_.AsPrettyVersionString () == L"1.0a1x");
+            VerifyTestResult (kTestVersion_ == Configuration::Version::FromPrettyVersionString (L"1.0a1x"));
+        }
+        VerifyTestResult (Version (1, 0, VersionStage::Release, 0) == Version::FromPrettyVersionString (L"1.0"));
+        VerifyTestResult (Version (1, 0, VersionStage::Release, 1) == Version::FromPrettyVersionString (L"1.0.1"));
+        VerifyTestResult (Version (2, 0, VersionStage::Beta, 3) == Version::FromPrettyVersionString (L"2.0b3"));
+
+        auto verifier = [] (const Version & v, const String & prettyName, const String & win32VersionString) {
+            VerifyTestResult (Version::FromPrettyVersionString (prettyName).AsWin32Version4DotString () == win32VersionString);
+            VerifyTestResult (Version::FromPrettyVersionString (prettyName) == v);
+            VerifyTestResult (Version::FromPrettyVersionString (prettyName) == Version::FromWin32Version4DotString (win32VersionString));
+        };
+        /*
+         *  FROM EXAMPLE TEXT
+         *      So Release 1.2b4 would be (in decimal place separated octets):
+         *          1.2.96.9 (in hex 0x1.0x2.0x60.0x9)
+         *      So Release 3.0 would be (in decimal place separated octets):
+         *          3.0.160.1  (in hex 0x3.0x0.0xa0.0x1)
+         */
+        verifier (Version (1, 2, VersionStage::Beta, 4, true), L"1.2b4", L"1.2.96.9");
+        verifier (Version (3, 0, VersionStage::Release, 0, true), L"3.0", L"3.0.160.1");
     }
 }
 

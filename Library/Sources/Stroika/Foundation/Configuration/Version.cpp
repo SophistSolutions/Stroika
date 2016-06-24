@@ -8,6 +8,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Execution/StringException.h"
+#include    "../Memory/Bits.h"
 
 #include    "Version.h"
 
@@ -26,17 +27,20 @@ using   Characters::String_Constant;
  */
 Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
-    int major       =   0;
-    int minor       =   0;
-    int verStage    =   0;
-    int verSubStage =   0;
+    int major               =   0;
+    int minor               =   0;
+    int verStageOctet       =   0;
+    int verSubStageOctet    =   0;
     DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
-    int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStage, &verSubStage);
+    int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
+    int     verStage        =   static_cast<uint16_t> (verStageOctet) >> 5;
+    int     verSubStage = (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 7);
+    bool    verFinal        =   verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         Execution::Throw (Execution::StringException (L"Invalid Version String"));
     }
-    return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage);   // in this form - no encoding of 'final build'
+    return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage, verFinal);
 }
 
 Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
@@ -119,7 +123,7 @@ Version Version::FromPrettyVersionString (const Characters::String& prettyVersio
 
 Characters::String      Version::AsWin32Version4DotString () const
 {
-    return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, fVerStage, fVerSubStage);
+    return Characters::Format (L"%d.%d.%d.%d", fMajorVer, fMinorVer, (static_cast<uint8_t> (fVerStage) << 5) | (fVerSubStage >> 7), (static_cast<uint8_t> (fVerSubStage & 0x7f) << 1) | static_cast<uint8_t> (fFinalBuild));
 }
 
 Characters::String      Version::AsPrettyVersionString () const

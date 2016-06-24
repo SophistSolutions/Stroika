@@ -26,7 +26,7 @@
  *      @todo   RETHINK MAPPING TO FULL_VERSION_NUMBER type? VersionStage only needs 3 bits (??)
  *              But maybe useful compat with windows format?
  *
- *      @todo   Consider if explicit Version(FullVersionType) CTOR should be FromFullVersionType
+ *      @todo   Consider if explicit Version(Binary32BitFullVersionType) CTOR should be FromBinary32BitFullVersionType
  */
 
 
@@ -65,11 +65,15 @@ namespace   Stroika {
              */
             struct  Version {
             public:
+                static  constexpr   uint16_t    kMaxVersionSubStage =   (1 << 12) - 1;
+
+            public:
                 /**
+                 *  \req verSubStage <= kMaxVersionSubStage
                  */
                 constexpr   Version ();
-                constexpr   explicit Version (FullVersionType fullVersionNumber);
-                constexpr   Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
+                constexpr   explicit Version (Binary32BitFullVersionType fullVersionNumber);
+                constexpr   Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint16_t verSubStage, bool finalBuild = true);
 
             public:
                 /**
@@ -87,13 +91,13 @@ namespace   Stroika {
                 uint8_t         fMajorVer;
                 uint8_t         fMinorVer;
                 VersionStage    fVerStage;
-                uint8_t         fVerSubStage;
+                uint16_t        fVerSubStage;
                 bool            fFinalBuild;
 
             public:
                 /**
                  */
-                nonvirtual  constexpr   FullVersionType AsFullVersionNum () const;
+                nonvirtual  constexpr   Binary32BitFullVersionType AsFullVersionNum () const;
 
             public:
                 /**
