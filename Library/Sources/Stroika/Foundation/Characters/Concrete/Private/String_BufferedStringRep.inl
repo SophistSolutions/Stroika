@@ -62,7 +62,7 @@ namespace   Stroika {
                             size_t      len     =   _GetLength ();
                             Assert (len <= newCapacity);
                             wchar_t*    newBuf  =   nullptr;
-                            {
+                            DISABLE_COMPILER_MSC_WARNING_START(4065) {
                                 switch (newCapacity) {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                                     case    kNElts1_:
@@ -92,6 +92,7 @@ namespace   Stroika {
                                     delete[] _PeekStart ();
                                     break;
                             }
+                            DISABLE_COMPILER_MSC_WARNING_END(4065)
                             _SetData (newBuf, newBuf + len);
                             fCapacity_ = newCapacity;
                         }
@@ -127,6 +128,7 @@ namespace   Stroika {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         Assert (capacity >= kNElts1_ or capacity >= kNElts2_);
 #endif
+                        DISABLE_COMPILER_MSC_WARNING_START(4065)
                         switch (capacity) {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                             case    kNElts1_: {
@@ -145,6 +147,7 @@ namespace   Stroika {
                                 }
                                 break;
                         }
+                        DISABLE_COMPILER_MSC_WARNING_END(4065)
                         (void)::memcpy (newBuf, start, len * sizeof (wchar_t));
                         newBuf[len] = '\0';
                         fCapacity_ = capacity;
@@ -156,6 +159,7 @@ namespace   Stroika {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                         Assert (fCapacity_ >= kNElts1_);
 #endif
+                        DISABLE_COMPILER_MSC_WARNING_START(4065)
                         switch (fCapacity_) {
 #if     qString_Private_BufferedStringRep_UseBlockAllocatedForSmallBufStrings
                             case kNElts1_: {
@@ -172,6 +176,7 @@ namespace   Stroika {
                                 }
                                 break;
                         }
+                        DISABLE_COMPILER_MSC_WARNING_END(4065)
                     }
 
 
