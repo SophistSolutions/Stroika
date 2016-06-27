@@ -68,6 +68,7 @@
 #define _MS_VS_2k15_RTM_FULLVER_        190023026
 #define _MS_VS_2k15_Update1_FULLVER_    190023506
 #define _MS_VS_2k15_Update2_FULLVER_    190023918
+#define _MS_VS_2k15_Update3_FULLVER_    190024210
 
 #if      _MSC_VER < _MS_VS_2k15_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
@@ -77,7 +78,7 @@
 #endif
 #if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
-#elif    _MSC_FULL_VER > _MS_VS_2k15_Update2_FULLVER_
+#elif    _MSC_FULL_VER > _MS_VS_2k15_Update3_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
 #endif
 
@@ -188,7 +189,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_union_designators_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy      0
 #endif
@@ -240,7 +242,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_somtimes_cannot_combine_constexpr_with_constexpr_Buggy      0
 #endif
@@ -254,7 +257,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
->c:\sandbox\stroikadev\tests\35\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
+>c:\sandbox\stroikadev\tests\36\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
 */
 #ifndef qCompilerAndStdLib_constexpr_stdinitializer_Buggy
 
@@ -262,7 +265,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy      0
 #endif
@@ -310,7 +314,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_with_delegated_construction_Buggy      0
 #endif
@@ -331,7 +336,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 // still broken in _MS_VS_2k13_Update4_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      0
 #endif
@@ -358,7 +364,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (__GNUC__ < 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy      0
 #endif
@@ -418,7 +425,8 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy       0
 #endif
@@ -426,6 +434,25 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 
+
+/*
+  Range.cpp
+2>c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(169): warning C4996: 'std::uninitialized_copy_n::_Unchecked_iterators::_Deprecate': Call to 'std::uninitialized_copy_n' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+2>  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory(169): note: see declaration of 'std::uninitialized_copy_n::_Unchecked_iterators::_Deprecate'
+2>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\containers\externallysynchronizeddatastructures\array.inl(190): note: see reference to function template instantiation '_FwdIt std::uninitialized_copy_n<T*,std::size_t,T*>(_InIt,std::_Diff,_FwdIt)' being compiled
+2>          with
+2>          [
+*/
+#ifndef qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_Update1_FULLVER_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy  (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
+#else
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy   0
+#endif
+
+#endif
 
 
 
@@ -436,7 +463,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_cplusplus_macro_value_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy      0
 #endif
@@ -476,7 +503,9 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 // this is still broken even if you say -std=+14 in gcc51
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// still broken in _MS_VS_2k15_Update2_FULLVER_
+// still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    0
 #endif
@@ -655,7 +684,8 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #elif   __clang__
 #define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy   ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
@@ -852,7 +882,8 @@ Compiling regtests for Median/OrderBy...
 // Still broken in _MS_VS_2k15_RTM_FULLVER_
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_inet_ntop_const_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_inet_ntop_const_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_inet_ntop_const_Buggy          0
 #endif
@@ -882,7 +913,8 @@ Compiling regtests for Median/OrderBy...
 // Still broken in _MS_VS_2k15_RTM_FULLVER_
 // Still broken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy          0
 #endif
@@ -1044,7 +1076,8 @@ eq_result
  *      noted discovered workaround (stdio stderr, isntead of cerr)
  */
 // still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_) && qPlatform_Win64
+// still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy        (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_) && qPlatform_Win64
 #else
 #define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy        0
 #endif
@@ -1349,7 +1382,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // still borken in _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
-#define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update2_FULLVER_)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qDecoratedNameLengthExceeded_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
 #else
 #define qDecoratedNameLengthExceeded_Buggy      0
 #endif

@@ -15,6 +15,30 @@ namespace   Stroika {
             namespace   ExternallySynchronizedDataStructures {
 
 
+#if     qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+                namespace PRIVATE_ {
+                    template<class InputIt, class Size, class ForwardIt>
+                    ForwardIt uninitialized_copy_n_MSFT_BWA(InputIt first, Size count, ForwardIt d_first)
+                    {
+                        using Value = typename std::iterator_traits<ForwardIt>::value_type;
+                        ForwardIt current = d_first;
+                        try {
+                            for (; count > 0; ++first, ++current, --count) {
+                                ::new (static_cast<void*>(&*current)) Value(*first);
+                            }
+                        }
+                        catch (...) {
+                            for (; d_first != current; ++d_first) {
+                                d_first->~Value();
+                            }
+                            throw;
+                        }
+                        return current;
+                    }
+                }
+#endif
+
+
                 /*
                 ********************************************************************************
                 **************************** Array<T,TRAITS> ***********************************
@@ -187,7 +211,11 @@ namespace   Stroika {
                                 T* newV = (T*) new char [sizeof (T) * slotsAlloced];
                                 try {
                                     size_t n2Copy = min(_fSlotsAllocated, slotsAlloced);
+#if     qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+                                    PRIVATE_::uninitialized_copy_n_MSFT_BWA (&_fItems[0], n2Copy, newV);
+#else
                                     std::uninitialized_copy_n (&_fItems[0], n2Copy, newV);
+#endif
                                 }
                                 catch (...) {
                                     delete[] (char*)newV;
