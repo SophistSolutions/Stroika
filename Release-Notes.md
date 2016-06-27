@@ -20,6 +20,36 @@ History
 
 
 
+  
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a152">v2.0a152x</a><br/>2016-06-27</td>
+<td>
+	<ul>
+		<li>Switch to VisualStudio 2k15 Update 3</li>
+		<li>Not BINARY backward compatible in binary format of Win32 4-byte version#s nor the binary format of Stroika verison#s</li>
+		<li>renamed Samples and Tests solution to have 'Stroika-' prefix</li>
+		<li>new PerformanceDump-v2.0a152-linux-gcc-6.1.0-x64.txt and PerformanceDump-v2.0a152-x86-vs2k15-ReleaseU.txt (on the surface, appears somewhat faster than update2)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
 
 
 
