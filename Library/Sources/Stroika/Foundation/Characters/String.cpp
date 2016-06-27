@@ -235,7 +235,17 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
 
 
 
-
+#if     qDebug
+namespace {
+    struct ModuleAssert_ {
+        inline  ModuleAssert_ ()
+        {
+            Assert (String::kBadIndex == wstring::npos);
+        }
+    };
+    const   ModuleAssert_   kModuleAssert_;
+}
+#endif
 
 
 
@@ -250,9 +260,7 @@ Traversal::Iterator<Character>  String::_IRep::FindFirstThat (_APPLYUNTIL_ARGTYP
  ********************************************************************************
  */
 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-#if     !qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
 constexpr   size_t    String::kBadIndex;
-#endif
 
 String::String (const char16_t* cString)
     : String (cString, cString + Characters::CString::Length (cString))

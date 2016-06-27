@@ -343,13 +343,11 @@ namespace   Stroika {
                 using   inherited   =   Iterable<Character>;
 
             public:
-#if     qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
-                static  constexpr size_t kBadIndex = -1;
-#elif   qCompilerAndStdLib_constexpr_STL_Buggy
-                static  constexpr size_t    kBadIndex = -1;
-#else
-                static  constexpr size_t    kBadIndex = wstring::npos;
-#endif
+                /*
+                 *  \note   This value - kBadIndex - is always the same as wstring::npos - but wstring::npos is not
+                 *          constexpr (http://www.cplusplus.com/reference/string/string/npos/
+                 */
+                static      constexpr   size_t      kBadIndex       =       -1;
 
             public:
                 /**

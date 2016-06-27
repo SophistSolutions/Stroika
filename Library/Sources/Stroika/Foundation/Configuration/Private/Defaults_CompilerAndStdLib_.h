@@ -326,27 +326,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
-/*
-1>c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): error C2131: expression did not evaluate to a constant
-1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\characters\string.h(350): note: failure was caused by non-constant arguments or reference to a non-constant symbol
-*/
-#ifndef qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k13_Update4_FULLVER_
-// still broken in _MS_VS_2k15_Update1_FULLVER_
-// Still broken in _MS_VS_2k15_Update2_FULLVER_
-// Still broken in _MS_VS_2k15_Update3_FULLVER_
-#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
-#else
-#define qCompilerAndStdLib_constexpr_STL_string_npos_constexpr_Buggy      0
-#endif
-
-#endif
-
-
-
-
 
 
 /*
