@@ -20,6 +20,21 @@ History
 
 
 
+
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a153">v2.0a153x</a><br/>2016-06-??</td>
+<td>
+	<ul>
+		<li>TODO</li>
+	</ul>
+</td>
+</tr>
+
+
+
   
 
 
