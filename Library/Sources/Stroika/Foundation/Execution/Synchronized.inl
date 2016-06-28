@@ -90,12 +90,6 @@ namespace   Stroika {
             {
                 return ReadableReference (&fDelegate_, &fLock_);
             }
-#if     qSupportSyncronizedOpArrowBackwardCompat_
-            template    <typename   T, typename TRAITS>
-            inline  auto Synchronized<T, TRAITS>::operator-> () -> WritableReference {
-                return WritableReference (&fDelegate_, &fLock_);
-            }
-#endif
             template    <typename   T, typename TRAITS>
             inline  void    Synchronized<T, TRAITS>::lock ()
             {

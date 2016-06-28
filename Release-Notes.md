@@ -24,6 +24,20 @@ History
 
 
 
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a154">v2.0a154</a><br/>2016-06-28</td>
+<td>
+	<ul>
+		<li>Synchonized&lt;&gt;- lose deprecated operator-> non-const - having it around still generates deprecation warnings cuz of how it matched.</li>
+		<li>Quick release- untested</li>
+	</ul>
+</td>
+</tr>
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a153">v2.0a153</a><br/>2016-06-28</td>
 <td>

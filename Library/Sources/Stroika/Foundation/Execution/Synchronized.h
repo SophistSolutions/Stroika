@@ -43,14 +43,6 @@ namespace   Stroika {
         namespace   Execution {
 
 
-// @todo EXPERIMEMTING WITH NEW RESTRICTIONS -- LGP 2016-06-22
-//#define qSupportSyncronizedOpArrowBackwardCompat_ 0
-#ifndef qSupportSyncronizedOpArrowBackwardCompat_
-#define qSupportSyncronizedOpArrowBackwardCompat_   1
-#endif
-
-
-
             /**
             ***** SCRAP NOTES - SOME OF THIS TEXT APPLIES TO NEW SYNCHO... CLEANUP
 
@@ -274,16 +266,6 @@ namespace   Stroika {
                  *  @see load ()
                  */
                 nonvirtual      const ReadableReference operator-> () const;
-
-            public:
-#if     qSupportSyncronizedOpArrowBackwardCompat_
-                /*
-                 *UNCLEAR BUT MAYBE DEPRECATE??? CONFUSING? OR overload const readonly and no-const writable, but with other stuff
-                 * like SharedByValue() I found that I accidentally got the wrong one alot.
-                 *  @see load ()
-                 */
-                nonvirtual  _Deprecated_("use rwget") WritableReference operator-> ();
-#endif
 
             public:
                 /**
