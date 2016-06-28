@@ -259,14 +259,29 @@ namespace   Stroika {
                 nonvirtual  const WritableReference GetReference () const;
                 nonvirtual  WritableReference GetReference ();
 
-#if     qSupportSyncronizedOpArrowBackwardCompat_
             public:
+                /*
+                 *  \brief  alias for cget ()
+                 *
+                 *  \note   Considered deprecating, due to confusion between the const and non-const overload of operator->. That was confusing
+                 *          because the overload was not based on need, but based on the constness of the underlying object.
+                 *
+                 *          But just having operator-> always return a const const ReadableReference is just convenient. Don't use it if
+                 *          you don't like it, but it adds to clarity.
+                 *
+                 *          And for the more rare 'write locks' - you are forced to use rwget ().
+                 *
+                 *  @see load ()
+                 */
+                nonvirtual      const ReadableReference operator-> () const;
+
+            public:
+#if     qSupportSyncronizedOpArrowBackwardCompat_
                 /*
                  *UNCLEAR BUT MAYBE DEPRECATE??? CONFUSING? OR overload const readonly and no-const writable, but with other stuff
                  * like SharedByValue() I found that I accidentally got the wrong one alot.
                  *  @see load ()
                  */
-                nonvirtual  _Deprecated_("use cget") const ReadableReference operator-> () const;
                 nonvirtual  _Deprecated_("use rwget") WritableReference operator-> ();
 #endif
 

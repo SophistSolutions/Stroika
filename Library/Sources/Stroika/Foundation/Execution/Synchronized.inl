@@ -85,12 +85,12 @@ namespace   Stroika {
             inline  auto    Synchronized<T, TRAITS>::GetReference () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
             }
-#if     qSupportSyncronizedOpArrowBackwardCompat_
             template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::operator-> () const -> const ReadableReference
             {
                 return ReadableReference (&fDelegate_, &fLock_);
             }
+#if     qSupportSyncronizedOpArrowBackwardCompat_
             template    <typename   T, typename TRAITS>
             inline  auto Synchronized<T, TRAITS>::operator-> () -> WritableReference {
                 return WritableReference (&fDelegate_, &fLock_);
@@ -393,7 +393,7 @@ namespace   Stroika {
             template    <typename   T, typename TRAITS, typename RHSTYPE>
             inline  auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator-= (rhs))
             {
-                return lhs->operator-= (rhs);
+                return lhs.rwget ()->operator-= (rhs);
             }
 
 
@@ -405,7 +405,7 @@ namespace   Stroika {
             template    <typename   T, typename TRAITS, typename RHSTYPE>
             inline  auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator+= (rhs))
             {
-                return lhs->operator+= (rhs);
+                return lhs.rwget ()->operator+= (rhs);
             }
 
 
