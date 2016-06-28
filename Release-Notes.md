@@ -25,10 +25,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a153">v2.0a153x</a><br/>2016-06-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a153">v2.0a153</a><br/>2016-06-28</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>Synchonized&lt;&gt;- fixed operator+=/operator-= to not use deprecated operator->; and changed choice - const operator-> () is OK - no longer deprecated</li>
+		<li>Quick release- untested</li>
 	</ul>
 </td>
 </tr>
