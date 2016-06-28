@@ -25,7 +25,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a152">v2.0a152x</a><br/>2016-06-27</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a152">v2.0a152</a><br/>2016-06-27</td>
 <td>
 	<ul>
 		<li>Switch to VisualStudio 2k15 Update 3</li>
