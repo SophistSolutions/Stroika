@@ -153,11 +153,17 @@ namespace   Stroika {
              *      }
              *      \endcode
              *
+             *  \note   Synchonized<> is similar to std::atomic, except that
+             *          *   You can use it as a mutex with lock_guard and lock for an extended period of time.
+             *          *   This supports read/write locks.
+             *          *   This supports locking objects and updated bits of them - not just replacing all at one go
              *
              *  \note   We consider supporting operator-> for Synchonized<> - and overloading on const to see if we use a Read Lock or a Write lock.
              *          The problem is - that IF its called through a non-const object, it will select the non-const (write lock) even though all that
              *          was needed was the read lock! So this paradigm - though more terse and clear - just encourages inefficient coding (so we
              *          have no read locks - all locks write locks).
+             *
+             *          So ONLY support operator-> const overload (brevity and more common than for write). To write - use rwget().
              */
             template    <typename   T, typename TRAITS = Synchronized_Traits<>>
             class   Synchronized {
