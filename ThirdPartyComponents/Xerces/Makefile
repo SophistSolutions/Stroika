@@ -9,7 +9,7 @@ endif
 .NOTPARALLEL:
 
 
-VERSION=3.1.3
+VERSION=3.1.4
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -23,9 +23,20 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 #
 
 FETCHURLS=
-FETCHURLS+=http://mirror.sdunix.com/apache//xerces/c/3/sources/$(BASENAME).tar.gz
-FETCHURLS+=http://psg.mtu.edu/pub/apache//xerces/c/3/sources/$(BASENAME).tar.gz
+#
+#Most Mirrors only have the current release so when xercesc updated, these start
+#failing (bad when building old stroika)
+#
+FETCHURLS+=http://apache.cs.utah.edu//xerces/c/3/sources/$(BASENAME).tar.gz
+FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
+FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
+
+#
+#ARCHIVE sites have old versions which matters when you are building an
+#older verison of Stroika
+#
 FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
+
 
 
 
