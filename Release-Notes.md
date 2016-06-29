@@ -29,7 +29,23 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a155">v2.0a155x</a><br/>2016-06-??</td>
 <td>
 	<ul>
-		<li>TODO</li>
+		<li>various code cleanups to Synchonized<>: use Configuration::ArgByValueType<T>, clarify/fix operator T(), docs cleanups, and fixed regression with oeprator-=, opeartor+=</li>
+		<li>Xerces: updated to use 3.1.4, and updated list of mirrors</li>
+		<li>Started transition of BitSubstring() API - by first creating BitSubstring_NEW, and deprecating BitSubstring (so we can transition through intermediate name as we chane meaning of 3rd parameter)</li>
+		<li>Added PerformanceDump-v2.0a155-x86-vs2k15-ReleaseU.txt and PerformanceDump-v2.0a155-linux-gcc-6.1.0-x64.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind (memcheck and helgrind)</li>
+			</ul>
+		</li>
 	</ul>
 </td>
 </tr>
