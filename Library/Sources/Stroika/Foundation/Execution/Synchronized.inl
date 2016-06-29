@@ -61,7 +61,7 @@ namespace   Stroika {
                 return fDelegate_;
             }
             template    <typename   T, typename TRAITS>
-            inline  void    Synchronized<T, TRAITS>::store (const T& v)
+            inline  void    Synchronized<T, TRAITS>::store (Configuration::ArgByValueType<T> v)
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
                 fDelegate_ = v;
@@ -191,7 +191,7 @@ namespace   Stroika {
                 return *const_cast<T*> (this->fT);
             }
             template    <typename   T, typename TRAITS>
-            inline  void    Synchronized<T, TRAITS>::WritableReference::store (const T& v)
+            inline  void    Synchronized<T, TRAITS>::WritableReference::store (Configuration::ArgByValueType<T> v)
             {
                 // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
                 *const_cast<T*> (this->fT) = v;
@@ -385,7 +385,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
-            inline  auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator-= (rhs))
+            inline  auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator-= (rhs))
             {
                 return lhs.rwget ()->operator-= (rhs);
             }
@@ -397,7 +397,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
-            inline  auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator+= (rhs))
+            inline  auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator+= (rhs))
             {
                 return lhs.rwget ()->operator+= (rhs);
             }

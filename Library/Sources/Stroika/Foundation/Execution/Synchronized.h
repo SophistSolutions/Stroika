@@ -12,6 +12,7 @@
 #endif
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/TypeHints.h"
 #include    "../Debug/Assertions.h"         // while RequireNotNull etc in headers --LGP 2015-06-11
 
 #include    "Common.h"
@@ -44,46 +45,6 @@ namespace   Stroika {
 
 
             /**
-            ***** SCRAP NOTES - SOME OF THIS TEXT APPLIES TO NEW SYNCHO... CLEANUP
-
-            * @todo
-            *
-            *
-             *  The idea behind any of these synchronized classes is that they can be used freely from
-             *  different threads without worry of data corruption. It is almost as if each operation were
-             *  preceeded with a mutex lock (on that object) and followed by an unlock.
-             *
-             *  Note - we say 'almost' because there is no guarantee of atomicity: just consistency and safety.
-             *
-             *  For example, an implementation of something like "Apply(function)" might do atomic locks
-             *  between each functional call, or some other way. But corruption or logical inconsistency
-             *  will be avoided.
-             *
-             *  If one thread does a Read operation on Synchronized<T> while another does a write (modification)
-             *  operation on Synchronized<T>, the Read will always return a consistent reasonable value, from
-             *  before the modification or afterwards, but never a distorted invalid value.
-             *
-             *  This is very much closely logically the java 'synchronized' attribute, except that its
-             *  not a language extension/attribute here, but rather a class wrapper. Its also implemented
-             *  in the library, not the programming language.
-             *
-             *  Its also in a way related to std::atomic<> - in that its a class wrapper on another type,
-             *  but the semantics it implements are moderately different than those in std::atomic,
-             *  which is really just intended to operate on integers, and integer type things, and not on
-             *  objects with methods.
-             *
-             *  \note   LIKE JAVA SYNCHRONIZED
-             *          This is SIMPLE to use like the Java (and .net) synchronized attribute(lock) mechanism.
-             *          But why does it not suffer from the same performance deficiit?
-             *
-             *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
-             *          checking for races (Debug::AssertExternallySynchronizedLock) in most objects, so
-             *          you only use Synchronized<> (or some other more performant mechanism) in the few places
-             *          you need it.
-             */
-
-
-            /**
              *  MUTEX:
              *      We chose to make the default MUTEX recursive_mutex - since most patterns of use will be supported
              *      by this safely.
@@ -109,6 +70,35 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Wrap any object with Synchonized<> and it can be used similarly to the base type,
+             *          but safely in a thread safe manner, from multiple threads. This is similar to std::atomic.
+             *
+             *  The idea behind any of these synchronized classes is that they can be used freely from
+             *  different threads without worry of data corruption. It is almost as if each operation were
+             *  preceeded with a mutex lock (on that object) and followed by an unlock.
+             *
+             *  If one thread does a Read operation on Synchronized<T> while another does a write (modification)
+             *  operation on Synchronized<T>, the Read will always return a consistent reasonable value, from
+             *  before the modification or afterwards, but never a distorted invalid value.
+             *
+             *  This is very much closely logically the java 'synchronized' attribute, except that its
+             *  not a language extension/attribute here, but rather a class wrapper. Its also implemented
+             *  in the library, not the programming language.
+             *
+             *  \note   LIKE JAVA SYNCHRONIZED
+             *          This is SIMPLE to use like the Java (and .net) synchronized attribute(lock) mechanism.
+             *          But why does it not suffer from the same performance deficiit?
+             *
+             *          Because with Java - you mixup exceptions and assertions. With Stroika, we have builtin
+             *          checking for races (Debug::AssertExternallySynchronizedLock) in most objects, so
+             *          you only use Synchronized<> (or some other more performant mechanism) in the few places
+             *          you need it.
+             *
+             *  \note   Synchonized<> is similar to std::atomic, except that
+             *          *   You can use it as a mutex with lock_guard and lock for an extended period of time.
+             *          *   This supports read/write locks.
+             *          *   This supports locking objects and updated bits of them - not just replacing all at one go
+             *
              *  \par Example Usage
              *      \code
              *      Synchronized<String> n;                                                 // SAME
@@ -153,11 +143,6 @@ namespace   Stroika {
              *      }
              *      \endcode
              *
-             *  \note   Synchonized<> is similar to std::atomic, except that
-             *          *   You can use it as a mutex with lock_guard and lock for an extended period of time.
-             *          *   This supports read/write locks.
-             *          *   This supports locking objects and updated bits of them - not just replacing all at one go
-             *
              *  \note   We consider supporting operator-> for Synchonized<> - and overloading on const to see if we use a Read Lock or a Write lock.
              *          The problem is - that IF its called through a non-const object, it will select the non-const (write lock) even though all that
              *          was needed was the read lock! So this paradigm - though more terse and clear - just encourages inefficient coding (so we
@@ -195,12 +180,14 @@ namespace   Stroika {
             public:
                 /**
                  *  Synonym for load ()
-                 ****
-                 ***    @todo DECIDE IF WE WANT TO USE EXPLICIT
-                 ****           http://stackoverflow.com/questions/27573928/are-explicit-conversion-operators-allowed-in-braced-initializer-lists
-                 *** VERY UNCELAR - FIUDDLE WITH THIS
+                 *
+                 *  \note   Tentatively (as of v2.0a155) - decided to do with non-explicit. This makes usage more terse
+                 *          for cases like:
+                 *              Synchronized<T> sX_;
+                 *              T Accessor ()  { return sX_; }
+                 *          and so far has caused no obvious problems.
                  */
-                nonvirtual   /*explicit*/ operator T () const;
+                nonvirtual  operator T () const;
 
             public:
                 /**
@@ -219,7 +206,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    store (const T& v);
+                nonvirtual  void    store (Configuration::ArgByValueType<T> v);
 
             public:
                 /**
@@ -317,7 +304,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  alias for cref () - but allows often simpler short-hand. Use explicit .cref() if you run into ambiguities.
+                 *  \brief  alias for cref () - but allows often simpler short-hand. Use explicit .cref () if you run into ambiguities.
+                 *
+                 *  \note   OK to return const reference here because we own a lock anyhow
                  */
                 nonvirtual  operator const T& () const;
 
@@ -370,7 +359,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual      void    store (const T& v);
+                nonvirtual      void    store (Configuration::ArgByValueType<T> v);
             };
 
 
@@ -459,13 +448,13 @@ namespace   Stroika {
             /**
              */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
-            auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator-= (rhs));
+            auto    operator-= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator-= (rhs));
 
 
             /**
              */
             template    <typename   T, typename TRAITS, typename RHSTYPE>
-            auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs->operator+= (rhs));
+            auto    operator+= (Synchronized<T, TRAITS>& lhs, RHSTYPE rhs) -> decltype (lhs.rwget ()->operator+= (rhs));
 
 
             /**
