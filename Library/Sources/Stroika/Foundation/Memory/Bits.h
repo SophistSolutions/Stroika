@@ -41,21 +41,30 @@ namespace   Stroika {
 
 
             /**
-             *  Capture the bits from 'bitField' - starting at bit 'offset' (zero-based), and go for
-             *  'nBits'. Bits are indexed from the low-order bit (starting with bit 0).
+             *  Capture the bits from 'bitField' - starting at bit 'startOffset' (zero-based),
+             *  extending to endOffset (also zero based). The number of bits captured
+             *  is endOffset-startOffset, so:
+             *      \req    startOffset < endOffset
              *
-             *  EXAMPLES:
-             *      VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
-             *      VerifyTestResult (BitSubstring (0x3, 1, 1) == 1);
-             *      VerifyTestResult (BitSubstring (0x3, 2, 1) == 0);
-             *      VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
-             *      VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
-             *      VerifyTestResult (BitSubstring (0xff, 8, 8) == 0x0);
+             *  \par Example Usage
+             *      \code
+             *      VerifyTestResult (BitSubstring_NEW (0x3, 0, 1) == 1);
+             *      VerifyTestResult (BitSubstring_NEW (0x3, 1, 2) == 1);
+             *      VerifyTestResult (BitSubstring_NEW (0x3, 2, 3) == 0);
+             *      VerifyTestResult (BitSubstring_NEW (0x3, 0, 3) == 0x3);
+             *      VerifyTestResult (BitSubstring_NEW (0xff, 0, 8) == 0xff);
+             *      VerifyTestResult (BitSubstring_NEW (0xff, 8, 16) == 0x0);
+             *      \endcode
              *
-             *  \note   This was called TakeNBitsFrom()
+             *  \note   This was previously named TakeNBitsFrom()
              */
             template    <typename INT_TYPE>
-            constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits);
+            constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
+            template    <typename INT_TYPE>
+            _Deprecated_ ("USE BitSubstring_NEW temporarily during API transition")            constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits)
+            {
+                return BitSubstring_NEW (bitField, offset, offset + nBits);
+            }
 
 
         }

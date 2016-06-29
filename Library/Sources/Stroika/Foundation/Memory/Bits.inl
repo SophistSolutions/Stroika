@@ -45,31 +45,14 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename INT_TYPE>
-            inline  constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits)
+            inline  constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                Require (nBits >= 1);
-                Require (offset < (CHAR_BIT * sizeof (INT_TYPE)));
-                Require ((nBits - 1 + offset) < (CHAR_BIT * sizeof (INT_TYPE)));
+                Require (startOffset < endOffset);
+                Require (startOffset < (CHAR_BIT * sizeof (INT_TYPE)));
+                Require (((endOffset - startOffset) - 1 + startOffset) < (CHAR_BIT * sizeof (INT_TYPE)));
 #endif
-                return (bitField >> offset) & ((1 << nBits) - 1);
-            }
-
-
-            /*
-             ********************************************************************************
-             ********************************* TakeNBitsFrom ********************************
-             ********************************************************************************
-             */
-            template    <typename INT_TYPE>
-            inline  constexpr   INT_TYPE    TakeNBitsFrom (INT_TYPE bitField, unsigned int nBits, unsigned int offset)
-            {
-#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                Require (nBits >= 1);
-                Require (offset < (CHAR_BIT * sizeof (INT_TYPE)));
-                Require ((nBits - 1 + offset) < (CHAR_BIT * sizeof (INT_TYPE)));
-#endif
-                return (bitField >> offset) & ((1 << nBits) - 1);
+                return (bitField >> startOffset) & ((1 << (endOffset - startOffset)) - 1);
             }
 
 
