@@ -13,6 +13,15 @@ OUT_FIELD_NAME=$2
 #	sh ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION  Major
 #	sh ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION  Major.Minor
 #
+# Allowed Field Names:
+#		FullVersionString
+#		Major
+#		Minor
+#		Stage
+#		SubStage
+#		Major.Minor
+#		DecoratedStageInfo
+#
 
 #echo "-----------"
 #echo VERSION_IN_FILE=$VERSION_IN_FILE
