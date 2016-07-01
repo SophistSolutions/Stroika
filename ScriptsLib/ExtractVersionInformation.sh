@@ -2,6 +2,18 @@
 VERSION_IN_FILE=$1
 OUT_FIELD_NAME=$2
 
+#
+# Handles input file regardless of if version string has trailing whitespace or
+# windows or mac or unix line termination.
+#
+# Produces output with no line termination
+#
+# Example usage:
+#	sh ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION  FullVersionString
+#	sh ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION  Major
+#	sh ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION  Major.Minor
+#
+
 #echo "-----------"
 #echo VERSION_IN_FILE=$VERSION_IN_FILE
 #echo OUT_FIELD_NAME=$OUT_FIELD_NAME
@@ -27,6 +39,10 @@ if [ "$VERSIONFINAL" != "false" ] && [ "$VERSIONFINAL" != "true" ] ; then echo "
 VERSIONFINALBUILD='0'
 if [ "$VERSIONFINAL" == "true" ] ; then VERSIONFINALBUILD="1"; fi
 
+if [ "$OUT_FIELD_NAME" == "FullVersionString" ]
+  then
+	echo -n "$FULLVERSIONSTRING"
+fi
 if [ "$OUT_FIELD_NAME" == "Major" ]
   then
 	echo -n "$MAJOR"
