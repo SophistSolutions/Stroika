@@ -9,12 +9,12 @@ OUT_FILE_TYPE=$3
 #echo OUT_FILE_TYPE=$OUT_FILE_TYPE
 #echo "-----------"
 
-FULLVERSIONSTRING=`sed 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
-MAJOR=`sed 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-MINOR=`sed 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr]\).*/\1/' $VERSION_IN_FILE`
-VERSIONSUBSTAGE=`sed 's/[0-9]*\.[0-9]*[abdr]\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONFINAL=`sed 's/[0-9]*\.[0-9]*[abdr][0-9]*\(.*\)/\1/' $VERSION_IN_FILE`
+FULLVERSIONSTRING=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE FullVersionString`
+MAJOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Major`
+MINOR=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Minor`
+VERSIONSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Stage`
+VERSIONSUBSTAGE=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE SubStage`
+VERSIONFINAL=`ScriptsLib/ExtractVersionInformation.sh $VERSION_IN_FILE Final`
 
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
 if [ "$VERSIONSTAGE" == "b" ] ; then VERSIONSTAGE="Beta"; fi
