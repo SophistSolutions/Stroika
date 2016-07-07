@@ -39,7 +39,7 @@ namespace   Stroika {
             inline  SpinLock::~SpinLock ()
             {
                 VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
-                VALGRIND_HG_ENABLE_CHECKING (&fLock_, sizeof(fLock_));
+                VALGRIND_HG_ENABLE_CHECKING (&fLock_, sizeof (fLock_));
             }
 #endif
             inline  bool    SpinLock::try_lock ()
