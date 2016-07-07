@@ -1748,14 +1748,20 @@ namespace {
             while (r) {
                 char buf[1024];
                 buf [0] = '\0';
-                if (r.getline (buf, sizeof(buf))) {
-                    const char kUidLbl [] = "Uid:";
-                    if (strncmp (buf, kUidLbl, strlen(kUidLbl)) == 0) {
-                        char* S = buf + strlen(kUidLbl);
+                if (r.getline (buf, sizeof (buf))) {
+                    constexpr char kUidLbl [] = "Uid:";
+                    if (::strncmp (buf, kUidLbl, ::strlen (kUidLbl)) == 0) {
+                        Assert (::strlen (buf) >= strlen (kUidLbl));    // because istream::getline returns valid C=string, and strncmp assures first 4 bytes match so must be NUL byte later
+                        char* S = buf + ::strlen (kUidLbl);
+                        Assert (S < std::end (buf));
                         int ruid = ::strtol (S, &S, 10);
+                        Assert (S < std::end (buf));
                         int euid = ::strtol (S, &S, 10);
+                        Assert (S < std::end (buf));
                         int suid = ::strtol (S, &S, 10);
+                        Assert (S < std::end (buf));
                         int fuid = ::strtol (S, &S, 10);
+                        Assert (S < std::end (buf));
                         result.ruid = ruid;
                     }
                 }
