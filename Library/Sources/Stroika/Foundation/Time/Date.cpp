@@ -42,11 +42,11 @@ using   namespace   Time;
 namespace   {
     SYSTEMTIME toSYSTEM_ (const Date& date)
     {
-        SYSTEMTIME  st {};
         MonthOfYear m   =   MonthOfYear::eEmptyMonthOfYear;
         DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
         Year        y   =   Year::eEmptyYear;
         date.mdy (&m, &d, &y);
+        SYSTEMTIME  st {};
         st.wYear = static_cast<WORD> (y);
         st.wMonth = static_cast<WORD> (m);
         st.wDay = static_cast<WORD> (d);
