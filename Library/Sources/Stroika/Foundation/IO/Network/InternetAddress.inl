@@ -166,17 +166,17 @@ namespace   Stroika {
                     switch (Configuration::GetEndianness ()) {
                         case    Configuration::Endian::eLittleByte:
                             return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 0, 8)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 8, 16)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 16, 24)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 24, 32))
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 16)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 24)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 32))
                                    );
                         case    Configuration::Endian::eBigByte:
                             return make_tuple<uint8_t, uint8_t, uint8_t, uint8_t> (
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 24, 32)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 16, 24)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 8, 16)),
-                                       static_cast<uint8_t> (Memory::BitSubstring_NEW (fV4_.s_addr, 0, 8))
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 24, 32)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 16, 24)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 8, 16)),
+                                       static_cast<uint8_t> (Memory::BitSubstring (fV4_.s_addr, 0, 8))
                                    );
                         default:
                             AssertNotImplemented ();

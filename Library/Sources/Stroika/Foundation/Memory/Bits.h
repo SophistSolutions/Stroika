@@ -50,12 +50,12 @@ namespace   Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      VerifyTestResult (BitSubstring_NEW (0x3, 0, 1) == 1);
-             *      VerifyTestResult (BitSubstring_NEW (0x3, 1, 2) == 1);
-             *      VerifyTestResult (BitSubstring_NEW (0x3, 2, 3) == 0);
-             *      VerifyTestResult (BitSubstring_NEW (0x3, 0, 3) == 0x3);
-             *      VerifyTestResult (BitSubstring_NEW (0xff, 0, 8) == 0xff);
-             *      VerifyTestResult (BitSubstring_NEW (0xff, 8, 16) == 0x0);
+             *      VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+             *      VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
+             *      VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
+             *      VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+             *      VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+             *      VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
              *      \endcode
              *
              *  \note   The startOffset/endOffset pattern matches that with STL iterators (not including the last item)
@@ -63,12 +63,14 @@ namespace   Stroika {
              *  \note   This was previously named TakeNBitsFrom()
              */
             template    <typename INT_TYPE>
-            constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
+            constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
+#if 0
             template    <typename INT_TYPE>
-            _Deprecated_ ("USE BitSubstring_NEW temporarily during API transition")            constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int offset, unsigned int nBits)
+            _Deprecated_ ("USE BitSubstring ")   constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
             {
-                return BitSubstring_NEW (bitField, offset, offset + nBits);
+                return BitSubstring_NEW (bitField, startOffset, endOffset);
             }
+#endif
 
 
         }

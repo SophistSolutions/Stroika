@@ -45,7 +45,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename INT_TYPE>
-            inline  constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
+            inline  constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
             {
 #if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (startOffset < endOffset);

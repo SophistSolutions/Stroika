@@ -35,7 +35,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
     DISABLE_COMPILER_MSC_WARNING_END(4996)
     int     verStage        =   static_cast<uint16_t> (verStageOctet) >> 5;
-    int     verSubStage     =   (Memory::BitSubstring_NEW (verStageOctet, 0, 5) << 7) + Memory::BitSubstring_NEW (verSubStageOctet, 1, 8);
+    int     verSubStage     =   (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
     bool    verFinal        =   verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         Execution::Throw (Execution::StringException (L"Invalid Version String"));

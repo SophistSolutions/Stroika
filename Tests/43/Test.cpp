@@ -303,12 +303,12 @@ namespace {
     void    Test_7_Bits_ ()
     {
         {
-            VerifyTestResult (BitSubstring_NEW (0x3, 0, 1) == 1);
-            VerifyTestResult (BitSubstring_NEW (0x3, 1, 2) == 1);
-            VerifyTestResult (BitSubstring_NEW (0x3, 2, 3) == 0);
-            VerifyTestResult (BitSubstring_NEW (0x3, 0, 3) == 0x3);
-            VerifyTestResult (BitSubstring_NEW (0xff, 0, 8) == 0xff);
-            VerifyTestResult (BitSubstring_NEW (0xff, 8, 16) == 0x0);
+            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
+            VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
+            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+            VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
         }
         {
             VerifyTestResult (Bit (0) == 0x1);
