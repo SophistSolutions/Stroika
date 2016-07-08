@@ -224,11 +224,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 */
-                nonvirtual  _Deprecated_("use rwget") WritableReference get ()  { return rwget (); }
-
-            public:
-                /**
                  *  \par Example Usage
                  *      auto    lockedConfigData = fConfig_.GetReference ();
                  *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
