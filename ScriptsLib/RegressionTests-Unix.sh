@@ -134,8 +134,7 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 fi
 
 
-#OK - 5 return and oen about raspberrypi build..
-TOTAL_WARNINGS_EXPECTED=6
+TOTAL_WARNINGS_EXPECTED=9
 
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
