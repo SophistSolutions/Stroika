@@ -213,7 +213,7 @@ namespace   Stroika {
                  *  \brief  get a read-only smart pointer to the underlying Synchronized<> object, holding the readlock the whole
                  *          time the temporary exists.
                  */
-                nonvirtual  const ReadableReference cget () const;
+                nonvirtual  ReadableReference cget () const;
 
             public:
                 /**
@@ -253,7 +253,7 @@ namespace   Stroika {
                  *
                  *  @see load ()
                  */
-                nonvirtual      const ReadableReference operator-> () const;
+                nonvirtual      ReadableReference operator-> () const;
 
             public:
                 /**
