@@ -1012,7 +1012,7 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
      */
     fRep_->fThreadDone_.WaitUntil (timeoutAt);
     // If not joinable, presume that means cuz its done
-    lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ };
+    lock_guard<mutex>   critSec  { fRep_->fAccessSTDThreadMutex_ };
     if (fRep_->fThread_.joinable  ()) {
         // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDone_ - it shouldn't really take long
         fRep_->fThread_.join ();
