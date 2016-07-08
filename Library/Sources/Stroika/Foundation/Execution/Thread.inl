@@ -76,6 +76,7 @@ namespace   Stroika {
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 InteruptFlagType_*      fTLSAbortFlag_ {};          // Can only be set properly within the MAINPROC of the thread
                 InteruptFlagType_*      fTLSInterruptFlag_ {};      // ""
+                mutable std::mutex      fAccessSTDThreadMutex_;     // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
                 std::thread             fThread_;
                 atomic<Status>          fStatus_;
                 WaitableEvent           fRefCountBumpedEvent_;

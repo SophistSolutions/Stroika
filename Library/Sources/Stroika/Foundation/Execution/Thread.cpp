@@ -96,7 +96,6 @@ namespace {
 }
 
 
-
 namespace {
     mutex                                       sChangeInterruptingMutex_;
     thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
@@ -321,6 +320,7 @@ namespace   Stroika {
  */
 Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Configuration>& configuration)
     : fRunnable_ (runnable)
+    , fAccessSTDThreadMutex_ ()
     , fThread_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
@@ -349,7 +349,8 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
      */
     SuppressInterruptionInContext  suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
-    (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+    // no need for  lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because already synchonized
+    (*repSharedPtr)->  = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
     }
@@ -371,6 +372,7 @@ Thread::Rep_::~Rep_ ()
      *      Separates the thread of execution from the thread object, allowing execution to continue
      *      independently. Any allocated resources will be freed once the thread exits.
      */
+    // no need for lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because already synchonized
     if (fThread_.joinable  ()) {
         fThread_.detach ();
     }
@@ -623,11 +625,13 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 
 Thread::IDType  Thread::Rep_::GetID () const
 {
+    lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ };
     return fThread_.get_id ();
 }
 
 Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 {
+    lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ };
     return fThread_.native_handle ();
 }
 
@@ -774,9 +778,9 @@ void    Thread::SetThreadPriority (Priority priority)
         if (not sValidPri_) {
             int         sched_policy;
             sched_param param;
-            Verify (pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
-            sPriorityMin_ = sched_get_priority_min (sched_policy);
-            sPriorityMax_ = sched_get_priority_max (sched_policy);
+            Verify (::pthread_getschedparam (pthread_self (), &sched_policy, &param) == 0);
+            sPriorityMin_ = ::sched_get_priority_min (sched_policy);
+            sPriorityMax_ = ::sched_get_priority_max (sched_policy);
             sValidPri_ = true;
         }
     }
@@ -853,7 +857,7 @@ void    Thread::SetThreadName (const String& threadName)
             {
                 info.dwType = 0x1000;
                 info.szName = useThreadName.c_str ();
-                info.dwThreadID = MyGetThreadId_ (fRep_->fThread_.native_handle ());
+                info.dwThreadID = MyGetThreadId_ (fRep_->GetNativeHandle ());
                 info.dwFlags = 0;
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info));
@@ -1008,8 +1012,9 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
      */
     fRep_->fThreadDone_.WaitUntil (timeoutAt);
     // If not joinable, presume that means cuz its done
+    lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ };
     if (fRep_->fThread_.joinable  ()) {
-        // this will block indefinitely - but if a timeout was specified
+        // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDone_ - it shouldn't really take long
         fRep_->fThread_.join ();
     }
 }
@@ -1030,7 +1035,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
     while (GetStatus () != Thread::Status::eCompleted) {
         DurationSecondsType     time2Wait   =   timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
-            Throw (TimeOutException ());
+            Throw (TimeOutException::kThe);
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, { thread }, time2Wait);
     }
