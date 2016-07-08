@@ -350,7 +350,7 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     SuppressInterruptionInContext  suppressInterruptionsOfThisThreadWhileConstructingOtherElseLoseSharedPtrEtc;
 
     // no need for  lock_guard<mutex>   critSec  { fAccessSTDThreadMutex_ }; because already synchonized
-    (*repSharedPtr)->  = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+    (*repSharedPtr)->fThread_  = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
     }
