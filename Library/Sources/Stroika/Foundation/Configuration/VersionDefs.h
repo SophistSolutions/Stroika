@@ -83,6 +83,15 @@ namespace   Stroika {
             /**
              *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
              *      @see Binary32BitFullVersionType for bit layout
+             *
+             *  \par Example Usage
+             *      \code
+             *          #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 156, 0)
+             *              use new function;
+             *          #else
+             *              use older API
+             *          #endif
+             *      \endcode
              */
 #define Stroika_Make_FULL_VERSION(_Major_,_Minor_,_Stage_,_SubStage_,_FinalBuild_)\
     ( (_Major_ << 24) | \
