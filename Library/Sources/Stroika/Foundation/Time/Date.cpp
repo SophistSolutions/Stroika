@@ -418,11 +418,6 @@ String Date::Format (PrintFormat pf) const
                 DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
                 Year        y   =   Year::eEmptyYear;
                 mdy (&m, &d, &y);
-#if     qSupportValgrindQuirks
-                // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
-                // -- LGP 2012-05-19
-                memset (buf, 0, sizeof(buf));
-#endif
                 Verify (::swprintf (buf, NEltsOf (buf), L"%04d-%02d-%02d", y, m, d) == 10);
                 return buf;
             }
@@ -444,11 +439,6 @@ String Date::Format (PrintFormat pf) const
                 DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
                 Year        y   =   Year::eEmptyYear;
                 mdy (&m, &d, &y);
-#if     qSupportValgrindQuirks
-                // Makes little sense - even buf[0] not sufficient - but this silences lots of warnings.
-                // -- LGP 2012-05-19
-                memset (buf, 0, sizeof(buf));
-#endif
                 Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
                 return buf;
             }

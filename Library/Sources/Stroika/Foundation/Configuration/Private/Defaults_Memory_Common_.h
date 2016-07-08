@@ -11,13 +11,4 @@
  */
 
 
-/*
- * See DOCS in Stroika/Foundation/Memory/Common.h
- */
-#if     !defined (qSupportValgrindQuirks)
-#define qSupportValgrindQuirks   0
-#endif
-
-
-
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Memory_Common_h_*/

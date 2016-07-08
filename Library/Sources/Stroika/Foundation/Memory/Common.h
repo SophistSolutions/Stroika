@@ -18,19 +18,6 @@
 
 
 
-/*
-@CONFIGVAR:     qSupportValgrindQuirks
-@DESCRIPTION:   <p>The qSupportValgrindQuirks macro is '1' if Stroika is compiled to use Valgrind,
-            and if ndefined this will help workaround some of
-            Valgrinds false-positive reporting.</p>
-*/
-#if     !defined (qSupportValgrindQuirks)
-#error  "qSupportValgrindQuirks should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {

@@ -93,12 +93,6 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
     }
 #endif
 
-#if     qSupportValgrindQuirks
-    // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
-    // -- LGP 2012-05-19
-    memset (msgBuf, 0, sizeof (msgBuf[0]) * msgBuf.GetSize());
-#endif
-
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
     // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
