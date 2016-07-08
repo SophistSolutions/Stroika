@@ -51,7 +51,7 @@ void    IOWaitDispatcher::Add (Socket s)
 void    IOWaitDispatcher::AddAll (const Set<Socket>& s)
 {
     {
-        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        auto rwLock = fSocketFDBijection_.rwget ();      // assure these keep fWaiter_ synconized which is why in same lock
         s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, cvt_ (si.GetNativeSocket ())); });
         fWaiter_.AddAll (s);
     }
@@ -66,7 +66,7 @@ void    IOWaitDispatcher::Remove (Socket s)
 void    IOWaitDispatcher::RemoveAll (const Set<Socket>& s)
 {
     {
-        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        auto rwLock = fSocketFDBijection_.rwget ();      // assure these keep fWaiter_ synconized which is why in same lock
         s.Apply ([&rwLock] (Socket si) { rwLock->RemoveDomainElement (si); });
         fWaiter_.RemoveAll (s);
     }
@@ -75,7 +75,7 @@ void    IOWaitDispatcher::RemoveAll (const Set<Socket>& s)
 
 void    IOWaitDispatcher::clear ()
 {
-    auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+    auto rwLock = fSocketFDBijection_.rwget ();      // assure these keep fWaiter_ synconized which is why in same lock
     rwLock->clear ();
     fWaiter_.clear ();
 }
@@ -88,7 +88,7 @@ Set<Socket> IOWaitDispatcher::GetSockets () const
 void       IOWaitDispatcher::SetSockets (const Set<Socket>& s)
 {
     {
-        auto rwLock = fSocketFDBijection_.GetReference ();      // assure these keep fWaiter_ synconized which is why in same lock
+        auto rwLock = fSocketFDBijection_.rwget ();      // assure these keep fWaiter_ synconized which is why in same lock
         rwLock->clear ();
         s.Apply ([&rwLock] (Socket si) { rwLock->Add (si, cvt_ (si.GetNativeSocket ())); });
         fWaiter_.SetDescriptors (s);

@@ -203,7 +203,7 @@ namespace   Stroika {
              *
              *      shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder) const
              *      {
-             *           auto lockedCache = sCachedScanFoldersDetails_.GetReference ();
+             *           auto lockedCache = sCachedScanFoldersDetails_.rwget ();
              *           if (Optional<FolderDetails_> o  = lockedCache->Lookup (folder)) {
              *                  return *o;
              *           }

@@ -98,7 +98,7 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         Debug::TraceContextBumper ctx ("Logger::Rep_::FlushDupsWarning_");
 #endif
         shared_ptr<IAppenderRep> tmp =   fAppender_;   // avoid races and critical sections (appender internally threadsafe)
-        auto    lastMsgLocked = fLastMsg_.GetReference ();
+        auto    lastMsgLocked = fLastMsg_.rwget ();
         if (lastMsgLocked->fRepeatCount_ > 0) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"fLastMsg_.fRepeatCount_ = %d", lastMsgLocked->fRepeatCount_);
@@ -162,7 +162,7 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                             }
                         }
                         {
-                            auto    lastMsgLocked = useRepInThread->fLastMsg_.GetReference ();
+                            auto    lastMsgLocked = useRepInThread->fLastMsg_.cget ();
                             if (lastMsgLocked->fRepeatCount_ > 0 and lastMsgLocked->fLastSentAt + suppressDuplicatesThreshold < Time::GetTickCount ()) {
                                 IgnoreExceptionsExceptThreadAbortForCall (useRepInThread->FlushDupsWarning_ ());
                             }
@@ -258,7 +258,7 @@ void    Logger::Log_ (Priority logLevel, const String& msg)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
         if (fRep_->fSuppressDuplicatesThreshold_.cget ()->IsPresent ()) {
-            auto    lastMsgLocked = fRep_->fLastMsg_.GetReference ();
+            auto    lastMsgLocked = fRep_->fLastMsg_.rwget ();
             if (p == lastMsgLocked->fLastMsgSent_) {
                 lastMsgLocked->fRepeatCount_++;
                 lastMsgLocked->fLastSentAt = Time::GetTickCount ();

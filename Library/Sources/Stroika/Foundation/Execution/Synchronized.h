@@ -211,21 +211,10 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief  get a read-only smart pointer to the underlying Synchronized<> object, holding the readlock the whole
-                 *          time the temporary exists.
-                 */
-                nonvirtual  ReadableReference cget () const;
-
-            public:
-                /**
-                 *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
-                 *          time the temporary exists.
-                 */
-                nonvirtual  WritableReference rwget ();
-
-            public:
-                /**
+                 *          time the return (often temporary) ReadableReference exists.
+                 *
                  *  \par Example Usage
-                 *      auto    lockedConfigData = fConfig_.GetReference ();
+                 *      auto    lockedConfigData = fConfig_.cget ();
                  *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
                  *      fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
                  *
@@ -236,8 +225,27 @@ namespace   Stroika {
                  *
                  *  Except that the former only does the lock once, and works even with a non-recursive mutex.
                  */
-                nonvirtual  const WritableReference GetReference () const;
-                nonvirtual  WritableReference GetReference ();
+                nonvirtual  ReadableReference cget () const;
+
+            public:
+                /**
+                 *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
+                 *          time the (often temporary) WritableReference exists.
+                 */
+                nonvirtual  WritableReference rwget ();
+
+            public:
+                /**
+                 */
+                _Deprecated_ ("USE cget ") const WritableReference GetReference () const
+                {
+                    auto nonConstThis = const_cast<Synchronized<T, TRAITS>*> (this);
+                    return WritableReference (&nonConstThis->fDelegate_, &nonConstThis->fLock_);
+                }
+                _Deprecated_ ("USE rwget ") WritableReference GetReference ()
+                {
+                    return WritableReference (&fDelegate_, &fLock_);
+                }
 
             public:
                 /*

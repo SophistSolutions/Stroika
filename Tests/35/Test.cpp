@@ -314,7 +314,7 @@ namespace   {
                 {
                     syncofint*  argP    =   reinterpret_cast<syncofint*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        syncofint::WritableReference r =    argP->GetReference ();
+                        syncofint::WritableReference r =    argP->rwget ();
                         int tmp = r;
                         Execution::Sleep (.01);
                         //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());

@@ -46,7 +46,7 @@ namespace {
         ~ErrStringIniter_ ()
         {
             if (sNamesSupported_) {
-                auto l = sNamesLoaded_.GetReference ();
+                auto l = sNamesLoaded_.rwget ();
                 if (static_cast<bool> (l)) {
                     ERR_free_strings ();
                     l = false;
@@ -57,7 +57,7 @@ namespace {
     void    LoadStringsIfNeeded_ ()
     {
         if (not sNamesLoaded_ and sNamesSupported_) {
-            auto l = sNamesLoaded_.GetReference ();
+            auto l = sNamesLoaded_.rwget ();
             if (not static_cast<bool> (l)) {
                 ERR_load_crypto_strings ();
                 //SSL_load_error_strings ();
@@ -114,13 +114,13 @@ bool    Exception::GetNamesSupported ()
 
 void    Exception::SetNamesSupported (bool openSSLStringsSupported)
 {
-    auto l = sNamesSupported_.GetReference ();
+    auto l = sNamesSupported_.rwget ();
     if (static_cast<bool> (l) != openSSLStringsSupported) {
         if (openSSLStringsSupported) {
             // nothing todo - just
         }
         else {
-            auto l = sNamesLoaded_.GetReference ();
+            auto l = sNamesLoaded_.rwget ();
             if (static_cast<bool> (l)) {
                 ERR_free_strings ();
                 l = false;
