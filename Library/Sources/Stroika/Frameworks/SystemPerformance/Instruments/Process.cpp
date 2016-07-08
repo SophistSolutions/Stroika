@@ -1640,13 +1640,13 @@ namespace {
                 char buf[1024];
                 buf [0] = '\0';
                 if (r.getline (buf, sizeof(buf))) {
-                    const char kReadLbl_ [] = "read_bytes:";
-                    const char kWriteLbl_ [] = "write_bytes:";
-                    if (strncmp (buf, kReadLbl_, strlen (kReadLbl_)) == 0) {
-                        result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + strlen (kReadLbl_));
+                    constexpr char kReadLbl_ [] = "read_bytes:";
+                    constexpr char kWriteLbl_ [] = "write_bytes:";
+                    if (::strncmp (buf, kReadLbl_, ::strlen (kReadLbl_)) == 0) {
+                        result.read_bytes = Characters::CString::String2Int<decltype (result.read_bytes)> (buf + ::strlen (kReadLbl_));
                     }
-                    else if (strncmp (buf, kWriteLbl_, strlen (kWriteLbl_)) == 0) {
-                        result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + strlen (kWriteLbl_));
+                    else if (::strncmp (buf, kWriteLbl_, ::strlen (kWriteLbl_)) == 0) {
+                        result.write_bytes = Characters::CString::String2Int<decltype (result.write_bytes)> (buf + ::strlen (kWriteLbl_));
                     }
                 }
             }
@@ -1718,14 +1718,14 @@ namespace {
                 buf [0] = '\0';
                 if (r.getline (buf, sizeof (buf))) {
                     // I think always in KB
-                    const char kPrivate1Lbl_ [] = "Private_Clean:";
-                    const char kPrivate2Lbl_ [] = "Private_Dirty:";
+                    constexpr char kPrivate1Lbl_ [] = "Private_Clean:";
+                    constexpr char kPrivate2Lbl_ [] = "Private_Dirty:";
                     // @todo - SHOULD pay attention to the labelm after the number. It may not always be kB? BUt not sure what it can be
-                    if (strncmp (buf, kPrivate1Lbl_, strlen (kPrivate1Lbl_)) == 0) {
+                    if (::strncmp (buf, kPrivate1Lbl_, ::strlen (kPrivate1Lbl_)) == 0) {
                         result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate1Lbl_)) * 1024;
                     }
-                    else if (strncmp (buf, kPrivate2Lbl_, strlen (kPrivate2Lbl_)) == 0) {
-                        result += Characters::CString::String2Int<MemorySizeType> (buf + strlen (kPrivate2Lbl_)) * 1024;
+                    else if (::strncmp (buf, kPrivate2Lbl_, ::strlen (kPrivate2Lbl_)) == 0) {
+                        result += Characters::CString::String2Int<MemorySizeType> (buf + ::strlen (kPrivate2Lbl_)) * 1024;
                     }
                 }
             }
