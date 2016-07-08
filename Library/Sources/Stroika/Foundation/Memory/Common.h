@@ -62,7 +62,7 @@ namespace   Stroika {
             template    <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
             inline  constexpr size_t    NEltsOf_REAL_(const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
             {
-                return (SIZE_OF_ARRAY);
+                return SIZE_OF_ARRAY;
             }
 // after testing - do this - cuz otherwise use in constant array arg wont work
 #define NEltsOf(X)      Stroika::Foundation::Memory::NEltsOf_REAL_(X)
