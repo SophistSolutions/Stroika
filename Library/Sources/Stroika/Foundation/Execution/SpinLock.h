@@ -39,7 +39,12 @@ namespace   Stroika {
              */
             class   SpinLock {
             public:
-                SpinLock ();
+                /**
+                 *  In typical usage, one would use a SpinLock as a mutex, and expect it to create a memory fence.
+                 *  However, sometimes you want to spinlock and handle the memory ordering yourself. So that feature
+                 *  is optional (defaulting to the safer, but slower - true).
+                 */
+                SpinLock (bool threadFence = true);
                 SpinLock (const SpinLock&) = delete;
 
 #if     qStroika_FeatureSupported_Valgrind
@@ -64,6 +69,9 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    unlock ();
+
+            private:
+                bool    fThreadFence_;
 
             private:
                 atomic_flag fLock_;

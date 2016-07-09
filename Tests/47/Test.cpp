@@ -1535,7 +1535,7 @@ namespace   {
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             18900,
-            .42,
+            .6,
             &failedTests
         );
 #endif
@@ -1639,7 +1639,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}  , L"MemoryStream<Characters::Character>",
         244000,
-        3.0,
+        3.1,
         &failedTests
         );
 #endif

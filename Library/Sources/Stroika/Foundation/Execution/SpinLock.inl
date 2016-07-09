@@ -22,9 +22,10 @@ namespace   Stroika {
              ******************************** Execution::SpinLock ***************************
              ********************************************************************************
              */
-            inline  SpinLock::SpinLock ()
+            inline  SpinLock::SpinLock (bool threadFence)
+                : fThreadFence_ (threadFence)
 #if     !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                : fLock_ (ATOMIC_FLAG_INIT)
+                , fLock_ (ATOMIC_FLAG_INIT)
 #endif
             {
 #if     qStroika_FeatureSupported_Valgrind
@@ -57,6 +58,16 @@ namespace   Stroika {
                     VALGRIND_HG_MUTEX_LOCK_POST (&fLock_);
                 }
 #endif
+                if (result and fThreadFence_) {
+                    /*
+                     *  https://stroika.atlassian.net/browse/STK-494
+                     *
+                     *  According to http://www.boost.org/doc/libs/1_54_0/doc/html/atomic/usage_examples.html#boost_atomic.usage_examples.example_spinlock
+                     *  it makes sense to use memory_order_acquire, but that doesn't seem right, as the
+                     *  lock could protect reading or writing another memory area.
+                     */
+                    std::atomic_thread_fence (std::memory_order_seq_cst);
+                }
                 return result;
             }
             inline  void    SpinLock::lock ()
