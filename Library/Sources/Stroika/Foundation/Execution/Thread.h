@@ -687,6 +687,20 @@ namespace   Stroika {
             void    CheckForThreadInterruption ();
 
 
+            /*
+             *  Avoid interference with Windows SDK headers. I hate macros
+             */
+#ifdef Yield
+#undef Yield
+#endif
+
+
+            /**
+             *  \brief calls CheckForThreadInterruption, and std::this_thread::yield ()
+             */
+            dont_inline void    Yield ();
+
+
 #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
             /**
              */

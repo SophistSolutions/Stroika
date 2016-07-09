@@ -1161,3 +1161,24 @@ void    Execution::CheckForThreadInterruption ()
     }
 #endif
 }
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************* Execution::Yield *****************************
+ ********************************************************************************
+ */
+void    Execution::Yield ()
+{
+    /*
+     *  Check before so we abort more quickly, and after since while we were sleeping we could be interupted.
+     *  And this (yeild) happens at a non-time critical point, so though checking before and after is redudnant,
+     *  not importantly
+     */
+    CheckForThreadInterruption ();
+    std::this_thread::yield ();
+    CheckForThreadInterruption ();
+}
