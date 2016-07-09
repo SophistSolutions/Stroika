@@ -18,6 +18,16 @@ namespace   Stroika {
 
 
             /*
+             *  Avoid interference with Windows SDK headers. I hate macros
+             */
+#ifdef Yield
+#undef Yield
+#endif
+            // Avoid mutual include
+            void    Yield ();   // from Thread.h
+
+
+            /*
              ********************************************************************************
              ******************************** Execution::SpinLock ***************************
              ********************************************************************************
@@ -74,7 +84,7 @@ namespace   Stroika {
             {
                 // Acquire lock. If / when fails, yield processor to avoid too much busy waiting.
                 while (not try_lock ()) {
-                    Yield_ ();
+                    Yield ();
                 }
             }
             inline  void    SpinLock::unlock ()

@@ -96,11 +96,6 @@ namespace   Stroika {
             private:
                 atomic_flag fLock_;
                 //atomic_flag fLock_ { ATOMIC_FLAG_INIT };
-
-            private:
-                // put in private subroutine instead of directly calling cuz MSVC impl is inline and
-                // makes call-point larger, and we dont want this inlined (performance impact)
-                static  dont_inline void    Yield_ ();
             };
 
 

@@ -12,15 +12,3 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
-
-
-/*
- ********************************************************************************
- ************************** Execution::SpinLock *********************************
- ********************************************************************************
- */
-void    SpinLock::Yield_ ()
-{
-    std::this_thread::yield ();
-    CheckForThreadInterruption<100> ();
-}
