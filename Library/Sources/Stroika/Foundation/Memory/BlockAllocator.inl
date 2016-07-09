@@ -29,7 +29,7 @@
  *
  *  STILL EXPERIMENTAL< but appears to be working well so leave on by default
  */
-#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   0
+//#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   0
 #if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseLockFree_)
 #define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   1
 #endif
