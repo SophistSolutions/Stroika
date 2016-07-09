@@ -42,8 +42,8 @@ namespace   Stroika {
              *  This is also similar to the @see ModuleInit<> template, except that this is intended to give the
              *  user tighter control over lifetime of the shared data.
              *
-             *  Example usage (from HealthFrameWorksServer):
-             *
+             *  \par Example Usage
+             *      \code
              *              class   AuditLogSink {
              *                  ...
              *                  private:
@@ -65,6 +65,7 @@ namespace   Stroika {
              *                      fCleanupThread.AbortAndWaitForDone ();
              *                  }
              *              };
+             *      \endcode
              *
              *  So then on the first AuditLogSink construction - we construct the cleanup thread, and on the last the
              *  thread is shutdown. If these objects are all created after main, this assures the thread startup/cleanup
