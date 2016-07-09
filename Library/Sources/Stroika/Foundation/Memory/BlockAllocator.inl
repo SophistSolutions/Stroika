@@ -205,9 +205,9 @@ namespace   Stroika {
                     // make op new inline for MOST important case
                     // were alloc is cheap linked list operation...
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                    static  std::atomic<void*>   sNextLink_;
+                    static  std::atomic<void*>   sHeadLink_;
 #else
-                    static  void*   sNextLink_;
+                    static  void*   sHeadLink_;
 #endif
                 };
 
@@ -229,11 +229,11 @@ namespace   Stroika {
 
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
                 /*
-                 *  Note - once we have stored Private_::kLockedSentinal_ in the sNextLink_ and gotten back something other than that, we
+                 *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
                  *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
                  */
 again:
-                void*   p = sNextLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+                void*   p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
@@ -252,7 +252,7 @@ again:
                  */
                 static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
                 void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
-                Verify (sNextLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+                Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
                 return result;
 #else
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -264,15 +264,15 @@ again:
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
                  */
-                if (sNextLink_ == nullptr) {
-                    sNextLink_ = GetMem_Util_ (SIZE);
+                if (sHeadLink_ == nullptr) {
+                    sHeadLink_ = GetMem_Util_ (SIZE);
                 }
-                void*   result = sNextLink_;
+                void*   result = sHeadLink_;
                 AssertNotNull (result);
                 /*
                  * treat this as a linked list, and make head point to next member
                  */
-                sNextLink_ = (*(void**)sNextLink_);
+                sHeadLink_ = (*(void**)sHeadLink_);
                 return result;
 #endif
             }
@@ -283,11 +283,11 @@ again:
                 RequireNotNull (p);
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
                 /*
-                 *  Note - once we have stored Private_::kLockedSentinal_ in the sNextLink_ and gotten back something other than that, we
+                 *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
                  *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
                  */
 again:
-                void*   prevHead = sNextLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
+                void*   prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
@@ -301,9 +301,9 @@ again:
                 static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
                 void*   newHead =   p;
                 reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
-                Verify (sNextLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+                Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
 #else
-                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
+                Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sHeadLink_);
 #endif
 #if     qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
@@ -327,7 +327,7 @@ again:
                 std::vector<void*> links;
                 try {
                     links.reserve (kChunks * 2);
-                    void*   link = sNextLink_;
+                    void*   link = sHeadLink_;
                     while (link != nullptr) {
                         // probably should use Containers::ReserveSpeedTweekAddN - but want to avoid embrace of dependencies
                         if (links.size () == links.capacity ()) {
@@ -378,10 +378,10 @@ again:
                 }
 
                 // finally, clean up the pool. The head link is probably wrong, and the elements are no longer linked up correctly
-                sNextLink_ = (links.size () == 0) ? nullptr : links[0];
+                sHeadLink_ = (links.size () == 0) ? nullptr : links[0];
                 if (links.size () != originalSize and links.size () > 0) {
                     // we delete some, which means that the next pointers are bad
-                    void**  curLink     =   (void**)sNextLink_;
+                    void**  curLink     =   (void**)sHeadLink_;
                     for (size_t i = 1; i < links.size (); i++) {
                         *curLink = links[i];
                         curLink = (void**)*curLink;
@@ -392,9 +392,9 @@ again:
             }
             template    <size_t SIZE>
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-            std::atomic<void*>   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
+            std::atomic<void*>   Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
 #else
-            void*   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
+            void*   Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
 #endif
 
 
