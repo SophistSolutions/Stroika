@@ -392,9 +392,9 @@ again:
             }
             template    <size_t SIZE>
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-            std::atomic<void*>   Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
+            std::atomic<void*>  Private_::BlockAllocationPool_<SIZE>::sHeadLink_    { nullptr };
 #else
-            void*   Private_::BlockAllocationPool_<SIZE>::sHeadLink_ = nullptr;
+            void*               Private_::BlockAllocationPool_<SIZE>::sHeadLink_    { nullptr };
 #endif
 
 
