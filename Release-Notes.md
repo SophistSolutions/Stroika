@@ -23,6 +23,53 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156x</a><br/>2016-07-09???</td>
+<td>
+	<ul>
+	<li>DRAFTDOCS</li>
+		<li>SpinLock
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional bool threadFence = true -
+				option to SpinLock CTOR (may fix/address bug on ARM / BLKQCL device - malloc corruption)</li>
+				<li>use qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex  - and set TRUE for msvc, and false for other compilers cuz gcc faster with mutex (limited testing) - change due to memory fence - slows down more on unix/gcc</li>
+			</ul>
+		</li>
+		<li>thread code - fAccessSTDThreadMutex_ to protect access to fThread_ - handles a rare race detected by Helgrind on UNIX</li>
+		<li>docs and support FullVersionString opt for ScriptsLib/ExtractVersionInformation.sh, and whitespace fix</li>
+		<li>{NOT BACKWARD COMPAT}:renamed BitSubstring_NEW to BitSubstring, and BitSubstring_NEW still around breifly deprecated</li>
+		<li>Assertions/Tweaks/Cleanups in SystemPerformance/Instruments/Process</li>
+		<li>lose obsolete qSupportValgrindQuirks - from a much earlier attempt at valgrind supprot - these hacks no longer needed</li>
+		<li>Synchnonized
+			<ul>
+				<li>Lose deprecated Synchonized<>::get()</li>
+				<li>Synchonized operator-> and cget() return non-const ReadableReference - so it can be moved. Safe to return non-const ebcause no non-const methods on ReadableReference anyhow (no way to modify data) - just allows moving the reference (handy in many cases)</li>
+				<li>deprecated Synchonized<> :: GetReference() - use rwget/cget instead</li>
+			</ul>
+		</li>
+		<li>added (test case) valgrind / helgrind on Samples_SystemPerformanceClient</li>
+		<li>Added PerformanceDump-v2.0a156-x86-vs2k15-ReleaseU.txt and PerformanceDump-v2.0a156-linux-gcc-6.1.0-x64.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile 2 raspberry-pi</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 
 <tr>
