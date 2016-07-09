@@ -42,7 +42,7 @@ namespace   Stroika {
              */
 #ifndef     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
 #if         defined (_MSC_VER)
-#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    0
+#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    1
 #else
 #define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    0
 #endif
