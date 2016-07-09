@@ -116,6 +116,19 @@ fi
 
 
 
+#HELGRIND ON SYSPERFORM (experimental - must find better way)
+if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
+	echo -n "Run-Samples_SystemPerformanceClient VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..."
+	echo "$PREFIX_OUT_LABEL" "Run-Samples_SystemPerformanceClient VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..." >>$TEST_OUT_FILE 2>&1
+	STAGE_STARTAT_INT=$(date +%s)
+	valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=$TEST_OUT_FILE  Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Samples_SystemPerformanceClient 2>&1 > /dev/null
+	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+else
+	echo "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS"
+	echo "$PREFIX_OUT_LABEL" "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_HELGRIND_TESTS=$INCLUDE_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
+fi
 
 
 echo "Regression Tests Summary:"
