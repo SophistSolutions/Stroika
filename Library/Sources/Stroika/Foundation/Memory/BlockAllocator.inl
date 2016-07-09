@@ -17,6 +17,7 @@
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Valgrind.h"
 #include    "../Execution/Common.h"
+#include    "../Execution/SpinLock.h"
 
 #include    "Common.h"
 
@@ -30,11 +31,7 @@
  *  spinning. And we could reduce this further during mallocs of new blocks.
  */
 #if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   1
-#endif
-
-#if    qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
-#include    "../Execution/SpinLock.h"
+#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
 #endif
 
 

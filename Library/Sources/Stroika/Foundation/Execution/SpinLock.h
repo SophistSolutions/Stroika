@@ -30,13 +30,33 @@ namespace   Stroika {
 
 
             /**
-             *  Implementation based on
-             *      http://en.cppreference.com/w/cpp/atomic/atomic_flag
+             *  SpinLock and mutex can be nearly used interchangeably. Often types, users will want to define a typedef which selects
+             *  the faster implementation.
              *
-             *  About to run tests to compare performance numbers. But this maybe useful for at least some(many) cases.
+             *  \note   Stroika 2.0a155 and earlier - qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex was always true
              *
-             *  Note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
+             *  \note   Stroika 2.0a156 and later - due to threadFence and https://stroika.atlassian.net/browse/STK-494 - SpinLock
+             *          may not be faster (in limited testing appears worse). Note - this was tested in non-multithreading code
+             *          so sort of a worst case. With gcc-6.1.0-release-c++17/Test47, the mutex versus SpinLock test was 20% slower.
+             *          Still much faster on windows (1/2 time)
              */
+#ifndef     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+#if         defined (_MSC_VER)
+#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    0
+#else
+#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    0
+#endif
+#endif
+
+
+            /**
+              *  Implementation based on
+              *      http://en.cppreference.com/w/cpp/atomic/atomic_flag
+              *
+              *  About to run tests to compare performance numbers. But this maybe useful for at least some(many) cases.
+              *
+              *  Note - SpinLock - though generally faster than most mutexes for short accesses, are not recursive mutexes!
+              */
             class   SpinLock {
             public:
                 /**
