@@ -523,7 +523,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #ifndef qCompilerAndStdLib_constexpr_constant_pointer_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #else
 #define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
 #endif

@@ -100,7 +100,7 @@ namespace   Stroika {
                  *  so go ahead and complete the operation.
                  */
 #if     qCompilerAndStdLib_constexpr_constant_pointer_Buggy
-                const       void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
+                void* const          kLockedSentinal_    =   (void*)1; // any invalid pointer
 #else
                 constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
 #endif
