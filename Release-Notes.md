@@ -33,6 +33,8 @@ History
 				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional bool threadFence = true -
 				option to SpinLock CTOR (may fix/address bug on ARM / BLKQCL device - malloc corruption)</li>
 				<li>use qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex  - and set TRUE for msvc, and false for other compilers cuz gcc faster with mutex (limited testing) - change due to memory fence - slows down more on unix/gcc</li>
+				<li>This fix (494) noticably slowed regtests (5-10%)</li>
+				<li>Added qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ code - which undid much of the loss, but still probably a few percent slower than v2.0a155 (depending on what you measure)</li>
 			</ul>
 		</li>
 		<li>thread code - fAccessSTDThreadMutex_ to protect access to fThread_ - handles a rare race detected by Helgrind on UNIX</li>
