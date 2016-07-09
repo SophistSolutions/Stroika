@@ -279,6 +279,27 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+/*
+1>..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp(15): error C2143: syntax error: missing ';' before '<end Parse>'
+1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\BlockAllocator.inl(398): note: while compiling class template static data member 'std::atomic<void *> Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::sHeadLink_' (compiling source file ..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp)
+1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\BlockAllocator.inl(281): note: while compiling class template member function 'void Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::Deallocate(void *) noexcept' (compiling source file ..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp)
+*/
+#ifndef qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy
+
+#if     defined (_MSC_VER)
+// still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
+#else
+#define qCompilerAndStdLib_constexpr_atomic_ptr_null_initializer_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
 /*
 */
 #ifndef qCompilerAndStdLib_is_trivially_copyable_Buggy
