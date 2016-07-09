@@ -43,7 +43,7 @@ namespace   Stroika {
 
                     /**
                      *  \note   Configuration::DefaultNames<> supported
-                     *  \note   These print names are mostly for display and debugging purposes, and they are not gauranteed to be safe for
+                     *  \note   These print names are mostly for display and debugging purposes, and they are not guarantied to be safe for
                      *          persistence (so be sure to version).
                      */
                     enum    BlockDeviceKind {

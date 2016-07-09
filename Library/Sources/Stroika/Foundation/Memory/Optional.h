@@ -213,7 +213,7 @@ namespace   Stroika {
              *  \note   \em Design-Note - Internal pointers
              *      -   Several APIs return internal pointers - both const and non-const. Because of this
              *          it up to callers to assure thread-safety. The lifetime of the returned pointers
-             *          is gauranteed only until the start of the next call on a the particular
+             *          is guarantied only until the start of the next call on a the particular
              *          Optional<> instance.
              *      -   Why we allow internal pointers to be returned from
              *          get (), operator-> (), and operator* ().

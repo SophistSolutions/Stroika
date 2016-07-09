@@ -194,7 +194,7 @@ void    StyleMarkerSummarySink::CombineElements (StyledTextImager::RunElement* r
 @METHOD:        StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary
 @DESCRIPTION:   <p>Create a vector of @'StyledTextImager::RunElement's. Each of these contains a list of
             marker objects for the region and a length field. The elements are returned in VIRTUAL (LTR display)
-            order - NOT logical (internal memory buffer) order. The elements are gauranteed not to cross
+            order - NOT logical (internal memory buffer) order. The elements are guarantied not to cross
             any directional boundaries (as returned from the @'TextLayoutBlock::GetScriptRuns' API)</p>
 */
 vector<StyledTextImager::RunElement>    StyledTextImager::StyleMarkerSummarySink::ProduceOutputSummary () const
