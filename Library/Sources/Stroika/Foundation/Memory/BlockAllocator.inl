@@ -228,8 +228,12 @@ namespace   Stroika {
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                /*
+                 *  Note - once we have stored Private_::kLockedSentinal_ in the sNextLink_ and gotten back something other than that, we
+                 *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
+                 */
 again:
-                void*   p = sNextLink_.exchange (Private_::kLockedSentinal_);
+                void*   p = sNextLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
@@ -242,11 +246,13 @@ again:
                 void*   result = p;
                 AssertNotNull (result);
                 /*
-                 * treat this as a linked list, and make head point to next member
+                 *  Treat this as a linked list, and make head point to next member.
+                 *
+                 *  Use atomic_load to guarantee the value not loaded from cache line not shared across threads.
                  */
-                p = (*(void**)p);
-
-                Verify (sNextLink_.exchange (p) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+                static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
+                void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
+                Verify (sNextLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
                 return result;
 #else
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -276,16 +282,26 @@ again:
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
 #if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                /*
+                 *  Note - once we have stored Private_::kLockedSentinal_ in the sNextLink_ and gotten back something other than that, we
+                 *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
+                 */
 again:
-                void*   prevHead = sNextLink_.exchange (Private_::kLockedSentinal_);
+                void*   prevHead = sNextLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
                     Execution::Yield ();
                     goto again;
                 }
-                // push p onto the head of linked free list
-                (*(void**)p) = prevHead;
-                Verify (sNextLink_.exchange (p) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+                /*
+                 *  Push p onto the head of linked free list.
+                 *
+                 *  Use atomic to guarantee the value not pushed to RAM so shared across threads.
+                 */
+                static_assert (sizeof (void*) == sizeof(atomic<void*>), "atomic doesnt change size");
+                void*   newHead =   p;
+                reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
+                Verify (sNextLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
 #else
                 Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
 #endif
