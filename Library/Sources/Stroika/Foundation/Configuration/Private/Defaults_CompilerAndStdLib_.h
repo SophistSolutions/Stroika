@@ -516,6 +516,22 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 
 
+/*
+/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Library/Sources/Stroika/Foundation/Traversal/../Characters/../Containers/../Memory/BlockAllocator.inl:102:37: error: constexpr variable 'kLockedSentinal_' must be initialized by a constant expression
+                constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
+*/
+#ifndef qCompilerAndStdLib_constexpr_constant_pointer_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 7)))
+#else
+#define qCompilerAndStdLib_constexpr_constant_pointer_Buggy     0
+#endif
+
+
+#endif
+
+
 
 /**
  */
