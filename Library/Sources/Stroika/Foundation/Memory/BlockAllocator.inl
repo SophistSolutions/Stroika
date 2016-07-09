@@ -23,6 +23,17 @@
 
 
 
+
+/**
+ *  EXPERIMENTAL
+ */
+//#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   1
+#if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseLockFree_)
+#define qStroika_Foundation_Memory_BlockAllocator_UseLockFree_   0
+#endif
+
+
+
 /*
  *  qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the
  *  performance regression test indicated that this helped considerably).
@@ -31,7 +42,7 @@
  *  spinning. And we could reduce this further during mallocs of new blocks.
  */
 #if     !defined (qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_   !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
 #endif
 
 
@@ -60,12 +71,24 @@ namespace   Stroika {
 
             namespace   Private_ {
 
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                /**
+                 *  Basic idea is to use a sentinal value to indicate LOCKED - and use atomic exchange, with
+                 *  the head of list pointer.
+                 *
+                 *  If we exchange and get the sentinal, we didnt get the lock so retry.
+                 *
+                 *  If don't get the sentinal, we have the lock (and stored the sentinal so nobody else will get the lock)
+                 *  so go ahead and complete the operation.
+                 */
+                constexpr   void*   kLockedSentinal_    =   (void*)1;   // any invalid pointer
+#else
                 struct  BlockAllocator_ModuleInit_ {
                     BlockAllocator_ModuleInit_ ();
                     ~BlockAllocator_ModuleInit_ ();
                 };
 
-#if    qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
+#if     qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
                 using LockType_ = Execution::SpinLock;
 #else
                 using LockType_ = mutex;
@@ -79,6 +102,7 @@ namespace   Stroika {
                 }
 
                 void    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+#endif
 
             }
 
@@ -162,7 +186,11 @@ namespace   Stroika {
                 private:
                     // make op new inline for MOST important case
                     // were alloc is cheap linked list operation...
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                    static  std::atomic<void*>   sNextLink_;
+#else
                     static  void*   sNextLink_;
+#endif
                 };
 
 
@@ -181,6 +209,27 @@ namespace   Stroika {
                 Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+again:
+                void*   p = sNextLink_.exchange (Private_::kLockedSentinal_);
+                if (p == Private_::kLockedSentinal_) {
+                    // we stored and retrieved a sentinal. So no lock. Try again!
+                    goto again;// @todo yield ()
+                }
+                // if we got here, p contains the real head
+                if (p == nullptr) {
+                    p = GetMem_Util_ (SIZE);
+                }
+                void*   result = p;
+                AssertNotNull (result);
+                /*
+                 * treat this as a linked list, and make head point to next member
+                 */
+                p = (*(void**)p);
+
+                Verify (sNextLink_.exchange (p) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+                return result;
+#else
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
@@ -200,13 +249,26 @@ namespace   Stroika {
                  */
                 sNextLink_ = (*(void**)sNextLink_);
                 return result;
+#endif
             }
             template    <size_t SIZE>
             inline  void    Private_::BlockAllocationPool_<SIZE>::Deallocate (void* p) noexcept
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+again:
+                void*   prevHead = sNextLink_.exchange (Private_::kLockedSentinal_);
+                if (prevHead == Private_::kLockedSentinal_) {
+                    // we stored and retrieved a sentinal. So no lock. Try again!
+                    goto again;// @todo yield ()
+                }
+                // push p onto the head of linked free list
+                (*(void**)p) = prevHead;
+                Verify (sNextLink_.exchange (p) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
+#else
                 Private_::DoDeleteHandlingLocksExceptionsEtc_ (p,  &sNextLink_);
+#endif
 #if     qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_CLEAN_MEMORY (p, SIZE);
 #endif
@@ -214,6 +276,9 @@ namespace   Stroika {
             template    <size_t SIZE>
             void    Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+                // cannot compact lock-free - no biggie
+#else
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
 #else
@@ -287,9 +352,14 @@ namespace   Stroika {
                     }
                     *curLink = nullptr;
                 }
+#endif
             }
             template    <size_t SIZE>
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+            std::atomic<void*>   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
+#else
             void*   Private_::BlockAllocationPool_<SIZE>::sNextLink_ = nullptr;
+#endif
 
 
             /*
@@ -338,7 +408,9 @@ namespace   Stroika {
         }
     }
 }
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocator_ModuleInit_>   _Stroika_Foundation_Memory_BlockAllocator_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
+#endif
 #endif  /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

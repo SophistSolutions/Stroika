@@ -22,10 +22,12 @@ using   namespace   Execution;
 
 
 
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 Memory::Private_::LockType_*    Memory::Private_::sLock_  =   nullptr;
+#endif
 
 
-
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 /*
  ********************************************************************************
  *********************** BlockAllocator_ModuleInit_ *****************************
@@ -43,6 +45,8 @@ BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
     delete sLock_;
     sLock_ = nullptr;
 }
+#endif
+
 
 
 
@@ -54,7 +58,11 @@ BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
  */
 Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
 {
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+    return Execution::ModuleDependency ([] () {}, [] () {});
+#else
     return Execution::ModuleInitializer<Private_::BlockAllocator_ModuleInit_>::GetDependency ();
+#endif
 }
 
 
@@ -64,6 +72,7 @@ Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
  *********** Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ **************
  ********************************************************************************
  */
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept
 {
     /*
@@ -93,3 +102,4 @@ void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** s
         *staticNextLinkP = p;
     }
 }
+#endif
