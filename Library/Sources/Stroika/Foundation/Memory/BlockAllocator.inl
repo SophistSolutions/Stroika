@@ -66,6 +66,22 @@
 
 namespace   Stroika {
     namespace   Foundation {
+        namespace   Execution {
+            /*
+             *  Avoid interference with Windows SDK headers. I hate macros
+             */
+#ifdef Yield
+#undef Yield
+#endif
+            void    Yield ();
+        }
+    }
+}
+
+
+
+namespace   Stroika {
+    namespace   Foundation {
         namespace   Memory {
 
 
@@ -214,7 +230,8 @@ again:
                 void*   p = sNextLink_.exchange (Private_::kLockedSentinal_);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    goto again;// @todo yield ()
+                    Execution::Yield ();
+                    goto again;
                 }
                 // if we got here, p contains the real head
                 if (p == nullptr) {
@@ -261,7 +278,8 @@ again:
                 void*   prevHead = sNextLink_.exchange (Private_::kLockedSentinal_);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    goto again;// @todo yield ()
+                    Execution::Yield ();
+                    goto again;
                 }
                 // push p onto the head of linked free list
                 (*(void**)p) = prevHead;
