@@ -118,10 +118,10 @@ fi
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
 if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
-	echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Samples_SystemPerformanceClient ..."
-	echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Samples_SystemPerformanceClient..." >>$TEST_OUT_FILE 2>&1
+	echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Samples_SystemPerformanceClient ..."
+	echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Samples_SystemPerformanceClient..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Samples_SystemPerformanceClient 2>&1 > /dev/null
+	valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Samples_SystemPerformanceClient 2>&1 > /dev/null
 	cat valgrind-log.tmp >> $TEST_OUT_FILE
 	rm -f valgrind-log.tmp 
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
