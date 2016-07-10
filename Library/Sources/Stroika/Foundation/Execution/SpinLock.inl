@@ -32,8 +32,8 @@ namespace   Stroika {
              ******************************** Execution::SpinLock ***************************
              ********************************************************************************
              */
-            inline  SpinLock::SpinLock (bool threadFence)
-                : fThreadFence_ (threadFence)
+            inline  SpinLock::SpinLock (BarrierFlag barrier)
+                : fBarrierFlag_ (barrier)
 #if     !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
                 , fLock_ (ATOMIC_FLAG_INIT)
 #endif
@@ -68,7 +68,7 @@ namespace   Stroika {
                     VALGRIND_HG_MUTEX_LOCK_POST (&fLock_);
                 }
 #endif
-                if (result and fThreadFence_) {
+                if (result) {
                     /*
                      *  https://stroika.atlassian.net/browse/STK-494
                      *
@@ -76,7 +76,16 @@ namespace   Stroika {
                      *  it makes sense to use memory_order_acquire, but that doesn't seem right, as the
                      *  lock could protect reading or writing another memory area.
                      */
-                    std::atomic_thread_fence (std::memory_order_seq_cst);
+                    switch (fBarrierFlag_) {
+                        case BarrierFlag::eReleaseAcquire:
+                            std::atomic_thread_fence (std::memory_order_acquire);
+                            break;
+                        case BarrierFlag::eCST:
+                            std::atomic_thread_fence (std::memory_order_seq_cst);
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 return result;
             }
@@ -89,6 +98,16 @@ namespace   Stroika {
             }
             inline  void    SpinLock::unlock ()
             {
+                switch (fBarrierFlag_) {
+                    case BarrierFlag::eReleaseAcquire:
+                        std::atomic_thread_fence (std::memory_order_release);
+                        break;
+                    case BarrierFlag::eCST:
+                        std::atomic_thread_fence (std::memory_order_seq_cst);
+                        break;
+                    default:
+                        break;
+                }
                 // release lock
 #if     qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_MUTEX_UNLOCK_PRE (&fLock_);
