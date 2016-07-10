@@ -24,10 +24,9 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156x</a><br/>2016-07-09???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156x</a><br/>2016-07-09</td>
 <td>
 	<ul>
-	<li>DRAFTDOCS</li>
 		<li>SpinLock
 			<ul>
 				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional bool threadFence = true -
@@ -60,7 +59,7 @@ History
 				<li>gcc 6.1</li>
 				<li>clang++3.7 (ubuntu)</li>
 				<li>clang++3.8 (ubuntu)</li>
-				<li>cross-compile 2 raspberry-pi</li>
+				<li>cross-compile to raspberry-pi</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 			</ul>
 		</li>
