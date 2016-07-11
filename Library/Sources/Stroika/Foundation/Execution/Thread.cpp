@@ -807,7 +807,7 @@ void    Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
     sSignalUsedForThreadInterrupt_ = signalNumber;
     // install new handler
     if (not sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = true;
     }
 }
