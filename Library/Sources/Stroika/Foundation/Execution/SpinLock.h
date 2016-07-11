@@ -9,6 +9,7 @@
 #include    <atomic>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Enumeration.h"
 #include    "../Time/Realtime.h"
 
 
@@ -17,8 +18,7 @@
  *
  *  \file
  *
- *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
- *
+ *  TODO:
  *      @todo   Since this lock is NOT recursive, we could add a capture of the current thread, and then
  *              ASSERT no calls come in on the same thread, as they would be guarnateed to deadlock!
  */
@@ -59,13 +59,20 @@ namespace   Stroika {
               */
             class   SpinLock {
             public:
+                /**
+                 *  @see std::atomic_thread_fence ()
+                 *  @see std::memory_order
+                 */
                 enum class BarrierFlag {
                     eNoBarrier,
                     eReleaseAcquire,
                     eCST,
 
                     eDEFAULT = eReleaseAcquire,
+
+                    Stroika_Define_Enum_Bounds(eNoBarrier, eCST)
                 };
+
             public:
                 /**
                  *  In typical usage, one would use a SpinLock as a mutex, and expect it to create a memory fence.
