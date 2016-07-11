@@ -36,16 +36,10 @@ namespace   Stroika {
              *  \note   Stroika 2.0a155 and earlier - qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex was always true
              *
              *  \note   Stroika 2.0a156 and later - due to threadFence and https://stroika.atlassian.net/browse/STK-494 - SpinLock
-             *          may not be faster (in limited testing appears worse). Note - this was tested in non-multithreading code
-             *          so sort of a worst case. With gcc-6.1.0-release-c++17/Test47, the mutex versus SpinLock test was 20% slower.
-             *          Still much faster on windows (1/2 time)
+             *          slowed slightly, but its still notably faster (with the default barrier style) on gcc/unix/windows (x86 only tested).
              */
 #ifndef     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-#if         defined (_MSC_VER)
 #define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    1
-#else
-#define     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex    0
-#endif
 #endif
 
 
