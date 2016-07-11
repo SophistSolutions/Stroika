@@ -19,6 +19,22 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            namespace PRIVATE_ {
+                enum    class   InteruptFlagState_ {
+                    eNone,
+                    eInterupted,
+                    eAborted,
+
+                    Stroika_Define_Enum_Bounds(eNone, eAborted)
+                };
+#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
+                using   InteruptFlagType_  =   volatile InteruptFlagState_;
+#else
+                using   InteruptFlagType_  =   atomic<InteruptFlagState_>;
+#endif
+            }
+
+
             /*
              ********************************************************************************
              ********************************* Thread::Rep_ *********************************
@@ -64,18 +80,14 @@ namespace   Stroika {
 #endif
 
             private:
-#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-                using   InteruptFlagType_  =   volatile bool;
-#else
-                using   InteruptFlagType_  =   atomic<bool>;
-#endif
+                using   InteruptFlagState_  =   PRIVATE_::InteruptFlagState_;
+                using   InteruptFlagType_   =   PRIVATE_::InteruptFlagType_;
 
             private:
                 Function<void()>        fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                InteruptFlagType_*      fTLSAbortFlag_ {};          // Can only be set properly within the MAINPROC of the thread
-                InteruptFlagType_*      fTLSInterruptFlag_ {};      // ""
+                InteruptFlagType_*      fTLSInterruptFlag_ {};      // regular interupt, abort interupt, or none
                 mutable std::mutex      fAccessSTDThreadMutex_;     // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
                 std::thread             fThread_;
                 atomic<Status>          fStatus_;

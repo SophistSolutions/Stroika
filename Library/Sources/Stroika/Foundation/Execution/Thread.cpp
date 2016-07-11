@@ -80,14 +80,6 @@ using   namespace   Characters;
 using   namespace   Execution;
 
 
-namespace {
-    // Use atomic because we take the address of these, and reference across threads
-#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-    using   TLSInterruptFlagType_  =   volatile bool;
-#else
-    using   TLSInterruptFlagType_  =   atomic<bool>;
-#endif
-}
 
 
 namespace {
@@ -97,9 +89,12 @@ namespace {
 
 
 namespace {
-    mutex                                       sChangeInterruptingMutex_;
-    thread_local TLSInterruptFlagType_          s_Aborting_                     { false };
-    thread_local TLSInterruptFlagType_          s_Interrupting_                 { false };
+    using   PRIVATE_::InteruptFlagState_;
+    using   PRIVATE_::InteruptFlagType_;
+}
+
+namespace {
+    thread_local InteruptFlagType_              s_Interrupting_                 { InteruptFlagState_::eNone };
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };
 }
 
@@ -297,6 +292,7 @@ namespace   Stroika {
 
 
 
+
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
@@ -453,7 +449,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
          *  instance, and hoping all that works correctly (that the memory access all work correctly).
          */
-        incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
         incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (*incRefCnt->fTLSAbortFlag_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (*incRefCnt->fTLSInterruptFlag_);
@@ -532,11 +527,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-            {
-                lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
-                s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
-                s_Interrupting_ = false;
-            }
+            s_Interrupting_ = InteruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             {
@@ -565,22 +556,31 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
     //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
 
-    {
-        lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
-        // Harmless todo multiple times - even if already set
-        AssertNotNull (fTLSInterruptFlag_);
-        *fTLSInterruptFlag_ = true;
-
-        if (aborting) {
-            AssertNotNull (fTLSAbortFlag_);
-            *fTLSAbortFlag_ = true;
+    AssertNotNull (fTLSInterruptFlag_);
+    if (aborting) {
+        fTLSInterruptFlag_->store (InteruptFlagState_::eAborted);
+    }
+    else {
+        // always upgrade
+        while (true) {
+            InteruptFlagState_  none        =   InteruptFlagState_::eNone;
+            InteruptFlagState_  interupt    =   InteruptFlagState_::eInterupted;
+            InteruptFlagState_  abort       =   InteruptFlagState_::eAborted;
+            if (fTLSInterruptFlag_->compare_exchange_strong (none, InteruptFlagState_::eInterupted)) {
+                break;
+            }
+            if (fTLSInterruptFlag_->compare_exchange_strong (interupt, InteruptFlagState_::eInterupted)) {
+                break;
+            }
+            if (fTLSInterruptFlag_->compare_exchange_strong (abort, InteruptFlagState_::eAborted)) {
+                break;
+            }
         }
     }
 
     if (GetCurrentThreadID () == GetID ()) {
         Assert (fTLSInterruptFlag_ == &s_Interrupting_);
-        Assert (fTLSAbortFlag_ == &s_Aborting_);
-        // NOTE - using CheckForThreadInterruption uses TLS s_Aborting_ instead of fStatus
+        // NOTE - using CheckForThreadInterruption uses TLS s_Interrupting_ instead of fStatus
         //      --LGP 2015-02-26
         CheckForThreadInterruption ();      // unless suppressed, this will throw
     }
@@ -588,15 +588,9 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 
     // @todo note - this used to check fStatus flag and I just changed to checking *fTLSInterruptFlag_ -- LGP 2015-02-26
     if (fStatus_ == Status::eAborting) {
-        Assert (*fTLSAbortFlag_);
-        Assert (*fTLSInterruptFlag_);       // except maybe possible slight race til I use atomic exchange!!! -- LGP 2015-02-26
-        // SEE https://stroika.atlassian.net/browse/STK-477
-        // saw triggered on UNIX, gcc48, 2015-04-03 running regtests
-        // saw triggered on Windows, using MSVC2k15. But very rare
-        // saw triggered on UNIX, gcc48, 2016-05-26 running regtests
-        // saw triggered on UNIX, DEFAULT_CONFIG, 2016-07-10, running regression test 35
+        Assert (*fTLSInterruptFlag_ == InteruptFlagState_::eAborted);
     }
-    if (*fTLSInterruptFlag_ /*fStatus_ == Status::eAborting*/) {
+    if (*fTLSInterruptFlag_ != InteruptFlagState_::eNone) {
 #if     qPlatform_POSIX
         {
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
@@ -661,7 +655,6 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
      *          inside CheckForThreadInterruption()
      */
     Assert (rep->fTLSInterruptFlag_ == &s_Interrupting_);
-    Assert (rep->fTLSAbortFlag_ == &s_Aborting_);
     switch (rep->fStatus_) {
         case Status::eAborting:
         case Status::eRunning: {
@@ -1134,29 +1127,19 @@ void    Execution::CheckForThreadInterruption ()
      *  just before the actual throw.
      */
     if (s_InterruptionSuppressDepth_ == 0) {
-        if (s_Interrupting_) {
-            if (s_Aborting_) {
-                Assert (s_Interrupting_);   // if s_Aborting_, then s_Interrupting_ must be true
-                Throw (Thread::AbortException::kThe);
-            }
-            else {
-                {
-                    lock_guard<mutex>   critSec  { sChangeInterruptingMutex_ };
-                    s_Interrupting_ = false;
-                    if (s_Aborting_) {
-                        // @todo fix - still racy - we wnat to assure if s_Aborting_, then fTLSInterruptFlag_ true, but tricky... Maybe use exchange()?
-                        s_Interrupting_ = true;
-                    }
-                }
+		Thread::SuppressInterruptionInContext	suppressSoStringsDontThrow;
+        switch (s_Interrupting_.load ()) {
+            case InteruptFlagState_::eInterupted:
                 Throw (Thread::InterruptException::kThe);
-            }
+            case InteruptFlagState_::eAborted:
+                Throw (Thread::AbortException::kThe);
         }
     }
 #if     qDefaultTracingOn
-    else if (s_Aborting_ or s_Interrupting_) {
+    else if (s_Interrupting_ != InteruptFlagState_::eNone) {
         static  atomic<unsigned int>    sSuperSuppress_ { };
         if (++sSuperSuppress_ <= 1) {
-            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Aborting_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, (bool)s_Aborting_, (bool)s_Interrupting_));
+            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, s_Interrupting_.load ()));
             sSuperSuppress_--;
         }
     }
