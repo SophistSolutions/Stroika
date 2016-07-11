@@ -192,7 +192,7 @@ namespace   Stroika {
                     Invariant ();
                     if (_fSlotsAllocated != slotsAlloced) {
                         if (slotsAlloced == 0) {
-                            delete (char*)_fItems;
+                            delete[] (char*)_fItems;
                             _fItems = nullptr;
                         }
                         else {
@@ -227,7 +227,7 @@ namespace   Stroika {
                                         p->T::~T ();
                                     }
                                 }
-                                delete (char*)_fItems;
+                                delete[] (char*)_fItems;
                                 _fItems = newV;
 #else
                                 _fItems = (T*) realloc (_fItems, sizeof (T) * slotsAlloced);
@@ -367,7 +367,7 @@ namespace   Stroika {
                 inline  Array<T, TRAITS>::~Array ()
                 {
                     RemoveAll ();
-                    delete (char*)_fItems;
+                    delete[] (char*)_fItems;
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
