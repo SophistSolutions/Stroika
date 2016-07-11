@@ -52,7 +52,7 @@ namespace   Stroika {
 
             /**
              *  This is equivilemnt to std::mutex, except that when a thread is blocked in a lock() call
-             *  it can still be interuptted by Thread::Abort ().
+             *  it can still be interrupted by Thread::Abort ().
              *
              *  This is not generally necessary for quick mutexes, but for any mutex use where you could
              *  block/lock for an extended time, it makes sense to use this instead. THis is compeltely

@@ -45,7 +45,7 @@
  *      @todo   SuppressInterruptionInContext DTOR should CheckFor...Abort...
  *
  *      @todo   DOCUMENT:
- *              With POSIX, interuption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
+ *              With POSIX, interruption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of special
  *              'alertable' apis. One of these - is SleepEx.
  *
  *              Turning this flag on (by default on for windoze) - means that we throw if user code calls a windows alertable API
@@ -93,7 +93,7 @@ namespace   Stroika {
              *  OVERVIEW:
              *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
              *  Stroika threads add a number of very useful features to std::threads:
-             *          o   Cancelation/Interuption/Aborting
+             *          o   Cancelation/Interruption/Aborting
              *          o   EINTR handling (POSIX only)
              *
              *  as well as a couple modestly helpful features (that can be done other ways directly with std::thread):
@@ -112,13 +112,13 @@ namespace   Stroika {
              *  will work safely - so that even when all external references go away, the fact that the thread
              *  is still running will keep the reference count non-zero.
              *
-             *  Thread Aborting/Interuption:
+             *  Thread Aborting/Interruption:
              *      The Stroika Thread class supports the idea of 'aborting' a thread.
              *
              *  \em Nomenclature Note:
-             *       In some libraries, the term interuption, cancelation is used for thread aborting.
+             *       In some libraries, the term interruption, cancelation is used for thread aborting.
              *
-             *              >   java uses interuption
+             *              >   java uses interruption
              *              >   boost uses cancelation,
              *              >   and .net uses Interrupt and Abort
              *
@@ -130,7 +130,7 @@ namespace   Stroika {
              *          has received a certain number of characters it starts searching, but perhaps before
              *          the search is done, another character comes in, so the GUI code will want to Abort
              *          the existing search, and start a new one (with the extra character(s)).
-             *      (2) A web server - which is serving up content, and it told to shut-down. It must interupt
+             *      (2) A web server - which is serving up content, and it told to shut-down. It must interrupt
              *          existing in process processes - some maybe handling a read/write sequence, and some
              *          perhaps doing a socket listen/accept call.
              *
@@ -159,15 +159,15 @@ namespace   Stroika {
              *          It sets a 'thread-local variable - aborted' and when it returns - any (WHICH?) system
              *          calls in progress will return the error
              *
-             *      <<<<DOCUMENT INTERUPTION POINTS>>>> - CALLED INTERUPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
+             *      <<<<DOCUMENT INTERRUPTION POINTS>>>> - CALLED INTERURPTION POINTS IN BOOST - MAYBE WE SHOULD CALL THEM ABORT POINTS?
              *      ??? They are placed in the code caller can ASSUME a call to CheckForThreadInterruption () is called. These include:
              *          o   SLEEP()
              *          o   ANY WAIT CALLS
-             *          o   anything that calls Handle_ErrNoResultInteruption ()
+             *          o   anything that calls Handle_ErrNoResultInterruption ()
              *
              *  @todo   DOCUMENT IMPACT ON WaitableEvents, std::mutex, (etc), std::condition_variable, and AbortableEvent, etc.
              *
-             * Handle_ErrNoResultInteruption()
+             * Handle_ErrNoResultInterruption()
              *      The short of it is that you need to catch EINTR and restart the call for these system calls:
              *          o read, readv, write, writev, ioctl
              *          o open() when dealing with a fifo
@@ -185,7 +185,7 @@ namespace   Stroika {
              *              different arguments)
              *      This is integrated with Stroika's thread cancelation mechanism.
              *
-             *  @see Handle_ErrNoResultInteruption
+             *  @see Handle_ErrNoResultInterruption
              *
              *  @todo       To make STOP code more safe - and have Stop really throw AbortException
              *              - then associate a PROGRESS object with this REP, and
@@ -291,7 +291,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Generally should not be reported. This is to support Thread::Interupt();
+                 * Generally should not be reported. This is to support Thread::Interrupt();
                  */
                 class   InterruptException;
 
@@ -356,13 +356,13 @@ namespace   Stroika {
                  *  inside that thread, so that at the next cancelation point, it will throw the InterruptedException.
                  *
                  *  When InterruptedException is thrown, that thread local storage flag is cleared. Often code will catch and rethrow
-                 *  the exception, but the Interupt state doesnt perisist past when its first handled (this is in stark contrast to Abort).
+                 *  the exception, but the Interrupt state doesnt perisist past when its first handled (this is in stark contrast to Abort).
                  *
                  *  If the InterruptException is not handled, it will terminate the thread  (go to the done state).
                  *
-                 *  Like Abort(), sending an Interupt() to an expired (aborted) or null thread will be ignored - simply never delivered.
+                 *  Like Abort(), sending an Interrupt() to an expired (aborted) or null thread will be ignored - simply never delivered.
                  *
-                 *  Note this can be called from any thread, whether the thread object being interupted, or (more typically) from another.
+                 *  Note this can be called from any thread, whether the thread object being interrupted, or (more typically) from another.
                  *
                  *  A thread being Aborted can also be interrupted, but Abort() takes precedence if both are attempted.
                  *
@@ -420,7 +420,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  If the thread is Done() - and completed with an exception (other than interupt),
+                 *  If the thread is Done() - and completed with an exception (other than interrupt),
                  *  this throws that exception, allowing an exception thrown inside a thread,
                  *  to be propagated across threads.
                  *
@@ -634,7 +634,7 @@ namespace   Stroika {
             /**
              *  This object - while in existance, blocks delivery of all Interrupt Exceptions (InterruptException and AbortException)
              *  (for this thread in which its instantiated). This blocking nest (so if you have two of them in one thread, only when the last
-             *  one is destroyed does the block on Interuption be removed).
+             *  one is destroyed does the block on Interruption be removed).
              *
              *  This is used to prevent a second abort request coming in to a thread already in the process of shutting down, which
              *  might cause a second, or incomplete cleanup.
@@ -676,7 +676,7 @@ namespace   Stroika {
 
 
             /**
-             *  Our thread interuption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
+             *  Our thread interruption (and abort) mechanism only throws at certain 'signalable' (alertable/cancelable)
              *  spots in the code - like sleeps, most reads, etc.
              *  This function will also trigger a throw if called inside a thread which is being aborted.
              *

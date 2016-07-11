@@ -20,17 +20,17 @@ namespace   Stroika {
 
 
             namespace PRIVATE_ {
-                enum    class   InteruptFlagState_ {
+                enum    class   InterruptFlagState_ {
                     eNone,
-                    eInterupted,
+                    eInterrupted,
                     eAborted,
 
                     Stroika_Define_Enum_Bounds(eNone, eAborted)
                 };
 #if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-                using   InteruptFlagType_  =   volatile InteruptFlagState_;
+                using   InterruptFlagType_  =   volatile InterruptFlagState_;
 #else
-                using   InteruptFlagType_  =   atomic<InteruptFlagState_>;
+                using   InterruptFlagType_  =   atomic<InterruptFlagState_>;
 #endif
             }
 
@@ -67,7 +67,7 @@ namespace   Stroika {
                 // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
                 // and is just called by Thread::Abort (). It sets (indirectly) the thread-local-storage aborted
                 // flag for the target thread. And if called from an aborting thread, it may throw
-                nonvirtual  void    NotifyOfInteruptionFromAnyThread_ (bool aborting);
+                nonvirtual  void    NotifyOfInterruptionFromAnyThread_ (bool aborting);
 
             private:
                 static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
@@ -80,14 +80,14 @@ namespace   Stroika {
 #endif
 
             private:
-                using   InteruptFlagState_  =   PRIVATE_::InteruptFlagState_;
-                using   InteruptFlagType_   =   PRIVATE_::InteruptFlagType_;
+                using   InterruptFlagState_ =   PRIVATE_::InterruptFlagState_;
+                using   InterruptFlagType_  =   PRIVATE_::InterruptFlagType_;
 
             private:
                 Function<void()>        fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                InteruptFlagType_*      fTLSInterruptFlag_ {};      // regular interupt, abort interupt, or none
+                InterruptFlagType_*     fTLSInterruptFlag_ {};      // regular interrupt, abort interrupt, or none
                 mutable std::mutex      fAccessSTDThreadMutex_;     // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
                 std::thread             fThread_;
                 atomic<Status>          fStatus_;

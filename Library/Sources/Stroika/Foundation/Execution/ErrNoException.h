@@ -77,7 +77,7 @@ namespace   Stroika {
             /**
              */
             template    <typename CALL>
-            auto    Handle_ErrNoResultInteruption (CALL call) -> decltype (call ());
+            auto    Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
 
             // Just pre-declare Throw><> template here so we can specailize
             template    <typename T>

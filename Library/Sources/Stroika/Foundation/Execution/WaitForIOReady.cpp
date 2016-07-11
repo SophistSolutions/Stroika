@@ -104,7 +104,7 @@ auto     WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<
             ++i;
         }
         constexpr   bool    kWaitAll_       { false };  // return when any one changes
-        constexpr   bool    kAlertable_     { true };   // so it can be interupted via thread abort
+        constexpr   bool    kAlertable_     { true };   // so it can be interrupted via thread abort
         DWORD   ret = ::WaitForMultipleObjectsEx (static_cast<DWORD> (sz), pollData.begin (), kWaitAll_, Execution::Platform::Windows::Duration2Milliseconds (time2Wait), kAlertable_);
         if (WAIT_OBJECT_0  <= ret and ret <= static_cast<DWORD> (WAIT_OBJECT_0 + sz - 1)) {
             // With this API, we can only find the first

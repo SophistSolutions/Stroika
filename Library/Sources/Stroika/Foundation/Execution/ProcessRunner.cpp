@@ -62,7 +62,7 @@ using   Debug::TraceContextBumper;
 namespace {
     inline  void    CLOSE_ (int fd)
     {
-        Execution::Handle_ErrNoResultInteruption ([fd] () -> int { return ::close (fd);});
+        Execution::Handle_ErrNoResultInterruption ([fd] () -> int { return ::close (fd);});
     }
 }
 #endif
@@ -413,9 +413,9 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
         int  jStdin[2];
         int  jStdout[2];
         int  jStderr[2];
-        Execution::Handle_ErrNoResultInteruption ([&jStdin] () -> int { return ::pipe (jStdin);});
-        Execution::Handle_ErrNoResultInteruption ([&jStdout] () -> int { return ::pipe (jStdout);});
-        Execution::Handle_ErrNoResultInteruption ([&jStderr] () -> int { return ::pipe (jStderr);});
+        Execution::Handle_ErrNoResultInterruption ([&jStdin] () -> int { return ::pipe (jStdin);});
+        Execution::Handle_ErrNoResultInterruption ([&jStdout] () -> int { return ::pipe (jStdout);});
+        Execution::Handle_ErrNoResultInterruption ([&jStderr] () -> int { return ::pipe (jStderr);});
         // assert cuz code below needs to be more careful if these can overlap 0..2
         Assert (jStdin[0] >= 3 and jStdin[1] >= 3);
         Assert (jStdout[0] >= 3 and jStdout[1] >= 3);
@@ -569,7 +569,7 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
                 const Byte* e   =   p + stdinBLOB.GetSize ();
                 if (p != e) {
                     for (const Byte* i = p; i != e;) {
-                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([useSTDIN, i, e] () { return ::write (useSTDIN, i, e - i); }));
+                        int bytesWritten = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([useSTDIN, i, e] () { return ::write (useSTDIN, i, e - i); }));
                         Assert (bytesWritten >= 0);
                         Assert (bytesWritten <= (e - i));
                         i += bytesWritten;
@@ -616,9 +616,9 @@ function<void()>    ProcessRunner::CreateRunnable_ (Memory::Optional<ProcessResu
             }
             // not sure we need?
             int status = 0;
-            int flags = 0;  // FOR NOW - HACK - but really must handle sig-interuptions...
+            int flags = 0;  // FOR NOW - HACK - but really must handle sig-interruptions...
             //  Wait for child
-            int result = Execution::Handle_ErrNoResultInteruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags);});
+            int result = Execution::Handle_ErrNoResultInterruption ([childPID, &status, flags] () -> int { return ::waitpid (childPID, &status, flags);});
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1

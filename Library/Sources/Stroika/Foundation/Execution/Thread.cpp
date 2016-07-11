@@ -89,12 +89,12 @@ namespace {
 
 
 namespace {
-    using   PRIVATE_::InteruptFlagState_;
-    using   PRIVATE_::InteruptFlagType_;
+    using   PRIVATE_::InterruptFlagState_;
+    using   PRIVATE_::InterruptFlagType_;
 }
 
 namespace {
-    thread_local InteruptFlagType_              s_Interrupting_                 { InteruptFlagState_::eNone };
+    thread_local InterruptFlagType_             s_Interrupting_                 { InterruptFlagState_::eNone };
     thread_local InterruptSuppressCountType_    s_InterruptionSuppressDepth_    { 0 };
 }
 
@@ -436,7 +436,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         }
         auto&&  cleanup =   Finally (
         [thisThreadID] () noexcept {
-            Thread::SuppressInterruptionInContext suppressThreadInterupts;  // may not be needed, but safer/harmless
+            Thread::SuppressInterruptionInContext suppressThreadInterrupts;  // may not be needed, but safer/harmless
             Require (not sKnownBadBeforeMainOrAfterMain_); // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
             MACRO_LOCK_GUARD_CONTEXT (sThreadSupportStatsMutex_);
             DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
@@ -454,7 +454,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fStatus_);
 
         try {
-            // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
+            // We cannot possibly get interrupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
             // baring an external process sending us a bogus signal)
             //
             // Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for
@@ -526,7 +526,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
             SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadInterrupt ());
-            s_Interrupting_ = InteruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
+            s_Interrupting_ = InterruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
             {
@@ -550,26 +550,26 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
     }
 }
 
-void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
+void    Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
     //TraceContextBumper ctx ("Thread::Rep_::NotifyOfAbortFromAnyThread_");
 
     AssertNotNull (fTLSInterruptFlag_);
     if (aborting) {
-        fTLSInterruptFlag_->store (InteruptFlagState_::eAborted);
+        fTLSInterruptFlag_->store (InterruptFlagState_::eAborted);
     }
     else {
         /*
          *  Only upgrade
          *
-         *  If was none, upgrade to interupted. If was interupted, already done. If was aborted, dont actually want to change.
+         *  If was none, upgrade to interrupted. If was interrupted, already done. If was aborted, dont actually want to change.
          */
-        InteruptFlagState_  v        =   InteruptFlagState_::eNone;
-        if (not fTLSInterruptFlag_->compare_exchange_strong (v, InteruptFlagState_::eInterupted)) {
-            Assert (v == InteruptFlagState_::eInterupted or v == InteruptFlagState_::eAborted);
+        InterruptFlagState_ v   =   InterruptFlagState_::eNone;
+        if (not fTLSInterruptFlag_->compare_exchange_strong (v, InterruptFlagState_::eInterrupted)) {
+            Assert (v == InterruptFlagState_::eInterrupted or v == InterruptFlagState_::eAborted);
         }
-        Assert (fTLSInterruptFlag_->load () == InteruptFlagState_::eInterupted or fTLSInterruptFlag_->load () == InteruptFlagState_::eAborted);
+        Assert (fTLSInterruptFlag_->load () == InterruptFlagState_::eInterrupted or fTLSInterruptFlag_->load () == InterruptFlagState_::eAborted);
     }
 
     if (GetCurrentThreadID () == GetID ()) {
@@ -582,9 +582,9 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 
     // @todo note - this used to check fStatus flag and I just changed to checking *fTLSInterruptFlag_ -- LGP 2015-02-26
     if (fStatus_ == Status::eAborting) {
-        Assert (*fTLSInterruptFlag_ == InteruptFlagState_::eAborted);
+        Assert (*fTLSInterruptFlag_ == InterruptFlagState_::eAborted);
     }
-    if (*fTLSInterruptFlag_ != InteruptFlagState_::eNone) {
+    if (*fTLSInterruptFlag_ != InterruptFlagState_::eNone) {
 #if     qPlatform_POSIX
         {
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
@@ -597,8 +597,8 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
 
         {
             /*
-             * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
-             * will return EINTR - which is crucial to our strategy to interupt them!
+             * siginterrupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
+             * will return EINTR - which is crucial to our strategy to interrupt them!
              *
              *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
              */
@@ -632,7 +632,7 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
     //TraceContextBumper ctx ("Thread::Rep_::CalledInRepThreadAbortProc_");
 #endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
-    // the TLS variable gets set through the rep poitner in NotifyOfInteruptionFromAnyThread_
+    // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_
 }
 #elif           qPlatform_Windows
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
@@ -641,7 +641,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
 
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
-    // @todo review/test carefully - cahgnged LGP 2015-02-26 to suppor tinterupt and abort
+    // @todo review/test carefully - cahgnged LGP 2015-02-26 to support interrupt and abort
     /*
      *  Note why this is safe here:
      *      o   This callback is called by the APC mechanism only if in an 'alertable state' call, like SleepEx().
@@ -899,7 +899,7 @@ void    Thread::Abort ()
     }
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
-        fRep_->NotifyOfInteruptionFromAnyThread_ (true);
+        fRep_->NotifyOfInterruptionFromAnyThread_ (true);
     }
 }
 
@@ -915,7 +915,7 @@ void    Thread::Interrupt ()
 
     Status  cs = fRep_->fStatus_.load ();
     if (cs != Status::eAborting and cs != Status::eCompleted) {
-        fRep_->NotifyOfInteruptionFromAnyThread_ (false);
+        fRep_->NotifyOfInterruptionFromAnyThread_ (false);
     }
 }
 
@@ -960,8 +960,8 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
         }
         if (tries <= 1) {
             // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
-            // a blocking call which needs interuption.
-            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interupt.");
+            // a blocking call which needs interruption.
+            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt.");
         }
         else {
             DbgTrace ("OK - maybe the target thread is ingoring abort exceptions? try/catch/ignore?");
@@ -1123,14 +1123,14 @@ void    Execution::CheckForThreadInterruption ()
     if (s_InterruptionSuppressDepth_ == 0) {
         Thread::SuppressInterruptionInContext   suppressSoStringsDontThrow;
         switch (s_Interrupting_.load ()) {
-            case InteruptFlagState_::eInterupted:
+            case InterruptFlagState_::eInterrupted:
                 Throw (Thread::InterruptException::kThe);
-            case InteruptFlagState_::eAborted:
+            case InterruptFlagState_::eAborted:
                 Throw (Thread::AbortException::kThe);
         }
     }
 #if     qDefaultTracingOn
-    else if (s_Interrupting_ != InteruptFlagState_::eNone) {
+    else if (s_Interrupting_ != InterruptFlagState_::eNone) {
         static  atomic<unsigned int>    sSuperSuppress_ { };
         if (++sSuperSuppress_ <= 1) {
             IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, s_Interrupting_.load ()));

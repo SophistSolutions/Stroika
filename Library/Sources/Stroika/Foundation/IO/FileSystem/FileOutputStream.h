@@ -17,7 +17,7 @@
  *  \file
  *
  * TODO:
- *      @todo   Use Exeuction??xx?? - caller - handler for thread interupts..
+ *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Add enum BufferFlag { eBuffered, eUnbuffered }; to mk () method, and like we have
  *              with FileOutputStream

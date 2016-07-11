@@ -30,7 +30,7 @@ namespace   Stroika {
             namespace Private {
 
 
-                // This contains has the advantage that can be interupted between iteration steps to update the container,
+                // This contains has the advantage that can be interrupted between iteration steps to update the container,
                 // and if calling lambdas was slow, this might be quicker.
                 template    <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
                 bool    Contains_ByDirectIteration_ (const Iterable<T>& c, T item);

@@ -17,7 +17,7 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *      @todo   Use Exeuction??xx?? - caller - handler for thread interupts..
+ *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *
  *      @todo   Add method to get access to FD  - PeekAtFD(), GetFD()???)
  *

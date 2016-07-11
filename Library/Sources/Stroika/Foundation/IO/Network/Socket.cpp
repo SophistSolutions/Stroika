@@ -112,7 +112,7 @@ namespace   {
             virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
             {
 #if     qPlatform_POSIX
-                return ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
+                return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif   qPlatform_Windows
                 ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
@@ -127,7 +127,7 @@ namespace   {
             {
 #if     qPlatform_POSIX
                 // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
-                int     n   =   Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+                int     n   =   Handle_ErrNoResultInterruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
                 ThrowErrNoIfNegative (n);
 #elif   qPlatform_Windows
                 /*
@@ -160,7 +160,7 @@ namespace   {
             {
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if     qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
 #elif   qPlatform_Windows
                 Require (end - start < numeric_limits<int>::max ());
                 ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
@@ -175,9 +175,9 @@ namespace   {
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_POSIX
 #if     qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::nrecvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
 #else
-                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+                size_t result = static_cast<size_t> (ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
 #endif
                 *fromAddress = sa;
                 return result;
@@ -193,7 +193,7 @@ namespace   {
             virtual void    Listen (unsigned int backlog) override
             {
 #if     qPlatform_POSIX
-                ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); }));
+                ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); }));
 #elif   qPlatform_Windows
                 ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::listen (fSD_, backlog));
 #else
@@ -203,7 +203,7 @@ namespace   {
             }
             virtual Socket  Accept () override
             {
-                // HACK - not right.... - Need to find a way to get interupted when abort is called
+                // HACK - not right.... - Need to find a way to get interrupted when abort is called
 #if     qPlatform_POSIX && 0
                 fd_set  fs;
                 FD_ZERO (&fs);
@@ -226,7 +226,7 @@ AGAIN:
 #endif
                 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
                 if (r < 0) {
-                    // HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
+                    // HACK - so we get interruptabilitiy.... MUST IMPROVE!!!
                     if (errno == EAGAIN or errno == EINTR/* or errno == EWOULDBLOCK*/) {
                         // DONT THINK SLEEP NEEDED ANYMORE - NOR WEOUDBLCOKExecution::Sleep(1.0);
                         goto AGAIN;
@@ -371,7 +371,7 @@ Socket::Socket (SocketKind socketKind)
 
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
-    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+    ThrowErrNoIfNegative (sfd = Handle_ErrNoResultInterruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
 #elif   qPlatform_Windows
     ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #else
@@ -422,7 +422,7 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         // there is an active listening socket bound to the address. When the listening socket is bound
         // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
         int    on = bindFlags.fReUseAddr ? 1 : 0;
-        Handle_ErrNoResultInteruption ([&sfd, &on] () -> int { return ::setsockopt(sfd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
+        Handle_ErrNoResultInterruption ([&sfd, &on] () -> int { return ::setsockopt(sfd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
     }
 
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
@@ -432,7 +432,7 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     // EACCESS reproted as FileAccessException - which is crazy confusing.
     // @todo - find a better way, but for now remap this...
     try {
-        ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
+        ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
     }
     catch (const IO::FileAccessException&) {
         Throw (StringException (L"Cannot Bind to port"));
@@ -467,7 +467,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
     hints.ai_flags = AI_PASSIVE;
     string  tmp =   bindProperties.fHostName.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
     try {
-        Execution::Handle_ErrNoResultInteruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
+        Execution::Handle_ErrNoResultInterruption ([&tmp, &hints, &res] () -> int { return getaddrinfo (tmp.c_str (), nullptr, &hints, &res);});
     }
     catch (...) {
         // MUST FIX THIS - BROKEN - BUT LEAVE IGNORING ERRORS FOR NOW...
@@ -481,7 +481,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 
     Socket::PlatformNativeHandle sd;
 #if     qPlatform_POSIX
-    sd = Execution::Handle_ErrNoResultInteruption ([]() -> int { return socket (AF_INET, SOCK_STREAM, 0); });
+    sd = Execution::Handle_ErrNoResultInterruption ([]() -> int { return socket (AF_INET, SOCK_STREAM, 0); });
 #else
     sd = 0;
     AssertNotImplemented ();
@@ -494,10 +494,10 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
         // there is an active listening socket bound to the address. When the listening socket is bound
         // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
         int    on = 1;
-        Execution::Handle_ErrNoResultInteruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
+        Execution::Handle_ErrNoResultInterruption ([&sd, &on] () -> int { return ::setsockopt(sd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
     }
 
-    Execution::Handle_ErrNoResultInteruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
+    Execution::Handle_ErrNoResultInterruption ([&sd, &useAddr] () -> int { return ::bind (sd, (sockaddr*)&useAddr, sizeof (useAddr));});
 
     fRep_  = make_shared<REALSOCKET_::Rep_> (sd);
 }

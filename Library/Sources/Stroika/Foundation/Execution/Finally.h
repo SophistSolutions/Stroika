@@ -69,7 +69,7 @@ namespace   Stroika {
              *      http://nerds-central.blogspot.com/2012/03/c11-trycatchfinally-pattern-using-raii.html
              *
              *  \note   For cleanup which is important/critical to be completed, its sometimes wise to include
-             *              Thread::SuppressInterruptionInContext suppressThreadInterupts;
+             *              Thread::SuppressInterruptionInContext suppressThreadInterrupts;
              *          in the function body
              *
              *  \note   This is (now) done in such a way that no locks are used or memory allocated, except if

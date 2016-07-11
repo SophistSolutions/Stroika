@@ -78,7 +78,7 @@ void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** s
     /*
      *  Logically this just does a lock acquire and assginemnt through pointers (swap). But
      *  it checks for thread abort exceptions, and supresses that if needed, since this is noexcept
-     *  and can be used in DTOR. You can interupt (abort) a thread while it deletes things.
+     *  and can be used in DTOR. You can interrupt (abort) a thread while it deletes things.
      */
     try {
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow

@@ -62,11 +62,11 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************ Handle_ErrNoResultInteruption *************************
+             ************************ Handle_ErrNoResultInterruption ************************
              ********************************************************************************
              */
             template    <typename CALL>
-            auto    Handle_ErrNoResultInteruption (CALL call)  -> decltype (call ())
+            auto    Handle_ErrNoResultInterruption (CALL call)  -> decltype (call ())
             {
                 decltype (call ())    ret;  // intentionally uninitialized since alway set at least once before read
                 do {

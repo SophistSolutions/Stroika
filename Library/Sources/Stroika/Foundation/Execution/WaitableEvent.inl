@@ -140,7 +140,7 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                    Thread::SuppressInterruptionInContext suppressThreadInterupts;
+                    Thread::SuppressInterruptionInContext suppressThreadInterrupts;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
@@ -204,7 +204,7 @@ namespace   Stroika {
                 shared_ptr<WE_> we  =   make_shared<WE_> (eAutoReset);
                 auto&&  cleanup =   Finally (
                 [we, waitableEventsStart, waitableEventsEnd] () noexcept {
-                    Thread::SuppressInterruptionInContext suppressThreadInterupts;
+                    Thread::SuppressInterruptionInContext suppressThreadInterrupts;
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                     MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
 #else
