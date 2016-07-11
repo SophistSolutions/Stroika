@@ -29,14 +29,16 @@ History
 	<ul>
 		<li>SpinLock
 			<ul>
-				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional bool threadFence = true -
+				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional BarrierFlag argument (defaults to acquire/release)
 				option to SpinLock CTOR (may fix/address bug on ARM / BLKQCL device - malloc corruption)</li>
 				<li>use qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex  - and set TRUE for msvc, and false for other compilers cuz gcc faster with mutex (limited testing) - change due to memory fence - slows down more on unix/gcc</li>
 				<li>This fix (494) noticably slowed regtests (5-10%)</li>
 				<li>Added qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ code - for blockallocator - which undid much of the loss, but still probably about a percent slower than v2.0a155 (depending on what you measure)</li>
 			</ul>
 		</li>
+		<li>Spelling error correction: renamed interupt -> interrupt</li>
 		<li>thread code - fAccessSTDThreadMutex_ to protect access to fThread_ - handles a rare race detected by Helgrind on UNIX</li>
+		<li>https://stroika.atlassian.net/browse/STK-477 - experimental rework of thread interuption TLS variable(s) - instead of two - down to 1 (two bools replaced with one enum) - must test more to see works, and Thread::Rep_::NotifyOfInteruptionFromAnyThread_ use of compare_exchange_strong to be simpler/faster/clearer</li>
 		<li>docs and support FullVersionString opt for ScriptsLib/ExtractVersionInformation.sh, and whitespace fix</li>
 		<li>{NOT BACKWARD COMPAT}:renamed BitSubstring_NEW to BitSubstring, and BitSubstring_NEW still around breifly deprecated</li>
 		<li>Assertions/Tweaks/Cleanups in SystemPerformance/Instruments/Process</li>
@@ -49,6 +51,8 @@ History
 			</ul>
 		</li>
 		<li>added (test case) valgrind / helgrind on Samples_SystemPerformanceClient</li>
+		<li>Fixed where we write PerformanceDump to - Build output directory</li>
+		<li>renamed Thread::GetSignalUsedForThreadAbort -> Thread::GetSignalUsedForThreadInterrupt</li>
 		<li>Added PerformanceDump-v2.0a156-x86-vs2k15-ReleaseU.txt and PerformanceDump-v2.0a156-linux-gcc-6.1.0-x64.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
