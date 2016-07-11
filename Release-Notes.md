@@ -24,7 +24,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156x</a><br/>2016-07-10</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156</a><br/>2016-07-11</td>
 <td>
 	<ul>
 		<li>SpinLock
