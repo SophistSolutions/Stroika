@@ -1526,7 +1526,7 @@ namespace   {
             Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSharedPtrCopy_shared_ptr_copy, L"shared_ptr<> copy",
             18800,
-            .60,
+            .62,
             &failedTests
         );
 #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 21, 0)
@@ -1535,7 +1535,7 @@ namespace   {
             Test_MutexVersusSpinLock_MUTEXT_LOCK, L"mutex",
             Test_MutexVersusSpinLock_SPIN_LOCK, L"SpinLock",
             18900,
-            .6,
+            .65,
             &failedTests
         );
 #endif
@@ -1604,7 +1604,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             310000,
-            9.1,
+            9.9,
             &failedTests
         );
         Tester (
@@ -1639,7 +1639,7 @@ namespace   {
         [] () {Test_StreamBuilderStringBuildingWithExtract_<wstringstream> ([](const wstringstream & w) {return w.str ();});} , L"wstringstream",
         [] () {Test_StreamBuilderStringBuildingWithExtract_<MemoryStream<Characters::Character>> ([](const MemoryStream<Characters::Character>& w) {return w.As<String> ();});}  , L"MemoryStream<Characters::Character>",
         244000,
-        3.1,
+        3.3,
         &failedTests
         );
 #endif
@@ -1724,7 +1724,7 @@ namespace   {
             Test_BLOB_Versus_Vector_Byte<vector<Byte>>, L"vector<Byte>",
             Test_BLOB_Versus_Vector_Byte<Memory::BLOB>, L"BLOB",
             10100,
-            0.47,
+            0.55,
             &failedTests
         );
         Tester (
