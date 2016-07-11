@@ -338,6 +338,8 @@ regression-test-configurations:
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
 		#\
+		# maybe add these directly to config\
+		./configure gcc-debug-addrsanitize --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --extra-compiler-args -fsanitize=address --extra-linker-args -fsanitize=address;\
 		###Builds with a few specail flags to make valgrind work better\
 		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable;\
 		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable;\
