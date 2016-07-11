@@ -466,10 +466,10 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
                 // and accept aborts after we've marked reference count as set.
                 sigset_t    mySet;
                 ::sigemptyset (&mySet);
-                (void)::sigaddset (&mySet, GetSignalUsedForThreadAbort ());
+                (void)::sigaddset (&mySet, GetSignalUsedForThreadInterrupt ());
                 Verify (::pthread_sigmask (SIG_UNBLOCK, &mySet, nullptr) == 0);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadAbort ()).c_str ());
+                DbgTrace (L"Just set SIG_UNBLOCK for signal %s in this thread", SignalToName (GetSignalUsedForThreadInterrupt ()).c_str ());
 #endif
             }
 #endif
@@ -525,7 +525,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
         catch (...) {
             SuppressInterruptionInContext   suppressCtx;
 #if     qPlatform_POSIX
-            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
+            Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadInterrupt ());
             s_Interrupting_ = InteruptFlagState_::eNone;        //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread: %s", incRefCnt->ToString ().c_str ());
@@ -595,7 +595,7 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
             auto    critSec { make_unique_lock (sHandlerInstalled_) };
             if (not sHandlerInstalled_)
             {
-                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
+                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
             }
         }
@@ -607,10 +607,10 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
              *
              *  @todo PROBABLY NOT NEEDED ANYMORE (due to use of sigaction) -- LGP 2015-08-29
              */
-            Verify (::siginterrupt (GetSignalUsedForThreadAbort (), true) == 0);
+            Verify (::siginterrupt (GetSignalUsedForThreadInterrupt (), true) == 0);
         }
 
-        (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
+        (void)Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadInterrupt ());
 #elif   qPlatform_Windows
         Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
@@ -680,7 +680,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
  ********************************************************************************
  */
 #if     qPlatform_POSIX
-SignalID        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
+SignalID        Thread::sSignalUsedForThreadInterrupt_  =   SIGUSR2;
 #endif
 namespace {
     Synchronized<Thread::Configuration> sDefaultConfiguration_;
@@ -802,14 +802,14 @@ void    Thread::SetThreadPriority (Priority priority)
 }
 
 #if     qPlatform_POSIX
-void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
+void    Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
 {
     auto    critSec { make_unique_lock (sHandlerInstalled_) };
     if (sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;
     }
-    sSignalUsedForThreadAbort_ = signalNumber;
+    sSignalUsedForThreadInterrupt_ = signalNumber;
     // install new handler
     if (not sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);

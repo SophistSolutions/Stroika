@@ -466,10 +466,10 @@ namespace   Stroika {
 
 #if     qPlatform_POSIX
             public:
-                static  SignalID        GetSignalUsedForThreadAbort ();
-                static  void            SetSignalUsedForThreadAbort (SignalID signalNumber);
+                static  SignalID        GetSignalUsedForThreadInterrupt ();
+                static  void            SetSignalUsedForThreadInterrupt (SignalID signalNumber);
             private:
-                static  SignalID        sSignalUsedForThreadAbort_;
+                static  SignalID        sSignalUsedForThreadInterrupt_;
 #endif
 
             public:

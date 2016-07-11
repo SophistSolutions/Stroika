@@ -129,9 +129,9 @@ namespace   Stroika {
             {
             }
 #if     qPlatform_POSIX
-            inline  SignalID        Thread::GetSignalUsedForThreadAbort ()
+            inline  SignalID        Thread::GetSignalUsedForThreadInterrupt ()
             {
-                return sSignalUsedForThreadAbort_;
+                return sSignalUsedForThreadInterrupt_;
             }
 #endif
             inline  Thread::IDType  Thread::GetID () const
