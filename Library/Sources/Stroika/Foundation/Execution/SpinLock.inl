@@ -80,7 +80,7 @@ namespace   Stroika {
                         case BarrierFlag::eReleaseAcquire:
                             std::atomic_thread_fence (std::memory_order_acquire);
                             break;
-                        case BarrierFlag::eCST:
+                        case BarrierFlag::eMemoryTotalOrder:
                             std::atomic_thread_fence (std::memory_order_seq_cst);
                             break;
                         default:
@@ -102,7 +102,7 @@ namespace   Stroika {
                     case BarrierFlag::eReleaseAcquire:
                         std::atomic_thread_fence (std::memory_order_release);
                         break;
-                    case BarrierFlag::eCST:
+                    case BarrierFlag::eMemoryTotalOrder:
                         std::atomic_thread_fence (std::memory_order_seq_cst);
                         break;
                     default:

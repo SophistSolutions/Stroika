@@ -66,11 +66,11 @@ namespace   Stroika {
                 enum class BarrierFlag {
                     eNoBarrier,
                     eReleaseAcquire,
-                    eCST,
+                    eMemoryTotalOrder,
 
                     eDEFAULT = eReleaseAcquire,
 
-                    Stroika_Define_Enum_Bounds(eNoBarrier, eCST)
+                    Stroika_Define_Enum_Bounds(eNoBarrier, eMemoryTotalOrder)
                 };
 
             public:
