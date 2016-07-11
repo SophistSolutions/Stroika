@@ -108,7 +108,7 @@ sub	DoHelp_
         print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2015) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
-        print("	    --valgrind { enable|disable|default }			/* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
+        print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++11, --std=c++14, or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -135,8 +135,8 @@ sub	DoHelp_
         print("	    --apply-default-debug-flags                     /*  */\n");
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
-        print("	    --debug-symbols {true|false}					/* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
-        print("	    --runtime-stack-check {true|false}				/* gcc -fstack-protector-all */\n");
+        print("	    --debug-symbols {true|false}                    /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
 		
 	exit ($x);
 }
