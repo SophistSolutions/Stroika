@@ -560,21 +560,16 @@ void    Thread::Rep_::NotifyOfInteruptionFromAnyThread_ (bool aborting)
         fTLSInterruptFlag_->store (InteruptFlagState_::eAborted);
     }
     else {
-        // always upgrade
-        while (true) {
-            InteruptFlagState_  none        =   InteruptFlagState_::eNone;
-            InteruptFlagState_  interupt    =   InteruptFlagState_::eInterupted;
-            InteruptFlagState_  abort       =   InteruptFlagState_::eAborted;
-            if (fTLSInterruptFlag_->compare_exchange_strong (none, InteruptFlagState_::eInterupted)) {
-                break;
-            }
-            if (fTLSInterruptFlag_->compare_exchange_strong (interupt, InteruptFlagState_::eInterupted)) {
-                break;
-            }
-            if (fTLSInterruptFlag_->compare_exchange_strong (abort, InteruptFlagState_::eAborted)) {
-                break;
-            }
+        /*
+         *  Only upgrade
+         *
+         *  If was none, upgrade to interupted. If was interupted, already done. If was aborted, dont actually want to change.
+         */
+        InteruptFlagState_  v        =   InteruptFlagState_::eNone;
+        if (not fTLSInterruptFlag_->compare_exchange_strong (v, InteruptFlagState_::eInterupted)) {
+            Assert (v == InteruptFlagState_::eInterupted or v == InteruptFlagState_::eAborted);
         }
+        Assert (fTLSInterruptFlag_->load () == InteruptFlagState_::eInterupted or fTLSInterruptFlag_->load () == InteruptFlagState_::eAborted);
     }
 
     if (GetCurrentThreadID () == GetID ()) {
@@ -1126,7 +1121,7 @@ void    Execution::CheckForThreadInterruption ()
      *  just before the actual throw.
      */
     if (s_InterruptionSuppressDepth_ == 0) {
-		Thread::SuppressInterruptionInContext	suppressSoStringsDontThrow;
+        Thread::SuppressInterruptionInContext   suppressSoStringsDontThrow;
         switch (s_Interrupting_.load ()) {
             case InteruptFlagState_::eInterupted:
                 Throw (Thread::InterruptException::kThe);
