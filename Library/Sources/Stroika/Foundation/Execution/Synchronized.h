@@ -235,19 +235,6 @@ namespace   Stroika {
                 nonvirtual  WritableReference rwget ();
 
             public:
-                /**
-                 */
-                _Deprecated_ ("USE cget ") const WritableReference GetReference () const
-                {
-                    auto nonConstThis = const_cast<Synchronized<T, TRAITS>*> (this);
-                    return WritableReference (&nonConstThis->fDelegate_, &nonConstThis->fLock_);
-                }
-                _Deprecated_ ("USE rwget ") WritableReference GetReference ()
-                {
-                    return WritableReference (&fDelegate_, &fLock_);
-                }
-
-            public:
                 /*
                  *  \brief  alias for cget ()
                  *

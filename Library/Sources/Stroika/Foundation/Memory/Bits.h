@@ -64,13 +64,6 @@ namespace   Stroika {
              */
             template    <typename INT_TYPE>
             constexpr   INT_TYPE    BitSubstring (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset);
-#if 0
-            template    <typename INT_TYPE>
-            _Deprecated_ ("USE BitSubstring ")   constexpr   INT_TYPE    BitSubstring_NEW (INT_TYPE bitField, unsigned int startOffset, unsigned int endOffset)
-            {
-                return BitSubstring_NEW (bitField, startOffset, endOffset);
-            }
-#endif
 
 
         }
