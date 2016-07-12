@@ -23,10 +23,11 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157x</a><br/>2016-07-11</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157x</a><br/>2016-07-12</td>
 <td>
 	<ul>
 		<li>fixed Containers/ExternallySynchronizedDataStructures/Array to use delete[] - detected by AddressSanitizer</li>
+		<li>Started adding more regtests - in preps for valgrind on arm, and addressanitizer/threadsantiizer tests</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>vc++2k15 Update 3</li>

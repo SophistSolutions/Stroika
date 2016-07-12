@@ -348,5 +348,5 @@ regression-test-configurations:
 		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
-		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --openssl use --openssl-extraargs purify --block-allocation disable --cross-compiling true;\
+		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
 	fi
