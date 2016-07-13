@@ -894,9 +894,35 @@ void    Thread::Abort ()
 
     // first try to send abort exception, and then - if force - get serious!
     // goto aborting, unless the previous value was completed, and then leave it completed.
+
+#if 1
+    {
+        // set to aborting, unless completed
+        Status s   =   Status::eRunning;
+        while (not fRep_->fStatus_.compare_exchange_strong (s, Status::eAborting)) {
+            switch (s) {
+                case Status::eNull:
+                    AssertNotReached ();
+                    break;
+                case Status::eAborting:
+                    // cannot happen first time through loop, but can ob subsequent passes
+                    break;              // leave state aborted
+                case Status::eCompleted:
+                    break;              // leave state completed
+                case Status::eNotYetRunning:
+                    continue;   // try again - this should transition to aborting
+                case Status::eRunning:
+                    continue;   // try again - this should transition to aborting
+                default:
+                    AssertNotReached ();
+            }
+        }
+    }
+#else
     if (fRep_->fStatus_.exchange (Status::eAborting) == Status::eCompleted) {
         fRep_->fStatus_ = Status::eCompleted;
     }
+#endif
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfInterruptionFromAnyThread_ (true);
