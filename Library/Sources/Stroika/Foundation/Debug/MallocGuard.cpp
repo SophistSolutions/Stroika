@@ -15,7 +15,7 @@ using   namespace   Stroika::Foundation;
 using   Memory::Byte;
 
 
-#if     qStroika_Foundation_Debug_MallogGuard ||1
+#if     qStroika_Foundation_Debug_MallogGuard
 namespace {
     using   GuradBytes_ =   Byte[16];
     constexpr   GuradBytes_ kMallocGuardHeader_ = { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
@@ -51,6 +51,7 @@ namespace {
     // returns the pointer to use externally
     void*   PatchNewPointer_ (void* p, size_t requestedSize)
     {
+        return p;
     }
 
     // todo variant that does pointer arithmatic
