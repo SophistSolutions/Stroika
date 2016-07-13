@@ -321,7 +321,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
     , fOK2StartEvent_ (WaitableEvent::eAutoReset)
-    , fThreadDone_ (WaitableEvent::eAutoReset)
+    , fThreadDone_ (WaitableEvent::eManualReset)
     , fThreadName_ ()
 {
 #if     qPlatform_POSIX
