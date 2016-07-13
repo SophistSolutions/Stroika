@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <exception>
 #include    <malloc.h>
 
 #include    "../Memory/Common.h"
@@ -29,10 +30,16 @@ namespace {
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
+            AssertNotReached ();
+            std::terminate ();
         }
         if (::memcmp (&footer.fGuard, &kMallocGuardFooter_, sizeof (kMallocGuardFooter_)) != 0) {
+            AssertNotReached ();
+            std::terminate ();
         }
         if (header.fRequestedBlockSize != footer.fRequestedBlockSize) {
+            AssertNotReached ();
+            std::terminate ();
         }
         // OK
     }

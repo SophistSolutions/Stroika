@@ -41,6 +41,10 @@ namespace   Stroika {
 
 
              &&& for now - requires GCC
+             &"
+             *  \note   On detected errors, this will first call AssertNotReached (), and then std::terminate ();
+             *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
+             *          and typically a core file - when errors are detected.
              */
 #if     !defined (qStroika_Foundation_Debug_MallogGuard)
 #define qStroika_Foundation_Debug_MallogGuard   0
