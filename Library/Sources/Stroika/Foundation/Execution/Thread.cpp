@@ -988,18 +988,27 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         return;
     }
     if (fRep_->fStatus_ == Status::eCompleted) {
-        return;
+        fRep_->fThreadDone_.Wait ();   // if we got past setting the status to completed wait forever for the last little bit as the thread just sets this event
     }
-    if (timeoutAt < Time::GetTickCount ()) {
-        Throw (TimeOutException::kThe);
+    else {
+        if (timeoutAt < Time::GetTickCount ()) {
+            Throw (TimeOutException::kThe);
+        }
+        fRep_->fThreadDone_.WaitUntil (timeoutAt);
     }
-    bool    doWait  =   false;
     /*
      *  First wait on fThreadDone_. If we get passed it, its safe to block indefinitely (since we're exiting
      *  the thread).
      */
     fRep_->fThreadDone_.WaitUntil (timeoutAt);
-    // If not joinable, presume that means cuz its done
+
+    /*
+     *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
+     *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+     *  because thats the only time we have an imporant side effect of the threads finalizing.
+     *
+     *  @see https://stroika.atlassian.net/browse/STK-496
+     */
     lock_guard<mutex>   critSec  { fRep_->fAccessSTDThreadMutex_ };
     if (fRep_->fThread_.joinable  ()) {
         // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDone_ - it shouldn't really take long
@@ -1027,6 +1036,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
         }
         Platform::Windows::WaitAndPumpMessages (nullptr, { thread }, time2Wait);
     }
+    WaitForDone (); // just to get the qStroika_Foundation_Exection_Thread_SupportThreadStatistics / join ()
 }
 #endif
 

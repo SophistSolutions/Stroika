@@ -393,6 +393,8 @@ namespace   Stroika {
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
                  *  Note that its legal to call WaitForDone on a thread in any state - including nullptr.
                  *  Some may just have no effect
+                 *
+                 *  @see WaitForDoneUntil ()
                  */
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
@@ -400,7 +402,11 @@ namespace   Stroika {
                 /**
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
                  *  Note that its legal to call WaitForDoneUntil on a thread in any state - including nullptr.
-                 *  Some may just have no effect
+                 *  Some may just have no effect.
+                 *
+                 *  \note   This does a tiny bit more than waiting for the done state to be set - it also
+                 *          'joins' (frees memory for) underlying thread if still allocated. This should not be visible/noticed
+                 *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  */
                 nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
@@ -415,6 +421,8 @@ namespace   Stroika {
                  *  As for example in FileUtils - DirectoryWatcher...
                  *
                  *  throws if timeout
+                 *
+                 *  @see WaitForDoneUntil ()
                  */
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -440,6 +448,8 @@ namespace   Stroika {
                  *  Its NOT an error if the timeout is exceeded.
                  *
                  *  throws if timeout
+                 *
+                 *  @see WaitForDoneUntil ()
                  */
                 nonvirtual  void    WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
