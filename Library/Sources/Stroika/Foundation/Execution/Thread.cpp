@@ -996,11 +996,6 @@ void    Thread::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
         }
         fRep_->fThreadDone_.WaitUntil (timeoutAt);
     }
-    /*
-     *  First wait on fThreadDone_. If we get passed it, its safe to block indefinitely (since we're exiting
-     *  the thread).
-     */
-    fRep_->fThreadDone_.WaitUntil (timeoutAt);
 
     /*
      *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
