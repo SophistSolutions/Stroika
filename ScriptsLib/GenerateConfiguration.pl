@@ -85,6 +85,7 @@ my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS = 1;
+my $MALLOC_GUARD = DEFAULT_BOOL_OPTIONS;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
 my $COMPILER_DRIVER = "";
@@ -136,6 +137,7 @@ sub	DoHelp_
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
         print("	    --debug-symbols {true|false}                    /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
 		
 	exit ($x);
@@ -636,6 +638,15 @@ sub	ParseCommandLine_Remaining_
 			}
 			$INCLUDE_SYMBOLS = $var;
 		}
+
+		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --malloc-guard");
+			}
+			$MALLOC_GUARD = $var;
+		}
 		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -759,6 +770,10 @@ sub PostProcessOptions_ ()
 			#Dont know how to do this yet...
 			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		}
+	}
+
+	if ($MALLOC_GUARD eq true) {
+		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallogGuard 1');
 	}
 }
 

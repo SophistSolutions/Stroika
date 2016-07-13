@@ -626,6 +626,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp" />
@@ -1126,6 +1127,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h" />
@@ -1480,6 +1482,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />

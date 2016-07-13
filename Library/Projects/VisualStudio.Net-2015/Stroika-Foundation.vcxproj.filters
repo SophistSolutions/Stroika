@@ -753,6 +753,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp">
+      <Filter>Sources\Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1794,6 +1797,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2664,9 +2670,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
-    <None Include="..\..\Sources\ReadMe.md">
-      <Filter>Sources\Debug</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
     </None>
@@ -2723,6 +2726,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\ReadMe.md">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
 </Project>
