@@ -232,7 +232,7 @@ void    Logger::ShutdownSingleton ()
 void    Logger::Shutdown ()
 {
     Debug::TraceContextBumper ctx ("Logger::Shutdown");
-    // @todo FIX to assure all shutdwon properly...
+    // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
     SetSuppressDuplicates (Memory::Optional<DurationSecondsType> {});
     SetBufferingEnabled (false);
