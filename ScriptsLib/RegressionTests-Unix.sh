@@ -149,8 +149,8 @@ if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
 fi
 
-#GUESTIMATE - I think excludes 2 clang tests
-TOTAL_WARNINGS_EXPECTED=$(($NUM_REGTESTS - 2))
+#VERY ROUGH GUESTIMATE - I think excludes 2 clang tests, and a few more?
+TOTAL_WARNINGS_EXPECTED=$(($NUM_PASSES_OF_REGTESTS_RUN - 5))
 
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
 echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
