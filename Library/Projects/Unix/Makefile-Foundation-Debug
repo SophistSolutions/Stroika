@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)BackTrace.o\
 	$(ObjDir)Debugger.o\
 	$(ObjDir)Fatal.o\
+	$(ObjDir)MallocGuard.o\
 	$(ObjDir)Trace.o\
 
 all:	$(Objs)
