@@ -31,6 +31,8 @@ namespace {
 
     void    OhShit_ ()
     {
+        const char  kMsg_[] =   "Fatal Error detected in Stroika Malloc Guard\n";
+        ::write (2, kMsg_, NEltsOf (kMsg_));
         std::terminate ();
     }
 
@@ -40,14 +42,14 @@ namespace {
         if (p == nullptr) {
             OhShit_ ();
         }
-        return reinterpret_cast<const HeaderOrFooter_*> (p) - 1;
+        return reinterpret_cast<HeaderOrFooter_*> (p) - 1;
     }
     void*   BackendPtrToExposedPtr_ (void* p)
     {
         if (p == nullptr) {
             OhShit_ ();
         }
-        return reinterpret_cast<const HeaderOrFooter_*> (p) + 1;
+        return reinterpret_cast<HeaderOrFooter_*> (p) + 1;
     }
     size_t  AdjustMallocSize_ (size_t s)
     {
@@ -74,17 +76,16 @@ namespace {
         const HeaderOrFooter_*  fp  =   reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
         HeaderOrFooter_ footer;
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
-        Validate_ (*h, footer);
+        Validate_ (*hp, footer);
     }
     void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
         HeaderOrFooter_*  hp   =   reinterpret_cast< HeaderOrFooter_*> (p);
-        (void)::memcpy (begin (hp->fGuard[0]), begin (kMallocGuardHeader_),  NEltsOf (kMallocGuardHeader_));
+        (void)::memcpy (begin (hp->fGuard), begin (kMallocGuardHeader_),  NEltsOf (kMallocGuardHeader_));
         hp->fRequestedBlockSize = requestedSize;
         HeaderOrFooter_*  fp  =    reinterpret_cast< HeaderOrFooter_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
-        (void)::memcpy (begin (fp->fGuard[0]), begin (kMallocGuardFooter_),  NEltsOf (kMallocGuardFooter_));
+        (void)::memcpy (begin (fp->fGuard), begin (kMallocGuardFooter_),  NEltsOf (kMallocGuardFooter_));
         fp->fRequestedBlockSize = requestedSize;
-        return p;
     }
 }
 #endif
