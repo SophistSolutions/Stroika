@@ -88,6 +88,41 @@ namespace {
         SetDeadMansLand_ (reinterpert_cast<Byte*> (p), reinterpert_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
 
+    /*
+     *  not 100% threadsafe, but OK.
+     *
+     *  Also FreeList alway uses BackendPtr - not ExternalPtr
+     */
+    void*   sFreeList_[100];
+    void**  sFreeList_NextFreeI_    =   &sFreeList_[0];
+    void    Add2FreeList_ (void* p)
+    {
+        *sFreeList_NextFreeI_ = p;
+        void**  next = sFreeList_NextFreeI_ + 1;
+        if (next >= end (sFreeList_)) {
+            next = begin (sFreeList_);
+        }
+        sFreeList_NextFreeI_ = next;    // race in that we could SKIP recording a free element, but thats harmless - just a missed opportunity to detect an error
+    }
+    void    ClearFromFreeList_ (void* p)
+    {
+        // not a race because you cannot free and allocate the same pointer at the same time
+        for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
+            if (*i == p) {
+                *i = nullptr;
+            }
+        }
+    }
+    bool    IsInFreeList_ (void* p)
+    {
+        for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
+            if (*i == p) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
@@ -108,6 +143,9 @@ namespace {
         HeaderOrFooter_ footer;
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
         Validate_ (*hp, footer);
+        if (IsInFreeList_ (p)) {
+            OhShit_ ();
+        }
     }
     void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
@@ -178,6 +216,7 @@ extern "C"  void    free (void* __ptr)
     void*   p = ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
     SetDeadMansLand_ (p);
+    Add2FreeList_ (p);
     __libc_free (p);
 }
 
@@ -185,6 +224,7 @@ extern "C"  void*   malloc (size_t __size)
 {
     void*   p   =   __libc_malloc (AdjustMallocSize_ (__size));
     PatchNewPointer_ (p, __size);
+    ClearFromFreeList_ (p);
     ValidateBackendPtr_ (p);
     if (p != nullptr) {
         p = BackendPtrToExposedPtr_ (p);
@@ -208,13 +248,18 @@ extern "C"  void*    realloc (void* __ptr, size_t __size)
     void*   p   =   ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
     size_t  n   =   AdjustMallocSize_ (__size);
-    p = __libc_realloc (p, n);
-    if (p != nullptr) {
-        PatchNewPointer_ (p, __size);
-        ValidateBackendPtr_ (p);
-        p = BackendPtrToExposedPtr_ (p);
+    void*   newP = __libc_realloc (p, n);
+    if (newP != nullptr) {
+        PatchNewPointer_ (newP, __size);
+        if (newP != p) {
+            SetDeadMansLand_ (p);
+            Add2FreeList_ (p);
+            ClearFromFreeList_ (newP);
+        }
+        ValidateBackendPtr_ (newP);
+        newP = BackendPtrToExposedPtr_ (newP);
     }
-    return p;
+    return newP;
 }
 
 extern "C"  void*   valloc (size_t __size)

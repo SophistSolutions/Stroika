@@ -26,8 +26,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   keep a 'free list' so we can detect re-use of freed items (e.g. double delete)
- *
  *      @todo   Support on Windows/MSVC
  *
  *      @todo   Maybe support generically (not sure if/how possible)
