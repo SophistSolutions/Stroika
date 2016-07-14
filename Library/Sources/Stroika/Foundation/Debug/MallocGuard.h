@@ -30,11 +30,16 @@
  *
  *      @todo   Maybe support generically (not sure if/how possible)
  *
- *      @todo   Finish support for stuff like memalign () and other functions that maybe needed
+ *      @todo   Finish support for stuff like posix_memalign () and other functions that maybe needed
  *
  *      @todo   Consider doing an implementation with the 'wrap' logic'
  *              http://stackoverflow.com/questions/262439/create-a-wrapper-function-for-malloc-and-free-in-c
- *
+ *              --wrap=symbol
+ *               void *__wrap_malloc (size_t c)
+ *              {
+ *                  printf ("malloc called with %zu\n", c);
+ *                  return __real_malloc (c);
+ *              }
  */
 
 namespace   Stroika {
@@ -43,15 +48,15 @@ namespace   Stroika {
 
 
             /**
-             *  If qStroika_Foundation_Debug_MallocGuard defined to 1,
-
-             TBD
-
-             but basically - replace malloc/free etc
-
-
-             &&& for now - requires GCC
-             &"
+             *  If qStroika_Foundation_Debug_MallocGuard defined to 1, wrap malloc(), free () etc, to do extra checking for corruption, double free
+             *  write off the ends, etc.
+             *
+             *  This works in DEBUG or RELEASE builds.
+             *
+             *  This - so far - only works for GCC.
+             *
+             *  This may not work perfectly if you call some wierd malloc variants, or mix __libc_malloc with free (), etc.
+             *
              *  \note   On detected errors, this will first call std::terminate ();
              *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
              *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
