@@ -13,6 +13,8 @@
 
 #include    "../Memory/Common.h"
 
+#include    "Trace.h"
+
 #include    "MallocGuard.h"
 
 
@@ -35,13 +37,19 @@ namespace {
     };
 
 
-    void    OhShit_ ()
+    void    OhShit_ (const char* why)
     {
         static  bool    sDone_      { false };      // doing terminate MIGHT allocate more memory ... just go with the flow if that happens - and dont re-barf (e.g. allow backtrace if possible)
         if (not sDone_) {
             sDone_ = true;
             const char  kMsg_[] =   "Fatal Error detected in Stroika Malloc Guard\n";
             ::write (2, kMsg_, NEltsOf (kMsg_));
+            DbgTrace ("%s", kMsg_);
+            {
+                ::write (2, why, ::strlen (why));
+                ::write (2, "\n", 1);
+                DbgTrace ("%s", why);
+            }
             std::terminate ();
         }
     }
@@ -50,14 +58,14 @@ namespace {
     void*   ExposedPtrToBackendPtr_ (void* p)
     {
         if (p == nullptr) {
-            OhShit_ ();
+            OhShit_ ("unexpected nullptr in ExposedPtrToBackendPtr_");
         }
         return reinterpret_cast<HeaderOrFooter_*> (p) - 1;
     }
     void*   BackendPtrToExposedPtr_ (void* p)
     {
         if (p == nullptr) {
-            OhShit_ ();
+            OhShit_ ("unexpected nullptr in BackendPtrToExposedPtr_");
         }
         return reinterpret_cast<HeaderOrFooter_*> (p) + 1;
     }
@@ -149,13 +157,13 @@ namespace {
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
-            OhShit_ ();
+            OhShit_ ("Invalid leading header guard");
         }
         if (::memcmp (&footer.fGuard, &kMallocGuardFooter_, sizeof (kMallocGuardFooter_)) != 0) {
-            OhShit_ ();
+            OhShit_ ("Invalid trailing footer guard");
         }
         if (header.fRequestedBlockSize != footer.fRequestedBlockSize) {
-            OhShit_ ();
+            OhShit_ ("Mismatch between header/trailer block sizes");
         }
         // OK
     }
@@ -163,7 +171,7 @@ namespace {
     {
         if (IsInFreeList_ (p)) {
             // check FIRST because if freed, the header will be all corrupted
-            OhShit_ ();
+            OhShit_ ("Pointer already freed (recently)");
         }
         const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
         const HeaderOrFooter_*  fp  =   reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
@@ -266,21 +274,21 @@ extern "C"  void*    realloc (void* __ptr, size_t __size)
 extern "C"  void*   valloc (size_t __size)
 {
     // http://linux.die.net/man/3/valloc "OBSOLETE"
-    OhShit_ ();
+    OhShit_ ("valloc not supported in qStroika_Foundation_Debug_MallocGuard (valloc is OBSOLETE)");
     return nullptr;
 }
 
 extern "C"  void*   pvalloc (size_t __size)
 {
     // http://linux.die.net/man/3/valloc "OBSOLETE"
-    OhShit_ ();
+    OhShit_ ("pvalloc not supported in qStroika_Foundation_Debug_MallocGuard (pvalloc is OBSOLETE)");
     return nullptr;
 }
 
 extern "C"  void*   memalign (size_t __alignment, size_t __size)
 {
     // http://linux.die.net/man/3/valloc "OBSOLETE"
-    OhShit_ ();
+    OhShit_ ("memalign not supported in qStroika_Foundation_Debug_MallocGuard (memalign is OBSOLETE)");
     return nullptr;
 }
 
@@ -298,7 +306,7 @@ extern "C"  size_t malloc_usable_size (void* ptr)
 extern "C"  int posix_memalign (void** memptr, size_t alignment, size_t size)
 {
     // Probably SHOULD implement ... but so far not running into trouble cuz anything I link to calling this...
-    OhShit_ ();
+    OhShit_ ("posix_memalign () not supported in qStroika_Foundation_Debug_MallocGuard (it should be)");
     return 0;
 }
 #endif
