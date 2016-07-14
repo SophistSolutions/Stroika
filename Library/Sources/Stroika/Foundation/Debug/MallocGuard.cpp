@@ -27,7 +27,7 @@ namespace {
     constexpr   GuradBytes_ kMallocGuardFooter_ =   { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
     constexpr   Byte        kDeadMansLand_[]    =   { 0x1d, 0xb6, 0x20, 0x27, 0x43, 0x7a, 0x3d, 0x1a, 0x13, 0x65, };
 
-    // need header with size, so we can ....
+
     struct alignas(alignof(long double))  HeaderOrFooter_ {
         GuradBytes_ fGuard;
         size_t      fRequestedBlockSize;
@@ -65,6 +65,7 @@ namespace {
         return s + 2 * sizeof (HeaderOrFooter_);
     }
 
+
     bool    IsDeadMansLand_ (const Byte* s, const Byte* e)
     {
         return false;
@@ -87,6 +88,7 @@ namespace {
         const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
         SetDeadMansLand_ (reinterpret_cast<Byte*> (p), reinterpret_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
+
 
     /*
      *  not 100% threadsafe, but OK.
@@ -123,6 +125,7 @@ namespace {
         return false;
     }
 
+
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
@@ -147,6 +150,8 @@ namespace {
             OhShit_ ();
         }
     }
+
+
     void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
         HeaderOrFooter_*  hp   =   reinterpret_cast< HeaderOrFooter_*> (p);
