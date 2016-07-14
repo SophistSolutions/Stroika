@@ -36,15 +36,23 @@ namespace {
     }
 
 
-    void*   ExposedPtrToBackendPtr_ (const void* p)
+    void*   ExposedPtrToBackendPtr_ (void* p)
     {
-        RequireNotNull (p);
+        if (p == nullptr) {
+            OhShit_ ();
+        }
         return reinterpret_cast<const HeaderOrFooter_*> (p) - 1;
     }
-    void*   BackendPtrToExposedPtr_ (const void* p)
+    void*   BackendPtrToExposedPtr_ (void* p)
     {
-        RequireNotNull (p);
+        if (p == nullptr) {
+            OhShit_ ();
+        }
         return reinterpret_cast<const HeaderOrFooter_*> (p) + 1;
+    }
+    size_t  AdjustMallocSize_ (size_t s)
+    {
+        return s + 2 * sizeof (HeaderOrFooter_);
     }
 
 
@@ -68,10 +76,6 @@ namespace {
         HeaderOrFooter_ footer;
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
         Validate_ (*h, footer);
-    }
-    size_t  AdjustMallocSize_ (size_t s)
-    {
-        return s + 2 * sizeof (HeaderOrFooter_);
     }
     // returns the pointer to use externally
     void*   PatchNewPointer_ (void* p, size_t requestedSize)
@@ -124,7 +128,10 @@ weak_alias (__malloc_info, malloc_info)
 
 extern "C"  void*   calloc (size_t __nmemb, size_t __size)
 {
-    return __libc_calloc (__nmemb, __size);
+    size_t  n   =   __nmemb * __size;
+    void*   p   =   malloc (n);
+    (void)::memset (p, 0, n);
+    return p;
 }
 
 extern "C"  void    cfree (void* __ptr)
@@ -132,34 +139,45 @@ extern "C"  void    cfree (void* __ptr)
     free (__ptr);
 }
 
-extern "C" void free (void* __ptr)
+extern "C"  void    free (void* __ptr)
 {
-    __libc_free (__ptr);
+    void*   p = ExposedPtrToBackendPtr_ (__ptr);
+    __libc_free (p);
 }
 
-extern "C" void* malloc (size_t __size)
+extern "C"  void*   malloc (size_t __size)
 {
-    return __libc_malloc (__size);
+    void*   p   =   __libc_malloc (AdjustMallocSize_ (__size));
+    if (p != nullptr) {
+        p = BackendPtrToExposedPtr_ (p);
+    }
+    return p;
 }
 
-extern "C" void*    realloc (void* __ptr, size_t __size)
+extern "C"  void*    realloc (void* __ptr, size_t __size)
 {
-    return __libc_realloc (__ptr, __size);
+    void*   p   =   ExposedPtrToBackendPtr_ (__ptr);
+    size_t  n   =   AdjustMallocSize_ (__size);
+    p = __libc_realloc (p, n);
+    if (p != nullptr) {
+        p = BackendPtrToExposedPtr_ (p);
+    }
+    return p;
 }
 
-extern "C"  void* valloc (size_t __size)
+extern "C"  void*   valloc (size_t __size)
 {
     OhShit_ ();
     return nullptr;
 }
 
-extern "C"  void* pvalloc (size_t __size)
+extern "C"  void*   pvalloc (size_t __size)
 {
     OhShit_ ();
     return nullptr;
 }
 
-extern "C"  void* memalign (size_t __alignment, size_t __size)
+extern "C"  void*   memalign (size_t __alignment, size_t __size)
 {
     OhShit_ ();
     return nullptr;
