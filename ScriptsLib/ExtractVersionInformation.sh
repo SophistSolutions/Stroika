@@ -32,15 +32,17 @@ OUT_FIELD_NAME=$2
 FULLVERSIONSTRING=`sed 's/[ \t]*$//' $VERSION_IN_FILE | xargs echo -n`
 MAJOR=`sed 's/\([0-9]*\).*/\1/' $VERSION_IN_FILE`
 MINOR=`sed 's/[0-9]*\.\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr]\).*/\1/' $VERSION_IN_FILE`
-VERSIONSUBSTAGE=`sed 's/[0-9]*\.[0-9]*[abdr]\([0-9]*\).*/\1/' $VERSION_IN_FILE`
-VERSIONFINAL=`sed 's/[0-9]*\.[0-9]*[abdr][0-9]*\(.*\)/\1/' $VERSION_IN_FILE | tr -d '[[:space:]]'`
+VERSIONSTAGE=`sed 's/[0-9]*\.[0-9]*\([abdr\.]\?\).*/\1/' $VERSION_IN_FILE`
+VERSIONSUBSTAGE=`sed 's/[0-9]*\.[0-9]*[abdr\.]\?\([0-9]*\).*/\1/' $VERSION_IN_FILE`
+VERSIONFINAL=`sed 's/[0-9]*\.[0-9]*[abdr\.]\?[0-9]*\(.*\)/\1/' $VERSION_IN_FILE | tr -d '[[:space:]]'`
 SHORT_VERSION_STAGE=$VERSIONSTAGE
 SHORT_VERSIONFINAL=$VERSIONFINAL
 if [ "$VERSIONSTAGE" == "a" ] ; then VERSIONSTAGE="Alpha"; fi
 if [ "$VERSIONSTAGE" == "b" ] ; then VERSIONSTAGE="Beta"; fi
 if [ "$VERSIONSTAGE" == "d" ] ; then VERSIONSTAGE="Dev"; fi
 if [ "$VERSIONSTAGE" == "r" ] ; then VERSIONSTAGE="ReleaseCandidate"; fi
+if [ "$VERSIONSTAGE" == "." ] ; then VERSIONSTAGE="Release"; fi
+if [ "$VERSIONSTAGE" == "" ] ; then VERSIONSTAGE="Release"; fi
 
 if [ "$VERSIONFINAL" == "x" ] ; then VERSIONFINAL="false"; fi
 if [ "$VERSIONFINAL" == "" ] ; then VERSIONFINAL="true"; fi
