@@ -23,7 +23,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157x</a><br/>2016-07-12</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157x</a><br/>2016-07-14</td>
 <td>
 	<ul>
 		<li>
@@ -31,14 +31,15 @@ History
 			 <ul>
 				<li>Slight race in Thread::WaitForDone:  https://stroika.atlassian.net/browse/STK-496 - minor changes to WaitForDone/WaitForDoneUnutl etc - in thread code. Test carefully. Very hard to reproduce</li>
 				<li>Major thread bug - fThreadDone event was an autoreset event! Must be manual reset (once someone waits on done - were still DONE!</li>
-				<li>slightl celanup of recent thread restructuring of waittildone code</li>
+				<li>slight cleanup of recent thread restructuring of waittildone code (needed manual reset event fix above to do this)</li>
 				<li>cleanup - compare_exchange_strong instead of exchange - with status - slight unimportant race cleaned up</lI>
 			 </ul>
-		</lI>
-		<li>malloc-guard (qStroika_Foundation_Debug_MallogGuard - ONLY for UNIX/GCC, configure --malloc-guard</li>
+		</li>
+		<li>updated ScriptsLib/ExtractVersionInformation.sh to handle 3.0.1 format version</li>
+		<li>malloc-guard (qStroika_Foundation_Debug_MallogGuard - ONLY for UNIX/GCC, configure --malloc-guard, to debug very hard to reproduce glibc memory corruption on BLKQCL device</li>
 		<li>Small UNIX regression test cleanups</li>
 		<li>fix makefile issue with xerces when its the only thirdpartylib</li>
-		<li>big change to debug symbols for unix - now IncludeDebugSymbolsInLibraries config file entry to paralel IncludeDebugSymbolsInExecutables and thats checked directyly instead of COnfig.mk file flag INCLUDE_SYMBOLS (which was ambiguous and confusing); 
+		<li>big change to debug symbols for unix - now IncludeDebugSymbolsInLibraries config file entry to parallel IncludeDebugSymbolsInExecutables and thats checked directyly instead of COnfig.mk file flag INCLUDE_SYMBOLS (which was ambiguous and confusing); 
 		instead - set +IncludeDebugSymbolsInExecutables by ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecu... in makefile - and use that to add -g to LinkerPrefixArgs
 		</li>
 		<li>fixed Containers/ExternallySynchronizedDataStructures/Array to use delete[] - detected by AddressSanitizer</li>
