@@ -27,6 +27,10 @@ History
 <td>
 	<ul>
 
+
+	https://stroika.atlassian.net/browse/STK-496
+
+
 	<!--as of 2016-07-12-->
 
 		<li>fixed Containers/ExternallySynchronizedDataStructures/Array to use delete[] - detected by AddressSanitizer</li>

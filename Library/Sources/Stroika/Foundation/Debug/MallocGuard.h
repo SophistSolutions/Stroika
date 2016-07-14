@@ -37,6 +37,8 @@
  *      @todo   Consider doing an implementation with the 'wrap' logic'
  *              http://stackoverflow.com/questions/262439/create-a-wrapper-function-for-malloc-and-free-in-c
  *
+ *      @todo   See if we can limp along once we get "OhShit" called - sowe can get stacktrace etc genrated. In Maybe as simple as only calling once.
+ *
  */
 
 namespace   Stroika {
@@ -54,9 +56,10 @@ namespace   Stroika {
 
              &&& for now - requires GCC
              &"
-             *  \note   On detected errors, this will first call AssertNotReached (), and then std::terminate ();
+             *  \note   On detected errors, this will first call std::terminate ();
              *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
-             *          and typically a core file - when errors are detected.
+             *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
+             *          not working well when we fail...
              */
 #if     !defined (qStroika_Foundation_Debug_MallocGuard)
 #define qStroika_Foundation_Debug_MallocGuard   0

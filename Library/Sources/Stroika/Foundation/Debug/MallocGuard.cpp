@@ -31,7 +31,6 @@ namespace {
 
     void    OhShit_ ()
     {
-        AssertNotReached ();
         std::terminate ();
     }
 
@@ -98,9 +97,7 @@ extern "C"  void*   __libc_malloc (size_t __size);
 extern "C"  void*   __libc_realloc (void* __ptr, size_t __size);
 extern "C"  void*   __libc_calloc (size_t __nmemb, size_t __size);
 extern "C"  void    __libc_free (void* __ptr);
-extern "C"  size_t  __malloc_usable_size (void* __ptr);
 extern "C"  void*   __libc_memalign (size_t __alignment, size_t __size);
-extern "C"  size_t  __malloc_usable_size (void* ptr);
 
 #if 0
 weak_alias (__malloc_info, malloc_info)
@@ -141,6 +138,10 @@ extern "C"  void    cfree (void* __ptr)
 
 extern "C"  void    free (void* __ptr)
 {
+    if (__ptr == nullptr) {
+        // according to http://linux.die.net/man/3/free
+        // "if ptr is NULL, no operation is performed." - and glibc does call this internally
+    }
     void*   p = ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
     __libc_free (p);
@@ -191,7 +192,12 @@ extern "C"  void*   memalign (size_t __alignment, size_t __size)
 
 extern "C"  size_t malloc_usable_size (void* ptr)
 {
-    OhShit_ ();
-    return 0;
+    if (ptr == nullptr) {
+        return 0;
+    }
+    void*   p   =   ExposedPtrToBackendPtr_ (ptr);
+    ValidateBackendPtr_ (p);
+    const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
+    return hp->fRequestedBlockSize;
 }
 #endif
