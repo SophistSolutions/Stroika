@@ -226,6 +226,7 @@ endif
 
 ifeq ($(INCLUDE_SYMBOLS), 1)
 	CFLAGS += -g
+	LinkerPrefixArgs += -g
 endif
 
 
