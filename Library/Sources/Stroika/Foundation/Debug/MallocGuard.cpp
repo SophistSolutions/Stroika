@@ -100,6 +100,7 @@ extern "C"  void*   __libc_calloc (size_t __nmemb, size_t __size);
 extern "C"  void    __libc_free (void* __ptr);
 extern "C"  size_t  __malloc_usable_size (void* __ptr);
 extern "C"  void*   __libc_memalign (size_t __alignment, size_t __size);
+extern "C"  size_t  __malloc_usable_size (void* ptr);
 
 #if 0
 weak_alias (__malloc_info, malloc_info)
@@ -186,5 +187,11 @@ extern "C"  void*   memalign (size_t __alignment, size_t __size)
 {
     OhShit_ ();
     return nullptr;
+}
+
+extern "C"  size_t malloc_usable_size (void* ptr)
+{
+    OhShit_ ();
+    return 0;
 }
 #endif

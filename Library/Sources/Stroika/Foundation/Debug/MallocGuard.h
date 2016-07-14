@@ -25,6 +25,18 @@
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
+ *  TODO:
+ *      @todo   Support on Windows/MSVC
+ *
+ *      @todo   Maybe support generically (not sure if/how possible)
+ *
+ *      @todo   Finish support for stuff like memalign () and other functions that maybe needed
+ *
+ *      @todo   Mark with 'special value' all freed items, and maybe keep a 'free list' so we can detect re-use of freed items
+ *
+ *      @todo   Consider doing an implementation with the 'wrap' logic'
+ *              http://stackoverflow.com/questions/262439/create-a-wrapper-function-for-malloc-and-free-in-c
+ *
  */
 
 namespace   Stroika {
