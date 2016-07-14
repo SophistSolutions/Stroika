@@ -102,29 +102,42 @@ namespace {
      *  Also FreeList alway uses BackendPtr - not ExternalPtr
      */
     volatile    void*   sFreeList_[100];
-    void**  sFreeList_NextFreeI_    =   &sFreeList_[0];
+    volatile    void**  sFreeList_NextFreeI_    =   &sFreeList_[0];
     void    Add2FreeList_ (void* p)
     {
         *sFreeList_NextFreeI_ = p;
-        void**  next = sFreeList_NextFreeI_ + 1;
+        volatile    void**  next = sFreeList_NextFreeI_ + 1;
         if (next >= end (sFreeList_)) {
             next = begin (sFreeList_);
         }
         sFreeList_NextFreeI_ = next;    // race in that we could SKIP recording a free element, but thats harmless - just a missed opportunity to detect an error
     }
+    void*   MyAtomicLoad_ (volatile void** p)
+    {
+        //unclear why this doesn't work....return std::atomic_load_explicit (p, memory_order_acquire);
+        // unclear that this is safe (but we do in Thread.cpp code too)
+        return std::atomic_load_explicit (reinterpret_cast<volatile atomic<void*>*> (p), memory_order_acquire);
+    }
+    void   MyAtomicStore_ (volatile void** p, void* value)
+    {
+        //unclear why this doesn't work....std::atomic_store_explicit (p, nullptr, memory_order_release);
+        // unclear that this is safe (but we do in Thread.cpp code too)
+        std::atomic_store_explicit (reinterpret_cast<volatile atomic<void*>*> (p), value, memory_order_release);
+
+    }
     void    ClearFromFreeList_ (void* p)
     {
         // not a race because you cannot free and allocate the same pointer at the same time
         for (volatile void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
-            if (std::atomic_load_explicit (i, memory_order_acquire) == p) {
-                std::atomic_store_explicit (i, nullptr, memory_order_release);
+            if (MyAtomicLoad_ (i) == p) {
+                MyAtomicStore_ (i, nullptr);
             }
         }
     }
     bool    IsInFreeList_ (const void* p)
     {
-        for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
-            if (std::atomic_load_explicit (i, memory_order_acquire) == p) {
+        for (volatile void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
+            if (MyAtomicLoad_ (i) == p) {
                 return true;
             }
         }
