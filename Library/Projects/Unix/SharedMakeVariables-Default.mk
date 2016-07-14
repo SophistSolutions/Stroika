@@ -55,6 +55,7 @@ endif
 
 
 IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
+IncludeDebugSymbolsInLibraries		=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
 
 
 ifndef StroikaFoundationLib
@@ -225,7 +226,7 @@ endif
 
 
 
-ifeq ($(INCLUDE_SYMBOLS), 1)
+ifeq ($(IncludeDebugSymbolsInLibraries), 1)
 	CFLAGS += -g
 endif
 

@@ -124,6 +124,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_ATLMFC'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<IncludeDebugSymbolsInLibraries>");
+		if (defined $pps) {
+			$configuration {'IncludeDebugSymbolsInLibraries'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<IncludeDebugSymbolsInExecutables>");
 		if (defined $pps) {
 			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;

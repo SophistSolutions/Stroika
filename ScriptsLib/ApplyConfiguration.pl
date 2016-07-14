@@ -49,7 +49,6 @@ my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
-my $INCLUDE_SYMBOLS = 1;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = 1;
 my $COMPILER_DRIVER_C = "";
@@ -132,7 +131,6 @@ sub	ReadConfiguration_
 	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
 
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
-	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
@@ -618,7 +616,6 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "\n");
 	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
 	print (OUT "IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=	$IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD\n");
-	print (OUT "INCLUDE_SYMBOLS=			$INCLUDE_SYMBOLS\n");
 	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "# Can be blank, or -O2, etc..\n");

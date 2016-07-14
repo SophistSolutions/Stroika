@@ -84,7 +84,8 @@ my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
-my $INCLUDE_SYMBOLS = 1;
+my $INCLUDE_SYMBOLS_LIB = true;
+my $INCLUDE_SYMBOLS_EXE = DEFAULT_BOOL_OPTIONS;
 my $MALLOC_GUARD = DEFAULT_BOOL_OPTIONS;
 my $COPTIMIZE_FLAGS = "";
 my $STATIC_LINK_GCCRUNTIME = DEFAULT_BOOL_OPTIONS;
@@ -137,6 +138,8 @@ sub	DoHelp_
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
         print("	    --debug-symbols {true|false}                    /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
         print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
 		
@@ -339,6 +342,9 @@ sub	SetDefaultForCompilerDriver_
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
+		}
+		if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+			$INCLUDE_SYMBOLS_EXE = true;
 		}
 
 		if (!("$^O" eq "aix")) {
@@ -652,9 +658,25 @@ sub	ParseCommandLine_Remaining_
 			if (not ($var eq "true" || $var eq "false")) {
 				die ("Invalid argument to --debug-symbols");
 			}
-			$INCLUDE_SYMBOLS = $var;
+			$INCLUDE_SYMBOLS_LIB = ToBool_ ($var);
+			$INCLUDE_SYMBOLS_EXE = ToBool_ ($var);
 		}
-
+		elsif ((lc ($var) eq "-debug-symbols-lib") or (lc ($var) eq "--debug-symbols-lib")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols-lib");
+			}
+			$INCLUDE_SYMBOLS_LIB = ToBool_ ($var);
+		}
+		elsif ((lc ($var) eq "-debug-symbols-exe") or (lc ($var) eq "--debug-symbols-exe")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($var eq "true" || $var eq "false")) {
+				die ("Invalid argument to --debug-symbols");
+			}
+			$INCLUDE_SYMBOLS_EXE = ToBool_ ($var);
+		}
 		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
 			$i++;
 			$MALLOC_GUARD = ToBool_ ($ARGV[$i]);
@@ -789,6 +811,10 @@ sub PostProcessOptions_ ()
 		}
 	}
 
+	if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
+		$INCLUDE_SYMBOLS_EXE = false;
+	}
+
 	if ($MALLOC_GUARD eq true) {
 		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallocGuard 1');
 	}
@@ -867,7 +893,8 @@ sub	WriteConfigFile_
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_TRACE2FILE>$ENABLE_TRACE2FILE</ENABLE_TRACE2FILE>\n");
 	}
-	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS</IncludeDebugSymbolsInExecutables>\n");
+	print (OUT "    <IncludeDebugSymbolsInLibraries>$INCLUDE_SYMBOLS_LIB</IncludeDebugSymbolsInLibraries>\n");
+	print (OUT "    <IncludeDebugSymbolsInExecutables>$INCLUDE_SYMBOLS_EXE</IncludeDebugSymbolsInExecutables>\n");
 	if (not ($COPTIMIZE_FLAGS eq "")) {
 		print (OUT "    <OptimizerFlag>$COPTIMIZE_FLAGS</OptimizerFlag>\n");
 	}
