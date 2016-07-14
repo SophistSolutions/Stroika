@@ -658,6 +658,11 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
 			$i++;
 			$MALLOC_GUARD = ToBool_ ($ARGV[$i]);
+			### DISABLE LTO BY DEFAULT IF MALLOC_GAURD TURNED ON BECAUSE FOR NOW THEY DONT WORK TOGETHER
+			### -- LGP 2016-07-14
+			if ($MALLOC_GUARD == true) {
+				$ENABLE_LTO = 0;
+			}
 		}
 		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
 			$i++;
