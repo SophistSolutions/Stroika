@@ -5,7 +5,10 @@
 
 #include    <exception>
 #include    <malloc.h>
-#include    <cstdlib>
+
+#if		qPlatform_POSIX
+#include    <unistd.h>
+#endif
 
 #include    "../Memory/Common.h"
 
