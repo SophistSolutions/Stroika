@@ -56,7 +56,6 @@ namespace {
         return s + 2 * sizeof (HeaderOrFooter_);
     }
 
-
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
@@ -142,6 +141,7 @@ extern "C"  void    free (void* __ptr)
     if (__ptr == nullptr) {
         // according to http://linux.die.net/man/3/free
         // "if ptr is NULL, no operation is performed." - and glibc does call this internally
+        return;
     }
     void*   p = ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
