@@ -67,6 +67,21 @@ namespace {
     }
     void    SetDeadMansLand_ (Byte* s, Byte* e)
     {
+        const   Byte*   pBadFillStart   =   begin (kDeadMansLand_);
+        const   Byte*   pBadFillEnd     =   end (kDeadMansLand_);
+        const   Byte*   badFillI        =   pBadFillStart;
+        for (Byte* oi = s; oi != e; ++oi) {
+            *oi = *badFillI;
+            badFillI++;
+            if (badFillI == pBadFillEnd) {
+                badFillI = pBadFillStart;
+            }
+        }
+    }
+    void    SetDeadMansLand_ (void* p)
+    {
+        const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
+        SetDeadMansLand_ (reinterpert_cast<Byte*> (p), reinterpert_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
 
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
@@ -158,6 +173,7 @@ extern "C"  void    free (void* __ptr)
     }
     void*   p = ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
+    SetDeadMansLand_ (p);
     __libc_free (p);
 }
 
