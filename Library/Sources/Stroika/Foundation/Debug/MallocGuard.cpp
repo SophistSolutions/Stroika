@@ -36,9 +36,13 @@ namespace {
 
     void    OhShit_ ()
     {
-        const char  kMsg_[] =   "Fatal Error detected in Stroika Malloc Guard\n";
-        ::write (2, kMsg_, NEltsOf (kMsg_));
-        std::terminate ();
+        static  bool    sDone_      { false };      // doing terminate MIGHT allocate more memory ... just go with the flow if that happens - and dont re-barf (e.g. allow backtrace if possible)
+        if (not sDone_) {
+            sDone_ = true;
+            const char  kMsg_[] =   "Fatal Error detected in Stroika Malloc Guard\n";
+            ::write (2, kMsg_, NEltsOf (kMsg_));
+            std::terminate ();
+        }
     }
 
 
