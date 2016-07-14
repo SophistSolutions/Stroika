@@ -63,7 +63,8 @@ namespace {
     }
     size_t  AdjustMallocSize_ (size_t s)
     {
-        return s + 2 * sizeof (HeaderOrFooter_);
+        // HeaderOrFooter_ before 's' and after 's'
+        return sizeof (HeaderOrFooter_) + s + sizeof (HeaderOrFooter_);
     }
 
 
