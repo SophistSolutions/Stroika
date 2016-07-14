@@ -60,7 +60,7 @@ namespace   Stroika {
              *  \note   You can enable this feature with
              *          ./configure ... --malloc-guard true
              *
-             *  \note   On detected errors, this will first call std::terminate ();
+             *  \note   On detected errors, this will call std::terminate ();
              *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
              *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
              *          not working well when we fail...
