@@ -27,19 +27,37 @@ namespace {
         GuradBytes_ fGuard;
         size_t      fRequestedBlockSize;
     };
+
+
+    void    OhShit_ ()
+    {
+        AssertNotReached ();
+        std::terminate ();
+    }
+
+
+    void*   ExposedPtrToBackendPtr_ (const void* p)
+    {
+        RequireNotNull (p);
+        return reinterpret_cast<const HeaderOrFooter_*> (p) - 1;
+    }
+    void*   BackendPtrToExposedPtr_ (const void* p)
+    {
+        RequireNotNull (p);
+        return reinterpret_cast<const HeaderOrFooter_*> (p) + 1;
+    }
+
+
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
-            AssertNotReached ();
-            std::terminate ();
+            OhShit_ ();
         }
         if (::memcmp (&footer.fGuard, &kMallocGuardFooter_, sizeof (kMallocGuardFooter_)) != 0) {
-            AssertNotReached ();
-            std::terminate ();
+            OhShit_ ();
         }
         if (header.fRequestedBlockSize != footer.fRequestedBlockSize) {
-            AssertNotReached ();
-            std::terminate ();
+            OhShit_ ();
         }
         // OK
     }
@@ -63,21 +81,60 @@ namespace {
 
     // todo variant that does pointer arithmatic
     // defines that contril how we handle failure (debug failure proc)?
+
+
 }
 #endif
 
 
 #if     qStroika_Foundation_Debug_MallogGuard
 
-extern "C" void __libc_free (void* __ptr);
-extern "C" void* __libc_malloc (size_t __size);
-extern "C" void* __libc_realloc (void* __ptr, size_t __size);
+extern "C"  void    __libc_free (void* __ptr);
+extern "C"  void*   __libc_malloc (size_t __size);
+extern "C"  void*   __libc_realloc (void* __ptr, size_t __size);
+extern "C"  void*   __libc_calloc (size_t __nmemb, size_t __size);
+extern "C"  void    __libc_free (void* __ptr);
+extern "C"  size_t  __malloc_usable_size (void* __ptr);
+/* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
+extern "C"  void*   __libc_memalign (size_t __alignment, size_t __size);
 
+#if 0
+weak_alias (__malloc_info, malloc_info)
+5256
+5257
+5258    strong_alias (__libc_calloc, __calloc) weak_alias (__libc_calloc, calloc)
+5259    strong_alias (__libc_free, __cfree) weak_alias (__libc_free, cfree)
+5260    strong_alias (__libc_free, __free) strong_alias (__libc_free, free)
+5261    strong_alias (__libc_malloc, __malloc) strong_alias (__libc_malloc, malloc)
+5262    strong_alias (__libc_memalign, __memalign)
+5263    weak_alias (__libc_memalign, memalign)
+5264    strong_alias (__libc_realloc, __realloc) strong_alias (__libc_realloc, realloc)
+5265    strong_alias (__libc_valloc, __valloc) weak_alias (__libc_valloc, valloc)
+5266    strong_alias (__libc_pvalloc, __pvalloc) weak_alias (__libc_pvalloc, pvalloc)
+5267    strong_alias (__libc_mallinfo, __mallinfo)
+5268    weak_alias (__libc_mallinfo, mallinfo)
+5269    strong_alias (__libc_mallopt, __mallopt) weak_alias (__libc_mallopt, mallopt)
+5270
+5271    weak_alias (__malloc_stats, malloc_stats)
+5272    weak_alias (__malloc_usable_size, malloc_usable_size)
+5273    weak_alias (__malloc_trim, malloc_trim)
+5274    weak_alias (__malloc_get_state, malloc_get_state)
+5275    weak_alias (__malloc_set_state, malloc_set_state)
+#endif
+
+extern "C"  void*   calloc (size_t __nmemb, size_t __size)
+{
+    return __libc_calloc (__nmemb, __size);
+}
+
+extern "C"  void    cfree (void* __ptr)
+{
+    free (__ptr);
+}
 
 extern "C" void free (void* __ptr)
 {
     __libc_free (__ptr);
-    // drop on the floor
 }
 
 extern "C" void* malloc (size_t __size)
@@ -85,8 +142,26 @@ extern "C" void* malloc (size_t __size)
     return __libc_malloc (__size);
 }
 
-extern "C" void* realloc (void* __ptr, size_t __size)
+extern "C" void*    realloc (void* __ptr, size_t __size)
 {
     return __libc_realloc (__ptr, __size);
+}
+
+extern "C"  void* valloc (size_t __size)
+{
+    OhShit_ ();
+    return nullptr;
+}
+
+extern "C"  void* pvalloc (size_t __size)
+{
+    OhShit_ ();
+    return nullptr;
+}
+
+extern "C"  void* memalign (size_t __alignment, size_t __size)
+{
+    OhShit_ ();
+    return nullptr;
 }
 #endif
