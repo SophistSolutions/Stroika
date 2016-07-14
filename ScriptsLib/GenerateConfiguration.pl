@@ -146,6 +146,22 @@ sub	DoHelp_
 
 
 
+
+sub     ToBool_
+{
+    my $x = shift(@_);
+	if ($x eq "true") {
+		return true;
+	}
+	if ($x eq "false") {
+		return false;
+	}
+	die ("expected bool argument to be true/false");
+}
+
+
+
+
 sub     IsGCCOrGPlusPlus_
 {
     my $x = shift(@_);
@@ -641,11 +657,7 @@ sub	ParseCommandLine_Remaining_
 
 		elsif ((lc ($var) eq "-malloc-guard") or (lc ($var) eq "--malloc-guard")) {
 			$i++;
-			$var = $ARGV[$i];
-			if (not ($var eq "true" || $var eq "false")) {
-				die ("Invalid argument to --malloc-guard");
-			}
-			$MALLOC_GUARD = $var;
+			$MALLOC_GUARD = ToBool_ ($ARGV[$i]);
 		}
 		elsif ((lc ($var) eq "-runtime-stack-check") or (lc ($var) eq "--runtime-stack-check")) {
 			$i++;
