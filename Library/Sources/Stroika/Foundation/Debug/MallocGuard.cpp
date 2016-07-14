@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation;
 using   Memory::Byte;
 
 
-#if     qStroika_Foundation_Debug_MallogGuard
+#if     qStroika_Foundation_Debug_MallocGuard
 namespace {
     using   GuradBytes_ =   Byte[16];
     constexpr   GuradBytes_ kMallocGuardHeader_ = { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
@@ -91,7 +91,7 @@ namespace {
 #endif
 
 
-#if     qStroika_Foundation_Debug_MallogGuard
+#if     qStroika_Foundation_Debug_MallocGuard
 
 extern "C"  void    __libc_free (void* __ptr);
 extern "C"  void*   __libc_malloc (size_t __size);

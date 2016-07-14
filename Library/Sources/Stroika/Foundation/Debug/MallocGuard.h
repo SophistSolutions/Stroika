@@ -33,7 +33,7 @@ namespace   Stroika {
 
 
             /**
-             *  If qStroika_Foundation_Debug_MallogGuard defined to 1,
+             *  If qStroika_Foundation_Debug_MallocGuard defined to 1,
 
              TBD
 
@@ -46,12 +46,9 @@ namespace   Stroika {
              *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
              *          and typically a core file - when errors are detected.
              */
-#if     !defined (qStroika_Foundation_Debug_MallogGuard)
-#define qStroika_Foundation_Debug_MallogGuard   0
+#if     !defined (qStroika_Foundation_Debug_MallocGuard)
+#define qStroika_Foundation_Debug_MallocGuard   0
 #endif
-
-
-
 
 
         }

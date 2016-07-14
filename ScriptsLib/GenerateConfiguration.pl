@@ -785,7 +785,7 @@ sub PostProcessOptions_ ()
 	}
 
 	if ($MALLOC_GUARD eq true) {
-		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallogGuard 1');
+		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallocGuard 1');
 	}
 }
 
