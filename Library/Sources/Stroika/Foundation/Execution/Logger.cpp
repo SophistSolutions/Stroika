@@ -531,7 +531,7 @@ void    Logger::FileAppender::Log (Priority logLevel, const String& message)
 #if     qPlatform_Windows
 /*
  ********************************************************************************
- ************************ Execution::SysLogAppender *****************************
+ ********************** Execution::WindowsEventLogAppender **********************
  ********************************************************************************
  */
 Logger::WindowsEventLogAppender::WindowsEventLogAppender (const String& eventSourceName)
