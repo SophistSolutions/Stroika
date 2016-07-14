@@ -69,24 +69,24 @@ namespace {
         }
         // OK
     }
-    void    Validate_ (const void* p)
+    void    ValidateBackendPtr_ (const void* p)
     {
-        const HeaderOrFooter_*  h = reinterpret_cast<const HeaderOrFooter_*> (p) - 1;
-        const HeaderOrFooter_*  fp  = reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (p) + h->fRequestedBlockSize);
+        const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
+        const HeaderOrFooter_*  fp  =   reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
         HeaderOrFooter_ footer;
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
         Validate_ (*h, footer);
     }
-    // returns the pointer to use externally
-    void*   PatchNewPointer_ (void* p, size_t requestedSize)
+    void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
+        HeaderOrFooter_*  hp   =   reinterpret_cast< HeaderOrFooter_*> (p);
+        (void)::memcpy (begin (hp->fGuard[0]), begin (kMallocGuardHeader_),  NEltsOf (kMallocGuardHeader_));
+        hp->fRequestedBlockSize = requestedSize;
+        HeaderOrFooter_*  fp  =    reinterpret_cast< HeaderOrFooter_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
+        (void)::memcpy (begin (fp->fGuard[0]), begin (kMallocGuardFooter_),  NEltsOf (kMallocGuardFooter_));
+        fp->fRequestedBlockSize = requestedSize;
         return p;
     }
-
-    // todo variant that does pointer arithmatic
-    // defines that contril how we handle failure (debug failure proc)?
-
-
 }
 #endif
 
@@ -99,7 +99,6 @@ extern "C"  void*   __libc_realloc (void* __ptr, size_t __size);
 extern "C"  void*   __libc_calloc (size_t __nmemb, size_t __size);
 extern "C"  void    __libc_free (void* __ptr);
 extern "C"  size_t  __malloc_usable_size (void* __ptr);
-/* Allocate SIZE bytes allocated to ALIGNMENT bytes.  */
 extern "C"  void*   __libc_memalign (size_t __alignment, size_t __size);
 
 #if 0
@@ -142,12 +141,15 @@ extern "C"  void    cfree (void* __ptr)
 extern "C"  void    free (void* __ptr)
 {
     void*   p = ExposedPtrToBackendPtr_ (__ptr);
+    ValidateBackendPtr_ (p);
     __libc_free (p);
 }
 
 extern "C"  void*   malloc (size_t __size)
 {
     void*   p   =   __libc_malloc (AdjustMallocSize_ (__size));
+    PatchNewPointer_ (p, __size);
+    ValidateBackendPtr_ (p);
     if (p != nullptr) {
         p = BackendPtrToExposedPtr_ (p);
     }
@@ -157,9 +159,12 @@ extern "C"  void*   malloc (size_t __size)
 extern "C"  void*    realloc (void* __ptr, size_t __size)
 {
     void*   p   =   ExposedPtrToBackendPtr_ (__ptr);
+    ValidateBackendPtr_ (p);
     size_t  n   =   AdjustMallocSize_ (__size);
     p = __libc_realloc (p, n);
     if (p != nullptr) {
+        PatchNewPointer_ (p, __size);
+        ValidateBackendPtr_ (p);
         p = BackendPtrToExposedPtr_ (p);
     }
     return p;
