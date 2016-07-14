@@ -85,7 +85,7 @@ namespace {
     void    SetDeadMansLand_ (void* p)
     {
         const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
-        SetDeadMansLand_ (reinterpert_cast<Byte*> (p), reinterpert_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
+        SetDeadMansLand_ (reinterpret_cast<Byte*> (p), reinterpret_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
 
     /*
@@ -113,7 +113,7 @@ namespace {
             }
         }
     }
-    bool    IsInFreeList_ (void* p)
+    bool    IsInFreeList_ (const void* p)
     {
         for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
             if (*i == p) {
