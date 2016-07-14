@@ -183,7 +183,7 @@ extern "C"  void*    realloc (void* __ptr, size_t __size)
         // from http://linux.die.net/man/3/realloc
         // if size is equal to zero, and ptr is not NULL, then the call is equivalent to free(ptr).
         free (__ptr);
-        return;
+        return nullptr;
     }
     void*   p   =   ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
