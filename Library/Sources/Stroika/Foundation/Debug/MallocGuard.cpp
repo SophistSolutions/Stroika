@@ -41,6 +41,7 @@ namespace {
     {
         static  bool    sDone_      { false };      // doing terminate MIGHT allocate more memory ... just go with the flow if that happens - and dont re-barf (e.g. allow backtrace if possible)
         if (not sDone_) {
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wunused-result\"")\
             sDone_ = true;
             const char  kMsg_[] =   "Fatal Error detected in Stroika Malloc Guard\n";
             ::write (2, kMsg_, NEltsOf (kMsg_));
@@ -50,6 +51,7 @@ namespace {
                 ::write (2, "\n", 1);
                 DbgTrace ("%s", why);
             }
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wunused-result\"")\
             std::terminate ();
         }
     }
