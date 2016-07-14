@@ -6,7 +6,7 @@
 #include    <exception>
 #include    <malloc.h>
 
-#if		qPlatform_POSIX
+#if     qPlatform_POSIX
 #include    <unistd.h>
 #endif
 
@@ -23,8 +23,9 @@ using   Memory::Byte;
 #if     qStroika_Foundation_Debug_MallocGuard
 namespace {
     using   GuradBytes_ =   Byte[16];
-    constexpr   GuradBytes_ kMallocGuardHeader_ = { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
-    constexpr   GuradBytes_ kMallocGuardFooter_ = { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
+    constexpr   GuradBytes_ kMallocGuardHeader_ =   { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
+    constexpr   GuradBytes_ kMallocGuardFooter_ =   { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
+    constexpr   Byte        kDeadMansLand_[]    =   { 0x1d, 0xb6, 0x20, 0x27, 0x43, 0x7a, 0x3d, 0x1a, 0x13, 0x65, };
 
     // need header with size, so we can ....
     struct alignas(alignof(long double))  HeaderOrFooter_ {
@@ -58,6 +59,14 @@ namespace {
     size_t  AdjustMallocSize_ (size_t s)
     {
         return s + 2 * sizeof (HeaderOrFooter_);
+    }
+
+    bool    IsDeadMansLand_ (const Byte* s, const Byte* e)
+    {
+        return false;
+    }
+    void    SetDeadMansLand_ (Byte* s, Byte* e)
+    {
     }
 
     void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
@@ -165,6 +174,17 @@ extern "C"  void*   malloc (size_t __size)
 
 extern "C"  void*    realloc (void* __ptr, size_t __size)
 {
+    if (__ptr == nullptr) {
+        // from http://linux.die.net/man/3/realloc
+        // If ptr is NULL, then the call is equivalent to malloc(size),
+        return malloc (__size);
+    }
+    if (__ptr != nullptr and __size == 0) {
+        // from http://linux.die.net/man/3/realloc
+        // if size is equal to zero, and ptr is not NULL, then the call is equivalent to free(ptr).
+        free (__ptr);
+        return;
+    }
     void*   p   =   ExposedPtrToBackendPtr_ (__ptr);
     ValidateBackendPtr_ (p);
     size_t  n   =   AdjustMallocSize_ (__size);
