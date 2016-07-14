@@ -161,14 +161,15 @@ namespace {
     }
     void    ValidateBackendPtr_ (const void* p)
     {
+        if (IsInFreeList_ (p)) {
+            // check FIRST because if freed, the header will be all corrupted
+            OhShit_ ();
+        }
         const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
         const HeaderOrFooter_*  fp  =   reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
         HeaderOrFooter_ footer;
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
         Validate_ (*hp, footer);
-        if (IsInFreeList_ (p)) {
-            OhShit_ ();
-        }
     }
 
 
