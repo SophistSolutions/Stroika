@@ -5,6 +5,7 @@
 
 #include    <exception>
 #include    <malloc.h>
+#include    <cstdlib>
 
 #include    "../Memory/Common.h"
 
