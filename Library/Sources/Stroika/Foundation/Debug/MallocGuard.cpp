@@ -252,7 +252,7 @@ extern "C"  void*    realloc (void* __ptr, size_t __size)
     if (newP != nullptr) {
         PatchNewPointer_ (newP, __size);
         if (newP != p) {
-            SetDeadMansLand_ (p);
+            //Already been freed, so not safe to set at this point!!! - SetDeadMansLand_ (p);
             Add2FreeList_ (p);
             ClearFromFreeList_ (newP);
         }
