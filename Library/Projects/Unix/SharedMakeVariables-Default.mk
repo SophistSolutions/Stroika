@@ -54,6 +54,7 @@ else ifeq ($(qFeatureFlag_ZLib), 'use')
 endif
 
 
+IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
 
 
 ifndef StroikaFoundationLib
@@ -226,8 +227,13 @@ endif
 
 ifeq ($(INCLUDE_SYMBOLS), 1)
 	CFLAGS += -g
+endif
+
+
+ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 	LinkerPrefixArgs += -g
 endif
+
 
 
 CFLAGS	+=			$(EXTRA_COMPILER_ARGS)
