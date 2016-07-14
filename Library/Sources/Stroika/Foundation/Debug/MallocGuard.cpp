@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <atomic>
 #include    <exception>
 #include    <malloc.h>
 
@@ -68,6 +69,7 @@ namespace {
 
     bool    IsDeadMansLand_ (const Byte* s, const Byte* e)
     {
+        // NYI cuz not clear if/how/where to use...
         return false;
     }
     void    SetDeadMansLand_ (Byte* s, Byte* e)
@@ -91,11 +93,15 @@ namespace {
 
 
     /*
-     *  not 100% threadsafe, but OK.
+     *  Not 100% threadsafe, but probably OK.
+     *
+     *  If we add something and it doesn't really get added, we just miss the opporuntity to detect a bug, but we don't create one.
+     *
+     *  Assure we flush any entries CLEARED with ClearFromFreeList_ (why we use atomic_store_explicit)
      *
      *  Also FreeList alway uses BackendPtr - not ExternalPtr
      */
-    void*   sFreeList_[100];
+    volatile    void*   sFreeList_[100];
     void**  sFreeList_NextFreeI_    =   &sFreeList_[0];
     void    Add2FreeList_ (void* p)
     {
@@ -109,16 +115,16 @@ namespace {
     void    ClearFromFreeList_ (void* p)
     {
         // not a race because you cannot free and allocate the same pointer at the same time
-        for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
-            if (*i == p) {
-                *i = nullptr;
+        for (volatile void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
+            if (std::atomic_load_explicit (i, memory_order_acquire) == p) {
+                std::atomic_store_explicit (i, nullptr, memory_order_release);
             }
         }
     }
     bool    IsInFreeList_ (const void* p)
     {
         for (void** i = begin (sFreeList_); i != end (sFreeList_); ++i) {
-            if (*i == p) {
+            if (std::atomic_load_explicit (i, memory_order_acquire) == p) {
                 return true;
             }
         }
