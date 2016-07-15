@@ -18,6 +18,14 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a158">v2.0a158x</a><br/>2016-07-??</td>
+<td>
+	<ul>
+		<li>ITODO</li>
+	</ul>
+</td>
+</tr>
 
 
 
@@ -26,7 +34,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157</a><br/>2016-07-14</td>
 <td>
 	<ul>
-		<li>Irreproducible std::terminate/crash on Test35 - Foundation::Execution::Threads - std::terminate() - but no logs and when I ran over and over no reproduce</li>
+		<li>Irreproducible std::terminate/crash on Test35 - Foundation::Execution::Threads - std::terminate() - but no logs and when I ran over and over no reproduce - https://stroika.atlassian.net/browse/STK-497</li>
 		<li>
 			 Threads
 			 <ul>
