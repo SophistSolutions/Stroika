@@ -421,7 +421,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy       (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy       ((__GNUC__ == 5 && (__GNUC_MINOR__ >= 4)) || (__GNUC__ == 6 && (__GNUC_MINOR__ <= 1)))
 #elif   defined (_MSC_VER)
 // still broken with _MS_VS_2k15_Update1_FULLVER_
 // Still broken in _MS_VS_2k15_Update2_FULLVER_
@@ -501,7 +501,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #elif    !defined (__clang__) && defined (__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
+#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy    (__GNUC__ <= 5)
 #elif   defined (_MSC_VER)
 // still broken in _MS_VS_2k15_Update2_FULLVER_
 // still broken in _MS_VS_2k15_Update3_FULLVER_
@@ -599,7 +599,6 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-* NOTE sure if this is a bug or my misunderstanding.
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
