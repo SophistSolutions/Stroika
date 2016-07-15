@@ -22,6 +22,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a158">v2.0a158x</a><br/>2016-07-??</td>
 <td>
 	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a157...0a158</li>
 		<li>Fix compile bug defines for new gcc 5.4 release</li>
 		<li>Tested (passed regtests)
 			<ul>
@@ -49,6 +50,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a157">v2.0a157</a><br/>2016-07-14</td>
 <td>
 	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a156...v2.0a157</li>
 		<li>Irreproducible std::terminate/crash on Test35 - Foundation::Execution::Threads - std::terminate() - but no logs and when I ran over and over no reproduce - https://stroika.atlassian.net/browse/STK-497</li>
 		<li>
 			 Threads
@@ -97,6 +99,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a156">v2.0a156</a><br/>2016-07-11</td>
 <td>
 	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a155...v2.0a156</li>
 		<li>SpinLock
 			<ul>
 				<li>https://stroika.atlassian.net/browse/STK-494 - attempt at workaround for possible bug WITH SpinLock - optional BarrierFlag argument (defaults to acquire/release)
