@@ -342,7 +342,7 @@ regression-test-configurations:
 		#\
 		# maybe add these directly to config\
 		# NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free\
-		./configure gcc-debug-addrsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --extra-compiler-args -fsanitize=address --extra-linker-args -fsanitize=address;\
+		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address --sanitize undefined;\
 		#./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\

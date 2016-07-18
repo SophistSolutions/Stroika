@@ -47,6 +47,7 @@ my $CPPSTD_VERSION_FLAG = '';
 my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
+my $sanitizerFlags = "";
 
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
@@ -142,6 +143,7 @@ sub	DoHelp_
         print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
         print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
+        print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) - any arg you can pass to -fsanitize=XXXX */\n");
 		
 	exit ($x);
 }
@@ -694,6 +696,20 @@ sub	ParseCommandLine_Remaining_
 			}
 			$runtimeStackProtectorFlag = $var;
 		}
+
+		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "none") {
+				$sanitizerFlags = "";
+			}
+			else {
+				if ($sanitizerFlags neq "") {
+					$sanitizerFlags  = "," . $sanitizerFlags;
+				}
+				$sanitizerFlags  .= $var;
+			}
+		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
 			$onlyGenerateIfCompilerExists = true;
 		}
@@ -799,6 +815,10 @@ sub PostProcessOptions_ ()
 	if ($ENABLE_LTO == true) {
 		$EXTRA_COMPILER_ARGS .= " -flto";
 		$EXTRA_LINKER_ARGS .= " -flto";
+	}
+	if ($sanitizerFlags neq "") {
+		$EXTRA_COMPILER_ARGS .= " " . $sanitizerFlags;
+		$EXTRA_LINKER_ARGS .= " " . $sanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		if ($CrossCompiling eq "false") {
