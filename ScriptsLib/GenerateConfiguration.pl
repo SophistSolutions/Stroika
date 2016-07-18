@@ -818,8 +818,8 @@ sub PostProcessOptions_ ()
 		$EXTRA_LINKER_ARGS .= " -flto";
 	}
 	if (not ($sanitizerFlags eq "")) {
-		$EXTRA_COMPILER_ARGS .= " " . $sanitizerFlags;
-		$EXTRA_LINKER_ARGS .= " " . $sanitizerFlags;
+		$EXTRA_COMPILER_ARGS .= " -fsanitize=" . $sanitizerFlags;
+		$EXTRA_LINKER_ARGS .= " -fsanitize=" . $sanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		if ($CrossCompiling eq "false") {
