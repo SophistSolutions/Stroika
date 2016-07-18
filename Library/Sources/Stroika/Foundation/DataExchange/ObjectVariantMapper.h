@@ -384,33 +384,33 @@ namespace   Stroika {
 
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Collection<T>*);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const vector<T>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedCollection<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedCollection<T>*);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::SortedSet<T>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
                 template    <typename T, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
                 template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type* = 0);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE*,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type* = 0);
 
             private:
                 template    <typename ACTUAL_CONTAINER_TYPE>
@@ -426,7 +426,7 @@ namespace   Stroika {
 
             private:
                 template    <typename T, size_t SZ>
-                static  TypeMappingDetails MakeCommonSerializer_ (const T (&)[SZ]);
+                static  TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 
             private:
                 template    <typename RANGE_TYPE>

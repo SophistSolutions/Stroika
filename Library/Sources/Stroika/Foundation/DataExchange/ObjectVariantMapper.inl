@@ -163,12 +163,12 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
             {
                 const T*  n = nullptr;    // arg unused, just for overloading
-                DISABLE_COMPILER_MSC_WARNING_START (6011)
-                return MakeCommonSerializer_ (*n);
-                DISABLE_COMPILER_MSC_WARNING_END (6011)
+                //DISABLE_COMPILER_MSC_WARNING_START (6011)
+                return MakeCommonSerializer_ (n);
+                //DISABLE_COMPILER_MSC_WARNING_END (6011)
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*)
             {
                 using   Characters::String_Constant;
                 using   Containers::Bijection;
@@ -207,17 +207,17 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Collection<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Collection<T>*)
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Containers::Collection<T>> ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*)
             {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*)
             {
                 using   Memory::Optional;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
@@ -246,7 +246,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*)
             {
                 using   Execution::Synchronized;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
@@ -262,12 +262,12 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Synchronized<T, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>*)
             {
                 return MakeCommonSerializer_WithSimpleAddByAppend_<Sequence<T>> ();
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const vector<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const vector<T>*)
             {
                 using   ACTUAL_CONTAINER_TYPE   =   vector<T>;
                 auto toVariantMapper = [](const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
@@ -295,22 +295,22 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>*)
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Set<T>> ();
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedCollection<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedCollection<T>*)
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Containers::SortedCollection<T>> ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*)
             {
                 return MakeCommonSerializer_WithKeyValuePairAdd_<KEY_TYPE, VALUE_TYPE, Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>>  ();
             }
             template    <typename T>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>*)
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Containers::SortedSet<T>> ();
             }
@@ -416,7 +416,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, size_t SZ>
-            inline  ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (&)[SZ])
+            inline  ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
             {
                 using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
@@ -453,17 +453,17 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, typename TRAITS>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*)
             {
                 return MakeCommonSerializer_Range_<Traversal::DiscreteRange<T, TRAITS>> ();
             }
             template    <typename T, typename TRAITS>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*)
             {
                 return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
             }
             template    <typename ENUM_TYPE>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&, typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE*, typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
             {
                 return MakeCommonSerializer_NamedEnumerations<ENUM_TYPE> ();
             }
