@@ -63,6 +63,8 @@ namespace   Stroika {
              *  \note   You can enable this feature with
              *          ./configure ... --malloc-guard true
              *
+             *  \note   If you can use ./configure --sanitize=address, that probably works better. Or - possibly - using valgrind.
+             *
              *  \note   On detected errors, this will call std::terminate ();
              *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
              *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
@@ -70,6 +72,16 @@ namespace   Stroika {
              */
 #if     !defined (qStroika_Foundation_Debug_MallocGuard)
 #define qStroika_Foundation_Debug_MallocGuard   0
+#endif
+
+
+            /**
+             *      qStroika_Foundation_Debug_MallocGuard_GuardSize can be 0, or any integer number greater;
+             *
+             *  \req qStroika_Foundation_Debug_MallocGuard
+             */
+#if     !defined (qStroika_Foundation_Debug_MallocGuard_GuardSize)
+#define qStroika_Foundation_Debug_MallocGuard_GuardSize   16
 #endif
 
 

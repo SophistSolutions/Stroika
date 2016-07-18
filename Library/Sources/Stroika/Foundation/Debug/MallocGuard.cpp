@@ -25,13 +25,40 @@ using   Memory::Byte;
 
 #if     qStroika_Foundation_Debug_MallocGuard
 namespace {
-    using   GuradBytes_ =   Byte[16];
-    constexpr   GuradBytes_ kMallocGuardHeader_ =   { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
-    constexpr   GuradBytes_ kMallocGuardFooter_ =   { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
+    constexpr   Byte kMallocGuardHeader_BASE_[16] =   { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
+    constexpr   Byte kMallocGuardFooter_BASE_[16] =   { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
+
+    using   GuradBytes_ =   Byte[qStroika_Foundation_Debug_MallocGuard_GuardSize];
+#if     qStroika_Foundation_Debug_MallocGuard_GuardSize == 16
+    constexpr   GuradBytes_ kMallocGuardHeader_ =   kMallocGuardHeader_BASE_;
+    constexpr   GuradBytes_ kMallocGuardFooter_ =   kMallocGuardFooter_BASE_;
+#else
+    const       GuradBytes_ kMallocGuardHeader_;
+    const       GuradBytes_ kMallocGuardFooter_;
+    struct DoInit_ ()
+    {
+        DoInit_ () {
+            size_t  fromI   =   0;
+            for (size_t i = 0; i < NEltsOf (kMallocGuardHeader_); ++i) {
+                kMallocGuardHeader_[i] = kMallocGuardHeader_BASE_[fromI];
+                kMallocGuardFooter_[i] = kMallocGuardFooter_[fromI];
+                fromI ++;
+                if (fromI >= NEltsOf (kMallocGuardHeader_BASE_)) {
+                    fromI = 0;
+                }
+            }
+        }
+    }
+} sDoInit_x_;
+#endif
     constexpr   Byte        kDeadMansLand_[]    =   { 0x1d, 0xb6, 0x20, 0x27, 0x43, 0x7a, 0x3d, 0x1a, 0x13, 0x65, };
 
 
-    struct alignas(alignof(long double))  HeaderOrFooter_ {
+    struct alignas(alignof(long double))  Header_ {
+        size_t      fRequestedBlockSize;
+        GuradBytes_ fGuard;
+    };
+    struct alignas(alignof(long double)) Footer_ {
         GuradBytes_ fGuard;
         size_t      fRequestedBlockSize;
     };
@@ -62,19 +89,19 @@ namespace {
         if (p == nullptr) {
             OhShit_ ("unexpected nullptr in ExposedPtrToBackendPtr_");
         }
-        return reinterpret_cast<HeaderOrFooter_*> (p) - 1;
+        return reinterpret_cast<Header_*> (p) - 1;
     }
     void*   BackendPtrToExposedPtr_ (void* p)
     {
         if (p == nullptr) {
             OhShit_ ("unexpected nullptr in BackendPtrToExposedPtr_");
         }
-        return reinterpret_cast<HeaderOrFooter_*> (p) + 1;
+        return reinterpret_cast<Header_*> (p) + 1;
     }
     size_t  AdjustMallocSize_ (size_t s)
     {
-        // HeaderOrFooter_ before 's' and after 's'
-        return sizeof (HeaderOrFooter_) + s + sizeof (HeaderOrFooter_);
+        // Header_ before 's' and after 's'
+        return sizeof (Header_) + s + sizeof (Footer_);
     }
 
 
@@ -98,7 +125,7 @@ namespace {
     }
     void    SetDeadMansLand_ (void* p)
     {
-        const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
+        const Header_*  hp  =   reinterpret_cast<const Header_*> (p);
         SetDeadMansLand_ (reinterpret_cast<Byte*> (p), reinterpret_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
 
@@ -156,7 +183,7 @@ namespace {
     }
 
 
-    void    Validate_ (const HeaderOrFooter_& header, const HeaderOrFooter_& footer)
+    void    Validate_ (const Header_& header, const Footer_& footer)
     {
         if (::memcmp (&header.fGuard, &kMallocGuardHeader_, sizeof (kMallocGuardHeader_)) != 0) {
             OhShit_ ("Invalid leading header guard");
@@ -175,9 +202,9 @@ namespace {
             // check FIRST because if freed, the header will be all corrupted
             OhShit_ ("Pointer already freed (recently)");
         }
-        const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
-        const HeaderOrFooter_*  fp  =   reinterpret_cast<const HeaderOrFooter_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
-        HeaderOrFooter_ footer;
+        const Header_*  hp  =   reinterpret_cast<const Header_*> (p);
+        const Footer_*  fp  =   reinterpret_cast<const Footer_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
+        Footer_ footer;//tmporary so aligned
         (void)::memcpy (&footer, fp, sizeof (footer));  // align access
         Validate_ (*hp, footer);
     }
@@ -185,10 +212,10 @@ namespace {
 
     void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
-        HeaderOrFooter_*  hp   =   reinterpret_cast< HeaderOrFooter_*> (p);
+        Header_*  hp   =   reinterpret_cast< Header_*> (p);
         (void)::memcpy (begin (hp->fGuard), begin (kMallocGuardHeader_),  NEltsOf (kMallocGuardHeader_));
         hp->fRequestedBlockSize = requestedSize;
-        HeaderOrFooter_*  fp  =    reinterpret_cast< HeaderOrFooter_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
+        Footer_*  fp  =    reinterpret_cast< Footer_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
         (void)::memcpy (begin (fp->fGuard), begin (kMallocGuardFooter_),  NEltsOf (kMallocGuardFooter_));
         fp->fRequestedBlockSize = requestedSize;
     }
@@ -301,7 +328,7 @@ extern "C"  size_t malloc_usable_size (void* ptr)
     }
     void*   p   =   ExposedPtrToBackendPtr_ (ptr);
     ValidateBackendPtr_ (p);
-    const HeaderOrFooter_*  hp  =   reinterpret_cast<const HeaderOrFooter_*> (p);
+    const Header_*  hp  =   reinterpret_cast<const Header_*> (p);
     return hp->fRequestedBlockSize;
 }
 
