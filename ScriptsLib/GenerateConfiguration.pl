@@ -704,7 +704,7 @@ sub	ParseCommandLine_Remaining_
 				$sanitizerFlags = "";
 			}
 			else {
-				if ($sanitizerFlags neq "") {
+				if (not ($sanitizerFlags eq "")) {
 					$sanitizerFlags  = "," . $sanitizerFlags;
 				}
 				$sanitizerFlags  .= $var;
@@ -816,7 +816,7 @@ sub PostProcessOptions_ ()
 		$EXTRA_COMPILER_ARGS .= " -flto";
 		$EXTRA_LINKER_ARGS .= " -flto";
 	}
-	if ($sanitizerFlags neq "") {
+	if (not ($sanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " " . $sanitizerFlags;
 		$EXTRA_LINKER_ARGS .= " " . $sanitizerFlags;
 	}
