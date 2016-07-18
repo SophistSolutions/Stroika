@@ -33,11 +33,11 @@
 /**
  *
  *
- *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *  \version    <a href="code_status.html#Alpha">Beta</a>
  *
  *  TODO:
  *
- *      @todo   Make AddCommonType() - when passed in an optional<T> - REquire that
+ *      @todo   Make AddCommonType() - when passed in an optional<T> - Require that
  *              the type T is already in the registry (like with AddClass). To debug!
  *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
@@ -88,7 +88,7 @@
  *
  *      @todo   NOTE and TODO
  *              The cast to Byte* loses some type safety (we may want to store the class size through template magic)
- *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
+ *              in the struct type info record, so it can be validated against the offsets in the typeinfo (in debug builds).
  *
  *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to VariantValue
  *              objects (logically - these are RAM-based representations of an XML or JSON tree - for example).
