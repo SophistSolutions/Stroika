@@ -257,6 +257,9 @@ namespace   Stroika {
                 if (lSize != rSize) {
                     return false;
                 }
+                if (lSize == 0) {
+                    return true;    // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0
+                }
                 return ::memcmp (l.first, r.first, lSize) == 0;
             }
 
