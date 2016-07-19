@@ -48,6 +48,7 @@ my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlags = "";
+my $noSanitizerFlags = "";
 
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
@@ -145,6 +146,7 @@ sub	DoHelp_
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
         print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) - any arg you can pass to -fsanitize=XXXX */\n");
         print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize= */\n");
+        print("	    --no-sanitize {thread|vptr|etc...}				/* any from --sanitize or all */\n");
 		
 	exit ($x);
 }
@@ -697,7 +699,6 @@ sub	ParseCommandLine_Remaining_
 			}
 			$runtimeStackProtectorFlag = $var;
 		}
-
 		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -709,6 +710,19 @@ sub	ParseCommandLine_Remaining_
 					$sanitizerFlags  = "," . $sanitizerFlags;
 				}
 				$sanitizerFlags  .= $var;
+			}
+		}
+		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var eq "none") {
+				$noSanitizerFlags = "";
+			}
+			else {
+				if (not ($noSanitizerFlags eq "")) {
+					$noSanitizerFlags  = "," . $noSanitizerFlags;
+				}
+				$noSanitizerFlags  .= $var;
 			}
 		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
@@ -820,6 +834,10 @@ sub PostProcessOptions_ ()
 	if (not ($sanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fsanitize=" . $sanitizerFlags;
 		$EXTRA_LINKER_ARGS .= " -fsanitize=" . $sanitizerFlags;
+	}
+	if (not ($noSanitizerFlags eq "")) {
+		$EXTRA_COMPILER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+		$EXTRA_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		if ($CrossCompiling eq "false") {
