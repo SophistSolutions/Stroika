@@ -25,10 +25,10 @@ using   Memory::Byte;
 
 #if     qStroika_Foundation_Debug_MallocGuard
 namespace {
-    constexpr   Byte kMallocGuardHeader_BASE_[16] =   { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
-    constexpr   Byte kMallocGuardFooter_BASE_[16] =   { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
+    constexpr   array<Byte, 16> kMallocGuardHeader_BASE_    { 0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23, };
+    constexpr   array<Byte, 16> kMallocGuardFooter_BASE_    { 0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80, };
 
-    using   GuradBytes_ =   Byte[qStroika_Foundation_Debug_MallocGuard_GuardSize];
+    using   GuradBytes_ =   array<Byte, qStroika_Foundation_Debug_MallocGuard_GuardSize>;
 #if     qStroika_Foundation_Debug_MallocGuard_GuardSize == 16
     constexpr   GuradBytes_ kMallocGuardHeader_     {   kMallocGuardHeader_BASE_ };
     constexpr   GuradBytes_ kMallocGuardFooter_     {   kMallocGuardFooter_BASE_ };
@@ -213,10 +213,10 @@ namespace {
     void   PatchNewPointer_ (void* p, size_t requestedSize)
     {
         Header_*  hp   =   reinterpret_cast< Header_*> (p);
-        (void)::memcpy (begin (hp->fGuard), begin (kMallocGuardHeader_),  NEltsOf (kMallocGuardHeader_));
+        (void)::memcpy (begin (hp->fGuard), begin (kMallocGuardHeader_),  kMallocGuardHeader_.size ());
         hp->fRequestedBlockSize = requestedSize;
         Footer_*  fp  =    reinterpret_cast< Footer_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
-        (void)::memcpy (begin (fp->fGuard), begin (kMallocGuardFooter_),  NEltsOf (kMallocGuardFooter_));
+        (void)::memcpy (begin (fp->fGuard), begin (kMallocGuardFooter_),  kMallocGuardFooter_.size ());
         fp->fRequestedBlockSize = requestedSize;
     }
 }
