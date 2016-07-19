@@ -286,12 +286,13 @@ namespace {
         Memory::SmallStackBuffer<Byte> useKey { keyLen };
         Memory::SmallStackBuffer<Byte> useIV { ivLen };
 
-        memset (useKey.begin (), 0, keyLen);
-        memset (useIV.begin (), 0, ivLen);
+        (void)::memset (useKey.begin (), 0, keyLen);
+        (void)::memset (useIV.begin (), 0, ivLen);
 
-        memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
-        memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
-
+        (void)::memcpy (useKey.begin (), key.begin (), min(keyLen, key.size ()));
+        if (not initialIV.empty ()) {
+            (void)::memcpy (useIV.begin (), initialIV.begin (), min(ivLen, initialIV.size ()));
+        }
         Cryptography::OpenSSL::Exception::ThrowLastErrorIfFailed (::EVP_CipherInit_ex (ctx, nullptr, NULL, useKey.begin (), useIV.begin (), enc));
     }
 }

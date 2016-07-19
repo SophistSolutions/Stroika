@@ -232,8 +232,11 @@ namespace {
                 size_t bytesToRead  =   intoEnd - intoStart;
                 size_t bytesLeft    =   fEnd - fCur;
                 bytesToRead = min (bytesLeft, bytesToRead);
-                (void)::memcpy (intoStart, fCur, bytesToRead);
-                fCur += bytesToRead;
+                if (bytesToRead != 0) {
+                    // see http://stackoverflow.com/questions/16362925/can-i-pass-a-null-pointer-to-memcmp -- illegal to pass nullptr to memcmp() even if size 0 (aka for memcpy)
+                    (void)::memcpy (intoStart, fCur, bytesToRead);
+                    fCur += bytesToRead;
+                }
                 return bytesToRead;
             }
             virtual SeekOffsetType  GetReadOffset () const override

@@ -159,8 +159,7 @@ namespace {
         ostream&    outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString ()  << ")" << endl;
         DurationSecondsType totalTime = baselineTime + compareWithTime;
-        double ratio = compareWithTime / baselineTime;
-        double performanceScore = ratio;
+        double performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
         //const char    kOneTab_[]  =   "      ";
         const char  kOneTab_[]  =   "\t";
         {
