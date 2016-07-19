@@ -40,12 +40,14 @@ help:
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
 
 
-all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ libraries tools samples tests documentation check
 ifeq ($(CONFIGURATION),)
+all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/All {$$i}:";\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
+else
+all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ libraries tools samples tests documentation check
 endif
 
 
@@ -101,29 +103,27 @@ documentation:
 	@$(MAKE) --directory Documentation --no-print-directory all MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 
-libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ third-party-components
 ifeq ($(CONFIGURATION),)
-ifeq ($(MAKECMDGOALS),libraries)
+libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
-endif
 else
+libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ third-party-components
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
 
 
-third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
 ifeq ($(CONFIGURATION),)
-ifeq ($(MAKECMDGOALS),third-party-components)
+third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Third-party-components {$$i}:";\
 		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
-endif
 else
+third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -150,50 +150,50 @@ project-files-qt-creator-save:
 	@$(ECHO) "done"
 
 
-tools:	assure-default-configurations-exist_ libraries
 ifeq ($(CONFIGURATION),)
-ifeq ($(MAKECMDGOALS),tools)
+tools:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Tools {$$i}:";\
 		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
-endif
 else
+tools:	assure-default-configurations-exist_ libraries
 	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
 
-tests:	assure-default-configurations-exist_ libraries
 ifeq ($(CONFIGURATION),)
-ifeq ($(MAKECMDGOALS),tests)
+tests:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Tests {$$i}:";\
 		$(MAKE) tests --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
-endif
 else
+tests:	assure-default-configurations-exist_ libraries
 	@$(MAKE) --directory Tests --no-print-directory tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
 
-samples:	assure-default-configurations-exist_ libraries
 ifeq ($(CONFIGURATION),)
+samples:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Samples {$$i}:";\
 		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
+samples:	assure-default-configurations-exist_ libraries
 	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
 
-run-tests:	tests
 ifeq ($(CONFIGURATION),)
+run-tests:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Run-All-Tests {$$i}:";\
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
+run-tests:	tests
 	@$(MAKE) --directory Tests --no-print-directory run-tests CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
