@@ -321,7 +321,7 @@ regression-test-configurations:
 	else\
 		./configure DEFAULT_CONFIG;\
 		#\
-		./configure gcc-with-malloc-gaurd --malloc-guard true;\
+		./configure gcc-with-malloc-guard --malloc-guard true;\
 		#\
 		./configure gcc-4.8.4-debug --compiler-driver /home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
 		./configure gcc-4.8-release --compiler-driver g++-4.8 --apply-default-release-flags --only-if-has-compiler;\
