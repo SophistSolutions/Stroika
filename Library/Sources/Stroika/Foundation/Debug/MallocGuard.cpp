@@ -30,8 +30,8 @@ namespace {
 
     using   GuradBytes_ =   Byte[qStroika_Foundation_Debug_MallocGuard_GuardSize];
 #if     qStroika_Foundation_Debug_MallocGuard_GuardSize == 16
-    constexpr   GuradBytes_ kMallocGuardHeader_ =   kMallocGuardHeader_BASE_;
-    constexpr   GuradBytes_ kMallocGuardFooter_ =   kMallocGuardFooter_BASE_;
+    constexpr   GuradBytes_ kMallocGuardHeader_     {   kMallocGuardHeader_BASE_ };
+    constexpr   GuradBytes_ kMallocGuardFooter_     {   kMallocGuardFooter_BASE_ };
 #else
     const       GuradBytes_ kMallocGuardHeader_;
     const       GuradBytes_ kMallocGuardFooter_;
