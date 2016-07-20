@@ -380,8 +380,7 @@ namespace   Stroika {
                 auto  ObjectReaderRegistry::MakeCommonReader_EnumAsInt () -> ReaderFromVoidStarFactory {
                     struct   myReader_ : public IElementConsumer {
                         myReader_ (ENUM_TYPE * intoVal)
-                            : fNameMap (nameMap)
-                            , fValue_ (intoVal)
+                            : fValue_ (intoVal)
                         {
                             RequireNotNull (intoVal);
                         }
