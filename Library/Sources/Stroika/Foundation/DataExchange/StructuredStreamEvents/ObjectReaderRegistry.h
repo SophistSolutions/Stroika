@@ -154,7 +154,7 @@ namespace   Stroika {
                     class   ListOfObjectReader;
                     template    <typename CONTAINER_OF_T>
                     struct  RepeatedElementReader_DefaultTraits;
-                    template    <typename   T, typename TRAITS>
+                    template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
                     class   RepeatedElementReader;
 
                 public:
@@ -651,26 +651,28 @@ namespace   Stroika {
                  *      \endcode
                  */
                 template    <typename CONTAINER_OF_T>
-                struct ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
-                    using   ElementType = typename CONTAINER_OF_T::value_type;
+                struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
+                    using   ContainerType = CONTAINER_OF_T;
+                    using   ElementType = typename ContainerType::value_type;
                     static  shared_ptr<IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
                     {
                         RequireNotNull (proxyValue);
-                        return  r.GetObjectReaderRegistry ().MakeContextReader (proxyValue);
+                        return r.GetObjectReaderRegistry ().MakeContextReader (proxyValue);
                     }
-                    static  void   AppendToOutputContainer (CONTAINER_OF_T* container, const ElementType& v)
+                    static  void   AppendToOutputContainer (ContainerType* container, const ElementType& v)
                     {
                         RequireNotNull (container);
                         container->push_back (v);
                     }
                 };
-                template    <typename CONTAINER_OF_T, typename TRAITS = ObjectReaderRegistry::RepeatedElementReader_DefaultTraits<CONTAINER_OF_T>>
+                template    <typename T, typename TRAITS>
                 class   ObjectReaderRegistry::RepeatedElementReader : public IElementConsumer {
                 public:
-                    using   ElementType = typename CONTAINER_OF_T::value_type;
+                    using   ContainerType = T;
+                    using   ElementType = typename ContainerType::value_type;
 
                 public:
-                    RepeatedElementReader (CONTAINER_OF_T* v);
+                    RepeatedElementReader (ContainerType* v);
 
                 public:
                     virtual void                            Activated (ObjectReaderRegistry::Context& r) override;
@@ -681,7 +683,7 @@ namespace   Stroika {
                 private:
                     ElementType                     fProxyValue_    {};
                     shared_ptr<IElementConsumer>    fActualReader_  {};
-                    CONTAINER_OF_T*                 fValuePtr_      {};
+                    ContainerType*                  fValuePtr_      {};
                 };
 
 
