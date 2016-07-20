@@ -41,7 +41,7 @@ namespace   Stroika {
                 using   ValueType   =   VALUE_TYPE;
 
             public:
-                KeyValuePair ();
+                KeyValuePair () = default;
                 KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value);
                 template    <
                     typename KEY2_TYPE,
@@ -57,8 +57,8 @@ namespace   Stroika {
                 KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value);
 
             public:
-                KeyType     fKey;
-                ValueType   fValue;
+                KeyType     fKey        {};
+                ValueType   fValue      {};
 
             public:
                 /**

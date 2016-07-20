@@ -23,12 +23,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair ()
-                : fKey ()
-                , fValue ()
-            {
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE>
             inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (typename Configuration::ArgByValueType<KeyType> key, typename Configuration::ArgByValueType<ValueType> value)
                 : fKey (key)
                 , fValue (value)
