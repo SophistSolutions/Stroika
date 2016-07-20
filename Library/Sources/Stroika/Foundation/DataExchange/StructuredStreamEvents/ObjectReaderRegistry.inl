@@ -410,15 +410,17 @@ namespace   Stroika {
                     };
                     return cvtFactory_<ENUM_TYPE> ( [] (ENUM_TYPE * o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
                 }
-
-
-
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*)
                 {
                     return MakeCommonReader_SimpleReader_<String> ();
                 }
                 template    <typename T>
-                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const T*, typename std::enable_if<std::is_pod<T>::value >::type*)
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const T*, typename std::enable_if<std::is_enum<T>::value >::type*)
+                {
+                    return MakeCommonReader_NamedEnumerations<T> ();
+                }
+                template    <typename T>
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const T*, typename std::enable_if < std::is_pod<T>::value and !std::is_enum<T>::value >::type*)
                 {
                     return MakeCommonReader_SimpleReader_<T> ();
                 }
