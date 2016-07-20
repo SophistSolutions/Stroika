@@ -226,36 +226,37 @@ namespace   Stroika {
                  ************** ObjectReaderRegistry::RepeatedElementReader *********************
                  ********************************************************************************
                  */
-                template    <typename CONTAINER_OF_T>
-                inline  ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::RepeatedElementReader (CONTAINER_OF_T* pv)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                inline  ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T, TRAITS>::RepeatedElementReader (CONTAINER_OF_T* pv)
                     : fValuePtr_ (pv)
                 {
                 }
-                template    <typename CONTAINER_OF_T>
-                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::Activated (ObjectReaderRegistry::Context& r)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T, TRAITS>::Activated (ObjectReaderRegistry::Context& r)
                 {
                     Assert (fActualReader_ == nullptr);
-                    fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+                    //fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+                    fActualReader_ = TRAITS::MakeActualReader (r, &fProxyValue_);
                     fActualReader_->Activated (r);
                 }
-                template    <typename CONTAINER_OF_T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::HandleChildStart (const Name& name)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer>    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T, TRAITS>::HandleChildStart (const Name& name)
                 {
                     AssertNotNull (fActualReader_);
                     return fActualReader_->HandleChildStart (name);
                 }
-                template    <typename CONTAINER_OF_T>
-                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::HandleTextInside (const String& text)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T, TRAITS>::HandleTextInside (const String& text)
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->HandleTextInside (text);
                 }
-                template    <typename CONTAINER_OF_T>
-                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T>::Deactivating ()
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                void    ObjectReaderRegistry::RepeatedElementReader<CONTAINER_OF_T, TRAITS>::Deactivating ()
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
-                    fValuePtr_->push_back (fProxyValue_);
+                    TRAITS::AppendToOutputContainer (fValuePtr_, fProxyValue_);
                 }
 
 
