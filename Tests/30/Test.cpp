@@ -593,7 +593,7 @@ namespace {
         using WaveNumberType_   = double;
         using TemperatureType_  = double;
         using CurrentType_  = double;
-        struct  TECPowerConsumptionStatsType {
+        struct  TECPowerConsumptionStatsType_ {
             Mapping<TunerNumberType_, CurrentType_>     TunerTECCurrent;
         };
         struct  SensorDataType_ {
@@ -605,7 +605,7 @@ namespace {
             Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
             Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
             Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
-            Optional<TECPowerConsumptionStatsType>      TECPowerConsumptionStats;
+            Optional<TECPowerConsumptionStatsType_>     TECPowerConsumptionStats;
         };
         Memory::BLOB    mkdata_ ()
         {
@@ -651,7 +651,6 @@ namespace {
          *
          *   Mapping<TunerNumberType,Temperature>    LaserTemperature;
          */
-#if 1
         template    <typename TARGET_TYPE>
         struct   TunerMappingReader_TRAITS_ {
             using   ElementType = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
@@ -678,9 +677,6 @@ namespace {
             }
             );
         } ();
-        //template    <typename TARGET_TYPE>
-        //using   TunerMappingReader_ = ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>;
-
         template    <typename TARGET_TYPE>
         class   TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
         public:
@@ -688,78 +684,24 @@ namespace {
                 : fValuePtr_ (v)
             {
             }
-            virtual void                            Activated (ObjectReaderRegistry::Context& r) override
+            virtual void    Activated (ObjectReaderRegistry::Context& r) override
             {
-                Assert (fSubReader_ == nullptr);
-                fSubReader_ = make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
-                //     fSubReader_->Activated (r);
-
-                Assert (fValuePtr_->size () == 0);
-
             }
             virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
             {
-                AssertNotNull (fSubReader_);
-                DbgTrace (L"name=%s", name.ToString ().c_str ());
-                //  return fSubReader_->HandleChildStart (name);
-                return fSubReader_;
+                //DbgTrace (L"name=%s", name.ToString ().c_str ());
+                return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
             }
-            virtual void                            Deactivating () override
+            virtual void    Deactivating () override
             {
-                AssertNotNull (fSubReader_);
-                //     fSubReader_->Deactivating ();
-                //Assert (fValuePtr_->size () == 1);
             }
         private:
-            shared_ptr<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>>                fSubReader_;
             Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
         };
 
-#else
-        template    <typename TARGET_TYPE>
-        class   TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
-        private:
-            static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
-        public:
-            TunerMappingReader_ (Mapping<TunerNumberType_, TARGET_TYPE>* v)
-                : fValuePtr_ (v)
-            {
-            }
-            virtual void                            Activated (ObjectReaderRegistry::Context& r) override
-            {
-                Assert (fSubReader_ == nullptr);
-                fCurTReading_ = KeyValuePair<TunerNumberType_, TARGET_TYPE> ();
-                fSubReader_ = sEltReader_ (&fCurTReading_);
-                fSubReader_->Activated (r);
-            }
-            virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
-            {
-                AssertNotNull (fSubReader_);
-                return fSubReader_->HandleChildStart (name);
-            }
-            virtual void                            Deactivating () override
-            {
-                AssertNotNull (fSubReader_);
-                fSubReader_->Deactivating ();
-                fValuePtr_->Add (fCurTReading_);
-            }
-        private:
-            shared_ptr<IElementConsumer>                fSubReader_;
-            KeyValuePair<TunerNumberType_, TARGET_TYPE> fCurTReading_;
-            Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
-        };
-        template    <typename TARGET_TYPE>
-        const   ObjectReaderRegistry::ReaderFromVoidStarFactory TunerMappingReader_<TARGET_TYPE>::sEltReader_ =
-        [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
-            using   KVPType_    =   KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            return ObjectReaderRegistry::MakeClassReader<KVPType_> (
-            initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"Tuner", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
-                { Name { Name::eValue }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
-            }
-            );
-        } ();
-#endif
+        /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
+
+
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
@@ -777,22 +719,17 @@ namespace {
             registry.AddCommonType<Optional<TemperatureType_>> ();
             registry.AddCommonType<CurrentType_> ();
             registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TemperatureType_>, TunerMappingReader_<TemperatureType_> > ());
-            registry.AddClass<TECPowerConsumptionStatsType> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-                { Name { L"TunerTECCurrent" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (TECPowerConsumptionStatsType, TunerTECCurrent) },
-            });
-            registry.AddCommonType<Optional<TECPowerConsumptionStatsType>> ();
+            registry.Add<TECPowerConsumptionStatsType_> (ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TemperatureType_>, TunerMappingReader_<TemperatureType_> > ());
+            registry.AddCommonType<Optional<TECPowerConsumptionStatsType_>> ();
             registry.AddClass<SensorDataType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
-#if 1
                 { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },
                 { Name { L"DetectorTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature) },
                 { Name { L"OpticsTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature) },
                 { Name { L"ExternalTemperature1" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ExternalTemperature1) },
-#endif
                 { Name { L"LaserTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, LaserTemperatures) },
-                // { Name { L"TECPowerConsumptionStats" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, TECPowerConsumptionStats) },
-
-
-
+                { Name { L"LaserCurrent" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, LaserCurrents) },
+                { Name { L"MirrorTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, MirrorTemperatures) },
+                { Name { L"TECPowerConsumptionStats" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, TECPowerConsumptionStats) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
@@ -811,8 +748,11 @@ namespace {
                 for (auto aaa : data.LaserTemperatures) {
                     DbgTrace (L"%d : %f", aaa.fKey, aaa.fValue);
                 }
+                for (auto aaa : data.TECPowerConsumptionStats->TunerTECCurrent) {
+                    DbgTrace (L"%d : %f", aaa.fKey, aaa.fValue);
+                }
 
-                //  VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4 }));
+                VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4 }));
 
                 VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
             }
