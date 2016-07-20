@@ -521,7 +521,7 @@ namespace   Stroika {
                     ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
                     * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
-                    if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND))
+                    if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto < ENUM_TYPE::eEND))
                     {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
                         Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
