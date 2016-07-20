@@ -647,7 +647,6 @@ namespace {
         {
             ObjectReaderRegistry registry;
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-
             registry.Add<TunerNumberType_> (ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String> {
                 pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
                 pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
@@ -660,7 +659,6 @@ namespace {
             registry.AddCommonType<TemperatureType_> ();
             registry.AddCommonType<Optional<TemperatureType_>> ();
             registry.AddCommonType<CurrentType_> ();
-
             registry.AddClass<TECPowerConsumptionStatsType> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 // { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (TECPowerConsumptionStatsType, ActiveLaser) },
             });
@@ -670,7 +668,6 @@ namespace {
                 { Name { L"OpticsTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature) },
                 { Name { L"ExternalTemperature1" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ExternalTemperature1) },
             });
-
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
             SensorDataType_   data;
