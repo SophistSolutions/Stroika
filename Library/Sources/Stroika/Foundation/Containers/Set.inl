@@ -197,6 +197,12 @@ namespace   Stroika {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep> { &rhs } ._ConstGetRep ());
             }
             template    <typename T, typename TRAITS>
+            bool  Set<T, TRAITS>::Equals (const Iterable<T>& rhs) const
+            {
+                // KISS for now
+                return Equals (Set<T, TRAITS> { rhs });
+            }
+            template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>    Set<T, TRAITS>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
             {
                 return Iterable<T>::Where (doToElement, Set<T, TRAITS> {});
@@ -330,9 +336,29 @@ namespace   Stroika {
                 return lhs.Equals (rhs);
             }
             template    <typename T, typename TRAITS>
+            inline  bool    operator== (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            {
+                return lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator== (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return rhs.Equals (lhs);
+            }
+            template    <typename T, typename TRAITS>
             inline  bool    operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            {
+                return not lhs.Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    operator!= (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs)
+            {
+                return not rhs.Equals (lhs);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)

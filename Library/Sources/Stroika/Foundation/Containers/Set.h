@@ -250,11 +250,14 @@ namespace   Stroika {
                 /**
                  *  Two Sets are considered equal if they contain the same elements (by comparing them with operator==).
                  *
-                 *  Equals is commutative().
+                 *  Equals is commutative ().
                  *
                  *  @todo - document computational complexity
+                 *
+                 *  \note   If RHS is an Iterable, it is treated/compared as if it was a set (aka Iterable<T>::SetEquals)
                  */
                 nonvirtual  bool    Equals (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  bool    Equals (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -387,12 +390,20 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             bool    operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator== (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator== (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
 
             /**
              *  operator indirects to Set<>::Equals()
              */
             template    <typename T, typename TRAITS>
             bool    operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs);
+            template    <typename T, typename TRAITS>
+            bool    operator!= (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs);
 
             /**
              *  Alias for Set<>::Union
