@@ -275,9 +275,7 @@ namespace   Stroika {
                  *  decomposing (into C++ structs), as a helpful backward compatible file format hook.
                  *
                  *  \req    AddClass<> requires that each field data type already be pre-loaded into the
-                 *          ObjectReaderRegistry. To avoid this requirement, you an use MakeClassReader
-                 *          directly, but if this type is absent when you call AddClass<> - its most likely
-                 *          a bug.
+                 *          ObjectReaderRegistry.
                  */
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject = nullptr);
