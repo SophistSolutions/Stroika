@@ -195,6 +195,7 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  @see ReadDownToReader
                      */
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
@@ -474,10 +475,13 @@ namespace   Stroika {
 
 
                 /**
-                 *   Eat/ignore everything down the level named by 'tagToHandoff'.
-                 *    Note - its not an error to call theUseReader with multiple starts, but never two at a time.
+                 *  Eat/ignore everything down the level named by 'tagToHandoff'.
+                 *  If tagToHandoff is missing, start on the first element.
+                 *  Note - its not an error to call theUseReader with multiple starts, but never two at a time.
                  *
-                 *    \note - the tag == tagToHandoff will be handed to theUseReader.
+                 *  \note - the tag == tagToHandoff will be handed to theUseReader.
+                 *
+                 *  \note   If multiple elements match, each one is started with theUseReader
                  */
                 class   ObjectReaderRegistry::ReadDownToReader : public IElementConsumer {
                 public:

@@ -578,6 +578,129 @@ namespace {
 
 
 
+namespace {
+    namespace  T7_SAXObjectReader_BLKQCL_ReadSensors_ {
+
+        enum    class   TunerNumberType_ {
+            eT1 = 1,
+            eT2 = 2,
+            eT3 = 3,
+            eT4 = 4,
+            Stroika_Define_Enum_Bounds(eT1, eT4)
+        };
+        using WaveNumberType_   = double;
+        using TemperatureType_  = double;
+        using CurrentType_  = double;
+        struct  TECPowerConsumptionStatsType {
+            Mapping<TunerNumberType_, CurrentType_>     TunerTECCurrent;
+        };
+        struct  SensorDataType_ {
+            Optional<TunerNumberType_>                  ActiveLaser;
+            Optional<WaveNumberType_>                   ActiveLaserWaveNumber;
+            Optional<TemperatureType_>                  DetectorTemperature;
+            Optional<TemperatureType_>                  OpticsTemperature;
+            Optional<TemperatureType_>                  ExternalTemperature1;
+            Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
+            Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
+            Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
+            Optional<TECPowerConsumptionStatsType>      TECPowerConsumptionStats;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"      <blk201605:ReadSensorsResponse>\n"
+                L"         <blk201605:Sensors>\n"
+                L"            <blk201605:DetectorTemperature>13.1</blk201605:DetectorTemperature>\n"
+                L"            <blk201605:OpticsTemperature>0.86115019791435543</blk201605:OpticsTemperature>\n"
+                L"            <blk201605:LaserTemperature>\n"
+                L"               <blk201605:Temperature Tuner=\"1\">20.899877489241646</blk201605:Temperature>\n"
+                L"            </blk201605:LaserTemperature>\n"
+                L"            <blk201605:LaserCurrent>\n"
+                L"               <blk201605:Current Tuner=\"1\">0.86871794871794872</blk201605:Current>\n"
+                L"            </blk201605:LaserCurrent>\n"
+                L"             <blk201605:MirrorTemperature>\n"
+                L"               <blk201605:Temperature Tuner=\"1\">0.86115019791435543</blk201605:Temperature>\n"
+                L"            </blk201605:MirrorTemperature>\n"
+                L"            <blk201605:TECPowerConsumptionStats>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"1\">-0.0015262515262515208</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"2\">0</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"3\">0</blk201605:TunerTECCurrent>\n"
+                L"               <blk201605:TunerTECCurrent Tuner=\"4\">0</blk201605:TunerTECCurrent>\n"
+                L"            </blk201605:TECPowerConsumptionStats>\n"
+                L"            <blk201605:ExternalTemperature1>0</blk201605:ExternalTemperature1>\n"
+                L"         </blk201605:Sensors>\n"
+                L"      </blk201605:ReadSensorsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+
+        void    DoTest ()
+        {
+            ObjectReaderRegistry registry;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+
+            registry.Add<TunerNumberType_> (ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<TunerNumberType_> (Containers::Bijection<TunerNumberType_, String> {
+                pair<TunerNumberType_, String> { TunerNumberType_::eT1, L"1" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT2, L"2" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT3, L"3" },
+                pair<TunerNumberType_, String> { TunerNumberType_::eT4, L"4" },
+            }));
+            registry.AddCommonType<Optional<TunerNumberType_>> ();
+            registry.AddCommonType<WaveNumberType_> ();
+            registry.AddCommonType<Optional<WaveNumberType_>> ();
+            registry.AddCommonType<TemperatureType_> ();
+            registry.AddCommonType<Optional<TemperatureType_>> ();
+            registry.AddCommonType<CurrentType_> ();
+
+            registry.AddClass<TECPowerConsumptionStatsType> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                // { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (TECPowerConsumptionStatsType, ActiveLaser) },
+            });
+            registry.AddClass<SensorDataType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },
+                { Name { L"DetectorTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, DetectorTemperature) },
+                { Name { L"OpticsTemperature" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, OpticsTemperature) },
+                { Name { L"ExternalTemperature1" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ExternalTemperature1) },
+            });
+
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+            SensorDataType_   data;
+            {
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"Sensors" }) };
+                //consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                VerifyTestResult (data.ActiveLaser.IsMissing ());
+                VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
+                VerifyTestResult (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
+                VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 namespace   {
 
@@ -590,6 +713,7 @@ namespace   {
             T4_SAXObjectReader_ReadDown2Sample_MixedContent_::DoTest ();
             T5_SAXObjectReader_DocSamples_::DoTests ();
             T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
+            T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
