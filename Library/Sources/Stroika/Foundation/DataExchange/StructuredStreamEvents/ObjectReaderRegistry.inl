@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    "../../Characters/String2Int.h"
+#include    "../../Characters/String_Constant.h"
 #include    "../BadFormatException.h"
 
 
