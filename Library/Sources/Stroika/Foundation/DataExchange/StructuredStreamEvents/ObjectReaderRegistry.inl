@@ -366,7 +366,7 @@ namespace   Stroika {
                             }
                             else {
                                 DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
-                                Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                                Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
                             }
                         }
                     };
@@ -405,7 +405,7 @@ namespace   Stroika {
                             }
                             else {
                                 DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
-                                Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                                Execution::Throw (BadFormatException (Characters::String_Constant (L"Enumeration value out of range")));
                             }
                         }
                     };
