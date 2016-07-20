@@ -237,6 +237,10 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Create a class factory for a class with the given fields. This does't check (because its static) if the types of the elements in the
+                     *  fields are part of the mapper.
+                     *
+                     *  @see AddClass<>
                      */
                     template    <typename CLASS>
                     static  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
