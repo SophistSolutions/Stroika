@@ -626,7 +626,7 @@ namespace {
                 L"               <blk201605:Current Tuner=\"1\">0.86871794871794872</blk201605:Current>\n"
                 L"            </blk201605:LaserCurrent>\n"
                 L"             <blk201605:MirrorTemperature>\n"
-                L"               <blk201605:Temperature Tuner=\"1\">0.86115019791435543</blk201605:Temperature>\n"
+                L"               <blk201605:Temperature Tuner=\"2\">0.86115019791435543</blk201605:Temperature>\n"
                 L"            </blk201605:MirrorTemperature>\n"
                 L"            <blk201605:TECPowerConsumptionStats>\n"
                 L"               <blk201605:TunerTECCurrent Tuner=\"1\">-0.0015262515262515208</blk201605:TunerTECCurrent>\n"
@@ -738,29 +738,41 @@ namespace {
                 ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"Sensors" }) };
                 //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace(L"LaserTemperatures=%s", Characters::ToString (data.LaserTemperatures).c_str ());
+                DbgTrace(L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
+                DbgTrace(L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
+                DbgTrace(L"TECPowerConsumptionStats=%s", Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent).c_str ());
                 VerifyTestResult (data.ActiveLaser.IsMissing ());
                 VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
                 VerifyTestResult (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
                 VerifyTestResult ((data.LaserTemperatures.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT1 }));
                 VerifyTestResult (Math::NearlyEquals (*data.LaserTemperatures.Lookup (TunerNumberType_::eT1), 20.899877489241646));
-                int a = data.LaserTemperatures.size ();
-                //DbgTrace(L"la=%s", Characters::ToString (data.LaserTemperatures).c_str ());
-                for (auto aaa : data.LaserTemperatures) {
-                    DbgTrace (L"%d : %f", aaa.fKey, aaa.fValue);
-                }
-                for (auto aaa : data.TECPowerConsumptionStats->TunerTECCurrent) {
-                    DbgTrace (L"%d : %f", aaa.fKey, aaa.fValue);
-                }
-
+                VerifyTestResult ((data.LaserCurrents.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT1 }));
+                VerifyTestResult (Math::NearlyEquals (*data.LaserCurrents.Lookup (TunerNumberType_::eT1), 0.86871794871794872));
+                VerifyTestResult ((data.MirrorTemperatures.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT2 }));
+                VerifyTestResult (Math::NearlyEquals (*data.MirrorTemperatures.Lookup (TunerNumberType_::eT2), 0.86115019791435543));
                 VerifyTestResult ((data.TECPowerConsumptionStats->TunerTECCurrent.Keys () == Set<TunerNumberType_> { TunerNumberType_::eT1, TunerNumberType_::eT2, TunerNumberType_::eT3, TunerNumberType_::eT4 }));
-
                 VerifyTestResult (Math::NearlyEquals (*data.ExternalTemperature1, 0.0));
             }
         }
     }
 
 }
-
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            const   EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>    DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k = EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer {
+                {
+                    { T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1" },
+                    { T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT2, L"eT2" },
+                    { T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT3, L"eT3" },
+                    { T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT4, L"eT4" },
+                }
+            };
+        }
+    }
+}
 
 
 
