@@ -736,7 +736,7 @@ namespace {
             SensorDataType_   data;
             {
                 ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"Sensors" }) };
-                consumerCallback.fContext.fTraceThisReader = true;
+                //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 VerifyTestResult (data.ActiveLaser.IsMissing ());
                 VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
