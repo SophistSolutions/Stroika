@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../../Characters/String2Int.h"
+#include    "../BadFormatException.h"
 
 
 namespace   Stroika {
@@ -335,6 +337,82 @@ namespace   Stroika {
                 auto   ObjectReaderRegistry::MakeCommonReader_SimpleReader_ () -> ReaderFromVoidStarFactory {
                     return cvtFactory_<T> ( [] (T * o) -> shared_ptr<IElementConsumer> { return make_shared<SimpleReader_<T>> (o); });
                 }
+                template    <typename ENUM_TYPE>
+                auto  ObjectReaderRegistry::MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap) -> ReaderFromVoidStarFactory {
+                    struct   myReader_ : public IElementConsumer {
+                        Containers::Bijection<ENUM_TYPE, String>    fNameMap;
+                        myReader_ (const Containers::Bijection<ENUM_TYPE, String>& nameMap, ENUM_TYPE * intoVal)
+                            : fNameMap (nameMap)
+                            , fValue_ (intoVal)
+                        {
+                            RequireNotNull (intoVal);
+                        }
+                        Characters::StringBuilder   fBuf_   {};
+                        ENUM_TYPE*                  fValue_ {};
+                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name & name) override
+                        {
+                            ThrowUnRecognizedStartElt (name);
+                        }
+                        virtual void                            HandleTextInside (const String & text) override
+                        {
+                            fBuf_ += text;
+                        }
+                        virtual void                            Deactivating () override
+                        {
+                            if (auto optVal = fNameMap.InverseLookup (fBuf_.str ()))
+                            {
+                                *fValue_ = *optVal;
+                            }
+                            else {
+                                DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
+                                Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                            }
+                        }
+                    };
+                    return cvtFactory_<ENUM_TYPE> ( [nameMap] (ENUM_TYPE * o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (nameMap, o); });
+                };
+                template    <typename ENUM_TYPE>
+                auto  ObjectReaderRegistry::MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap) -> ReaderFromVoidStarFactory {
+                    return MakeCommonReader_NamedEnumerations (Containers::Bijection<ENUM_TYPE, String> (nameMap));
+                }
+                template    <typename ENUM_TYPE>
+                auto  ObjectReaderRegistry::MakeCommonReader_EnumAsInt () -> ReaderFromVoidStarFactory {
+                    struct   myReader_ : public IElementConsumer {
+                        myReader_ (ENUM_TYPE * intoVal)
+                            : fNameMap (nameMap)
+                            , fValue_ (intoVal)
+                        {
+                            RequireNotNull (intoVal);
+                        }
+                        Characters::StringBuilder   fBuf_   {};
+                        ENUM_TYPE*                  fValue_ {};
+                        virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name & name) override
+                        {
+                            ThrowUnRecognizedStartElt (name);
+                        }
+                        virtual void                            HandleTextInside (const String & text) override
+                        {
+                            fBuf_ += text;
+                        }
+                        virtual void                            Deactivating () override
+                        {
+                            using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
+                            SerializeAsType tmp =   Characters::String2Int<SerializeAsType> (fBuf_.str ());
+                            if (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)
+                            {
+                                *fValue_ = static_cast<ENUM_TYPE> (tmp);
+                            }
+                            else {
+                                DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
+                                Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
+                            }
+                        }
+                    };
+                    return cvtFactory_<ENUM_TYPE> ( [] (ENUM_TYPE * o) -> shared_ptr<IElementConsumer> { return make_shared<myReader_> (o); });
+                }
+
+
+
                 inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const String*)
                 {
                     return MakeCommonReader_SimpleReader_<String> ();

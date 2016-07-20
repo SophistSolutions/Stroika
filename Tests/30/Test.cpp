@@ -468,9 +468,15 @@ namespace {
 
 namespace {
     namespace  T6_SAXObjectReader_RepeatedElementReader_Sample_ {
+        enum class GenderType_ {
+            Male,
+            Female,
+            Stroika_Define_Enum_Bounds(Male, Female)
+        };
         struct  Person_ {
-            String firstName;
-            String lastName;
+            String                  firstName;
+            String                  lastName;
+            Optional<GenderType_>   gender;
         };
         struct  Address_ {
             String city;
@@ -487,6 +493,7 @@ namespace {
                 L"	  <person>\n"
                 L"		  <FirstName>Jim</FirstName>"
                 L"		  <LastName>Smith</LastName>"
+                L"		  <Gender>Male</Gender>"
                 L"	  </person>\n"
                 L"	  <person>\n"
                 L"		  <FirstName>Fred</FirstName>"
@@ -514,12 +521,17 @@ namespace {
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
-            registry.AddCommonType<String> ();
-
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddCommonType<String> ();
+            registry.Add<GenderType_> (ObjectReaderRegistry::MakeCommonReader_NamedEnumerations<GenderType_> (Containers::Bijection<GenderType_, String> {
+                pair<GenderType_, String> { GenderType_::Male, L"Male" },
+                pair<GenderType_, String> { GenderType_::Female, L"Female" },
+            }));
+            registry.AddCommonType<Optional<GenderType_>> ();
             registry.AddClass<Person_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
                 { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                { Name { L"Gender" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, gender) },
             });
             registry.AddCommonType<vector<Person_>> ();
             registry.Add<vector<Person_>> (ObjectReaderRegistry::ConvertReaderToFactory <vector<Person_>, ObjectReaderRegistry::RepeatedElementReader<vector<Person_>>> ());
@@ -541,8 +553,10 @@ namespace {
                 VerifyTestResult (data.people.size () == 2);
                 VerifyTestResult (data.people[0].firstName == L"Jim");
                 VerifyTestResult (data.people[0].lastName == L"Smith");
+                VerifyTestResult (data.people[0].gender == GenderType_::Male);
                 VerifyTestResult (data.people[1].firstName == L"Fred");
                 VerifyTestResult (data.people[1].lastName == L"Down");
+                VerifyTestResult (data.people[1].gender.IsMissing ());
                 VerifyTestResult (data.addresses.size () == 3);
                 VerifyTestResult (data.addresses[0].city == L"Boston");
                 VerifyTestResult (data.addresses[0].state == L"MA");

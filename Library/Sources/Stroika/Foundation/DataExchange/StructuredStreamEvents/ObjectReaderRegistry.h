@@ -80,7 +80,7 @@ namespace   Stroika {
 
 
                 /**
-                  */
+                 */
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 #define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
 #endif
@@ -221,6 +221,10 @@ namespace   Stroika {
                      *
                      *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
                      *  fit what the deserailizer expects.
+                     *
+                     *  @see MakeClassReader
+                     *  @see MakeCommonReader_EnumAsInt
+                     *  @see MakeCommonReader_NamedEnumerations
                      */
                     template    <typename T, typename... ARGS>
                     static  ReaderFromVoidStarFactory  MakeCommonReader (ARGS&& ... args);
@@ -247,6 +251,24 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  @see MakeCommonReader
+                     *  @see MakeCommonReader_EnumAsInt
+                     */
+                    template    <typename ENUM_TYPE>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap);
+                    template    <typename ENUM_TYPE>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap = Configuration::DefaultNames<ENUM_TYPE>::k);
+
+                public:
+                    /**
+                     *  @see MakeCommonReader
+                     *  @see MakeCommonReader_NamedEnumerations
+                     */
+                    template    <typename ENUM_TYPE>
+                    static  ReaderFromVoidStarFactory  MakeCommonReader_EnumAsInt ();
+
+                public:
+                    /**
                      *  It's pretty easy to code up a 'reader' class - just a simple subclass of IElementConsumer.
                      *  There are lots of examples in this module.
                      *
@@ -260,9 +282,9 @@ namespace   Stroika {
                     /**
                      *  This is generally just called inside of another composite reader to read sub-objects.
                      */
-                    shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
+                    nonvirtual  shared_ptr<IElementConsumer>    MakeContextReader (type_index ti, void* destinationObject) const;
                     template    <typename T>
-                    shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
+                    nonvirtual  shared_ptr<IElementConsumer>    MakeContextReader (T* destinationObject) const;
 
                 private:
                     template    <typename   T>
@@ -272,7 +294,8 @@ namespace   Stroika {
 
                 private:
                     template    <typename T>
-                    static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf );
+                    static  ReaderFromVoidStarFactory   cvtFactory_ (const ReaderFromTStarFactory<T>& tf);
+                private:
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   MakeCommonReader_SimpleReader_ ();
                 private:
