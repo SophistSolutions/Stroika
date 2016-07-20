@@ -239,7 +239,7 @@ namespace   Stroika {
                     /**
                      */
                     template    <typename CLASS>
-                    nonvirtual  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
+                    static  ReaderFromVoidStarFactory    MakeClassReader (const Mapping<Name, StructFieldMetaInfo>& fieldInfo);
 
                 public:
                     /**
