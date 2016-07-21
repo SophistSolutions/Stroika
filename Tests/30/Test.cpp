@@ -715,7 +715,7 @@ namespace {
             registry.AddCommonType<CurrentType_> ();
             registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (mkTunerMappingReaderFactory_<TemperatureType_> ());
             registry.Add<Mapping<TunerNumberType_, CurrentType_>> (mkTunerMappingReaderFactory_<CurrentType_> ());
-            registry.Add<TECPowerConsumptionStatsType_> (mkTunerMappingReaderFactory_<TemperatureType_> ());
+            registry.Add<TECPowerConsumptionStatsType_> (mkTunerMappingReaderFactory_<CurrentType_> ());
             registry.AddCommonType<Optional<TECPowerConsumptionStatsType_>> ();
             registry.AddClass<SensorDataType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },

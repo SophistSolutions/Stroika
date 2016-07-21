@@ -398,7 +398,6 @@ namespace   Stroika {
                         {
                             using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
                             SerializeAsType tmp     =   Characters::String2Int<SerializeAsType> (fBuf_.str ());
-                            ENUM_TYPE       tmpE    =   ;
                             if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND))
                             {
                                 *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
