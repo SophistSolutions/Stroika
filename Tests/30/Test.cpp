@@ -678,30 +678,23 @@ namespace {
             );
         } ();
         template    <typename TARGET_TYPE>
-        class   TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
-        public:
+        struct  TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
+            Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
             TunerMappingReader_ (Mapping<TunerNumberType_, TARGET_TYPE>* v)
                 : fValuePtr_ (v)
             {
             }
-            virtual void    Activated (ObjectReaderRegistry::Context& r) override
-            {
-            }
             virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
             {
-                //DbgTrace (L"name=%s", name.ToString ().c_str ());
                 return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_TRAITS_<TARGET_TYPE>>> (fValuePtr_);
             }
-            virtual void    Deactivating () override
-            {
-            }
-        private:
-            Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
         };
-
-        /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
-
-
+        template    <typename TARGET_TYPE>
+        ObjectReaderRegistry::ReaderFromVoidStarFactory mkTunerMappingReaderFactory_ ()
+        {
+            /// @todo see if I can replace TunerMappingReader_ with ReadDownToReader
+            return ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TARGET_TYPE>, TunerMappingReader_<TARGET_TYPE> > ();
+        }
         void    DoTest ()
         {
             ObjectReaderRegistry registry;
@@ -718,8 +711,9 @@ namespace {
             registry.AddCommonType<TemperatureType_> ();
             registry.AddCommonType<Optional<TemperatureType_>> ();
             registry.AddCommonType<CurrentType_> ();
-            registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TemperatureType_>, TunerMappingReader_<TemperatureType_> > ());
-            registry.Add<TECPowerConsumptionStatsType_> (ObjectReaderRegistry::ConvertReaderToFactory<Mapping<TunerNumberType_, TemperatureType_>, TunerMappingReader_<TemperatureType_> > ());
+            registry.Add<Mapping<TunerNumberType_, TemperatureType_>> (mkTunerMappingReaderFactory_<TemperatureType_> ());
+            registry.Add<Mapping<TunerNumberType_, CurrentType_>> (mkTunerMappingReaderFactory_<CurrentType_> ());
+            registry.Add<TECPowerConsumptionStatsType_> (mkTunerMappingReaderFactory_<TemperatureType_> ());
             registry.AddCommonType<Optional<TECPowerConsumptionStatsType_>> ();
             registry.AddClass<SensorDataType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"ActiveLaser" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (SensorDataType_, ActiveLaser) },
