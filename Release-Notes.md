@@ -18,11 +18,59 @@ History
 
 
 
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a159">v2.0a159</a><br/>2016-07-21</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a158...v2.0a159</li>
+		<li>Improved support for configure --sanitiize, and --no-sanitiize, and added --sanitize address,undefined --no-sanitize vptr to regression tests, and fixed a few small complaints detected by sanitizers</li>
+		<li>Improved memory guard support (more control options and sep header/footer layout)</li>
+		<li>Improved makefile handing of building witih CONFIGURATION=""</li>
+		<li>Added output-sync=line to MAKEFLAGS in hopes of reducing broken makefile output due to parallel makes</li>
+		<li>DataExchange
+			<ul>
+				<li>StructuredStreamEvents/ObjectReaderRegistry MakeClassReader is now static (addclass checks if fields present but make does not accordin gto docs)</li>
+				<li>StructuredStreamEvents/ObjectReaderRegistry MakeCommonReader_NamedEnumerations and MakeCommonReader_EnumAsInt and regtests of enum version</li>
+				<li>Fixed ObjectReaderRegistry so default for MakeCommonReader is to use MakeCommonReader_NamedEnumerations</li>
+				<li>Regtest T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest; and docs</li>
+				<li>Fix reading enum whose value == END - that counts as out of range! (chagne in behavior ofor DataExchange/ObjectVariantMapper</li>
+				<li>refactored ObjectReaderRegistry::RepeatedElementReader so TRAITS allow external specify of type object used in subelements and alternate append strategy</li>
+			</ul>
+		</li>
+		<li>Support Set Equals() with iterable arg - and operator== and operator!= to handle that automatically - when comparing with a set</li>
+		<li>KeyValuePair members have default initiialization</li>
+		<li>VS2k15 project files now require /bigobj option (because of new regtests but easier to do for all)</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a158">v2.0a158</a><br/>2016-07-15</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a157...0a158</li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a157...v2.0a158</li>
 		<li>Fix compile bug defines for new gcc 5.4 release</li>
 		<li>Tested (passed regtests)
 			<ul>
