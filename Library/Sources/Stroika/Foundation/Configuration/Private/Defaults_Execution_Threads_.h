@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Configuration_Private_Defaults_Execution_Exceptions_h_
-#define _Stroika_Foundation_Configuration_Private_Defaults_Execution_Exceptions_h_  1
+#ifndef _Stroika_Foundation_Configuration_Private_Defaults_Execution_Threads_h_
+#define _Stroika_Foundation_Configuration_Private_Defaults_Execution_Threads_h_  1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -23,4 +23,4 @@
 #endif
 
 
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Exceptions_h_*/
+#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Execution_Threads_h_*/

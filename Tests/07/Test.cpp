@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2014.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
 //  TEST    Foundation::Containers::Private::DataStructures::STLContainerWrapper
 ///             STATUS - ALL WRONG - REWRITE!!!!!

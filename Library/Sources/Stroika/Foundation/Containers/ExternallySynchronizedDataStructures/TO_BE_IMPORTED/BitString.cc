@@ -1,4 +1,6 @@
-/* Copyright(c) Sophist Solutions Inc. 1990-1992.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ */
 
 /*
  * $Header: /fuji/lewis/RCS/BitString.cc,v 1.4 1992/10/09 21:30:44 lewis Exp $

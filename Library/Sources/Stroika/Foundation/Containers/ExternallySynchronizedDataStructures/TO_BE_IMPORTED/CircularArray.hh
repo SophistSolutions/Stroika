@@ -1,4 +1,6 @@
-/* Copyright(c) Sophist Solutions Inc. 1990-1992.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ */
 #ifndef	__CircularArray__
 #define	__CircularArray__
 

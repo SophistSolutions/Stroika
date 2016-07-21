@@ -1,4 +1,6 @@
-/* Copyright(c) Sophist Solutions Inc. 1990-1992.  All rights reserved */
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ */
 
 /*
  * $Header: /fuji/lewis/RCS/RedBlackTree.cc,v 1.2 1992/10/10 04:27:57 lewis Exp $
