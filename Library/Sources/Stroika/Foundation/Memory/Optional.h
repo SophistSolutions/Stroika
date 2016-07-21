@@ -271,6 +271,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \note   We have the two overloads of CTOR doing conversion - one where the types are essentially the same, and one where
+                 *          they are not. The only difference between the two is an explicit cast in the implementation and whether the conversion
+                 *          is implicit or explicit.
                  */
                 constexpr   Optional ();
                 constexpr   Optional (nullopt_t);

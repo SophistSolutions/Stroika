@@ -230,6 +230,7 @@ namespace   Stroika {
             {
                 lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
+                    // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
                 }
             }
