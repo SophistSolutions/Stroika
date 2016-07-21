@@ -397,10 +397,11 @@ namespace   Stroika {
                         virtual void                            Deactivating () override
                         {
                             using   SerializeAsType     =   typename std::underlying_type<ENUM_TYPE>::type;
-                            SerializeAsType tmp =   Characters::String2Int<SerializeAsType> (fBuf_.str ());
-                            if (ENUM_TYPE::eSTART <= tmp and tmp < ENUM_TYPE::eEND)
+                            SerializeAsType tmp     =   Characters::String2Int<SerializeAsType> (fBuf_.str ());
+                            ENUM_TYPE       tmpE    =   ;
+                            if (Configuration::ToInt (ENUM_TYPE::eSTART) <= tmp and tmp < Configuration::ToInt (ENUM_TYPE::eEND))
                             {
-                                *fValue_ = static_cast<ENUM_TYPE> (tmp);
+                                *fValue_ = Configuration::ToEnum<ENUM_TYPE> (tmp);
                             }
                             else {
                                 DbgTrace ("Enumeration ('%s') value '%s' out of range", typeid (ENUM_TYPE).name (), fBuf_.str ().AsUTF8 ().c_str ());
