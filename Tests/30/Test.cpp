@@ -666,6 +666,7 @@ namespace {
             }
             static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
         };
+        DISABLE_COMPILER_MSC_WARNING_START(4573)
         template    <typename TARGET_TYPE>
         const   ObjectReaderRegistry::ReaderFromVoidStarFactory TunerMappingReader_TRAITS_<TARGET_TYPE>::sEltReader_ =
         [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
@@ -677,6 +678,7 @@ namespace {
             }
             );
         } ();
+        DISABLE_COMPILER_MSC_WARNING_END(4573)
         template    <typename TARGET_TYPE>
         struct  TunerMappingReader_: public ObjectReaderRegistry::IElementConsumer {
             Mapping<TunerNumberType_, TARGET_TYPE>*     fValuePtr_;
