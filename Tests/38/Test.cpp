@@ -259,6 +259,14 @@ namespace {
                 VerifyTestResult (url.GetHostRelativePath () == L"fred/Start.htm");
                 VerifyTestResult (url.GetFragment ().empty ());
             }
+            if (false) {
+                // https://stroika.atlassian.net/browse/STK-502
+                URL url = URL::Parse (L"123.1.2.3:8080", URL::eFlexiblyAsUI);
+                VerifyTestResult (url.GetHost () == L"123.1.2.3");
+                VerifyTestResult (url.GetPortValue () == 8080);
+                VerifyTestResult (url.GetHostRelativePath ().empty ());
+                VerifyTestResult (url.GetFragment ().empty ());
+            }
         }
     }
 }
