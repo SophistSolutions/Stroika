@@ -170,32 +170,32 @@ namespace   Stroika {
                  ******************* ObjectReaderRegistry::ListOfObjectReader *******************
                  ********************************************************************************
                  */
-                template    <typename CONTAINER_OF_T>
-                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::ListOfObjectReader (CONTAINER_OF_T* v)
                     : fValuePtr_ (v)
                 {
                     RequireNotNull (v);
                 }
-                template    <typename CONTAINER_OF_T>
-                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                inline  ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::ListOfObjectReader (CONTAINER_OF_T* v, const Name& memberElementName)
                     : fMemberElementName_  (memberElementName)
                     , fValuePtr_ (v)
                 {
                     RequireNotNull (v);
                 }
-                template    <typename CONTAINER_OF_T>
-                void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::Activated (Context& r)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::Activated (Context& r)
                 {
                     Require (fActiveContext_ == nullptr);
                     fActiveContext_ = &r;
                 }
-                template    <typename CONTAINER_OF_T>
-                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::HandleChildStart (const StructuredStreamEvents::Name& name)
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                shared_ptr<ObjectReaderRegistry::IElementConsumer> ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::HandleChildStart (const StructuredStreamEvents::Name& name)
                 {
                     RequireNotNull (fActiveContext_);
                     if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
                         if (fReadingAT_) {
-                            this->fValuePtr_->push_back (fCurTReading_);
+                            TRAITS::ContainerAdder::Add (this->fValuePtr_, fCurTReading_);
                             fReadingAT_ = false;
                         }
                         fReadingAT_ = true;
@@ -209,12 +209,12 @@ namespace   Stroika {
                         return make_shared<IgnoreNodeReader> ();
                     }
                 }
-                template    <typename CONTAINER_OF_T>
-                void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T>::Deactivating ()
+                template    <typename CONTAINER_OF_T, typename TRAITS>
+                void    ObjectReaderRegistry::ListOfObjectReader<CONTAINER_OF_T, TRAITS>::Deactivating ()
                 {
                     RequireNotNull (fActiveContext_);
                     if (fReadingAT_) {
-                        this->fValuePtr_->push_back (fCurTReading_);
+                        TRAITS::ContainerAdder::Add (this->fValuePtr_, fCurTReading_);
                         fReadingAT_ = false;
                     }
                     fActiveContext_ = nullptr;
