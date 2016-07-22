@@ -7,6 +7,7 @@
 #include    <iostream>
 #include    <random>
 
+#include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -424,6 +425,7 @@ namespace {
 #endif
             }
             catch (...) {
+                DbgTrace (L"e=%s", Characters::ToString (current_exception ()).c_str ());
                 VerifyTestResult (false);
             }
         }

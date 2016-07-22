@@ -811,40 +811,40 @@ namespace {
             ObjectReaderRegistry registry;
             registry.AddCommonType<AlarmType_> ();
             registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> ());
-			{
-				// Example matching ANY sub-element
-				Set<AlarmType_>   data;
-				{
-					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
-					XML::SAXParse (mkdata_ (), consumerCallback);
-					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
-				}
-				VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
-			}
-			const Name kAlarmName_ = Name { L"Alarm" };
-			registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kAlarmName_));
-			{
-				// Example matching THE RIGHT sub-element
-				Set<AlarmType_>   data;
-				{
-					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
-					XML::SAXParse (mkdata_ (), consumerCallback);
-					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
-				}
-				VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
-			}
-			const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
-			registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kWrongAlarmName_));
-			{
-				// Example matching THE WRONG sub-element
-				Set<AlarmType_>   data;
-				{
-					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
-					XML::SAXParse (mkdata_ (), consumerCallback);
-					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
-				}
-				VerifyTestResult ((data == Set<AlarmType_> {  }));
-			}
+            {
+                // Example matching ANY sub-element
+                Set<AlarmType_>   data;
+                {
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
+            }
+            const Name kAlarmName_ = Name { L"Alarm" };
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kAlarmName_));
+            {
+                // Example matching THE RIGHT sub-element
+                Set<AlarmType_>   data;
+                {
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
+            }
+            const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kWrongAlarmName_));
+            {
+                // Example matching THE WRONG sub-element
+                Set<AlarmType_>   data;
+                {
+                    ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+                    XML::SAXParse (mkdata_ (), consumerCallback);
+                    DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+                }
+                VerifyTestResult ((data == Set<AlarmType_> {  }));
+            }
         }
     }
 
