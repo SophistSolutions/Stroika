@@ -1800,6 +1800,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2732,6 +2735,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>

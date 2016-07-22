@@ -59,9 +59,14 @@ namespace   Stroika {
 
             public:
                 struct  ControlParams {
-                    ValueType   P;
-                    ValueType   I;
-                    ValueType   D;
+                    ControlParams () = default;
+                    ControlParams (ValueType p, ValueType i, ValueType d);
+                    ValueType   P {};
+                    ValueType   I {};
+                    ValueType   D {};
+
+                    nonvirtual    bool operator== (const ControlParams& rhs) const;
+                    nonvirtual    bool operator!= (const ControlParams& rhs) const;
                 };
 
             public:
@@ -70,8 +75,8 @@ namespace   Stroika {
                  */
                 PIDLoop () = delete;
                 PIDLoop (const PIDLoop&) = delete;
-                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
-                PIDLoop& operator= (const PIDLoop&) = delete;
+                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+                nonvirtual  PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
                 /**
@@ -115,14 +120,14 @@ namespace   Stroika {
                 ControlParams               fPIDParams_;
                 Time::DurationSecondsType   fTimeDelta_;
                 function<ValueType()>       fMeasureFunction_;
-                function<(ValueType o)>     fOutputFunction_;
+                function<void(ValueType o)>     fOutputFunction_;
                 struct  UpdatableParams_ {
                     ValueType   fSetPoint_ = {};
                     ValueType   fPrevError_ = {};
                     ValueType   fIntegral_ = {};
                 };
                 Synchronized<UpdatableParams_>  fUpdatableParams_;
-                Optional<Thread>                fThread_;
+                Memory::Optional<Thread>        fThread_;
             };
 
 

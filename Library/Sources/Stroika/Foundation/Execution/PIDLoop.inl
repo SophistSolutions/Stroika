@@ -19,29 +19,53 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ********************* PIDLoop<CONTROL_VAR_TYPE>::ControlParams *****************
+             ********************************************************************************
+             */
+            template    <typename CONTROL_VAR_TYPE>
+            inline  PIDLoop<CONTROL_VAR_TYPE>::ControlParams::ControlParams (ValueType p, ValueType i, ValueType d)
+                : P (p)
+                , I (i)
+                , D (d)
+            {
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            inline  bool PIDLoop<CONTROL_VAR_TYPE>::ControlParams::operator== (const ControlParams& rhs) const
+            {
+                return P == rhs.P and I == rhs.I and D == rhs.D;
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            inline  bool PIDLoop<CONTROL_VAR_TYPE>::ControlParams::operator!= (const ControlParams& rhs) const
+            {
+                return not operator== (rhs);
+            }
+
+
+            /*
+             ********************************************************************************
              ************************** PIDLoop<CONTROL_VAR_TYPE> ***************************
              ********************************************************************************
              */
             template    <typename CONTROL_VAR_TYPE>
-            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<(ValueType o)>& outputFunction, ValueType initialSetPoint)
+            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint)
                 : fPIDParams_ (pidParams)
                 , fTimeDelta_ (timeDelta)
                 , fMeasureFunction_ (measureFunction)
                 , fOutputFunction_ (outputFunction)
-                , fSetPoint_ (initialSetPoint)
             {
+                fUpdatableParams_.rwget ()->fSetPoint_  = (initialSetPoint);
             }
             template    <typename CONTROL_VAR_TYPE>
             PIDLoop<CONTROL_VAR_TYPE>::~PIDLoop ()
             {
                 if (fThread_) {
-                    fThread_->AbortAndWaitTilDone ();
+                    fThread_->AbortAndWaitForDone ();
                 }
             }
             template    <typename CONTROL_VAR_TYPE>
             inline  auto    PIDLoop<CONTROL_VAR_TYPE>::GetSetPoint () const -> ValueType
             {
-                return fSetPoint_;
+                return fUpdatableParams_->fSetPoint_;
             }
             template    <typename CONTROL_VAR_TYPE>
             inline  void    PIDLoop<CONTROL_VAR_TYPE>::SetSetPoint (ValueType sp)
@@ -60,9 +84,9 @@ namespace   Stroika {
                     ValueType   measuredValue = fMeasureFunction_ ();
                     ValueType   error = fUpdatableParams_->fSetPoint_ - measuredValue;
                     fUpdatableParams_->fIntegral_ += error * fTimeDelta_;
-                    ValueType   derivative = (error - fPrevError) / fTimeDelta_;
+                    ValueType   derivative = (error - fUpdatableParams_->fPrevError) / fTimeDelta_;
                     fUpdatableParams_->fPrevError_ = error;
-                    fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * integral + fPIDParams_.D * derivative);
+                    fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * fUpdatableParams_->fIntegral_ + fPIDParams_.D * derivative);
                     nextRunAt += fTimeDelta_;
                 }
             }
