@@ -783,6 +783,80 @@ namespace Stroika {
 
 
 
+
+namespace {
+    namespace  T8_SAXObjectReader_BLKQCL_ReadAlarms_ {
+        using   AlarmType_ = String;
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"			<blk201605:GetAlarmsResponse>\n"
+                L"				<blk201605:Alarm>Fred</blk201605:Alarm>\n"
+                L"				<blk201605:Alarm>Critical_LaserOverheating</blk201605:Alarm>\n"
+                L"			</blk201605:GetAlarmsResponse>>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+        void    DoTest ()
+        {
+            ObjectReaderRegistry registry;
+            registry.AddCommonType<AlarmType_> ();
+            registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> ());
+			{
+				// Example matching ANY sub-element
+				Set<AlarmType_>   data;
+				{
+					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+					XML::SAXParse (mkdata_ (), consumerCallback);
+					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+				}
+				VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
+			}
+			const Name kAlarmName_ = Name { L"Alarm" };
+			registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kAlarmName_));
+			{
+				// Example matching THE RIGHT sub-element
+				Set<AlarmType_>   data;
+				{
+					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+					XML::SAXParse (mkdata_ (), consumerCallback);
+					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+				}
+				VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
+			}
+			const Name kWrongAlarmName_ = Name { L"xxxAlarm" };
+			registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kWrongAlarmName_));
+			{
+				// Example matching THE WRONG sub-element
+				Set<AlarmType_>   data;
+				{
+					ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"GetAlarmsResponse" }) };
+					XML::SAXParse (mkdata_ (), consumerCallback);
+					DbgTrace(L"Alarms=%s", Characters::ToString (data).c_str ());
+				}
+				VerifyTestResult ((data == Set<AlarmType_> {  }));
+			}
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -795,6 +869,7 @@ namespace   {
             T5_SAXObjectReader_DocSamples_::DoTests ();
             T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
             T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
+            T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
