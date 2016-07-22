@@ -21,6 +21,22 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a160">v2.0a160</a><br/>2016-07-22</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a159...v2.0a160</li>
+		<li>Quick (untested) release to provide needed SAXReader functionality for Block</li>
+		<li>experimental ContainerAdder template helper and used in ListOfObjectReader, and related regression tests</li>
+		<li>Comments, and remove some obsolete code.</li>
+		<li>Minor fixes to PIDLoop</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a159">v2.0a159</a><br/>2016-07-21</td>
 <td>
 	<ul>
