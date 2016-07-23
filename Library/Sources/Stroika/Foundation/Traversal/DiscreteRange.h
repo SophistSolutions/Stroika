@@ -116,6 +116,10 @@ namespace   Stroika {
              *          ...i = 1..10
              *      }
              *      \endcode
+             *
+             *  \note   Since the default traits for an enum with Stroika type anotation (Stroika_Define_Enum_Bounds)
+             *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
+             *          iterable with all possible legal values of the enum.
              */
             template    <typename T, typename TRAITS = RangeTraits::DefaultDiscreteRangeTraits<T>>
             class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType> {
