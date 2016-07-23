@@ -181,6 +181,9 @@
     <Filter Include="Sources\Containers\Factory">
       <UniqueIdentifier>{fd92cd00-f3ff-4ea5-9355-f840f5cb4f6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Adapters">
+      <UniqueIdentifier>{bc8adc2c-562f-43c8-907f-a40e04c4c545}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1803,6 +1806,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h">
+      <Filter>Sources\Containers\Adapters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2738,6 +2744,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl">
+      <Filter>Sources\Containers\Adapters</Filter>
     </None>
   </ItemGroup>
 </Project>
