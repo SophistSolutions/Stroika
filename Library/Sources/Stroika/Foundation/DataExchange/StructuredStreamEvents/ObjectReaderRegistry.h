@@ -12,6 +12,7 @@
 #include    "../../Characters/String.h"
 #include    "../../Characters/StringBuilder.h"
 #include    "../../Configuration/Enumeration.h"
+#include    "../../Containers/Adapters/Adder.h"
 #include    "../../Containers/Bijection.h"
 #include    "../../Containers/Collection.h"
 #include    "../../Containers/Mapping.h"

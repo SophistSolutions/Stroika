@@ -50,6 +50,9 @@ namespace   Stroika {
                 struct  Adder {
                     using   ElementType     = typename CONTAINER_TYPE::value_type;
 
+                public:
+                    static  void    Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<ElementType> value);
+
                 private:
                     template    <typename TRAITS>
                     static  void    Add_ (Set<ElementType, TRAITS>* container, Configuration::ArgByValueType<ElementType> value);
@@ -57,8 +60,6 @@ namespace   Stroika {
                     static  void    Add_ (Mapping<ElementType, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<ElementType, VALUE_TYPE>> value);
                     static  void    Add_ (vector<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
                     static  void    Add_ (Sequence<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
-                public:
-                    static  void    Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<ElementType> value);
                 };
 
 
