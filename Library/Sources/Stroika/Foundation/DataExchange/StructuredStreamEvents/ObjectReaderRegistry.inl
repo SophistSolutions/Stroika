@@ -195,7 +195,7 @@ namespace   Stroika {
                     RequireNotNull (fActiveContext_);
                     if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
                         if (fReadingAT_) {
-                            TRAITS::ContainerAdder::Add (this->fValuePtr_, fCurTReading_);
+                            TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, fCurTReading_);
                             fReadingAT_ = false;
                         }
                         fReadingAT_ = true;
@@ -214,7 +214,7 @@ namespace   Stroika {
                 {
                     RequireNotNull (fActiveContext_);
                     if (fReadingAT_) {
-                        TRAITS::ContainerAdder::Add (this->fValuePtr_, fCurTReading_);
+                        TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, fCurTReading_);
                         fReadingAT_ = false;
                     }
                     fActiveContext_ = nullptr;
@@ -255,7 +255,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
-                    TRAITS::AppendToOutputContainer (fValuePtr_, fProxyValue_);
+                    TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, this->fProxyValue_);
                 }
 
 

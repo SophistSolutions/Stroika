@@ -42,6 +42,7 @@ namespace   Stroika {
 
                 using   Configuration::ArgByValueType;
 
+
                 /*
                  *  utility we might want to move someplace else
                  *** EXPERIMENTAL - LGP 2016-07-22
@@ -61,8 +62,6 @@ namespace   Stroika {
                     static  void    Add_ (vector<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
                     static  void    Add_ (Sequence<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
                 };
-
-
 
 
             }

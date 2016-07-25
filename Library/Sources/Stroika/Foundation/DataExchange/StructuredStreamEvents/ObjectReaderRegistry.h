@@ -87,46 +87,6 @@ namespace   Stroika {
 #define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing  qDebug
 #endif
 
-                /*
-                 *  utility we might want to move someplace else
-                 *** EXPERIMENTAL - LGP 2016-07-22
-                 */
-                template        <typename CONTAINER_TYPE>
-                struct  ContainerAdder {
-                    using   ElementType     = typename CONTAINER_TYPE::value_type;
-
-                private:
-                    template    <typename TRAITS>
-                    static  void    Add_ (Set<ElementType, TRAITS>* container, Configuration::ArgByValueType<ElementType> value)
-                    {
-                        RequireNotNull (container);
-                        container->Add (value);
-                    }
-                    template    <typename VALUE_TYPE, typename TRAITS>
-                    static  void    Add_ (Mapping<ElementType, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<ElementType, VALUE_TYPE>> value)
-                    {
-                        RequireNotNull (container);
-                        container->Add (value);
-                    }
-                    static  void    Add_ (vector<ElementType>* container, Configuration::ArgByValueType<ElementType> value)
-                    {
-                        RequireNotNull (container);
-                        container->push_back (value);
-                    }
-                    static  void    Add_ (Sequence<ElementType>* container, Configuration::ArgByValueType<ElementType> value)
-                    {
-                        RequireNotNull (container);
-                        container->push_back (value);
-                    }
-                public:
-                    static  void    Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<ElementType> value)
-                    {
-                        RequireNotNull (container);
-                        Add_ (container, value);
-                    }
-                };
-
-
 
                 /**
                  */
@@ -192,11 +152,11 @@ namespace   Stroika {
                     class   IgnoreNodeReader;
                     template    <typename   T>
                     class   ClassReader;
-                    template    <typename CONTAINER_OF_T, typename CONTAINER_ADDER = ContainerAdder<CONTAINER_OF_T>>
+                    template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
                     struct  ListOfObjectReader_DefaultTraits;
                     template    <typename   CONTAINER_OF_T, typename TRAITS = ListOfObjectReader_DefaultTraits<CONTAINER_OF_T>>
                     class   ListOfObjectReader;
-                    template    <typename CONTAINER_OF_T>
+                    template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER = Containers::Adapters::Adder<CONTAINER_OF_T>>
                     struct  RepeatedElementReader_DefaultTraits;
                     template    <typename   T, typename TRAITS = RepeatedElementReader_DefaultTraits<T>>
                     class   RepeatedElementReader;
@@ -604,9 +564,9 @@ namespace   Stroika {
                  *  ListOfObjectReader<> can read a container (vector-like) of elements. You can optionally specify
                  *  the name of each element, or omit that, to assume every sub-element is of the 'T' type.
                  */
-                template    <typename CONTAINER_OF_T, typename CONTAINER_ADDER>
+                template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
                 struct  ObjectReaderRegistry:: ListOfObjectReader_DefaultTraits {
-                    using   ContainerAdder = CONTAINER_ADDER;
+                    using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                 };
                 template    <typename CONTAINER_OF_T, typename TRAITS>
                 class   ObjectReaderRegistry::ListOfObjectReader: public IElementConsumer {
@@ -698,19 +658,15 @@ namespace   Stroika {
                  *      XML::SAXParse (srcXMLStream, ctx);
                  *      \endcode
                  */
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename CONTAINER_ADAPTER_ADDER>
                 struct  ObjectReaderRegistry:: RepeatedElementReader_DefaultTraits {
                     using   ContainerType = CONTAINER_OF_T;
                     using   ElementType = typename ContainerType::value_type;
+                    using   ContainerAdapterAdder = CONTAINER_ADAPTER_ADDER;
                     static  shared_ptr<IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
                     {
                         RequireNotNull (proxyValue);
                         return r.GetObjectReaderRegistry ().MakeContextReader (proxyValue);
-                    }
-                    static  void   AppendToOutputContainer (ContainerType* container, const ElementType& v)
-                    {
-                        RequireNotNull (container);
-                        container->push_back (v);
                     }
                 };
                 template    <typename T, typename TRAITS>
