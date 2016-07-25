@@ -1,10 +1,6 @@
 #!/bin/sh
 
-
-echo "INCOMPLETE AND PROBABLY NOT WORKING YET..."
-
-
-VERSION=3.6.2
+VERSION=${VERSION-3.8.1}
 BUILDDIR=BUILDDIR-LLVM-$VERSION
 
 PARALELLMAKEARG=-j4
@@ -39,8 +35,3 @@ make $PARALELLMAKEARG
 make install
 cd ..
 
-
-#mkdir build_libcxx && cd build_libcxx
-#CC=$HOME/clang-$VERSION CXX=$HOME/clang-$VERSION/clang++ cmake -G "Unix Makefiles" -DLIBCXX_CXX_ABI=libsupc++ -DLIBCXX_LIBSUPCXX_INCLUDE_PATHS="/usr/include/c++/4.6/;/usr/include/c++/4.6/x86_64-linux-gnu/" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr $HOME/Clang/libcxx
-#make -j 8
-#make install
