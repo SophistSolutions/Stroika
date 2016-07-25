@@ -132,7 +132,9 @@ sub	DoHelp_
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
+        print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
+        print("	    --append-extra-linker-args {ARG}                /* Appends ARG to 'extra linker */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
@@ -628,10 +630,26 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$EXTRA_COMPILER_ARGS = $var;
 		}
+		elsif ((lc ($var) eq "-append-extra-compiler-args") or (lc ($var) eq "--append-extra-compiler-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($EXTRA_COMPILER_ARGS eq "")) {
+				$EXTRA_COMPILER_ARGS .= " ";
+			}
+			$EXTRA_COMPILER_ARGS .= $var;
+		}
 		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
 			$EXTRA_LINKER_ARGS = $var;
+		}
+		elsif ((lc ($var) eq "-append-extra-linker-args") or (lc ($var) eq "--append-extra-linker-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($EXTRA_LINKER_ARGS eq "")) {
+				$EXTRA_LINKER_ARGS .= " ";
+			}
+			$EXTRA_LINKER_ARGS .= $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
 			$i++;
