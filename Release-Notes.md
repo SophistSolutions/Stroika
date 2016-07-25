@@ -25,7 +25,7 @@ History
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a160...v2.0a161</li>
 		<li>New experimental Containers::Adapters::Adder, and used to simplify ObjectReaderRegistery</li>
 		<li>tested - and BuildClang script was working - minor cleanups and fixes to config/build (pass version arg)</li>
-		<li>configure script: fixed bug with --sanitizer multiple args and added  --append-extra-compiler-and-linker-args option</li>
+		<li>configure script: fixed bug with --sanitizer multiple args and added  --append-extra-compiler-and-linker-args option, and --append-extra-compiler-args --append-extra-linker-args commandline args</li>
 		<li>Tested (passed regtests)
 			<ul>
 				<li>vc++2k15 Update 3</li>
