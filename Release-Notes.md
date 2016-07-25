@@ -18,6 +18,36 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a161">v2.0a161xx???</a><br/>2016-07-25</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a160...v2.0a161</li>
+		<li>New experimental Containers::Adapters::Adder, and used to simplify ObjectReaderRegistery</li>
+		<li>tested - and BuildClang script was working - minor cleanups and fixes to config/build (pass version arg)</li>
+		<li>configure script: fixed bug with --sanitizer multiple args and added  --append-extra-compiler-and-linker-args option</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.8</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu &;amp; private compiler build 3.8.1)</li>
+				<li>cross-compile to raspberry-pi</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
