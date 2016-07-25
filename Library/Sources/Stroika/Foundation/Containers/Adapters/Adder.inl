@@ -18,11 +18,9 @@ namespace   Stroika {
             namespace   Adapters {
 
 
-
-
                 /*
                  ********************************************************************************
-                 **************************** Association operators *****************************
+                 ******************************** Adapters::Adder *******************************
                  ********************************************************************************
                  */
                 template    <typename CONTAINER_TYPE>
@@ -39,8 +37,8 @@ namespace   Stroika {
                     container->Add (value);
                 }
                 template    <typename CONTAINER_TYPE>
-                template    <typename VALUE_TYPE, typename TRAITS>
-                inline  void    Adder <CONTAINER_TYPE>::Add_ (Mapping<ElementType, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<ElementType, VALUE_TYPE>> value)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  void    Adder <CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>> value)
                 {
                     RequireNotNull (container);
                     container->Add (value);

@@ -255,7 +255,7 @@ namespace   Stroika {
                 {
                     AssertNotNull (fActualReader_);
                     fActualReader_->Deactivating ();
-                    TRAITS::ContainerAdapterAdder::Add (this->fValuePtr_, this->fProxyValue_);
+                    TRAITS::ContainerAdapterAdder::Add (fValuePtr_, fProxyValue_);
                 }
 
 

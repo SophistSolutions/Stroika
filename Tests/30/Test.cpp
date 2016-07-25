@@ -659,15 +659,7 @@ namespace {
                 RequireNotNull (proxyValue);
                 return  sEltReader_ (proxyValue);
             }
-            struct blah_ {
-                static  void   Add (Mapping<TunerNumberType_, TARGET_TYPE>* container, const ElementType& v)
-                {
-                    RequireNotNull (container);
-                    container->Add (v.fKey, v.fValue);
-                }
-            };
-            //using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
-            using ContainerAdapterAdder = blah_;
+            using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<TunerNumberType_, TARGET_TYPE>>;
             static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
         };
         DISABLE_COMPILER_MSC_WARNING_START(4573)

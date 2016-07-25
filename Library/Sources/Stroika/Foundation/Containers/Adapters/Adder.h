@@ -19,13 +19,13 @@
 /*
  *  \file
  *              ****VERY ROUGH DRAFT
-
+ *
  *  DONT like how its done - with dependencies - but very helpful.
  *  Dont want to add to Iterable (though that would make some sense) - cuz:
-        *STL stuff doesnt work with that
-        *Up til now - Iterable has been all about readonly operations. Could have UpdatableIterable intermediate class...
-
-
+ *       *STL stuff doesnt work with that
+ *       *Up til now - Iterable has been all about readonly operations. Could have UpdatableIterable intermediate class...
+ *
+ *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
@@ -57,8 +57,8 @@ namespace   Stroika {
                 private:
                     template    <typename TRAITS>
                     static  void    Add_ (Set<ElementType, TRAITS>* container, Configuration::ArgByValueType<ElementType> value);
-                    template    <typename VALUE_TYPE, typename TRAITS>
-                    static  void    Add_ (Mapping<ElementType, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<ElementType, VALUE_TYPE>> value);
+                    template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                    static  void    Add_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>> value);
                     static  void    Add_ (vector<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
                     static  void    Add_ (Sequence<ElementType>* container, Configuration::ArgByValueType<ElementType> value);
                 };
