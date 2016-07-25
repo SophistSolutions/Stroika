@@ -707,9 +707,9 @@ sub	ParseCommandLine_Remaining_
 			}
 			else {
 				if (not ($sanitizerFlags eq "")) {
-					$sanitizerFlags  = "," . $sanitizerFlags;
+					$sanitizerFlags .= ",";
 				}
-				$sanitizerFlags  .= $var;
+				$sanitizerFlags .= $var;
 			}
 		}
 		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
@@ -720,9 +720,9 @@ sub	ParseCommandLine_Remaining_
 			}
 			else {
 				if (not ($noSanitizerFlags eq "")) {
-					$noSanitizerFlags  = "," . $noSanitizerFlags;
+					$noSanitizerFlags  .= ",";
 				}
-				$noSanitizerFlags  .= $var;
+				$noSanitizerFlags .= $var;
 			}
 		}
 		elsif ((lc ($var) eq "-only-if-has-compiler") or (lc ($var) eq "--only-if-has-compiler")) {
