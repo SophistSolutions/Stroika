@@ -167,6 +167,13 @@ void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ()
     IgnoreExceptionsForCall (*fValue_ = Time::DateTime::Parse (fBuf_.str (), Time::DateTime::ParseFormat::eXML));
 }
 
+template <>
+void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ()
+{
+    // not 100% right to ignore exceptions, but tricky to do more right (cuz not necesarily all text given us at once)
+    IgnoreExceptionsForCall (*fValue_ = Time::Duration (fBuf_.str ()));
+}
+
 
 /*
  ********************************************************************************

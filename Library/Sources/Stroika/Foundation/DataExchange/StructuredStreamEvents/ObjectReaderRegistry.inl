@@ -432,6 +432,10 @@ namespace   Stroika {
                 {
                     return MakeCommonReader_SimpleReader_<Time::DateTime> ();
                 }
+                inline  ObjectReaderRegistry::ReaderFromVoidStarFactory   ObjectReaderRegistry::MakeCommonReader_ (const Time::Duration*)
+                {
+                    return MakeCommonReader_SimpleReader_<Time::Duration> ();
+                }
                 template    <typename T, typename TRAITS>
                 inline   ObjectReaderRegistry::ReaderFromVoidStarFactory  ObjectReaderRegistry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
                 {

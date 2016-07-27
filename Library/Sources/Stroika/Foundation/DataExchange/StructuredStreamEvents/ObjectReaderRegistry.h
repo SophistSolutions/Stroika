@@ -27,6 +27,7 @@
 #include    "../../Memory/Optional.h"
 #include    "../../Streams/InputStream.h"
 #include    "../../Time/DateTime.h"
+#include    "../../Time/Duration.h"
 #include    "../../Traversal/Range.h"
 
 #include    "../StructFieldMetaInfo.h"
@@ -312,6 +313,7 @@ namespace   Stroika {
                 private:
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const String*);
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Time::DateTime*);
+                    static  ReaderFromVoidStarFactory   MakeCommonReader_ (const Time::Duration*);
                     template    <typename T>
                     static  ReaderFromVoidStarFactory   MakeCommonReader_ (const T*, typename std::enable_if<std::is_enum<T>::value >::type* = 0);
                     template    <typename T>
