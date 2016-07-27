@@ -564,6 +564,8 @@ namespace   Stroika {
                 void   ObjectReaderRegistry::SimpleReader_<long double>::Deactivating ();
                 template <>
                 void   ObjectReaderRegistry::SimpleReader_<Time::DateTime>::Deactivating ();
+                template <>
+                void   ObjectReaderRegistry::SimpleReader_<Time::Duration>::Deactivating ();
 
 
                 /**
