@@ -135,7 +135,7 @@ namespace   Stroika {
                 /**
                  *  The characterset of the std::string CTOR is expected to be all ascii, or the code throws FormatException
                  *
-                 *   Throws (FormatException) if bad format
+                 *  Throws (FormatException) if bad format
                  */
                 Duration ();
                 explicit Duration (const string& durationStr);
