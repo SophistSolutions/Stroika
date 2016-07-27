@@ -81,7 +81,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, const std::exception&>::value>::type* = 0)
                 {
-                    return String::FromNarrowSDKString (e.what ());
+                    return String_Constant {L"Exception: " } + String::FromNarrowSDKString (e.what ()) + String_Constant {L"}" }
                 }
 
                 template    <typename T>
