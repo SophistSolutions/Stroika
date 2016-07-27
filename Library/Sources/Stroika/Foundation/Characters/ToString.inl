@@ -79,6 +79,12 @@ namespace   Stroika {
                 }
 
                 template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<is_convertible<T, const std::exception&>::value>::type* = 0)
+                {
+                    return String::FromNarrowSDKString (e.what ());
+                }
+
+                template    <typename T>
                 String  ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
                 {
                     StringBuilder sb;
