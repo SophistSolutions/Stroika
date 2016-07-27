@@ -309,7 +309,7 @@ namespace   Stroika {
                     for (auto kv : fieldInfo) {
                         if (not fFactories_.ContainsKey (kv.fValue.fTypeInfo)) {
                             Debug::TraceContextBumper   ctx ("ObjectReaderRegistry::AddClass");
-                            DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", kv.fValue.fTypeInfo.name ());
+                            DbgTrace ("(CLASS=%s field-TypeInfo-not-found = %s) - UnRegistered Type!", typeid (CLASS).raw_name (), kv.fValue.fTypeInfo.name ());
                             RequireNotReached ();
                         }
                     }
