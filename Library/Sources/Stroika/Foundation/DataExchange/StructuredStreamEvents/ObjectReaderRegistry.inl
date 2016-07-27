@@ -302,6 +302,10 @@ namespace   Stroika {
                 {
                     return make_shared<ReadDownToReader> (theUseReader, tagToHandOff);
                 }
+                inline  shared_ptr<ObjectReaderRegistry::ReadDownToReader>      ObjectReaderRegistry::mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff)
+                {
+                    return make_shared<ReadDownToReader> (make_shared<ReadDownToReader> (theUseReader, tagToHandOff), contextTag);
+                }
                 template    <typename CLASS>
                 void    ObjectReaderRegistry::AddClass (const Mapping<Name, StructFieldMetaInfo>& fieldInfo)
                 {

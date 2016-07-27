@@ -202,9 +202,13 @@ namespace   Stroika {
                 public:
                     /**
                      *  @see ReadDownToReader
+                     *
+                     *  @todo use perferct forwarding and/or something else to handle the overloading.list case.
+                     *          So 2/Name acase - context is OUTER context, and tagToHandoff is closest context - so like using a/b in XPath.
                      */
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader);
                     static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& tagToHandOff);
+                    static  shared_ptr<ReadDownToReader>    mkReadDownToReader (const shared_ptr<IElementConsumer>& theUseReader, const Name& contextTag, const Name& tagToHandOff);
 
                 public:
                     /**
