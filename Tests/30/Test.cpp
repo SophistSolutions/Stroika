@@ -9,6 +9,7 @@
 
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Containers/SortedMapping.h"
 #include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
 #include    "Stroika/Foundation/DataExchange/StructuredStreamEvents/ObjectReaderRegistry.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -28,6 +29,7 @@ using   namespace   Stroika::Foundation::DataExchange::StructuredStreamEvents;
 using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Common::KeyValuePair;
+using   Containers::SortedMapping;
 using   Debug::TraceContextBumper;
 using   Streams::iostream::InputStreamFromStdIStream;
 
@@ -857,6 +859,182 @@ namespace {
 
 
 
+
+
+namespace {
+    namespace  T9_SAXObjectReader_BLKQCL_ReadScanDetails_ {
+
+        using   ScanIDType_ = uint32_t;
+        using   WaveNumberType_   = double;
+        using   IntensityType_   = double;
+        using   SpectrumType_ = SortedMapping<double, double>;
+        using   PersistenceScanAuxDataType_ =   Mapping<String, String>;
+        struct PersistentScanDetailsType_ {
+            ScanIDType_  ScanID {};
+            DateTime ScanStart;
+            DateTime ScanEnd;
+            Optional<String> ScanLabel;
+            Optional<SpectrumType_> RawSpectrum;
+            PersistenceScanAuxDataType_ AuxData;
+        };
+        Memory::BLOB    mkdata_ ()
+        {
+            wstring newDocXML   =
+                L"<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" xmlns:blk201505=\"http://tempuri.org/blk201505.xsd\" xmlns:blk201605=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/\" xmlns:blk2016052=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IConfiguration\" xmlns:blk2016053=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILaserOperation\" xmlns:blk2016054=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IDeviceManagement\" xmlns:blk2016055=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IManufacturing\" xmlns:blk2016056=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-ILowLevelHardwareAccess\" xmlns:blk2016057=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IBasicPersistence\" xmlns:blk2016058=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL/SOAP-IScanPersistence\" xmlns:ns1=\"http://www.blockeng.com/Schemas/2015-05/BLKQCL-Common/\" xmlns:ns2=\"http://www.blockeng.com/Schemas/2016-05/BLKQCL-App/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                L"   <SOAP-ENV:Header>\n"
+                L"      <blk201505:timestamp>8557.8791092709998</blk201505:timestamp>\n"
+                L"   </SOAP-ENV:Header>\n"
+                L"   <SOAP-ENV:Body>\n"
+                L"   		<blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"   			<blk201605:Scan>\n"
+                L"   				<blk201605:ScanID>8320</blk201605:ScanID>\n"
+                L"   				<blk201605:ScanStart>2016-07-28T20:14:30Z</blk201605:ScanStart>\n"
+                L"   				<blk201605:ScanEnd>2016-07-28T20:14:44Z</blk201605:ScanEnd>\n"
+                L"   				<blk201605:ScanKind>Reference</blk201605:ScanKind>\n"
+                L"   				<blk201605:RawSpectrum>\n"
+                L"   					<ns1:Measurement intensity=\"0\" waveNumber=\"901.5\"/>\n"
+                L"   					<ns1:Measurement intensity=\"1\" waveNumber=\"902.5\"/>\n"
+                //...
+                L"   				</blk201605:RawSpectrum>\n"
+                L"   				<blk201605:AuxData>\n"
+                L"   					<blk201605:KeyValuePair Value=\"1000\" Key=\"Cell-Pressure\"/>\n"
+                L"   					<blk201605:KeyValuePair Value=\"0\" Key=\"Cell-Temperature\"/>\n"
+                L"   					<blk201605:KeyValuePair Value=\"B1E56F82-B217-40D3-A24D-FAC491EDCDE8\" Key=\"EngineId\"/>\n"
+                L"   				</blk201605:AuxData>\n"
+                L"   			</blk201605:Scan>\n"
+                L"   		</blk201605:ScanPersistenceGetScanDetailsResponse>\n"
+                L"   </SOAP-ENV:Body>\n"
+                L"</SOAP-ENV:Envelope>\n"
+                ;
+            stringstream tmpStrm;
+            WriteTextStream_ (newDocXML, tmpStrm);
+            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+        }
+        namespace PRIVATE_ {
+            struct   SpectrumReader_TRAITS_ {
+                using   ElementType = KeyValuePair<WaveNumberType_, IntensityType_>;
+                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
+                {
+                    RequireNotNull (proxyValue);
+                    return  sEltReader_ (proxyValue);
+                }
+                using ContainerAdapterAdder = Containers::Adapters::Adder<SpectrumType_>;
+                static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+            };
+            DISABLE_COMPILER_MSC_WARNING_START(4573)
+            const   ObjectReaderRegistry::ReaderFromVoidStarFactory SpectrumReader_TRAITS_::sEltReader_ =
+            [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+                using   KVPType_    =   SpectrumType_::ElementType;
+                return ObjectReaderRegistry::MakeClassReader<KVPType_> (
+                initializer_list<pair<Name, StructFieldMetaInfo>> {
+                    { Name { L"waveNumber", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                    { Name { L"intensity", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
+                }
+                );
+            } ();
+            DISABLE_COMPILER_MSC_WARNING_END(4573)
+            struct  SpectrumReader_: public ObjectReaderRegistry::IElementConsumer {
+                SpectrumType_*     fValuePtr_;
+                SpectrumReader_ (SpectrumType_* v)
+                    : fValuePtr_ (v)
+                {
+                }
+                virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
+                {
+                    return  make_shared<ObjectReaderRegistry::RepeatedElementReader<SpectrumType_, SpectrumReader_TRAITS_>> (fValuePtr_);
+                }
+            };
+            struct   StringKVStringReader_TRAITS_ {
+                using   ElementType = KeyValuePair<String, String>;
+                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
+                {
+                    RequireNotNull (proxyValue);
+                    return  sEltReader_ (proxyValue);
+                }
+                using ContainerAdapterAdder = Containers::Adapters::Adder<Mapping<String, String>>;
+                static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
+            };
+            DISABLE_COMPILER_MSC_WARNING_START(4573)
+            const   ObjectReaderRegistry::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
+            [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
+                using   KVPType_    =   SpectrumType_::ElementType;
+                return ObjectReaderRegistry::MakeClassReader<KVPType_> (
+                initializer_list<pair<Name, StructFieldMetaInfo>> {
+                    { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
+                    { Name { L"Value", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue) },
+                }
+                );
+            } ();
+            DISABLE_COMPILER_MSC_WARNING_END(4573)
+            struct  StringKVStringReader: public ObjectReaderRegistry::IElementConsumer {
+                Mapping<String, String>*     fValuePtr_;
+                StringKVStringReader (Mapping<String, String>* v)
+                    : fValuePtr_ (v)
+                {
+                }
+                virtual shared_ptr<IElementConsumer>    HandleChildStart (const Name& name) override
+                {
+                    return  make_shared<ObjectReaderRegistry::RepeatedElementReader<Mapping<String, String>, StringKVStringReader_TRAITS_>> (fValuePtr_);
+                }
+            };
+        }
+        void    DoTest ()
+        {
+            ObjectReaderRegistry registry;
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddCommonType<ScanIDType_> ();
+            registry.AddCommonType<WaveNumberType_> ();
+            registry.AddCommonType<IntensityType_> ();
+            registry.AddCommonType<DateTime> ();
+            registry.AddCommonType<String> ();
+            registry.AddCommonType<Optional<String>> ();
+            registry.Add<SpectrumType_> (ObjectReaderRegistry::ConvertReaderToFactory<SpectrumType_, PRIVATE_::SpectrumReader_> ());
+            registry.AddCommonType<Optional<SpectrumType_>> ();
+            registry.Add<PersistenceScanAuxDataType_> (ObjectReaderRegistry::ConvertReaderToFactory<PersistenceScanAuxDataType_, PRIVATE_::StringKVStringReader> ());
+
+
+            registry.AddClass<PersistentScanDetailsType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"ScanID" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID) },
+                { Name { L"ScanStart" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart) },
+                { Name { L"ScanEnd" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanEnd) },
+                { Name { L"ScanLabel" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanLabel) },
+                { Name { L"RawSpectrum" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, RawSpectrum) },
+				// https://stroika.atlassian.net/browse/STK-504
+                //CAUSES CRASH              { Name { L"AuxData" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, AuxData) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            PersistentScanDetailsType_   data;
+            {
+                ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
+                consumerCallback.fContext.fTraceThisReader = true;
+                XML::SAXParse (mkdata_ (), consumerCallback);
+                DbgTrace(L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
+                DbgTrace(L"ScanStart=%s", Characters::ToString (data.ScanStart).c_str ());
+                DbgTrace(L"ScanEnd=%s", Characters::ToString (data.ScanEnd).c_str ());
+                if (data.ScanLabel) {
+                    DbgTrace(L"ScanLabel=%s", Characters::ToString (*data.ScanLabel).c_str ());
+                }
+                if (data.RawSpectrum) {
+                    DbgTrace(L"RawSpectrum=%s", Characters::ToString (*data.RawSpectrum).c_str ());
+                }
+                DbgTrace(L"AuxData=%s", Characters::ToString (data.AuxData).c_str ());
+                VerifyTestResult (data.ScanID == 8320);
+                VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::ParseFormat::eISO8601));
+                VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::ParseFormat::eISO8601));
+                VerifyTestResult (data.ScanLabel.IsMissing ());
+                VerifyTestResult (data.RawSpectrum.IsPresent () and (data.RawSpectrum->Keys () == Set<WaveNumberType_> {901.5, 902.5}));
+                VerifyTestResult (data.RawSpectrum.IsPresent () and (data.RawSpectrum->Values () == Set<IntensityType_> {0, 1}));
+            }
+        }
+    }
+
+}
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -870,6 +1048,7 @@ namespace   {
             T6_SAXObjectReader_RepeatedElementReader_Sample_::DoTest ();
             T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
             T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
+            T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
