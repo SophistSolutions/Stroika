@@ -329,16 +329,13 @@ regression-test-configurations:
 		#\
 		./configure gcc-with-malloc-guard --malloc-guard true;\
 		#\
-		./configure gcc-4.8.4-debug --compiler-driver /home/lewis/gcc-4.8.4/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
-		./configure gcc-4.8-release --compiler-driver g++-4.8 --apply-default-release-flags --only-if-has-compiler;\
 		./configure gcc-4.9-debug-no-TPC --compiler-driver g++-4.9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --LibCurl no --OpenSSL no --Xerces no;\
 		./configure gcc-4.9-release --compiler-driver g++-4.9 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure gcc-5.3.0-release --compiler-driver /home/lewis/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure gcc-5.3.0-debug-c++17 --compiler-driver /home/lewis/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1z;\
-		./configure gcc-6.1.0-debug-c++17 --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure gcc-6.1.0-release-c++17 --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
+		./configure gcc-5.3.0-release --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
+		./configure gcc-5.3.0-debug-c++17 --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1z;\
+		./configure gcc-6.1.0-debug-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
+		./configure gcc-6.1.0-release-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
-		./configure clang++-3.6-debug --compiler-driver clang++-3.6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure clang++-3.8-debug --compiler-driver clang++-3.8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang++-3.8.2-debug --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
@@ -353,8 +350,8 @@ regression-test-configurations:
 		#./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
-		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver /home/lewis/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable;\
+		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable;\
+		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		./configure raspberrypi_valgrind_gcc-5_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-5' --valgrind enable --block-allocation disable --cross-compiling true;\
