@@ -1,0 +1,32 @@
+﻿https://connect.microsoft.com/VisualStudio/feedback/details/1651009/64bit-compiles-break-cout-library
+
+# to reset state (using this branch I created that deletes most stuff from Stroika)
+# (this note is m
+	make clobber
+	rm -rf Configurations
+	make default-configurations
+	make apply-configurations
+	make project-files
+	#(stop at this point and send to MSFT)
+	make tests
+
+
+MSFT:
+	You should be able to open the Solution {root}Tests\Projects\VisualStudio.Net-2015\Stroika-Tests.sln
+	
+	Select the Configuraiton 
+		Debug-U-64 | x64
+		Release-U-64 | x64
+		
+	rebuild ANY of the test apps, and run into it, and see the crash reported.
+	
+	For shits and grins, I also included
+		Debug-U-32 | Win32
+		
+	its the same code. But if you try that - you get no failure.
+
+
+	Search for qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
+		{root}\Library\Sources\Stroika\Foundation\Configuration\Private\Defaults_CompilerAndStdLib_.h
+		If you turn that ON, you will find the bug goes away (my workaround)
+		If you turn that OFF (how I shipped to you), you will see the crash.

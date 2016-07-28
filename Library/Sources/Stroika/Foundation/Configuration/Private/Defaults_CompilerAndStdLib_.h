@@ -1081,8 +1081,8 @@ eq_result
 
 
 
-
-
+//TMPHACK TO FORCE THE BUG TO OCCUR - FOR MSFT
+#define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy        0
 #ifndef qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
 
 #if     defined (_MSC_VER)

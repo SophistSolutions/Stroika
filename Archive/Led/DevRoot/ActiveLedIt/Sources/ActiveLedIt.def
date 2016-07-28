@@ -1,9 +1,0 @@
-; ActiveLedIt.def : Declares the module parameters.
-
-LIBRARY      "ACTIVELEDIT.OCX"
-
-EXPORTS
-	DllCanUnloadNow     PRIVATE
-	DllGetClassObject   PRIVATE
-	DllRegisterServer   PRIVATE
-	DllUnregisterServer PRIVATE

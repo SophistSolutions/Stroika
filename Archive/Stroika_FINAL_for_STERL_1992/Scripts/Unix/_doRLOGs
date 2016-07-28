@@ -1,8 +1,0 @@
-#!/bin/csh -f
-#
-# hack around find
-#
-set dir = $1
-shift
-
-rlog $* $dir/*,v

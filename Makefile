@@ -90,19 +90,10 @@ endif
 
 
 clobber:
-ifeq ($(CONFIGURATION),)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-else
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clobber {$(CONFIGURATION)}..."
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Library --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tools --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Tests --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-	@$(MAKE) --directory Samples --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
+	@rm -f Tests\Projects\VisualStudio.Net-2015>rm Stroika-Tests.VC.db
 
 
 documentation:
@@ -121,17 +112,8 @@ libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ 
 endif
 
 
-
-ifeq ($(CONFIGURATION),)
-third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Third-party-components {$$i}:";\
-		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
-	done
-else
-third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
-endif
+third-party-components:
+	###TMPHACKNOTHING
 
 
 project-files:	project-files-visual-studio project-files-qt-creator
@@ -156,17 +138,8 @@ project-files-qt-creator-save:
 	@$(ECHO) "done"
 
 
-ifeq ($(CONFIGURATION),)
-tools:	assure-default-configurations-exist_
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Tools {$$i}:";\
-		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
-	done
-else
-tools:	assure-default-configurations-exist_ libraries
-	@$(MAKE) --directory Tools --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
-endif
-
+tools:
+	# hack for msft repro
 
 ifeq ($(CONFIGURATION),)
 tests:	assure-default-configurations-exist_
@@ -180,16 +153,8 @@ tests:	assure-default-configurations-exist_ libraries
 endif
 
 
-ifeq ($(CONFIGURATION),)
-samples:	assure-default-configurations-exist_
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Samples {$$i}:";\
-		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
-	done
-else
-samples:	assure-default-configurations-exist_ libraries
-	@$(MAKE) --directory Samples --no-print-directory samples CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
-endif
+samples:
+	# hack for msft repro
 
 
 ifeq ($(CONFIGURATION),)
@@ -298,12 +263,8 @@ default-configurations:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ `uname -o` = "Cygwin" ] ; then\
-		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-32 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-64 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-U-64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
 		#./configure DefaultConfiguration $(DEFAULT_CONFIGURATION_ARGS);\
