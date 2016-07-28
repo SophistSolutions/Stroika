@@ -46,10 +46,6 @@ namespace   Stroika {
 
             /**
              *
-             *  SUPER ROUGH DRAFT
-             *
-             *  \note - THIS IS NOT THREADSAFE!!!!!(DETAILS) - BY DESIGN
-             *
              *  \note   Uses Execution::ExternallySynchronizedLock - so you must externally assure this isn't updated by
              *          one thread while being read or updated on another.
              *
