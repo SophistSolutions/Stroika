@@ -18,18 +18,18 @@ CONFIGURATION=Debug-U-64
 qFeatureFlag_EnableAssertions=1
 ENABLE_GLIBCXX_DEBUG=1
 qFeatureFlag_LibCurl='no'
-qFeatureFlag_OpenSSL='use'
+qFeatureFlag_OpenSSL='no'
 qFeatureFlag_WinHTTP='use-system'
 qFeatureFlag_ATLMFC='use-system'
-qFeatureFlag_Xerces='use'
-qFeatureFlag_ZLib='use'
-qFeatureFlag_LZMA='use'
+qFeatureFlag_Xerces='no'
+qFeatureFlag_ZLib='no'
+qFeatureFlag_LZMA='no'
 #Third Party Product Libs to Build:
 qBuildThirdPartyComponents_libcurl=0
-qBuildThirdPartyComponents_OpenSSL=1
-qBuildThirdPartyComponents_Xerces=1
-qBuildThirdPartyComponents_ZLib=1
-qBuildThirdPartyComponents_LZMA=1
+qBuildThirdPartyComponents_OpenSSL=0
+qBuildThirdPartyComponents_Xerces=0
+qBuildThirdPartyComponents_ZLib=0
+qBuildThirdPartyComponents_LZMA=0
 
 
 #Configured Command Line Arguments (-make-define)

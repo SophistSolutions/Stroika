@@ -23,7 +23,7 @@
 #define	qHasFeature_LibCurl 0
 
 //--OpenSSL {build-only|use|use-system|no}
-#define	qHasFeature_OpenSSL 1
+#define	qHasFeature_OpenSSL 0
 
 //--WinHTTP {use-system|no}
 #define	qHasFeature_WinHTTP 1
@@ -32,13 +32,13 @@
 #define	qHasFeature_ATLMFC 1
 
 //--Xerces {build-only|use|use-system|no}
-#define	qHasFeature_Xerces	1
+#define	qHasFeature_Xerces	0
 
 //--ZLib {build-only|use|use-system|no}
-#define	qHasFeature_ZLib	1
+#define	qHasFeature_ZLib	0
 
 //--LZMA {build-only|use|use-system|no}
-#define	qHasFeature_LZMA	1
+#define	qHasFeature_LZMA	0
 
 
 

@@ -259,6 +259,9 @@ endif
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
 
+
+#HACK FOR MSFT
+DEFAULT_CONFIGURATION_ARGS=--zlib no --xerces no --libcurl no --openssl no --lzma no
 default-configurations:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
