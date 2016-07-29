@@ -19,6 +19,13 @@
 
 
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 #if     qHasFeature_Xerces && defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #if     qDebug
