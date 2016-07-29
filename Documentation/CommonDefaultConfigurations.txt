@@ -33,7 +33,7 @@ configure DefaultConfiguration --assertions disable --trace2file enable --compil
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver 'g++-4.9'
 configure DefaultConfiguration --assertions disable --trace2file enable --compiler-driver 'g++-4.9' --cpp-optimize-flag -O2
 
-configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver arm-linux-gnueabihf-g++-5 -std=c++14' --LibCurl no --OpenSSL no --Xerces use
+configure DefaultConfiguration --apply-default-debug-flags --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true
 
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver clang++-3.4
 configure DefaultConfiguration --assertions enable --trace2file enable --compiler-driver clang++-3.4 --cppstd-version-flag '--std=c++1y'
