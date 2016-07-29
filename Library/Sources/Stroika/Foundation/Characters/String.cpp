@@ -275,76 +275,6 @@ String::String (const char32_t* cString)
 }
 
 namespace {
-    String  mkStr_ (const char16_t* from, const char16_t* to)
-    {
-		// @todo https://stroika.atlassian.net/browse/STK-506
-        Assert (sizeof (char16_t) != sizeof (wchar_t));
-        Memory::SmallStackBuffer<wchar_t>   buf (to - from);
-        size_t  len { 0 };
-
-        // @todo FIX - WRONG but adequate for now
-        wchar_t*    outI     =  buf.begin ();
-        for (const char16_t* i = from; i != to; ++i) {
-            *outI++ = *i++;
-            len++;
-        }
-        return String (buf.begin (), buf.begin () + len);
-    }
-    String  mkStr_ (const char32_t* from, const char32_t* to)
-    {
-		// @todo https://stroika.atlassian.net/browse/STK-506
-        Assert (sizeof (char32_t) != sizeof (wchar_t));
-        Memory::SmallStackBuffer<wchar_t>   buf (2 * (to - from));
-        size_t  len { 0 };
-        // @todo FIX - WRONG but adequate for now
-        wchar_t*    outI     =  buf.begin ();
-        for (const char32_t* i = from; i != to; ++i) {
-            *outI++ = *i++;
-            len++;
-        }
-        return String (buf.begin (), buf.begin () + len);
-    }
-}
-
-// @todo https://stroika.atlassian.net/browse/STK-506
-String::String (const char16_t* from, const char16_t* to)
-    : String (sizeof (char16_t) == sizeof(wchar_t)
-              ? String (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))
-              : String (mkStr_ (from, to))
-             )
-{
-    Require ((from == nullptr) == (to == nullptr));
-    Require (from <= to);
-#if 0
-    // @todo fix for if char16_t != wchar_t
-    // Horrible, but temporarily OK impl
-    for (const char16_t* i = from; i != to; ++i) {
-        Append (*i);
-    }
-#endif
-    _AssertRepValidType (); // just make sure non-null and right type
-}
-
-// @todo https://stroika.atlassian.net/browse/STK-506
-String::String (const char32_t* from, const char32_t* to)
-    : String (sizeof (char32_t) == sizeof(wchar_t)
-              ? String (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))
-              : String (mkStr_ (from, to))
-             )
-{
-    Require ((from == nullptr) == (to == nullptr));
-    Require (from <= to);
-#if 0
-    // @todo fix for if char16_t != wchar_t
-    // Horrible, but temporarily OK impl
-    for (const char32_t* i = from; i != to; ++i) {
-        Append (*i);
-    }
-#endif
-    _AssertRepValidType (); // just make sure non-null and right type
-}
-
-namespace {
     wstring mkWS_ (const Traversal::Iterable<Character>& src)
     {
         wstring r;
@@ -513,6 +443,37 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
     auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
     sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     return sRep;
+}
+
+String::_SharedPtrIRep  String::mk_ (const char16_t* from, const char16_t* to)
+{
+    // @todo https://stroika.atlassian.net/browse/STK-506
+    Assert (sizeof (char16_t) != sizeof (wchar_t));
+    Memory::SmallStackBuffer<wchar_t>   buf (to - from);
+    size_t  len { 0 };
+
+    // @todo FIX - WRONG but adequate for now
+    wchar_t*    outI     =  buf.begin ();
+    for (const char16_t* i = from; i != to; ++i) {
+        *outI++ = *i++;
+        len++;
+    }
+    return mk_ (buf.begin (), buf.begin () + len);
+}
+
+String::_SharedPtrIRep  String::mk_ (const char32_t* from, const char32_t* to)
+{
+    // @todo https://stroika.atlassian.net/browse/STK-506
+    Assert (sizeof (char32_t) != sizeof (wchar_t));
+    Memory::SmallStackBuffer<wchar_t>   buf (2 * (to - from));
+    size_t  len { 0 };
+    // @todo FIX - WRONG but adequate for now
+    wchar_t*    outI     =  buf.begin ();
+    for (const char32_t* i = from; i != to; ++i) {
+        *outI++ = *i++;
+        len++;
+    }
+    return mk_ (buf.begin (), buf.begin () + len);
 }
 
 String  String::Concatenate (const String& rhs) const

@@ -444,6 +444,8 @@ namespace   Stroika {
                 static  _SharedPtrIRep  mkEmpty_ ();
                 static  _SharedPtrIRep  mk_ (const wchar_t* start, const wchar_t* end);
                 static  _SharedPtrIRep  mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
+                static  _SharedPtrIRep  mk_ (const char16_t* start, const char16_t* end);
+                static  _SharedPtrIRep  mk_ (const char32_t* start, const char32_t* end);
 
             public:
                 nonvirtual  String& operator+= (Character appendage);

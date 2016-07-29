@@ -142,6 +142,20 @@ namespace   Stroika {
             {
                 _AssertRepValidType ();
             }
+            inline  String::String (const char16_t* from, const char16_t* to)
+                : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+            {
+                Require ((from == nullptr) == (to == nullptr));
+                Require (from <= to);
+                _AssertRepValidType (); // just make sure non-null and right type
+            }
+            inline  String::String (const char32_t* from, const char32_t* to)
+                : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
+            {
+                Require ((from == nullptr) == (to == nullptr));
+                Require (from <= to);
+                _AssertRepValidType (); // just make sure non-null and right type
+            }
             inline  String  String::FromNarrowString (const char* from, const locale& l)
             {
                 RequireNotNull (from);
