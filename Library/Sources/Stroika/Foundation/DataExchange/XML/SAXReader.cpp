@@ -93,9 +93,8 @@ using   namespace   Stroika::Foundation::Streams;
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
-#if 1
-        return String (s, e);
-#else
+        // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
+        // --LGP 2016-07-29
         if (sizeof (XMLCh) == sizeof (wchar_t)) {
             return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
         }
@@ -109,13 +108,11 @@ namespace {
             AssertNotReached ();
             return String ();
         }
-#endif
     }
     String xercesString2String_ (const XMLCh* t)
     {
-#if 1
-        return String (t);
-#else
+        // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
+        // --LGP 2016-07-29
         if (sizeof (XMLCh) == sizeof (wchar_t)) {
             return String (reinterpret_cast<const wchar_t*> (t));
         }
@@ -129,7 +126,6 @@ namespace {
             AssertNotReached ();
             return String ();
         }
-#endif
     }
 }
 #endif
