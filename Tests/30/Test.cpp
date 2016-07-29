@@ -1003,7 +1003,7 @@ namespace {
             PersistentScanDetailsType_   data;
             {
                 ObjectReaderRegistry::IConsumerDelegateToContext consumerCallback { registry, registry.mkReadDownToReader (registry.MakeContextReader (&data), Name { L"ScanPersistenceGetScanDetailsResponse" }, Name { L"Scan" }) };
-                consumerCallback.fContext.fTraceThisReader = true;
+                //consumerCallback.fContext.fTraceThisReader = true;
                 XML::SAXParse (mkdata_ (), consumerCallback);
                 DbgTrace(L"ScanID=%s", Characters::ToString (data.ScanID).c_str ());
                 DbgTrace(L"ScanStart=%s", Characters::ToString (data.ScanStart).c_str ());
