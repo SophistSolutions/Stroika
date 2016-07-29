@@ -955,6 +955,7 @@ namespace {
                 static  const   ObjectReaderRegistry::ReaderFromVoidStarFactory sEltReader_;
             };
             DISABLE_COMPILER_MSC_WARNING_START(4573)
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             const   ObjectReaderRegistry::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
             [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
                 using   KVPType_    =   StringKVStringReader_TRAITS_::ElementType;
@@ -966,6 +967,7 @@ namespace {
                 );
             } ();
             DISABLE_COMPILER_MSC_WARNING_END(4573)
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             struct  StringKVStringReader: public ObjectReaderRegistry::IElementConsumer {
                 Mapping<String, String>*     fValuePtr_;
                 StringKVStringReader (Mapping<String, String>* v)
