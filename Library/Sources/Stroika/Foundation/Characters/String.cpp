@@ -447,33 +447,43 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 
 String::_SharedPtrIRep  String::mk_ (const char16_t* from, const char16_t* to)
 {
-    // @todo https://stroika.atlassian.net/browse/STK-506
-    Assert (sizeof (char16_t) != sizeof (wchar_t));
-    Memory::SmallStackBuffer<wchar_t>   buf (to - from);
-    size_t  len { 0 };
-
-    // @todo FIX - WRONG but adequate for now
-    wchar_t*    outI     =  buf.begin ();
-    for (const char16_t* i = from; i != to; ++i) {
-        *outI++ = *i++;
-        len++;
+    if (sizeof (char16_t) == sizeof (wchar_t)) {
+        return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
-    return mk_ (buf.begin (), buf.begin () + len);
+    else {
+        // @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char16_t) != sizeof (wchar_t));
+        Memory::SmallStackBuffer<wchar_t>   buf (to - from);
+        size_t  len { 0 };
+
+        // @todo FIX - WRONG but adequate for now
+        wchar_t*    outI     =  buf.begin ();
+        for (const char16_t* i = from; i != to; ++i) {
+            *outI++ = *i++;
+            len++;
+        }
+        return mk_ (buf.begin (), buf.begin () + len);
+    }
 }
 
 String::_SharedPtrIRep  String::mk_ (const char32_t* from, const char32_t* to)
 {
-    // @todo https://stroika.atlassian.net/browse/STK-506
-    Assert (sizeof (char32_t) != sizeof (wchar_t));
-    Memory::SmallStackBuffer<wchar_t>   buf (2 * (to - from));
-    size_t  len { 0 };
-    // @todo FIX - WRONG but adequate for now
-    wchar_t*    outI     =  buf.begin ();
-    for (const char32_t* i = from; i != to; ++i) {
-        *outI++ = *i++;
-        len++;
+    if (sizeof (char32_t) == sizeof (wchar_t)) {
+        return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
-    return mk_ (buf.begin (), buf.begin () + len);
+    else {
+        // @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char32_t) != sizeof (wchar_t));
+        Memory::SmallStackBuffer<wchar_t>   buf (2 * (to - from));
+        size_t  len { 0 };
+        // @todo FIX - WRONG but adequate for now
+        wchar_t*    outI     =  buf.begin ();
+        for (const char32_t* i = from; i != to; ++i) {
+            *outI++ = *i++;
+            len++;
+        }
+        return mk_ (buf.begin (), buf.begin () + len);
+    }
 }
 
 String  String::Concatenate (const String& rhs) const
