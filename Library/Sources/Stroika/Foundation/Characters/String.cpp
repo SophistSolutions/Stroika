@@ -447,6 +447,8 @@ String::_SharedPtrIRep  String::mk_ (const wchar_t* start1, const wchar_t* end1,
 
 String::_SharedPtrIRep  String::mk_ (const char16_t* from, const char16_t* to)
 {
+    Require ((from == nullptr) == (to == nullptr));
+    Require (from <= to);
     if (sizeof (char16_t) == sizeof (wchar_t)) {
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
@@ -468,6 +470,8 @@ String::_SharedPtrIRep  String::mk_ (const char16_t* from, const char16_t* to)
 
 String::_SharedPtrIRep  String::mk_ (const char32_t* from, const char32_t* to)
 {
+    Require ((from == nullptr) == (to == nullptr));
+    Require (from <= to);
     if (sizeof (char32_t) == sizeof (wchar_t)) {
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
