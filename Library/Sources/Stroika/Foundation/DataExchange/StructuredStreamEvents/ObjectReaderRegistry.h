@@ -434,6 +434,7 @@ namespace   Stroika {
 
 
                 /**
+                 *  @see ObjectReaderRegistry for examples of use
                  */
                 class   ObjectReaderRegistry::IConsumerDelegateToContext : public StructuredStreamEvents::IConsumer {
                 public:

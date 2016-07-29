@@ -49,6 +49,8 @@ namespace   Stroika {
                  *
                  *          @todo then when you configure the SAX parser, tell it (consmer interface returning a set of types of things it wants)
                  *          to optimize so just the right types of elements sent.
+                 *
+                 *  @see ObjectReaderRegistry for examples of one way to use this
                  */
                 class   IConsumer {
                 public:

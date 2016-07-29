@@ -41,6 +41,8 @@ namespace   Stroika {
 
                 /**
                  * Parse will throw an exception if it encouters any errors parsing.
+                 *
+                 *  @see ObjectReaderRegistry for examples of one way to use this
                  */
                 void    SAXParse (const Streams::InputStream<Memory::Byte>& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
                 void    SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);

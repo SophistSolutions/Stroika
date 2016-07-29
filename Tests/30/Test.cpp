@@ -1034,6 +1034,68 @@ namespace {
 
 
 
+
+
+
+
+
+namespace {
+    namespace  T10_SAXObjectReader_NANValues_ {
+        namespace PRIVATE_ {
+            struct  Values_ {
+                double      valueMissing;
+                double      valueExplicitGood;
+                double      valueExplicitNAN1;
+                double      valueExplicitNAN2;
+            };
+            Memory::BLOB    mkdata_ ()
+            {
+                wstring newDocXML   =
+                    L"<Values>\n"
+                    //L"          <valueMissing></valueMissing>"
+                    L"		  <valueExplicitGood>3.0</valueExplicitGood>"
+                    L"		  <valueExplicitNAN1>NAN</valueExplicitNAN1>"
+                    L"		  <valueExplicitNAN2>NAN</valueExplicitNAN2>"
+                    L"</Values>\n"
+                    ;
+                stringstream tmpStrm;
+                WriteTextStream_ (newDocXML, tmpStrm);
+                return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
+            }
+        }
+        void    DoTest ()
+        {
+            using   namespace   PRIVATE_;
+            TraceContextBumper ctx ("T10_SAXObjectReader_NANValues_");
+            ObjectReaderRegistry registry;
+            registry.AddCommonType<double> ();
+            DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            registry.AddClass<Values_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
+                { Name { L"valueMissing" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueMissing) },
+                { Name { L"valueExplicitGood" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitGood) },
+                { Name { L"valueExplicitNAN1" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN1) },
+                { Name { L"valueExplicitNAN2" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Values_, valueExplicitNAN2) },
+            });
+            DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+            {
+                Values_ values {};
+                values.valueMissing = 999;
+                ObjectReaderRegistry::IConsumerDelegateToContext ctx { registry, registry.mkReadDownToReader (registry.MakeContextReader (&values), Name { L"Values" }) };
+                XML::SAXParse (mkdata_ (), ctx);
+                VerifyTestResult (values.valueMissing == 999);
+                VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
+                VerifyTestResult (std::isnan (values.valueExplicitNAN1));
+                VerifyTestResult (std::isnan (values.valueExplicitNAN2));
+            }
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -1048,6 +1110,7 @@ namespace   {
             T7_SAXObjectReader_BLKQCL_ReadSensors_::DoTest ();
             T8_SAXObjectReader_BLKQCL_ReadAlarms_::DoTest ();
             T9_SAXObjectReader_BLKQCL_ReadScanDetails_::DoTest ();
+            T10_SAXObjectReader_NANValues_::DoTest ();
         }
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
