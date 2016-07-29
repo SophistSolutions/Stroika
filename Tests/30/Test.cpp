@@ -957,7 +957,7 @@ namespace {
             DISABLE_COMPILER_MSC_WARNING_START(4573)
             const   ObjectReaderRegistry::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
             [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
-                using   KVPType_    =   SpectrumType_::ElementType;
+                using   KVPType_    =   StringKVStringReader_TRAITS_::ElementType;
                 return ObjectReaderRegistry::MakeClassReader<KVPType_> (
                 initializer_list<pair<Name, StructFieldMetaInfo>> {
                     { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
@@ -991,16 +991,13 @@ namespace {
             registry.Add<SpectrumType_> (ObjectReaderRegistry::ConvertReaderToFactory<SpectrumType_, PRIVATE_::SpectrumReader_> ());
             registry.AddCommonType<Optional<SpectrumType_>> ();
             registry.Add<PersistenceScanAuxDataType_> (ObjectReaderRegistry::ConvertReaderToFactory<PersistenceScanAuxDataType_, PRIVATE_::StringKVStringReader> ());
-
-
             registry.AddClass<PersistentScanDetailsType_> ( initializer_list<pair<Name, StructFieldMetaInfo>> {
                 { Name { L"ScanID" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanID) },
                 { Name { L"ScanStart" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanStart) },
                 { Name { L"ScanEnd" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanEnd) },
                 { Name { L"ScanLabel" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, ScanLabel) },
                 { Name { L"RawSpectrum" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, RawSpectrum) },
-				// https://stroika.atlassian.net/browse/STK-504
-                //CAUSES CRASH              { Name { L"AuxData" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, AuxData) },
+                { Name { L"AuxData" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (PersistentScanDetailsType_, AuxData) },
             });
             DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
             PersistentScanDetailsType_   data;
@@ -1022,8 +1019,8 @@ namespace {
                 VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::ParseFormat::eISO8601));
                 VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::ParseFormat::eISO8601));
                 VerifyTestResult (data.ScanLabel.IsMissing ());
-                VerifyTestResult (data.RawSpectrum.IsPresent () and (data.RawSpectrum->Keys () == Set<WaveNumberType_> {901.5, 902.5}));
-                VerifyTestResult (data.RawSpectrum.IsPresent () and (data.RawSpectrum->Values () == Set<IntensityType_> {0, 1}));
+                VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_> { pair<WaveNumberType_, IntensityType_> {901.5, 0},  pair<WaveNumberType_, IntensityType_> {902.5, 1}}));
+                VerifyTestResult ((data.AuxData == Mapping<String, String> { pair<String, String> {L"Cell-Pressure", L"1000"},  pair<String, String> {L"Cell-Temperature", L"0"},  pair<String, String> {L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }
         }
     }
