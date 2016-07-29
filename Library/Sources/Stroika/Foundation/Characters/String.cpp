@@ -461,7 +461,7 @@ String::_SharedPtrIRep  String::mk_ (const char16_t* from, const char16_t* to)
 
         // @todo FIX - WRONG but adequate for now
         wchar_t*    outI     =  buf.begin ();
-        for (const char16_t* i = from; i != to; ++i) {
+        for (const char16_t* i = from; i != to;) {
             *outI++ = *i++;
             len++;
         }
@@ -484,7 +484,7 @@ String::_SharedPtrIRep  String::mk_ (const char32_t* from, const char32_t* to)
         size_t  len { 0 };
         // @todo FIX - WRONG but adequate for now
         wchar_t*    outI     =  buf.begin ();
-        for (const char32_t* i = from; i != to; ++i) {
+        for (const char32_t* i = from; i != to; ) {
             *outI++ = *i++;
             len++;
         }
