@@ -51,7 +51,7 @@ namespace   Stroika {
              *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
              *  by default.
              *
-             *  Float2String () maps NAN valeus to the string "NAN", and negative infinite values to "-INF", and positive infinite
+             *  Float2String () maps NAN values to the string "NAN", and negative infinite values to "-INF", and positive infinite
              *  values to "INF".
              *      @see http://en.cppreference.com/w/cpp/string/byte/strtof
              */

@@ -1425,9 +1425,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>

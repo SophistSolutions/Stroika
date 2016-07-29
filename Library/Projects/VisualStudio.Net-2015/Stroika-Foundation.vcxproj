@@ -942,7 +942,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
