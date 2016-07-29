@@ -93,29 +93,43 @@ using   namespace   Stroika::Foundation::Streams;
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
     {
-        if (sizeof (XMLCh) == sizeof (char16_t)) {
+#if 1
+        return String (s, e);
+#else
+        if (sizeof (XMLCh) == sizeof (wchar_t)) {
+            return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+        }
+        else if (sizeof (XMLCh) == sizeof (char16_t)) {
             return String (reinterpret_cast<const char16_t*> (s), reinterpret_cast<const char16_t*> (e));
         }
-        else if (sizeof (XMLCh) == sizeof (wchar_t)) {
-            return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+        else if (sizeof (XMLCh) == sizeof (char32_t)) {
+            return String (reinterpret_cast<const char32_t*> (s), reinterpret_cast<const char32_t*> (e));
         }
         else {
             AssertNotReached ();
             return String ();
         }
+#endif
     }
     String xercesString2String_ (const XMLCh* t)
     {
-        if (sizeof (XMLCh) == sizeof (char16_t)) {
+#if 1
+        return String (t);
+#else
+        if (sizeof (XMLCh) == sizeof (wchar_t)) {
+            return String (reinterpret_cast<const wchar_t*> (t));
+        }
+        else if (sizeof (XMLCh) == sizeof (char16_t)) {
             return String (reinterpret_cast<const char16_t*> (t));
         }
-        else if (sizeof (XMLCh) == sizeof (wchar_t)) {
-            return String (reinterpret_cast<const wchar_t*> (t));
+        else if (sizeof (XMLCh) == sizeof (char32_t)) {
+            return String (reinterpret_cast<const char32_t*> (t));
         }
         else {
             AssertNotReached ();
             return String ();
         }
+#endif
     }
 }
 #endif
