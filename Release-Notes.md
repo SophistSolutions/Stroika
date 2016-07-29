@@ -20,6 +20,35 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a164">v2.0a164x</a><br/>2016-07-29?</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a163...v2.0a164</li>
+		<li>quick release - no changes, but runing full set of regtests this time</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7 (ubuntu)</li>
+				<li>clang++3.8 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie)</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a163">v2.0a163</a><br/>2016-07-29</td>
 <td>
 	<ul>
