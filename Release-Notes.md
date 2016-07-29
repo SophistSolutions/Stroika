@@ -18,6 +18,32 @@ History
 
 
 
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a163">v2.0a163</a><br/>2016-07-29</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a162...v2.0a163</li>
+		<li>Start losing support for gcc48 (still ifdefs but no longer test)</li>
+		<li>Adder overload taking pair<> with Mapping</li>
+		<li>SAXParser/ObjectReaderRegistry: many new regtests and fixed Fixed https://stroika.atlassian.net/browse/STK-504</li>
+		<li>String class performance improvements relative to constructor char16_t, char32_t (done by Xerces/SAX parser) - but still needs work (open https://stroika.atlassian.net/browse/STK-506)</li>
+		<li>new PerformanceDump-v2.0a163-linux-gcc-6.1.0-x64.txt and PerformanceDump-v2.0a163-x86-vs2k15-ReleaseU.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.8 (ubuntu &;amp; private compiler build 3.8.1)</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a162">v2.0a162</a><br/>2016-07-28</td>
 <td>
