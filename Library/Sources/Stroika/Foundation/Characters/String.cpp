@@ -19,6 +19,7 @@
 #include    "../Math/Common.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/BlockAllocated.h"
+#include    "../Memory/SmallStackBuffer.h"
 
 #include    "RegularExpression.h"
 #include    "Concrete/Private/String_BufferedStringRep.h"
@@ -273,29 +274,73 @@ String::String (const char32_t* cString)
 {
 }
 
+namespace {
+    String  mkStr_ (const char16_t* from, const char16_t* to)
+    {
+		// @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char16_t) != sizeof (wchar_t));
+        Memory::SmallStackBuffer<wchar_t>   buf (to - from);
+        size_t  len { 0 };
+
+        // @todo FIX - WRONG but adequate for now
+        wchar_t*    outI     =  buf.begin ();
+        for (const char16_t* i = from; i != to; ++i) {
+            *outI++ = *i++;
+            len++;
+        }
+        return String (buf.begin (), buf.begin () + len);
+    }
+    String  mkStr_ (const char32_t* from, const char32_t* to)
+    {
+		// @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char32_t) != sizeof (wchar_t));
+        Memory::SmallStackBuffer<wchar_t>   buf (2 * (to - from));
+        size_t  len { 0 };
+        // @todo FIX - WRONG but adequate for now
+        wchar_t*    outI     =  buf.begin ();
+        for (const char32_t* i = from; i != to; ++i) {
+            *outI++ = *i++;
+            len++;
+        }
+        return String (buf.begin (), buf.begin () + len);
+    }
+}
+
+// @todo https://stroika.atlassian.net/browse/STK-506
 String::String (const char16_t* from, const char16_t* to)
-    : inherited (mkEmpty_ ())
+    : String (sizeof (char16_t) == sizeof(wchar_t)
+              ? String (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))
+              : String (mkStr_ (from, to))
+             )
 {
     Require ((from == nullptr) == (to == nullptr));
     Require (from <= to);
+#if 0
     // @todo fix for if char16_t != wchar_t
     // Horrible, but temporarily OK impl
     for (const char16_t* i = from; i != to; ++i) {
         Append (*i);
     }
+#endif
     _AssertRepValidType (); // just make sure non-null and right type
 }
 
+// @todo https://stroika.atlassian.net/browse/STK-506
 String::String (const char32_t* from, const char32_t* to)
-    : inherited (mkEmpty_ ())
+    : String (sizeof (char32_t) == sizeof(wchar_t)
+              ? String (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))
+              : String (mkStr_ (from, to))
+             )
 {
     Require ((from == nullptr) == (to == nullptr));
     Require (from <= to);
+#if 0
     // @todo fix for if char16_t != wchar_t
     // Horrible, but temporarily OK impl
     for (const char32_t* i = from; i != to; ++i) {
         Append (*i);
     }
+#endif
     _AssertRepValidType (); // just make sure non-null and right type
 }
 
