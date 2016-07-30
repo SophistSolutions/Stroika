@@ -4,11 +4,9 @@
 # (this note is m
 	make clobber
 	rm -rf Configurations
-	make default-configurations
-	make apply-configurations
-	make project-files
+	make default-configurations apply-configurations project-files
 	#(stop at this point and send to MSFT)
-	make tests
+	make run-tests
 
 
 MSFT:
