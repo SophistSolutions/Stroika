@@ -31,12 +31,6 @@
     <Filter Include="Sources\Math">
       <UniqueIdentifier>{c0ded7bf-d414-4138-bf41-ce8dfe42c0b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Cryptography">
-      <UniqueIdentifier>{f853972f-222a-4134-89dd-771992a35d70}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Database">
-      <UniqueIdentifier>{8b3a56e4-cb11-426d-966f-591815e96707}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\IO\Network">
       <UniqueIdentifier>{13c8d0c5-f17b-4427-b683-763b6acaef9d}</UniqueIdentifier>
     </Filter>
@@ -52,20 +46,8 @@
     <Filter Include="Sources\Execution\Platform\Windows">
       <UniqueIdentifier>{4aeb5339-ebc3-4aa8-a44b-749d9af47704}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Streams">
-      <UniqueIdentifier>{eba5ee5b-1eff-4a84-b2ad-88df60b433bc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Configuration\Private">
       <UniqueIdentifier>{27d4da00-63dc-4f7b-be10-46c6afd89e74}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange">
-      <UniqueIdentifier>{e1bf59e1-abe8-43cc-8855-ba489e000bdf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\JSON">
-      <UniqueIdentifier>{e42a91d3-64ce-4f8a-938b-4b1c118549a9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\XML">
-      <UniqueIdentifier>{f5abe5eb-bc4d-4e08-9e2a-92cfa9dbcc74}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Characters\Platform">
       <UniqueIdentifier>{1cbbdc22-254d-4d95-a3b1-7ece18ad227c}</UniqueIdentifier>
@@ -73,29 +55,17 @@
     <Filter Include="Sources\Characters\Platform\Windows">
       <UniqueIdentifier>{ec714b71-f421-47f5-a8b3-801de432f3ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Linguistics">
-      <UniqueIdentifier>{6b1b3bae-d077-420d-82ed-25b7c63afda2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\IO\Network\Transfer">
       <UniqueIdentifier>{695f0de1-3dbf-43e4-b9d9-07b4cd35924b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\IO\FileSystem">
       <UniqueIdentifier>{59229ad2-d85b-4b0a-bf59-30a861769be5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Streams\iostream">
-      <UniqueIdentifier>{4f8744f9-b834-4bc2-be46-013348768bcf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\IO\Network\HTTP">
       <UniqueIdentifier>{176b919d-a2cd-4146-aa3a-20e9f0e32452}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Execution\Platform\POSIX">
       <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\SSL">
-      <UniqueIdentifier>{e5bc13d3-660a-4be2-95df-297eba6a4330}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cache">
-      <UniqueIdentifier>{d2eadc00-4e81-4df2-be06-55d6391cb34b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Containers\Concrete">
       <UniqueIdentifier>{3bb34cbe-2bf5-4022-b9a1-35ab90dd9979}</UniqueIdentifier>
@@ -133,44 +103,14 @@
     <Filter Include="Sources\Characters\Concrete\Private">
       <UniqueIdentifier>{f38efb24-6d94-455e-946a-6b618d7abe71}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\DataExchange\INI">
-      <UniqueIdentifier>{c66c07a8-5aa1-47d5-b8b1-855e5b1fa389}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Containers\ExternallySynchronizedDataStructures">
       <UniqueIdentifier>{b06dc60e-c921-4e52-bc1c-c7e98ca6204a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\Encoding">
-      <UniqueIdentifier>{a4f7b4a9-2ebc-4b1e-aa2d-dd2c024c5f06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\Encoding\Algorithm">
-      <UniqueIdentifier>{7c82edbb-ecf9-4aa9-a6e8-8e6fc42b9bd9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\Digest">
-      <UniqueIdentifier>{5e340b67-8a0a-448a-b8f7-ec2108b9976a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\Digest\Algorithm">
-      <UniqueIdentifier>{89139fd0-1555-4802-9cbd-82b3c856b5e2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\CharacterDelimitedLines">
-      <UniqueIdentifier>{b9af5880-25e4-40f9-8b5f-c0b8a4c127d8}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\IO\Network\Platform">
       <UniqueIdentifier>{ba979189-9cd7-4b4c-87e9-705a51e22bfe}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\IO\Network\Platform\Windows">
       <UniqueIdentifier>{de6d3307-094f-4e56-9f90-5a1a1919a053}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Cryptography\OpenSSL">
-      <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\7z">
-      <UniqueIdentifier>{ec2c992c-013e-4939-8212-d4c2e7e10483}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\Zip">
-      <UniqueIdentifier>{7506af22-27f9-44e9-a583-60e131f67d8a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\StructuredStreamEvents">
-      <UniqueIdentifier>{5e550cdb-ffe0-4576-8941-d7ec6508fb41}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Containers\DefaultTraits">
       <UniqueIdentifier>{e9904ae6-d1bc-4fb1-b6f2-a35fc4769b05}</UniqueIdentifier>
@@ -210,9 +150,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp">
-      <Filter>Sources\Database</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -234,23 +171,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Reader.cpp">
-      <Filter>Sources\DataExchange\JSON</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.cpp">
-      <Filter>Sources\DataExchange\JSON</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp">
       <Filter>Sources\Characters</Filter>
@@ -264,22 +186,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.cpp">
-      <Filter>Sources\Linguistics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Format.cpp">
@@ -306,9 +216,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -320,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp">
       <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp">
-      <Filter>Sources\DataExchange</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp">
       <Filter>Sources\Execution</Filter>
@@ -353,21 +257,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.cpp">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
       <Filter>Sources\Execution</Filter>
@@ -447,9 +336,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -458,18 +344,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp">
-      <Filter>Sources\DataExchange\XML</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -519,12 +393,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
@@ -549,23 +417,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Function.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.cpp">
-      <Filter>Sources\DataExchange\INI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Writer.cpp">
-      <Filter>Sources\DataExchange\INI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.cpp">
-      <Filter>Sources\DataExchange\INI</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
       <Filter>Sources\Execution</Filter>
@@ -591,56 +447,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.cpp">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.cpp">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.cpp">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.cpp">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.cpp">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.cpp">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.cpp">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.cpp">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.cpp">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.cpp">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.cpp">
-      <Filter>Sources\Cryptography</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.cpp">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.cpp">
-      <Filter>Sources\Cryptography\Digest</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
       <Filter>Sources\IO\Network</Filter>
@@ -650,12 +461,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.cpp">
-      <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Writer.cpp">
-      <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp">
       <Filter>Sources\IO</Filter>
@@ -675,35 +480,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.cpp">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp">
-      <Filter>Sources\Streams</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -713,27 +491,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
-      <Filter>Sources\DataExchange\7z</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
-      <Filter>Sources\DataExchange\Zip</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.cpp">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Process.cpp">
       <Filter>Sources\Execution</Filter>
@@ -753,11 +510,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.cpp">
-      <Filter>Sources\Streams</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp">
       <Filter>Sources\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
+      <Filter>Sources\Time</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -797,9 +554,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h">
       <Filter>Sources\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h">
-      <Filter>Sources\Database</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h">
       <Filter>Sources\IO\Network</Filter>
@@ -873,29 +627,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Reader.h">
-      <Filter>Sources\DataExchange\JSON</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.h">
-      <Filter>Sources\DataExchange\JSON</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_DataExchange_XML_Common_.h">
       <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h">
-      <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h">
       <Filter>Sources\Characters</Filter>
@@ -914,12 +650,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
       <Filter>Sources\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Linguistics\Words.h">
-      <Filter>Sources\Linguistics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
       <Filter>Sources\Characters</Filter>
@@ -972,9 +702,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -989,9 +716,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h">
       <Filter>Sources\IO\Network</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h">
-      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Logger.h">
       <Filter>Sources\Execution</Filter>
@@ -1019,21 +743,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ClientContext.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\Common.h">
-      <Filter>Sources\Cryptography\SSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
       <Filter>Sources\Configuration\Private</Filter>
@@ -1067,15 +776,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h">
       <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h">
-      <Filter>Sources\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.h">
-      <Filter>Sources\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h">
-      <Filter>Sources\Cache</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h">
       <Filter>Sources\Containers</Filter>
@@ -1142,9 +842,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h">
-      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
       <Filter>Sources\Containers\Private</Filter>
@@ -1230,9 +927,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
@@ -1259,15 +953,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
       <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.h">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h">
-      <Filter>Sources\DataExchange\XML</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1319,12 +1004,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h">
-      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Logging_.h">
       <Filter>Sources\Configuration\Private</Filter>
@@ -1407,9 +1086,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1436,15 +1112,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h">
       <Filter>Sources\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.h">
-      <Filter>Sources\DataExchange\INI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Writer.h">
-      <Filter>Sources\DataExchange\INI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.h">
-      <Filter>Sources\DataExchange\INI</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h">
       <Filter>Sources\Execution</Filter>
@@ -1482,9 +1149,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.h">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </ClInclude>
@@ -1497,56 +1161,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.h">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.h">
-      <Filter>Sources\Cache</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h">
       <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.h">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\AES.h">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\Base64.h">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\Algorithm\RC4.h">
-      <Filter>Sources\Cryptography\Encoding\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.h">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.h">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.h">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.h">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.h">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.h">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.h">
-      <Filter>Sources\Cryptography</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.h">
-      <Filter>Sources\Cryptography\Digest</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h">
       <Filter>Sources\IO\Network</Filter>
@@ -1559,12 +1178,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Reader.h">
-      <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CharacterDelimitedLines\Writer.h">
-      <Filter>Sources\DataExchange\CharacterDelimitedLines</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1614,50 +1227,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\ToString.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\CipherAlgorithm.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DigestAlgorithm.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.h">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Stream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.h">
-      <Filter>Sources\Streams</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -1665,44 +1236,14 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.h">
-      <Filter>Sources\Streams\iostream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
       <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.h">
-      <Filter>Sources\DataExchange\7z</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
-      <Filter>Sources\DataExchange\Zip</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.h">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.h">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h">
       <Filter>Sources\Debug</Filter>
@@ -1712,9 +1253,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.h">
-      <Filter>Sources\DataExchange</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
@@ -1790,9 +1328,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h">
       <Filter>Sources\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.h">
-      <Filter>Sources\Streams</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h">
       <Filter>Sources\Debug</Filter>
@@ -1883,17 +1418,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl">
       <Filter>Sources\Characters</Filter>
@@ -1906,9 +1432,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl">
       <Filter>Sources\Characters</Filter>
@@ -1967,9 +1490,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -1997,12 +1517,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl">
-      <Filter>Sources\Cache</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl">
-      <Filter>Sources\Cache</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -2025,9 +1539,6 @@
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.md">
-      <Filter>Sources\Cache</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -2036,15 +1547,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md">
-      <Filter>Sources\Cryptography</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md">
-      <Filter>Sources\Database</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md">
-      <Filter>Sources\DataExchange</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md">
       <Filter>Sources\Debug</Filter>
@@ -2055,17 +1557,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md">
       <Filter>Sources\IO</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Linguistics\ReadMe.md">
-      <Filter>Sources\Linguistics</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md">
       <Filter>Sources\Math</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\ReadMe.md">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md">
       <Filter>Sources\Time</Filter>
@@ -2132,9 +1628,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
       <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl">
-      <Filter>Sources\Streams\iostream</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
@@ -2214,12 +1707,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl">
       <Filter>Sources\Common</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
@@ -2255,12 +1742,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl">
-      <Filter>Sources\DataExchange\XML</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md">
       <Filter>Sources\IO\FileSystem</Filter>
@@ -2315,12 +1796,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl">
-      <Filter>Sources\DataExchange</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl">
       <Filter>Sources\IO\Network</Filter>
@@ -2403,9 +1878,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -2429,12 +1901,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl">
       <Filter>Sources\Math</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Profile.inl">
-      <Filter>Sources\DataExchange\INI</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\INI\Reader.inl">
-      <Filter>Sources\DataExchange\INI</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl">
       <Filter>Sources\Execution</Filter>
@@ -2472,9 +1938,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\CriticalSectionRecursiveMutex.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\OptionsFile.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\Array.inl">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </None>
@@ -2493,53 +1956,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\TODO.md">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl">
-      <Filter>Sources\Cache</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl">
       <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Encoding\OpenSSLCryptoStream.inl">
-      <Filter>Sources\Cryptography\Encoding</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.inl">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\Jenkins.inl">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\MD5.inl">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\SuperFastHash.inl">
-      <Filter>Sources\Cryptography\Digest\Algorithm</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ReadMe.md">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\TODO.md">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\ResultTypes.inl">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Digester.inl">
-      <Filter>Sources\Cryptography\Digest</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash.inl">
-      <Filter>Sources\Cryptography</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Format.inl">
-      <Filter>Sources\Cryptography</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\SerializeItemToBLOB.inl">
-      <Filter>Sources\Streams\iostream</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\DigestDataToString.inl">
-      <Filter>Sources\Cryptography\Digest</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl">
       <Filter>Sources\IO\Network</Filter>
@@ -2595,77 +2016,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\DerivedKey.inl">
-      <Filter>Sources\Cryptography\OpenSSL</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\Stream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\InputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\OutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\MemoryStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\InputOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedInputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\BufferedOutputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\ExternallyOwnedMemoryInputStream.inl">
-      <Filter>Sources\Streams</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\InputStreamFromStdIStream.inl">
-      <Filter>Sources\Streams\iostream</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\OutputStreamFromStdOStream.inl">
-      <Filter>Sources\Streams\iostream</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\Name.inl">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\ObjectReaderRegistry.inl">
-      <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl">
       <Filter>Sources\Debug</Filter>
@@ -2675,9 +2036,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructFieldMetaInfo.inl">
-      <Filter>Sources\DataExchange</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
@@ -2726,9 +2084,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Streams\EOFException.inl">
-      <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl">
       <Filter>Sources\Debug</Filter>

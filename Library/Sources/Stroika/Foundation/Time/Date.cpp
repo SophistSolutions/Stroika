@@ -747,23 +747,3 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
         return Format (L"%d", yearDiff);
     }
 }
-
-String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
-{
-    if (birthDate.empty ()) {
-        return String_Constant (L"?");
-    }
-    else {
-        int yearDiff    =   deathDate.empty () ? YearDifference (DateTime::GetToday (), birthDate) : YearDifference (deathDate, birthDate);
-        if (yearDiff >= 0 and yearDiff < 2) {
-            float   yearDiffF   =   deathDate.empty () ? YearDifferenceF (DateTime::GetToday (), birthDate) : YearDifferenceF (deathDate, birthDate);
-            int     months      =   int (yearDiffF * 12.0f + 0.4999f);
-            wstring unitBase    =   abbrevUnit ? L"mo" : L"month";
-            return Format (L"%d %s", months, Linguistics::PluralizeNoun (unitBase, months).c_str ());
-        }
-        else {
-            wstring unitBase    =   abbrevUnit ? L"yr" : L"year";
-            return Format (L"%d %s", yearDiff, Linguistics::PluralizeNoun (unitBase, yearDiff).c_str ());
-        }
-    }
-}

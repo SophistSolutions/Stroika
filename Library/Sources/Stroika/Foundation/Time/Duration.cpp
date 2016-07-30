@@ -278,110 +278,7 @@ namespace   {
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
-    if (empty ()) {
-        return String ();
-    }
-    /*
-     *  TODO:
-     *          o   Fix feeble attempt at rounding. We more or less round correctly for seconds, but not other units.
-     */
-    InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
-    bool    isNeg       =   (t < 0);
-    InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
-    String result;
-    if (timeLeft >= kSecondsPerYear) {
-        unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
-        if (nYears != 0) {
-            if (not result.empty ()) {
-                result += L", ";
-            }
-            result += Characters::Format (L"%d ", nYears) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
-            timeLeft -= nYears * kSecondsPerYear;
-        }
-    }
-    if (timeLeft >= kSecondsPerMonth) {
-        unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
-        if (nMonths != 0) {
-            if (not result.empty ()) {
-                result += L", ";
-            }
-            result += Characters::Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
-            timeLeft -= nMonths * kSecondsPerMonth;
-        }
-    }
-    if (timeLeft >= kSecondsPerDay) {
-        unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
-        if (nDays != 0) {
-            if (not result.empty ()) {
-                result += L", ";
-            }
-            result += Characters::Format (L"%d ", nDays) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
-            timeLeft -= nDays * kSecondsPerDay;
-        }
-    }
-    if (timeLeft != 0) {
-        if (timeLeft >= kSecondsPerHour) {
-            unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
-            if (nHours != 0) {
-                if (not result.empty ()) {
-                    result += L", ";
-                }
-                result += Characters::Format (L"%d ", nHours) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
-                timeLeft -= nHours * kSecondsPerHour;
-            }
-        }
-        if (timeLeft >= kSecondsPerMinute) {
-            unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
-            if (nMinutes != 0) {
-                if (not result.empty ()) {
-                    result += String_Constant (L", ");
-                }
-                result += Characters::Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
-                timeLeft -= nMinutes * kSecondsPerMinute;
-            }
-        }
-        if (timeLeft > 0) {
-            int timeLeftAsInt   =   static_cast<int> (timeLeft);
-            if (timeLeftAsInt != 0) {
-                Assert (timeLeftAsInt > 0);
-                if (not result.empty ()) {
-                    result += String_Constant (L", ");
-                }
-                // Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
-                if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
-                    result += Characters::Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
-                    timeLeft -= static_cast<int> (timeLeft);
-                }
-                else {
-                    result += Characters::Format (L"%.3f ", timeLeft) + prettyPrintInfo.fLabels.fSeconds;
-                    timeLeft = 0.0;
-                }
-            }
-        }
-        if (timeLeft > 0) {
-            // DO nano, micro, milliseconds here
-            uint32_t    nNanoSeconds    =   uint32_t (timeLeft * 1000 * 1000 * 1000 + 0.5); // round
-            if (not result.empty ()) {
-                result += String_Constant (L", ");
-            }
-            if (nNanoSeconds < 1000) {
-                result += Characters::Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
-            }
-            else if (nNanoSeconds < 1000 * 1000) {
-                result += Characters::Format (L"%d ", nNanoSeconds / 1000) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nNanoSeconds / 1000);
-            }
-            else  {
-                result += Characters::Format (L"%d ", nNanoSeconds / (1000 * 1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds / (1000 * 1000));
-            }
-        }
-    }
-    if (result.empty ()) {
-        result = L"0 " + prettyPrintInfo.fLabels.fSeconds;
-    }
-    if (isNeg) {
-        result = String_Constant (L"-") + result;
-    }
-    return result;
+	return String{};
 }
 
 Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
@@ -396,42 +293,7 @@ Characters::String  Duration::ToString () const
 
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
-    InternalNumericFormatType_  t           =   As<InternalNumericFormatType_> ();
-    bool    isNeg       =   (t < 0);
-    InternalNumericFormatType_  absT        =   isNeg ? -t : t;
-    if (absT < agePrettyPrintInfo.fNowThreshold) {
-        return agePrettyPrintInfo.fLabels.fNow;
-    }
-
-    Characters::String  suffix  =   isNeg ? agePrettyPrintInfo.fLabels.fAgo : agePrettyPrintInfo.fLabels.fFromNow;
-
-    auto fmtDate = [suffix] (int timeInSelectedUnit, const String & singularUnit,  const String & pluralUnit) -> String {
-        String label = Linguistics::PluralizeNoun (singularUnit, pluralUnit, timeInSelectedUnit);
-        return Characters::Format (L"%d %s %s", timeInSelectedUnit, label.c_str (), suffix.c_str ());
-    };
-
-    constexpr   InternalNumericFormatType_  kShowAsMinutesIfLess_   =       55 * kSecondsPerMinute;
-    constexpr   InternalNumericFormatType_  kShowHoursIfLess_       =       23 * kSecondsPerHour;
-    constexpr   InternalNumericFormatType_  kShowDaysIfLess_        =       14 * kSecondsPerDay;
-    constexpr   InternalNumericFormatType_  kShowWeeksIfLess_       =       59 * kSecondsPerDay;
-    constexpr   InternalNumericFormatType_  kShowMonthsIfLess_      =       11 * kSecondsPerMonth;
-
-    if (absT < kShowAsMinutesIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerMinute)), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
-    }
-    if (absT < kShowHoursIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerHour)), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
-    }
-    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek), 1.0)) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerDay)), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
-    }
-    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth), 1.0)) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerWeek)), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
-    }
-    if (absT < kShowMonthsIfLess_) {
-        return fmtDate (static_cast<int> (round (absT / kSecondsPerMonth)), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
-    }
-    return fmtDate (static_cast<int> (round (absT / kSecondsPerYear)), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
+	return String{};
 }
 
 Duration    Duration::operator- () const

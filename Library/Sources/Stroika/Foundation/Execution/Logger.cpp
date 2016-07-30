@@ -7,7 +7,7 @@
 #include    <syslog.h>
 #endif
 
-#include    "../Cache/CallerStalenessCache.h"
+//#include    "../Cache/CallerStalenessCache.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
@@ -84,7 +84,7 @@ struct  Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 
     Synchronized<Execution::Thread>                                         fBookkeepingThread_;
     atomic<Time::DurationSecondsType>                                       fMaxWindow_ {};
-    Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
+//    Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
 
     Rep_ ()
     {
@@ -348,33 +348,6 @@ void    Logger::Log (Priority logLevel, String format, ...)
 
 void    Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
 {
-    Require (suppressionTimeWindow > 0);
-    RequireNotNull (fRep_);
-    using   CacheType = decltype (fRep_->fMsgSentMaybeSuppressed_)::element_type;
-    fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ()));   // doesn't need to be synchronized
-    va_list     argsList;
-    va_start (argsList, format);
-    String      msg     =   Characters::FormatV (format.c_str (), argsList);
-    va_end (argsList);
-    DbgTrace (L"Logger::LogIfNew (%s, %f, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
-    if (WouldLog (logLevel)) {
-        if (fRep_->fMsgSentMaybeSuppressed_.rwget ()->Lookup (pair<Priority, String> { logLevel, msg }, CacheType::Ago (suppressionTimeWindow), false)) {
-            DbgTrace (L"...suppressed by fMsgSentMaybeSuppressed_->Lookup ()");
-        }
-        else {
-            Log_ (logLevel, msg);
-            fRep_->fMsgSentMaybeSuppressed_.rwget ()->Add (pair<Priority, String> { logLevel, msg }, true);
-        }
-    }
-    else {
-        DbgTrace (L"...suppressed by WouldLog");
-    }
-    /*
-     *  Spend a modicum of effort, so that at least very old strings are purged. This limits how large a cache sMsgSentMaybeSuppressed_
-     *  can become.
-     */
-    constexpr   double  kCleanupFactor_ { 2.0 };
-    fRep_->fMsgSentMaybeSuppressed_.rwget ()->ClearOlderThan (CacheType::Ago (fRep_->fMaxWindow_.load () * kCleanupFactor_));
 }
 
 
