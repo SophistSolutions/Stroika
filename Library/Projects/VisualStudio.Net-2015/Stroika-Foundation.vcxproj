@@ -178,7 +178,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp" />
@@ -276,7 +275,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Process.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
@@ -319,7 +317,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
@@ -356,64 +353,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
@@ -593,7 +532,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h" />
@@ -612,7 +550,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -661,7 +598,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
@@ -687,7 +623,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
@@ -706,26 +641,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
@@ -889,7 +804,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
@@ -907,7 +821,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -935,7 +848,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
@@ -956,7 +868,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl" />
@@ -975,26 +886,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\LinkMonitor.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Platform\Windows\WinSock.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\IOWaitDispatcher.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\URL.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl" />
