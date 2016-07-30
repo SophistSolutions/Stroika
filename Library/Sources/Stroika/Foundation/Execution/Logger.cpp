@@ -19,7 +19,6 @@
 #include    "Synchronized.h"
 #include    "Thread.h"
 #include    "TimeOutException.h"
-#include    "../IO/FileSystem/FileOutputStream.h"
 #include    "../Streams/TextWriter.h"
 #include    "../Time/DateTime.h"
 
@@ -472,18 +471,13 @@ void    Logger::StreamAppender::Log (Priority logLevel, const String& message)
  ********************************************************************************
  */
 struct  Logger::FileAppender::Rep_ {
-    using   FileOutputStream = IO::FileSystem::FileOutputStream;
 public:
     Rep_ (const String& fileName, bool truncateOnOpen)
-        : fOut_ (StreamAppender (FileOutputStream::mk (fileName, truncateOnOpen ? FileOutputStream::eStartFromStart : FileOutputStream::eAppend)))
     {
     }
     void    Log (Priority logLevel, const String& message)
     {
-        fOut_.Log (logLevel, message);
     }
-private:
-    StreamAppender    fOut_;        // no need to synchronize since our Logger::StreamAppender class is internally synchronized
 };
 
 Logger::FileAppender::FileAppender (const String& fileName, bool truncateOnOpen)

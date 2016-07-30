@@ -19,7 +19,6 @@
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "DateTime.h"
-#include    "../IO/FileSystem/FileInputStream.h"
 #include    "../Streams/TextReader.h"
 
 #include    "Timezone.h"

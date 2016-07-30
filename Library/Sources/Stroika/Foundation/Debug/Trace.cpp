@@ -16,7 +16,6 @@
 #include    "../Execution/Module.h"
 #include    "../Execution/Process.h"
 #include    "../Execution/Thread.h"
-#include    "../IO/FileSystem/PathName.h"
 #include    "../Memory/Common.h"
 #include    "../Time/Realtime.h"
 

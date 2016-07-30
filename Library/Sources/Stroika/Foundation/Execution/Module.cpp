@@ -18,7 +18,6 @@
 #include    "Platform/AIX/GetEXEPathWithHint.h"
 #endif
 #include    "../Memory/SmallStackBuffer.h"
-#include    "../IO/FileSystem/PathName.h"
 
 #include    "Module.h"
 
@@ -55,9 +54,7 @@ String Execution::GetEXEDir ()
  */
 SDKString Execution::GetEXEDirT ()
 {
-    // Currently this impl depends on String - we may want to redo one cleanly without any dependency on String()...
-    // Docs call for this - but I'm not sure its needed
-    return IO::FileSystem::GetFileDirectory (GetEXEPath ()).AsSDKString ();
+	return SDKString {};
 }
 
 

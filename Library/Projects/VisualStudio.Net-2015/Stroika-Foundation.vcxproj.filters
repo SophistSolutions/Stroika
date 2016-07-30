@@ -52,9 +52,6 @@
     <Filter Include="Sources\Characters\Platform\Windows">
       <UniqueIdentifier>{ec714b71-f421-47f5-a8b3-801de432f3ed}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\IO\FileSystem">
-      <UniqueIdentifier>{59229ad2-d85b-4b0a-bf59-30a861769be5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Execution\Platform\POSIX">
       <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
     </Filter>
@@ -180,20 +177,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp">
       <Filter>Sources\Execution</Filter>
@@ -288,21 +273,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -310,12 +280,6 @@
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.cpp">
-      <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp">
@@ -381,12 +345,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -401,12 +359,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.cpp">
-      <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
       <Filter>Sources\Characters</Filter>
@@ -597,23 +549,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h">
       <Filter>Sources\IO</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.h">
-      <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h">
       <Filter>Sources\Execution</Filter>
@@ -828,21 +768,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
@@ -853,12 +778,6 @@
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h">
-      <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.h">
-      <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h">
@@ -1026,12 +945,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\SkipList.h">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1079,12 +992,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.h">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.h">
-      <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
       <Filter>Sources\Configuration</Filter>
@@ -1301,20 +1208,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl">
       <Filter>Sources\IO</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl">
       <Filter>Sources\Execution</Filter>
@@ -1542,24 +1440,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
@@ -1570,12 +1450,6 @@
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.inl">
-      <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl">
       <Filter>Sources\Time</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl">
@@ -1749,12 +1623,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ExternallySynchronizedDataStructures\TODO.md">
       <Filter>Sources\Containers\ExternallySynchronizedDataStructures</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterator.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\DirectoryIterable.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -1793,12 +1661,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
       <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileInputStream.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileOutputStream.inl">
-      <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
