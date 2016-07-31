@@ -275,7 +275,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
@@ -299,8 +298,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
@@ -324,7 +321,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
@@ -544,20 +540,16 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Optional.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
@@ -757,18 +749,14 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Common.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Optional.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md" />

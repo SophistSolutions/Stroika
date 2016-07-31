@@ -8,7 +8,6 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Execution/StringException.h"
-#include    "../Memory/Bits.h"
 
 #include    "Version.h"
 
@@ -27,21 +26,7 @@ using   Characters::String_Constant;
  */
 Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
-    int major               =   0;
-    int minor               =   0;
-    int verStageOctet       =   0;
-    int verSubStageOctet    =   0;
-    DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
-    int nMatchingItems = ::swscanf (win32Version4DotString.c_str (), L"%d.%d.%d.%d", &major, &minor, &verStageOctet, &verSubStageOctet);
-    DISABLE_COMPILER_MSC_WARNING_END(4996)
-    int     verStage        =   static_cast<uint16_t> (verStageOctet) >> 5;
-    Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8));   // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
-    int     verSubStage     =   (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
-    bool    verFinal        =   verSubStageOctet & 0x1;
-    if (nMatchingItems != 4 or not (ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
-        Execution::Throw (Execution::StringException (L"Invalid Version String"));
-    }
-    return Version (major, minor, static_cast<VersionStage> (verStage), verSubStage, verFinal);
+	return Version {};
 }
 
 Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
