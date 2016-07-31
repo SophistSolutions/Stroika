@@ -19,7 +19,6 @@
 #include    "../Memory/Common.h"
 #include    "../Memory/BlockAllocated.h"
 
-#include    "RegularExpression.h"
 #include    "Concrete/Private/String_BufferedStringRep.h"
 #include    "SDKString.h"
 #include    "StringBuilder.h"
@@ -132,18 +131,6 @@ namespace {
 
 
 
-
-
-
-
-#if     !qCompilerAndStdLib_regex_Buggy
-namespace   {
-    inline  constexpr   regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
-    {
-        return (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
-    }
-}
-#endif
 
 
 
@@ -645,15 +632,6 @@ nogood2:
 #if     !qCompilerAndStdLib_regex_Buggy
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
 {
-    const String  threadSafeCopy  { *this };
-    Require (startAt <= threadSafeCopy.GetLength ());
-    Assert (startAt == 0);  // else NYI
-    wstring tmp     =   threadSafeCopy.As<wstring> ();
-    std::wsmatch res;
-    regex_search (tmp, res, regEx.GetCompiled ());
-    if (res.size () >= 1) {
-        return pair<size_t, size_t> (res.position (), res.position () + res.length ());
-    }
     return pair<size_t, size_t> (kBadIndex, kBadIndex);
 }
 #endif
@@ -673,61 +651,14 @@ vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions
 vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) const
 {
     vector<pair<size_t, size_t>>  result;
-#if     qCompilerAndStdLib_regex_Buggy
-    AssertNotImplemented ();
-#else
-    //@TODO - FIX - IF we get back zero length match
-    wstring         tmp { As<wstring> () };
-    std::wsmatch    res;
-    regex_search (tmp, res, regEx.GetCompiled ());
-    size_t  nMatches = res.size ();
-    result.reserve (nMatches);
-    for (size_t mi = 0; mi < nMatches; ++mi) {
-        size_t matchLen = res.length (mi);  // avoid populating with lots of empty matches - specail case of empty search
-        if (matchLen != 0) {
-            result.push_back (pair<size_t, size_t> (res.position (mi), matchLen));
-        }
-    }
-#endif
     return result;
 }
 #endif
 
 #if     !qCompilerAndStdLib_regex_Buggy
-vector<RegularExpressionMatch>  String::FindEachMatch (const RegularExpression& regEx) const
-{
-    vector<RegularExpressionMatch>  result;
-    wstring         tmp         { As<wstring> () };
-    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
-        std::wsmatch    match { *i };
-        Assert (match.size () != 0);
-        size_t n = match.size ();
-        Containers::Sequence<String>    s;
-        for (size_t i = 1; i < n; ++i) {
-            s.Append (match.str (i));
-        }
-        result.push_back (RegularExpressionMatch (match.str (0), s));
-    }
-    return result;
-}
-
 vector<String>  String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String>  result;
-    wstring         tmp         { As<wstring> () };
-#if 1
-    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
-        result.push_back (String { i->str () });
-    }
-#else
-    std::wsmatch    res;
-    if (regex_search (tmp, res, regEx.GetCompiled ())) {
-        result.reserve (res.size ());
-        for (auto i : res) {
-            result.push_back (String { i });
-        }
-    }
-#endif
     return result;
 }
 #endif
@@ -841,15 +772,14 @@ bool    String::EndsWith (const String& subString, CompareOptions co) const
 #if     !qCompilerAndStdLib_regex_Buggy
 bool    String::Match (const RegularExpression& regEx) const
 {
-    wstring tmp  { As<wstring> () };
-    return regex_match (tmp.begin(), tmp.end(), regEx.GetCompiled ());
+	return false;
 }
 #endif
 
 #if     !qCompilerAndStdLib_regex_Buggy
 String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
-    return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
+	return String{};
 }
 #endif
 

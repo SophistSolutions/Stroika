@@ -162,9 +162,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Users.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClCompile>
@@ -173,9 +170,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp">
-      <Filter>Sources\Characters</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <Filter>Sources\Characters\CString</Filter>
@@ -435,9 +429,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClInclude>
@@ -449,9 +440,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h">
-      <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h">
       <Filter>Sources\Containers</Filter>
@@ -592,9 +580,6 @@
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h">
-      <Filter>Sources\Traversal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h">
@@ -784,9 +769,6 @@
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h">
-      <Filter>Sources\Traversal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.h">
@@ -1007,9 +989,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -1177,9 +1156,6 @@
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl">
-      <Filter>Sources\Traversal</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Range.inl">
@@ -1372,9 +1348,6 @@
       <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl">
-      <Filter>Sources\Traversal</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl">
