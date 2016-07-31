@@ -80,7 +80,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -169,7 +168,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp" />
@@ -314,7 +312,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
@@ -352,11 +349,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Memory_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h" />
@@ -522,7 +517,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.h" />
@@ -555,7 +549,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
@@ -581,10 +574,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl" />
@@ -723,7 +714,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.inl" />

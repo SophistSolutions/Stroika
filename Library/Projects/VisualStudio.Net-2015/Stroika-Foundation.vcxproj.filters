@@ -94,9 +94,6 @@
     <Filter Include="Sources\Containers\Factory">
       <UniqueIdentifier>{fd92cd00-f3ff-4ea5-9355-f840f5cb4f6f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Containers\Adapters">
-      <UniqueIdentifier>{bc8adc2c-562f-43c8-907f-a40e04c4c545}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -204,9 +201,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
@@ -263,9 +257,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
       <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
-      <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp">
       <Filter>Sources\Characters</Filter>
@@ -555,9 +546,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.h">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </ClInclude>
@@ -756,9 +744,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
-      <Filter>Sources\Configuration</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -806,9 +791,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h">
       <Filter>Sources\Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
@@ -884,9 +866,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h">
-      <Filter>Sources\Containers\Adapters</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1128,9 +1107,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.inl">
-      <Filter>Sources\Characters\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.inl">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </None>
@@ -1338,9 +1314,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.inl">
-      <Filter>Sources\Configuration</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
       <Filter>Sources\Configuration</Filter>
     </None>
@@ -1376,9 +1349,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl">
       <Filter>Sources\Debug</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
@@ -1433,9 +1403,6 @@
     </None>
     <None Include="..\..\Sources\ReadMe.md">
       <Filter>Sources</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl">
-      <Filter>Sources\Containers\Adapters</Filter>
     </None>
   </ItemGroup>
 </Project>
