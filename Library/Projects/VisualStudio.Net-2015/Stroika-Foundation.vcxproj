@@ -567,11 +567,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h" />
@@ -775,11 +773,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointDiscreteRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Range.inl" />

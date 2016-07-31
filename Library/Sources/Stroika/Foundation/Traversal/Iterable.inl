@@ -14,8 +14,6 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Generator.h"
-
 
 
 namespace   Stroika {
@@ -245,19 +243,7 @@ namespace   Stroika {
             template    <typename T>
             Iterable<T> Iterable<T>::mk_ (const initializer_list<T>& from)
             {
-                using   Memory::Optional;
-                vector<T>   tmp (from.begin (), from.end ());     // Somewhat simplistic / inefficient implementation
-                size_t idx { 0 };
-                function<Optional<T>()> getNext = [tmp, idx] () mutable -> Memory::Optional<T> {
-                    if (idx < tmp.size ())
-                    {
-                        return tmp[idx++];
-                    }
-                    else {
-                        return Optional<T> ();
-                    }
-                };
-                return CreateGenerator (getNext);
+                return Iterable<T> {};
             }
             template    <typename T>
             inline  Memory::SharedByValue_State     Iterable<T>::_GetSharingState () const

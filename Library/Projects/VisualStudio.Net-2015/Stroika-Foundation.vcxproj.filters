@@ -600,9 +600,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h">
-      <Filter>Sources\Traversal</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h">
       <Filter>Sources\Containers\STL</Filter>
     </ClInclude>
@@ -617,9 +614,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
-      <Filter>Sources\Traversal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h">
       <Filter>Sources\Characters</Filter>
@@ -1197,9 +1191,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl">
-      <Filter>Sources\Traversal</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl">
       <Filter>Sources\Containers\STL</Filter>
     </None>
@@ -1217,9 +1208,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
-      <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl">
       <Filter>Sources\Characters</Filter>

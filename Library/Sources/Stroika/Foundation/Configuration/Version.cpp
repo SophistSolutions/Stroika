@@ -26,7 +26,7 @@ using   Characters::String_Constant;
  */
 Version Version::FromWin32Version4DotString (const Characters::String& win32Version4DotString)
 {
-	return Version {};
+    return Version {};
 }
 
 Version Version::FromPrettyVersionString (const Characters::String& prettyVersionString)
