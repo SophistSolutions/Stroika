@@ -18,7 +18,6 @@
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Enumeration.h"
-#include    "../Math/Common.h"
 
 #include    "Date.h"
 #include    "TimeOfDay.h"
@@ -471,14 +470,6 @@ namespace   Stroika {
             Duration operator- (const DateTime&, const DateTime& rhs);
 
 
-        }
-    }
-}
-namespace Stroika {
-    namespace Foundation {
-        namespace Math {
-            bool    NearlyEquals (Time::DateTime l, Time::DateTime r);
-            bool    NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon);
         }
     }
 }

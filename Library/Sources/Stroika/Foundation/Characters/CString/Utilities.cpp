@@ -7,7 +7,6 @@
 #include    <iomanip>
 #include    <sstream>
 
-#include    "../../Math/Common.h"
 #include    "../../Memory/SmallStackBuffer.h"
 #include    "../CodePage.h"
 
@@ -363,15 +362,6 @@ double  Characters::CString::String2Float (const string& s)
 {
     char*   e   =   nullptr;
     double  d   =   strtod (s.c_str (), &e);
-    // if trailing crap - return nan
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s.c_str () == e) {
-            return Math::nan<double> ();
-        }
-    }
     return d;
 }
 
@@ -380,14 +370,6 @@ double  Characters::CString::String2Float (const wchar_t* s)
     RequireNotNull (s);
     wchar_t*    e   =   nullptr;
     double  d   =   wcstod (s, &e);
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s == e) {
-            return Math::nan<double> ();
-        }
-    }
     return d;
 }
 
@@ -395,13 +377,5 @@ double  Characters::CString::String2Float (const wstring& s)
 {
     wchar_t*    e   =   nullptr;
     double  d   =   wcstod (s.c_str (), &e);
-    if (*e != '\0') {
-        return Math::nan<double> ();
-    }
-    if (d == 0) {
-        if (s.c_str () == e) {
-            return Math::nan<double> ();
-        }
-    }
     return d;
 }

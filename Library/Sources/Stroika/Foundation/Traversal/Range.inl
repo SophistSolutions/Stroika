@@ -7,7 +7,6 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Debug/Assertions.h"
-#include    "../Math/Overlap.h"
 #include    "DisjointRange.h"
 
 

@@ -11,7 +11,6 @@
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "../Linguistics/Words.h"
-#include    "../Math/Common.h"
 
 #include    "Duration.h"
 
@@ -278,7 +277,7 @@ namespace   {
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
 {
-	return String{};
+    return String{};
 }
 
 Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
@@ -293,7 +292,7 @@ Characters::String  Duration::ToString () const
 
 Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
 {
-	return String{};
+    return String{};
 }
 
 Duration    Duration::operator- () const

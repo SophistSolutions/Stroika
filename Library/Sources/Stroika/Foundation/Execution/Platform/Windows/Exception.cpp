@@ -21,8 +21,6 @@
 #if     qPlatform_Windows
 #include    "HRESULTErrorException.h"
 #endif
-#include    "../../../IO/FileAccessException.h"
-#include    "../../../IO/FileBusyException.h"
 #include    "../../../Time/Realtime.h"
 
 #include    "Exception.h"
@@ -131,42 +129,6 @@ Exception::Exception (DWORD error)
 }
 void    Execution::Platform::Windows::Exception::Throw (DWORD error)
 {
-    switch (error) {
-        case    ERROR_SUCCESS: {
-                DbgTrace ("Platform::Windows::Exception::Throw (ERROR_SUCCESS) - throwing Platform::Windows::Exception (ERROR_NOT_SUPPORTED)");
-                throw Platform::Windows::Exception (ERROR_NOT_SUPPORTED);   // unsure WHAT to throw here - SOMETHING failed - but GetLastError () must have given
-                // a bad reason code?
-            }
-        case    ERROR_NOT_ENOUGH_MEMORY:
-        case    ERROR_OUTOFMEMORY: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing bad_alloc", error);
-                throw bad_alloc ();
-            }
-        case    ERROR_SHARING_VIOLATION: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileBusyException", error);
-                throw IO::FileBusyException ();
-            }
-        case    ERROR_ACCESS_DENIED: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-                throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
-            }
-        case ERROR_FILE_NOT_FOUND: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-                throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
-            }
-        case ERROR_PATH_NOT_FOUND: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing FileAccessException", error);
-                throw IO::FileAccessException ();   // don't know if they were reading or writing at this level..., and don't know file name...
-            }
-        case WAIT_TIMEOUT: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing TimeOutException", error);
-                throw Execution::TimeOutException ();
-            }
-        default: {
-                DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing Platform::Windows::Exception", error);
-                throw Platform::Windows::Exception (error);
-            }
-    }
 }
 
 SDKString Execution::Platform::Windows::Exception::LookupMessage (DWORD dw)

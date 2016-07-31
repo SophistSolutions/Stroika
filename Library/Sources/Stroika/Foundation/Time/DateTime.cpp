@@ -716,19 +716,3 @@ DateTime    Time::operator- (const DateTime& lhs, const Duration& rhs)
 
 
 
-
-
-
-/*
- ********************************************************************************
- ************************** Math::NearlyEquals **********************************
- ********************************************************************************
- */
-bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
-{
-    return NearlyEquals (l, r, static_cast<Time::DurationSecondsType> (1.0));
-}
-bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
-{
-    return l == r or Math::NearlyEquals (l.ToTickCount (), r.ToTickCount (), epsilon);
-}

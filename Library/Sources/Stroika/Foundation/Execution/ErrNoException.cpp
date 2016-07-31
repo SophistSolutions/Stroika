@@ -3,8 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../IO/FileAccessException.h"
-
 #include    "Exceptions.h"
 
 #include    "ErrNoException.h"
@@ -70,30 +68,4 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 
 [[noreturn]]    void    errno_ErrorException::Throw (Execution::errno_t error)
 {
-    //REVIEW EXCPETIONS ANMD MPAPING - THIS IS NOT GOOD - NOT EVEN CLOSE!!! -- LGP 2011-09-29
-    switch (error) {
-        case    ENOMEM: {
-                Execution::Throw (bad_alloc (), "errno_ErrorException::Throw (ENOMEM) - throwing bad_alloc");
-            }
-        case ENOENT: {
-                Execution::Throw (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
-            }
-        case EACCES: {
-                Execution::Throw (IO::FileAccessException ());       // don't know if they were reading or writing at this level..., and don't know file name...
-            }
-            // If I decide to pursue mapping, this maybe a good place to start
-            //  http://aplawrence.com/Unixart/errors.html
-            //      -- LGP 2009-01-02
-#if 0
-        case    EPERM: {
-                // not sure any point in this unification. Maybe if I added my OWN private 'access denied' exception
-                // the mapping/unification would make sense.
-                //      -- LGP 2009-01-02
-                DbgTrace ("errno_ErrorException::Throw (EPERM) - throwing ERROR_ACCESS_DENIED");
-                throw Win32Exception (ERROR_ACCESS_DENIED);
-            }
-#endif
-    }
-    DbgTrace (L"errno_ErrorException (0x%x - %s) - throwing errno_ErrorException", error, SDKString2Wide (LookupMessage (error)).c_str ());
-    throw errno_ErrorException (error);
 }

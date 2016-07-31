@@ -13,7 +13,6 @@
 #include    "../Characters/String_Constant.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
-#include    "../Math/Common.h"
 #include    "../Memory/SmallStackBuffer.h"
 #include    "CodePage.h"
 
@@ -115,15 +114,6 @@ namespace {
         wchar_t*        e   = nullptr;
         const wchar_t*  cst = s.c_str ();
         RETURN_TYPE  d = F (cst, &e);
-        // if trailing crap - return nan
-        if (*e != '\0') {
-            return Math::nan<RETURN_TYPE> ();
-        }
-        if (d == 0) {
-            if (cst == e) {
-                return Math::nan<RETURN_TYPE> ();
-            }
-        }
         return d;
     }
 }

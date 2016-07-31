@@ -265,7 +265,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.cpp" />
@@ -303,10 +302,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/Execution-Users.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
@@ -541,7 +536,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.h" />
@@ -563,15 +557,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Angle.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\ReBin.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Statistics.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Bits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
@@ -765,7 +750,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.inl" />
@@ -784,17 +768,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessMode.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Angle.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Common.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\ReBin.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Math\Statistics.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Bits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl" />

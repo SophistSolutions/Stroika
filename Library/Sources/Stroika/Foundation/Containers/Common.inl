@@ -13,8 +13,6 @@
 
 #include    <algorithm>
 
-#include    "../Math/Common.h"
-
 
 namespace   Stroika {
     namespace   Foundation {
@@ -65,9 +63,6 @@ namespace   Stroika {
             inline  size_t    ReserveSpeedTweekAdjustCapacity (size_t targetCapacity, size_t minChunk)
             {
                 size_t  capacity    { targetCapacity };
-                capacity *= 6;
-                capacity /= 5;
-                capacity = Stroika::Foundation::Math::RoundUpTo (capacity, minChunk);
                 return capacity;
             }
 

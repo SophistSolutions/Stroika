@@ -12,7 +12,6 @@
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
-#include    "../Math/Common.h"
 
 #include    "Debugger.h"
 
