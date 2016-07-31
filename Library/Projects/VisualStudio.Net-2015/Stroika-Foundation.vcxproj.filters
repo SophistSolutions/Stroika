@@ -117,9 +117,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -183,9 +180,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
@@ -197,18 +191,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp">
-      <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp">
       <Filter>Sources\IO</Filter>
@@ -287,9 +269,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp">
       <Filter>Sources\Characters</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp">
-      <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
@@ -376,9 +355,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h">
       <Filter>Sources\Execution</Filter>
@@ -531,9 +507,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
@@ -545,18 +518,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
       <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h">
       <Filter>Sources\Execution</Filter>
@@ -797,9 +758,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
@@ -1063,9 +1021,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.inl">
       <Filter>Sources\Memory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl">
       <Filter>Sources\Execution</Filter>
@@ -1446,14 +1401,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <Filter>Sources\Execution\Platform\POSIX</Filter>

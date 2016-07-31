@@ -23,7 +23,6 @@
 
 #include    "Common.h"
 #include    "ErrNoException.h"
-#include    "DLLSupport.h"
 #include    "Synchronized.h"
 #include    "TimeOutException.h"
 

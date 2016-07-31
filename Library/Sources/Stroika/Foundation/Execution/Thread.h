@@ -14,7 +14,6 @@
 #include    "../Time/Realtime.h"
 
 #include    "Function.h"
-#include    "Signals.h"
 #include    "StringException.h"
 
 

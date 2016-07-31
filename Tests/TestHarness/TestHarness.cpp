@@ -15,7 +15,6 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Debugger.h"
 #include    "Stroika/Foundation/Debug/Fatal.h"
-#include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 
 #include    "TestHarness.h"
@@ -68,16 +67,6 @@ namespace   {
         Debug::DropIntoDebuggerIfPresent ();
         std::_Exit (EXIT_FAILURE);  // skip
     }
-    void    _FatalSignalHandler_ (Execution::SignalID signal)
-    {
-#if     qCompilerAndStdLib_COutCErrStartupCrasher_Buggy
-#else
-        cerr << "FAILED: SIGNAL= " <<  Execution::SignalToName (signal).AsNarrowSDKString () << endl;
-#endif
-        DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
-        Debug::DropIntoDebuggerIfPresent ();
-        std::_Exit (EXIT_FAILURE);  // skip
-    }
 }
 
 
@@ -90,7 +79,6 @@ void    TestHarness::Setup ()
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
     using   namespace   Execution;
-    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (_FatalSignalHandler_, SignalHandler::Type::eDirect));
 }
 
 

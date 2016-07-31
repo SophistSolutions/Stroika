@@ -179,13 +179,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -269,8 +266,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.cpp" />
@@ -279,8 +274,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
@@ -494,16 +487,13 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -552,8 +542,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Users.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\CompiledResourceManager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\ElfResourceManager.h" />
@@ -562,8 +550,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h" />
@@ -746,7 +732,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl" />
@@ -789,8 +774,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
