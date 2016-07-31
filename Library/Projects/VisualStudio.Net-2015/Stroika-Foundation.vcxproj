@@ -541,7 +541,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
@@ -744,7 +743,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />

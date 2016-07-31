@@ -768,9 +768,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.h">
-      <Filter>Sources\Traversal</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
@@ -1346,9 +1343,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.inl">
       <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DisjointRange.inl">
-      <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\BidirectionalIterator.inl">
       <Filter>Sources\Traversal</Filter>

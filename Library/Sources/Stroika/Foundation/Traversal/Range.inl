@@ -7,7 +7,6 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/StringBuilder.h"
 #include    "../Debug/Assertions.h"
-#include    "DisjointRange.h"
 
 
 namespace   Stroika {
