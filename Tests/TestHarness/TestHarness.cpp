@@ -13,8 +13,6 @@
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Debugger.h"
-#include    "Stroika/Foundation/Debug/Fatal.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 
 #include    "TestHarness.h"
@@ -45,7 +43,6 @@ namespace   {
 #endif
         DbgTrace ("FAILED: %s; %s; %s; %s; %d", assertCategory, assertionText, functionName, fileName, lineNum);
 
-        Debug::DropIntoDebuggerIfPresent ();
 
         std::_Exit (EXIT_FAILURE);  // skip
     }
@@ -64,7 +61,6 @@ namespace   {
         cerr << "FAILED: " <<  msg << endl;
 #endif
 #endif
-        Debug::DropIntoDebuggerIfPresent ();
         std::_Exit (EXIT_FAILURE);  // skip
     }
 }
@@ -77,7 +73,6 @@ void    TestHarness::Setup ()
 #if     qDebug
     Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
-    Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
     using   namespace   Execution;
 }
 
@@ -103,7 +98,6 @@ void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
         cout << "Failed" << endl;
 #endif
         DbgTrace (L"FAILED: REGRESSION TEST (Execution::StringException): '%s", Characters::ToString (exc).c_str ());
-        Debug::DropIntoDebuggerIfPresent ();
         exit (EXIT_FAILURE);
     }
 }

@@ -66,10 +66,6 @@ namespace   Stroika {
                     void    ThrowIfShellExecError (HINSTANCE r);
 
 
-                    // these map invalid parameters etc to Execution (with assertions and appropriate
-                    // logging)
-                    void    RegisterDefaultHandler_invalid_parameter ();
-
 
                 }
             }

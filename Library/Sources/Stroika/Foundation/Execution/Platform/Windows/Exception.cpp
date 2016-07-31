@@ -219,7 +219,3 @@ namespace   {
         Execution::Throw (Execution::Platform::Windows::Exception (ERROR_INVALID_PARAMETER));
     }
 }
-void    Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ()
-{
-    (void)_set_invalid_parameter_handler (invalid_parameter_handler_);
-}

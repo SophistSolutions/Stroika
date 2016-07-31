@@ -147,9 +147,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.cpp">
       <Filter>Sources\Characters\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp">
-      <Filter>Sources\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -167,9 +164,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp">
       <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp">
-      <Filter>Sources\Debug</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp">
       <Filter>Sources\Execution</Filter>
@@ -309,9 +303,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.cpp">
-      <Filter>Sources\Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -432,9 +423,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h">
-      <Filter>Sources\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -464,9 +452,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h">
-      <Filter>Sources\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h">
       <Filter>Sources\Execution</Filter>
@@ -944,9 +929,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\BackTrace.h">
-      <Filter>Sources\Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h">
       <Filter>Sources\Debug</Filter>

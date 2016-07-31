@@ -7,7 +7,6 @@
 
 #if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
 #include    "../Characters/String.h"
-#include    "../Debug/BackTrace.h"
 #endif
 
 
@@ -37,6 +36,6 @@ string  Private_::GetBT_s ()
 wstring Private_::GetBT_ws ()
 {
     // no need to use Thread::SuppressInterruptionInContext since not using any Stroika code that can throw
-    return Debug::BackTrace ();
+    return wstring ();
 }
 #endif
