@@ -5,8 +5,8 @@
 #
 #	Examples:
 #		ScriptsLib/RunPerformanceRegressionTests.sh
-#		CONFIGURATION=Release ScriptsLib/RunPerformanceRegressionTests.sh
-#		CONFIGURATION=Release CONFIG_LABEL_IN_OUTPUT=FRED ScriptsLib/RunPerformanceRegressionTests.sh
+#		EXE=Builds/gcc-6.1.0-release-c++17/Test47 ScriptsLib/RunPerformanceRegressionTests.sh
+#		EXE=Builds/Releease/Test47 CONFIG_LABEL_IN_OUTPUT=FRED ScriptsLib/RunPerformanceRegressionTests.sh
 #		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests.sh
 #
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
