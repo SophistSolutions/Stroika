@@ -6,11 +6,12 @@
 #	Examples:
 #		ScriptsLib/RunPerformanceRegressionTests.sh
 #		EXE=Builds/gcc-6.1.0-release-c++17/Test47 ScriptsLib/RunPerformanceRegressionTests.sh
-#		EXE=Builds/Releease/Test47 CONFIG_LABEL_IN_OUTPUT=FRED ScriptsLib/RunPerformanceRegressionTests.sh
+#		EXE=Builds/Release/Test47 CONFIG_LABEL_IN_OUTPUT=FRED ScriptsLib/RunPerformanceRegressionTests.sh
 #		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests.sh
 #
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
-if   [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
+MULTIPLIER=${MULTIPLIER-15}
+if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
     EXE=${EXE-"Builds/gcc-6.1.0-release-c++17/Test47"}
     CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.1.0-x64"
@@ -25,10 +26,11 @@ elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     EXE=${EXE-"Builds/Release-U-32/Test47/Test47"}
     CONFIG_LABEL_IN_OUTPUT="x86-vs2k15"
     CMDRUN_PREFIX=""
+else
+    echo "WARNING - unrecognized OS"
 fi
 
-MULTIPLIER=15
 
-echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$CONFIG_LABEL_IN_OUTPUT.txt..."
+echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$CONFIG_LABEL_IN_OUTPUT.txt ... "
 $CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$CONFIG_LABEL_IN_OUTPUT.txt
 echo "done"
