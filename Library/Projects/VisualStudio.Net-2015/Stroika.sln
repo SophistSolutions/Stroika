@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -99,15 +99,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\..\ScriptsLib\GetConfigurations.sh = ..\..\..\ScriptsLib\GetConfigurations.sh
 		..\..\..\ScriptsLib\GetDefaultShellVariable.sh = ..\..\..\ScriptsLib\GetDefaultShellVariable.sh
 		..\..\..\ScriptsLib\GetVisualStudioConfigLine.pl = ..\..\..\ScriptsLib\GetVisualStudioConfigLine.pl
+		..\..\..\ScriptsLib\HasCompiler.sh = ..\..\..\ScriptsLib\HasCompiler.sh
 		..\..\..\ScriptsLib\MakeBuildRoot.sh = ..\..\..\ScriptsLib\MakeBuildRoot.sh
 		..\..\..\ScriptsLib\MakeDirectorySymbolicLink.sh = ..\..\..\ScriptsLib\MakeDirectorySymbolicLink.sh
 		..\..\..\ScriptsLib\MakeVersionFile.sh = ..\..\..\ScriptsLib\MakeVersionFile.sh
 		..\..\..\ScriptsLib\PrintConfigurationVariable.pl = ..\..\..\ScriptsLib\PrintConfigurationVariable.pl
 		..\..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl = ..\..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl
 		..\..\..\ScriptsLib\PrintLevelLeader.sh = ..\..\..\ScriptsLib\PrintLevelLeader.sh
-		..\..\..\ScriptsLib\RegressionTests-Unix.sh = ..\..\..\ScriptsLib\RegressionTests-Unix.sh
+		..\..\..\ScriptsLib\RegressionTests.sh = ..\..\..\ScriptsLib\RegressionTests.sh
 		..\..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
 		..\..\..\ScriptsLib\RunMKLinkViaUAC.bat = ..\..\..\ScriptsLib\RunMKLinkViaUAC.bat
+		..\..\..\ScriptsLib\RunPerformanceRegressionTests.sh = ..\..\..\ScriptsLib\RunPerformanceRegressionTests.sh
 		..\..\..\ScriptsLib\RunPerfTests.bat = ..\..\..\ScriptsLib\RunPerfTests.bat
 		..\..\..\ScriptsLib\StringUtils.pl = ..\..\..\ScriptsLib\StringUtils.pl
 		..\..\..\ScriptsLib\WebGet.sh = ..\..\..\ScriptsLib\WebGet.sh

@@ -13,13 +13,13 @@ VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 
 
 mkdir -p Tests/HistoricalRegressionTestResults
-TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-OUTPUT.txt
+TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-OUT.txt
 
 
 if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     #todo - rewrite - but for now  this works
     #LGP 2016-07-31
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-$VER-OUTPUT.txt
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-$VER-OUT.txt
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
     make clobber all run-tests 2>&1 > $TEST_OUT_FILE
     echo done
