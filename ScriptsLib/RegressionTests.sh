@@ -21,7 +21,7 @@ if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     #LGP 2016-07-31
     TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-$VER-OUTPUT.txt
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
-    make all run-tests 2>&1 > $TEST_OUT_FILE
+    make clobber all run-tests 2>&1 > $TEST_OUT_FILE
     echo done
     exit 0;
 fi
