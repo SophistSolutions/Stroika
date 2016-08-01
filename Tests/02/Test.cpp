@@ -725,7 +725,6 @@ namespace   {
         }
         void    Test17_RegExpMatch_ ()
         {
-#if     !qCompilerAndStdLib_regex_Buggy
             {
                 //const RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
                 const   RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
@@ -736,11 +735,9 @@ namespace   {
                     VerifyTestResult (i.Match (kMatchAll_));
                 }
             }
-#endif
         }
         void    Test17_RegExp_Search_ ()
         {
-#if     !qCompilerAndStdLib_regex_Buggy
             {
                 RegularExpression   regExp (L"abc", RegularExpression::SyntaxType::eECMAScript);
                 String              testStr2Search  =   String (L"abc");
@@ -752,7 +749,6 @@ namespace   {
                 String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::SyntaxType::eECMAScript), L"");
                 VerifyTestResult (replaced == L"abcdef");
             }
-#endif
 #if 0
 // not sure why this didn't work! -
             {
@@ -770,12 +766,10 @@ namespace   {
             Test17_FindEach_ ();
             Test17_RegExp_Search_ ();
             Test17_RegExpMatch_ ();
-#if     !qCompilerAndStdLib_regex_Buggy
             VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
             vector<RegularExpressionMatch>  r   =   String (L"<h2>Egg prices</h2>").FindEachMatch (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
             VerifyTestResult (r.size () == 1 and r[0].GetSubMatches ()[0] == L"2" and r[0].GetSubMatches ()[1] == L"Egg prices");
             VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world", RegularExpression::SyntaxType::eECMAScript), L"Planet") == L"Hello Planet");
-#endif
         }
         void    docsTests_ ()
         {
@@ -789,7 +783,6 @@ namespace   {
                 }
                 VerifyTestResult (tmp == L"b");
             }
-#if     !qCompilerAndStdLib_regex_Buggy
             {
                 // SEE http://en.cppreference.com/w/cpp/regex/match_results/operator_at
                 // SEE http://en.cppreference.com/w/cpp/regex/regex_search
@@ -854,7 +847,6 @@ namespace   {
                     VerifyTestResult ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
                 }
             }
-#endif
         }
     }
 
@@ -1047,13 +1039,11 @@ namespace {
 namespace {
     void    Test22_StartsWithEndsWithMatch_ ()
     {
-#if     !qCompilerAndStdLib_regex_Buggy
         VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc", RegularExpression::SyntaxType::eECMAScript)));
         VerifyTestResult (not (String (L"abc").Match (RegularExpression (L"bc", RegularExpression::SyntaxType::eECMAScript))));
         VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc", RegularExpression::SyntaxType::eECMAScript)));
         VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c", RegularExpression::SyntaxType::eECMAScript)));             /// LGP DONT UNDERSTAND - THIS SEEMS BACKWARDS?? -- LGP 2014-10-26
         VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)));
-#endif
         VerifyTestResult (String (L"abc").StartsWith (L"AB", CompareOptions::eCaseInsensitive));
         VerifyTestResult (not String (L"abc").StartsWith (L"AB", CompareOptions::eWithCase));
         VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eCaseInsensitive));

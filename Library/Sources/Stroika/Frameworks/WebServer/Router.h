@@ -49,8 +49,6 @@ namespace   Stroika {
             using   Memory::Optional;
 
 
-
-#if     !qCompilerAndStdLib_regex_Buggy
             class   Router;
 
             /**
@@ -108,7 +106,6 @@ namespace   Stroika {
             private:
                 Execution::Synchronized<Sequence<Route>>  fRoutes_;
             };
-#endif
 
 
         }

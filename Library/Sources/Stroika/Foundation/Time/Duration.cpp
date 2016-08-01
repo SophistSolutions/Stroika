@@ -199,48 +199,36 @@ long double  Duration::As () const
     return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-#endif
-
-            template    <>
-            std::chrono::duration<double>  Duration::As () const
-            {
-                return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
-            }
-            template    <>
-            std::chrono::seconds  Duration::As () const
-            {
-                return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
-            }
-            template    <>
-            std::chrono::milliseconds  Duration::As () const
-            {
-                return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
-            }
-            template    <>
-            std::chrono::microseconds  Duration::As () const
-            {
-                return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
-            }
-            template    <>
-            std::chrono::nanoseconds  Duration::As () const
-            {
-                return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
-            }
-            template    <>
-            String  Duration::As () const
-            {
-                return ASCIIStringToWide (fDurationRep_);
-            }
-
-#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
-        }
-    }
+template    <>
+std::chrono::duration<double>  Duration::As () const
+{
+    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
-#endif
+template    <>
+std::chrono::seconds  Duration::As () const
+{
+    return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
+}
+template    <>
+std::chrono::milliseconds  Duration::As () const
+{
+    return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
+}
+template    <>
+std::chrono::microseconds  Duration::As () const
+{
+    return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
+}
+template    <>
+std::chrono::nanoseconds  Duration::As () const
+{
+    return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
+}
+template    <>
+String  Duration::As () const
+{
+    return ASCIIStringToWide (fDurationRep_);
+}
 
 template    <>
 wstring Duration::As () const
@@ -585,11 +573,6 @@ namespace {
 #endif
 }
 
-#if     qCompilerAndStdLib_GCC_48_OptimizerBug
-// This code fails with -O2 or greater! Tried to see which particular optimization failed but not obvious...
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-#endif
 string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
     //Debug::TraceContextBumper   ctx ("Duration::UnParseTime_");
@@ -681,9 +664,6 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     }
     return result;
 }
-#if     qCompilerAndStdLib_GCC_48_OptimizerBug
-#pragma GCC pop_options
-#endif
 
 
 

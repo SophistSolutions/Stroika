@@ -17,7 +17,6 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
-#if     !qCompilerAndStdLib_regex_Buggy
 /*
  ********************************************************************************
  ************************* WebServer::Router ************************************
@@ -47,4 +46,3 @@ Optional<RequestHandler>   Router::Lookup (const Request& request) const
     }
     return Optional<RequestHandler> {};
 }
-#endif

@@ -15,7 +15,6 @@ namespace   Stroika {
         namespace   WebServer {
 
 
-#if     !qCompilerAndStdLib_regex_Buggy
             /*
              ********************************************************************************
              ******************************** ConnectionManager *****************************
@@ -37,7 +36,6 @@ namespace   Stroika {
             {
                 fIgnoreSillyCORS_ = ignoreCORS;
             }
-#endif
 
 
         }

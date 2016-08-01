@@ -139,7 +139,7 @@ namespace   {
  *  This code is used to test/valdiate the underlying locale/stdc++ library, which we've had alot of trouble
  *  with!
  */
-#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
 namespace {
     void    TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (int tm_Year, int tm_Mon, int tm_mDay, const locale& l)
     {
@@ -340,7 +340,7 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
         Execution::Throw (FormatException::kThe);
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
-#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     return AsDate_ (when);
@@ -466,7 +466,7 @@ String Date::Format (const locale& l, const String& formatPattern) const
     if (empty ()) {
         return String ();
     }
-#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
 

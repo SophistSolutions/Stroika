@@ -14,7 +14,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 
 
-#if     !qCompilerAndStdLib_regex_Buggy
 
 
 namespace   {
@@ -73,4 +72,3 @@ Containers::Sequence<String>    RegularExpressionMatch::GetSubMatches () const
 {
     return fSubMatches_;
 }
-#endif

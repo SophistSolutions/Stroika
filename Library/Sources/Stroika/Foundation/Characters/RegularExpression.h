@@ -6,9 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     !qCompilerAndStdLib_regex_Buggy
 #include    <regex>
-#endif
 
 #include    "../Containers/Sequence.h"
 

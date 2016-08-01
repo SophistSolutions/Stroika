@@ -389,11 +389,7 @@ namespace   Stroika {
                         }
                     };
                     MyIterable_ (const MyAssociation_& m)
-#if     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
-                        : Iterable<KEY_TYPE> (typename Iterable<KEY_TYPE>::_SharedPtrIRep (new MyIterableRep_ (m)))
-#else
                         : Iterable<KEY_TYPE> (Iterable<KEY_TYPE>::template MakeSharedPtr<MyIterableRep_> (m))
-#endif
                     {
                     }
                 };

@@ -43,8 +43,8 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 5))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.5")
+#if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7")
 #endif
 #if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 8))
 #pragma message ("Info: Stroika untested with this version of clang++")
@@ -52,8 +52,8 @@
 
 #elif   defined (__GNUC__)
 
-#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
-#pragma message ("Warning: Stroika does not support versions prior to GCC 4.8")
+#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
+#pragma message ("Warning: Stroika does not support versions prior to GCC 4.9")
 #endif
 #if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
 #pragma message ("Info: Stroika untested with this version of GCC")
@@ -106,23 +106,6 @@
  *******************************************************************
  *******************************************************************
  */
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_LocaleTM_put_Buggy
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_LocaleTM_put_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#else
-#define qCompilerAndStdLib_LocaleTM_put_Buggy     0
-#endif
-
-#endif
 
 
 
@@ -378,38 +361,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy
-
-#if   !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
-#else
-#define qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy      0
-#endif
-
-#endif
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      ((__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
-#else
-#define qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy      0
-#endif
-
-#endif
-
-
 
 /*
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\io\network\internetaddress.inl(237): error C2127: 'Stroika::Foundation::IO::Network::V4::kLocalhost': illegal initialization of 'constexpr' entity with a non-constant expression
@@ -612,16 +563,6 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 #endif
 
-
-#ifndef qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
-#else
-#define qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy      0
-#endif
-
-#endif
 
 
 
@@ -861,28 +802,6 @@ Compiling regtests for Median/OrderBy...
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_regex_Buggy
-@DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
-*/
-#ifndef qCompilerAndStdLib_regex_Buggy
-
-#if     defined (__clang__)
-// Dont know how to test for libstdc++ version, but that seems the problem. For example, though fixed with gcc 49, clang-34 not
-// compatible with that fix...
-#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ <= 6))
-#elif   defined (__GNUC__)
-// Note - Verified FIXED in gcc 4.9, so it was gcc / libstdc++ bug
-// @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
-// Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
-#define qCompilerAndStdLib_regex_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#else
-#define qCompilerAndStdLib_regex_Buggy       0
-#endif
-
-#endif
-
-
 
 
 
@@ -1106,34 +1025,6 @@ eq_result
 
 
 
-#ifndef qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#else
-#define qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy        0
-#endif
-
-#endif
-
-
-
-
-
-#ifndef qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#else
-#define qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy       0
-#endif
-
-#endif
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
@@ -1154,23 +1045,6 @@ eq_result
 #endif
 
 
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_GCC_48_OptimizerBug
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_GCC_48_OptimizerBug
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 8))
-#else
-#define qCompilerAndStdLib_GCC_48_OptimizerBug     0
-#endif
-
-#endif
 
 
 
@@ -1257,24 +1131,6 @@ eq_result
 
 
 
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
-@DESCRIPTION:   Not sure if this is a gcc compiler bug or not - but seems wierd
-
-                GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-                 -- LGP 2012-05-26
-*/
-#if     !defined (qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy)
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
-#else
-#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy      0
-#endif
-
-#endif
 
 
 

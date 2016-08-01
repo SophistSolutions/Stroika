@@ -43,7 +43,6 @@ namespace   Stroika {
             using   std::shared_ptr;
 
 
-#if     !qCompilerAndStdLib_regex_Buggy
             /**
              *  This class is a useful helper for managing a set of connections. You can start it and stop it
              *  (it maintains internal threads). And you can hand it Connections, along with a set of handlers,
@@ -62,7 +61,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
-
 
             public:
                 /**
@@ -137,7 +135,6 @@ namespace   Stroika {
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
                 Execution::ThreadPool                                       fThreads_;
             };
-#endif
 
 
         }

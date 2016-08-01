@@ -819,9 +819,6 @@ namespace {
                 }
                 VerifyTestResult ((data == Set<AlarmType_> { L"Fred", L"Critical_LaserOverheating" }));
             }
-#if     qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy
-            // Just use wildcard match for now - if we have this bug - or must do some real work!
-#else
             const Name kAlarmName_ = Name { L"Alarm" };
             registry.Add<Set<AlarmType_>> (ObjectReaderRegistry::ConvertReaderToFactory<Set<AlarmType_>, ObjectReaderRegistry::ListOfObjectReader<Set<AlarmType_>>> (kAlarmName_));
             {
@@ -846,7 +843,6 @@ namespace {
                 }
                 VerifyTestResult ((data == Set<AlarmType_> {  }));
             }
-#endif
         }
     }
 
