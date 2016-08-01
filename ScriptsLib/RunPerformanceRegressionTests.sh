@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#
+# Call from $StroikaRoot
+#
+#	Examples:
+#		ScriptsLib/RunPerformanceRegressionTests.sh
+#		CONFIGURATION=Release ScriptsLib/RunPerformanceRegressionTests.sh
+#		CONFIGURATION=Release CONFIG_LABEL_IN_OUTPUT=FRED ScriptsLib/RunPerformanceRegressionTests.sh
+#		MULTIPLIER=1 ScriptsLib/RunPerformanceRegressionTests.sh
+#
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 if   [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
