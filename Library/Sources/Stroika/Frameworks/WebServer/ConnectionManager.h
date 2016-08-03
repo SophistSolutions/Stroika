@@ -90,13 +90,13 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	@see CORSModeSupport
+                 *  @see CORSModeSupport
                  */
                 nonvirtual  CORSModeSupport GetCORSModeSupport () const;
 
             public:
                 /**
-				 *	@see CORSModeSupport
+                 *  @see CORSModeSupport
                  */
                 nonvirtual  void SetCORSModeSupport (CORSModeSupport support);
 

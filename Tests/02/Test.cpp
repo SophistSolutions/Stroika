@@ -729,8 +729,7 @@ namespace   {
                 //const RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
                 const   RegularExpression   kMatchNone_ (L"(?!)", RegularExpression::SyntaxType::eECMAScript);
                 const   RegularExpression   kMatchAll_ (L".*", RegularExpression::SyntaxType::eECMAScript);
-                for (String i : Sequence<String> { L"01-23-45-67-89", L"", L"a" })
-                {
+                for (String i : Sequence<String> { L"01-23-45-67-89", L"", L"a" }) {
                     VerifyTestResult (not i.Match (kMatchNone_));
                     VerifyTestResult (i.Match (kMatchAll_));
                 }
