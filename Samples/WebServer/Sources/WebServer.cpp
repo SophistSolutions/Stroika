@@ -8,13 +8,10 @@
 #include    <cstdio>
 #endif
 
-#include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/WaitableEvent.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Exception.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
-#include    "Stroika/Foundation/IO/Network/LinkMonitor.h"
-#include    "Stroika/Foundation/IO/Network/Listener.h"
 #include    "Stroika/Foundation/Streams/TextReader.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -65,7 +62,7 @@ int main (int argc, const char* argv[])
     Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     try {
         ConnectionManager   cm { SocketAddress (Network::V4::kAddrAny, 8080), kRouter_ } ;  // listen and dispatch while this object exists
-        cm.SetServerHeader (String { L"Stroika-Sample-WebServer" });
+        cm.SetServerHeader (String { L"Stroika-Sample-WebServer/1.0" });
         Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
