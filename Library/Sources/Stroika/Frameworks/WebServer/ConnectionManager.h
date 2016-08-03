@@ -24,8 +24,6 @@
 /*
  * TODO:
  *
- *      o   First get basics working
- *
  *      o   Handle thread safety (very tricky - watch adding connection handlers!)
  *
  *      o   Do a single background thread first to run handlers.
@@ -72,16 +70,35 @@ namespace   Stroika {
                  */
                 nonvirtual  void SetServerHeader (Optional<String> server);
 
-            public:
-                /**
-                 */
-                nonvirtual  bool GetIgnoreCORS () const;
 
             public:
                 /**
+                 *  CORSMode
+                 *
+                 *  \brief  If eNone this does nothing, and if CORSModeSupport == eSuppress, CORS Headers are emitted which suppress the CORS features.
+                 *
+                 *  @see GetCORSModeSupport (), SetCORSModeSupport ()
                  */
-                nonvirtual  void SetIgnoreCORS (bool ignoreCORS);
+                enum    class   CORSModeSupport {
+                    eNone,
+                    eSuppress,
 
+                    Stroika_Define_Enum_Bounds (eNone, eSuppress)
+
+                    eDEFAULT = eSuppress,
+                };
+
+            public:
+                /**
+				 *	@see CORSModeSupport
+                 */
+                nonvirtual  CORSModeSupport GetCORSModeSupport () const;
+
+            public:
+                /**
+				 *	@see CORSModeSupport
+                 */
+                nonvirtual  void SetCORSModeSupport (CORSModeSupport support);
 
 #if 0
             public:
@@ -119,13 +136,11 @@ namespace   Stroika {
                 nonvirtual  void onConnect_ (Socket s);
 
             private:
-                Optional<String>        fServerHeader_;
-                bool                    fIgnoreSillyCORS_ { true };
-                Router                  fRouter_;
-                IO::Network::Listener   fListener_;
-                // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-//                Execution::Synchronized<list<shared_ptr<RequestHandler>>>   fHandlers_;
-                Execution::Synchronized<list<shared_ptr<Connection>>>       fActiveConnections_;
+                Optional<String>                                        fServerHeader_;
+                CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
+                Router                                                  fRouter_;
+                IO::Network::Listener                                   fListener_;
+                Execution::Synchronized<list<shared_ptr<Connection>>>   fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
@@ -133,7 +148,7 @@ namespace   Stroika {
                 // But for now - KISS
                 //
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
-                Execution::ThreadPool                                       fThreads_;
+                Execution::ThreadPool                                   fThreads_;
             };
 
 

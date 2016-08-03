@@ -59,7 +59,7 @@ void ConnectionManager::onConnect_ (Socket s)
             if (fServerHeader_) {
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
             }
-            if (fIgnoreSillyCORS_) {
+            if (GetCORSModeSupport () == CORSModeSupport::eSuppress) {
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
             }

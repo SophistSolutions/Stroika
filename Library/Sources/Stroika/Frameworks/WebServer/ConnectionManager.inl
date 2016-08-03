@@ -28,13 +28,13 @@ namespace   Stroika {
             {
                 fServerHeader_ = server;
             }
-            inline      bool ConnectionManager::GetIgnoreCORS () const
+            inline      auto ConnectionManager::GetCORSModeSupport () const -> CORSModeSupport
             {
-                return fIgnoreSillyCORS_;
+                return fCORSModeSupport_;
             }
-            inline    void ConnectionManager::SetIgnoreCORS (bool ignoreCORS)
+            inline    void ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
             {
-                fIgnoreSillyCORS_ = ignoreCORS;
+                fCORSModeSupport_ = support;
             }
 
 
