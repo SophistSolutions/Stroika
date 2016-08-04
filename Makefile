@@ -336,7 +336,7 @@ regression-test-configurations:
 		./configure my-gcc-6.1.0-debug-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.1.0-release-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
-		./configure my-clang++-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
 		#./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
 		./configure clang-3.8-debug --compiler-driver clang++-3.8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
