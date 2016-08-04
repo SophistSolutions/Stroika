@@ -332,13 +332,14 @@ regression-test-configurations:
 		./configure gcc-4.9-debug-no-TPC --compiler-driver g++-4.9 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --LibCurl no --OpenSSL no --Xerces no;\
 		./configure gcc-4.9-release --compiler-driver g++-4.9 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
 		./configure my-gcc-5.3.0-release --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure my-gcc-5.3.0-debug-c++17 --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1z;\
+		#./configure my-gcc-5.3.0-debug-c++17 --compiler-driver ~/gcc-5.3.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1z;\
 		./configure my-gcc-6.1.0-debug-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.1.0-release-c++17 --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
-		./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
-		./configure clang++-3.8-debug --compiler-driver clang++-3.8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
-		./configure my-clang++-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
+		./configure my-clang++-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
+		#./configure clang++-3.7-debug --compiler-driver clang++-3.7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
+		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++1y;\
+		./configure clang-3.8-debug --compiler-driver clang++-3.8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++1y;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
