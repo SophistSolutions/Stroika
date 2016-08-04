@@ -85,6 +85,11 @@ namespace   Stroika {
             {
                 return GetLength ();
             }
+            template    <typename T>
+            inline  void    BlockingQueue<T>::clear ()
+            {
+                fQueue_.rwget ()->clear ();
+            }
 
 
         }

@@ -194,6 +194,11 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t      length () const;
 
+            public:
+                /**
+                 */
+                nonvirtual  void    clear ();
+
             private:
                 WaitableEvent                       fDataAvailable_;
                 Synchronized<Containers::Queue<T>>  fQueue_;
