@@ -107,7 +107,8 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
 
 DB:: ~DB ()
 {
-    ::sqlite3_close(fDB_);
+	AssertNotNull (fDB_);
+    ::sqlite3_close (fDB_);
 }
 
 void    DB::Exec (const String& cmd2Exec)
