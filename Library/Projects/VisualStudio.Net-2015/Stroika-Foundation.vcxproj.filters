@@ -759,6 +759,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp">
+      <Filter>Sources\Database</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1806,6 +1809,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.h">
       <Filter>Sources\Containers\Adapters</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h">
+      <Filter>Sources\Database</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2744,6 +2750,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Adapters\Adder.inl">
       <Filter>Sources\Containers\Adapters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLite.inl">
+      <Filter>Sources\Database</Filter>
     </None>
   </ItemGroup>
 </Project>

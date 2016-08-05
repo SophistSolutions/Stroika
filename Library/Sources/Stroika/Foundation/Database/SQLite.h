@@ -32,6 +32,7 @@ namespace   Stroika {
                 using   Characters::String;
                 using   Containers::Mapping;
                 using   Containers::Sequence;
+                using   DataExchange::VariantValue;
                 using   Memory::Optional;
 
 
@@ -40,7 +41,7 @@ namespace   Stroika {
                  */
                 class   DB {
                 public:
-                    DB (const String& experimentDBFullPath);
+                    DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitializer = [] (DB&) {});
                     DB (const DB&) = delete;
                     DB& operator= (const DB&) = delete;
                     ~DB ();
@@ -60,7 +61,7 @@ namespace   Stroika {
                 class DB::Statement {
                 public:
                     Statement (sqlite3* db, const String& query);
-                    ~Statement_ ();
+                    ~Statement ();
 
                 public:
                     // redo as iterator

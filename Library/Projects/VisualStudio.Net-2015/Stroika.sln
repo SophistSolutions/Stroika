@@ -1066,6 +1066,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-Modbus", "Stroika-Frameworks-Modbus.vcxproj", "{17CE653D-28FF-4F04-8007-579A0C708DC1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sqlite", "sqlite", "{41EA2E5B-3909-45BE-8DB0-29575A063A05}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\sqlite\Makefile = ..\..\..\ThirdPartyComponents\sqlite\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{4F2612A0-DA60-4D21-B9E1-3B82FAB23258}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\sqlite\CURRENT\shell.c = ..\..\..\ThirdPartyComponents\sqlite\CURRENT\shell.c
+		..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3.c = ..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3.c
+		..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3.h = ..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3.h
+		..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3ext.h = ..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3ext.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -1443,5 +1456,7 @@ Global
 		{707DC8D1-0256-474B-9DEA-BD9D715457A4} = {1B514C20-0A4B-40FA-937D-2F11449E1E3D}
 		{B7D0481B-0F01-4B7C-A2A0-EF32291DC550} = {312AE444-7947-4826-8B1C-19691D0568CD}
 		{285BD8F4-F975-4D92-9A33-0B3552397239} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
+		{41EA2E5B-3909-45BE-8DB0-29575A063A05} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
+		{4F2612A0-DA60-4D21-B9E1-3B82FAB23258} = {41EA2E5B-3909-45BE-8DB0-29575A063A05}
 	EndGlobalSection
 EndGlobal

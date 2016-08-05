@@ -442,6 +442,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchange-7z-Reader.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchange-7z-Reader.obj</ObjectFileName>
@@ -1091,6 +1092,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h" />
@@ -1459,6 +1461,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSL\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Database\SQLite.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />

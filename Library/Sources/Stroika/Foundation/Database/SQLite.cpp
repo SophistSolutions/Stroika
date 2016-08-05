@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
 
 #include    "SQLite.h"
@@ -46,7 +47,7 @@ DB::Statement::Statement (sqlite3* db, const String& query)
 }
 
 /// returns 'missing' on EOF, exception on error
-auto   DB::Statement::StatementGetNextRow () -> Optional<RowType> {
+auto   DB::Statement::GetNextRow () -> Optional<RowType> {
     // use SQLITE_API const char *SQLITE_STDCALL sqlite3_column_name(sqlite3_stmt*, int N);
     // to get column name
 
@@ -83,7 +84,7 @@ DB::Statement::~Statement ()
  ********************************** SQLite::DB **********************************
  ********************************************************************************
  */
-DB::DB (const String& experimentDBFullPath)
+DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitializer)
 {
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
     // @todo - code cleanup!!!
@@ -92,7 +93,7 @@ DB::DB (const String& experimentDBFullPath)
     if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
         if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI |  SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
             try {
-                InitialSetup_ ();
+                dbInitializer (*this);
             }
             catch (...) {
                 //Logger::Get ().Log (Logger::Priority::eInfo, L"Errir settuibg yo d: %s: %s", experimentDBFullPath.c_str (), Characters::ToString (current_exception ()).c_str ());
