@@ -123,7 +123,7 @@ CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 $(SQLITE3OBJ):
 	@mkdir -p $(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@"$(CC)" -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
+	@$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c
