@@ -96,7 +96,7 @@ $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CU
 	cp CURRENT/sqlite3.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/sqlite/sqlite.a:
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)
 	$(RANLIB) $@
