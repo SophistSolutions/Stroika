@@ -34,13 +34,13 @@ using   namespace   Execution;
  */
 DB::Statement::Statement (sqlite3* db, const String& query)
 {
-    int rc = sqlite3_prepare_v2(db, query.AsUTF8 ().c_str (), -1, &stmt, NULL);
+    int rc = ::sqlite3_prepare_v2 (db, query.AsUTF8 ().c_str (), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (sqlite3_errmsg (db)).c_str ())));
     }
-    nParams = sqlite3_column_count (stmt);
+    nParams = ::sqlite3_column_count (stmt);
     for (size_t i = 0; i < nParams; ++i) {
-        fColNames += String::FromUTF8 (sqlite3_column_name (stmt, i));
+        fColNames += String::FromUTF8 (::sqlite3_column_name (stmt, i));
 
         // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
     }
@@ -55,13 +55,13 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
     // @todo redo with https://www.sqlite.org/c3ref/value.html
 
     int rc;
-    if (( rc = sqlite3_step(stmt)) == SQLITE_ROW)
+    if (( rc = ::sqlite3_step (stmt)) == SQLITE_ROW)
     {
         RowType row;
         for (size_t i = 0; i < nParams; ++i) {
             //DbgTrace (L"sqlite3_column_decltype(i) = %s", String::FromUTF8 (sqlite3_column_decltype(stmt, i)).c_str ());
             //DbgTrace (L"COLNAME=%s", fColNames[i].c_str () );
-            row.Add (fColNames[i], VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (sqlite3_column_text (stmt, i)))));
+            row.Add (fColNames[i], VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i)))));
             //DbgTrace ("rowsize now %d", row.size ());
         }
         return row;
@@ -72,7 +72,7 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
 
 DB::Statement::~Statement ()
 {
-    sqlite3_finalize(stmt);
+    ::sqlite3_finalize (stmt);
 }
 
 
