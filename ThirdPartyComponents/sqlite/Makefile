@@ -36,6 +36,7 @@ CC=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATI
 LIB=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_64)
 endif
 PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
+INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) INCLUDE)
 endif
 
 
@@ -45,6 +46,7 @@ CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) 
 endif
 
 BUILDS_ROOT=../../Builds/
+INTERMEDIATES_ROOT=../../IntermediateFiles/
 
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -89,22 +91,40 @@ CURRENT:	$(ZIPEDFILE)
 	@mv $(AMALGAMATION_WITH_VERSION) CURRENT
 	@touch CURRENT
 
-OBJS=
+
+ifeq (Unix,$(ProjectPlatformSubdir))
+SQLITE3OBJ=$(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/sqlite3.o
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+SQLITE3OBJ=$(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/sqlite3.obj
+endif
+OBJS=$(SQLITE3OBJ)
+
 
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CURRENT
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite
 	cp CURRENT/sqlite3.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	$(AR) cr $@ $(OBJS)
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:	$(OBJS)
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
+	@$(AR) cr $@ $(OBJS)
 	#$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	"$(LIB)" /OUT:$@ $(OBJS)
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:	$(OBJS)
+	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
+	@"$(LIB)" /OUT:$@ $(OBJS)
 endif
 
-	
+
+CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
+
+$(SQLITE3OBJ):
+	@mkdir -p $(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@"$(CC)" -o $@ CURRENT/sqlite3.c $(CFLAGS)
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c
+endif
