@@ -79,10 +79,10 @@ endif
 	@#$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 clobber:
-	@rm -rf sqlite-$(AMALGAMATION_WITH_VERSION) CURRENT
+	@rm -rf sqlite-$(AMALGAMATION_WITH_VERSION) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
 	
 clean:
-	@rm -rf $(AMALGAMATION_WITH_VERSION)
+	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
 
 CURRENT:	$(ZIPEDFILE)
 	@unzip -q $(ZIPEDFILE)
@@ -99,7 +99,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)
-	$(RANLIB) $@
+	#$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:
