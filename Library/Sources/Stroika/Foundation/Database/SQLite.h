@@ -7,13 +7,19 @@
 #include    "../StroikaPreComp.h"
 
 #if     qHasFeature_sqlite
-#include    "sqlite3.h"
+#include    <sqlite/sqlite3.h>
 #endif
+
+#include	"../Characters/String.h"
+#include	"../Containers/Mapping.h"
+#include	"../Containers/Sequence.h"
+#include	"../DataExchange/VariantValue.h"
+#include	"../Memory/Optional.h"
 
 /**
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  */
 
@@ -23,15 +29,16 @@ namespace   Stroika {
             namespace   SQLite {
 
 
-                using   Characters::SDKString;
-                using   Characters::SDKChar;
+                using   Characters::String;
+                using   Containers::Mapping;
+                using   Containers::Sequence;
+                using   Memory::Optional;
+
 
 #if     qHasFeature_sqlite
-                class DB {
-                public:
-                    using   ExperimentID    =   uint64_t;
-                public:
-                    using   ScanID  =   uint64_t;
+				/**
+				 */
+                class	DB {
                 public:
                     DB (const String& experimentDBFullPath);
                     DB (const DB&) = delete;
@@ -42,7 +49,7 @@ namespace   Stroika {
                     class Statement;
 
                 public:
-                    void    Exec (const String& cmd2Exec);
+                    nonvirtual	void    Exec (const String& cmd2Exec);
 
                 private:
                     sqlite3* fDB_ {};
@@ -68,7 +75,6 @@ namespace   Stroika {
                     size_t  nParams;
                     Sequence<String>    fColNames;
                 };
-
 #endif
 
 
