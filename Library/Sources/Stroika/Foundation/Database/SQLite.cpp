@@ -88,7 +88,6 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
 {
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
     // @todo - code cleanup!!!
-    bool    created = false;
     int e;
     if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
         if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI |  SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
@@ -96,23 +95,12 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
                 dbInitializer (*this);
             }
             catch (...) {
-                //Logger::Get ().Log (Logger::Priority::eInfo, L"Errir settuibg yo d: %s: %s", experimentDBFullPath.c_str (), Characters::ToString (current_exception ()).c_str ());
                 ::sqlite3_close(fDB_);
                 Execution::ReThrow ();
             }
-            created = true;
         }
     }
-    else if (e == SQLITE_OK) {
-        if (created) {
-            //Logger::Get ().Log (Logger::Priority::eInfo, L"Created new experiment DB: %s", experimentDBFullPath.c_str ());
-        }
-        else {
-            //Logger::Get ().Log (Logger::Priority::eInfo, L"Opened experiment DB: %s", experimentDBFullPath.c_str ());
-        }
-    }
-    else {
-        //Logger::Get ().Log (Logger::Priority::eError, L"FAILED opening experiment DB: %s", experimentDBFullPath.c_str ());
+    else if (e != SQLITE_OK) {
         Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
     }
 }
