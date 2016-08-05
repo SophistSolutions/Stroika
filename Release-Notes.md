@@ -18,6 +18,54 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a165">v2.0a165</a><br/>2016-08-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a164...v2.0a165</li>
+		<li>New SQLite support - wrapper module, and automatically build sqlite3 in third-party-products</li>
+		<li>cosmetic cleanups to ConnectionManager (http): use GetCORSModeSupport () instead of  GetIgnoreCORS</li>
+		<li> Lose backward compat workarounds which were only needed for gcc 48.
+			<ul>
+				<li>qCompilerAndStdLib_LocaleTM_put_Buggy</li>
+				<li>qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy</li>
+				<li>qCompilerAndStdLib_Iterator_template_MakeSharedPtr_gcc_crasher_Buggy</li>
+				<li>qCompilerAndStdLib_constexpr_after_template_decl_constexpr_Buggy</li>
+				<li>qCompilerAndStdLib_ParameterPack_Pass_Through_Lambda_Buggy</li>
+				<li>qCompilerAndStdLib_regex_Buggy</li>
+				<li>qCompilerAndStdLib_TemplateDiffersOnReturnTypeOnly_Buggy</li>
+				<li>qCompilerAndStdLib_stdContainerEraseConstArgSupport_Buggy</li>
+				<li>qCompilerAndStdLib_GCC_48_OptimizerBug</li>
+				<li>qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy</li>
+			</ul>
+		</li>
+		<li>ScriptsLib/RegressionTests-Unix.sh -> ScriptsLib/RegressionTests.sh and got working on windows (poorly but something).</li>
+		<li>Revised exactly what builds get run and how in regression tests</li>
+		<li>New ScriptsLib/RunPerformanceRegressionTests.sh script to facilitate running performance tests on both platforms</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-2.0a165-OUT.txt</li>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-2.0a165-OUT.txt</li>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie)</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a164">v2.0a164</a><br/>2016-07-30</td>
