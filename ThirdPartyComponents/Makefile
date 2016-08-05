@@ -32,6 +32,7 @@ endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+	@$(MAKE) --directory sqlite --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -57,6 +58,7 @@ endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+	@$(MAKE) --directory sqlite --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 
 
@@ -72,6 +74,7 @@ endif
 	@$(MAKE) --directory curl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
 
 
 clobber:
@@ -86,4 +89,5 @@ endif
 	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory lzma --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory Xerces --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
 	@$(ECHO) "done"
