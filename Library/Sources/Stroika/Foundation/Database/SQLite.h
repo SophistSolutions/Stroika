@@ -41,23 +41,37 @@ namespace   Stroika {
                  */
                 class   DB {
                 public:
+                    /**
+                     */
                     DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitializer = [] (DB&) {});
                     DB (const DB&) = delete;
+
+                public:
                     DB& operator= (const DB&) = delete;
+
+                public:
                     ~DB ();
 
                 public:
                     class Statement;
 
                 public:
+                    /**
+                     */
                     nonvirtual  void    Exec (const String& cmd2Exec);
+
+                public:
+                    /**
+                     */
+                    nonvirtual  sqlite3*    Peek ();
 
                 private:
                     sqlite3* fDB_ {};
                 };
 
 
-
+                /**
+                 */
                 class DB::Statement {
                 public:
                     Statement (sqlite3* db, const String& query);
@@ -67,7 +81,7 @@ namespace   Stroika {
                     // redo as iterator
                     using   RowType = Mapping<String, VariantValue>;
                     /// returns 'missing' on EOF, exception on error
-                    Optional<RowType>   GetNextRow ();
+                    nonvirtual  Optional<RowType>   GetNextRow ();
 
 
                 private:
