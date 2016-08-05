@@ -84,6 +84,7 @@ my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_Xerces = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $INCLUDE_SYMBOLS_LIB = true;
@@ -121,6 +122,7 @@ sub	DoHelp_
         print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --ATLMFC {use-system|no}                        /* Enables/disables use of ATLMFC for this configuration [default use-system on windows, and no otherwise] */\n");
         print("	    --Xerces {build-only|use|use-system|no}         /* Enables/disables use of Xerces for this configuration [default use] */\n");
+        print("	    --sqlite {build-only|use|use-system|no}         /* Enables/disables use of sqlite for this configuration [default use] */\n");
         print("	    --ZLib {build-only|use|use-system|no}           /* Enables/disables use of ZLib for this configuration [default use] */\n");
         print("	    --lzma {build-only|use|use-system|no}           /* Enables/disables use of LZMA SDK for this configuration [default use] */\n");
         print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
@@ -574,6 +576,11 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_ZLib = $var;
         }
+        elsif ((lc ($var) eq "-sqlite") or (lc ($var) eq "--sqlite")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_sqlite = $var;
+        }
         elsif ((lc ($var) eq "-lzma") or (lc ($var) eq "--lzma")) {
             $i++;
             $var = $ARGV[$i];
@@ -943,6 +950,7 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_ATLMFC>$FEATUREFLAG_ATLMFC</qFeatureFlag_ATLMFC>\n");
 	print (OUT "    <qFeatureFlag_Xerces>$FEATUREFLAG_Xerces</qFeatureFlag_Xerces>\n");
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
+	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 
 	if (defined $AR) {

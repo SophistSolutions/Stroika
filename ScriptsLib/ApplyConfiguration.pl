@@ -47,6 +47,7 @@ my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;
 my $FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_XERCES = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_ZLib = $LIBFEATUREFLAG_UseStaticTPP;
+my $FEATUREFLAG_sqlite = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_LZMA = $LIBFEATUREFLAG_UseStaticTPP;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
 my $COPTIMIZE_FLAGS = "";
@@ -124,6 +125,7 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_ATLMFC = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ATLMFC");
 	$FEATUREFLAG_XERCES = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_Xerces");
 	$FEATUREFLAG_ZLib = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_ZLib");
+	$FEATUREFLAG_sqlite = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_sqlite");
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
@@ -417,7 +419,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-    print (OUT "//--Xerces {build-only|use|use-system|no}\n");
+     print (OUT "//--Xerces {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_XERCES eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_Xerces	1\n");
 	}
@@ -427,12 +429,21 @@ sub WriteStroikaConfigCHeader
 	print (OUT "\n");
 
 
-    print (OUT "//--ZLib {build-only|use|use-system|no}\n");
+     print (OUT "//--ZLib {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_ZLib	1\n");
 	}
 	else {
 		print (OUT "#define	qHasFeature_ZLib	0\n");
+	}
+	print (OUT "\n");
+
+     print (OUT "//--sqlite {build-only|use|use-system|no}\n");
+	if (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseSystem)) {
+		print (OUT "#define	qHasFeature_sqlite	1\n");
+	}
+	else {
+		print (OUT "#define	qHasFeature_sqlite	0\n");
 	}
 	print (OUT "\n");
 
@@ -568,6 +579,7 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "qFeatureFlag_ATLMFC='$FEATUREFLAG_ATLMFC'\n");
 	print (OUT "qFeatureFlag_Xerces='$FEATUREFLAG_XERCES'\n");
 	print (OUT "qFeatureFlag_ZLib='$FEATUREFLAG_ZLib'\n");
+	print (OUT "qFeatureFlag_sqlite='$FEATUREFLAG_sqlite'\n");
 	print (OUT "qFeatureFlag_LZMA='$FEATUREFLAG_LZMA'\n");
 
 
@@ -596,6 +608,12 @@ sub WriteStroikaConfigMakeHeader
 	}	
 	else {
 		print (OUT "qBuildThirdPartyComponents_ZLib=0\n");
+	}	
+	if (($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_BuildOnly)) {
+		print (OUT "qBuildThirdPartyComponents_sqlite=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyComponents_sqlite=0\n");
 	}	
 	if (($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_BuildOnly)) {
 		print (OUT "qBuildThirdPartyComponents_LZMA=1\n");
