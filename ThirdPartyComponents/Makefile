@@ -32,7 +32,9 @@ endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+ifeq ($(qBuildThirdPartyComponents_sqlite), 1)
 	@$(MAKE) --directory sqlite --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 endif
 
 
@@ -58,7 +60,9 @@ endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
 	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+ifeq ($(qBuildThirdPartyComponents_sqlite), 1)
 	@$(MAKE) --directory sqlite --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 endif
 
 
