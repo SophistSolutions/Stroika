@@ -29,9 +29,10 @@ namespace   Stroika {
                  **************************** SQLite::DB::Statement *****************************
                  ********************************************************************************
                  */
-                inline  DB::Statement::Statement (DB& db, const String& query)
-                    : Statement (db.Peek (), query)
+                inline  DB::Statement::Statement (DB* db, const String& query)
+                    : Statement (db->Peek (), query)
                 {
+                    RequireNotNull (db);
                 }
 
 

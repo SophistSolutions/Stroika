@@ -77,7 +77,7 @@ namespace   Stroika {
                  */
                 class DB::Statement {
                 public:
-                    Statement (DB& db, const String& query);
+                    Statement (DB* db, const String& query);
                     Statement (sqlite3* db, const String& query);
                     ~Statement ();
 

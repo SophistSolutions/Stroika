@@ -107,7 +107,7 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
 
 DB:: ~DB ()
 {
-	AssertNotNull (fDB_);
+    AssertNotNull (fDB_);
     ::sqlite3_close (fDB_);
 }
 
