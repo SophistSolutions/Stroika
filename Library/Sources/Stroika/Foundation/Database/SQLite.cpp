@@ -46,8 +46,7 @@ DB::Statement::Statement (sqlite3* db, const String& query)
 }
 
 /// returns 'missing' on EOF, exception on error
-auto   DB::Statement::StatementGetNextRow () -> Optional<RowType>
-{
+auto   DB::Statement::StatementGetNextRow () -> Optional<RowType> {
     // use SQLITE_API const char *SQLITE_STDCALL sqlite3_column_name(sqlite3_stmt*, int N);
     // to get column name
 
@@ -55,7 +54,8 @@ auto   DB::Statement::StatementGetNextRow () -> Optional<RowType>
     // @todo redo with https://www.sqlite.org/c3ref/value.html
 
     int rc;
-    if (( rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+    if (( rc = sqlite3_step(stmt)) == SQLITE_ROW)
+    {
         RowType row;
         for (size_t i = 0; i < nParams; ++i) {
             //DbgTrace (L"sqlite3_column_decltype(i) = %s", String::FromUTF8 (sqlite3_column_decltype(stmt, i)).c_str ());

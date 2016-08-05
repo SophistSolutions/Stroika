@@ -10,11 +10,11 @@
 #include    <sqlite/sqlite3.h>
 #endif
 
-#include	"../Characters/String.h"
-#include	"../Containers/Mapping.h"
-#include	"../Containers/Sequence.h"
-#include	"../DataExchange/VariantValue.h"
-#include	"../Memory/Optional.h"
+#include    "../Characters/String.h"
+#include    "../Containers/Mapping.h"
+#include    "../Containers/Sequence.h"
+#include    "../DataExchange/VariantValue.h"
+#include    "../Memory/Optional.h"
 
 /**
  *  \file
@@ -36,9 +36,9 @@ namespace   Stroika {
 
 
 #if     qHasFeature_sqlite
-				/**
-				 */
-                class	DB {
+                /**
+                 */
+                class   DB {
                 public:
                     DB (const String& experimentDBFullPath);
                     DB (const DB&) = delete;
@@ -49,7 +49,7 @@ namespace   Stroika {
                     class Statement;
 
                 public:
-                    nonvirtual	void    Exec (const String& cmd2Exec);
+                    nonvirtual  void    Exec (const String& cmd2Exec);
 
                 private:
                     sqlite3* fDB_ {};

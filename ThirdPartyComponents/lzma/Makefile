@@ -75,7 +75,7 @@ endif
 
 
 
-BUILDS_DIR=	CURRENT/Builds/
+#BUILDS_DIR=	CURRENT/Builds/
 
 
 all:
