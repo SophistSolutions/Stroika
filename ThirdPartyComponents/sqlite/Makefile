@@ -93,10 +93,10 @@ CURRENT:	$(ZIPEDFILE)
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
-SQLITE3OBJ=$(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/sqlite3.o
+SQLITE3OBJ=$(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/sqlite3.o
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-SQLITE3OBJ=$(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/sqlite3.obj
+SQLITE3OBJ=$(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/sqlite3.obj
 endif
 OBJS=$(SQLITE3OBJ)
 
@@ -121,7 +121,7 @@ endif
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
 $(SQLITE3OBJ):
-	@mkdir -p $(INTERMEDIATES_ROOT)ThirdPartyComponents/lib/sqlite/
+	@mkdir -p $(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
 endif
