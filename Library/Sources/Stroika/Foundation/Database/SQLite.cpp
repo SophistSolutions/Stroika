@@ -43,15 +43,17 @@ DB::Statement::Statement (sqlite3* db, const String& query)
     for (size_t i = 0; i < nParams; ++i) {
         fColNames += String::FromUTF8 (::sqlite3_column_name (stmt, i));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sqlite3_column_decltype(i) = %s", String::FromUTF8 (::sqlite3_column_decltype (stmt, i)).c_str ());
+        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (stmt, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (stmt, i)).c_str ());
 #endif
-
         // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
     }
 }
 
 /// returns 'missing' on EOF, exception on error
 auto   DB::Statement::GetNextRow () -> Optional<RowType> {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::GetNextRow"));
+#endif
     // @todo redo with https://www.sqlite.org/c3ref/value.html
     int rc;
     AssertNotNull (stmt);
@@ -85,10 +87,11 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
                     }
                     break;
                 case SQLITE_NULL: {
-                        v = VariantValue ();
+                        // default to null value
                     }
                     break;
                 case SQLITE_TEXT: {
+                        AssertNotNull (::sqlite3_column_text (stmt, i));
                         v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
                     }
                     break;
@@ -130,7 +133,7 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
                 dbInitializer (*this);
             }
             catch (...) {
-                ::sqlite3_close (fDB_);
+                Verify (::sqlite3_close (fDB_) == SQLITE_OK);
                 Execution::ReThrow ();
             }
         }
@@ -145,7 +148,7 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
 DB:: ~DB ()
 {
     AssertNotNull (fDB_);
-    ::sqlite3_close (fDB_);
+    Verify (::sqlite3_close (fDB_) == SQLITE_OK);
 }
 
 void    DB::Exec (const String& cmd2Exec)
