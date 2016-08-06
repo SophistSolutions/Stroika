@@ -25,15 +25,14 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
-
-
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
+
 namespace {
-	// @todo MOVE TO LIB
-	    String  QuoteStringForDB_ (const String& s)
+    // @todo MOVE TO LIB
+    String  QuoteStringForDB_ (const String& s)
     {
         // @todo discuss with John/review sqlite docs
         if (s.Contains ('\'')) {
@@ -49,41 +48,41 @@ namespace {
         else {
             return s;
         }
-		}
+    }
 }
 
 namespace   {
     namespace RegressionTest1_x_ {
         namespace PRIVATE_ {
-			using   Statement   =   Database::SQLite::DB::Statement;
+            using   Statement   =   Database::SQLite::DB::Statement;
             enum class ScanKindType_ {
                 Background,
                 Reference,
                 Sample,
                 Stroika_Define_Enum_Bounds(Background, Sample)
             };
-			using	ScanIDType_					=	uint64_t;
-			using	SpectrumType_				=	Mapping<double,double>;
-			using	PersistenceScanAuxDataType_	=	Mapping<String,String>;
+            using   ScanIDType_                 =   uint64_t;
+            using   SpectrumType_               =   Mapping<double, double>;
+            using   PersistenceScanAuxDataType_ =   Mapping<String, String>;
             struct DB {
             public:
                 DB ()
                 {
-					bool    created = false;
-					String experimentDBFullPath = L"/C:/temp/foo.db";
-					try {
-						fDB_ = make_unique<Database::SQLite::DB> (experimentDBFullPath, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
-					}
-					catch (...) {
-						DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", experimentDBFullPath.c_str (), Characters::ToString (current_exception ()).c_str ());
-						Execution::ReThrow ();
-					}
-					if (created) {
-						DbgTrace (L"Initialized new experiment DB: %s", experimentDBFullPath.c_str ());
-					}
-					else {
-						DbgTrace (L"Opened experiment DB: %s", experimentDBFullPath.c_str ());
-					}
+                    bool    created = false;
+                    String experimentDBFullPath = L"/C:/temp/foo.db";
+                    try {
+                        fDB_ = make_unique<Database::SQLite::DB> (experimentDBFullPath, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
+                    }
+                    catch (...) {
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", experimentDBFullPath.c_str (), Characters::ToString (current_exception ()).c_str ());
+                        Execution::ReThrow ();
+                    }
+                    if (created) {
+                        DbgTrace (L"Initialized new experiment DB: %s", experimentDBFullPath.c_str ());
+                    }
+                    else {
+                        DbgTrace (L"Opened experiment DB: %s", experimentDBFullPath.c_str ());
+                    }
                 }
                 DB (const DB&) = delete;
                 nonvirtual  DB& operator= (const DB&) = delete;
@@ -203,7 +202,7 @@ namespace   {
         }
         void    DoIt ()
         {
-			using	namespace	PRIVATE_;
+            using   namespace   PRIVATE_;
             TraceContextBumper ctx (SDKSTR ("ScanDB::DB::RunTest"));
             PRIVATE_::DB db;
             db.fDB_->Exec (L"select * from ScanTypes;");
