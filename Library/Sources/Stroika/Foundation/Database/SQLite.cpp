@@ -59,7 +59,9 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
     {
         RowType row;
         for (size_t i = 0; i < nParams; ++i) {
-            row.Add (fColNames[i], VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i)))));
+            // redo as sqlite3_column_text16
+            const char* t = reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i));
+            row.Add (fColNames[i], t == nullptr ? VariantValue () : VariantValue (String::FromUTF8 (t)));
         }
         return row;
     }
