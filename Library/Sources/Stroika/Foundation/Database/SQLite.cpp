@@ -25,6 +25,14 @@ using   namespace   Execution;
 
 
 
+#if     qHasFeature_sqlite && defined (_MSC_VER)
+// Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#pragma comment (lib, "sqlite.lib")
+#endif
+
+
+
+
 
 #if     qHasFeature_sqlite
 /*
