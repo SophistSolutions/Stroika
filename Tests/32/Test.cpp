@@ -69,7 +69,12 @@ namespace   {
                 DB ()
                 {
                     bool    created = false;
+                    // horible hack
+#if qPlatform_Windows
                     String experimentDBFullPath = L"/C:/temp/foo.db";
+#else
+                    String experimentDBFullPath = L"/tmp/foo.db";
+#endif
                     try {
                         fDB_ = make_unique<Database::SQLite::DB> (experimentDBFullPath, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
                     }
@@ -96,13 +101,7 @@ namespace   {
                         sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::PrintFormat::eISO8601) +  L"',";
                         sb += Characters::Format (L"%d", scanKind) + L",";
                         if (rawSpectrum) {
-
-                            //
-                            // @todo next!!!
-                            // QuoteStringForDB_ (JSON::Writer ().WriteAsString (mapper.AsVariantValue (*rawSpectrum)))
-
-
-                            sb += L"'" + String (L"SomeLongASCIIStringSomeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +  L"',";
+                            sb += L"'" + QuoteStringForDB_ (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +  L"',";
                         }
                         else {
                             sb += L"NULL,";
@@ -222,7 +221,10 @@ namespace   {
                 DateTime    scanStartTime   =   DateTime::Now () - Duration (.1);
                 DateTime    scanEndTime     =   DateTime::Now ();
                 ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String {L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
-                DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", sid, db.GetLastScan (ScanKindType_::Reference).Value (-1));
+                Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
+#endif
             }
         }
     }
