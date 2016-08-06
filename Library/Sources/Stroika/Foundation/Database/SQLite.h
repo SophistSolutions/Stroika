@@ -22,6 +22,13 @@
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
+ *  TODO
+ *      @todo   Consider how we handle Threads. One possability is to wrap our object with
+ *              DebugAssertExtenrallySYnchonized and define the SQLITE_THREADSAFE=0 flag when we build
+ *              sqlite3.  Another possabiliyt is to let it handle the threadsafety, and in our wrapper
+ *              code provide thread safety if we find SQLITE_THREADSAFE is not defined.
+ *
+ *              Very unsure best way.
  */
 
 
@@ -94,7 +101,7 @@ namespace   Stroika {
                 private:
                     sqlite3_stmt*       fStatementObj_;
                     unsigned int        fParamsCount_;
-                    Sequence<String>    fColNames;
+                    Sequence<String>    fColNames_;
                 };
 #endif
 
