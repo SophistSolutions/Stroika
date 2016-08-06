@@ -74,6 +74,8 @@ namespace   Stroika {
 
 
                 /**
+                 *  \note - for now - this only supports a SINGLE STATEMENT at a time. BUt if you give more than one, the subsequent ones are ignored.
+                 *          Obviously that sucks, and needs work - @todo
                  */
                 class DB::Statement {
                 public:

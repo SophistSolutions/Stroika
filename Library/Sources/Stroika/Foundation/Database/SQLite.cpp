@@ -34,6 +34,10 @@ using   namespace   Execution;
  */
 DB::Statement::Statement (sqlite3* db, const String& query)
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
+    DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
+#endif
     int rc = ::sqlite3_prepare_v2 (db, query.AsUTF8 ().c_str (), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db)).c_str ())));
