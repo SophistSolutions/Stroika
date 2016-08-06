@@ -16,12 +16,14 @@
 #include    "../DataExchange/VariantValue.h"
 #include    "../Memory/Optional.h"
 
+
 /**
  *  \file
  *
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  */
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -89,11 +91,9 @@ namespace   Stroika {
                     /// returns 'missing' on EOF, exception on error
                     nonvirtual  Optional<RowType>   GetNextRow ();
 
-
                 private:
-                    sqlite3_stmt* stmt;
-
-                    size_t  nParams;
+                    sqlite3_stmt*       fStatementObj_;
+                    unsigned int        fParamsCount_;
                     Sequence<String>    fColNames;
                 };
 #endif

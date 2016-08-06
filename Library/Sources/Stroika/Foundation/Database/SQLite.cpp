@@ -46,16 +46,16 @@ DB::Statement::Statement (sqlite3* db, const String& query)
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
 #endif
-    int rc = ::sqlite3_prepare_v2 (db, query.AsUTF8 ().c_str (), -1, &stmt, NULL);
+    int rc = ::sqlite3_prepare_v2 (db, query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
     if (rc != SQLITE_OK) {
         Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db)).c_str ())));
     }
-    AssertNotNull (stmt);
-    nParams = ::sqlite3_column_count (stmt);
-    for (size_t i = 0; i < nParams; ++i) {
-        fColNames += String::FromUTF8 (::sqlite3_column_name (stmt, i));
+    AssertNotNull (fStatementObj_);
+    fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
+    for (unsigned int i = 0; i < fParamsCount_; ++i) {
+        fColNames_ += String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i));
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (stmt, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (stmt, i)).c_str ());
+        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
         // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
     }
@@ -68,33 +68,33 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
 #endif
     // @todo redo with https://www.sqlite.org/c3ref/value.html
     int rc;
-    AssertNotNull (stmt);
-    if (( rc = ::sqlite3_step (stmt)) == SQLITE_ROW)
+    AssertNotNull (fStatementObj_);
+    if (( rc = ::sqlite3_step (fStatementObj_)) == SQLITE_ROW)
     {
         RowType row;
-        for (size_t i = 0; i < nParams; ++i) {
+        for (unsigned int i = 0; i < fParamsCount_; ++i) {
             // redo as sqlite3_column_text16
             // @todo AND iether use value object or check INTERANL TYOPE  - https://www.sqlite.org/c3ref/column_blob.html and return the right one  - NULL, INTEGER, FLOAT, TEXT, BLOB
             VariantValue    v;
-            switch (::sqlite3_column_type (stmt, i)) {
+            switch (::sqlite3_column_type (fStatementObj_, i)) {
                 case SQLITE_INTEGER: {
-                        v = VariantValue (::sqlite3_column_int (stmt, i));
+                        v = VariantValue (::sqlite3_column_int (fStatementObj_, i));
                     }
                     break;
                 case SQLITE_FLOAT: {
-                        v = VariantValue (::sqlite3_column_double (stmt, i));
+                        v = VariantValue (::sqlite3_column_double (fStatementObj_, i));
                     }
                     break;
                 case SQLITE_BLOB: {
 #if 1
                         // this will work badly, so dont use!!!
                         AssertNotImplemented ();
-                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i))));
 #else
                         // @todo - support this once we support BLOB in VariantValue
-                        const void* sqlite3_column_blob(sqlite3_stmt*, int iCol);
+                        const void* sqlite3_column_blob(sqlite3_fStatementObj_*, int iCol);
                         int sqlite3_column_bytes(sqlite3_stmt*, int iCol);
-                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i))));
 #endif
                     }
                     break;
@@ -103,8 +103,8 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
                     }
                     break;
                 case SQLITE_TEXT: {
-                        AssertNotNull (::sqlite3_column_text (stmt, i));
-                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+                        AssertNotNull (::sqlite3_column_text (fStatementObj_, i));
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i))));
                     }
                     break;
                 default: {
@@ -112,7 +112,7 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
                     }
                     break;
             }
-            row.Add (fColNames[i], v);
+            row.Add (fColNames_[i], v);
         }
         return row;
     }
@@ -121,8 +121,8 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
 
 DB::Statement::~Statement ()
 {
-    AssertNotNull (stmt);
-    ::sqlite3_finalize (stmt);
+    AssertNotNull (fStatementObj_);
+    ::sqlite3_finalize (fStatementObj_);
 }
 
 
