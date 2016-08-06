@@ -72,19 +72,20 @@ $(ZIPEDFILE):
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
+SILENT_BUILD_FLAG=	-silent
+ifeq ($(ECHO_BUILD_LINES),1)
+SILENT_BUILD_FLAG=
+endif
+
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/sqlite $(VERSION):"
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building Stroika/ThirdPartyComponents/sqlite $(VERSION) ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@#$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
+	@echo done
 
-clobber:
-	@rm -rf sqlite-$(AMALGAMATION_WITH_VERSION) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
-	
-clean:
-	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT
 
 CURRENT:	$(ZIPEDFILE)
 	@unzip -q $(ZIPEDFILE)
@@ -107,24 +108,52 @@ $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CU
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:	$(OBJS)
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	@$(AR) cr $@ $(OBJS)
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
+	$(AR) cr $@ $(OBJS)
 	#$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:	$(OBJS)
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
-	@"$(LIB)" /OUT:$@ $(OBJS)
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
+	"$(LIB)" /OUT:$@ /nologo $(OBJS)
 endif
 
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
+
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#/Zi program databaes debug format
+CFLAGS	+= /Z7
+
+CFLAGS	+= /nologo
+endif
+
 $(SQLITE3OBJ):
-	@mkdir -p $(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/
+	mkdir -p $(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
+	$(CC) -c -o $@ CURRENT/sqlite3.c $(CFLAGS)
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c
+	INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
+endif
+
+
+clobber:
+ifeq ($(CONFIGURATION),)
+	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i;\
+	done
+else
+	@$(MAKE) --no-print-directory clean
+	@rm -rf sqlite-$(AMALGAMATION_WITH_VERSION) CURRENT $(PRODUCED_OUTPUT_ARTIFACTS)
+endif
+	
+clean:
+ifeq ($(CONFIGURATION),)
+	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
+	done
+else
+	@rm -rf $(AMALGAMATION_WITH_VERSION) CURRENT $(OBJS)
 endif
