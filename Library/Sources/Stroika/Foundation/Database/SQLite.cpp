@@ -60,8 +60,44 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
         RowType row;
         for (size_t i = 0; i < nParams; ++i) {
             // redo as sqlite3_column_text16
-            const char* t = reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i));
-            row.Add (fColNames[i], t == nullptr ? VariantValue () : VariantValue (String::FromUTF8 (t)));
+            // @todo AND iether use value object or check INTERANL TYOPE  - https://www.sqlite.org/c3ref/column_blob.html and return the right one  - NULL, INTEGER, FLOAT, TEXT, BLOB
+            VariantValue    v;
+            switch (::sqlite3_column_type (stmt, i)) {
+                case SQLITE_INTEGER: {
+                        v = VariantValue (::sqlite3_column_int (stmt, i));
+                    }
+                    break;
+                case SQLITE_FLOAT: {
+                        v = VariantValue (::sqlite3_column_double (stmt, i));
+                    }
+                    break;
+                case SQLITE_BLOB: {
+#if 1
+                        // this will work badly, so dont use!!!
+                        AssertNotImplemented ();
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+#else
+                        // @todo - support this once we support BLOB in VariantValue
+                        const void* sqlite3_column_blob(sqlite3_stmt*, int iCol);
+                        int sqlite3_column_bytes(sqlite3_stmt*, int iCol);
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+#endif
+                    }
+                    break;
+                case SQLITE_NULL: {
+                        v = VariantValue ();
+                    }
+                    break;
+                case SQLITE_TEXT: {
+                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (stmt, i))));
+                    }
+                    break;
+                default: {
+                        AssertNotReached ();
+                    }
+                    break;
+            }
+            row.Add (fColNames[i], v);
         }
         return row;
     }
