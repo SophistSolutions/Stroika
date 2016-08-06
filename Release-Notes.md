@@ -19,6 +19,22 @@ History
 
 
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a166">v2.0a166</a><br/>2016-08-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a165...v2.0a166</li>
+		<li>Several SQLite fixes</li>
+		<li>Largely untested release</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a165">v2.0a165</a><br/>2016-08-05</td>
 <td>
 	<ul>
