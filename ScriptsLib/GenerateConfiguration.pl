@@ -212,6 +212,17 @@ sub     GetClangVersion_
     return $ver;
 }
 
+sub     IsMSVCCompiler_
+{
+   #bad way but best I know for now
+	if ("$^O" eq "cygwin") {
+		return true;
+	}
+	return false
+}
+
+
+
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
@@ -350,6 +361,11 @@ sub	SetDefaultForCompilerDriver_
 				$runtimeStackProtectorFlag = true;
 			}
 		}
+
+		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+			$COPTIMIZE_FLAGS .= " /Od";
+		}
+
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 1;
 		}
@@ -378,6 +394,9 @@ sub	SetDefaultForCompilerDriver_
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
 				$ENABLE_GLIBCXX_DEBUG = 0;
 			}
+		}
+		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
+			$COPTIMIZE_FLAGS .= " /O2 /Oi /Oy ";
 		}
 		if ($ENABLE_TRACE2FILE == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_TRACE2FILE = 0;
@@ -866,8 +885,13 @@ ParseCommandLine_ ();
 sub PostProcessOptions_ ()
 {
 	if ($ENABLE_LTO == true) {
-		$EXTRA_COMPILER_ARGS .= " -flto";
-		$EXTRA_LINKER_ARGS .= " -flto";
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			$EXTRA_COMPILER_ARGS .= " -flto";
+			$EXTRA_LINKER_ARGS .= " -flto";
+		}
+		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
+			$COPTIMIZE_FLAGS .= " /GL";
+		}
 	}
 	if (not ($sanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fsanitize=" . $sanitizerFlags;

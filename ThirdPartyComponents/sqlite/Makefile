@@ -43,7 +43,14 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
+ENABLE_GLIBCXX_DEBUG=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
+AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
+RANLIB=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RANLIB)
 endif
+
+ENABLE_ASSERTIONS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
+OptimizerFlag=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) OptimizerFlag)
+
 
 BUILDS_ROOT=../../Builds/
 INTERMEDIATES_ROOT=../../IntermediateFiles/
@@ -110,7 +117,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:	$(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)
-	#$(RANLIB) $@
+	$(RANLIB) $@
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.lib:	$(OBJS)
@@ -121,13 +128,29 @@ endif
 
 CFLAGS	+= -DSQLITE_OMIT_LOAD_EXTENSION
 
+ifeq (1,$(ENABLE_ASSERTIONS))
+CFLAGS	+= -DSQLITE_ENABLE_API_ARMOR
+CFLAGS	+= -DSQLITE_DEBUG
+endif
 
+
+ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+	CFLAGS +=  -D_GLIBCXX_DEBUG 
+endif
+ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+	CFLAGS += -g
+endif
+endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#/Zi program databaes debug format
+#/Z7 program databaes debug format
 CFLAGS	+= /Z7
-
 CFLAGS	+= /nologo
 endif
+
+CFLAGS	+= $(OptimizerFlag)
+
+
 
 $(SQLITE3OBJ):
 	mkdir -p $(INTERMEDIATES_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite/
