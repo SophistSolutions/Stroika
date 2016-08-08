@@ -45,6 +45,12 @@ namespace   Stroika {
                 using   Memory::Optional;
 
 
+                /**
+                 *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")
+                 */
+                String  QuoteStringForDB (const String& s);
+
+
 #if     qHasFeature_sqlite
                 /**
                  */

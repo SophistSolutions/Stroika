@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Characters/StringBuilder.h"
 #include    "../Debug/Trace.h"
 
 #include    "SQLite.h"
@@ -31,6 +32,29 @@ using   namespace   Execution;
 #endif
 
 
+
+/*
+ ********************************************************************************
+ ************************* SQLite::QuoteStringForDB *****************************
+ ********************************************************************************
+ */
+String  SQLite::QuoteStringForDB (const String& s)
+{
+    // @todo discuss with John/review sqlite docs
+    if (s.Contains ('\'')) {
+        StringBuilder sb;
+        for (Character c : s) {
+            if (c == '\'') {
+                sb += '\'';
+            }
+            sb += c;
+        }
+        return sb.str ();
+    }
+    else {
+        return s;
+    }
+}
 
 
 
@@ -87,8 +111,8 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
                     }
                     break;
                 case SQLITE_BLOB: {
-                        const Byte* data		=	reinterpret_cast<const Byte*> (::sqlite3_column_blob (fStatementObj_, i));
-                        size_t		byteCount	=	static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
+                        const Byte* data        =   reinterpret_cast<const Byte*> (::sqlite3_column_blob (fStatementObj_, i));
+                        size_t      byteCount   =   static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
                         v = VariantValue (Memory::BLOB (data, data + byteCount));
                     }
                     break;
