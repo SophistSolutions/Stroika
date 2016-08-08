@@ -29,6 +29,10 @@
  *              code provide thread safety if we find SQLITE_THREADSAFE is not defined.
  *
  *              Very unsure best way.
+ *
+ *      @todo   Add REQUIRE statements on DB::Statement that only one statement is passed in.
+ *
+ *      @todo   Add DB::Statements object - like DB::Statement - but which allows for multiple statements, and just combines the results.
  */
 
 
