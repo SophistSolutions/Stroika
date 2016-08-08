@@ -42,6 +42,7 @@ using   namespace   Execution;
  */
 DB::Statement::Statement (sqlite3* db, const String& query)
 {
+    RequireNotNull (db);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
