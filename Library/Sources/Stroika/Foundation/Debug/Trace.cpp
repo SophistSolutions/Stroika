@@ -10,7 +10,6 @@
 #include    <map>
 #include    <mutex>
 
-#include    "../Characters/Format.h"
 #include    "../Characters/LineEndings.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/Module.h"

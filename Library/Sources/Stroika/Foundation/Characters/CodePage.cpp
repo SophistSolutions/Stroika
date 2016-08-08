@@ -8,7 +8,6 @@
 #include    <set>
 
 #include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
 #include    "../Execution/Common.h"
