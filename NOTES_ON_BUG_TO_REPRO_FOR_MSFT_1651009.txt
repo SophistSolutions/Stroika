@@ -1,7 +1,6 @@
 ﻿https://connect.microsoft.com/VisualStudio/feedback/details/1651009/64bit-compiles-break-cout-library
 
 # to reset state (using this branch I created that deletes most stuff from Stroika)
-# (this note is m
 	make clobber && rm -rf Configurations
 	make default-configurations apply-configurations project-files
 	#(stop at this point and send to MSFT)
