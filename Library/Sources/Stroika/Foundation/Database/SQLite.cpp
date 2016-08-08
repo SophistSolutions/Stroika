@@ -58,15 +58,47 @@ String  SQLite::QuoteStringForDB (const String& s)
 
 
 
+
 #if     qHasFeature_sqlite
 /*
  ********************************************************************************
  ************************* SQLite::DB::Statement ********************************
  ********************************************************************************
  */
-DB::Statement::Statement (sqlite3* db, const String& query)
+DB::Statement::Statement (DB* db,  const wchar_t* formatQuery, ...)
 {
     RequireNotNull (db);
+    RequireNotNull (db->Peek ());
+    va_list     argsList;
+    va_start (argsList, formatQuery);
+    String  query   =   Characters::FormatV (formatQuery, argsList);
+    va_end (argsList);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
+    DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
+#endif
+    int rc = ::sqlite3_prepare_v2 (db->Peek (), query.AsUTF8 ().c_str (), -1, &fStatementObj_, NULL);
+    if (rc != SQLITE_OK) {
+        Execution::Throw (StringException (Characters::Format (L"SQLite Error %s:", String::FromUTF8 (::sqlite3_errmsg (db->Peek ())).c_str ())));
+    }
+    AssertNotNull (fStatementObj_);
+    fParamsCount_ = ::sqlite3_column_count (fStatementObj_);
+    for (unsigned int i = 0; i < fParamsCount_; ++i) {
+        fColNames_ += String::FromUTF8 (::sqlite3_column_name (fStatementObj_, i));
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
+#endif
+        // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
+    }
+}
+
+DB::Statement::Statement (sqlite3* db,  const wchar_t* formatQuery, ...)
+{
+    RequireNotNull (db);
+    va_list     argsList;
+    va_start (argsList, formatQuery);
+    String  query   =   Characters::FormatV (formatQuery, argsList);
+    va_end (argsList);
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::Statement::Statement"));
     DbgTrace (L"(db=%p,query='%s')", db, query.c_str ());
@@ -181,8 +213,12 @@ DB:: ~DB ()
     Verify (::sqlite3_close (fDB_) == SQLITE_OK);
 }
 
-void    DB::Exec (const String& cmd2Exec)
+void    DB::Exec (const wchar_t* formatCmd2Exec, ...)
 {
+    va_list     argsList;
+    va_start (argsList, formatCmd2Exec);
+    String  cmd2Exec    =   Characters::FormatV (formatCmd2Exec, argsList);
+    va_end (argsList);
     char* db_err {};
     int e = ::sqlite3_exec (fDB_, cmd2Exec.AsUTF8 ().c_str (), NULL, 0, &db_err);
     if (e != SQLITE_OK) {

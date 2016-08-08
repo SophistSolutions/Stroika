@@ -76,7 +76,7 @@ namespace   Stroika {
                      *
                      *  \todo - EXTEND this to write the RESPONSE (use the callback) to DbgTrace () calls - perhaps optionally?)
                      */
-                    nonvirtual  void    Exec (const String& cmd2Exec);
+                    nonvirtual  void    Exec (const wchar_t* formatCmd2Exec, ...);
 
                 public:
                     /**
@@ -94,8 +94,8 @@ namespace   Stroika {
                  */
                 class DB::Statement {
                 public:
-                    Statement (DB* db, const String& query);
-                    Statement (sqlite3* db, const String& query);
+                    Statement (DB* db, const wchar_t* formatQuery, ...);
+                    Statement (sqlite3* db,  const wchar_t* formatQuery, ...);
                     ~Statement ();
 
                 public:
