@@ -577,6 +577,8 @@ namespace   {
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (true));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (Memory::BLOB::Hex ("aa1234abcd01010102030405")));
             }
         }
 
