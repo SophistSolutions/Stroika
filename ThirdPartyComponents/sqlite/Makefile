@@ -85,13 +85,12 @@ SILENT_BUILD_FLAG=
 endif
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building Stroika/ThirdPartyComponents/sqlite $(VERSION) ... "
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/sqlite $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
-	@#$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
-	@echo done
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
 
 CURRENT:	$(ZIPEDFILE)
@@ -146,6 +145,12 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 #/Z7 program databaes debug format
 CFLAGS	+= /Z7
 CFLAGS	+= /nologo
+ifeq (1,$(ENABLE_ASSERTIONS))
+CFLAGS	+= /MTd
+endif
+ifeq (0,$(ENABLE_ASSERTIONS))
+CFLAGS	+= /MT
+endif
 endif
 
 CFLAGS	+= $(OptimizerFlag)
@@ -160,6 +165,17 @@ endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	INCLUDE="$(INCLUDE)" "$(CC)" $(CFLAGS) /c /Fo$@ CURRENT/sqlite3.c > STUPID_FILENAME_OUTPUT_SUPRESS && rm -f STUPID_FILENAME_OUTPUT_SUPRESS || cat STUPID_FILENAME_OUTPUT_SUPRESS
 endif
+
+
+check:
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			$(ECHO) "   FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -    [Succeeded]";
 
 
 clobber:
