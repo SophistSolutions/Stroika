@@ -87,16 +87,9 @@ auto   DB::Statement::GetNextRow () -> Optional<RowType> {
                     }
                     break;
                 case SQLITE_BLOB: {
-#if 1
-                        // this will work badly, so dont use!!!
-                        AssertNotImplemented ();
-                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i))));
-#else
-                        // @todo - support this once we support BLOB in VariantValue
-                        const void* sqlite3_column_blob(sqlite3_fStatementObj_*, int iCol);
-                        int sqlite3_column_bytes(sqlite3_stmt*, int iCol);
-                        v = VariantValue (String::FromUTF8 (reinterpret_cast<const char*> (::sqlite3_column_text (fStatementObj_, i))));
-#endif
+                        const Byte* data		=	reinterpret_cast<const Byte*> (::sqlite3_column_blob (fStatementObj_, i));
+                        size_t		byteCount	=	static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
+                        v = VariantValue (Memory::BLOB (data, data + byteCount));
                     }
                     break;
                 case SQLITE_NULL: {
