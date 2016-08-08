@@ -23,6 +23,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a167">v2.0a167x</a><br/>2016-08-08?</td>
 <td>
 	<ul>
+		<li>Support Memory::BLOB in VariantValue</li>
 		<li>
 			SQLite work
 			<ul>
@@ -33,7 +34,6 @@ History
 				<li>support (untested) In memoruy DB, and CTOR for URL or Filename</li>
 			</ul>
 		</li>
-		<li>Support Memory::BLOB in VariantValue</li>
 		<li>Documentation/CommonDefaultConfigurations.txt</li>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a166...v2.0a167</li>
 	</ul>
