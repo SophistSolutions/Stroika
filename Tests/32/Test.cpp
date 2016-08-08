@@ -29,28 +29,6 @@ using   namespace   Stroika::Foundation::Time;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
-
-namespace {
-    // @todo MOVE TO LIB
-    String  QuoteStringForDB_ (const String& s)
-    {
-        // @todo discuss with John/review sqlite docs
-        if (s.Contains ('\'')) {
-            StringBuilder sb;
-            for (Character c : s) {
-                if (c == '\'') {
-                    sb += '\'';
-                }
-                sb += c;
-            }
-            return sb.str ();
-        }
-        else {
-            return s;
-        }
-    }
-}
-
 namespace   {
     namespace RegressionTest1_x_ {
         namespace PRIVATE_ {
@@ -70,7 +48,7 @@ namespace   {
                 {
                     bool    created = false;
                     // horible hack
-#if qPlatform_Windows
+#if		qPlatform_Windows
                     String experimentDBFullPath = L"/C:/temp/foo.db";
 #else
                     String experimentDBFullPath = L"/tmp/foo.db";
@@ -101,13 +79,13 @@ namespace   {
                         sb += L"'" + ScanEnd.AsUTC ().Format (DateTime::PrintFormat::eISO8601) +  L"',";
                         sb += Characters::Format (L"%d", scanKind) + L",";
                         if (rawSpectrum) {
-                            sb += L"'" + QuoteStringForDB_ (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +  L"',";
+                            sb += L"'" + Database::SQLite::QuoteStringForDB (L"SomeLongASCIIStringS\r\r\n\t'omeLongASCIIStringSomeLongASCIIStringSomeLongASCIIString") +  L"',";
                         }
                         else {
                             sb += L"NULL,";
                         }
                         if (ScanLabel) {
-                            sb += L"'" + QuoteStringForDB_ (*ScanLabel) +  L"'";
+                            sb += L"'" + Database::SQLite::QuoteStringForDB (*ScanLabel) +  L"'";
                         }
                         else {
                             sb += L"NULL";
@@ -187,7 +165,7 @@ namespace   {
                     };
                     auto tableSetup_ExtraForeignKeys = [&db] () {
                         db.Exec (L"Alter table Scans add column DependsOnScanSetIdRef bigint references  ScanSet(ScanSetID);");
-                        db.Exec (L"Alter table Scans add column RawScanData varchar;");
+                        db.Exec (L"Alter table Scans add column RawScanData BLOB;");
                     };
                     tableSetup_ScanTypes ();
                     tableSetup_Scans ();
@@ -215,14 +193,14 @@ namespace   {
             SpectrumType_    spectrum;
 
             PersistenceScanAuxDataType_ AuxData;
-            Optional<ScanIDType_> Background;
-            Optional<ScanIDType_> Reference;
+            Optional<ScanIDType_>		Background;
+            Optional<ScanIDType_>		Reference;
             for (int i = 0; i < 100; ++i) {
                 DateTime    scanStartTime   =   DateTime::Now () - Duration (.1);
                 DateTime    scanEndTime     =   DateTime::Now ();
                 ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String {L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
                 Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if		USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
 #endif
             }
