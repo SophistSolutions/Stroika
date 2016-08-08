@@ -15,7 +15,6 @@
 #include    <vector>
 
 #include    "../Debug/Assertions.h"
-#include    "../Debug/Valgrind.h"
 #include    "../Execution/Common.h"
 #include    "../Execution/SpinLock.h"
 

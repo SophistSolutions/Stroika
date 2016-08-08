@@ -448,8 +448,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept
          *  instance, and hoping all that works correctly (that the memory access all work correctly).
          */
         incRefCnt->fTLSInterruptFlag_ = &s_Interrupting_;
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (*incRefCnt->fTLSInterruptFlag_);
-        Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (incRefCnt->fStatus_);
 
         try {
             // We cannot possibly get interrupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID

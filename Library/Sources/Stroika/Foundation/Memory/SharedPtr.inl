@@ -45,13 +45,11 @@ namespace   Stroika {
                 : fCount {0}
                 , fDeleteCounter_ { true }
             {
-                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fCount);
             }
             inline  Private_::ReferenceCounterContainerType_::ReferenceCounterContainerType_ (bool deleteCounter)
                 : fCount {0}
                 , fDeleteCounter_ { deleteCounter }
             {
-                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fCount);
             }
 
 

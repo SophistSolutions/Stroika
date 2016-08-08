@@ -772,14 +772,14 @@ bool    String::EndsWith (const String& subString, CompareOptions co) const
 #if     !qCompilerAndStdLib_regex_Buggy
 bool    String::Match (const RegularExpression& regEx) const
 {
-	return false;
+    return false;
 }
 #endif
 
 #if     !qCompilerAndStdLib_regex_Buggy
 String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
-	return String{};
+    return String{};
 }
 #endif
 

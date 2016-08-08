@@ -25,12 +25,6 @@
     <Filter Include="Sources\Time">
       <UniqueIdentifier>{53245152-d369-4911-b1fc-0ca5997b5f2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Memory\Platform">
-      <UniqueIdentifier>{f6f48fae-3185-4b6c-8228-ba71ac92da20}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Memory\Platform\Windows">
-      <UniqueIdentifier>{d5f4d135-7c9a-40ae-bd35-869feb225078}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Execution\Platform">
       <UniqueIdentifier>{66acc35b-3e8a-4887-880b-054f21c4c9ea}</UniqueIdentifier>
     </Filter>
@@ -45,9 +39,6 @@
     </Filter>
     <Filter Include="Sources\Characters\Platform\Windows">
       <UniqueIdentifier>{ec714b71-f421-47f5-a8b3-801de432f3ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\Execution\Platform\POSIX">
-      <UniqueIdentifier>{e3cb51f2-90a4-4e1e-b12c-4626c86fe91e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Sources\Containers\Concrete">
       <UniqueIdentifier>{3bb34cbe-2bf5-4022-b9a1-35ab90dd9979}</UniqueIdentifier>
@@ -189,9 +180,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
-      <Filter>Sources\Memory\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
@@ -243,9 +231,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h">
-      <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.h">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </ClInclude>
@@ -290,9 +275,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Users.h">
-      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h">
       <Filter>Sources\Configuration\Private</Filter>
@@ -341,9 +323,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h">
       <Filter>Sources\Execution\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h">
-      <Filter>Sources\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
       <Filter>Sources\Configuration</Filter>
@@ -510,9 +489,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
-      <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\PatchableContainerHelper.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </ClInclude>
@@ -645,9 +621,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h">
-      <Filter>Sources\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Bijection.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
@@ -717,9 +690,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h">
-      <Filter>Sources\Debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -749,9 +719,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
-      <Filter>Sources\Memory\Platform\Windows</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -777,9 +744,6 @@
       <Filter>Sources\Configuration</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.inl">
-      <Filter>Sources\Execution\Platform\Windows</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl">
       <Filter>Sources\Execution\Platform\Windows</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\Exception.inl">
@@ -852,9 +816,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md">
-      <Filter>Sources\Memory</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md">
       <Filter>Sources\Time</Filter>
     </None>
@@ -893,9 +854,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl">
       <Filter>Sources\Execution\Resources\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.inl">
-      <Filter>Sources\Memory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl">
       <Filter>Sources\Configuration</Filter>
@@ -1062,9 +1020,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
-      <Filter>Sources\Execution\Platform\POSIX</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md">
       <Filter>Sources\Debug</Filter>
     </None>
@@ -1191,9 +1146,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\CompileTimeFlagChecker.inl">
       <Filter>Sources\Debug</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl">
-      <Filter>Sources\Debug</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.inl">
       <Filter>Sources\Common</Filter>
     </None>
@@ -1238,9 +1190,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Stack_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl">
-      <Filter>Sources\Debug</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl">
       <Filter>Sources\Execution</Filter>
