@@ -48,7 +48,7 @@ namespace   {
                 {
                     bool    created = false;
                     // horible hack
-#if		qPlatform_Windows
+#if     qPlatform_Windows
                     String experimentDBFullPath = L"/C:/temp/foo.db";
 #else
                     String experimentDBFullPath = L"/tmp/foo.db";
@@ -193,14 +193,14 @@ namespace   {
             SpectrumType_    spectrum;
 
             PersistenceScanAuxDataType_ AuxData;
-            Optional<ScanIDType_>		Background;
-            Optional<ScanIDType_>		Reference;
+            Optional<ScanIDType_>       Background;
+            Optional<ScanIDType_>       Reference;
             for (int i = 0; i < 100; ++i) {
                 DateTime    scanStartTime   =   DateTime::Now () - Duration (.1);
                 DateTime    scanEndTime     =   DateTime::Now ();
                 ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String {L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
                 Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
-#if		USE_NOISY_TRACE_IN_THIS_MODULE_
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
 #endif
             }

@@ -14,6 +14,7 @@
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
 #include    "../DataExchange/VariantValue.h"
+#include    "../IO/Network/URL.h"
 #include    "../Memory/Optional.h"
 
 
@@ -47,6 +48,7 @@ namespace   Stroika {
                 using   Containers::Sequence;
                 using   DataExchange::VariantValue;
                 using   Memory::Optional;
+                using   IO::Network::URL;
 
 
                 /**
@@ -60,9 +62,15 @@ namespace   Stroika {
                  */
                 class   DB {
                 public:
+                    enum InMemoryDBFlag {
+                        eInMemoryDB,
+                    };
+                public:
                     /**
                      */
-                    DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitializer = [] (DB&) {});
+                    DB (const URL& dbURL, const function<void(DB&)>& dbInitializer = [] (DB&) {});
+                    DB (const String& dbPath, const function<void(DB&)>& dbInitializer = [] (DB&) {});
+                    DB (InMemoryDBFlag memoryDBFlag, const function<void(DB&)>& dbInitializer = [] (DB&) {});
                     DB (const DB&) = delete;
 
                 public:

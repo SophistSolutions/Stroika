@@ -184,13 +184,13 @@ DB::Statement::~Statement ()
  ********************************** SQLite::DB **********************************
  ********************************************************************************
  */
-DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitializer)
+DB::DB (const URL& dbURL, const function<void(DB&)>& dbInitializer)
 {
     TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
     // @todo - code cleanup!!!
     int e;
-    if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
-        if ((e = ::sqlite3_open_v2 ((L"file://" + experimentDBFullPath).AsUTF8 ().c_str (), &fDB_,  SQLITE_OPEN_URI |  SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
+    if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
+        if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
             try {
                 dbInitializer (*this);
             }
@@ -198,6 +198,50 @@ DB::DB (const String& experimentDBFullPath, const function<void(DB&)>& dbInitial
                 Verify (::sqlite3_close (fDB_) == SQLITE_OK);
                 Execution::ReThrow ();
             }
+        }
+    }
+    else if (e != SQLITE_OK) {
+        Assert (fDB_ == nullptr);
+        // @todo add error string
+        Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
+    }
+}
+
+DB::DB (const String& dbPath, const function<void(DB&)>& dbInitializer)
+{
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
+    // @todo - code cleanup!!!
+    int e;
+    if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
+        if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
+            try {
+                dbInitializer (*this);
+            }
+            catch (...) {
+                Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+                Execution::ReThrow ();
+            }
+        }
+    }
+    else if (e != SQLITE_OK) {
+        Assert (fDB_ == nullptr);
+        // @todo add error string
+        Execution::Throw (StringException (Characters::Format (L"SQLite Error %d:", e)));
+    }
+}
+
+DB::DB (InMemoryDBFlag, const function<void(DB&)>& dbInitializer)
+{
+    TraceContextBumper ctx (SDKSTR ("SQLite::DB::DB"));
+    // @todo - code cleanup!!!
+    int e;
+    if ((e = ::sqlite3_open_v2 ("memory:", &fDB_,  SQLITE_OPEN_MEMORY |  SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
+        try {
+            dbInitializer (*this);
+        }
+        catch (...) {
+            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+            Execution::ReThrow ();
         }
     }
     else if (e != SQLITE_OK) {
@@ -215,6 +259,7 @@ DB:: ~DB ()
 
 void    DB::Exec (const wchar_t* formatCmd2Exec, ...)
 {
+    RequireNotNull (formatCmd2Exec);
     va_list     argsList;
     va_start (argsList, formatCmd2Exec);
     String  cmd2Exec    =   Characters::FormatV (formatCmd2Exec, argsList);
