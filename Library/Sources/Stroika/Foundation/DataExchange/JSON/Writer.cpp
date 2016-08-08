@@ -187,6 +187,9 @@ namespace   {
             case    VariantValue::Type::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
+            case    VariantValue::Type::eBLOB:
+                PrettyPrint_ (v.As<String> (), out);
+                break;
             case    VariantValue::Type::eDate:
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
