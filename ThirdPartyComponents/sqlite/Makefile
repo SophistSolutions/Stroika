@@ -175,7 +175,7 @@ check:
 			exit 1;\
 		fi;\
 	done
-	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -    [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/sqlite -  [Succeeded]";
 
 
 clobber:
