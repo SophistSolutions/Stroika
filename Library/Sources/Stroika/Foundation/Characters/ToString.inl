@@ -8,7 +8,6 @@
 #include    <exception>
 #include    "../Configuration/Concepts.h"
 #include    "../Configuration/Enumeration.h"
-#include    "FloatConversion.h"
 #include    "StringBuilder.h"
 #include    "String_Constant.h"
 

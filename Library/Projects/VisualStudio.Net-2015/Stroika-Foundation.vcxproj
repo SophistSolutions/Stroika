@@ -157,9 +157,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
@@ -392,8 +389,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md" />

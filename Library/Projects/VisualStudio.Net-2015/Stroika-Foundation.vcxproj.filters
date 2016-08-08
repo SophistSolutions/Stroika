@@ -282,9 +282,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
@@ -555,9 +552,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Function.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -644,9 +638,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\TypeHints.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
-      <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
       <Filter>Sources\Containers</Filter>
@@ -817,9 +808,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl">
       <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
-      <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl">
       <Filter>Sources\Execution</Filter>
@@ -1195,9 +1183,6 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ToString.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl">
