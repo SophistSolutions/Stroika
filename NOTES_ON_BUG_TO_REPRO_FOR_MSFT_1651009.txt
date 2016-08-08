@@ -2,15 +2,15 @@
 
 # to reset state (using this branch I created that deletes most stuff from Stroika)
 # (this note is m
-	make clobber
-	rm -rf Configurations
+	make clobber && rm -rf Configurations
 	make default-configurations apply-configurations project-files
 	#(stop at this point and send to MSFT)
 	make run-tests
 
 
 MSFT:
-	You should be able to open the Solution {root}Tests\Projects\VisualStudio.Net-2015\Stroika-Tests.sln
+	You should be able to open the Solution 
+		{root}Tests\Projects\VisualStudio.Net-2015\Stroika-Tests.sln
 	
 	Select the Configuraiton 
 		Debug-U-64 | x64

@@ -79,7 +79,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <ProgramDataBaseFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
@@ -165,11 +164,8 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp" />
@@ -270,7 +266,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
@@ -311,7 +306,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Float2String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h" />
@@ -435,7 +429,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.h" />
@@ -548,7 +541,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_ApplicationLifetime.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_ExternalMemoryOwnership_StackLifetime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl" />
@@ -653,7 +645,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
