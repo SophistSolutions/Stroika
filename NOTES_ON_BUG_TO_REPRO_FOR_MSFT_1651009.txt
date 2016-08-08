@@ -6,6 +6,8 @@
 	#(stop at this point and send to MSFT)
 	make run-tests
 
+To see how many library CPP files still included:
+	sh -c "/bin/find Library -name \*.cpp -print | wc -l"
 
 MSFT:
 	You should be able to open the Solution 
