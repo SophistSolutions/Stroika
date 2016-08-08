@@ -265,38 +265,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)Memory-Common.o</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
@@ -505,7 +479,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.h" />

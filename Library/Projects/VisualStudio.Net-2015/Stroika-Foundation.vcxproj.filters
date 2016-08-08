@@ -102,9 +102,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -119,9 +116,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp">
       <Filter>Sources\Execution\Platform\Windows</Filter>
@@ -156,9 +150,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CString\Utilities.cpp">
       <Filter>Sources\Characters\CString</Filter>
     </ClCompile>
@@ -182,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp">
       <Filter>Sources\Execution\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp">
-      <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
@@ -216,13 +204,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp">
@@ -245,9 +227,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\AssertExternallySynchronizedLock.cpp">
       <Filter>Sources\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
-      <Filter>Sources\Traversal</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp">
       <Filter>Sources\Execution</Filter>
@@ -403,9 +382,6 @@
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h">
