@@ -17,6 +17,32 @@ History
 
 
 
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a167">v2.0a167x</a><br/>2016-08-08?</td>
+<td>
+	<ul>
+		<li>
+			SQLite work
+			<ul>
+				<li>New SQLite regression test</li>
+				<li>Fixed bugs with sqlite thirdparty makefiles</li>
+				<li>Support BLOB</li>
+				<li>SQLite APIs for running queries now take format strings - not queries per-se</li>
+				<li>support (untested) In memoruy DB, and CTOR for URL or Filename</li>
+			</ul>
+		</li>
+		<li>Support Memory::BLOB in VariantValue</li>
+		<li>Documentation/CommonDefaultConfigurations.txt</li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a166...v2.0a167</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a166">v2.0a166</a><br/>2016-08-05</td>
