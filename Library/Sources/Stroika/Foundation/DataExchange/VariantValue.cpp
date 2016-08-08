@@ -9,6 +9,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/String2Int.h"
+#include    "../Cryptography/Encoding/Algorithm/Base64.h"
 #include    "../DataExchange/BadFormatException.h"
 #include    "../Math/Common.h"
 
@@ -34,6 +35,10 @@ namespace {
     template    <>
     struct TN_<bool> {
         static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eBoolean };
+    };
+    template    <>
+    struct TN_<Memory::BLOB> {
+        static  constexpr VariantValue::Type    kTYPEENUM   { VariantValue::Type::eBLOB };
     };
     template    <>
     struct TN_<IntegerType_> {
@@ -101,6 +106,11 @@ struct  VariantValue::TIRep_ : VariantValue::IRep_ {
  */
 VariantValue::VariantValue (bool val)
     : fVal_ { MakeSharedPtr_<TIRep_<bool>> (val) }
+{
+}
+
+VariantValue::VariantValue (const Memory::BLOB& val)
+    : fVal_ { MakeSharedPtr_<TIRep_<Memory::BLOB>> (val) }
 {
 }
 
@@ -235,6 +245,10 @@ bool    VariantValue::empty () const
         case    Type::eUnsignedInteger: {
                 return false;       // cannot be empty
             }
+        case    Type::eBLOB: {
+                auto    v   =   dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+                return v->fVal.empty ();
+            }
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
@@ -300,6 +314,27 @@ bool    VariantValue::As () const
             }
         default: {
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to bool")));
+            }
+    }
+}
+
+template    <>
+Memory::BLOB    VariantValue::As () const
+{
+    if (fVal_ == nullptr) {
+        return Memory::BLOB {};
+    }
+    switch (fVal_->GetType ()) {
+        case    Type::eBLOB: {
+                auto    v   =   dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+                AssertNotNull (v);
+                return v->fVal;
+            }
+        case    Type::eString: {
+                return Cryptography::Encoding::Algorithm::DecodeBase64 (As<String> ());
+            }
+        default: {
+                Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to Memory::BLOB")));
             }
     }
 }
@@ -473,6 +508,11 @@ String  VariantValue::AsString_ () const
                 auto    v   =   dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? String_Constant (L"true") : String_Constant (L"false");
+            }
+        case    Type::eBLOB: {
+                auto    v   =   dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
+                AssertNotNull (v);
+                return String::FromAscii (Cryptography::Encoding::Algorithm::EncodeBase64 (v->fVal));
             }
         case    Type::eInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());

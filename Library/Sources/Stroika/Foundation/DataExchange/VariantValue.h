@@ -14,6 +14,7 @@
 #include    "../Configuration/Enumeration.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
+#include    "../Memory/BLOB.h"
 #include    "../Memory/SharedPtr.h"
 #include    "../Time/DateTime.h"
 
@@ -134,6 +135,7 @@ namespace   Stroika {
                  */
                 enum class  Type : uint8_t {
                     eNull,
+                    eBLOB,
                     eBoolean,
                     eInteger,
                     eUnsignedInteger,
@@ -153,6 +155,7 @@ namespace   Stroika {
                 VariantValue () = default;
                 VariantValue (nullptr_t);
                 VariantValue (bool val);
+                VariantValue (const Memory::BLOB& val);
                 VariantValue (signed char val);
                 VariantValue (short int val);
                 VariantValue (int val);
@@ -218,6 +221,7 @@ namespace   Stroika {
                  *
                  *      Supported (RETURNTYPE) types include:
                  *          o   bool
+                 *          o   Memory::BLOB
                  *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
                  *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsigned long long int (any of the 5 unsigned int types)
                  *          o   float, double, long double
@@ -240,6 +244,11 @@ namespace   Stroika {
                  *          Coerences String value 'true' - case sensative - to true, and any integer or unsigned intger value
                  *          to true if non-zero.
                  *
+                 *  \note   About As<Memory::BLOB> ()
+                 *          Converts String to BLOB using base64 conversion. If thats not what you want, convert yourself.
+                 *          null-type converted to empty BLOB
+                 *          other types an assertion error.
+                 *
                  *  \note   About As<DateTime> ()
                  *          Coerences String value to dates assuming ISO8601 string format.
                  *
@@ -252,6 +261,7 @@ namespace   Stroika {
                 nonvirtual RETURNTYPE As () const;
 
             private:
+                nonvirtual  Memory::BLOB            AsBLOB_ () const;
                 nonvirtual  IntegerType_            AsInteger_ () const;
                 nonvirtual  UnsignedIntegerType_    AsUnsignedInteger_ () const;
                 nonvirtual  FloatType_              AsFloatType_ () const;
@@ -310,6 +320,8 @@ namespace   Stroika {
 
             template    <>
             bool VariantValue::As () const;
+            template    <>
+            Memory::BLOB VariantValue::As () const;
             template    <>
             signed char VariantValue::As () const;
             template    <>
