@@ -9,6 +9,8 @@
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Database/SQLite.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
+#include    "Stroika/Foundation/IO/FileSystem/FileSystem.h"
 #include    "Stroika/Foundation/Time/Duration.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -44,27 +46,38 @@ namespace   {
             using   PersistenceScanAuxDataType_ =   Mapping<String, String>;
             struct DB {
             public:
-                DB ()
+                DB (const String& testDBFile)
                 {
                     bool    created = false;
-                    // horible hack
-#if     qPlatform_Windows
-                    String experimentDBFullPath = L"/C:/temp/foo.db";
-#else
-                    String experimentDBFullPath = L"/tmp/foo.db";
-#endif
                     try {
-                        fDB_ = make_unique<Database::SQLite::DB> (experimentDBFullPath, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
+                        fDB_ = make_unique<Database::SQLite::DB> (testDBFile, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
                     }
                     catch (...) {
-                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", experimentDBFullPath.c_str (), Characters::ToString (current_exception ()).c_str ());
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", testDBFile.c_str (), Characters::ToString (current_exception ()).c_str ());
                         Execution::ReThrow ();
                     }
                     if (created) {
-                        DbgTrace (L"Initialized new experiment DB: %s", experimentDBFullPath.c_str ());
+                        DbgTrace (L"Initialized new experiment DB: %s", testDBFile.c_str ());
                     }
                     else {
-                        DbgTrace (L"Opened experiment DB: %s", experimentDBFullPath.c_str ());
+                        DbgTrace (L"Opened experiment DB: %s", testDBFile.c_str ());
+                    }
+                }
+                DB (Database::SQLite::DB::InMemoryDBFlag)
+                {
+                    bool    created = false;
+                    try {
+                        fDB_ = make_unique<Database::SQLite::DB> (Database::SQLite::DB::eInMemoryDB, [&created] (Database::SQLite::DB & db) { created = true; InitialSetup_ (db); });
+                    }
+                    catch (...) {
+                        DbgTrace (L"Error %s experiment DB: %s: %s", created ? L"creating" : L"opening", L"MEMORY", Characters::ToString (current_exception ()).c_str ());
+                        Execution::ReThrow ();
+                    }
+                    if (created) {
+                        DbgTrace (L"Initialized new experiment DB: %s", L"MEMORY");
+                    }
+                    else {
+                        DbgTrace (L"Opened experiment DB: %s", L"MEMORY");
                     }
                 }
                 DB (const DB&) = delete;
@@ -181,28 +194,43 @@ namespace   {
         {
             using   namespace   PRIVATE_;
             TraceContextBumper ctx (SDKSTR ("ScanDB::DB::RunTest"));
-            PRIVATE_::DB db;
-            db.fDB_->Exec (L"select * from ScanTypes;");
+            auto test = [] (PRIVATE_::DB & db, unsigned nTimesRanBefore) {
+                db.fDB_->Exec (L"select * from ScanTypes;");
+                {
+                    Statement s { db.fDB_.get (), L"select * from ScanTypes;" };
+                    while (Optional<Statement::RowType> r = s.GetNextRow ()) {
+                        DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                    }
+                }
+                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).Value (-1));
+                SpectrumType_               spectrum;
+                PersistenceScanAuxDataType_ AuxData;
+                Optional<ScanIDType_>       Background;
+                Optional<ScanIDType_>       Reference;
+                const   unsigned int        kNRecordsAddedPerTestCall = 100;
+                for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
+                    DateTime    scanStartTime   =   DateTime::Now () - Duration (.1);
+                    DateTime    scanEndTime     =   DateTime::Now ();
+                    ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String {L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
+                    Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
+                    Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
+#endif
+                }
+            };
             {
-                Statement s { db.fDB_.get (), L"select * from ScanTypes;" };
-                while (Optional<Statement::RowType> r = s.GetNextRow ()) {
-                    DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
+                // re-open the file several times and assure right number of records present
+                String  dbFileName =    IO::FileSystem::WellKnownLocations::GetTemporary () + L"foo.db";
+                IO::FileSystem::FileSystem::Default ().RemoveFileIf (dbFileName);
+                for (unsigned int i = 0; i < 5; ++i) {
+                    PRIVATE_::DB db { dbFileName };
+                    test (db, i);
                 }
             }
-            DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).Value (-1));
-            SpectrumType_    spectrum;
-
-            PersistenceScanAuxDataType_ AuxData;
-            Optional<ScanIDType_>       Background;
-            Optional<ScanIDType_>       Reference;
-            for (int i = 0; i < 100; ++i) {
-                DateTime    scanStartTime   =   DateTime::Now () - Duration (.1);
-                DateTime    scanEndTime     =   DateTime::Now ();
-                ScanIDType_ sid = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String {L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
-                Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("ScanPersistenceAdd returned id=%d, and laserScan reported=%d", (int)sid, (int)db.GetLastScan (ScanKindType_::Reference).Value (-1));
-#endif
+            {
+                PRIVATE_::DB db {  SQLite::DB::eInMemoryDB };
+                test (db, 0);
             }
         }
     }
