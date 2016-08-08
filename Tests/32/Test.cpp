@@ -115,7 +115,7 @@ namespace   {
                         sb += L";";
                         return sb.str ();
                     } ();
-                    fDB_->Exec (insertSQL);
+                    fDB_->Exec (L"%s", insertSQL.c_str ());
                     Statement s { fDB_.get (),  L"SELECT MAX(ScanId) FROM Scans;" };
 
                     if (Optional<Statement::RowType> r = s.GetNextRow ()) {
@@ -129,7 +129,7 @@ namespace   {
                 }
                 nonvirtual  Optional<ScanIDType_> GetLastScan (ScanKindType_ scanKind)
                 {
-                    Statement s { fDB_.get (),  Characters::Format (L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind)};
+                    Statement s { fDB_.get (),  L"select MAX(ScanId) from Scans where  ScanTypeIDRef='%d';", scanKind};
                     if (Optional<Statement::RowType> r = s.GetNextRow ()) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
@@ -148,9 +148,9 @@ namespace   {
                                  L"TypeName varchar(255) not null"
                                  L");"
                                 );
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference));
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample));
-                        db.Exec (Characters::Format (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background));
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Reference';", ScanKindType_::Reference);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Sample';", ScanKindType_::Sample);
+                        db.Exec (L"insert into ScanTypes (ScanTypeId, TypeName) select %d, 'Background';", ScanKindType_::Background);
                     };
                     auto tableSetup_Scans = [&db] () {
                         db.Exec (
