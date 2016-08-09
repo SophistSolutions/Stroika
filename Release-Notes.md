@@ -17,6 +17,24 @@ History
 
 
 
+
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a168">v2.0a168</a><br/>2016-08-09</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a167...v2.0a168</li>
+		<li>Remove BOM from sqlite Makefile (breaks build on older Unix)</li>
+		<li>Quick untested release</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
   
 
 <tr>
