@@ -1,4 +1,4 @@
-﻿ifneq ($(CONFIGURATION),)
+ifneq ($(CONFIGURATION),)
 ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 endif
 
