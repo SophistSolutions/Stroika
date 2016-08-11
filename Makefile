@@ -47,13 +47,13 @@ help:
 
 
 ifeq ($(CONFIGURATION),)
-all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/All {$$i}:";\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
-all:		IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ libraries tools samples tests documentation check
+all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ libraries tools samples tests documentation check
 endif
 
 
@@ -110,26 +110,26 @@ documentation:
 
 
 ifeq ($(CONFIGURATION),)
-libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
-libraries:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ third-party-components
+libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED third-party-components
 	@$(MAKE) --directory Library --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
 
 
 ifeq ($(CONFIGURATION),)
-third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ apply-configuration-if-needed_ IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Third-party-components {$$i}:";\
 		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
-third-party-components:	IntermediateFiles/TOOLS_CHECKED assure-default-configurations-exist_ apply-configuration-if-needed_
+third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_ apply-configuration-if-needed_
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 endif
 
@@ -238,13 +238,17 @@ format-code:
 # useful internal check to make sure users dont run/build while missing key components that will
 # just fail later
 # but dont check if already checked
-IntermediateFiles/TOOLS_CHECKED:
-	@$(MAKE) check-prerequisite-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL:
+	@$(MAKE) check-prerequisite-tools-all_ --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@mkdir -p IntermediateFiles
-	@touch IntermediateFiles/TOOLS_CHECKED
+	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
 
-# Force TOOLS_CHECKED test
-check-prerequisite-tools:
+IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
+	@$(MAKE) check-prerequisite-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@mkdir -p IntermediateFiles/$(CONFIGURATION)
+	@touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+
+check-prerequisite-tools-all_:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking for installed tools:"
@@ -259,6 +263,10 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (echo 'Missing unix2dos' && exit 1)"
 endif
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "All Required-Always Tools Present"
+
+# Force TOOLS_CHECKED test
+check-prerequisite-tools:
+	@$(MAKE) --no-print-directory check-prerequisite-tools-all_ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 ifeq ($(CONFIGURATION),)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
