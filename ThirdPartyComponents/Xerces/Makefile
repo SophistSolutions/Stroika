@@ -104,6 +104,10 @@ else
 endif
 
 
+check-prerequisite-tools:
+	@#nothing specail required
+
+
 check:
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 ifeq ($(CONFIGURATION),)

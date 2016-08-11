@@ -139,6 +139,9 @@ else
 endif
 
 
+check-prerequisite-tools:
+	@#nothing
+
 check:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)

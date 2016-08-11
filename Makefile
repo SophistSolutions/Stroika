@@ -1,6 +1,6 @@
 .NOTPARALLEL:
 .PHONY:	tests documentation all check clobber libraries assure-default-configurations apply-configuration-if-needed_
-.FORCE:	check-tools
+.FORCE:	check-prerequisite-tools
 .FORCE:	apply-configurations
 
 
@@ -40,7 +40,7 @@ help:
 	@$(ECHO) "    default-configurations:      -    Creates the default configurations in Configurations folder; [DEFAULT_CONFIGURATION_ARGS]')"
 	@$(ECHO) "                                      e.g. DEFAULT_CONFIGURATION_ARGS=--help OR"
 	@$(ECHO) "                                      DEFAULT_CONFIGURATION_ARGS='--openssl-extraargs purify --block-allocation disable'"
-	@$(ECHO) "    check-tools:                 -    Check the tools needed to build Stroika are installed."
+	@$(ECHO) "    check-prerequisite-tools:    -    Check the tools needed to build Stroika are installed."
 	@$(ECHO) "Special Variables:               -    Extra params you can pass to the make line that may help..."
 	@$(ECHO) "    ECHO_BUILD_LINES=1           -    Causes make lines to be echoed which can help makefile debugging"
 	@$(ECHO) "    MAKE_INDENT_LEVEL=0          -    Helpful to neaten formatting when multiple levels of makes calling Stroika make"
@@ -239,12 +239,12 @@ format-code:
 # just fail later
 # but dont check if already checked
 IntermediateFiles/TOOLS_CHECKED:
-	@$(MAKE) check-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+	@$(MAKE) check-prerequisite-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/TOOLS_CHECKED
 
 # Force TOOLS_CHECKED test
-check-tools:
+check-prerequisite-tools:
 	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
 	@# no point in checking make ;-)
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking for installed tools:"
@@ -258,7 +258,15 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type dos2unix 2> /dev/null) || (echo 'Missing dos2unix' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (echo 'Missing unix2dos' && exit 1)"
 endif
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "All Required Tools Present"
+	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "All Required-Always Tools Present"
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/ThirdPartyComponents Check Prerequisite Tools {$$i}:";\
+		$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
+	done
+else
+	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+endif
 
 
 assure-default-configurations-exist_:

@@ -242,6 +242,7 @@ check_prerequisites_:
 	@type libtool > /dev/null || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "checking tools...Missing libtool" && exit 1)
 
 
+
 check:
 	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
 ifeq ($(CONFIGURATION),)
@@ -254,6 +255,15 @@ endif
 		fi;\
 	done
 	@$(ECHO) " Stroika/ThirdPartyComponents/curl -    [Succeeded]";
+
+
+check-prerequisite-tools:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for curl..."
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
+	@$(ECHO) " done";
 
 
 clean:

@@ -101,6 +101,16 @@ $(ZIPEDFILE):
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
+check-prerequisite-tools:
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for lzma..."
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
+	@$(ECHO) " done";
+
+
+
 check_prerequisites_:
 	@{ type 7za > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools...Missing 7za" && exit 1; }
 

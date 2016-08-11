@@ -38,6 +38,33 @@ endif
 endif
 
 
+check-prerequisite-tools:
+ifeq ($(CONFIGURATION),)
+	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+	done
+else
+	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking-Tools Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
+	@$(MAKE) --directory zlib --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
+	@$(MAKE) --directory openssl --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
+	@$(MAKE) --directory curl --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(qBuildThirdPartyComponents_LZMA), 1)
+	@$(MAKE) --directory lzma --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
+	@$(MAKE) --directory Xerces --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+endif
+
+
+
+
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
