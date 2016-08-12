@@ -235,22 +235,27 @@ format-code:
 	done
 
 
-# useful internal check to make sure users dont run/build while missing key components that will
-# just fail later
-# but dont check if already checked
-IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL:
-	@$(MAKE) check-prerequisite-tools-all_ --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-	@mkdir -p IntermediateFiles
-	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
+#
+#check-prerequisite-tools
+#	is broken into check-prerequisite-tools-common - which checks all stroika prerequisites, and
+#	check-prerequisite-tools-current-configuration which checks a given argument CONFIGURATION.
+#
+#	We use take target files IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL and IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+#	to make sure each configuraiton is checked at least once before build, so we get easier to understand error messages
+#	(tool x missing instead of xxx failed)
+#
+check-prerequisite-tools:
+	@$(MAKE) --no-print-directory check-prerequisite-tools-common CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+ifeq ($(CONFIGURATION),)
+	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory check-prerequisite-tools-current-configuration CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
+	done
+else
+	@$(MAKE) --no-print-directory check-prerequisite-tools-current-configuration CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+endif
 
-IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
-	@$(MAKE) check-prerequisite-tools --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-	@mkdir -p IntermediateFiles/$(CONFIGURATION)
-	@touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
 
-check-prerequisite-tools-all_:
-	@#NOTE - we used to check for libtool, but thats only sometimes needed and we dont know if needed until after this rule (config based); its checked/warned about later
-	@# no point in checking make ;-)
+check-prerequisite-tools-common:
 	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking for installed tools:"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type sed 2> /dev/null) || (echo 'Missing sed' && exit 1)"
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type wget 2> /dev/null) || (echo 'Missing wget' && exit 1)"
@@ -263,17 +268,24 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (echo 'Missing unix2dos' && exit 1)"
 endif
 	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "All Required-Always Tools Present"
+	@mkdir -p IntermediateFiles
+	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
 
-# Force TOOLS_CHECKED test
-check-prerequisite-tools:
-	@$(MAKE) --no-print-directory check-prerequisite-tools-all_ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+
+check-prerequisite-tools-current-configuration:
 ifeq ($(CONFIGURATION),)
-	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
-	done
-else
-	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+	$(error Cannot call check-prerequisite-tools-current-configuration without a configuration argument)
 endif
+	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+	@mkdir -p IntermediateFiles/$(CONFIGURATION)
+	@touch IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED
+
+
+IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL:
+	@$(MAKE) check-prerequisite-tools-common --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
+
+IntermediateFiles/$(CONFIGURATION)/TOOLS_CHECKED:
+	@$(MAKE) check-prerequisite-tools-current-configuration --no-print-directory MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CONFIGURATION=$(CONFIGURATION)
 
 
 assure-default-configurations-exist_:
