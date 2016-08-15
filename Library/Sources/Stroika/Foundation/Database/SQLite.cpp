@@ -215,6 +215,7 @@ DB::DB (const String& dbPath, const function<void(DB&)>& dbInitializer)
     if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
         if (fDB_ == nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+            fDB_ = nullptr;
         }
         if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
             try {
