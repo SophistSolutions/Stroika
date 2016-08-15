@@ -203,7 +203,7 @@ DB::DB (const URL& dbURL, const function<void(DB&)>& dbInitializer)
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
-        if (fDB_ == nullptr) {
+        if (fDB_ != nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
             fDB_ = nullptr;
         }
@@ -230,7 +230,7 @@ DB::DB (const String& dbPath, const function<void(DB&)>& dbInitializer)
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbPath.AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
-        if (fDB_ == nullptr) {
+        if (fDB_ != nullptr) {
             Verify (::sqlite3_close (fDB_) == SQLITE_OK);
             fDB_ = nullptr;
         }
