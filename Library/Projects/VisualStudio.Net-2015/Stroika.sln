@@ -1079,6 +1079,131 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{4F26
 		..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3ext.h = ..\..\..\ThirdPartyComponents\sqlite\CURRENT\sqlite3ext.h
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\adler32.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\adler32.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\ChangeLog = ..\..\..\ThirdPartyComponents\zlib\CURRENT\ChangeLog
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\CMakeLists.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\CMakeLists.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\compress.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\compress.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\configure = ..\..\..\ThirdPartyComponents\zlib\CURRENT\configure
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\crc32.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\crc32.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\crc32.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\crc32.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\deflate.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\deflate.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\deflate.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\deflate.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\FAQ = ..\..\..\ThirdPartyComponents\zlib\CURRENT\FAQ
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\gzclose.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\gzclose.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\gzguts.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\gzguts.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\gzlib.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\gzlib.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\gzread.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\gzread.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\gzwrite.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\gzwrite.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\INDEX = ..\..\..\ThirdPartyComponents\zlib\CURRENT\INDEX
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\infback.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\infback.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inffast.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inffast.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inffast.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inffast.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inffixed.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inffixed.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inflate.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inflate.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inflate.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inflate.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inftrees.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inftrees.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\inftrees.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\inftrees.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\make_vms.com = ..\..\..\ThirdPartyComponents\zlib\CURRENT\make_vms.com
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\Makefile = ..\..\..\ThirdPartyComponents\zlib\CURRENT\Makefile
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\Makefile.in = ..\..\..\ThirdPartyComponents\zlib\CURRENT\Makefile.in
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\PATCHING.OUT = ..\..\..\ThirdPartyComponents\zlib\CURRENT\PATCHING.OUT
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\README = ..\..\..\ThirdPartyComponents\zlib\CURRENT\README
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\treebuild.xml = ..\..\..\ThirdPartyComponents\zlib\CURRENT\treebuild.xml
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\trees.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\trees.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\trees.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\trees.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\uncompr.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\uncompr.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h.cmakein = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h.cmakein
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h.in = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zconf.h.in
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.3 = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.3
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.3.pdf = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.3.pdf
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.map = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.map
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.pc.cmakein = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.pc.cmakein
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.pc.in = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib.pc.in
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib2ansi = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zlib2ansi
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zutil.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zutil.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\zutil.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\zutil.h
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "amiga", "amiga", "{9AFBC039-F722-4DF4-A369-8BB390BDF0BF}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\amiga\Makefile.pup = ..\..\..\ThirdPartyComponents\zlib\CURRENT\amiga\Makefile.pup
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\amiga\Makefile.sas = ..\..\..\ThirdPartyComponents\zlib\CURRENT\amiga\Makefile.sas
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "as400", "as400", "{A7FB3C44-43A2-4DC5-A06B-6745B5361834}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\bndsrc = ..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\bndsrc
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\compile.clp = ..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\compile.clp
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\readme.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\readme.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\zlib.inc = ..\..\..\ThirdPartyComponents\zlib\CURRENT\as400\zlib.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "contrib", "contrib", "{EAFA3E0E-1691-42C7-982B-58485437BABD}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\contrib\README.contrib = ..\..\..\ThirdPartyComponents\zlib\CURRENT\contrib\README.contrib
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "old", "old", "{BF3C95AA-31D3-433B-9DF7-88060F3A0841}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\old\descrip.mms = ..\..\..\ThirdPartyComponents\zlib\CURRENT\old\descrip.mms
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\old\Makefile.emx = ..\..\..\ThirdPartyComponents\zlib\CURRENT\old\Makefile.emx
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\old\Makefile.riscos = ..\..\..\ThirdPartyComponents\zlib\CURRENT\old\Makefile.riscos
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\old\README = ..\..\..\ThirdPartyComponents\zlib\CURRENT\old\README
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\old\visual-basic.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\old\visual-basic.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "qnx", "qnx", "{2EA7010F-D208-4257-854F-54C6DC3397AD}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\qnx\package.qpg = ..\..\..\ThirdPartyComponents\zlib\CURRENT\qnx\package.qpg
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "win32", "win32", "{D69EFCE3-74D3-457D-9272-82307EB6F99B}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\DLL_FAQ.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\DLL_FAQ.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.bor = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.bor
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.gcc = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.gcc
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.msc = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.msc
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.msc.orig = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\Makefile.msc.orig
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\README-WIN32.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\README-WIN32.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\VisualC.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\VisualC.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\zlib.def = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\zlib.def
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\zlib1.rc = ..\..\..\ThirdPartyComponents\zlib\CURRENT\win32\zlib1.rc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "watcom", "watcom", "{BFF4E72C-747B-45A9-95D5-737B6ECFA3FD}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\watcom\watcom_f.mak = ..\..\..\ThirdPartyComponents\zlib\CURRENT\watcom\watcom_f.mak
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\watcom\watcom_l.mak = ..\..\..\ThirdPartyComponents\zlib\CURRENT\watcom\watcom_l.mak
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "doc", "doc", "{66BAEC24-8DEF-46ED-B594-9357090F2A3F}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\algorithm.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\algorithm.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1950.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1950.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1951.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1951.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1952.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\rfc1952.txt
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\txtvsbin.txt = ..\..\..\ThirdPartyComponents\zlib\CURRENT\doc\txtvsbin.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{F8957664-20AD-4CBE-8E7C-AD55F9D85287}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\enough.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\enough.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\fitblk.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\fitblk.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gun.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gun.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzappend.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzappend.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzjoin.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzjoin.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzlog.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzlog.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzlog.h = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\gzlog.h
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\README.examples = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\README.examples
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zlib_how.html = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zlib_how.html
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zpipe.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zpipe.c
+		..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zran.c = ..\..\..\ThirdPartyComponents\zlib\CURRENT\examples\zran.c
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -1458,5 +1583,15 @@ Global
 		{285BD8F4-F975-4D92-9A33-0B3552397239} = {B7D0481B-0F01-4B7C-A2A0-EF32291DC550}
 		{41EA2E5B-3909-45BE-8DB0-29575A063A05} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 		{4F2612A0-DA60-4D21-B9E1-3B82FAB23258} = {41EA2E5B-3909-45BE-8DB0-29575A063A05}
+		{53FD16F4-0973-4819-B11E-E8F3E0D9B5B8} = {B79422CE-425A-4687-9459-A65B084D2792}
+		{9AFBC039-F722-4DF4-A369-8BB390BDF0BF} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{A7FB3C44-43A2-4DC5-A06B-6745B5361834} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{EAFA3E0E-1691-42C7-982B-58485437BABD} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{BF3C95AA-31D3-433B-9DF7-88060F3A0841} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{2EA7010F-D208-4257-854F-54C6DC3397AD} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{D69EFCE3-74D3-457D-9272-82307EB6F99B} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{BFF4E72C-747B-45A9-95D5-737B6ECFA3FD} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{66BAEC24-8DEF-46ED-B594-9357090F2A3F} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
+		{F8957664-20AD-4CBE-8E7C-AD55F9D85287} = {53FD16F4-0973-4819-B11E-E8F3E0D9B5B8}
 	EndGlobalSection
 EndGlobal
