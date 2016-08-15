@@ -33,6 +33,19 @@ using   namespace   Execution;
 
 
 
+#if     qHasFeature_sqlite
+namespace {
+    struct ModuleShutdown_ {
+        ~ModuleShutdown_ ()
+        {
+            Verify (::sqlite3_shutdown () == SQLITE_OK);        // mostly pointless but avoids memory leak complaints
+        }
+    }   sModuleShutdown_;
+}
+#endif
+
+
+
 /*
  ********************************************************************************
  ************************* SQLite::QuoteStringForDB *****************************
@@ -190,6 +203,10 @@ DB::DB (const URL& dbURL, const function<void(DB&)>& dbInitializer)
     // @todo - code cleanup!!!
     int e;
     if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_CANTOPEN) {
+        if (fDB_ == nullptr) {
+            Verify (::sqlite3_close (fDB_) == SQLITE_OK);
+            fDB_ = nullptr;
+        }
         if ((e = ::sqlite3_open_v2 (dbURL.GetFullURL ().AsUTF8 ().c_str (), &fDB_, SQLITE_OPEN_URI | SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, nullptr)) == SQLITE_OK) {
             try {
                 dbInitializer (*this);
