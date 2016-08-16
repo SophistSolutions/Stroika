@@ -10,6 +10,7 @@
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
+#include    "../../Foundation/Debug/Trace.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/IO/Network/HTTP/Headers.h"
@@ -31,6 +32,13 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 /*
  ********************************************************************************
  ************************* WebServer::ConnectionManager *************************
@@ -48,11 +56,14 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const So
 {
 }
 
-void ConnectionManager::onConnect_ (Socket s)
+void    ConnectionManager::onConnect_ (Socket s)
 {
     Execution::Thread runConnectionOnAnotherThread {
         [this, s]()
         {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
+#endif
             // now read
             Connection conn (s);
             conn.ReadHeaders ();    // bad API. Must rethink...
@@ -70,7 +81,9 @@ void ConnectionManager::onConnect_ (Socket s)
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
             }
             String url = conn.GetRequest ().fURL.GetFullURL ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Serving page %s", url.c_str ());
+#endif
             try {
                 Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
                 if (handler) {
