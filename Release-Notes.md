@@ -19,6 +19,37 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a169">v2.0a169</a><br/>2016-08-16</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a168...v2.0a169</li>
+		<li>revised/improved check-prerequisite-tools support (renamed target and now recursive at start for third-party-components)</li>
+		<li>Started support for openssl 1.1, but incomplete and mostly not checked in; but parts were and those required changes to zlib build</li>
+		<li>SQLite: small memory leak fix, and makefile improvements</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-2.0a169-OUT.txt</li>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-2.0a169-OUT.txt</li>
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie)</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>AddressSanitizer (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
