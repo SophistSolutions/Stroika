@@ -128,7 +128,7 @@ endif
 
 
 clean:
-	@rm -rf CURRENT
+	@rm -rf CURRENT ORIGS
 
 
 clobber:	clean
@@ -137,6 +137,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
+
 
 
 check-prerequisite-tools:
