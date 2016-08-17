@@ -101,7 +101,7 @@ DB::Statement::Statement (DB* db,  const wchar_t* formatQuery, ...)
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
-        // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
+        // add VariantValue::Type list based on sqlite3_column_decltype
     }
 }
 
@@ -127,7 +127,7 @@ DB::Statement::Statement (sqlite3* db,  const wchar_t* formatQuery, ...)
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"sqlite3_column_decltype(i) = %s", ::sqlite3_column_decltype (fStatementObj_, i) == nullptr ? L"{nullptr}" : String::FromUTF8 (::sqlite3_column_decltype (fStatementObj_, i)).c_str ());
 #endif
-        // add VaroamtVa;ue"::Type list based on sqlite3_column_decltype
+        // add VariantValue::Type list based on sqlite3_column_decltype
     }
 }
 
