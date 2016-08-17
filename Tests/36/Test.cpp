@@ -449,16 +449,13 @@ namespace   {
         {
             ThreadPool  p;
             p.SetPoolSize (1);
-            struct  FRED {
-                static  void    DoIt (void* arg)
+            int intVal  =   3;
+            ThreadPool::TaskType task {
+                [&intVal] ()
                 {
-                    int*    p   =   reinterpret_cast<int*> (arg);
-                    (*p)++;
+                    intVal++;
                 }
             };
-            int intVal  =   3;
-            //shared_ptr<Execution::IRunnable>    task    =   Execution::mkIRunnablePtr (bind (FRED::DoIt, &intVal));
-            ThreadPool::TaskType task { bind (FRED::DoIt, &intVal) };
             p.AddTask (task);
             p.WaitForTask (task);
             p.AbortAndWaitForDone ();
@@ -474,28 +471,21 @@ namespace   {
     {
         Debug::TraceContextBumper traceCtx ("RegressionTest8_ThreadPool_");
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
-        struct  FRED {
-            static  void    DoIt (void* ignored)
-            {
-                int*    argP    =   reinterpret_cast<int*> (ignored);
-                for (int i = 0; i < 10; i++) {
-                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
-                    int tmp = *argP;
-                    Execution::Sleep (.01);
-                    //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
-                    *argP = tmp + 1;
-                }
+        auto    doIt    = [] (int* argP) {
+            for (int i = 0; i < 10; i++) {
+                lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
+                int tmp = *argP;
+                Execution::Sleep (.01);
+                //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
+                *argP = tmp + 1;
             }
         };
-
         for (unsigned int threadPoolSize = 1; threadPoolSize < 10; ++threadPoolSize) {
             ThreadPool  p;
             p.SetPoolSize (threadPoolSize);
             int updaterValue    =   0;
-            //shared_ptr<Execution::IRunnable>    task1   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
-            //shared_ptr<Execution::IRunnable>    task2   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
-            ThreadPool::TaskType task1 { bind (FRED::DoIt, &updaterValue) };
-            ThreadPool::TaskType task2 { bind (FRED::DoIt, &updaterValue) };
+            ThreadPool::TaskType task1 { [&updaterValue, &doIt]  () {doIt (&updaterValue); } };
+            ThreadPool::TaskType task2 { [&updaterValue, &doIt]  () {doIt (&updaterValue); } };
             p.AddTask (task1);
             p.AddTask (task2);
             p.WaitForTask (task1);
