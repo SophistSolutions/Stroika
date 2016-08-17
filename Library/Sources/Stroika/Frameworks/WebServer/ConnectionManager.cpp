@@ -7,6 +7,7 @@
 #include    <cstdlib>
 
 #include    "../../Foundation/Characters/String_Constant.h"
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
@@ -65,7 +66,7 @@ void    ConnectionManager::onConnect_ (Socket s)
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
             // now read
-            Connection conn (s);
+            Connection  conn (s);
             conn.ReadHeaders ();    // bad API. Must rethink...
             if (fServerHeader_) {
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
@@ -95,18 +96,18 @@ void    ConnectionManager::onConnect_ (Socket s)
             }
             catch (const IO::Network::HTTP::Exception& e) {
                 conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
-                conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
                 conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
             }
             catch (...) {
                 conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
-                conn.GetResponse ().writeln (L"<html><body><p>OOPS</p></body></html>");
+                conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (std::current_exception ()).c_str ());
                 conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
             }
             conn.GetResponse ().End ();
         }
         , Execution::Thread::eAutoStart
-        , String (L"Connection Thread")     // Could use a fancier name (connection#, from remote address?)
+        , String_Constant { L"Connection Thread" }     // Could use a fancier name (connection#, from remote address?)
     };
     runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
 };
