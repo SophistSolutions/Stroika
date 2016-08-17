@@ -73,6 +73,16 @@ namespace   Stroika {
             }
 
 
+            /**
+             *  Divide the duration by the floating point argument
+             */
+            inline  Duration    operator/ (const Duration& lhs, long double rhs)
+            {
+                Require (rhs != 0);
+                return lhs * (1 / rhs);
+            }
+
+
             namespace Private_ {
 
 

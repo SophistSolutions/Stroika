@@ -680,3 +680,8 @@ Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
     return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
 }
 
+Duration    Time::operator* (const Duration& lhs, long double rhs)
+{
+    return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
+}
+
