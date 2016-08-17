@@ -181,7 +181,6 @@ sub GetString2InsertIntoBatchFileToInit32BitCompiles
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
 	$result 	.=	"\" x86;\r\n";
-	#$result 	.=	"\" amd64_x86;\n";
 	return $result;
 }
 
@@ -190,9 +189,7 @@ sub GetString2InsertIntoBatchFileToInit64BitCompiles
 	my $result = "";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\vcvarsall.bat";
-	$result 	.=	"\" x86_amd64;\n";
-#	$result 	.=	"$VSDIR_VC\\bin\\amd64\\vcvars64.bat";
-	$result 	.=	"\"\r\n";
+	$result 	.=	"\" x86_amd64;\r\n";
 	return $result;
 }
 
