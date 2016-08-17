@@ -1544,7 +1544,7 @@ namespace   {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             26900,
-            .97,
+            1.0,
             &failedTests
         );
 #endif
@@ -1603,7 +1603,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             310000,
-            9.9,
+            10.0,
             &failedTests
         );
         Tester (
