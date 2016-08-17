@@ -128,6 +128,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{D21F3707-4413-4F9F-AB52-4E1CB6483829}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\Patches\FixQuotesInWindowsMakefileTemplate.PATCH = ..\..\..\ThirdPartyComponents\openssl\Patches\FixQuotesInWindowsMakefileTemplate.PATCH
 		..\..\..\ThirdPartyComponents\openssl\Patches\LosePRINTOfCopyingInUtils.PATCH = ..\..\..\ThirdPartyComponents\openssl\Patches\LosePRINTOfCopyingInUtils.PATCH
 	EndProjectSection
 EndProject
@@ -1233,7 +1234,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{F464
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.PERL = ..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.PERL
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.VMS = ..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.VMS
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.WIN = ..\..\..\ThirdPartyComponents\openssl\CURRENT\NOTES.WIN
-		..\..\..\ThirdPartyComponents\openssl\CURRENT\NUL = ..\..\..\ThirdPartyComponents\openssl\CURRENT\NUL
+		\\.\NUL = \\.\NUL
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\README = ..\..\..\ThirdPartyComponents\openssl\CURRENT\README
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\README.ECC = ..\..\..\ThirdPartyComponents\openssl\CURRENT\README.ECC
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\README.ENGINE = ..\..\..\ThirdPartyComponents\openssl\CURRENT\README.ENGINE
