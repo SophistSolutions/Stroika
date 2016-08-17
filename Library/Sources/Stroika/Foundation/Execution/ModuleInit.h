@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <cstdint>
+
 #include    "../Configuration/Common.h"
 #include    "../Memory/Common.h"
 
@@ -149,8 +151,8 @@ namespace   Stroika {
                 static  ModuleDependency   GetDependency ();
 
             private:
-                static  Byte                sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
-                static  unsigned    short   sInitCnt_;
+                static  alignas(alignof(MODULE_DATA))   Byte    sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
+                static  uint16_t                                sInitCnt_;
             };
 
 
