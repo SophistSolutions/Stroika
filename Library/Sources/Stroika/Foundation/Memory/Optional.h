@@ -81,8 +81,8 @@ namespace   Stroika {
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
-                    alignas(alignment_of<T>)    Memory::Byte    fBuffer_[sizeof(T)];  // intentionally uninitialized
-                    T*                                          fValue_ { nullptr };
+                    alignas(alignof(T))    Memory::Byte fBuffer_[sizeof(T)];  // intentionally uninitialized
+                    T*                                  fValue_ { nullptr };
 
                     StorageType ();
                     StorageType (T* p);
