@@ -130,9 +130,6 @@ namespace   Stroika {
              * This class makes sure that - if you construct a ModuleInitializer<> object in every module which might
              * use this module, then the is constructed at the earliest time, and destroyed at the latest.
              *
-             *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure
-             *              sActualModuleInitializer_Storage_ properly aligned).
-             *
              */
             template    <typename MODULE_DATA>
             class   ModuleInitializer {
@@ -151,7 +148,7 @@ namespace   Stroika {
                 static  ModuleDependency   GetDependency ();
 
             private:
-                static  alignas(alignof(MODULE_DATA))   Byte    sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
+                alignas(alignof(MODULE_DATA))   static  Byte    sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
                 static  uint16_t                                sInitCnt_;
             };
 
