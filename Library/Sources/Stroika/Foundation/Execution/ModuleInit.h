@@ -165,7 +165,7 @@ namespace   Stroika {
             template    <typename   T>
             struct  StaticSingletonObjectConstructionHelper {
                 bool    fConstructed;
-                Byte    fTBuf[sizeof (T)];
+                alignas(alignof(T)) Byte    fTBuf[sizeof (T)];
 
                 operator T& ()
                 {
