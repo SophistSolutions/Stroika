@@ -69,10 +69,22 @@ namespace   Stroika {
              *
              *  For easiser use probably the best approach is to see DECLARE_USE_BLOCK_ALLOCATION
              *
+             *  \note   Design Note: alignas / alignemnt of allocated values
+             *          https://stroika.atlassian.net/browse/STK-511
+             *          We use sizeof(). We always allocate large blocks which (I htink are always) algined to the largest
+             *          alignemnt required by the system, and we that as an array.
+             *
+             *          But I think since sizeof(T) is the offset from one elemnet of an array[T] - our allocations will always be aligned
+             *          if the first big block is aligned.
+             *
+             *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations
+             *
              *  But also see:
              *      @see AutomaticallyBlockAllocated
              *      @see ManuallyBlockAllocated
              *      @see DECLARE_USE_BLOCK_ALLOCATION
+
+
              */
             template    <typename   T>
             class   BlockAllocator  {

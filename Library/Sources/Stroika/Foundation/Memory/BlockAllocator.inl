@@ -418,12 +418,14 @@ again:
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
-
 #if     qAllowBlockAllocation
-                return BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
+                void*   result  =    BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
 #else
-                return ::operator new (n);
+                void*   result  =    ::operator new (n);
 #endif
+                EnsureNotNull (result);
+                Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0);   // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
+                return result;
             }
             template    <typename   T>
             inline  void    BlockAllocator<T>::Deallocate (void* p) noexcept
