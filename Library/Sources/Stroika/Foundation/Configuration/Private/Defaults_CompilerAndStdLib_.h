@@ -154,6 +154,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_union_designators_Buggy
 @DESCRIPTION:
@@ -179,6 +180,37 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #endif
 
 #endif
+
+
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\dataexchange\badformatexception.h(40): warning C4359: 'Stroika::Foundation::DataExchange::BadFormatException::kThe': Alignment specifier is less than actual alignment (8), and will be ignored.
+...
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(373): error C2719: 'defaultValue': formal parameter with requested alignment of 8 won't be aligned
+1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterator.h(566): note: see reference to class template instantiation 'Stroika::Foundation::Memory::Optional<Stroika::Foundation::IO::Network::Interface,Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<T>>' being compiled
+....1>  c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\interface.cpp(137): note: see reference to class template instantiation 'Stroika::Foundation::Traversal::Iterable<Stroika::Foundation::IO::Network::Interface>' being compiled
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(440): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(544): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\memory\optional.h(552): error C2719: 'rhs': formal parameter with requested alignment of 8 won't be aligned
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(691): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned
+1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\traversal\iterable.h(767): error C2719: 'unnamed-parameter': formal parameter with requested alignment of 8 won't be aligned*/
+#ifndef qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+
+#if     defined (_MSC_VER)
+// Still broken in _MS_VS_2k15_Update3_FULLVER_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_Update3_FULLVER_)
+#else
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy      0
+#endif
+
+#endif
+
 
 
 

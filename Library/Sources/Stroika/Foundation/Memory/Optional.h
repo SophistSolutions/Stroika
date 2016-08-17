@@ -77,22 +77,32 @@ namespace   Stroika {
              *  sizeof (T) be know at the time Optional<T> is used (so not forward declared).
              *
              *  \note   This is NOT meant to be used by itself. This is only to be used as a template argument to Optional<>
+             *
+             *  \note   \em Implementation Detail
+             *              We put fValue_ ahead of fBuffer_ because the data is nearly always accessed through
+             *              fValue_ and putting it first probably makes its offset zero which may make for a faster
+             *              reference (deref without offset)
              */
             template    <typename T>
             struct  Optional_Traits_Inplace_Storage {
                 struct  StorageType {
-                    alignas(alignof(T))    Memory::Byte fBuffer_[sizeof(T)];  // intentionally uninitialized
-                    T*                                  fValue_ { nullptr };
+                    T*              fValue_ { nullptr };
+#if     qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
+                    // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
+#else
+                    alignas(T)
+#endif
+                    Memory::Byte    fBuffer_[sizeof (T)];  // intentionally uninitialized
 
-                    StorageType ();
+                    StorageType () = default;
                     StorageType (T* p);
 
                     template    <typename ...ARGS>
-                    T*          alloc (ARGS&& ...args);
-                    void        destroy ();
-                    void        moveInitialize (StorageType&& rhs);
-                    T*          peek ();
-                    const T*    peek () const;
+                    nonvirtual  T*          alloc (ARGS&& ...args);
+                    nonvirtual  void        destroy ();
+                    nonvirtual  void        moveInitialize (StorageType&& rhs);
+                    nonvirtual  T*          peek ();
+                    nonvirtual  const T*    peek () const;
                 };
             };
 
@@ -115,11 +125,11 @@ namespace   Stroika {
                     StorageType (AutomaticallyBlockAllocated<T>* p);
 
                     template    <typename ...ARGS>
-                    AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
-                    void                            destroy ();
-                    void                            moveInitialize (StorageType&& rhs);
-                    T*                              peek ();
-                    const T*                        peek () const;
+                    nonvirtual  AutomaticallyBlockAllocated<T>* alloc (ARGS&& ...args);
+                    nonvirtual  void                            destroy ();
+                    nonvirtual  void                            moveInitialize (StorageType&& rhs);
+                    nonvirtual  T*                              peek ();
+                    nonvirtual  const T*                        peek () const;
                 };
             };
 

@@ -25,10 +25,6 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType ()
-            {
-            }
-            template    <typename T>
             inline  Optional_Traits_Inplace_Storage<T>::StorageType::StorageType (T* p)
                 : fValue_ { p }
             {
