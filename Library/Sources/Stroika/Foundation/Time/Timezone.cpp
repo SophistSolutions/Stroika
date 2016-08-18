@@ -290,8 +290,13 @@ bool    Time::IsDaylightSavingsTime (const DateTime& d)
      *  APPEARS to work since... --LGP 2011-10-15
      */
     asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-    Verify (::mktime (&asTM) != -1);
-    return asTM.tm_isdst >= 1;
+    // https://stroika.atlassian.net/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
+    if (::mktime (&asTM) == -1) {
+        return false;
+    }
+    else {
+        return asTM.tm_isdst >= 1;
+    }
 }
 
 
@@ -329,6 +334,7 @@ time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
     tm.tm_mday = 1;
     tm.tm_isdst = applyDST;
     time_t  result  =   ::mktime (&tm);
+    Assert (result != -1);  // this shouldn't fail
     Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
     return result;
 }
