@@ -266,10 +266,25 @@ String    Time::GetTimezone (const DateTime& d)
 bool    Time::IsDaylightSavingsTime (const DateTime& d)
 {
     struct  tm  asTM    =   d.As<struct tm> ();
+    /*
+     *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
+     *
+     *      A positive or 0 value for tm_isdst causes mktime() to presume initially that Daylight Savings Time, respectively,
+     *      is or is not in effect for the specified time. A negative value for tm_isdst causes mktime() to attempt to determine
+     *      whether Daylight Saving Time is in effect for the specified time.
+     *
+     *      Local timezone information is set as though mktime() called tzset().
+     *
+     *      Upon successful completion, the values of the tm_wday and tm_yday components of the structure are set appropriately,
+     *      and the other components are set to represent the specified time since the Epoch, but with their values forced to the
+     *      ranges indicated in the <time.h> entry; the final value of tm_mday is not set until tm_mon and tm_year are determined.
+     *
+     *
+     *  This is not totally clear - docs on mktime () don't specify unambiguously that this should work...
+     *  So far it seems too however, --LGP 2011-10-15
+     */
     asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-    // THINK this is true - not totally clear - docs on mktime () don't specify unambiguously that this should work...
-    // So far it seems too however, --LGP 2011-10-15
-    time_t  result  =   mktime (&asTM);
+    (void)::mktime (&asTM);
     return asTM.tm_isdst >= 1;
 }
 
