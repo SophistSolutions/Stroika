@@ -40,6 +40,9 @@ namespace   Stroika {
             }
             inline  constexpr   unsigned int    TimeOfDay::GetAsSecondsCount () const
             {
+#if     !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                Ensure ((empty () ? 0 : fTime_) < kMaxSecondsPerDay);
+#endif
                 return empty () ? 0 : fTime_;
             }
             inline  uint8_t TimeOfDay::GetHours () const

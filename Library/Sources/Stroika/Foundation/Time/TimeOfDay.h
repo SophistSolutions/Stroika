@@ -171,6 +171,8 @@ namespace   Stroika {
             public:
                 /**
                  * In special case of empty - this also returns 0
+                 *
+                 *  \ensure {return} < kMaxSecondsPerDay
                  */
                 nonvirtual  constexpr   uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
 
