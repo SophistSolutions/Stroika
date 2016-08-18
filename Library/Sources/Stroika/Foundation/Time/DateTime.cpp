@@ -441,18 +441,6 @@ String DateTime::Format (PrintFormat pf) const
                         r +=  ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
                     }
                 }
-#if     qDebug
-                {
-                    // TODO:
-                    //      This probably shouldn't be needed!!! - think through more carefully.
-                    //          --LGP 2011-10-07
-                    DateTime    parsed  =   DateTime::Parse (r, ParseFormat::eXML);
-                    if (parsed.GetTimezone () != GetTimezone ()) {
-                        parsed = DateTime (parsed.GetDate (), parsed.GetTimeOfDay (), parsed.GetTimezone ());
-                    }
-                    Assert (parsed == *this);
-                }
-#endif
                 return r;
             }
             break;
