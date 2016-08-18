@@ -730,5 +730,5 @@ bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r)
 }
 bool    Math::NearlyEquals (Time::DateTime l, Time::DateTime r, Time::DurationSecondsType epsilon)
 {
-    return l == r or Math::NearlyEquals (l.ToTickCount (), r.ToTickCount (), epsilon);
+    return l == r or Math::NearlyEquals (static_cast<DurationSecondsType> (l.As<time_t> ()), static_cast<DurationSecondsType> (r.As<time_t> ()), epsilon);
 }

@@ -721,7 +721,8 @@ namespace   {
         {
             DateTimeRange d1 { Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20)), Date (Year (2000), MonthOfYear::eApril, DayOfMonth (22)) };
             VerifyTestResult (d1.GetDistanceSpanned () / 2 == Duration ("PT1D"));
-            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date (Year (2000), MonthOfYear::eApril, DayOfMonth (21)), DurationSecondsType (0.1)));
+            // SEE https://stroika.atlassian.net/browse/STK-514 for accuracy of compare (sb .1 or less)
+            VerifyTestResult (Math::NearlyEquals (d1.GetMidpoint (), Date (Year (2000), MonthOfYear::eApril, DayOfMonth (21)), DurationSecondsType (2)));
         }
     }
 }
