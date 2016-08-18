@@ -150,8 +150,8 @@ sub	DoHelp_
         print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
         print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) - any arg you can pass to -fsanitize=XXXX */\n");
-        print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize= */\n");
-        print("	    --no-sanitize {thread|vptr|etc...}				/* any from --sanitize or all */\n");
+        print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
+        print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
 		
 	exit ($x);
 }
