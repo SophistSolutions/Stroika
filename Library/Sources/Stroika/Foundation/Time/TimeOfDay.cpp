@@ -501,12 +501,16 @@ String TimeOfDay::Format (LCID lcid) const
 
 void    TimeOfDay::ClearSecondsField ()
 {
-    int hour = fTime_ / (60 * 60);
-    int minutes = (fTime_ - hour * 60 * 60) / 60;
-    int secs = fTime_ - hour * 60 * 60 - minutes * 60;
-    Assert (hour >= 0 and hour < 24);
-    Assert (minutes >= 0 and minutes < 60);
-    Assert (secs >= 0 and secs < 60);
-    fTime_ -= secs;
+    Assert (empty () or fTime_ < kMaxSecondsPerDay);
+    if (not empty ()) {
+        int hour = fTime_ / (60 * 60);
+        int minutes = (fTime_ - hour * 60 * 60) / 60;
+        int secs = fTime_ - hour * 60 * 60 - minutes * 60;
+        Assert (hour >= 0 and hour < 24);
+        Assert (minutes >= 0 and minutes < 60);
+        Assert (secs >= 0 and secs < 60);
+        fTime_ -= secs;
+    }
+    Assert (empty () or fTime_ < kMaxSecondsPerDay);
 }
 
