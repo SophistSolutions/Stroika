@@ -307,7 +307,8 @@ time_t  Time::GetLocaltimeToGMTOffset (bool applyDST)
     tm.tm_mon = 0;      // Jan
     tm.tm_mday = 1;
     tm.tm_isdst = applyDST;
-    time_t  result  =   mktime (&tm);
+    time_t  result  =   ::mktime (&tm);
+    Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
     return result;
 }
 
