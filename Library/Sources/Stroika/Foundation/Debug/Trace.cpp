@@ -162,14 +162,6 @@ namespace   {
         constexpr bool  kOldWay_ = true;   // https://stroika.atlassian.net/browse/STK-513
         if (kOldWay_) {
             nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eCurrentLocale).AsSDKString ();
-            for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-                if (*i == ':') {
-                    *i = '-';
-                }
-                if (*i == '/' or * i == ' ') {
-                    *i = '_';
-                }
-            }
         }
         else {
             time_t rawtime { ::time (nullptr) };
@@ -179,10 +171,13 @@ namespace   {
             if (nowstr.size () > 0) {
                 nowstr = nowstr.substr (0, nowstr.size () - 1); //trim trailing NL
             }
-            for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-                if (*i == ':') {
-                    *i = '-';
-                }
+        }
+        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+            if (*i == ':') {
+                *i = '-';
+            }
+            if (*i == '/' or * i == ' ') {
+                *i = '_';
             }
         }
         return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
