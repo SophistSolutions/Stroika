@@ -172,6 +172,9 @@ namespace   {
             time_t rawtime {};
             ::time (&rawtime);
             nowstr = NarrowSDK2SDKString  (::asctime(::localtime (&rawtime)));
+            if (nowstr.size () > 0) {
+                nowstr = nowstr.substr (0, nowstr.size () - 1); //trim trailing NL
+            }
             for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
                 if (*i == ':') {
                     *i = '-';
