@@ -525,23 +525,6 @@ Date::JulianRepType DateTime::DaysSince () const
     }
 }
 
-#if     qPlatform_Windows
-namespace   {
-    time_t  OLD_GetUNIXEpochTime_ (const DateTime& dt)
-    {
-        SYSTEMTIME  st  =   dt.As<SYSTEMTIME> ();
-        struct tm   tm {};
-        tm.tm_year = st.wYear - 1900;
-        tm.tm_mon = st.wMonth - 1;
-        tm.tm_mday = st.wDay;
-        tm.tm_hour = st.wHour;
-        tm.tm_min = st.wMinute;
-        tm.tm_sec = st.wSecond;
-        return mktime (&tm);
-    }
-}
-#endif
-
 template    <>
 time_t  DateTime::As () const
 {
@@ -555,15 +538,15 @@ time_t  DateTime::As () const
     tm.tm_min = totalSecondsRemaining / 60;
     totalSecondsRemaining -= tm.tm_min * 60;
     tm.tm_sec = totalSecondsRemaining;
-    time_t  result  =   mktime (&tm);
-#if     qPlatform_Windows
-    Ensure (result == OLD_GetUNIXEpochTime_ (*this));       // OLD WINDOZE code was WRONG - neglecting the coorect for mktime () timezone nonsense
-#endif
-    /*
-     * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
-     * DateTime() object.
-     */
-    result -= Time::GetLocaltimeToGMTOffset (false);
+    time_t  result  =   ::mktime (&tm);     // from http://en.cppreference.com/w/cpp/chrono/c/mktime - -1 returned on error
+    if (result != -1) {
+        /*
+         * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
+         * DateTime() object.
+         */
+        result -= Time::GetLocaltimeToGMTOffset (false);
+    }
+    // NB: This CAN return -1 - if outside unix EPOCH time
     return result;
 }
 
