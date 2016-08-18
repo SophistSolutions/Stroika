@@ -169,8 +169,7 @@ namespace   {
             }
         }
         else {
-            time_t rawtime {};
-            (void)::time (&rawtime);
+            time_t rawtime { ::time () };
             struct tm   tmBuf {};
             char    ascTimeBuf[64]; // must be at least 26 bytes according to http://linux.die.net/man/3/localtime
             nowstr = NarrowSDK2SDKString  (::asctime_r (::localtime_r (&rawtime, &tmBuf), &ascTimeBuf[0]));
