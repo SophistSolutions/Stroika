@@ -223,6 +223,7 @@ ifeq  (1.1.,$(findstring 1.1.,$(VERSION)))
 	@patch --quiet -p0 CURRENT/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
 endif
 	@$(ECHO) "done"
+endif
 
 
 doCreate:	$(ZIPEDFILE)
@@ -236,6 +237,8 @@ doCreate:	$(ZIPEDFILE)
 	@mv $(EXTRACTED_DIRNAME) CURRENT;
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
+
+
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -253,6 +256,9 @@ endif
 endif
 
 doBuilds:
+	@
+	@#Run openssl configure scripts
+	@
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (output to CURRENT/CONFIG.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
@@ -270,6 +276,9 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 endif
 	@$(ECHO) "done"
 	@
+	@
+	@#Do actual OpenSSL build
+	@
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)...";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
@@ -281,6 +290,9 @@ ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 endif
 endif
 	@$(ECHO) "done"
+	@
+	@
+	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Installing (to $(BUILDS_OUTPUT_DIR)), and redirecting messages to CURRENT/INSTALL.OUT ...";
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -297,7 +309,9 @@ ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 endif
 endif
 	@$(ECHO) "done"
-endif
+	@
+	@#OpenSSL 1.0 VS support (using buildall_windows_.pl)  - LEGACY
+	@
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq  (1.0.,$(findstring 1.0.,$(VERSION)))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
@@ -343,6 +357,9 @@ endif
 	@touch $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/c_rehash.pl
 endif
 endif
+	@
+	@#Run Regression Tests (unless cross compiling)
+	@
 ifeq (false,$(CrossCompiling))
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 ifneq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
