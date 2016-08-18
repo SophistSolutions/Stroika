@@ -161,7 +161,7 @@ namespace   {
         SDKString nowstr;
         constexpr bool  kOldWay_ = false;   // https://stroika.atlassian.net/browse/STK-513
         if (kOldWay_) {
-            nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
+            nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eCurrentLocale).AsSDKString ();
             for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
                 if (*i == ':') {
                     *i = '-';
@@ -170,8 +170,10 @@ namespace   {
         }
         else {
             time_t rawtime {};
-            ::time (&rawtime);
-            nowstr = NarrowSDK2SDKString  (::asctime(::localtime (&rawtime)));
+            (void)::time (&rawtime);
+            struct tm   tmBuf {};
+            char    ascTimeBuf[64]; // must be at least 26 bytes according to http://linux.die.net/man/3/localtime
+            nowstr = NarrowSDK2SDKString  (::asctime_r (::localtime_r (&rawtime, &tmBuf), &ascTimeBuf[0]));
             if (nowstr.size () > 0) {
                 nowstr = nowstr.substr (0, nowstr.size () - 1); //trim trailing NL
             }
