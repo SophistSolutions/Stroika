@@ -159,11 +159,11 @@ namespace   {
             }
         }
         SDKString nowstr;
-        constexpr bool  kOldWay_ = false;   // https://stroika.atlassian.net/browse/STK-513
+        constexpr bool  kOldWay_ = true;   // https://stroika.atlassian.net/browse/STK-513
         if (kOldWay_) {
             nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eCurrentLocale).AsSDKString ();
             for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-                if (*i == ':') {
+                if (*i == ':' or * i == ' ') {
                     *i = '-';
                 }
             }
