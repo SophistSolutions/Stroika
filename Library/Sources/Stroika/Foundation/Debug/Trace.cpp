@@ -163,8 +163,11 @@ namespace   {
         if (kOldWay_) {
             nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eCurrentLocale).AsSDKString ();
             for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-                if (*i == ':' or * i == ' ') {
+                if (*i == ':') {
                     *i = '-';
+                }
+                if (*i == '/' or * i == ' ') {
+                    *i = '_';
                 }
             }
         }
