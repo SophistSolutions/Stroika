@@ -279,12 +279,18 @@ bool    Time::IsDaylightSavingsTime (const DateTime& d)
      *      and the other components are set to represent the specified time since the Epoch, but with their values forced to the
      *      ranges indicated in the <time.h> entry; the final value of tm_mday is not set until tm_mon and tm_year are determined.
      *
+     *  But http://linux.die.net/man/3/localtime says:
+     *      The mktime() function modifies the fields of the tm structure as follows: tm_wday and tm_yday are set to values determined
+     *      from the contents of the other fields; if structure members are outside their valid interval, they will be normalized
+     *      (so that, for example, 40 October is changed into 9 November); tm_isdst is set (regardless of its initial value)
+     *      to a positive value or to 0, respectively, to indicate whether DST is or is not in effect at the specified time.
      *
-     *  This is not totally clear - docs on mktime () don't specify unambiguously that this should work...
-     *  So far it seems too however, --LGP 2011-10-15
+     *  The POSIX part is not totally clear - but the linux docs do make it clear - that we can use this to test if is daylight savings time.
+     *
+     *  APPEARS to work since... --LGP 2011-10-15
      */
     asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-    (void)::mktime (&asTM);
+    Verify (::mktime (&asTM) != -1);
     return asTM.tm_isdst >= 1;
 }
 
