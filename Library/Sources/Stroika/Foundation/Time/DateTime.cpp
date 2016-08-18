@@ -577,8 +577,10 @@ tm  DateTime::As () const
     unsigned int    totalSecondsRemaining   =   fTimeOfDay_.GetAsSecondsCount ();
     tm.tm_hour = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+    Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60 * 60); // cuz would have gone into hours
     tm.tm_min = totalSecondsRemaining / 60;
     totalSecondsRemaining -= tm.tm_min * 60;
+    Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60); // cuz would have gone into minutes
     tm.tm_sec = totalSecondsRemaining;
     tm.tm_isdst = -1;
     Ensure (0 <= tm.tm_hour and tm.tm_hour <= 23);
