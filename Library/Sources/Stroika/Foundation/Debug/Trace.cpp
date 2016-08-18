@@ -158,10 +158,24 @@ namespace   {
                 }
             }
         }
-        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
-        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
-            if (*i == ':') {
-                *i = '-';
+        SDKString nowstr;
+        constexpr bool  kOldWay_ = false;   // https://stroika.atlassian.net/browse/STK-513
+        if (kOldWay_) {
+            nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
+            for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+                if (*i == ':') {
+                    *i = '-';
+                }
+            }
+        }
+        else {
+            time_t rawtime {};
+            ::time (&rawtime);
+            nowstr = NarrowSDK2SDKString  (::asctime(::localtime (&rawtime)));
+            for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+                if (*i == ':') {
+                    *i = '-';
+                }
             }
         }
         return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
