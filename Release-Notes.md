@@ -15,6 +15,86 @@ History
   </thead>
 
 
+ 
+
+
+
+
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a170">v2.0a170</a><br/>2016-08-19</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a169...v2.0a170</li>
+		<li>Raspberrypi regression tests now regularly run --sanitize address,undefined
+			<ul>
+				<li>required updating my raspberypi to 'testing' in /etc/apt/sources.list (for libasan.so.2)</li>
+				<li>added to regression-test-configurations</li>
+				<li>support new +REMOTE_RUN_PREFIX= hack on running remote regression tests - to work around issue with address sanitizer	
+					REMOTE_RUN_PREFIX=LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.2</li>
+			</ul>
+		</li>
+		<li>Alignas
+			<ul>
+				<li>Due to testing --sanitize undefined on raspberrypi...</li>
+				<li>Fixed several places where we had WRONG or missing alignas</li>
+				<li>workaround new qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy define</li>
+				<li>Not sure what bad alignment could have done (speed or bad semantics) - but COULD have caused subtle ARM bugs?</li>
+			</ul>
+		</li>
+		<li>https://stroika.atlassian.net/browse/STK-513 - had crash (originally due to time bug/issue) - which ONLY 
+			affected ARM/raspberry pi target, and ONLY when address sanitizer running. Side effect, I changed the format of
+			the filename (after lots of back and forth unimportant changes)
+		</li>
+		<li>Time bugs
+			<ul>
+				<li>longstanding bug with TimeOfDay::ClearSecondsField () - it must be a noop when called when 'empty' (not sure why only showed up with address sanitizer on arm)</li>
+				<li>docs on Time::IsDaylightSavingsTime () - and added VERIFY call - that mktime didnt fail - https://stroika.atlassian.net/browse/STK-515</li>
+				<li>Math::NearlyEquals (Time::DateTime l,... now uses As<time_t> isntead of ToTickCount()</li>
+				<li>more assert calls in tm  DateTime::As () etc</li>
+				<li>docs that TimeOfDay ensures result <  kMaxSecondsPerDay and added ensure where mktime retunrs -1 (wasnt checking</li>
+				<li>https://stroika.atlassian.net/browse/STK-516 DateTime::AddSeconds (int64_t seconds) - if adding days only - dont convert 'emty' datetime to 0 datetime</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebServer/ConnectionManager
+			<ul>
+				<li>Minor debug cleanups</li>
+				<li>improved error reporting in Frameworks/WebServer/ConnectionManager - defaults - for exceptions</li>
+			</ul>
+		</li>
+		<li>openssl 1.1 - https://stroika.atlassian.net/browse/STK-488
+			<ul>
+				<li>rogress on getting openssl 1.1 (beta 6) working on windows. Now builds tpc on windows (did for a while on unix); 
+				still not right - some flags wrong. But since I can switch between 1.0 and 1.1 for now - we can check this in</li>
+				<li>fixed GetString2InsertIntoBatchFileToInit64BitCompiles ()</li>
+			</ul>
+		</li>
+		<li>https://stroika.atlassian.net/browse/STK-166: support Duration * float, / float, and that fixes DateTimeRange::GetMidpoint()</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-v2.0a170-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-2.0a170-OUT.txt</li>xxx
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-2.0a170-OUT.txt</li>xxx
+				<li>vc++2k15 Update 3</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 
