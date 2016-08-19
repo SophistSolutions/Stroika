@@ -75,7 +75,7 @@ namespace   Stroika {
                 return ModuleDependency (Start, End);
             }
             template    <typename MODULE_DATA>
-            Byte    ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+            alignas(alignof(MODULE_DATA))   Byte    ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
             template    <typename MODULE_DATA>
             unsigned    short   ModuleInitializer<MODULE_DATA>::sInitCnt_;
 
