@@ -158,7 +158,7 @@ namespace   {
                 }
             }
         }
-        SDKString nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eCurrentLocale).AsSDKString ();
+        SDKString nowstr =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eISO8601).AsSDKString ();  // use eISO8601 instead of eCurrentLocale cuz locale CTOR not safe to construct before main
         for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
             if (*i == ':') {
                 *i = '-';
