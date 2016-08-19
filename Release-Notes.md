@@ -74,9 +74,9 @@ History
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-v2.0a170-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
-				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-2.0a170-OUT.txt</li>xxx
-				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-2.0a170-OUT.txt</li>xxx
-				<li>vc++2k15 Update 3</li>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-2.0a170-OUT.txt</li>
+				<li>Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-2.0a170-OUT.txt</li>
+				<li>vc++2k15 Update 3 </li>
 				<li>gcc 4.9</li>
 				<li>gcc 5.3</li>
 				<li>gcc 5.4</li>
