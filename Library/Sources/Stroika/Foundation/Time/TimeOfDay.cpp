@@ -271,18 +271,6 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
     }
 }
 
-/*
- * As of vs2k13 - qxxx_supports_locale_time_get_facet_get_time compiles and does something, but produces the wrong
- * answers quite freqntly (e.g. TimeOfDay::Parse (L"12:00:02 AM", Configuration::FindNamedLocale (L"en", L"us"))
- */
-#define qxxx_supports_locale_time_get_facet_get_time    1
-
-/*
-* As of vs2k13 - qxxx_supports_locale_time_get_facet_plain_get_PCT_X compiles and does something, but produces the wrong
-* answers quite freqntly (e.g. TimeOfDay::Parse (L"12:00:02 AM", Configuration::FindNamedLocale (L"en", L"us"))
-*/
-#define qxxx_supports_locale_time_get_facet_plain_get_PCT_X 0
-
 TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
 {
     if (rep.empty ()) {
@@ -292,7 +280,6 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     ios::iostate state = ios::goodbit;
     tm  when {};
 
-#if     qxxx_supports_locale_time_get_facet_get_time
     {
         const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
         wistringstream iss (rep.As<wstring> ());
@@ -301,20 +288,6 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
         istreambuf_iterator<wchar_t> itend;          // end-of-stream
         tmget.get_time (itbegin, itend, iss, state, &when);
     }
-#endif
-#if     qxxx_supports_locale_time_get_facet_plain_get_PCT_X
-    {
-        const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
-        wistringstream iss (rep.As<wstring> ());
-        //iss.imbue (l);        // not sure if/why needed/not/needed
-        istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
-        istreambuf_iterator<wchar_t> itend;          // end-of-stream
-        const wchar_t kPattern[] = L"%X";
-        //const wchar_t kPattern[] = L"%r";
-        //const wchar_t kPattern[] = L"%H : %M : %S";
-        tmget.get (itbegin, itend, iss, state, &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
-    }
-#endif
 
 #if     qPlatform_POSIX
     //%t        Any white space.
@@ -345,8 +318,8 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     if (state & ios::failbit) {
         string  tmp =   WideStringToNarrowSDKString (rep.As<wstring> ());
         for (auto i = std::begin (kFmtStrs2Try); (state & ios::failbit) and (i != std::end (kFmtStrs2Try)); ++i) {
-            memset (&when, 0, sizeof (when));
-            state = (strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
+            (void)::memset (&when, 0, sizeof (when));
+            state = (::strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
         }
     }
 #endif
