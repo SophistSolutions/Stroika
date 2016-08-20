@@ -251,7 +251,6 @@ namespace   {
                 catch (const Execution::TimeOutException&) {
                     caughtExceptAt =  Time::GetTickCount ();
                 }
-                Assert (caughtExceptAt == 0);
                 Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
                 if (not (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_)) {
                     DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
