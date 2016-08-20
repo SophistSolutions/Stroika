@@ -47,7 +47,8 @@
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.7")
 #endif
 #if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ > 8))
-#pragma message ("Info: Stroika untested with this version of clang++")
+#pragma message ("Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
 
 #elif   defined (__GNUC__)
@@ -59,7 +60,8 @@
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 #if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 1))
-#pragma message ("Info: Stroika untested with this version of GCC")
+#pragma message ("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
 
 #elif     defined (_MSC_VER)
@@ -69,7 +71,7 @@
 #define _MS_VS_2k15_Update1_FULLVER_    190023506
 #define _MS_VS_2k15_Update2_FULLVER_    190023918
 #define _MS_VS_2k15_Update3_FULLVER_    190024210
-#define _MS_VS_2k15_Update3_01_FULLVER_ 190024213
+#define _MS_VS_2k15_Update3_01_FULLVER_ 190024212
 
 #if      _MSC_VER < _MS_VS_2k15_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
@@ -80,7 +82,8 @@
 #if      _MSC_VER > _MS_VS_2k15_VER_
 #pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
 #elif    _MSC_FULL_VER > _MS_VS_2k15_Update3_01_FULLVER_
-#pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++")
+#pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
 
 #else
@@ -92,11 +95,18 @@
 
 /*
  *
-  * &&& ADJUST SO IS X if we've tested up to compierl ? but 1 if not - so this controls defaults for all compilers
-  @todo - INCOMPLETE
+ *  Stroika supports a wide variety of compilers with a wide variety of bugs and degrees of C++ standards conformance.
+ *
+ *  If you see the compile message "USING PREVIOUS COMPILER VERSION BUG DEFINES" - Stroika will use the set of bug defines
+ *  from the most recent version of the compiler available. That may nor may not work.
+ *
+ *  To FIX Stroika - force this true, and then add // in front of #ifndef       CompilerAndStdLib_AssumeBuggyIfNewerCheck_ and its endif,
+ *  and go through and test and adjust each bug define for the new version of the compiler.
+ *
  */
+#ifndef     CompilerAndStdLib_AssumeBuggyIfNewerCheck_
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   (X)
-//#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
+#endif
 
 
 
