@@ -9,12 +9,6 @@ ECHO?=	$(shell ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
 
-# Adding --output-sync=line helps reduce the echo errors - broken lines - in display output.
-# adding it first allows other command-line specs to take precedence
-# see https://www.gnu.org/software/make/manual/make.html#Parallel-Output
-MAKEFLAGS:=	output-sync=line $(MAKEFLAGS)
-
-
 help:
 	@$(ECHO) "Help for making Stroika:"
 	@$(ECHO) "Targets:"
