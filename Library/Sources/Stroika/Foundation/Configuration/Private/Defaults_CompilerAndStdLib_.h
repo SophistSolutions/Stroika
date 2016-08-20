@@ -75,13 +75,12 @@
 
 #if      _MSC_VER < _MS_VS_2k15_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
-#endif
-#if      _MSC_VER ==_MS_VS_2k15_VER_ && (_MSC_FULL_VER < _MS_VS_2k15_Update2_FULLVER_)
+#elif   _MSC_VER ==_MS_VS_2k15_VER_ && (_MSC_FULL_VER < _MS_VS_2k15_Update2_FULLVER_)
 #pragma message ("Warning: Stroika requires update 2 or later if using Microsoft Visual Studio.net 2015")
-#endif
-#if      _MSC_VER > _MS_VS_2k15_VER_
-#pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++")
-#elif    _MSC_FULL_VER > _MS_VS_2k15_Update3_01_FULLVER_
+#elif   _MSC_VER > _MS_VS_2k15_VER_
+#pragma message ("Info: This version of Stroika is untested with this version of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
+#elif   _MSC_FULL_VER > _MS_VS_2k15_Update3_01_FULLVER_
 #pragma message ("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
 #endif
