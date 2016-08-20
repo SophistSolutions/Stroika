@@ -1603,7 +1603,7 @@ namespace   {
             Test_SimpleStringAppends3_<wstring>, L"wstring",
             Test_SimpleStringAppends3_<String>, L"Charactes::String",
             310000,
-            10.2,
+            10.4,
             &failedTests
         );
         Tester (
