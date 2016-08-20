@@ -240,7 +240,7 @@ namespace   {
             // At this point the thread SHOULD block and wait 60.0 seconds
             {
                 const   Time::DurationSecondsType   kMargingOfErrorLo_  =   .5;
-                const   Time::DurationSecondsType   kMargingOfErrorHi_  =   1;      // if sys busy, thread could be put to sleep almost any amount of time
+                const   Time::DurationSecondsType   kMargingOfErrorHi_  =   1.5;      // if sys busy, thread could be put to sleep almost any amount of time
                 const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
                 Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
                 Time::DurationSecondsType   caughtExceptAt  =   0;
@@ -251,8 +251,13 @@ namespace   {
                 catch (const Execution::TimeOutException&) {
                     caughtExceptAt =  Time::GetTickCount ();
                 }
+                Assert (caughtExceptAt == 0);
                 Time::DurationSecondsType   expectedEndAt   =   startTestAt + kWaitOnAbortFor;
-                VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
+                if (not (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_)) {
+                    DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double (expectedEndAt), double (caughtExceptAt));
+                }
+                VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt);
+                VerifyTestResult (caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
             }
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
