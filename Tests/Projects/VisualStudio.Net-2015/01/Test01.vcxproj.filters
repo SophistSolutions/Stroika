@@ -24,12 +24,6 @@
     <ClCompile Include="..\..\..\01\Test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
-      <Filter>TestHarness</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\TestHarness\SimpleClass.h">
@@ -46,13 +40,7 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
-      <Filter>TestCommon</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h">
-      <Filter>TestCommon</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Queue.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h">

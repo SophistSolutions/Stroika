@@ -77,9 +77,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />

@@ -751,10 +751,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\01\Test.cpp">
     </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\SimpleClass.cpp">
-    </ClCompile>
-    <ClCompile Include="..\..\..\TestHarness\TestHarness.cpp">
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\TestHarness\SimpleClass.h" />
