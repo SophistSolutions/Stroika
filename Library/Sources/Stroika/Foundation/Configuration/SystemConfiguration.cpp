@@ -1150,7 +1150,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         try {
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
-            DataExchange::Variant::INI::Profile p = DataExchange::INI::Variant::Reader ().ReadProfile (s);
+            DataExchange::Variant::INI::Profile p = DataExchange::Variant::INI::Reader ().ReadProfile (s);
             tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
             tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
             tmp.fMajorMinorVersionString =  p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
