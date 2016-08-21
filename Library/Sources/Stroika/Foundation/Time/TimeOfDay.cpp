@@ -5,6 +5,7 @@
 
 #include    <algorithm>
 #include    <ctime>
+#include    <iomanip>
 #include    <sstream>
 
 #include    "../Characters/Format.h"
@@ -281,12 +282,21 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     tm  when {};
 
     {
-        const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
+        //DbgTrace (L"X=%s", rep.c_str ());
         wistringstream iss (rep.As<wstring> ());
-        //iss.imbue (l);        // not sure if/why needed/not/needed
         istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
         istreambuf_iterator<wchar_t> itend;          // end-of-stream
+        // as of C++ 11 tmget.get_time just does HMS, and get_time (%X) is more locale dependent - I think
+#if     qCompilerAndStdLib_std_get_time_pctx_Buggy
+        //iss.imbue (l);        // not sure if/why needed/not/needed
+        const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
         tmget.get_time (itbegin, itend, iss, state, &when);
+#else
+        // example from http://en.cppreference.com/w/cpp/io/manip/get_time
+        iss.imbue (l);
+        iss >> std::get_time (&when, L"%X");
+        state = iss.rdstate ();
+#endif
     }
 
 #if     qPlatform_POSIX
@@ -334,6 +344,9 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     if (state & ios::failbit) {
         Execution::Throw (FormatException::kThe);
     }
+    Assert (0 <= when.tm_hour and when.tm_hour <= 23);
+    Assert (0 <= when.tm_min and when.tm_min <= 59);
+    Assert (0 <= when.tm_sec and when.tm_sec <= 59);
     return TimeOfDay (when.tm_hour * 60 * 60 + when.tm_min * 60 + when.tm_sec);
 }
 

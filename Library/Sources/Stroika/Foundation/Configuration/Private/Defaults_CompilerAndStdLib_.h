@@ -290,6 +290,27 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 
+
+/*
+*/
+#ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
+
+#if     defined (_MSC_VER)
+// Still broken in _MS_VS_2k15_Update3_01_FULLVER_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k15_Update3_01_FULLVER_)
+#else
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy      0
+#endif
+
+#endif
+
+
+
+
+
+
+
+
 /*
 >c:\sandbox\stroikadev\tests\36\test.cpp(203): error C2127: 'kOrigValueInit_': illegal initialization of 'constexpr' entity with a non-constant expression
 */
