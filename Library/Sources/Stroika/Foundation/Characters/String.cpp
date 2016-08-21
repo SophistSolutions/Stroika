@@ -3802,3 +3802,1848 @@ double  Characters::CString::String2Float (const wstring& s)
     double  d   =   wcstod (s.c_str (), &e);
     return d;
 }
+
+
+
+
+#include    <cmath>
+#include    <cstdarg>
+#include    <cstdio>
+#include    <fstream>
+#include    <map>
+#include    <mutex>
+
+#include    "../Characters/LineEndings.h"
+#include    "../Execution/Common.h"
+#include    "../Execution/Module.h"
+#include    "../Execution/Thread.h"
+#include    "../Memory/Common.h"
+#include    "../Time/Realtime.h"
+
+#if     qTraceToFile
+#include    "../IO/FileSystem/WellKnownLocations.h"
+#include    "../Time/DateTime.h"
+#endif
+
+#include    "../Debug/Trace.h"
+
+
+
+using   namespace   Stroika::Foundation;
+
+using   namespace   Characters;
+using   namespace   Debug;
+using   namespace   Execution;
+
+
+using   Execution::make_unique_lock;
+
+
+
+/*
+ * TODO:
+ *
+ *      @todo   The buffering code here maybe now correct, but isn't simple/clear, so rewrite/improve...
+ *              -- LGP 2011-10-03
+ */
+
+
+
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qTraceToFile, qTraceToFile);
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qDefaultTracingOn, qDefaultTracingOn);
+
+
+
+namespace   {
+    // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
+    const   char    kBadChar_   =   ' ';
+    void    SquishBadCharacters_ (string* s)
+    {
+        RequireNotNull (s);
+        size_t  end =   s->length ();
+        // ignore last 2 in case crlf
+        if (end > 2) {
+            end -= 2;
+        }
+        for (size_t i = 0; i < end; ++i) {
+            if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                (*s)[i] = kBadChar_;
+            }
+        }
+    }
+    void    SquishBadCharacters_ (wstring* s)
+    {
+        RequireNotNull (s);
+        size_t  end =   s->length ();
+        // ignore last 2 in case crlf
+        if (end > 2) {
+            end -= 2;
+        }
+        for (size_t i = 0; i < end; ++i) {
+            if ((*s)[i] == '\n' or (*s)[i] == '\r') {
+                (*s)[i] = kBadChar_;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************ Private_::TraceModuleData_ ****************************
+ ********************************************************************************
+ */
+namespace   {
+    recursive_mutex*    sEmitTraceCritSec_   =   nullptr;
+#if     qTraceToFile
+    ofstream*   sTraceFile  =   nullptr;
+#endif
+#if     qDefaultTracingOn
+    thread_local    unsigned int    sTraceContextDepth_ { 0 };  // no need for atomic access because thread_local
+#endif
+
+    // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
+    Thread::IDType  sMainThread_                =   Execution::GetCurrentThreadID ();
+
+    string  mkPrintDashAdornment_ ()
+    {
+        size_t threadPrintWidth = FormatThreadID_A (sMainThread_).length () - 4;
+        string result;
+        result.reserve (threadPrintWidth / 2);
+        for (size_t i = 0; i < threadPrintWidth / 2; ++i) {
+            result.append ("-");
+        }
+        return result;
+    }
+    char        sThreadPrintDashAdornment_[32]; // use static array to avoid putting the string object into TraceModuleData_, and otherwise having to worry about use after main when calls DbgTrace()
+    bool        sDidOneTimePrimaryThreadMessage_    =   false;
+}
+
+
+
+
+
+#if     qTraceToFile
+namespace   {
+    SDKString mkTraceFileName_ ()
+    {
+        // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
+        // (could fix of course, but I'm not sure desirable - reasonable defaults)
+        //
+        // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
+        SDKString mfname;
+        {
+            try {
+                mfname = Execution::GetEXEPathT ();
+            }
+            catch (...) {
+                mfname = SDKSTR ("{unknown}");
+            }
+            size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
+            if (i != SDKString::npos) {
+                mfname = mfname.substr (i + 1);
+            }
+            i = mfname.rfind ('.');
+            if (i != SDKString::npos) {
+                mfname.erase (i);
+            }
+            for (auto i = mfname.begin (); i != mfname.end (); ++i) {
+                if (*i == ' ') {
+                    *i = '-';
+                }
+            }
+        }
+        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
+        for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
+            if (*i == ':') {
+                *i = '-';
+            }
+        }
+        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + CString::Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+    }
+}
+#endif
+
+Debug::Private_::TraceModuleData_::TraceModuleData_ ()
+    : fEmitter ()
+    , fStringDependency (Characters::MakeModuleDependency_String ())
+#if     qTraceToFile
+    , fTraceFileName (mkTraceFileName_ ())
+#endif
+{
+    CString::Copy (sThreadPrintDashAdornment_, NEltsOf (sThreadPrintDashAdornment_), mkPrintDashAdornment_ ().c_str ());
+    Assert (sEmitTraceCritSec_ == nullptr);
+    sEmitTraceCritSec_ = new recursive_mutex ();
+#if     qTraceToFile
+    Assert (sTraceFile == nullptr);
+    sTraceFile = new ofstream ();
+    sTraceFile->open (Emitter::Get ().GetTraceFileName ().c_str (), ios::out | ios::binary);
+#endif
+}
+
+Debug::Private_::TraceModuleData_::~TraceModuleData_ ()
+{
+    delete sEmitTraceCritSec_;
+    sEmitTraceCritSec_ = nullptr;
+#if     qTraceToFile
+    AssertNotNull (sTraceFile);
+    sTraceFile->close ();
+    delete sTraceFile;
+    sTraceFile = nullptr;
+#endif
+}
+
+
+
+
+
+
+
+
+namespace   {
+    inline  recursive_mutex&    GetCritSection_ ()
+    {
+        // obsolete comment because as of 2014-01-31 (or earlier) we are acutallly deleting this. But we do have
+        // some race where we sometimes - rarely - trigger this error. So we may need to re-instate that leak!!!
+        // and this comment!!!
+        //  --LGP 2014-02-01
+#if 0
+        // this is a 'false' or 'apparent' memory leak, but we allocate the object this way because in C++ things
+        // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
+        // someone might do a trace message.
+        //      -- LGP 2008-12-21
+#endif
+        EnsureNotNull (sEmitTraceCritSec_);
+        return *sEmitTraceCritSec_;
+    }
+}
+
+
+
+#if     qTraceToFile
+SDKString Emitter::GetTraceFileName () const
+{
+    return Execution::ModuleInitializer<Private_::TraceModuleData_>::Actual ().fTraceFileName;
+}
+#endif
+
+
+#if     qTraceToFile
+namespace   {
+    void    Emit2File_ (const char* text) noexcept
+    {
+        RequireNotNull (text);
+        RequireNotNull (sTraceFile);
+        try {
+            if (sTraceFile->is_open ()) {
+                (*sTraceFile) << text;
+                sTraceFile->flush ();
+            }
+        }
+        catch (...) {
+            AssertNotReached ();
+        }
+    }
+    void    Emit2File_ (const wchar_t* text) noexcept
+    {
+        RequireNotNull (text);
+        try {
+            Emit2File_ (WideStringToUTF8 (text).c_str ());
+        }
+        catch (...) {
+            AssertNotReached ();
+        }
+    }
+}
+#endif
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ******************** Debug::MakeModuleDependency_Trace *************************
+ ********************************************************************************
+ */
+Execution::ModuleDependency Debug::MakeModuleDependency_Trace ()
+{
+    return Execution::ModuleInitializer<Debug::Private_::TraceModuleData_>::GetDependency ();
+}
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************************ Emitter ***********************************
+ ********************************************************************************
+ */
+Emitter::Emitter ()
+    : fLastNCharBufCharCount_ (0)
+//  , fLastNCharBuf_CHAR_ ()
+//  , fLastNCharBuf_WCHAR_ ()
+    , fLastNCharBuf_WCHARFlag_ (false)
+    , fLastNCharBuf_Token_ (0)
+    , fLastNCharBuf_WriteTickcount_ (0.0f)
+{
+}
+
+/*
+@DESCRIPTION:   <p>This function takes a 'format' argument and then any number of additional arguments - exactly
+            like std::printf (). It calls std::vsprintf () internally. This can be called directly - regardless of the
+             @'qDefaultTracingOn' flag - but is typically just called indirectly by calling
+             @'DbgTrace'.</p>
+*/
+void    Emitter::EmitTraceMessage (const char* format, ...) noexcept
+{
+    Thread::SuppressInterruptionInContext   suppressAborts;
+    try {
+        va_list     argsList;
+        va_start (argsList, format);
+        string  tmp =   Characters::CString::FormatV (format, argsList);
+        va_end (argsList);
+        SquishBadCharacters_ (&tmp);
+        AssureHasLineTermination (&tmp);
+        DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (...) {
+        Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
+        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
+    }
+}
+
+void    Emitter::EmitTraceMessage (const wchar_t* format, ...) noexcept
+{
+    Thread::SuppressInterruptionInContext   suppressAborts;
+    try {
+        va_list     argsList;
+        va_start (argsList, format);
+        wstring tmp =   Characters::CString::FormatV (format, argsList);
+        va_end (argsList);
+        SquishBadCharacters_ (&tmp);
+        AssureHasLineTermination (&tmp);
+        DoEmitMessage_ (0, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (...) {
+        Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
+        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
+    }
+}
+
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const char* format, ...) noexcept
+{
+    Thread::SuppressInterruptionInContext   suppressAborts;
+    try {
+        va_list     argsList;
+        va_start (argsList, format);
+        string  tmp =   Characters::CString::FormatV (format, argsList);
+        va_end (argsList);
+        SquishBadCharacters_ (&tmp);
+        AssureHasLineTermination (&tmp);
+        return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (...) {
+        Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
+        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
+        return 0;
+    }
+}
+
+Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bufferLastNChars, const wchar_t* format, ...) noexcept
+{
+    Thread::SuppressInterruptionInContext   suppressAborts;
+    try {
+        va_list     argsList;
+        va_start (argsList, format);
+        wstring tmp =   Characters::CString::FormatV (format, argsList);
+        va_end (argsList);
+        SquishBadCharacters_ (&tmp);
+        AssureHasLineTermination (&tmp);
+        return DoEmitMessage_ (bufferLastNChars, Containers::Start (tmp), Containers::End (tmp));
+    }
+    catch (...) {
+        Assert (false); // Should NEVER happen anymore becuase of new vsnprintf() stuff
+        // Most likely indicates invalid format string for varargs parameters
+        DoEmit_ (L"EmitTraceMessage FAILED internally (buffer overflow?)");
+        return 0;
+    }
+}
+
+namespace {
+    inline  Time::DurationSecondsType   GetStartOfEpoch_ ()
+    {
+        // factored out of template Emitter::DoEmitMessage_ so we have ONE start of epoch - instead of one per type CHARTYPE!
+        static  Time::DurationSecondsType   sStartOfTime_    =   Time::GetTickCount (); // always set just once, and threadsafe
+        return sStartOfTime_;
+    }
+}
+
+template    <typename   CHARTYPE>
+Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
+{
+    auto    critSec { make_unique_lock (GetCritSection_ ()) };
+    FlushBufferedCharacters_ ();
+    Time::DurationSecondsType   curRelativeTime =   Time::GetTickCount () - GetStartOfEpoch_ ();
+    {
+        char    buf[1024];
+        Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
+        string  threadIDStr =   FormatThreadID_A (threadID);
+        if (sMainThread_ == threadID) {
+            Verify (::snprintf  (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
+            if (not sDidOneTimePrimaryThreadMessage_) {
+                sDidOneTimePrimaryThreadMessage_ = true;
+                char buf2[1024];
+                Verify ( ::snprintf  (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
+#if     __STDC_WANT_SECURE_LIB__
+                strcat_s (buf, buf2);
+#else
+                strcat (buf, buf2);
+#endif
+#if     qPlatform_POSIX
+                Verify (::snprintf  (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+#if     __STDC_WANT_SECURE_LIB__
+                strcat_s (buf, buf2);
+#else
+                strcat (buf, buf2);
+#endif
+#endif
+            }
+        }
+        else {
+            (void)::snprintf  (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
+        }
+        DoEmit_ (buf);
+    }
+#if     qDefaultTracingOn
+    unsigned int    contextDepth    =   TraceContextBumper::GetCount ();
+    for (unsigned int i = 0; i < contextDepth; ++i) {
+        DoEmit_ (L"\t");
+    }
+#endif
+    if (bufferLastNChars == 0) {
+        DoEmit_ (p, e);
+        fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
+    }
+    else {
+        Assert ((e - p) > static_cast<ptrdiff_t> (bufferLastNChars));
+        BufferNChars_ (bufferLastNChars, e - bufferLastNChars);
+        DoEmit_ (p, e - bufferLastNChars);
+        fLastNCharBuf_WriteTickcount_ = curRelativeTime + GetStartOfEpoch_ ();
+        fLastNCharBuf_Token_++; // even if not buffering, increment, so other buffers known to be invalid
+    }
+    return fLastNCharBuf_Token_;
+}
+
+void    Emitter::BufferNChars_ (size_t bufferLastNChars, const char* p)
+{
+    Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_CHAR_));
+    fLastNCharBufCharCount_ = bufferLastNChars;
+#if     __STDC_WANT_SECURE_LIB__
+    strcpy_s (fLastNCharBuf_CHAR_, p);
+#else
+    strcpy (fLastNCharBuf_CHAR_, p);
+#endif
+    fLastNCharBuf_WCHARFlag_ = false;
+}
+
+void    Emitter::BufferNChars_ (size_t bufferLastNChars, const wchar_t* p)
+{
+    Assert (bufferLastNChars < NEltsOf (fLastNCharBuf_WCHAR_));
+    fLastNCharBufCharCount_ = bufferLastNChars;
+#if     __STDC_WANT_SECURE_LIB__
+    ::wcscpy_s (fLastNCharBuf_WCHAR_, p);
+#else
+    ::wcscpy (fLastNCharBuf_WCHAR_, p);
+#endif
+    fLastNCharBuf_WCHARFlag_ = true;
+}
+
+void    Emitter::FlushBufferedCharacters_ ()
+{
+    if (fLastNCharBufCharCount_ != 0) {
+        if (fLastNCharBuf_WCHARFlag_) {
+            DoEmit_ (fLastNCharBuf_WCHAR_);
+        }
+        else {
+            DoEmit_ (fLastNCharBuf_CHAR_);
+        }
+        fLastNCharBufCharCount_ = 0;
+    }
+}
+
+bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
+{
+    auto    critSec { make_unique_lock (GetCritSection_ ()) };
+    // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
+    // hasn't been too long (we currently write 1/100th second timestamp resolution).
+    // then blank unput (ignore) buffered characters, and return true so caller knows to write
+    // funky replacement for those characters.
+    if (fLastNCharBuf_Token_ == token and (Time::GetTickCount () - fLastNCharBuf_WriteTickcount_ < 0.02f)) {
+        fLastNCharBufCharCount_ = 0;
+        return true;
+    }
+    return false;   // assume old behavior for now
+}
+
+void    Emitter::DoEmit_ (const char* p) noexcept
+{
+#if     qPlatform_Windows
+    constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
+    if (::strlen (p) < kMaxLen_) {
+        ::OutputDebugStringA (p);
+    }
+    else {
+        char    buf[1024];  // @todo if/when we always support constexpr can use that here!
+        memcpy (buf, p, sizeof (buf));
+        buf[NEltsOf(buf) - 1] = 0;
+        ::OutputDebugStringA (buf);
+        ::OutputDebugStringA ("...");
+        ::OutputDebugStringA (GetEOL<char> ());
+    }
+#endif
+#if     qTraceToFile
+    Emit2File_ (p);
+#endif
+}
+
+void    Emitter::DoEmit_ (const wchar_t* p) noexcept
+{
+#if     qPlatform_Windows
+    constexpr   size_t  kMaxLen_    =   1023;   // no docs on limit, but various hints the limit is somewhere between 1k and 4k. Empirically - just chops off after a point...
+    if (::wcslen (p) < kMaxLen_) {
+        ::OutputDebugStringW (p);
+    }
+    else {
+        wchar_t buf[1024];  // @todo if/when we always support constexpr can use that here!
+        memcpy (buf, p, sizeof (buf));
+        buf[NEltsOf(buf) - 1] = 0;
+        ::OutputDebugStringW (buf);
+        ::OutputDebugStringW (L"...");
+        ::OutputDebugStringW (GetEOL<wchar_t> ());
+    }
+#endif
+#if     qTraceToFile
+    Emit2File_ (p);
+#endif
+}
+
+void    Emitter::DoEmit_ (const char* p, const char* e) noexcept
+{
+    try {
+        size_t  len =   e - p;
+        Memory::SmallStackBuffer<char>  buf (len + 1);
+        (void)::memcpy (buf.begin (), p, len);
+        buf.begin () [len] = '\0';
+        DoEmit_ (buf.begin ());
+    }
+    catch (...) {
+        AssertNotReached ();
+    }
+}
+
+void    Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
+{
+    try {
+        size_t  len =   e - p;
+        Memory::SmallStackBuffer<wchar_t>   buf (len + 1);
+        (void)::memcpy (buf.begin (), p, len * sizeof (wchar_t));
+        buf.begin () [len] = '\0';
+        DoEmit_ (buf.begin ());
+    }
+    catch (...) {
+        AssertNotReached ();
+    }
+}
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************************** TraceContextBumper ******************************
+ ********************************************************************************
+ */
+#if     qDefaultTracingOn
+TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
+    : fDoEndMarker (true)
+      //,fSavedContextName_ ()
+{
+    fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
+    size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));
+    char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
+    *(std::end (fSavedContextName_) - 1) = '\0';
+    fSavedContextName_[len] = '\0';
+    IncCount_ ();
+}
+
+TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
+    : TraceContextBumper (mkwtrfromascii_ (contextName).data ())
+{
+}
+
+unsigned int    TraceContextBumper::GetCount ()
+{
+    return sTraceContextDepth_;
+}
+
+void    TraceContextBumper::IncCount_ () noexcept
+{
+    sTraceContextDepth_++;
+}
+
+void    TraceContextBumper::DecrCount_ () noexcept
+{
+    --sTraceContextDepth_;
+}
+
+TraceContextBumper::~TraceContextBumper ()
+{
+    DecrCount_ ();
+    if (fDoEndMarker) {
+        auto    critSec { make_unique_lock (GetCritSection_ ()) };
+        if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
+            Emitter::Get ().EmitUnadornedText ("/>");
+            Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
+        }
+        else {
+            Emitter::Get ().EmitTraceMessage (L"} </%s>", fSavedContextName_);
+        }
+    }
+}
+
+auto    TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_> {
+    array<wchar_t, kMaxContextNameLen_>  r;
+    auto ci = contextName;
+    for (; *ci != '\0'; ++ci)
+    {
+        Require (isascii (*ci));
+        size_t i = ci - contextName;
+        if (i < kMaxContextNameLen_ - 1) {
+            r[i] = *ci;
+        }
+        else {
+            break;
+        }
+    }
+    Assert (ci - contextName < kMaxContextNameLen_);
+    r[ci - contextName] = '\0';
+    return r;
+}
+#endif
+
+
+
+
+#include    <cmath>
+
+#include    "../Characters/CString/Utilities.h"
+#include    "../Characters/String_Constant.h"
+#include    "../Debug/Assertions.h"
+#include    "../Debug/Trace.h"
+#include    "../Linguistics/Words.h"
+
+#include    "../Time/Duration.h"
+
+using   namespace   Stroika;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Time;
+
+using   Characters::String_Constant;
+using   Debug::TraceContextBumper;
+
+using   namespace   Time;
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************** Duration::FormatException *******************************
+ ********************************************************************************
+ */
+Duration::FormatException::FormatException ()
+    : StringException (String_Constant (L"Invalid Duration Format"))
+{
+}
+
+const   Duration::FormatException   Duration::FormatException::kThe;
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************* Private_::Duration_ModuleData_ ***************************
+ ********************************************************************************
+ */
+
+Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
+    : fMin (numeric_limits<Duration::InternalNumericFormatType_>::lowest ())
+    , fMax (numeric_limits<Duration::InternalNumericFormatType_>::max ())
+{
+}
+
+
+
+/*
+ ********************************************************************************
+ *********************************** Duration ***********************************
+ ********************************************************************************
+ */
+const   Duration&    Duration::kMin = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin;
+const   Duration&    Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax;
+
+const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
+    {
+        String_Constant (L"year"), String_Constant (L"years"),
+        String_Constant (L"month"), String_Constant (L"months"),
+        String_Constant (L"week"), String_Constant (L"weeks"),
+        String_Constant (L"day"), String_Constant (L"days"),
+        String_Constant (L"hour"), String_Constant (L"hours"),
+        String_Constant (L"minute"), String_Constant (L"minutes"),
+        String_Constant (L"second"), String_Constant (L"seconds"),
+        String_Constant (L"ms"), String_Constant (L"ms"),
+        String_Constant (L"µs"), String_Constant (L"µs"),
+        String_Constant (L"ns"), String_Constant (L"ns")
+    }
+};
+
+const   Duration::AgePrettyPrintInfo   Duration::kDefaultAgePrettyPrintInfo = {
+    {
+        String_Constant (L"now"),
+        String_Constant (L"ago"),
+        String_Constant (L"from now"),
+    },
+    12 * 60 /*fNowThreshold*/
+};
+
+Duration::Duration ()
+    : fDurationRep_ ()
+{
+}
+
+Duration::Duration (const string& durationStr)
+    : fDurationRep_ (durationStr)
+{
+    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
+}
+
+Duration::Duration (const String& durationStr)
+    : fDurationRep_ (durationStr.AsASCII ())
+{
+    (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
+}
+
+Duration::Duration (int duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (long duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (long long duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (float duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (double duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (long double duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration&   Duration::operator+= (const Duration& rhs)
+{
+    *this = *this + rhs;
+    return *this;
+}
+
+void    Duration::clear ()
+{
+    fDurationRep_.clear ();
+}
+
+bool    Duration::empty () const
+{
+    return fDurationRep_.empty ();
+}
+
+template    <>
+int  Duration::As () const
+{
+    return static_cast<int> (ParseTime_ (fDurationRep_));       // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long int  Duration::As () const
+{
+    return static_cast<long int> (ParseTime_ (fDurationRep_));      // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long long int  Duration::As () const
+{
+    return static_cast<long long int> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+float  Duration::As () const
+{
+    return static_cast<float> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+double  Duration::As () const
+{
+    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long double  Duration::As () const
+{
+    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
+#endif
+
+            template    <>
+            std::chrono::duration<double>  Duration::As () const
+            {
+                return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
+            }
+            template    <>
+            std::chrono::seconds  Duration::As () const
+            {
+                return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
+            }
+            template    <>
+            std::chrono::milliseconds  Duration::As () const
+            {
+                return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
+            }
+            template    <>
+            std::chrono::microseconds  Duration::As () const
+            {
+                return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
+            }
+            template    <>
+            std::chrono::nanoseconds  Duration::As () const
+            {
+                return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
+            }
+            template    <>
+            String  Duration::As () const
+            {
+                return ASCIIStringToWide (fDurationRep_);
+            }
+
+#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
+        }
+    }
+}
+#endif
+
+template    <>
+wstring Duration::As () const
+{
+    return ASCIIStringToWide (fDurationRep_);
+}
+
+namespace   {
+    string::const_iterator  SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
+    {
+        // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).
+        // Still - no harm in accepting this - so long as we don't ever generate it...
+        while (i != end and isspace (*i)) {
+            ++i;
+        }
+        Ensure (i <= end);
+        return i;
+    }
+    string::const_iterator  FindFirstNonDigitOrDot_ (string::const_iterator i, string::const_iterator end)
+    {
+        while (i != end and (isdigit (*i) or * i == '.')) {
+            ++i;
+        }
+        Ensure (i <= end);
+        return i;
+    }
+
+    const   time_t  kSecondsPerMinute   =   60;
+    const   time_t  kSecondsPerHour     =   kSecondsPerMinute * 60;
+    const   time_t  kSecondsPerDay      =   kSecondsPerHour * 24;
+    const   time_t  kSecondsPerWeek     =   kSecondsPerDay * 7;
+    const   time_t  kSecondsPerMonth    =   kSecondsPerDay * 30;
+    const   time_t  kSecondsPerYear     =   kSecondsPerDay * 365;
+}
+
+String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
+{
+    return String{};
+}
+
+Characters::String Duration::Format (const PrettyPrintInfo& prettyPrintInfo) const
+{
+    return PrettyPrint (prettyPrintInfo);
+}
+
+Characters::String  Duration::ToString () const
+{
+    return Format ();
+}
+
+Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePrettyPrintInfo, const PrettyPrintInfo& prettyPrintInfo) const
+{
+    return String{};
+}
+
+Duration    Duration::operator- () const
+{
+    wstring tmp =   As<wstring> ();
+    if (tmp.empty ()) {
+        return *this;
+    }
+    if (tmp[0] == '-') {
+        return Duration (tmp.substr (1));
+    }
+    else {
+        return Duration (L"-" + tmp);
+    }
+}
+
+int Duration::Compare (const Duration& rhs) const
+{
+    Duration::InternalNumericFormatType_    n   =   As<Duration::InternalNumericFormatType_> () - rhs.As<Duration::InternalNumericFormatType_> ();
+    if (n < 0) {
+        return -1;
+    }
+    if (n > 0) {
+        return 1;
+    }
+    return 0;
+}
+
+Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
+{
+    //Debug::TraceContextBumper   ctx ("Duration::ParseTime_");
+    //DbgTrace ("(s = %s)", s.c_str ());
+    if (s.empty ()) {
+        return 0;
+    }
+    InternalNumericFormatType_  curVal  =   0;
+    bool    isNeg   =   false;
+    // compute and throw if bad...
+    string::const_iterator  i   =   SkipWhitespace_ (s.begin (), s.end ());
+    if  (*i == '-') {
+        isNeg = true;
+        i = SkipWhitespace_ (i + 1, s.end ());
+    }
+    if (*i == 'P') {
+        i = SkipWhitespace_ (i + 1, s.end ());
+    }
+    else {
+        Execution::Throw (FormatException::kThe);
+    }
+    bool    timePart    =   false;
+    while (i != s.end ()) {
+        if (*i == 'T') {
+            timePart = true;
+            i = SkipWhitespace_ (i + 1, s.end ());
+            continue;
+        }
+        string::const_iterator  firstDigitI =   i;
+        string::const_iterator  lastDigitI  =   FindFirstNonDigitOrDot_ (i, s.end ());
+        if (lastDigitI == s.end ()) {
+            Execution::Throw (FormatException::kThe);
+        }
+        if (firstDigitI == lastDigitI) {
+            Execution::Throw (FormatException::kThe);
+        }
+        /*
+         *  According to http://en.wikipedia.org/wiki/ISO_8601
+         *      "The smallest value used may also have a decimal fraction, as in "P0.5Y" to indicate
+         *      half a year. This decimal fraction may be specified with either a comma or a full stop,
+         *      as in "P0,5Y" or "P0.5Y"."
+         *
+         *  @todo   See todo in header: the first/last digit range could use '.' or ',' and I'm not sure atof is as flexible
+         *  test/verify!!!
+         */
+        InternalNumericFormatType_  n   =   atof (string (firstDigitI, lastDigitI).c_str ());
+        switch (*lastDigitI) {
+            case    'Y':
+                curVal += n * kSecondsPerYear;
+                break;
+            case    'M':
+                curVal += n * (timePart ? kSecondsPerMinute : kSecondsPerMonth);
+                break;
+            case    'W':
+                curVal += n * kSecondsPerWeek;
+                break;
+            case    'D':
+                curVal += n * kSecondsPerDay;
+                break;
+            case    'H':
+                curVal += n * kSecondsPerHour;
+                break;
+            case    'S':
+                curVal += n;
+                break;
+        }
+        i = SkipWhitespace_ (lastDigitI + 1, s.end ());
+    }
+    return isNeg ? -curVal : curVal;
+}
+
+namespace {
+    // take 3.1340000 and return 3.13
+    // take 300 and return 300
+    // take 300.0 and return 300
+    //
+    void    TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
+    {
+        RequireNotNull (sWithMaybeTrailingZeros);
+        char*   pDot = sWithMaybeTrailingZeros;
+        for (; *pDot != '.' and * pDot != '\0'; ++pDot)
+            ;
+        Assert (*pDot == '\0' or * pDot == '.');
+        if (*pDot != '\0') {
+            char*   pPastDot = pDot + 1;
+            char*   pPastLastZero = pPastDot + ::strlen (pPastDot);
+            Assert (*pPastLastZero == '\0');
+            for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
+                Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero);  // so ptr ref always valid
+                if (*(pPastLastZero - 1) == '0') {
+                    *(pPastLastZero - 1) = '\0';
+                }
+                else {
+                    break;
+                }
+            }
+            if (strcmp (pDot, ".0") == 0) {
+                *pDot = '\0';
+            }
+        }
+    }
+#if     qDebug
+    struct Tester_ {
+        Tester_ ()
+        {
+            {
+                char buf[1024] = "3.1340000";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "3.134");
+            }
+            {
+                char buf[1024] = "300";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "300");
+            }
+            {
+                char buf[1024] = "300.0";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "300");
+            }
+        }
+    }   s_Tester_;
+#endif
+}
+
+#if     qCompilerAndStdLib_GCC_48_OptimizerBug
+// This code fails with -O2 or greater! Tried to see which particular optimization failed but not obvious...
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+#endif
+string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
+{
+    //Debug::TraceContextBumper   ctx ("Duration::UnParseTime_");
+    //DbgTrace ("(t = %f)", t);
+    bool                        isNeg       =   (t < 0);
+    InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
+    string  result;
+    result.reserve (50);
+    if (isNeg) {
+        result += "-";
+    }
+    result += "P";
+    if (timeLeft >= kSecondsPerYear) {
+        InternalNumericFormatType_    nYears = trunc (timeLeft / kSecondsPerYear);
+        Assert (nYears > 0.0);
+        if (nYears > 0.0) {
+            char buf[10 * 1024];
+            (void)snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
+            result += buf;
+            timeLeft -= nYears * kSecondsPerYear;
+            if (std::isinf (timeLeft) or timeLeft < 0) {
+                // some date numbers are so large, we cannot compute a number of days, weeks etc
+                // Also, for reasons which elude me (e.g. 32 bit gcc builds) this can go negative.
+                // Not strictly a bug (I don't think). Just roundoff.
+                timeLeft = 0.0;
+            }
+        }
+    }
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerYear);
+    if (timeLeft >= kSecondsPerMonth) {
+        unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
+        if (nMonths != 0) {
+            char buf[1024];
+            (void)snprintf (buf, sizeof (buf), "%dM", nMonths);
+            result += buf;
+            timeLeft -= nMonths * kSecondsPerMonth;
+        }
+    }
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMonth);
+    if (timeLeft >= kSecondsPerDay) {
+        unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
+        if (nDays != 0) {
+            char buf[1024];
+            (void)snprintf (buf, sizeof (buf), "%dD", nDays);
+            result += buf;
+            timeLeft -= nDays * kSecondsPerDay;
+        }
+    }
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerDay);
+    if (timeLeft > 0) {
+        result += "T";
+        if (timeLeft >= kSecondsPerHour) {
+            unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
+            if (nHours != 0) {
+                char buf[1024];
+                (void)snprintf (buf, sizeof (buf), "%dH", nHours);
+                result += buf;
+                timeLeft -= nHours * kSecondsPerHour;
+            }
+        }
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerHour);
+        if (timeLeft >= kSecondsPerMinute) {
+            unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
+            if (nMinutes != 0) {
+                char buf[1024];
+                (void)snprintf (buf, sizeof (buf), "%dM", nMinutes);
+                result += buf;
+                timeLeft -= nMinutes * kSecondsPerMinute;
+            }
+        }
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute);
+        if (timeLeft > 0.0) {
+            char buf[10 * 1024];
+            buf[0] = '\0';
+            // We used to use 1000, but that failed silently on AIX 7.1/pcc. And its a waste anyhow.
+            // I'm pretty sure we never need more than 20 or so digits here. And it wastes time.
+            // (100 works on AIX 7.1/gcc 4.9.2).
+            //
+            // Pick a slightly more aggressive number for now, to avoid the bugs/performance cost,
+            // and eventually totally rewrite how we handle this.
+            Verify (::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
+            TrimTrailingZerosInPlace_ (buf);
+            result += buf;
+            result += "S";
+        }
+    }
+    if (result.length () == 1) {
+        result += "T0S";
+    }
+    return result;
+}
+#if     qCompilerAndStdLib_GCC_48_OptimizerBug
+#pragma GCC pop_options
+#endif
+
+
+
+
+
+/*
+ ********************************************************************************
+ *************************** Time operators *************************************
+ ********************************************************************************
+ */
+Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
+{
+    // @todo - this convers to/from floats. This could be done more efficiently, and less lossily...
+    return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
+}
+
+
+
+
+
+
+
+#include    <algorithm>
+
+#if     qPlatform_Windows
+#include    <Windows.h>
+#elif   qPlatform_POSIX
+#include    <time.h>
+#endif
+
+#include    "../Debug/Assertions.h"
+#include    "../Memory/SmallStackBuffer.h"
+
+#include    "../Time/Realtime.h"
+
+using   namespace   Stroika;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Time;
+
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************************* Time::GetTickCount ***********************************
+ ********************************************************************************
+ */
+namespace {
+    inline  DurationSecondsType GetTickCount_ () noexcept
+    {
+#if     qPlatform_MacOS
+        return (DurationSecondsType (::TickCount ()) / 60.0);
+#elif   qPlatform_POSIX
+        timespec ts;
+        Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
+        return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
+#elif   qPlatform_Windows
+        static  DurationSecondsType sPerformanceFrequencyBasis_ = [] () -> DurationSecondsType {
+            LARGE_INTEGER   performanceFrequency;
+            if (::QueryPerformanceFrequency (&performanceFrequency) == 0)
+            {
+                return 0.0;
+            }
+            else {
+                return static_cast<DurationSecondsType> (performanceFrequency.QuadPart);
+            }
+        } ();
+        if (sPerformanceFrequencyBasis_ == 0.0) {
+#if     (_WIN32_WINNT >= 0x0600)
+            return (DurationSecondsType (::GetTickCount64 ()) / 1000.0);
+#else
+            DISABLE_COMPILER_MSC_WARNING_START(28159)
+            return (DurationSecondsType (::GetTickCount ()) / 1000.0);
+            DISABLE_COMPILER_MSC_WARNING_END(28159)
+#endif
+        }
+        LARGE_INTEGER   counter;
+        Verify (::QueryPerformanceCounter (&counter));
+        return static_cast<DurationSecondsType> (counter.QuadPart) / sPerformanceFrequencyBasis_;
+#else
+        return ::time (0);    //tmphack... not good but better than assert error
+#endif
+    }
+}
+DurationSecondsType Stroika::Foundation::Time::GetTickCount () noexcept
+{
+    static  const   DurationSecondsType kFirstTC_   =   GetTickCount_ ();
+    return GetTickCount_ () - kFirstTC_;
+}
+
+
+
+
+
+
+
+
+
+
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ */
+#include    "../StroikaPreComp.h"
+
+#include    <cassert>
+#include    <cstdlib>
+
+#include    "../Debug/Trace.h"
+
+#include    "../Debug/Assertions.h"
+
+#if     qPlatform_POSIX
+#include    <cstdio>
+#endif
+
+
+using   namespace   Stroika;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Debug;
+
+
+
+
+CompileTimeFlagChecker_SOURCE(Stroika::Foundation::Debug, qDebug, qDebug);
+
+
+
+
+#if     qDebug
+
+namespace   {
+    void    DefaultAssertionHandler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+    {
+        DbgTrace ("%s (%s) failed in '%s'; %s:%d",
+                  assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+                  assertionText == nullptr ? "" : assertionText,
+                  functionName == nullptr ? "" : functionName,
+                  fileName == nullptr ? "" : fileName,
+                  lineNum
+                 );
+#if     qPlatform_POSIX
+        fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n",
+                 assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+                 assertionText == nullptr ? "" : assertionText,
+                 functionName == nullptr ? "" : functionName,
+                 fileName == nullptr ? "" : fileName,
+                 lineNum
+                );
+#endif
+        DbgTrace ("ABORTING...");
+#if     qPlatform_POSIX
+        fprintf (stderr, "ABORTING...\n");
+#endif
+        abort ();   // if we ever get that far...
+    }
+}
+
+namespace {
+    AssertionHandlerType    sAssertFailureHandler_      =   DefaultAssertionHandler_;
+}
+
+
+AssertionHandlerType    Stroika::Foundation::Debug::GetAssertionHandler ()
+{
+    return sAssertFailureHandler_;
+}
+
+AssertionHandlerType    Stroika::Foundation::Debug::GetDefaultAssertionHandler ()
+{
+    return DefaultAssertionHandler_;
+}
+
+void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType assertionHandler)
+{
+    sAssertFailureHandler_ = (assertionHandler == nullptr) ? DefaultAssertionHandler_ : assertionHandler;
+}
+
+DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Winvalid-noreturn\"");
+// Cannot figure out how to disable this warning? -- LGP 2014-01-04
+//DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wenabled-by-default\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
+[[noreturn]]    void    Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
+{
+    static  bool    s_InTrap    =   false;
+    if (s_InTrap) {
+        // prevent infinite looping if we get an assertion triggered while processing an assertion.
+        // And ignore threading issues, because we are pragmatically aborting at this stage anyhow...
+        abort ();
+    }
+    s_InTrap = true;
+    try {
+        (sAssertFailureHandler_) (assertCategory, assertionText, fileName, lineNum, functionName);
+        s_InTrap = false;   // in case using some sort of assertion handler that allows for continuation
+    }
+    catch (...) {
+        s_InTrap = false;   // in case using some sort of assertion handler that allows for continuation
+        throw;
+    }
+}
+//DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wenabled-by-default\"");
+DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Winvalid-noreturn\"");
+#endif
+
+
+
+
+
+
+
+
+
+#include    <algorithm>
+#include    <climits>
+#include    <string>
+
+#include    "../Containers/Common.h"
+#include    "../Execution/Exceptions.h"
+#include    "../Memory/Common.h"
+#include    "../Memory/BlockAllocated.h"
+
+#include    "Concrete/Private/String_BufferedStringRep.h"
+
+#include    "Concrete/String_ExternalMemoryOwnership_ApplicationLifetime.h"
+
+
+
+
+
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Characters::Concrete;
+
+
+using   Traversal::IteratorOwnerID;
+
+
+
+#if 0
+namespace   {
+    class   String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
+    private:
+        using   inherited   =   Concrete::Private::BufferedStringRep::_Rep;
+    public:
+        String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
+            : inherited (start, end)
+        {
+        }
+        virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
+        {
+            // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
+            // ignore suggested IteratorOwnerID
+            return Traversal::Iterable<Character>::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+        }
+    public:
+        DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
+    };
+}
+#endif
+
+
+
+
+class   String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep {
+private:
+    using   inherited   =   String::_IRep;
+public:
+    MyRep_ (const wchar_t* start, const wchar_t* end)
+        : inherited (start, end)
+    {
+        Require (start + ::wcslen (start) == end);
+    }
+    virtual _IterableSharedPtrIRep   Clone (IteratorOwnerID forIterableEnvelope) const override
+    {
+        /*
+         * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
+         * make a rep that is modifyable
+         */
+        return Traversal::Iterable<Character>::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+    }
+    virtual const wchar_t*  c_str_peek () const  noexcept override
+    {
+        // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime and ALWAYS with NUL-terminated string
+        Assert (_fStart + ::wcslen (_fStart) == _fEnd);
+        return _fStart;
+    }
+public:
+    DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
+};
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************** String_ExternalMemoryOwnership_ApplicationLifetime **************
+ ********************************************************************************
+ */
+String_ExternalMemoryOwnership_ApplicationLifetime::String_ExternalMemoryOwnership_ApplicationLifetime (const wchar_t* start, const wchar_t* end)
+    : inherited (_SharedPtrIRep (new MyRep_ (start, end)))
+{
+    Require (*end == '\0');
+    Require (end == start + ::wcslen (start));  // require standard C-string
+}
+
+
+
+
+
+
+
+
+
+#include    "../Execution/Thread.h"
+
+#include    "../Memory/BlockAllocator.h"
+
+
+
+
+
+
+using   namespace   Stroika;
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Memory::Private_;
+using   namespace   Stroika::Foundation::Execution;
+
+using   namespace   Execution;
+
+
+
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+Memory::Private_::LockType_*    Memory::Private_::sLock_  =   nullptr;
+#endif
+
+
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+/*
+ ********************************************************************************
+ *********************** BlockAllocator_ModuleInit_ *****************************
+ ********************************************************************************
+ */
+BlockAllocator_ModuleInit_::BlockAllocator_ModuleInit_ ()
+{
+    Require (sLock_ == nullptr);
+    sLock_ = new Private_::LockType_ ();
+}
+
+BlockAllocator_ModuleInit_::~BlockAllocator_ModuleInit_ ()
+{
+    RequireNotNull (sLock_);
+    delete sLock_;
+    sLock_ = nullptr;
+}
+#endif
+
+
+
+
+
+/*
+ ********************************************************************************
+ ************** Memory::MakeModuleDependency_BlockAllocator *********************
+ ********************************************************************************
+ */
+Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocator ()
+{
+#if     qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+    return Execution::ModuleDependency ([] () {}, [] () {});
+#else
+    return Execution::ModuleInitializer<Private_::BlockAllocator_ModuleInit_>::GetDependency ();
+#endif
+}
+
+
+
+/*
+ ********************************************************************************
+ *********** Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ **************
+ ********************************************************************************
+ */
+#if     !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
+void    Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept
+{
+    /*
+     *  Logically this just does a lock acquire and assginemnt through pointers (swap). But
+     *  it checks for thread abort exceptions, and supresses that if needed, since this is noexcept
+     *  and can be used in DTOR. You can interrupt (abort) a thread while it deletes things.
+     */
+    try {
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
+#else
+        auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
+#endif
+        // push p onto the head of linked free list
+        (*(void**)p) = *staticNextLinkP;
+        * staticNextLinkP = p;
+    }
+    catch (const Execution::Thread::InterruptException&) {
+        Execution::Thread::SuppressInterruptionInContext  suppressContext;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+        MACRO_LOCK_GUARD_CONTEXT (Private_::GetLock_ ());
+#else
+        auto    critSec  { make_unique_lock (Private_::GetLock_ ()) };
+#endif
+        // push p onto the head of linked free list
+        (*(void**)p) = *staticNextLinkP;
+        *staticNextLinkP = p;
+    }
+}
+#endif
+
+
+
+
+
+
+
+
+
+
+#include    "../Characters/String_Constant.h"
+
+#include    "../Execution/TimeOutException.h"
+
+
+
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
+
+using   Characters::String_Constant;
+
+
+/*
+ ********************************************************************************
+ ********************************* TimeOutException *****************************
+ ********************************************************************************
+ */
+const   TimeOutException    TimeOutException::kThe;
+
+TimeOutException::TimeOutException ()
+    : StringException (String_Constant (L"Timeout Expired"))
+{
+}
+
+TimeOutException::TimeOutException (const Characters::String& message)
+    : StringException (message)
+{
+}
+
+
+
+
+
+
+
+
+#include    "../Execution/Thread.h"
+
+#include    "../Execution/SharedStaticData.h"
+
+
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
+
+
+/*
+ ********************************************************************************
+ ****************** Execution::Private_::SharedStaticData_DTORHelper_ ***********
+ ********************************************************************************
+ */
+bool    Execution::Private_::SharedStaticData_DTORHelper_ (
+#if     qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+    SpinLock* m,
+#else
+    mutex* m,
+#endif
+    unsigned int* cu
+)
+{
+    Thread::SuppressInterruptionInContext   suppressAborts;
+#if     qCompilerAndStdLib_make_unique_lock_IsSlow
+    MACRO_LOCK_GUARD_CONTEXT (*m);
+#else
+    auto    critSec { make_unique_lock (*m) };
+#endif
+    --(*cu);
+    if (*cu == 0) {
+        return true;
+    }
+    return false;
+
+}
+
+
+
+
+
+
+
+
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
+ */
+#include    "../StroikaPreComp.h"
+
+#include    "../Time/Duration.h"
+
+#include    "../Execution/Common.h"
+#include    "../Execution/TimeOutException.h"
+
+#include    "../Execution/WaitableEvent.h"
+
+
+using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
+
+
+using   Stroika::Foundation::Time::Duration;
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
+/*
+ * Design notes:
+ *
+ *      o   The use of condition variables is non-obvious. I haven't found good documentation, but
+ *          the best I've found would be
+ *              https://computing.llnl.gov/tutorials/pthreads/#ConVarOverview
+ *
+ *          In particular, on the surface, it looks like the mutex locks in Wait() and signal should prevent things
+ *          form working (deadlock). But they apparently do not cause a deadlock because
+ *              "pthread_cond_wait() blocks the calling thread until the specified condition is signalled.
+ *               This routine should be called while mutex is locked, and it will automatically release the
+ *               mutex while it waits. After signal is received and thread is awakened, mutex will be
+ *               automatically locked for use by the thread. The programmer is then responsible for
+ *               unlocking mutex when the thread is finished with it."
+ *
+ */
+
+
+
+/*
+ ********************************************************************************
+ ****************************** WaitableEvent::WE_ ******************************
+ ********************************************************************************
+ */
+void    WaitableEvent::WE_::WaitUntil (Time::DurationSecondsType timeoutAt)
+{
+    if (WaitUntilQuietly (timeoutAt) == kTIMEOUTBoolResult) {
+        // note - safe use of TimeOutException::kThe because you cannot really wait except when threads are running, so
+        // inside 'main' lifetime
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        // only thing Throw() helper does is DbgTrace ()- and that can make traces hard to read unless you are debugging a timeout /event issue
+        Throw (TimeOutException::kThe);
+#else
+        throw (TimeOutException::kThe);
+#endif
+    }
+}
+
+bool    WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("WaitableEvent::WE_::WaitUntil");
+    DbgTrace ("(timeout = %.2f)", timeoutAt);
+#endif
+    CheckForThreadInterruption ();
+    if (timeoutAt <= Time::GetTickCount ()) {
+        return kTIMEOUTBoolResult;
+    }
+
+    /*
+     *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
+     *  unlock.
+     */
+    std::unique_lock<mutex>     lock (fMutex);
+    /*
+     * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
+     * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
+     */
+    while (not fTriggered) {
+        CheckForThreadInterruption ();
+        Time::DurationSecondsType   remaining   =   timeoutAt - Time::GetTickCount ();
+        if (remaining < 0) {
+            return kTIMEOUTBoolResult;
+        }
+
+        /*
+         *  See WaitableEvent::SetThreadAbortCheckFrequency ();
+         */
+        remaining = min (remaining, fThreadAbortCheckFrequency);
+
+        if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
+            /*
+             *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
+             *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
+             *
+             *      Throw (TimeOutException::kThe);
+             */
+        }
+    }
+    if (fResetType == eAutoReset) {
+        // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
+        fTriggered = false ;   // autoreset
+    }
+    return not kTIMEOUTBoolResult;
+}
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************** WaitableEvent *******************************
+ ********************************************************************************
+ */
+#if     qDebug || qStroika_FeatureSupported_Valgrind
+WaitableEvent::~WaitableEvent ()
+{
+    Assert (fExtraWaitableEvents_.empty ());    // Cannot kill a waitable event while its being waited on by others
+}
+#endif
+
+void    WaitableEvent::Set ()
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx ("WaitableEvent::Set");
+#endif
+    fWE_.Set ();
+#if     qExecution_WaitableEvent_SupportWaitForMultipleObjects
+    auto    critSec { make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_) };
+    for (auto i : fExtraWaitableEvents_) {
+        i->Set ();
+    }
+#endif
+}
