@@ -266,9 +266,9 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/DataExchange/Archive", "Makefile-Foundation-DataExchange-Archive");
 		mkDirWithLinks3("Foundation/DataExchange/Archive/7z", "Makefile-Foundation-DataExchange-Archive-7z");
 		mkDirWithLinks3("Foundation/DataExchange/Archive/Zip", "Makefile-Foundation-DataExchange-Archive-Zip");
-		mkDirWithLinks2("Foundation/DataExchange/CharacterDelimitedLines", "Makefile-Foundation-DataExchange-CharacterDelimitedLines");
 		mkDirWithLinks2("Foundation/DataExchange/StructuredStreamEvents", "Makefile-Foundation-DataExchange-StructuredStreamEvents");
 		mkDirWithLinks2("Foundation/DataExchange/Variant", "Makefile-Foundation-DataExchange-Variant");
+		mkDirWithLinks3("Foundation/DataExchange/Variant/CharacterDelimitedLines", "Makefile-Foundation-DataExchange-Variant-CharacterDelimitedLines");
 		mkDirWithLinks3("Foundation/DataExchange/Variant/INI", "Makefile-Foundation-DataExchange-Variant-INI");
 		mkDirWithLinks3("Foundation/DataExchange/Variant/JSON", "Makefile-Foundation-DataExchange-Variant-JSON");
 		mkDirWithLinks3("Foundation/DataExchange/Variant/XML", "Makefile-Foundation-DataExchange-Variant-XML");
