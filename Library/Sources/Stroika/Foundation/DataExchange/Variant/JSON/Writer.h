@@ -75,9 +75,9 @@ namespace   Stroika {
                      *      JSON::Writer ().Write (VariantValue (m), Streams::iostream::OutputStreamFromStdOStream (stringBuf));
                      *      \endcode
                      */
-                    class   Writer : public DataExchange::Variant::VariantWriter {
+                    class   Writer : public Variant::Writer {
                     private:
-                        using   inherited   =   DataExchange::Variant::VariantWriter;
+                        using   inherited   =   Variant::Writer;
 
                     private:
                         class   Rep_;

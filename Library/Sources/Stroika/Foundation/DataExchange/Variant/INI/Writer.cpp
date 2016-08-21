@@ -22,7 +22,7 @@ using   Memory::Byte;
  ************************** DataExchange::INI::Writer ***************************
  ********************************************************************************
  */
-class   Variant::INI::Writer::Rep_ : public Variant::VariantWriter::_IRep {
+class   Variant::INI::Writer::Rep_ : public Variant::Writer::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:

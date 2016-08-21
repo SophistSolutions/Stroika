@@ -37,7 +37,7 @@ using   Traversal::Iterable;
  *********** DataExchange::::CharacterDelimitedLines::Reader ********************
  ********************************************************************************
  */
-class   Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::VariantReader::_IRep {
+class   Variant::CharacterDelimitedLines::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
     Set<Character>  fDelimiters_;
     Rep_ (const Set<Character>& columnDelimiters)

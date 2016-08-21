@@ -140,13 +140,13 @@ namespace   Stroika {
                 /**
                  *  Format serializer
                  */
-                static  const   Variant::VariantReader  kDefaultReader;
+                static  const   Variant::Reader  kDefaultReader;
 
             public:
                 /**
                  *  Format serializer
                  */
-                static  const   Variant::VariantWriter  kDefaultWriter;
+                static  const   Variant::Writer  kDefaultWriter;
 
             public:
                 /**
@@ -158,8 +158,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
-                    Variant::VariantReader reader = kDefaultReader,
-                    Variant::VariantWriter writer = kDefaultWriter
+                    Variant::Reader reader = kDefaultReader,
+                    Variant::Writer writer = kDefaultWriter
                 );
                 OptionsFile (
                     const String& modName,
@@ -169,8 +169,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
-                    Variant::VariantReader reader = kDefaultReader,
-                    Variant::VariantWriter writer = kDefaultWriter
+                    Variant::Reader reader = kDefaultReader,
+                    Variant::Writer writer = kDefaultWriter
                 );
                 OptionsFile (
                     const String& modName,
@@ -180,8 +180,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
                     LoggerType logger,
-                    Variant::VariantReader reader,
-                    Variant::VariantWriter writer,
+                    Variant::Reader reader,
+                    Variant::Writer writer,
                     const String& fileSuffix
                 );
 
@@ -251,8 +251,8 @@ namespace   Stroika {
                 ModuleNameToFileNameMapperType      fModuleNameToWriteFileNameMapper_;
                 ModuleNameToFileVersionMapperType   fModuleNameToFileVersionMapper_;
                 LoggerType                          fLogger_;
-                Variant::VariantReader              fReader_;
-                Variant::VariantWriter              fWriter_;
+                Variant::Reader                     fReader_;
+                Variant::Writer                     fWriter_;
                 String                              fFileSuffix_;
             };
 

@@ -21,25 +21,25 @@ using   Streams::iostream::InputStreamFromStdIStream;
 
 /*
  ********************************************************************************
- **************************** Variant::VariantReader ****************************
+ **************************** Variant::Reader ****************************
  ********************************************************************************
  */
-VariantValue    Variant::VariantReader::Read (const Traversal::Iterable<Characters::Character>& in)
+VariantValue    Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in)
 {
     return Read (Streams::TextReader (in));
 }
 
-VariantValue    Variant::VariantReader::Read (const Memory::BLOB& in)
+VariantValue    Variant::Reader::Read (const Memory::BLOB& in)
 {
     return Read (in.As<Streams::InputStream<Memory::Byte>> ());
 }
 
-VariantValue    Variant::VariantReader::Read (istream& in)
+VariantValue    Variant::Reader::Read (istream& in)
 {
     return Read (InputStreamFromStdIStream<Memory::Byte> (in));
 }
 
-VariantValue    Variant::VariantReader::Read (wistream& in)
+VariantValue    Variant::Reader::Read (wistream& in)
 {
     return Read (InputStreamFromStdIStream<Characters::Character> (in));
 }

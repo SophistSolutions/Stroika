@@ -426,7 +426,7 @@ namespace {
              *          look for them more, and stop when none left to look for (wont work if some like sreclaimable not found).
              */
             static  const   String_Constant kProcMemInfoFileName_ { L"/proc/meminfo" };
-            DataExchange::Variant::CharacterDelimitedLines::Reader	reader {{ ':', ' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader  reader {{ ':', ' ', '\t' }};
             // Note - /procfs files always unseekable
             Optional<uint64_t>  memTotal;
             Optional<uint64_t>  slabReclaimable;
@@ -494,7 +494,7 @@ namespace {
                 {
                     unsigned    int nFound {};
                     // Note - /procfs files always unseekable
-                    DataExchange::Variant::CharacterDelimitedLines::Reader	reader {{ ' ', '\t' }};
+                    DataExchange::Variant::CharacterDelimitedLines::Reader  reader {{ ' ', '\t' }};
                     for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcVMStatFileName_, FileInputStream::eNotSeekable))) {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size(), line.empty () ? L"" : line[0].c_str ());

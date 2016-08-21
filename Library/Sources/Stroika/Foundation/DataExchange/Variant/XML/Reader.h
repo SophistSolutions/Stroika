@@ -45,9 +45,9 @@ namespace   Stroika {
                       like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
                       do or dont include xml processing instruction
                      */
-                    class Reader : public DataExchange::Variant::VariantReader {
+                    class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   DataExchange::Variant::VariantReader;
+                        using   inherited   =   Variant::Reader;
 
                     private:
                         class   Rep_;

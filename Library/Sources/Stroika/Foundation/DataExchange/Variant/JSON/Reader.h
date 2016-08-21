@@ -46,9 +46,9 @@ namespace   Stroika {
                      *
                      *  @todo add example usage (and docs)
                      */
-                    class   Reader : public DataExchange::Variant::VariantReader {
+                    class   Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   DataExchange::Variant::VariantReader;
+                        using   inherited   =   Variant::Reader;
 
                     private:
                         class   Rep_;

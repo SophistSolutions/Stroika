@@ -35,9 +35,9 @@ namespace   Stroika {
 
                     /**
                      */
-                    class Writer : public Variant::VariantWriter {
+                    class Writer : public Variant::Writer {
                     private:
-                        using   inherited   =   Variant::VariantWriter;
+                        using   inherited   =   Variant::Writer;
 
                     private:
                         class   Rep_;

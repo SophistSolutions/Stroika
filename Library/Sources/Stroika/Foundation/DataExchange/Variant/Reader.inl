@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_VariantReader_inl_
-#define _Stroika_Foundation_DataExchange_VariantReader_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_Variant_Reader_inl_
+#define _Stroika_Foundation_DataExchange_Variant_Reader_inl_  1
 
 
 /*
@@ -18,10 +18,10 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************** DataExchange::VariantReader::_Rep_Cloner ***********************
+                 *************** DataExchange::Reader::_Rep_Cloner ***********************
                  ********************************************************************************
                  */
-                inline   VariantReader::_SharedPtrIRep   VariantReader::_Rep_Cloner::Copy (const _IRep& t)
+                inline   Reader::_SharedPtrIRep   Reader::_Rep_Cloner::Copy (const _IRep& t)
                 {
                     return t.Clone ();
                 }
@@ -29,31 +29,31 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *************************** DataExchange::VariantReader ************************
+                 *************************** DataExchange::Reader ************************
                  ********************************************************************************
                  */
-                inline  VariantReader::VariantReader (const shared_ptr<_IRep>& rep)
+                inline  Reader::Reader (const shared_ptr<_IRep>& rep)
                     : fRep_ (rep)
                 {
                 }
-                inline  String  VariantReader::GetDefaultFileSuffix () const
+                inline  String  Reader::GetDefaultFileSuffix () const
                 {
                     return fRep_->GetDefaultFileSuffix ();
                 }
-                inline  VariantValue    VariantReader::Read (const Streams::InputStream<Memory::Byte>& in)
+                inline  VariantValue    Reader::Read (const Streams::InputStream<Memory::Byte>& in)
                 {
                     return fRep_->Read (in);
                 }
-                inline  VariantValue    VariantReader::Read (const Streams::InputStream<Characters::Character>& in)
+                inline  VariantValue    Reader::Read (const Streams::InputStream<Characters::Character>& in)
                 {
                     return fRep_->Read (in);
                 }
-                inline  VariantReader::_IRep&   VariantReader::_GetRep ()
+                inline  Reader::_IRep&   Reader::_GetRep ()
                 {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
                 }
-                inline  const VariantReader::_IRep&   VariantReader::_GetRep () const
+                inline  const Reader::_IRep&   Reader::_GetRep () const
                 {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
@@ -64,4 +64,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchange_VariantReader_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_Variant_Reader_inl_*/

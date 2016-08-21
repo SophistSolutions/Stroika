@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_VariantWriter_inl_
-#define _Stroika_Foundation_DataExchange_VariantWriter_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_Variant_Writer_inl_
+#define _Stroika_Foundation_DataExchange_Variant_Writer_inl_  1
 
 
 /*
@@ -18,10 +18,10 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ****************** DataExchange::VariantWriter::_Rep_Cloner ********************
+                 ********************** DataExchange::Writer::_Rep_Cloner ***********************
                  ********************************************************************************
                  */
-                inline   VariantWriter::_SharedPtrIRep   VariantWriter::_Rep_Cloner::Copy (const _IRep& t)
+                inline   Writer::_SharedPtrIRep   Writer::_Rep_Cloner::Copy (const _IRep& t)
                 {
                     return t.Clone ();
                 }
@@ -29,31 +29,31 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ DataExchange::VariantWriter ***************************
+                 ***************************** DataExchange::Writer *****************************
                  ********************************************************************************
                  */
-                inline  VariantWriter::VariantWriter (const shared_ptr<_IRep>& rep)
+                inline  Writer::Writer (const shared_ptr<_IRep>& rep)
                     : fRep_ (rep)
                 {
                 }
-                inline  String  VariantWriter::GetDefaultFileSuffix () const
+                inline  String  Writer::GetDefaultFileSuffix () const
                 {
                     return fRep_->GetDefaultFileSuffix ();
                 }
-                inline  void    VariantWriter::Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out)
+                inline  void    Writer::Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>& out)
                 {
                     fRep_->Write (v, out);
                 }
-                inline  void    VariantWriter::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out)
+                inline  void    Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>& out)
                 {
                     fRep_->Write (v, out);
                 }
-                inline  VariantWriter::_IRep&   VariantWriter::_GetRep ()
+                inline  Writer::_IRep&   Writer::_GetRep ()
                 {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
                 }
-                inline  const VariantWriter::_IRep&   VariantWriter::_GetRep () const
+                inline  const Writer::_IRep&   Writer::_GetRep () const
                 {
                     EnsureNotNull (fRep_.get ());
                     return *fRep_;
@@ -64,4 +64,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchange_VariantWriter_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_Variant_Writer_inl_*/

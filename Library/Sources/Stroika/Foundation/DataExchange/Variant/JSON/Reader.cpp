@@ -420,7 +420,7 @@ namespace   {
  ************************* Variant::JSON::Reader ********************************
  ********************************************************************************
  */
-class   Variant::JSON::Reader::Rep_ : public Variant::VariantReader::_IRep {
+class   Variant::JSON::Reader::Rep_ : public Variant::Reader::_IRep {
 public:
     virtual _SharedPtrIRep  Clone () const override
     {

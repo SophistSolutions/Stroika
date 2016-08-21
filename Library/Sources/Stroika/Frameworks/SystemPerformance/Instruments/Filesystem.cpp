@@ -1090,7 +1090,7 @@ namespace {
         Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using   Characters::String2Float;
-            Mapping<dev_t, PerfStats_>								result;
+            Mapping<dev_t, PerfStats_>                              result;
             DataExchange::Variant::CharacterDelimitedLines::Reader  reader {{' ', '\t' }};
             const   String_Constant kProcMemInfoFileName_ { L"/proc/diskstats" };
             // Note - /procfs files always unseekable

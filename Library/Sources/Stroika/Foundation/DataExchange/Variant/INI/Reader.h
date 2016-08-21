@@ -48,9 +48,9 @@ namespace   Stroika {
                     /**
                      *  See example usage in Regregssion test(@todo fixup)
                      */
-                    class Reader : public Variant::VariantReader {
+                    class Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   Variant::VariantReader;
+                        using   inherited   =   Variant::Reader;
 
                     private:
                         class   Rep_;

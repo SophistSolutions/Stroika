@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_VariantReader_h_
-#define _Stroika_Foundation_DataExchange_VariantReader_h_    1
+#ifndef _Stroika_Foundation_DataExchange_Variant_Reader_h_
+#define _Stroika_Foundation_DataExchange_Variant_Reader_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -16,10 +16,6 @@
 
 /**
  *  \file
- *
- * TODO:
- *      @todo   UNDOCUMENTED - PRELIMINARY
- *
  *
  *  \em Design Note:
  *      One question was whether or not to natively include support for istream sources or not.
@@ -49,15 +45,15 @@ namespace   Stroika {
                 /**
                  *  \brief  abstract class specifying interface for readers that map a source like XML or JSON to a VariantValue objects
                  */
-                class   VariantReader {
+                class   Reader {
                 protected:
                     class   _IRep;
 
                 protected:
-                    VariantReader () = delete; // @todo may want to allow?
+                    Reader () = delete; // @todo may want to allow?
 
                 protected:
-                    explicit VariantReader (const shared_ptr<_IRep>& rep);
+                    explicit Reader (const shared_ptr<_IRep>& rep);
 
                 public:
                     /**
@@ -92,7 +88,7 @@ namespace   Stroika {
                 };
 
 
-                class   VariantReader::_IRep {
+                class   Reader::_IRep {
                 public:
                     virtual _SharedPtrIRep  Clone () const                                                  =   0;
                     virtual String          GetDefaultFileSuffix () const                                   =   0;
@@ -115,4 +111,4 @@ namespace   Stroika {
  */
 #include    "Reader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_VariantReader_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_Variant_Reader_h_*/

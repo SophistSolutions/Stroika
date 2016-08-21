@@ -21,27 +21,27 @@ using   Streams::iostream::OutputStreamFromStdOStream;
 
 /*
  ********************************************************************************
- **************************** Variant::VariantWriter ****************************
+ **************************** Variant::Writer ****************************
  ********************************************************************************
  */
-void    Variant::VariantWriter::Write (const VariantValue& v, ostream& out)
+void    Variant::Writer::Write (const VariantValue& v, ostream& out)
 {
     Write (v, OutputStreamFromStdOStream<Memory::Byte> (out));
 }
 
-void    Variant::VariantWriter::Write (const VariantValue& v, wostream& out)
+void    Variant::Writer::Write (const VariantValue& v, wostream& out)
 {
     Write (v, OutputStreamFromStdOStream<Characters::Character> (out));
 }
 
-Memory::BLOB    Variant::VariantWriter::WriteAsBLOB (const VariantValue& v)
+Memory::BLOB    Variant::Writer::WriteAsBLOB (const VariantValue& v)
 {
     Streams::MemoryStream<Memory::Byte> buf;
     Write(v, buf);
     return buf.As<Memory::BLOB>();
 }
 
-String  Variant::VariantWriter::WriteAsString (const VariantValue& v)
+String  Variant::Writer::WriteAsString (const VariantValue& v)
 {
     return Streams::TextReader (WriteAsBLOB (v)).ReadAll ();
 }

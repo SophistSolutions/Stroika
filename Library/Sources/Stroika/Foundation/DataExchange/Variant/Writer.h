@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_VariantWriter_h_
-#define _Stroika_Foundation_DataExchange_VariantWriter_h_    1
+#ifndef _Stroika_Foundation_DataExchange_Variant_Writer_h_
+#define _Stroika_Foundation_DataExchange_Variant_Writer_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -15,9 +15,6 @@
 
 /**
  *  \file
- *
- * TODO:
- *      @todo   UNDOCUMENTED - PRELIMINARY
  *
  *  \em Design Note:
  *      One question was whether or not to natively include support for istream sources or not.
@@ -42,13 +39,13 @@ namespace   Stroika {
                 /**
                  *  \brief  abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
                  */
-                class   VariantWriter {
+                class   Writer {
                 protected:
                     class   _IRep;
 
                 protected:
-                    explicit VariantWriter (const shared_ptr<_IRep>& rep);
-                    VariantWriter () = delete; // @todo may want to allow?
+                    explicit Writer (const shared_ptr<_IRep>& rep);
+                    Writer () = delete; // @todo may want to allow?
 
                 public:
                     /**
@@ -93,7 +90,7 @@ namespace   Stroika {
                 };
 
 
-                class   VariantWriter::_IRep {
+                class   Writer::_IRep {
                 public:
                     virtual _SharedPtrIRep  Clone () const                                                                          =   0;
                     virtual String          GetDefaultFileSuffix () const                                                           =   0;
@@ -116,4 +113,4 @@ namespace   Stroika {
  */
 #include    "Writer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchange_VariantWriter_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_Variant_Writer_h_*/

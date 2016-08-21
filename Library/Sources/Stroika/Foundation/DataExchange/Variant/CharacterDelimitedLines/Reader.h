@@ -45,9 +45,9 @@ namespace   Stroika {
                      *
                      *  This COULD be easily used to read CSV files, for example.
                      */
-                    class   Reader : public VariantReader {
+                    class   Reader : public Variant::Reader {
                     private:
-                        using   inherited   =   DataExchange::Variant::VariantReader;
+                        using   inherited   =   Variant::Reader;
 
                     private:
                         class   Rep_;
