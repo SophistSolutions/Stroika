@@ -33,6 +33,7 @@ FETCHURLS=
 FETCHURLS+=https://curl.haxx.se/download/curl-$(VERSION).tar.gz
 FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
+INTERMEDIATEFILES_ROOT=../../IntermediateFiles/
 BUILDS_ROOT=../../Builds/
 
 
@@ -106,12 +107,12 @@ ORIG:	$(ZIPEDFILE)
 	@mv $(EXTRACTED_DIRNAME) ORIGS
 
 
-#note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
+#note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
 #didn't work (failed to find crypto lib)
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
-PKG_CONFIG_PATH=$(shell realpath `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
+PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 endif
 endif
 
@@ -216,6 +217,7 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT..."
+	@mkdir -p $(INTERMEDIATEFILES_ROOT)$(CONFIGURATION)/ThirdPartyComponents $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Configure (see CURRENT/CONFIGURE.OUT)..."
 	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
