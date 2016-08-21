@@ -11,12 +11,12 @@
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
-#include    "Stroika/Foundation/DataExchange/ArchiveReader.h"
+#include    "Stroika/Foundation/DataExchange/Archive/Reader.h"
 #if     qHasFeature_LZMA
-#include    "Stroika/Foundation/DataExchange/7z/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
 #if     qHasFeature_ZLib
-#include    "Stroika/Foundation/DataExchange/Zip/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #endif
 #include    "Stroika/Foundation/IO/FileSystem/Directory.h"
 #include    "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
@@ -130,17 +130,17 @@ namespace {
 
 
 namespace {
-    DataExchange::ArchiveReader OpenArchive_ (const String& archiveName)
+    DataExchange::Archive::Reader OpenArchive_ (const String& archiveName)
     {
         // @todo - must support other formats, have a registry, and autodetect
 #if     qHasFeature_LZMA
         if (archiveName.EndsWith (L".7z", Characters::CompareOptions::eCaseInsensitive)) {
-            return move (_7z::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
+            return move (Archive::_7z::Reader { IO::FileSystem::FileInputStream { archiveName } });
         }
 #endif
 #if   qHasFeature_ZLib
         if (archiveName.EndsWith (L".zip", Characters::CompareOptions::eCaseInsensitive)) {
-            return move (Zip::ArchiveReader { IO::FileSystem::FileInputStream { archiveName } });
+            return move (Archive::Zip::Reader { IO::FileSystem::FileInputStream { archiveName } });
         }
 #endif
         Execution::Throw (Execution::StringException (L"Unrecognized format"));
@@ -164,7 +164,7 @@ namespace {
     {
         Debug::TraceContextBumper ctx { L"ExtractArchive_" };
         DbgTrace (L"(archiveName=%s, toDir=%s)", archiveName.c_str (), toDirectory.c_str ());
-        DataExchange::ArchiveReader archive { OpenArchive_ (archiveName) };
+        DataExchange::Archive::Reader archive { OpenArchive_ (archiveName) };
         for (String i : archive.GetContainedFiles ()) {
             String  srcFileName =   i;
             String  trgFileName =   toDirectory + L"/" + srcFileName;
