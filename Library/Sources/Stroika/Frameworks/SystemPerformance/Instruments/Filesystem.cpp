@@ -830,7 +830,7 @@ namespace {
              *  So the last one with a given mount point in the file wins.
              */
             Mapping<String, MountInfo_>   result;
-            DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
             // Note - /procfs files always unseekable
             static  const   String_Constant kProcMountsFileName_     { L"/proc/mounts" };;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMountsFileName_, FileInputStream::eNotSeekable))) {
@@ -1090,8 +1090,8 @@ namespace {
         Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using   Characters::String2Float;
-            Mapping<dev_t, PerfStats_>                      result;
-            DataExchange::CharacterDelimitedLines::Reader   reader {{' ', '\t' }};
+            Mapping<dev_t, PerfStats_>								result;
+            DataExchange::Variant::CharacterDelimitedLines::Reader  reader {{' ', '\t' }};
             const   String_Constant kProcMemInfoFileName_ { L"/proc/diskstats" };
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {

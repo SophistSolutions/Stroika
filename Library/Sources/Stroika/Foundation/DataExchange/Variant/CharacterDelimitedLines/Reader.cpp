@@ -64,13 +64,13 @@ public:
     nonvirtual  Iterable<Sequence<String>>  ReadMatrix (const Streams::InputStream<Character>& in) const
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx ("DataExchange::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
+        Debug::TraceContextBumper ctx ("DataExchange::Variant::CharacterDelimitedLines::Reader::Rep_::ReadMatrix");
 #endif
         Sequence<Sequence<String>>  result;
         for (String line : in.ReadLines ()) {
             Sequence<String>    tokens  { line.Tokenize (fDelimiters_) };
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"DataExchange::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
+            DbgTrace (L"DataExchange::Variant::CharacterDelimitedLines::Reader::ReadMatrix: line=%s, tokenCount=%d", line.c_str (), tokens.size ());
             for (auto i : tokens) {
                 DbgTrace (L"token='%s'", i.c_str ());
             }

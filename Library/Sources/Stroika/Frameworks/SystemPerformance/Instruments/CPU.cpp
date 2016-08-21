@@ -397,7 +397,7 @@ namespace {
             POSIXSysTimeCaptureContext_   result;
             using   IO::FileSystem::FileInputStream;
             using   Characters::String2Float;
-            DataExchange::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{' ', '\t' }};
             const   String_Constant kFileName_ { L"/proc/stat" };
             // Note - /procfs files always unseekable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::mk (kFileName_, FileInputStream::eNotSeekable))) {

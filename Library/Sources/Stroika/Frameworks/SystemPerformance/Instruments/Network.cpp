@@ -415,7 +415,7 @@ namespace {
             using   Instruments::Network::InterfaceInfo;
             RequireNotNull (interfaceResults);
             RequireNotNull (accumSummary);
-            DataExchange::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{ ':', ' ', '\t' }};
             static  const   String_Constant kProcFileName_ { L"/proc/net/dev" };
             //static    const String_Constant kProcFileName_ { L"c:\\Sandbox\\VMSharedFolder\\proc-net-dev" };
             // Note - /procfs files always unseekable
@@ -470,7 +470,7 @@ namespace {
         {
             AssertNotReached ();    // dont use this for now
             RequireNotNull (accumSummary);
-            DataExchange::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
             static  const   String_Constant kProcFileName_ { L"/proc/net/netstat" };
             // Note - /procfs files always unseekable
             bool    firstTime = true;
@@ -502,7 +502,7 @@ namespace {
         void    Read_proc_net_snmp_ (IOStatistics* accumSummary)
         {
             RequireNotNull (accumSummary);
-            DataExchange::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
+            DataExchange::Variant::CharacterDelimitedLines::Reader reader {{  ' ', '\t' }};
             static  const   String_Constant kProcFileName_ { L"/proc/net/snmp" };
             // Note - /procfs files always unseekable
             bool    firstTime = true;
