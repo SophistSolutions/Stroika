@@ -6729,49 +6729,11 @@ bool    Thread::IsDone () const
  */
 string Execution::FormatThreadID_A (Thread::IDType threadID)
 {
-    Thread::SuppressInterruptionInContext   suppressAborts;
-
-    /*
-     *  stdc++ doesn't define a way to get the INT thread id, just a string. But they dont format it the
-     *  way we usually format a thread ID (hex, fixed width). So do that, so thread IDs look more consistent.
-     */
+	// IF YOU COMMENT OUT the stringstream below - the crash stops - this fixes the crash!
+#if 1
     stringstream   out;
-    out << threadID;
-
-#if     qPlatform_Windows
-    constexpr   size_t  kSizeOfThreadID_    =   sizeof (DWORD);                 // All MSFT SDK Thread APIs use DWORD for thread id
-#elif   qPlatform_POSIX
-    constexpr   size_t  kSizeOfThreadID_    =   sizeof (pthread_t);
-#else
-    // on MSFT this object is much larger than thread id because it includes handle and id
-    // Not a reliable measure anywhere, but probably our best guess
-    constexpr   size_t  kSizeOfThreadID_    =   sizeof (Thread::IDType);
 #endif
-
-    if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
-        uint64_t   threadIDInt =   0;
-        out >> threadIDInt;
-        return Characters::CString::Format ("0x%016llx", threadIDInt);
-    }
-    else {
-        uint32_t    threadIDInt =   0;
-        out >> threadIDInt;
-        /*
-         *  Often, it appears ThreadIDs IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-         *
-         *  However, I dont see any reliable way to tell this is the case, so don't bother for now. A trouble with checking on
-         *  a per-thread-id basis is that often the MAIN THREAD is 0, which is < 0xffff. Then we get one size and then
-         *  on the rest a differnt size, so the layout in the debug trace log looks funny.
-         */
-        constexpr   bool    kUse16BitThreadIDsIfTheyFit_ { false };
-        const   bool    kUse16Bit_ = kUse16BitThreadIDsIfTheyFit_ and threadIDInt <= 0xffff;
-        if (kUse16Bit_) {
-            return Characters::CString::Format ("0x%04x", threadIDInt);
-        }
-        else {
-            return Characters::CString::Format ("0x%08x", threadIDInt);
-        }
-    }
+	return string {"abcdefg"};
 }
 
 
@@ -6785,50 +6747,13 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadInterruption ()
 {
-    /*
-     *  NOTE: subtle but important that we use static Thread::InterruptException::kThe so we avoid
-     *  re-throw with string operations. Otheriwse we would have to use SuppressInterruptionInContext
-     *  just before the actual throw.
-     */
-    if (s_InterruptionSuppressDepth_ == 0) {
-        Thread::SuppressInterruptionInContext   suppressSoStringsDontThrow;
-        switch (s_Interrupting_.load ()) {
-            case InterruptFlagState_::eInterrupted:
-                Throw (Thread::InterruptException::kThe);
-            case InterruptFlagState_::eAborted:
-                Throw (Thread::AbortException::kThe);
-        }
-    }
-#if     qDefaultTracingOn
-    else if (s_Interrupting_ != InterruptFlagState_::eNone) {
-        static  atomic<unsigned int>    sSuperSuppress_ { };
-        if (++sSuperSuppress_ <= 1) {
-            IgnoreExceptionsForCall (DbgTrace ("Suppressed interupt throw: s_InterruptionSuppressDepth_=%d, s_Interrupting_=%d", s_InterruptionSuppressDepth_, s_Interrupting_.load ()));
-            sSuperSuppress_--;
-        }
-    }
-#endif
 }
 
 
 
 
-
-/*
- ********************************************************************************
- ********************************* Execution::Yield *****************************
- ********************************************************************************
- */
 void    Execution::Yield ()
 {
-    /*
-     *  Check before so we abort more quickly, and after since while we were sleeping we could be interupted.
-     *  And this (yeild) happens at a non-time critical point, so though checking before and after is redudnant,
-     *  not importantly
-     */
-    CheckForThreadInterruption ();
-    std::this_thread::yield ();
-    CheckForThreadInterruption ();
 }
 
 
@@ -6847,46 +6772,12 @@ using   Time::DurationSecondsType;
 
 
 
-/*
- ********************************************************************************
- ********************************** WaitSupport *********************************
- ********************************************************************************
- */
-
-/*
- *  Call this if you want to pump messages and want to block/wait for a while if need be (to avoid busy-waiting).
- */
 void    Windows::WaitAndPumpMessages (HWND dialog, Time::DurationSecondsType forNSecs)
 {
-    Windows::WaitAndPumpMessages (dialog, vector<HANDLE> (), forNSecs);
 }
 
 void    Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn, Time::DurationSecondsType forNSecs)
 {
-    DurationSecondsType startAt =   Time::GetTickCount ();
-    DurationSecondsType endAt   =   startAt + forNSecs;
-
-    for (DurationSecondsType timeLeft  = endAt - Time::GetTickCount (); timeLeft > 0; timeLeft  = endAt - Time::GetTickCount ()) {
-        DWORD   waitResult  =   ::MsgWaitForMultipleObjectsEx (static_cast<DWORD> (waitOn.size ()), Containers::Start (waitOn), Platform::Windows::Duration2Milliseconds (timeLeft), QS_ALLEVENTS, MWMO_INPUTAVAILABLE);
-        if (WAIT_OBJECT_0 <= waitResult and waitResult < WAIT_OBJECT_0 + waitOn.size ()) {
-            return;
-        }
-        MSG msg;
-        while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
-            try {
-                if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
-                    ::TranslateMessage (&msg);
-                    ::DispatchMessage (&msg);
-                }
-            }
-            catch (...) {
-            }
-            timeLeft  = endAt - Time::GetTickCount ();
-            if (timeLeft < 0) {
-                break;
-            }
-        }
-    }
 }
 
 /*
@@ -6895,68 +6786,13 @@ void    Windows::WaitAndPumpMessages (HWND dialog, const vector<HANDLE>& waitOn,
  */
 void    Windows::PumpMessagesWhileInputAvailable (HWND dialog, Time::DurationSecondsType atMostNSecs)
 {
-    DurationSecondsType startAt =   Time::GetTickCount ();
-    DurationSecondsType endAt   =   startAt + atMostNSecs;
-
-    MSG msg;
-    while (::PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) {
-        try {
-            if (dialog == nullptr or not ::IsDialogMessage (dialog, &msg)) {
-                ::TranslateMessage (&msg);
-                ::DispatchMessage (&msg);
-            }
-        }
-        catch (...) {
-        }
-        if (endAt < Time::GetTickCount ()) {
-            break;      // should be only rarely triggered, except if atMostNSecs <= 0
-        }
-    }
 }
 
 
-
-
-
-
-
-
-
-
-/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
- */
-#include    "../StroikaPreComp.h"
-
-#include    "../Execution/Exceptions.h"
-
-#if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
-#include    "../Characters/String.h"
-#endif
-
-
-using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
-
-
-
-
-
-/*
- ********************************************************************************
- ******************** Execution::Private_::GetBT_s/GetBT_ws *********************
- ********************************************************************************
- */
 #if     qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
 string  Execution::Private_::GetBT_s ()
 {
-    // KISS, and dont use string if you dont want truncation
-    wstring  tmp     =   GetBT_ws ();
-    string   result;
-    for (wchar_t c : tmp) {
-        result += static_cast<char> (c);
-    }
-    return result;
+	return string {};
 }
 wstring Execution::Private_::GetBT_ws ()
 {
