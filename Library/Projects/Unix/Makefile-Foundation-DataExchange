@@ -8,7 +8,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Atom.o\
-	$(ObjDir)ArchiveReader.o\
 	$(ObjDir)BadFormatException.o\
 	$(ObjDir)CheckedConverter.o\
 	$(ObjDir)InternetMediaType.o\
@@ -19,13 +18,12 @@ Objs	=	\
 	$(ObjDir)VariantWriter.o\
 
 SubDirs	=	\
-	7z \
+	Archive \
 	CharacterDelimitedLines \
 	INI \
 	JSON \
 	StructuredStreamEvents \
 	XML \
-	Zip \
 
 .PHONY:				$(SubDirs)
 
@@ -33,18 +31,17 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-SevenZ_OBJS := $(addprefix "7z/", $(shell $(MAKE) --directory 7z -s list-objs))
+Archive_OBJS := $(addprefix "7z/", $(shell $(MAKE) --directory Archive -s list-objs))
 CharacterDelimitedLines_OBJS := $(addprefix "CharacterDelimitedLines/", $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs))
 INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs))
 JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs))
 StructuredStreamEvents_OBJS := $(addprefix "StructuredStreamEvents/", $(shell $(MAKE) --directory StructuredStreamEvents -s list-objs))
 XML_OBJS := $(addprefix "XML/", $(shell $(MAKE) --directory XML -s list-objs))
-Zip_OBJS := $(addprefix "Zip/", $(shell $(MAKE) --directory Zip -s list-objs))
 
 
 list-objs::
-	@echo $(SevenZ_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(StructuredStreamEvents_OBJS) $(XML_OBJS) $(Zip_OBJS)
+	@echo $(Archive_OBJS) $(CharacterDelimitedLines_OBJS) $(INI_OBJS) $(JSON_OBJS) $(StructuredStreamEvents_OBJS) $(XML_OBJS)
 
 
-7z CharacterDelimitedLines INI JSON StructuredStreamEvents XML Zip:
+Archive CharacterDelimitedLines INI JSON StructuredStreamEvents XML:
 	@$(MAKE) --directory $@ -s

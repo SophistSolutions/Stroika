@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
 // @todo add Stroika wrapper on this (thirdpartyproducts)
 #ifdef  HAVE_BZIP2
 #include "bzlib.h"
 #endif
 
-#include    "../../Characters/Format.h"
-#include    "../../Execution/Finally.h"
-#include    "../../Streams/MemoryStream.h"
+#include    "../../../Characters/Format.h"
+#include    "../../../Execution/Finally.h"
+#include    "../../../Streams/MemoryStream.h"
 
 #include    "Reader.h"
 
@@ -157,6 +157,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::Archive;
 
 
 
@@ -2699,7 +2700,7 @@ namespace {
 
 
 #if     qHasFeature_ZLib
-class   Zip::ArchiveReader::Rep_ : public ArchiveReader::_IRep {
+class   Zip::Reader::Rep_ : public Reader::_IRep {
 private:
     struct MyISeekInStream  : zlib_filefunc64_def {
         Streams::InputStream<Memory::Byte>  fInStream_;
@@ -2930,8 +2931,8 @@ public:
     }
 };
 
-Zip::ArchiveReader::ArchiveReader (const Streams::InputStream<Memory::Byte>& in)
-    : DataExchange::ArchiveReader (make_shared<Rep_> (in))
+Zip::Reader::Reader (const Streams::InputStream<Memory::Byte>& in)
+    : DataExchange::Archive::Reader (make_shared<Rep_> (in))
 {
 }
 #endif

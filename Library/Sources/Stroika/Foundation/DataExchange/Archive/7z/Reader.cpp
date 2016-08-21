@@ -1,11 +1,11 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#include    "../../StroikaPreComp.h"
+#include    "../../../StroikaPreComp.h"
 
-#include    "../../Characters/Format.h"
-#include    "../../Execution/Finally.h"
-#include    "../../Streams/iostream/InputStreamFromStdIStream.h"
+#include    "../../../Characters/Format.h"
+#include    "../../../Execution/Finally.h"
+#include    "../../../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include    "Reader.h"
 
@@ -30,6 +30,7 @@ extern  "C" {
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::Archive;
 
 
 using   Streams::iostream::InputStreamFromStdIStream;
@@ -46,7 +47,7 @@ namespace {
     } sInitOnce_;
 }
 
-class   _7z::ArchiveReader::Rep_ : public ArchiveReader::_IRep {
+class   _7z::Reader::Rep_ : public Reader::_IRep {
 private:
     // could do smarter/block allocation or arena allocation, but KISS for now
     static    void* Alloc_ (void* p, size_t size)
@@ -182,8 +183,8 @@ public:
     }
 };
 
-_7z::ArchiveReader::ArchiveReader (const Streams::InputStream<Memory::Byte>& in)
-    : DataExchange::ArchiveReader (make_shared<Rep_> (in))
+_7z::Reader::Reader (const Streams::InputStream<Memory::Byte>& in)
+    : DataExchange::Archive::Reader (make_shared<Rep_> (in))
 {
 }
 #endif

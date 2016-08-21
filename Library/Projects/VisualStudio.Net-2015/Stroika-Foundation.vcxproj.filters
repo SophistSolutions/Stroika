@@ -163,12 +163,6 @@
     <Filter Include="Sources\Cryptography\OpenSSL">
       <UniqueIdentifier>{a561a186-939b-4767-ae45-66afe4224565}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\DataExchange\7z">
-      <UniqueIdentifier>{ec2c992c-013e-4939-8212-d4c2e7e10483}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sources\DataExchange\Zip">
-      <UniqueIdentifier>{7506af22-27f9-44e9-a583-60e131f67d8a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\DataExchange\StructuredStreamEvents">
       <UniqueIdentifier>{5e550cdb-ffe0-4576-8941-d7ec6508fb41}</UniqueIdentifier>
     </Filter>
@@ -183,6 +177,15 @@
     </Filter>
     <Filter Include="Sources\Containers\Adapters">
       <UniqueIdentifier>{bc8adc2c-562f-43c8-907f-a40e04c4c545}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchange\Archive">
+      <UniqueIdentifier>{46a8edcb-9121-45d3-8fda-98a6d4739152}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchange\Archive\Zip">
+      <UniqueIdentifier>{5ed8205c-6b87-4d38-911d-3a5bef807024}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchange\Archive\7z">
+      <UniqueIdentifier>{6a743719-94cd-453b-a85a-69caa11f8916}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -714,20 +717,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.cpp">
-      <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantWriter.cpp">
       <Filter>Sources\DataExchange</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.cpp">
-      <Filter>Sources\DataExchange\7z</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.cpp">
-      <Filter>Sources\DataExchange\Zip</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.cpp">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
@@ -761,6 +755,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\SQLite.cpp">
       <Filter>Sources\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.cpp">
+      <Filter>Sources\DataExchange\Archive\7z</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.cpp">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.cpp">
+      <Filter>Sources\DataExchange\Archive</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1677,9 +1680,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.h">
-      <Filter>Sources\DataExchange</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
@@ -1688,12 +1688,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
       <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\7z\Reader.h">
-      <Filter>Sources\DataExchange\7z</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Zip\Reader.h">
-      <Filter>Sources\DataExchange\Zip</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
@@ -1811,6 +1805,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\SQLite.h">
       <Filter>Sources\Database</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\7z\Reader.h">
+      <Filter>Sources\DataExchange\Archive\7z</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Zip\Reader.h">
+      <Filter>Sources\DataExchange\Archive\Zip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.h">
+      <Filter>Sources\DataExchange\Archive</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2649,9 +2652,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ArchiveReader.inl">
-      <Filter>Sources\DataExchange</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantReader.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
@@ -2753,6 +2753,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Database\SQLite.inl">
       <Filter>Sources\Database</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\Reader.inl">
+      <Filter>Sources\DataExchange\Archive</Filter>
     </None>
   </ItemGroup>
 </Project>

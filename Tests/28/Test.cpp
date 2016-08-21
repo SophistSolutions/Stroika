@@ -8,13 +8,14 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Sequence.h"
+#include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if     qHasFeature_ZLib
-#include    "Stroika/Foundation/DataExchange/Zip/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
 #endif
 #if     qHasFeature_LZMA
-#include    "Stroika/Foundation/DataExchange/7z/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
 #include    "Stroika/Foundation/DataExchange/INI/Reader.h"
 #include    "Stroika/Foundation/DataExchange/INI/Writer.h"
@@ -144,8 +145,8 @@ namespace {
                 };
                 Assert (sizeof (ksample_zip_7z_) == 2157);
 #if     qHasFeature_LZMA
-                _7z::ArchiveReader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
-                VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+                Archive::_7z::Reader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_7z_), end (ksample_zip_7z_)));
+                VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
                 {
                     using   Streams::InputStream;
@@ -291,9 +292,9 @@ namespace {
                 Assert (sizeof (ksample_zip_) == 2948);
 #if     qHasFeature_ZLib
                 // Not working yet
-                Zip::ArchiveReader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_), end (ksample_zip_)));
+                Archive::Zip::Reader  reader (Streams::ExternallyOwnedMemoryInputStream<Byte> (begin (ksample_zip_), end (ksample_zip_)));
 
-                VerifyTestResult ((reader.GetContainedFiles () == Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
+                VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String> {L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
                 {
                     using   Streams::InputStream;
                     using   Streams::TextReader;
