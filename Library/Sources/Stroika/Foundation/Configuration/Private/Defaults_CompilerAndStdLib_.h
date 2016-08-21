@@ -292,6 +292,7 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 
 
 /*
+ *	NOTE - when this fails - it compiles but crashes in MSFT implementaiton
 */
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
