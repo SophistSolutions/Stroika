@@ -71,7 +71,7 @@
 #define _MS_VS_2k15_Update1_FULLVER_    190023506
 #define _MS_VS_2k15_Update2_FULLVER_    190023918
 #define _MS_VS_2k15_Update3_FULLVER_    190024210
-#define _MS_VS_2k15_Update3_01_FULLVER_ 190024212
+#define _MS_VS_2k15_Update3_01_FULLVER_ 190024213
 
 #if      _MSC_VER < _MS_VS_2k15_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2015")
