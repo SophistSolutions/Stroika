@@ -40,7 +40,7 @@
 
 
 #if     qPlatform_POSIX
-#include    "../DataExchange/INI/Reader.h"
+#include    "../DataExchange/Variant/INI/Reader.h"
 #include    "../Execution/ProcessRunner.h"
 #include    "../Streams/iostream/FStreamSupport.h"
 #endif
@@ -1150,7 +1150,7 @@ SystemConfiguration::OperatingSystem    Configuration::GetSystemConfiguration_Op
         try {
             ifstream s;
             Streams::iostream::OpenInputFileStream (&s, L"/etc/os-release");
-            DataExchange::INI::Profile p = DataExchange::INI::Reader ().ReadProfile (s);
+            DataExchange::Variant::INI::Profile p = DataExchange::INI::Variant::Reader ().ReadProfile (s);
             tmp.fShortPrettyName = p.fUnnamedSection.fProperties.LookupValue (L"NAME");
             tmp.fPrettyNameWithMajorVersion = p.fUnnamedSection.fProperties.LookupValue (L"PRETTY_NAME");
             tmp.fMajorMinorVersionString =  p.fUnnamedSection.fProperties.LookupValue (L"VERSION_ID");
