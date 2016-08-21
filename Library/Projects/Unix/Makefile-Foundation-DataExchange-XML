@@ -1,13 +1,15 @@
-include ../../../../Configuration.mk
-include	../../../../SharedBuildRules.mk
-include	../../../../SharedMakeVariables.mk
+include ../../../Configuration.mk
+include	../../../SharedBuildRules.mk
+include	../../../SharedMakeVariables.mk
 
-SrcDir						=		$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/XML/
+SrcDir						=		$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/XML/
 
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Reader.o\
-	$(ObjDir)Writer.o\
+	$(ObjDir)Namespace.o\
+	$(ObjDir)SAXReader.o\
+	$(ObjDir)SerializationConfiguration.o\
+	$(ObjDir)WriterUtils.o\
 
 all:	$(Objs)
