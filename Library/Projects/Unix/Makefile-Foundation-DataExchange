@@ -31,7 +31,7 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Archive_OBJS := $(addprefix "7z/", $(shell $(MAKE) --directory Archive -s list-objs))
+Archive_OBJS := $(addprefix "Archive/", $(shell $(MAKE) --directory Archive -s list-objs))
 CharacterDelimitedLines_OBJS := $(addprefix "CharacterDelimitedLines/", $(shell $(MAKE) --directory CharacterDelimitedLines -s list-objs))
 INI_OBJS := $(addprefix "INI/", $(shell $(MAKE) --directory INI -s list-objs))
 JSON_OBJS := $(addprefix "JSON/", $(shell $(MAKE) --directory JSON -s list-objs))
