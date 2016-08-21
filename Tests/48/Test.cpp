@@ -29,12 +29,12 @@
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Configuration/StroikaVersion.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchange/INI/Reader.h"
-#include    "Stroika/Foundation/DataExchange/INI/Writer.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
-#include    "Stroika/Foundation/DataExchange/XML/Reader.h"
-#include    "Stroika/Foundation/DataExchange/XML/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/TimingTrace.h"
@@ -1343,7 +1343,7 @@ namespace {
         ScanDetails_    doRead_ (const InputStream<Byte> in)
         {
             using   namespace DataExchange;
-            VariantValue o { JSON::Reader ().Read (in) };
+            VariantValue o { Variant::JSON::Reader ().Read (in) };
             static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
             return kMapper_.ToObject<ScanDetails_> (o);
         }
@@ -1352,7 +1352,7 @@ namespace {
             using   namespace DataExchange;
             Streams::MemoryStream<Byte>    out;
             static  const   ObjectVariantMapper kMapper_ = GetPersistenceDetailsMapper_ ();
-            JSON::Writer ().Write (kMapper_.FromObject (scan), out);
+            Variant::JSON::Writer ().Write (kMapper_.FromObject (scan), out);
             return out.As<Memory::BLOB> ();
         }
         void    DoRunPerfTest ()

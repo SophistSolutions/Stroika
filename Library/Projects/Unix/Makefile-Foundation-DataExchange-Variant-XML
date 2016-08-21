@@ -7,7 +7,11 @@ SrcDir						=		$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Var
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)Namespace.o\
 	$(ObjDir)Reader.o\
+	$(ObjDir)SAXReader.o\
+	$(ObjDir)SerializationConfiguration.o\
 	$(ObjDir)Writer.o\
+	$(ObjDir)WriterUtils.o\
 
 all:	$(Objs)

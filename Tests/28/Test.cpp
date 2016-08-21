@@ -17,12 +17,12 @@
 #if     qHasFeature_LZMA
 #include    "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
 #endif
-#include    "Stroika/Foundation/DataExchange/INI/Reader.h"
-#include    "Stroika/Foundation/DataExchange/INI/Writer.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
-#include    "Stroika/Foundation/DataExchange/XML/Reader.h"
-#include    "Stroika/Foundation/DataExchange/XML/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/INI/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/INI/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/XML/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Streams/MemoryStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryInputStream.h"
@@ -343,7 +343,7 @@ namespace {
             tmp << "HOME_URL=\"http://www.ubuntu.com/\"" << endl;
             tmp << "SUPPORT_URL=\"http://help.ubuntu.com/\"" << endl;
             tmp << "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"" << endl;
-            INI::Profile p = INI::Reader ().ReadProfile (tmp);
+            Variant::INI::Profile p = Variant::INI::Reader ().ReadProfile (tmp);
             VerifyTestResult (p.fNamedSections.empty ());
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"NAME") == L"Ubuntu");
             VerifyTestResult (p.fUnnamedSection.fProperties.LookupValue (L"SUPPORT_URL") == L"http://help.ubuntu.com/");
@@ -369,7 +369,7 @@ namespace   {
             void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
                 Streams::MemoryStream<Byte>    out;
-                DataExchange::JSON::Writer ().Write (v, out);
+                DataExchange::Variant::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
                     if (x[i] != expected[i]) {
@@ -455,7 +455,7 @@ namespace   {
             {
                 stringstream    tmp;
                 tmp << v;
-                VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                VariantValue    v1  =   DataExchange::Variant::JSON::Reader ().Read (tmp);
                 VerifyTestResult (v1 == expected);
             }
 
@@ -500,7 +500,7 @@ namespace   {
                     const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
                     stringstream    tmp;
                     tmp << kExample;
-                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                    VariantValue    v1  =   DataExchange::Variant::JSON::Reader ().Read (tmp);
                     VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
                 }
 
@@ -514,7 +514,7 @@ namespace   {
                 stringstream    tmp;
                 tmp << s;
                 try {
-                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                    VariantValue    v1  =   DataExchange::Variant::JSON::Reader ().Read (tmp);
                     VerifyTestResult (false);   // should get exception
                 }
                 catch (const DataExchange::BadFormatException&) {
@@ -543,13 +543,13 @@ namespace   {
                 string  encodedRep;
                 {
                     Streams::MemoryStream<Byte>    out;
-                    DataExchange::JSON::Writer ().Write (v, out);
+                    DataExchange::Variant::JSON::Writer ().Write (v, out);
                     encodedRep = out.As<string> ();
                 }
                 {
                     stringstream    tmp;
                     tmp << encodedRep;
-                    VariantValue    vOut = DataExchange::JSON::Reader ().Read (tmp);
+                    VariantValue    vOut = DataExchange::Variant::JSON::Reader ().Read (tmp);
                     VerifyTestResult (vOut == v);
                 }
             }
@@ -615,7 +615,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    VariantValue v = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
                     VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -626,14 +626,14 @@ namespace   {
                     string  jsonExampleWithUpdatedMaxFilesReference;
                     {
                         Streams::MemoryStream<Byte>    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
                         jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
                     }
                     {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (locale ("C"));
                         Streams::MemoryStream<Byte>    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -642,7 +642,7 @@ namespace   {
                         // Verify change of locale has no effect on results
                         Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                         Streams::MemoryStream<Byte>    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                     }
 #endif
@@ -662,11 +662,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
+                    VariantValue    v1  =   DataExchange::Variant::JSON::Reader ().Read (tnmStrStrm);
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -695,7 +695,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    VariantValue v = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte> (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     Mapping<String, VariantValue>  mv  =   v.As<Mapping<String, VariantValue>> ();
                     VerifyTestResult (mv[L"T1"].GetType () == VariantValue::Type::eString);
                     VerifyTestResult (mv[L"T1"] == String ());
@@ -715,11 +715,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
+                    VariantValue    v1  =   DataExchange::Variant::JSON::Reader ().Read (tnmStrStrm);
                     // JSON reader comes back with strings - because date/datetime are not native types
                     if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
                         v1 = VariantValue (v1.As<Time::Date> ());
@@ -747,7 +747,7 @@ namespace   {
 
                     {
                         stringstream    tmpStrm;
-                        DataExchange::JSON::Writer ().Write (VariantValue (44905.3), tmpStrm);
+                        DataExchange::Variant::JSON::Writer ().Write (VariantValue (44905.3), tmpStrm);
                         string tmp = tmpStrm.str ();
                         VerifyTestResult (tmp.find (",") == string::npos);
                     }
@@ -767,7 +767,7 @@ namespace   {
             void    DoIt ()
             {
                 try {
-                    VariantValue    vOut    =   DataExchange::JSON::Reader ().Read (Streams::MemoryStream<Byte> (nullptr, nullptr));
+                    VariantValue    vOut    =   DataExchange::Variant::JSON::Reader ().Read (Streams::MemoryStream<Byte> (nullptr, nullptr));
                     VerifyTestResult (false);
                 }
                 catch (const DataExchange::BadFormatException&) {
@@ -783,13 +783,13 @@ namespace   {
                 string  encodedRep;
                 {
                     Streams::MemoryStream<Byte>    out;
-                    DataExchange::JSON::Writer ().Write (v, out);
+                    DataExchange::Variant::JSON::Writer ().Write (v, out);
                     encodedRep = out.As<string> ();
                 }
                 {
                     stringstream    tmp;
                     tmp << encodedRep;
-                    VariantValue    vOut = DataExchange::JSON::Reader ().Read (tmp);
+                    VariantValue    vOut = DataExchange::Variant::JSON::Reader ().Read (tmp);
                     VerifyTestResult (vOut == v);
                 }
             }
@@ -839,7 +839,7 @@ namespace   {
             void    DoIt ()
             {
                 {
-                    DataExchange::XML::Writer w;
+                    DataExchange::Variant::XML::Writer w;
                     VariantValue    v   =   VariantValue (44905.3);
                     Streams::MemoryStream<Byte>    out;
                     w.Write (v, out);
@@ -847,7 +847,7 @@ namespace   {
                     int breakhere = 1;
                 }
                 {
-                    DataExchange::XML::Writer w;
+                    DataExchange::Variant::XML::Writer w;
                     map<wstring, VariantValue>  mv;
                     mv[L"MaxFiles"] = VariantValue (405);
                     VariantValue    v   =    VariantValue (mv);
@@ -953,8 +953,8 @@ namespace   {
             using   Characters::String;
 
             auto roundTripCheck = [] (const VariantValue & vv) {
-                String          inputAsJSON     =   JSON::Writer ().WriteAsString (vv);
-                VariantValue    v               =   JSON::Reader ().Read (inputAsJSON);
+                String          inputAsJSON     =   Variant::JSON::Writer ().WriteAsString (vv);
+                VariantValue    v               =   Variant::JSON::Reader ().Read (inputAsJSON);
                 VerifyTestResult (v == vv);
             };
             roundTripCheck (VariantValue (3));

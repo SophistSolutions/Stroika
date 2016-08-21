@@ -11,10 +11,11 @@
 #include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 
+#include    "Variant/Reader.h"
+#include    "Variant/Writer.h"
+
 #include    "ObjectVariantMapper.h"
-#include    "VariantReader.h"
 #include    "VariantValue.h"
-#include    "VariantWriter.h"
 
 
 /**
@@ -139,13 +140,13 @@ namespace   Stroika {
                 /**
                  *  Format serializer
                  */
-                static  const   VariantReader  kDefaultReader;
+                static  const   Variant::VariantReader  kDefaultReader;
 
             public:
                 /**
                  *  Format serializer
                  */
-                static  const   VariantWriter  kDefaultWriter;
+                static  const   Variant::VariantWriter  kDefaultWriter;
 
             public:
                 /**
@@ -157,8 +158,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToFileNameMapper = mkFilenameMapper (L"Put-Your-App-Name-Here"),
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
-                    VariantReader reader = kDefaultReader,
-                    VariantWriter writer = kDefaultWriter
+                    Variant::VariantReader reader = kDefaultReader,
+                    Variant::VariantWriter writer = kDefaultWriter
                 );
                 OptionsFile (
                     const String& modName,
@@ -168,8 +169,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion = kDefaultModuleNameToFileVersionMapper,
                     LoggerType logger = kDefaultLogger,
-                    VariantReader reader = kDefaultReader,
-                    VariantWriter writer = kDefaultWriter
+                    Variant::VariantReader reader = kDefaultReader,
+                    Variant::VariantWriter writer = kDefaultWriter
                 );
                 OptionsFile (
                     const String& modName,
@@ -179,8 +180,8 @@ namespace   Stroika {
                     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
                     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
                     LoggerType logger,
-                    VariantReader reader,
-                    VariantWriter writer,
+                    Variant::VariantReader reader,
+                    Variant::VariantWriter writer,
                     const String& fileSuffix
                 );
 
@@ -250,8 +251,8 @@ namespace   Stroika {
                 ModuleNameToFileNameMapperType      fModuleNameToWriteFileNameMapper_;
                 ModuleNameToFileVersionMapperType   fModuleNameToFileVersionMapper_;
                 LoggerType                          fLogger_;
-                VariantReader                       fReader_;
-                VariantWriter                       fWriter_;
+                Variant::VariantReader              fReader_;
+                Variant::VariantWriter              fWriter_;
                 String                              fFileSuffix_;
             };
 

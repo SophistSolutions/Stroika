@@ -2,7 +2,7 @@ include ../../../../Configuration.mk
 include	../../../../SharedBuildRules.mk
 include	../../../../SharedMakeVariables.mk
 
-SrcDir						=		$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/XML/
+SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/DataExchange/Variant/JSON/
 
 vpath %cpp $(SrcDir)
 
@@ -11,3 +11,6 @@ Objs	=	\
 	$(ObjDir)Writer.o\
 
 all:	$(Objs)
+
+
+

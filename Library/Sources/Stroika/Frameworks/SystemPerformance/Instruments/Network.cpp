@@ -18,7 +18,7 @@
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/Trace.h"
-#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #if     qPlatform_Windows
 #include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif

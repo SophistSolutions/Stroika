@@ -11,7 +11,7 @@
 
 #include    "Stroika/Foundation/Characters/FloatConversion.h"
 #include    "Stroika/Foundation/Characters/ToString.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #if     qPlatform_POSIX
@@ -43,7 +43,7 @@ namespace {
     string  Serialize_ (VariantValue v, bool oneLineMode)
     {
         Streams::MemoryStream<Byte>    out;
-        DataExchange::JSON::Writer ().Write (v, out);
+        DataExchange::Variant::JSON::Writer ().Write (v, out);
         // strip CRLF - so shows up on one line
         String result = String::FromUTF8 (out.As<string> ());
         if (oneLineMode) {

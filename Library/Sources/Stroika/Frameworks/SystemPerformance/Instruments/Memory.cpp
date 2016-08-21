@@ -17,7 +17,7 @@
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Foundation/Debug/Trace.h"
-#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../Foundation/Execution/ProcessRunner.h"
 #include    "../../../Foundation/Execution/Sleep.h"

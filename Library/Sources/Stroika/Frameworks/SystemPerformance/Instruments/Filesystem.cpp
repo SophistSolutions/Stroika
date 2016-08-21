@@ -26,7 +26,7 @@
 #include    "../../../Foundation/Containers/Set.h"
 #include    "../../../Foundation/Containers/Sequence.h"
 #include    "../../../Foundation/Configuration/SystemConfiguration.h"
-#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 #include    "../../../Foundation/Execution/StringException.h"

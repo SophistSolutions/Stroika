@@ -12,10 +12,10 @@
 #include    "../IO/FileSystem/WellKnownLocations.h"
 #include    "../Streams/MemoryStream.h"
 
-#include    "JSON/Reader.h"
-#include    "JSON/Writer.h"
-#include    "XML/Reader.h"
-#include    "XML/Writer.h"
+#include    "Variant/JSON/Reader.h"
+#include    "Variant/JSON/Writer.h"
+#include    "Variant/XML/Reader.h"
+#include    "Variant/XML/Writer.h"
 #include    "VariantValue.h"
 
 #include    "OptionsFile.h"
@@ -131,8 +131,8 @@ const   OptionsFile::ModuleNameToFileVersionMapperType  OptionsFile::kDefaultMod
 
 
 // Consider using XML by default when more mature
-const   VariantReader  OptionsFile::kDefaultReader =   JSON::Reader ();
-const   VariantWriter  OptionsFile::kDefaultWriter =   JSON::Writer ();
+const   Variant::VariantReader  OptionsFile::kDefaultReader =   Variant::JSON::Reader ();
+const   Variant::VariantWriter  OptionsFile::kDefaultWriter =   Variant::JSON::Writer ();
 
 
 
@@ -146,8 +146,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    VariantReader reader,
-    VariantWriter writer
+    Variant::VariantReader reader,
+    Variant::VariantWriter writer
 )
     : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToFileNameMapper, moduleNameToFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
@@ -161,8 +161,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    VariantReader reader,
-    VariantWriter writer
+    Variant::VariantReader reader,
+    Variant::VariantWriter writer
 )
     : OptionsFile (modName, mapper, moduleUpgrader, moduleNameToReadFileNameMapper, moduleNameToWriteFileNameMapper, moduleNameToReadFileVersion, logger, reader, writer, reader.GetDefaultFileSuffix ())
 {
@@ -176,8 +176,8 @@ OptionsFile::OptionsFile (
     ModuleNameToFileNameMapperType moduleNameToWriteFileNameMapper,
     ModuleNameToFileVersionMapperType moduleNameToReadFileVersion,
     LoggerType logger,
-    VariantReader reader,
-    VariantWriter writer,
+    Variant::VariantReader reader,
+    Variant::VariantWriter writer,
     const String& fileSuffix
 )
     : fModuleName_ (modName)

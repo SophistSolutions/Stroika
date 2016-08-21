@@ -16,7 +16,7 @@
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Characters/String_Constant.h"
 #include    "../../../Foundation/Containers/Sequence.h"
-#include    "../../../Foundation/DataExchange/CharacterDelimitedLines/Reader.h"
+#include    "../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/Reader.h"
 #include    "../../../Foundation/Debug/Assertions.h"
 #include    "../../../Foundation/Execution/Sleep.h"
 

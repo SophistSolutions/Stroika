@@ -27,5 +27,5 @@ list-objs::
 	@echo $(SevenZ_OBJS) $(Zip_OBJS)
 
 
-7z Zip:
+$(SubDirs):
 	@$(MAKE) --directory $@ -s

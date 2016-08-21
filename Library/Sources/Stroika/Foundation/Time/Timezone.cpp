@@ -15,7 +15,7 @@
 #include    "../Characters/String.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Containers/Mapping.h"
-#include    "../DataExchange/INI/Reader.h"
+#include    "../DataExchange/Variant/INI/Reader.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
 #include    "DateTime.h"

@@ -9,8 +9,8 @@
 #include    "Stroika/Foundation/Containers/Bijection.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/IO/FileSystem/FileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/FileOutputStream.h"
@@ -137,20 +137,20 @@ namespace   {
         // This can then be serialized using
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::FileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            JSON::Writer ().Write (v, tmp);
+            Variant::JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::FileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmp));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -209,16 +209,16 @@ namespace   {
         // This can then be serialized using
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -272,16 +272,16 @@ namespace   {
         // This can then be serialized using
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -370,16 +370,16 @@ namespace   {
             // This can then be serialized using
 
             Streams::MemoryStream<Byte>   tmpStream;
-            JSON::Writer ().Write (v, tmpStream);
+            Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
             VerifyTestResult (tmp2 == tmp);
         }
 
@@ -401,16 +401,16 @@ namespace   {
             // This can then be serialized using
 
             Streams::MemoryStream<Byte>   tmpStream;
-            JSON::Writer ().Write (v, tmpStream);
+            Variant::JSON::Writer ().Write (v, tmpStream);
 
             if (kWrite2FileAsWell_) {
                 String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-                JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+                SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
             }
 
             // THEN deserialized, and mapped back to C++ object form
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
             VerifyTestResult (tmp2 == tmp);
         }
     }
@@ -474,16 +474,16 @@ namespace   {
         // This can then be serialized using
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -530,16 +530,16 @@ namespace   {
         // This can then be serialized using
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -626,16 +626,16 @@ namespace   {
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
+            Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream (fileName)));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
@@ -686,10 +686,10 @@ namespace   {
         VariantValue v = mapper.FromObject (tmp);
 
         Streams::MemoryStream<Byte>   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
+        Variant::JSON::Writer ().Write (v, tmpStream);
 
         // THEN deserialized, and mapped back to C++ object form
-        Derived_    tmp2 = mapper.ToObject<Derived_> (JSON::Reader ().Read (tmpStream));
+        Derived_    tmp2 = mapper.ToObject<Derived_> (Variant::JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }

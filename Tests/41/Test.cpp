@@ -9,7 +9,7 @@
 
 #include    "Stroika/Foundation/Characters/ToString.h"
 #include    "Stroika/Foundation/Cryptography/Encoding/Algorithm/Base64.h"
-#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Variant/JSON/Reader.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
@@ -134,7 +134,7 @@ namespace {
                 VerifyTestResult (r.GetSucceeded ());
                 VerifyTestResult (r.GetData ().size () > 1);
                 {
-                    VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                    VariantValue v = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     VerifyTestResult (vv.ContainsKey (L"args"));
                     VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get");
@@ -158,7 +158,7 @@ namespace {
                 Response    r   =   c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
                 VerifyTestResult (r.GetSucceeded ());
                 {
-                    VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                    VariantValue v = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     DbgTrace ("POST parsed response:");
                     for (auto i : vv) {
@@ -193,7 +193,7 @@ namespace {
                 Response    r   =   c.PUT (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
                 VerifyTestResult (r.GetSucceeded ());
                 {
-                    VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                    VariantValue v = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     DbgTrace ("PUT parsed response:");
                     for (auto i : vv) {
