@@ -18,6 +18,44 @@ History
  
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a171">v2.0a171</a><br/>2016-08-21</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a170...v2.0a171</li>
+		<li>Support _MS_VS_2k15_Update3_01_FULLVER_</li>
+		<li>https://stroika.atlassian.net/browse/STK-518 - CompilerAndStdLib_AssumeBuggyIfNewerCheck_ () to
+			try and improve the situation when people use Stroika with compilers newer than we've tested
+		</li>
+		<li>Added qCompilerAndStdLib_std_get_time_pctx_Buggy to capture reasons for workaround code
+			in TimeOfDay::Parse(...locale) - I think the std::get_time way is better but doesnt work on windows
+			cleanup some obsolete diffenrt stratgies in TimeOfDay::Parse()
+		</li>
+		<li>tweak kMargingOfErrorHi_ and VerifyTestResult () checks - to avoid/get better info on rare verifytestresults() test fauilure</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a171-OUT.txt</li>
+				<li>vc++2k15 Update 3.1</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 
 
