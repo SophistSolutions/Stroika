@@ -35,6 +35,7 @@ namespace   Stroika {
 
 
                 /**
+                 *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
                  */
                 class   Reader {
                 protected:
