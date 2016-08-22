@@ -2763,5 +2763,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.inl">
       <Filter>Sources\DataExchange\Variant</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Archive\ReadMe.md">
+      <Filter>Sources\DataExchange\Archive</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\ReadMe.md">
+      <Filter>Sources\DataExchange\Variant</Filter>
+    </None>
   </ItemGroup>
 </Project>
