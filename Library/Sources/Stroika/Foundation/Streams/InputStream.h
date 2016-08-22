@@ -196,7 +196,7 @@ namespace   Stroika {
                  *
                  *  Read/2
                  *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
-                 *      bufSize must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
+                 *      bufSize (intoEnd-intoStart) must always be >= 1. Returns 0 iff EOF, and otherwise number of bytes read.
                  *      BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *      without prejudice about how much more is available.
                  *
@@ -208,6 +208,9 @@ namespace   Stroika {
                  *      Would be LIKE Read/2 () - except NOT update any intrinsic seek offset. Input offset
                  *      would be where we read from, and would be updated to reflect where we read to. Change in
                  *      offset would be the same as the returned value.
+                 *
+                 *  All
+                 *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
                  */
                 nonvirtual  Memory::Optional<ElementType>  Read () const;
                 nonvirtual  size_t  Read (ElementType* intoStart, ElementType* intoEnd) const;
