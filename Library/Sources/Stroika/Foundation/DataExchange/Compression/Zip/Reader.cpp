@@ -16,7 +16,6 @@
 #if     qHasFeature_ZLib
 #include    <zlib.h>
 
-
 #if     defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
 #pragma comment (lib, "zlib.lib")
@@ -27,7 +26,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::DataExchange::Compression;
-using   namespace	Stroika::Foundation::Streams;
+using   namespace   Stroika::Foundation::Streams;
 
 
 
@@ -46,11 +45,13 @@ namespace {
     using   Memory::Byte;
     struct MyCompressionStream_ : InputStream<Byte> {
         struct  BaseRep_ : public _IRep  {
+            static  constexpr   size_t  CHUNK   =   16384;
             Streams::InputStream<Memory::Byte>  fInStream_;
-            z_stream strm;
+            z_stream                            fZStream_;
+            Byte                                fInBuf_[CHUNK];
             BaseRep_ (const Streams::InputStream<Memory::Byte>& in)
                 : fInStream_ (in)
-                , strm {}
+                , fZStream_ {}
             {
             }
             virtual ~BaseRep_ () = default;
@@ -68,70 +69,67 @@ namespace {
                 RequireNotReached ();
                 return SeekOffsetType {};
             }
+            void    _AssureInputAvailable ()
+            {
+                if (fZStream_.avail_in == 0) {
+                    fZStream_.avail_in = fInStream_.Read (begin (fInBuf_), end (fInBuf_));
+                    fZStream_.next_in = begin (fInBuf_);
+                }
+            }
         };
         struct  DeflateRep_ : BaseRep_  {
             DeflateRep_ (const Streams::InputStream<Memory::Byte>& in)
                 : BaseRep_ (in)
             {
-                int level = 1;
-                ThrowIfZLibErr_ (::deflateInit (&strm, level));
+                int level =  Z_DEFAULT_COMPRESSION;
+                ThrowIfZLibErr_ (::deflateInit (&fZStream_, level));
             }
             virtual ~DeflateRep_ ()
             {
-                Verify (::deflateEnd (&strm) == Z_OK);
+                Verify (::deflateEnd (&fZStream_) == Z_OK);
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+                _AssureInputAvailable ();
+
                 // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
                 //tmphack - do 1 byte at a time
                 Require (intoStart < intoEnd);
-                Byte b[1];
-                size_t n = fInStream_.Read (&b[0], &b[1]);
-                if (n == 0) {
-                    return 0;
-                }
-                Assert (n == 1);
-                strm.next_in = b;
-                strm.avail_in = n;
 
-                strm.avail_out = intoEnd - intoStart;
-                strm.next_out = intoStart;
-                ThrowIfZLibErr_ (::deflate (&strm, Z_NO_FLUSH));
+                fZStream_.avail_out = intoEnd - intoStart;
+                fZStream_.next_out = intoStart;
+                ThrowIfZLibErr_ (::deflate (&fZStream_, Z_NO_FLUSH));
 
-                Assert (static_cast<ptrdiff_t> (strm.avail_out) < intoEnd - intoStart);
-                return strm.avail_out;
+                ptrdiff_t have = CHUNK - fZStream_.avail_out;
+                Assert (have < intoEnd - intoStart);
+                return have;
             }
         };
         struct  InflateRep_ : BaseRep_  {
             InflateRep_ (const Streams::InputStream<Memory::Byte>& in)
                 : BaseRep_ (in)
             {
-                ThrowIfZLibErr_ (::inflateInit (&strm));
+                ThrowIfZLibErr_ (::inflateInit (&fZStream_));
             }
             virtual ~InflateRep_ ()
             {
-                Verify (::inflateEnd (&strm) == Z_OK);
+                Verify (::inflateEnd (&fZStream_) == Z_OK);
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+                _AssureInputAvailable ();
+
                 // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
                 //tmphack - do 1 byte at a time
                 Require (intoStart < intoEnd);
-                Byte b[1];
-                size_t n = fInStream_.Read (&b[0], &b[1]);
-                if (n == 0) {
-                    return 0;
-                }
-                Assert (n == 1);
-                strm.next_in = b;
-                strm.avail_in = n;
 
-                strm.avail_out = intoEnd - intoStart;
-                strm.next_out = intoStart;
-                ThrowIfZLibErr_ (::inflate (&strm, Z_NO_FLUSH));
+                fZStream_.avail_out = intoEnd - intoStart;
+                fZStream_.next_out = intoStart;
+                ThrowIfZLibErr_ (::inflate (&fZStream_, Z_NO_FLUSH));
 
-                Assert (static_cast<ptrdiff_t> (strm.avail_out) < intoEnd - intoStart);
-                return strm.avail_out;
+                ptrdiff_t have = CHUNK - fZStream_.avail_out;
+                Assert (have < intoEnd - intoStart);
+                return have;
             }
         };
         enum Compression {eCompression};
@@ -157,8 +155,6 @@ namespace {
 #if     qHasFeature_ZLib
 class   Zip::Reader::Rep_ : public Reader::_IRep {
 public:
-    Rep_ () = default;
-    ~Rep_ () = default;
     virtual InputStream<Byte>   Compress (const InputStream<Byte>& src) const override
     {
         return MyCompressionStream_ (MyCompressionStream_::eCompression, src);
