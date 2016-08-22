@@ -13,6 +13,7 @@
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
 #if     qHasFeature_ZLib
 #include    "Stroika/Foundation/DataExchange/Archive/Zip/Reader.h"
+#include    "Stroika/Foundation/DataExchange/Compression/Zip/Reader.h"
 #endif
 #if     qHasFeature_LZMA
 #include    "Stroika/Foundation/DataExchange/Archive/7z/Reader.h"
@@ -972,6 +973,25 @@ namespace   {
 
 
 
+
+namespace {
+    namespace   CompressionTests_ {
+        namespace PRIVATE_ {
+        }
+        void    DoAll_ ()
+        {
+            Memory::BLOB  kSample1_   =   Memory::BLOB::Hex ("aa1234abcd01010102030405");
+            Memory::BLOB  compressed  = Compression::Zip::Reader ().Compress (kSample1_);
+            Verify (kSample1_ == Compression::Zip::Reader ().Decompress (compressed));
+        }
+    }
+}
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -986,6 +1006,7 @@ namespace   {
 
         ValueReaderReadFromString::Tests_ ();
 
+        CompressionTests_::DoAll_ ();
     }
 }
 

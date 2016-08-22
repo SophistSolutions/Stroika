@@ -90,20 +90,33 @@ namespace {
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+Again:
                 _AssureInputAvailable ();
+                bool isAtSrcEOF = (fZStream_.avail_in == 0);
 
                 // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
                 //tmphack - do 1 byte at a time
                 Require (intoStart < intoEnd);
                 //int   flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
-                int   flush = fZStream_.avail_in == 0 ? Z_FINISH : Z_NO_FLUSH;
+                int   flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
 
                 fZStream_.avail_out = intoEnd - intoStart;
                 fZStream_.next_out = intoStart;
-                ThrowIfZLibErr_ (::deflate (&fZStream_, flush));
+                int ret;
+                switch (ret = ::deflate (&fZStream_, flush)) {
+                    case Z_OK:
+                        break;
+                    case Z_STREAM_END:
+                        break;
+                    default:
+                        ThrowIfZLibErr_ (ret);
+                }
 
-                ptrdiff_t have = CHUNK - fZStream_.avail_out;
-                Assert (have < intoEnd - intoStart);
+                ptrdiff_t have = (intoEnd - intoStart) - fZStream_.avail_out;
+                Assert (have < (intoEnd - intoStart));
+                if (have == 0 and not isAtSrcEOF and flush == Z_NO_FLUSH) {
+                    goto Again;
+                }
                 return have;
             }
         };
@@ -119,7 +132,9 @@ namespace {
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+Again:
                 _AssureInputAvailable ();
+                bool isAtSrcEOF = (fZStream_.avail_in == 0);
 
                 // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
                 //tmphack - do 1 byte at a time
@@ -127,10 +142,21 @@ namespace {
 
                 fZStream_.avail_out = intoEnd - intoStart;
                 fZStream_.next_out = intoStart;
-                ThrowIfZLibErr_ (::inflate (&fZStream_, Z_NO_FLUSH));
+                int ret;
+                switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {
+                    case Z_OK:
+                        break;
+                    case Z_STREAM_END:
+                        break;
+                    default:
+                        ThrowIfZLibErr_ (ret);
+                }
 
-                ptrdiff_t have = CHUNK - fZStream_.avail_out;
-                Assert (have < intoEnd - intoStart);
+                ptrdiff_t have = (intoEnd - intoStart) - fZStream_.avail_out;
+                Assert (have < (intoEnd - intoStart));
+                if (have == 0 and not isAtSrcEOF) {
+                    goto Again;
+                }
                 return have;
             }
         };
