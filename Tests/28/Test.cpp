@@ -977,12 +977,26 @@ namespace   {
 namespace {
     namespace   CompressionTests_ {
         namespace PRIVATE_ {
+            void    RoundTripCompressTest_ (const Memory::BLOB& b)
+            {
+#if     qHasFeature_ZLib
+                Memory::BLOB  compressed  = Compression::Zip::Reader ().Compress (b);
+                VerifyTestResult (b == Compression::Zip::Reader ().Decompress (compressed));
+#endif
+            }
         }
         void    DoAll_ ()
         {
-            Memory::BLOB  kSample1_   =   Memory::BLOB::Hex ("aa1234abcd01010102030405");
-            Memory::BLOB  compressed  = Compression::Zip::Reader ().Compress (kSample1_);
-            Verify (kSample1_ == Compression::Zip::Reader ().Decompress (compressed));
+            using   PRIVATE_::RoundTripCompressTest_;
+            RoundTripCompressTest_ (Memory::BLOB::Hex ("aa1234abcd01010102030405"));
+            {
+                Memory::BLOB    bigBlob =   Memory::BLOB::Hex ("00112233445566778899aabbccddeeff");
+                Assert (bigBlob.size () == 16);
+                while (bigBlob.size () < 256 * 1024) {
+                    bigBlob = bigBlob + bigBlob;
+                }
+                RoundTripCompressTest_ (bigBlob);
+            }
         }
     }
 }
