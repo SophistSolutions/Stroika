@@ -95,10 +95,12 @@ namespace {
                 // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
                 //tmphack - do 1 byte at a time
                 Require (intoStart < intoEnd);
+                //int   flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
+                int   flush = fZStream_.avail_in == 0 ? Z_FINISH : Z_NO_FLUSH;
 
                 fZStream_.avail_out = intoEnd - intoStart;
                 fZStream_.next_out = intoStart;
-                ThrowIfZLibErr_ (::deflate (&fZStream_, Z_NO_FLUSH));
+                ThrowIfZLibErr_ (::deflate (&fZStream_, flush));
 
                 ptrdiff_t have = CHUNK - fZStream_.avail_out;
                 Assert (have < intoEnd - intoStart);
