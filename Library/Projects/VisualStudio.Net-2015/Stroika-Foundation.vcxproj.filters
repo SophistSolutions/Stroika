@@ -193,6 +193,12 @@
     <Filter Include="Sources\DataExchange\Variant\XML">
       <UniqueIdentifier>{821bbfe1-b742-4d8d-8ede-728fbbae19aa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\DataExchange\Compression">
+      <UniqueIdentifier>{12087261-c2a0-4b4c-97df-e1d2c3a0011a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\DataExchange\Compression\Zip">
+      <UniqueIdentifier>{b0c453db-b682-4ccd-9511-38306d89ce9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -770,6 +776,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.cpp">
       <Filter>Sources\DataExchange\Variant</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.cpp">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.cpp">
+      <Filter>Sources\DataExchange\Compression\Zip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1821,6 +1833,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\Writer.h">
       <Filter>Sources\DataExchange\Variant</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.h">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Zip\Reader.h">
+      <Filter>Sources\DataExchange\Compression\Zip</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2768,6 +2786,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Variant\ReadMe.md">
       <Filter>Sources\DataExchange\Variant</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\Reader.inl">
+      <Filter>Sources\DataExchange\Compression</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Compression\ReadMe.md">
+      <Filter>Sources\DataExchange\Compression</Filter>
     </None>
   </ItemGroup>
 </Project>
