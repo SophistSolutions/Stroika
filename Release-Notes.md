@@ -20,10 +20,28 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a172">v2.0a172x</a><br/>2016-08-??</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a172">v2.0a172</a><br/>2016-08-22</td>
 <td>
 	<ul>
-		<li>TODO
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a171...v2.0a172</li>
+		<li>https://stroika.atlassian.net/browse/STK-519 - New Foundation/DataExchange/Compression/ module - with (limited but functional) zlib compression/decompression support (with regtests)</li>
+		<li>refactor - DataExchange::{ArchiveReader,7z,Zip} -> DataExchange::Archive/{Reader,XML,7z} (NOT SRC COMPATIBLE)</li>
+		<li>refactor- DataExchagne/{VariantReader,VariantWriter,someofxml,INI,JSON,CharacterDelimitedLines} -> DataExchange/Variant/ (NOT SRC COMPATIBLE)</li>
+		<li>changed PERFORMANCE REGTEST qPrintOutIfFailsToMeetPerformanceExpectations includes qAllowBlockAllocation and !!qDefaultTracingOn so we dont have to keep weakening timing constraints</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a172-OUT.txt</li>
+				<li>vc++2k15 Update 3.1</li>
+				<li>gcc 4.9</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
 		</li>
 	</ul>
 </td>
