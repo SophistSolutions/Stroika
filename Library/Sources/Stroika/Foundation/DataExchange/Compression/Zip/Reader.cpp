@@ -49,6 +49,7 @@ namespace {
             Streams::InputStream<Memory::Byte>  fInStream_;
             z_stream                            fZStream_;
             Byte                                fInBuf_[CHUNK];
+            SeekOffsetType                      _fSeekOffset {};
             BaseRep_ (const Streams::InputStream<Memory::Byte>& in)
                 : fInStream_ (in)
                 , fZStream_ {}
@@ -62,19 +63,20 @@ namespace {
             }
             virtual SeekOffsetType      GetReadOffset () const override
             {
-                return SeekOffsetType {};
+                return _fSeekOffset;
             }
             virtual SeekOffsetType      SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 RequireNotReached ();
                 return SeekOffsetType {};
             }
-            nonvirtual  void    _AssureInputAvailable ()
+            nonvirtual  bool    _AssureInputAvailableReturnTrueIfAtEOF ()
             {
                 if (fZStream_.avail_in == 0) {
                     fZStream_.avail_in = fInStream_.Read (begin (fInBuf_), end (fInBuf_));
                     fZStream_.next_in = begin (fInBuf_);
                 }
+                return fZStream_.avail_in == 0;
             }
         };
         struct  DeflateRep_ : BaseRep_  {
@@ -90,17 +92,16 @@ namespace {
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+                Require (intoStart < intoEnd);  // API rule for streams
 Again:
-                _AssureInputAvailable ();
-                bool isAtSrcEOF = (fZStream_.avail_in == 0);
+                bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
 
-                // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
-                //tmphack - do 1 byte at a time
                 Require (intoStart < intoEnd);
-                //int   flush = feof(source) ? Z_FINISH : Z_NO_FLUSH;
+                ptrdiff_t   outBufSize  =   intoEnd - intoStart;
+
                 int   flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
 
-                fZStream_.avail_out = intoEnd - intoStart;
+                fZStream_.avail_out = outBufSize;
                 fZStream_.next_out = intoStart;
                 int ret;
                 switch (ret = ::deflate (&fZStream_, flush)) {
@@ -112,12 +113,13 @@ Again:
                         ThrowIfZLibErr_ (ret);
                 }
 
-                ptrdiff_t have = (intoEnd - intoStart) - fZStream_.avail_out;
-                Assert (have < (intoEnd - intoStart));
-                if (have == 0 and not isAtSrcEOF and flush == Z_NO_FLUSH) {
+                ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
+                Assert (pulledOut <= outBufSize);
+                if (pulledOut == 0 and not isAtSrcEOF and flush == Z_NO_FLUSH) {
                     goto Again;
                 }
-                return have;
+                _fSeekOffset += pulledOut;
+                return pulledOut;
             }
         };
         struct  InflateRep_ : BaseRep_  {
@@ -132,15 +134,12 @@ Again:
             }
             virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
             {
+                Require (intoStart < intoEnd);  // API rule for streams
 Again:
-                _AssureInputAvailable ();
-                bool isAtSrcEOF = (fZStream_.avail_in == 0);
+                bool        isAtSrcEOF  =   _AssureInputAvailableReturnTrueIfAtEOF ();
+                ptrdiff_t   outBufSize  =   intoEnd - intoStart;
 
-                // @TODO - THIS IS WRONG- in that it doesnt take into account if strm.next_in still has data
-                //tmphack - do 1 byte at a time
-                Require (intoStart < intoEnd);
-
-                fZStream_.avail_out = intoEnd - intoStart;
+                fZStream_.avail_out = outBufSize;
                 fZStream_.next_out = intoStart;
                 int ret;
                 switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {
@@ -152,12 +151,13 @@ Again:
                         ThrowIfZLibErr_ (ret);
                 }
 
-                ptrdiff_t have = (intoEnd - intoStart) - fZStream_.avail_out;
-                Assert (have < (intoEnd - intoStart));
-                if (have == 0 and not isAtSrcEOF) {
+                ptrdiff_t pulledOut = outBufSize - fZStream_.avail_out;
+                Assert (pulledOut <= outBufSize);
+                if (pulledOut == 0 and not isAtSrcEOF) {
                     goto Again;
                 }
-                return have;
+                _fSeekOffset += pulledOut;
+                return pulledOut;
             }
         };
         enum Compression {eCompression};
@@ -167,7 +167,7 @@ Again:
         {
         }
         MyCompressionStream_ (DeCompression, const Streams::InputStream<Memory::Byte>& in)
-            : InputStream<Byte> (make_shared<InflateRep_> (in))/// tmphack cuz NYI otjer
+            : InputStream<Byte> (make_shared<InflateRep_> (in))
         {
         }
     };
