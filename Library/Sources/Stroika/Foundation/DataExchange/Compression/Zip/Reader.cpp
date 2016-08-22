@@ -55,7 +55,7 @@ namespace {
             {
             }
             virtual ~BaseRep_ () = default;
-            virtual bool    IsSeekable () const
+            virtual bool    IsSeekable () const override
             {
                 // for now - KISS
                 return false;   // SHOULD allow seekable IFF src is seekable
@@ -69,7 +69,7 @@ namespace {
                 RequireNotReached ();
                 return SeekOffsetType {};
             }
-            void    _AssureInputAvailable ()
+            nonvirtual  void    _AssureInputAvailable ()
             {
                 if (fZStream_.avail_in == 0) {
                     fZStream_.avail_in = fInStream_.Read (begin (fInBuf_), end (fInBuf_));
