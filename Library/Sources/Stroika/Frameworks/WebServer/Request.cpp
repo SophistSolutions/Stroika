@@ -8,6 +8,8 @@
 
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/String2Int.h"
+#include    "../../Foundation/Characters/StringBuilder.h"
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
@@ -19,6 +21,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Memory;
 
@@ -61,4 +64,16 @@ Memory::BLOB    Request::GetBody ()
         }
     }
     return *fBody_;
+}
+
+String  Request::ToString () const
+{
+    StringBuilder   sb;
+    sb += L"{";
+    sb += L"HTTPVersion: " + fHTTPVersion + L", ";
+    sb += L"Method: " + fMethod + L", ";
+    sb += L"fURL: " + Characters::ToString (fURL) + L", ";
+    sb += L"Headers: " + Characters::ToString (fHeaders) + L", ";
+    sb += L"}";
+    return sb.str ();
 }

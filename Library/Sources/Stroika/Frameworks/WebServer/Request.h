@@ -61,6 +61,12 @@ namespace   Stroika {
                 IO::Network::URL                        fURL;
                 Mapping<String, String>                 fHeaders;
 
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual  String  ToString () const;
+
             private:
                 Memory::Optional<Memory::BLOB>          fBody_;
             };

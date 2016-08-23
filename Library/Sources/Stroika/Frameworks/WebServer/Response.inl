@@ -87,4 +87,24 @@ namespace   Stroika {
         }
     }
 }
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<Frameworks::WebServer::Response::State> : EnumNames<Frameworks::WebServer::Response::State> {
+                static  constexpr   EnumNames<Frameworks::WebServer::Response::State>    k {
+                    EnumNames<Frameworks::WebServer::Response::State>::BasicArrayInitializer {
+                        {
+                            { Frameworks::WebServer::Response::State::eInProgress, L"InProgress" },
+                            { Frameworks::WebServer::Response::State::eInProgressHeaderSentState, L"InProgressHeaderSentState" },
+                            { Frameworks::WebServer::Response::State::eCompleted, L"Completed" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<Frameworks::WebServer::Response::State> (k) {}
+            };
+        }
+    }
+}
 #endif  /*_Stroika_Frameworks_WebServer_Response_inl_*/
+

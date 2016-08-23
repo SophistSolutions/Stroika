@@ -10,6 +10,8 @@
 #include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/String_Constant.h"
 #include    "../../Foundation/Characters/Format.h"
+#include    "../../Foundation/Characters/StringBuilder.h"
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
@@ -37,6 +39,24 @@ namespace   {
         IO::Network::HTTP::HeaderName::kContentLength,
         IO::Network::HTTP::HeaderName::kContentType
     });
+}
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            constexpr   EnumNames<Frameworks::WebServer::Response::State>    DefaultNames<Frameworks::WebServer::Response::State>::k;
+        }
+    }
 }
 
 
@@ -280,4 +300,15 @@ void    Response::printf (const wchar_t* format, ...)
     String      tmp     =   Characters::FormatV (format, argsList);
     va_end (argsList);
     write (tmp);
+}
+
+String  Response::ToString () const
+{
+    StringBuilder   sb;
+    sb += L"{";
+    sb += L"State_: " + Characters::ToString (fState_) + L", ";
+    sb += L"StatusOverrideReason_: " + Characters::ToString (fStatusOverrideReason_) + L", ";
+    sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
+    sb += L"}";
+    return sb.str ();
 }

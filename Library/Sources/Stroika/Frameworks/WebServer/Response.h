@@ -205,6 +205,12 @@ namespace   Stroika {
                  */
                 nonvirtual  map<String, String>  GetEffectiveHeaders () const;
 
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual  String  ToString () const;
+
             private:
                 IO::Network::Socket                         fSocket_;
                 State                                       fState_;
