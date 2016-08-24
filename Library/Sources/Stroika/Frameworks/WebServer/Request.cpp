@@ -37,11 +37,12 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::Request ***********************************
  ********************************************************************************
  */
-Request::Request (const Streams::InputStream<Byte>& inStream)
+Request::Request (const Streams::InputStream<Byte>& inStream, const Optional<IO::Network::SocketAddress>& peerAddress)
     : fInputStream (inStream)
     , fHTTPVersion ()
     , fURL ()
     , fHeaders ()
+    , fPeerAddress_ (peerAddress)
 {
 }
 

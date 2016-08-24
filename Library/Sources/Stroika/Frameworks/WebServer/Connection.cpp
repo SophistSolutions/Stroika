@@ -37,7 +37,7 @@ using   namespace   Stroika::Frameworks::WebServer;
 Connection::Connection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
-    , fRequest_ (fSocketStream_)
+    , fRequest_ (fSocketStream_, s.GetPeerAddress ())
     , fResponse_ (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())
 {
 }

@@ -33,6 +33,9 @@ namespace   Stroika {
             using   Stroika::Foundation::IO::Network::Socket;
             using   Stroika::Foundation::IO::Network::SocketStream;
 
+
+            /**
+             */
             class   Connection {
             public:
                 Connection () = delete;
@@ -51,9 +54,8 @@ namespace   Stroika {
 // not sure we want this
                 nonvirtual  void    Close ();
 
-
             public:
-                nonvirtual  Socket              GetSocket () const;
+                nonvirtual  Socket          GetSocket () const;
                 nonvirtual  Request&        GetRequest ();
                 nonvirtual  const Request&  GetRequest () const;
                 nonvirtual  Response&       GetResponse ();
@@ -62,8 +64,8 @@ namespace   Stroika {
             private:
                 Socket          fSocket_;
                 SocketStream    fSocketStream_;
-                Request     fRequest_;
-                Response    fResponse_;
+                Request         fRequest_;
+                Response        fResponse_;
             };
 
         }

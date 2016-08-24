@@ -10,6 +10,8 @@
 #include    "../../Foundation/Containers/Mapping.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
+#include    "../../Foundation/Memory/Optional.h"
+#include    "../../Foundation/IO/Network/SocketAddress.h"
 #include    "../../Foundation/IO/Network/URL.h"
 #include    "../../Foundation/Streams/InputStream.h"
 
@@ -42,7 +44,7 @@ namespace   Stroika {
             public:
                 Request () = delete;
                 Request (const Request&) = delete;
-                Request (const Streams::InputStream<Memory::Byte>& inStream);
+                Request (const Streams::InputStream<Memory::Byte>& inStream, const Memory::Optional<IO::Network::SocketAddress>& peerAddress = Memory::Optional<IO::Network::SocketAddress> {});
 
             public:
                 nonvirtual  const Request& operator= (const Request&) = delete;
@@ -53,6 +55,12 @@ namespace   Stroika {
                 nonvirtual  Memory::BLOB    GetBody ();
 
             public:
+                /**
+                    *  @see Socket::GetPeerAddress
+                    */
+                nonvirtual  Memory::Optional<IO::Network::SocketAddress> GetPeerAddress () const;
+
+            public:
                 Streams::InputStream<Memory::Byte>      fInputStream;
 
             public:
@@ -60,6 +68,9 @@ namespace   Stroika {
                 String                                  fMethod;
                 IO::Network::URL                        fURL;
                 Mapping<String, String>                 fHeaders;
+
+            private:
+                Memory::Optional<IO::Network::SocketAddress>    fPeerAddress_;
 
             public:
                 /**

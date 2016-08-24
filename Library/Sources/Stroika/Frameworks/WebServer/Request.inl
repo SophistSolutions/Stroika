@@ -17,6 +17,16 @@ namespace   Stroika {
         namespace   WebServer {
 
 
+            /*
+             ********************************************************************************
+             ***************************** Implementation Details ***************************
+             ********************************************************************************
+             */
+            inline  Memory::Optional<IO::Network::SocketAddress> Request::GetPeerAddress () const
+            {
+                return fPeerAddress_;
+            }
+
 
         }
     }
