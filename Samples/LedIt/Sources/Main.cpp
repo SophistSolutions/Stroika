@@ -66,7 +66,7 @@ inline  char*   DoSysAlloc (size_t n)
 #if     DEBUG_NEW
     gDebugNewFlags &= ~dnCheckBlocksInApplZone;
 #endif
-    OSErr err;  // ingored...
+    OSErr err;  // ignored...
     Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
     if (h == NULL) {
         h = ::NewHandle (n);
