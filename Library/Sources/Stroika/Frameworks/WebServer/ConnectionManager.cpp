@@ -68,8 +68,8 @@ void    ConnectionManager::onConnect_ (Socket s)
             // now read
             Connection  conn (s);
             conn.ReadHeaders ();    // bad API. Must rethink...
-            if (fServerHeader_) {
-                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
+            if (Optional<String> o = fServerHeader_.cget ()) {
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *o);
             }
             if (GetCORSModeSupport () == CORSModeSupport::eSuppress) {
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });

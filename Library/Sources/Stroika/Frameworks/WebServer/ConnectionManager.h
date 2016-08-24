@@ -136,7 +136,7 @@ namespace   Stroika {
                 nonvirtual  void onConnect_ (Socket s);
 
             private:
-                Optional<String>                                        fServerHeader_;
+                Execution::Synchronized<Optional<String>>               fServerHeader_;
                 CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
                 Router                                                  fRouter_;
                 IO::Network::Listener                                   fListener_;
