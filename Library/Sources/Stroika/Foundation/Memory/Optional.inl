@@ -215,7 +215,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional& from)
             {
-                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
+                shared_lock<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
                 }
@@ -224,7 +224,7 @@ namespace   Stroika {
             template    <typename T2, typename TRAITS2, typename SFINAE_SAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from)
             {
-                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
+                shared_lock<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     // explicit static cast avoided because we want to allow warning for Optional<uint64_t> aa; Optional<double> x1 = Optional<double> (aa);
                     fStorage_.fValue_ = fStorage_.alloc (*from.fStorage_.peek ());
@@ -234,7 +234,7 @@ namespace   Stroika {
             template    <typename T2, typename TRAITS2, typename SFINAE_UNSAFE_CONVERTIBLE>
             inline  Optional<T, TRAITS>::Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE*)
             {
-                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };
+                shared_lock<const AssertExternallySynchronizedLock> fromCritSec { from };
                 if (from.fStorage_.peek () != nullptr) {
                     // static_cast<T> to silence warnings, because this overload of Optional (const Optional<T2, TRAITS2> is explicit)
                     fStorage_.fValue_ = fStorage_.alloc (static_cast<T> (*from.fStorage_.peek ()));
@@ -354,14 +354,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return IsMissing () ? defaultValue : *fStorage_.peek ();
             }
             template    <typename T, typename TRAITS>
             template    <typename   THROW_IF_MISSING_TYPE>
             inline  T   Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsMissing ()) {
                     Execution::Throw (exception2ThrowIfMissing);
                 }
@@ -374,7 +374,7 @@ namespace   Stroika {
             inline  void    Optional<T, TRAITS>::CopyToIf (CONVERTABLE_TO_TYPE* to) const
             {
                 RequireNotNull (to);
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (IsPresent ()) {
                     // Static cast in case conversion was explicit - because call to CopyToIf() was explicit
                     DISABLE_COMPILER_MSC_WARNING_START(4244)// MSVC WARNING ABOUT conversions (see comment above about explicit)
@@ -385,7 +385,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             void     Optional<T, TRAITS>::AccumulateIf (Optional<T> rhsOptionalValue, const function<T(T, T)>& op)
             {
-                //logigcally do this but need recursive mutex lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 if (*this or rhsOptionalValue) {
                     *this = op (Value (), rhsOptionalValue.Value ());
                 }
@@ -408,7 +408,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  auto   Optional<T, TRAITS>::operator* () const -> T
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 Require (IsPresent ());
                 AssertNotNull (fStorage_.fValue_);
                 //return ConstHolder_ { this };  when we embed mutex into holder
@@ -452,7 +452,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return rhs.fStorage_.fValue_ == nullptr;
                 }
@@ -467,7 +467,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::Equals (T rhs) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return false;
                 }
@@ -477,7 +477,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional& rhs) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return (rhs.fStorage_.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
@@ -492,7 +492,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (T rhs) const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 if (fStorage_.fValue_ == nullptr) {
                     return 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }

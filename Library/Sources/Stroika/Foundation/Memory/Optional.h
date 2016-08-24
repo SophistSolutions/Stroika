@@ -7,6 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    <mutex>
+#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
+#include    <shared_mutex>
+#endif
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
@@ -32,11 +35,6 @@
  *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
- *      @todo   Consider LOOSER version of Debug::AssertExternallySynchronizedLock with READ and WRITE locks, and then
- *              in Optional – for CONST methods use the READLOCK variant, and, THIS allows multiple readers, so
- *              long as there are no writers. Then we can make OPTIONAL usage even more efficient, allowing for
- *              Optioanl<> use without synchronized, if all readers, but as soon as a writer gets into the party – assert out!
- *
  *      @todo   See if I can get operator* working with ConstHolder_ (maybe more efficient). Or could return const&
  *              in release builds and T in DEBUG builds (so we can do context based debug lock/check).
  *
@@ -49,12 +47,6 @@
  *      @todo   COULD make operator==, operator<, etc compares more efficeint when comparing with T
  *              by adding a slew (3x) more overloads. (DID TO SOME EXTENT BUT COULD IMPROVE); And could improve iterop
  *              by adding operator XXX (where XXX is ==, etc) with (T, OPTIONAL);
- *
- *      @todo   Condsider (maybe test) if implemenation using member buffer Byte buf[sizeof(T)]; with appropriate alignof stuff -
- *              would perform better than BlockAllocated? It's important that this class be low-cost, low-overhead!
- *
- *              One trick is must be careful with copy-semantics. But almost certainly would perform better (just cuz no
- *              lock needed with blockallocated).
  */
 
 
@@ -221,26 +213,8 @@ namespace   Stroika {
              *          would just 'BreakReferences'.
              *
              *  \note   \em Design-Note - Internal pointers
-             *      -   Several APIs return internal pointers - both const and non-const. Because of this
-             *          it up to callers to assure thread-safety. The lifetime of the returned pointers
-             *          is guarantied only until the start of the next call on a the particular
-             *          Optional<> instance.
-             *      -   Why we allow internal pointers to be returned from
-             *          get (), operator-> (), and operator* ().
-             *          -   GIST is this class is intrinsically not thread safe anyhow. Main reason
-             *              to not allow that stuff is to assure thread safety and controlled update.
-             *          -   Allowing returning const ptrs is just as unsafe and returning non-const pointers
-             *              cuz another thread could still modify that data.
-             *          -   And returning non-const pointers very confenenti when doing optional of a struct,
-             *              and allowing people to modify parts of the struct.
-             *
-             *              \code
-             *              Optional<some_object> o;
-             *              ...
-             *              o->x = 1;   // assert fails if o not set first
-             *              o->y = 2;
-             *              return o->z;
-             *              \endcode
+             *      -   The only internal pointers returned (without checks) are in the peek () method. For this reason, we are
+             *          considering losing the peek() method.
              *
              *  \note   \em Design-Note - why no operator T()
              *      -   We considered having an operator T () method. This has advantages, in that
@@ -251,11 +225,7 @@ namespace   Stroika {
              *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
-             *          It would have been impractical to make Optional<T> fully thread-safe, due to its returning
-             *          of internal pointers.
-             *
-             *          FOR NOW - this class does not evel allow multiple readers at the same time - due to
-             *          Debug::AssertExternallySynchronizedLock usage.
+             *          Const methods can be used by multiple readers at a time.
              *
              *  \note   \em Design-Note - Optional<void>
              *          I considered supporting Optional<void>, but there seemed no natural way to 'assign' something to it
@@ -447,7 +417,7 @@ namespace   Stroika {
                 struct  ConstHolder_ {
                     const Optional*   fVal;
 #if     qDebug
-                    std::unique_lock<const Debug::AssertExternallySynchronizedLock> fCritSec_;
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> fCritSec_;
 #endif
                     ConstHolder_ (const ConstHolder_&) = delete;
                     ConstHolder_ (const Optional* p);
