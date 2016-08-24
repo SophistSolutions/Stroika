@@ -60,9 +60,13 @@ namespace   Stroika {
                  */
                 class   Listener {
                 public:
-                    // Define params object for stuff like listen backlog (for now hardwire)
-                    Listener (const SocketAddress& addr, const function<void(Socket newConnection)>& newConnectionAcceptor);
-                    Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor);
+                    /*
+                     *  Define params object for stuff like listen backlog (for now hardwire)
+                     *
+                     *  For 'backlog' - @see Socket::Listen
+                     */
+                    Listener (const SocketAddress& addr, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
+                    Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(Socket newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
                     Listener (const Listener&& rhs);
                     Listener (const Listener&) = delete;
                 public:

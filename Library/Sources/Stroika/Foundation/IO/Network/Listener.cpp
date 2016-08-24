@@ -71,16 +71,13 @@ struct  Listener::Rep_ {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
-namespace {
-    constexpr   unsigned int kBacklog_ { 10 };
-}
-Listener::Listener (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor)
-    : fRep_ (make_shared<Rep_> (addr, Socket::BindFlags {}, kBacklog_, newConnectionAcceptor))
+Listener::Listener (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+    : fRep_ (make_shared<Rep_> (addr, Socket::BindFlags {}, backlog, newConnectionAcceptor))
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (Socket newConnection)>& newConnectionAcceptor)
-    : fRep_ (make_shared<Rep_> (addr, bindFlags, kBacklog_, newConnectionAcceptor))
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void (Socket newConnection)>& newConnectionAcceptor, unsigned int backlog)
+    : fRep_ (make_shared<Rep_> (addr, bindFlags, backlog, newConnectionAcceptor))
 {
 }
 
