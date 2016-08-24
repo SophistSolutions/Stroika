@@ -45,72 +45,72 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::ConnectionManager *************************
  ********************************************************************************
  */
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router)
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Router& router, size_t maxConnections)
     : ConnectionManager (bindAddress, Socket::BindFlags {}, router)
 {
+    fThreads_.SetPoolSize (maxConnections); // implementation detail - due to EXPENSIVE blcoking read strategy
 }
 
-ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router)
+ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
-    , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); })
+    , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
+    fThreads_.SetPoolSize (maxConnections); // implementation detail - due to EXPENSIVE blcoking read strategy
 }
 
 void    ConnectionManager::onConnect_ (Socket s)
 {
-    Execution::Thread runConnectionOnAnotherThread {
-        [this, s]()
-        {
+    // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
+    // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
+    fThreads_.AddTask (
+    [this, s] () {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
+        Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
-            // now read
-            Connection  conn (s);
-            conn.ReadHeaders ();    // bad API. Must rethink...
-            if (Optional<String> o = fServerHeader_.cget ()) {
-                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *o);
-            }
-            if (GetCORSModeSupport () == CORSModeSupport::eSuppress) {
-                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
-                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
-            }
-            constexpr bool kSupportHTTPKeepAlives_ { false };
-            if (not kSupportHTTPKeepAlives_) {
-                // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-                //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
-            }
-            String url = conn.GetRequest ().fURL.GetFullURL ();
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Serving page %s", url.c_str ());
-#endif
-            try {
-                Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
-                if (handler) {
-                    (*handler) (&conn.GetRequest (), &conn.GetResponse ());
-                }
-                else {
-                    Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
-                }
-            }
-            catch (const IO::Network::HTTP::Exception& e) {
-                conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
-                conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
-                conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-            }
-            catch (...) {
-                conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
-                conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (std::current_exception ()).c_str ());
-                conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-            }
-            conn.GetResponse ().End ();
+        // now read
+        Connection  conn (s);
+        conn.ReadHeaders ();    // bad API. Must rethink...
+        if (Optional<String> o = fServerHeader_.cget ()) {
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *o);
         }
-        , Execution::Thread::eAutoStart
-        , String_Constant { L"Connection Thread" }     // Could use a fancier name (connection#, from remote address?)
-    };
-    runConnectionOnAnotherThread.WaitForDone ();    // maybe save these in connection mgr so we can force them all shut down...
-};
+        if (GetCORSModeSupport () == CORSModeSupport::eSuppress) {
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
+        }
+        constexpr bool kSupportHTTPKeepAlives_ { false };
+        if (not kSupportHTTPKeepAlives_) {
+            // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
+        }
+        String url = conn.GetRequest ().fURL.GetFullURL ();
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Serving page %s", url.c_str ());
+#endif
+        try {
+            Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
+            if (handler) {
+                (*handler) (&conn.GetRequest (), &conn.GetResponse ());
+            }
+            else {
+                Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
+            }
+        }
+        catch (const IO::Network::HTTP::Exception& e) {
+            conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
+            conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
+            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        catch (...) {
+            conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
+            conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (std::current_exception ()).c_str ());
+            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        }
+        conn.GetResponse ().End ();
+    }
+    );
+}
 
 #if 0
 void    ConnectionManager::Start ()
