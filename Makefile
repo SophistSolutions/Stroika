@@ -361,8 +361,8 @@ regression-test-configurations:
 		./configure Release-U-64 --apply-default-release-flags;\
 	else\
 		./configure DEFAULT_CONFIG;\
-		./configure DEFAULT_CONFIG-no-TCP --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
-		./configure DEFAULT_CONFIG-with-malloc-guard --malloc-guard true;\
+		./configure no-third-party-components --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
+		./configure malloc-guard --malloc-guard true;\
 		#\
 		#./configure gcc-4.9-release --compiler-driver g++-4.9 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
 		#\
