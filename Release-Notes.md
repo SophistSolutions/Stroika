@@ -18,6 +18,46 @@ History
  
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a173">v2.0a173</a><br/>2016-08-25</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a172...v2.0a173</li>
+		<li>{MAJOR}: Fixed Optional<> (requires much testing and reaction) to support multiple readers of const methods - using shared_lock of  AssertExternallySynchronizedLock on const methods; and fixed Optional<T, TRAITS>::AccumulateIf to do AssertExternallySynchronizedLock cuz that class is now recursive</li>
+		<li>Foundation/IO/Network/Listener CTOR now takes backlog argument: NOTE - NOT FULLY backward compatible - because default is 1, and before we had hardwired 10</li>
+		<li>Framework/WebServer
+			<ul>
+				<li>ToString support (request/response/response-state)</li>
+				<li>fServerHeader_ must be synchonized in ConnectionMnaager because there is a  setter method</li>
+				<li>Frameworks/WebServer/ConnectionManager takes new option arg - maxConnecitons; uses that for threadpool, and now uses threadpool instead of a single thread it blcoks on in onConnect"</li>
+				<li>    Added Request::GetPeerAddress () - and pass it into the Request from the Conneciton</li>
+			</ul>
+		</li>
+		<li>pthread_setschedprio assert calls fixed to check for if not succeed, errno = EPERM</li>
+		<li>UNIX regression test cleanups - some name cleanups, lose gcc49, added no-third-party-components config</li>
+		<li>Noticed I wasnt testing gcc49, and a bug (compiler crash) crept in. Not sure we need it  so begin process of de-supporting gcc49</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a173-OUT.txt</li>
+				<li>vc++2k15 Update 3.1</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a172">v2.0a172</a><br/>2016-08-22</td>
