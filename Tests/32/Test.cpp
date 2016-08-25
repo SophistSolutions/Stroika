@@ -31,8 +31,9 @@ using   namespace   Stroika::Foundation::Time;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
+#if     qHasFeature_sqlite
 namespace   {
-    namespace RegressionTest1_x_ {
+    namespace RegressionTest1_sqlite_ {
         namespace PRIVATE_ {
             using   Statement   =   Database::SQLite::DB::Statement;
             enum class ScanKindType_ {
@@ -235,14 +236,16 @@ namespace   {
         }
     }
 }
-
+#endif
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        RegressionTest1_x_::DoIt ();
+#if     qHasFeature_sqlite
+        RegressionTest1_sqlite_::DoIt ();
+#endif
     }
 
 }
