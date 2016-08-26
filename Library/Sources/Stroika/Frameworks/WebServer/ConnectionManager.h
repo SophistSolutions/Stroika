@@ -139,8 +139,6 @@ namespace   Stroika {
                 Execution::Synchronized<Optional<String>>               fServerHeader_;
                 CORSModeSupport                                         fCORSModeSupport_ { CORSModeSupport::eDEFAULT };
                 Router                                                  fRouter_;
-                IO::Network::Listener                                   fListener_;
-                Execution::Synchronized<list<shared_ptr<Connection>>>   fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
@@ -149,6 +147,11 @@ namespace   Stroika {
                 //
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
                 Execution::ThreadPool                                   fThreads_;
+
+                // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesnt try to launch
+                // new tasks into an already destroyed threadpool.
+                IO::Network::Listener                                   fListener_;
+                Execution::Synchronized<list<shared_ptr<Connection>>>   fActiveConnections_;
             };
 
 

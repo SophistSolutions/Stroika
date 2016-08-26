@@ -54,9 +54,9 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
+    , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
     , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
-    fThreads_.SetPoolSize (maxConnections); // implementation detail - due to EXPENSIVE blcoking read strategy
 }
 
 void    ConnectionManager::onConnect_ (Socket s)
