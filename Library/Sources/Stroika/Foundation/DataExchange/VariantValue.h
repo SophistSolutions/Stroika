@@ -201,6 +201,7 @@ namespace   Stroika {
                  *  on the type of the variant. For example, eNull type is always empty. Most
                  *  other types are empty iff their native type (e.g. basic_string) is 'empty'.
                  *  A FLOAT is empty iff its std::isnan().
+                 *  Booleans and integer types are never empty (even if zero/false).
                  */
                 nonvirtual  bool    empty () const;
 
