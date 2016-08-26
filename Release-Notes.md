@@ -18,6 +18,22 @@ History
  
 
 
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a174">v2.0a174</a><br/>2016-08-26</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a173...v2.0a174</li>
+		<li>Thread::SuppressInterruptionInContext in ThreadPool DTOR - so it safely shuts down all owned threads</li>
+		<li>in Frameworks/WebServer/ConnectionManager - reorder fListenr and fThreads (threadpool) object - so we default DTOR stops listeneer before killing threadpool</li>
+		<li>SKIPPED REGRESSION TESTS</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a173">v2.0a173</a><br/>2016-08-25</td>
 <td>
