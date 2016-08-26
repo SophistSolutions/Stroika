@@ -124,11 +124,12 @@ ThreadPool::ThreadPool (unsigned int nThreads)
 
 ThreadPool::~ThreadPool ()
 {
+    Thread::SuppressInterruptionInContext   suppressCtx;        // cuz we must shutdown owned threads
     try {
         AbortAndWaitForDone ();
     }
     catch (...) {
-        DbgTrace ("Ignore exception in destroying thread pool ** probably bad thing...");
+        AssertNotReached ();     // this should never happen due to the SuppressInterruptionInContext...
     }
 }
 
