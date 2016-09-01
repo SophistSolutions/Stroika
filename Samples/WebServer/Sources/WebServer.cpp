@@ -37,17 +37,17 @@ using   Memory::BLOB;
 
 
 namespace {
-    void    DefaultPage_ (Request* request, Response* response)
+    void    DefaultPage_ (Message* message)
     {
-        response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
-        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        message->PeekResponse ()->writeln (L"<html><body><p>Hi Mom</p></body></html>");
+        message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
     }
-    void    SetAppState_ (Request* request, Response* response)
+    void    SetAppState_ (Message* message)
     {
-        BLOB    setAppState2    =   request->GetBody ();
+        BLOB    setAppState2    =   message->PeekRequest ()->GetBody ();
         String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
-        response->writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
-        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
+        message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
     }
     const   Router kRouter_ {
         Sequence<Route> {

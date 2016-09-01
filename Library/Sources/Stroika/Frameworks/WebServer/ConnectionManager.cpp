@@ -91,7 +91,7 @@ void    ConnectionManager::onConnect_ (Socket s)
         try {
             Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
             if (handler) {
-                (*handler) (&conn.GetRequest (), &conn.GetResponse ());
+                (*handler) (&conn.fMessage_);
             }
             else {
                 Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));

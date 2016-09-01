@@ -10,8 +10,7 @@
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 
-#include    "Request.h"
-#include    "Response.h"
+#include    "Message.h"
 
 
 /*
@@ -31,7 +30,15 @@ namespace   Stroika {
             using   DataExchange::InternetMediaType;
 
 
-            using   RequestHandler = function<void(Request* request, Response* response)>;
+            /*
+             * A request handler should be understood to be stateless - as far as the connection is concerned.
+             * ??? Maybe - or maybe have add/remove or notication so assocaited?? For now - assume stateless - and just called
+             * with HandleRequest ...
+             *
+             * Also - a RequestHandler should be careful about threads, as it could be called first on one thread, and
+             * then - possibly at the same time - on another thread. The same handler can be used multiple times (multiple sessions).
+             */
+            using   RequestHandler = function<void(Message* message)>;
 #if 0
 
             /*

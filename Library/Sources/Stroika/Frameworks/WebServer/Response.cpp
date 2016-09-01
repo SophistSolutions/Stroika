@@ -100,7 +100,6 @@ Response::Response (const IO::Network::Socket& s,  Streams::OutputStream<Byte> o
 
 Response::~Response ()
 {
-    Require (fState_ == State::eCompleted);
 }
 
 void    Response::SetContentSizePolicy (ContentSizePolicy csp)

@@ -50,6 +50,7 @@ Connection::~Connection ()
     if (fMessage_.PeekResponse ()->GetState () != Response::State::eCompleted) {
         IgnoreExceptionsForCall (fMessage_.PeekResponse ()->Abort ());
     }
+    Require (fMessage_.PeekResponse ()->GetState () == Response::State::eCompleted);
 }
 
 void    Connection::ReadHeaders ()
