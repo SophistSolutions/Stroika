@@ -34,7 +34,7 @@ namespace   Stroika {
             using   Stroika::Foundation::IO::Network::Socket;
             using   Stroika::Foundation::IO::Network::SocketStream;
 
-			class	ConnectionManager;
+            class   ConnectionManager;
 
             /**
              */
@@ -63,13 +63,13 @@ namespace   Stroika {
                 nonvirtual  Response&       GetResponse ();
                 nonvirtual  const Response& GetResponse () const;
 
-			private:
+            private:
                 Socket          fSocket_;
                 SocketStream    fSocketStream_;
                 Message         fMessage_;
 
-			private:
-				friend	ConnectionManager;
+            private:
+                friend  ConnectionManager;
             };
 
         }

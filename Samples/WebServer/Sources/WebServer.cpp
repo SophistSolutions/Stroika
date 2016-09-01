@@ -37,16 +37,17 @@ using   Memory::BLOB;
 
 
 namespace {
-    void    DefaultPage_ (Message* message)
+	// Can declare arguments as Request*,Response*
+    void    DefaultPage_ (Request*, Response* response)
     {
-        message->PeekResponse ()->writeln (L"<html><body><p>Hi Mom</p></body></html>");
-        message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+        response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
+        response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
     }
+	// Can declare arguments as Message* message
     void    SetAppState_ (Message* message)
     {
-        BLOB    setAppState2    =   message->PeekRequest ()->GetBody ();
-        String  interpretAsString = Streams::TextReader (setAppState2).ReadAll ();
-        message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + interpretAsString.As<wstring> () + L")</p></body></html>");
+        String  argsAsString = Streams::TextReader (message->PeekRequest ()->GetBody ()).ReadAll ();
+        message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
         message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
     }
     const   Router kRouter_ {
@@ -57,7 +58,7 @@ namespace {
     };
 }
 
-int main (int argc, const char* argv[])
+int		main (int argc, const char* argv[])
 {
     Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     try {
