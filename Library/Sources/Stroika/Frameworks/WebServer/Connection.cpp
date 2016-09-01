@@ -34,6 +34,9 @@ using   namespace   Stroika::Frameworks::WebServer;
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
+#if     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wpessimizing-move\"");
+#endif
 Connection::Connection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
@@ -44,6 +47,9 @@ Connection::Connection (Socket s)
 }
 {
 }
+#if     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+DISABLE_COMPILER_CLANG_WARNING_END("clang diagnostic ignored \"-Wpessimizing-move\"");
+#endif
 
 Connection::~Connection ()
 {
