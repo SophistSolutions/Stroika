@@ -27,6 +27,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h">
@@ -48,6 +51,9 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.h">
+      <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.h">
       <Filter>Sources</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,6 +78,9 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ClientErrorException.inl">
+      <Filter>Sources</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Message.inl">
       <Filter>Sources</Filter>
     </None>
   </ItemGroup>

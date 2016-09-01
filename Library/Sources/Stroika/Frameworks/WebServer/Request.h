@@ -44,6 +44,7 @@ namespace   Stroika {
             public:
                 Request () = delete;
                 Request (const Request&) = delete;
+                Request (Request&&) = default;
                 Request (const Streams::InputStream<Memory::Byte>& inStream, const Memory::Optional<IO::Network::SocketAddress>& peerAddress = Memory::Optional<IO::Network::SocketAddress> {});
 
             public:
@@ -58,7 +59,11 @@ namespace   Stroika {
                 /**
                     *  @see Socket::GetPeerAddress
                     */
-                nonvirtual  Memory::Optional<IO::Network::SocketAddress> GetPeerAddress () const;
+                _Deprecated_ ("USE Message::GetPeerAddress")
+                nonvirtual  Memory::Optional<IO::Network::SocketAddress> GetPeerAddress () const
+                {
+                    return fPeerAddress_;
+                }
 
             public:
                 Streams::InputStream<Memory::Byte>      fInputStream;

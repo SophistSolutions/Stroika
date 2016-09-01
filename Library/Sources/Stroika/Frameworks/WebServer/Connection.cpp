@@ -37,15 +37,18 @@ using   namespace   Stroika::Frameworks::WebServer;
 Connection::Connection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
-    , fRequest_ (fSocketStream_, s.GetPeerAddress ())
-    , fResponse_ (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())
+    , fMessage_ {
+    move (Request (fSocketStream_)),
+    move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),
+    s.GetPeerAddress ()
+}
 {
 }
 
 Connection::~Connection ()
 {
-    if (fResponse_.GetState () != Response::State::eCompleted) {
-        IgnoreExceptionsForCall (fResponse_.Abort ());
+    if (fMessage_.GetResponse ()->GetState () != Response::State::eCompleted) {
+        IgnoreExceptionsForCall (fMessage_.GetResponse ()->Abort ());
     }
 }
 
@@ -54,7 +57,7 @@ void    Connection::ReadHeaders ()
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
 
-    Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter inTextStream (fRequest_.fInputStream);
+    Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter inTextStream (fMessage_.GetRequest ()->fInputStream);
     {
         // Read METHOD line
         String line = inTextStream.ReadLine ();
@@ -62,14 +65,14 @@ void    Connection::ReadHeaders ()
         if (tokens.size () < 3) {
             Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
         }
-        fRequest_.fMethod = tokens[0];
+        fMessage_.GetRequest ()->fMethod = tokens[0];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using   IO::Network::URL;
-        fRequest_.fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
-        if (fRequest_.fMethod.empty ()) {
+        fMessage_.GetRequest ()->fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
+        if (fMessage_.GetRequest ()->fMethod.empty ()) {
             // should check if GET/PUT/DELETE etc...
             Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
         }
@@ -88,14 +91,14 @@ void    Connection::ReadHeaders ()
         else {
             String  hdr     =   line.SubString (0, i).Trim ();
             String  value   =   line.SubString (i + 1).Trim ();
-            fRequest_.fHeaders.Add (hdr, value);
+            fMessage_.GetRequest ()->fHeaders.Add (hdr, value);
         }
     }
 }
 
 void    Connection::Close ()
 {
-    fResponse_.Flush ();
+    fMessage_.GetResponse ()->Flush ();
     fSocket_.Close ();
 }
 

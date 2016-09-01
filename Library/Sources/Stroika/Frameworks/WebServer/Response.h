@@ -63,8 +63,10 @@ namespace   Stroika {
             public:
                 Response () = delete;
                 Response (const Response&) = delete;
+                Response (Response&&) = default;
                 Response (const IO::Network::Socket& s, Streams::OutputStream<Byte> outStream, const InternetMediaType& ct);
 
+            public:
                 // Reponse must be completed (OK to Abort ()) before being destroyed
                 ~Response ();
 

@@ -6,14 +6,15 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
+//#include    <string>
+//#include    <vector>
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/IO/Network/SocketStream.h"
-#include    "Request.h"
-#include    "Response.h"
+//#include    "Request.h"
+//#include    "Response.h"
+#include    "Message.h"
 
 
 
@@ -64,8 +65,7 @@ namespace   Stroika {
             private:
                 Socket          fSocket_;
                 SocketStream    fSocketStream_;
-                Request         fRequest_;
-                Response        fResponse_;
+                Message         fMessage_;
             };
 
         }
