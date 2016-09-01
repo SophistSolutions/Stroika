@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "RequestHandler.h"
+#include    "InterceptorChain.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -13,13 +13,24 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
+    virtual void    HandleFault (Message* m, const exception_ptr& e) override
+    {
+    }
+    virtual void    HandleMessage (Message* m) override
+    {
+    }
+
+};
 
 
 /*
  ********************************************************************************
- ************************* WebServer::RequestHandler ****************************
+ *********************** WebServer::InterceptorChain ****************************
  ********************************************************************************
  */
-RequestHandler::RequestHandler (const function<void(Request* request, Response* response)>& f)
-    : RequestHandler { [f] (Message * message) { f (message->PeekRequest (), message->PeekResponse ()); } } {
+
+InterceptorChain::InterceptorChain ()
+    : fRep_ (make_shared<Rep_> ())
+{
 }

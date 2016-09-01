@@ -6,14 +6,11 @@
 
 #include    "../StroikaPreComp.h"
 
-//#include    <string>
-//#include    <vector>
-
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/IO/Network/SocketStream.h"
-//#include    "Request.h"
-//#include    "Response.h"
+
+#include    "InterceptorChain.h"
 #include    "Message.h"
 
 
@@ -67,6 +64,7 @@ namespace   Stroika {
                 Socket          fSocket_;
                 SocketStream    fSocketStream_;
                 Message         fMessage_;
+                InterceptorChain    fInterceptorChain_;
 
             private:
                 friend  ConnectionManager;

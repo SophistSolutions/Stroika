@@ -37,13 +37,13 @@ using   Memory::BLOB;
 
 
 namespace {
-	// Can declare arguments as Request*,Response*
+    // Can declare arguments as Request*,Response*
     void    DefaultPage_ (Request*, Response* response)
     {
         response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
         response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
     }
-	// Can declare arguments as Message* message
+    // Can declare arguments as Message* message
     void    SetAppState_ (Message* message)
     {
         String  argsAsString = Streams::TextReader (message->PeekRequest ()->GetBody ()).ReadAll ();
@@ -58,7 +58,7 @@ namespace {
     };
 }
 
-int		main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
     Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     try {

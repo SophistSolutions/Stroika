@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "RequestHandler.h"
+#include    "Interceptor.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -17,9 +17,6 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::RequestHandler ****************************
+ **************************** WebServer::Interceptor ****************************
  ********************************************************************************
  */
-RequestHandler::RequestHandler (const function<void(Request* request, Response* response)>& f)
-    : RequestHandler { [f] (Message * message) { f (message->PeekRequest (), message->PeekResponse ()); } } {
-}

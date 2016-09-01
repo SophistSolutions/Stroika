@@ -10,6 +10,8 @@ Objs	=	\
 	$(ObjDir)ClientErrorException.o\
 	$(ObjDir)ConnectionManager.o\
 	$(ObjDir)Connection.o\
+	$(ObjDir)Interceptor.o\
+	$(ObjDir)InterceptorChain.o\
 	$(ObjDir)Message.o\
 	$(ObjDir)Request.o\
 	$(ObjDir)RequestHandler.o\
