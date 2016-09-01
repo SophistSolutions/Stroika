@@ -38,7 +38,7 @@ Connection::Connection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
     , fMessage_ {
-    move (Request (fSocketStream_)),
+    move (Request (fSocketStream_,  s.GetPeerAddress ())),
     move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),
     s.GetPeerAddress ()
 }
