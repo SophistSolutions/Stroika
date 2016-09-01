@@ -3,21 +3,10 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <algorithm>
-#include    <cstdlib>
-
-#include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchange/BadFormatException.h"
-#include    "../../Foundation/Debug/Assertions.h"
-#include    "../../Foundation/Execution/Exceptions.h"
-#include    "../../Foundation/Memory/SmallStackBuffer.h"
-
 #include    "RequestHandler.h"
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::WebServer;
@@ -28,15 +17,10 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ********************* WebServer::RequestHandler ****************************
+ ************************* WebServer::RequestHandler ****************************
  ********************************************************************************
  */
-#if 0
-RequestHandler::RequestHandler ()
+RequestHandler::RequestHandler (const function<void(Request* request, Response* response)>& f)
+    : RequestHandler { [f] (Message * message) { f (message->PeekRequest (), message->PeekResponse ()); } } 
 {
 }
-
-RequestHandler::~RequestHandler ()
-{
-}
-#endif
