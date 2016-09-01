@@ -228,6 +228,7 @@ namespace   Stroika {
                 uint64_t                                    fContentSize_;          // only  maintained for some policies
             };
 
+
         }
     }
 }

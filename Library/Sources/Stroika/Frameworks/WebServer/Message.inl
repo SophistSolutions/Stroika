@@ -32,19 +32,19 @@ namespace   Stroika {
             {
                 return fPeerAddress_;
             }
-            inline  const Request* Message::GetRequest () const
+            inline  const Request* Message::PeekRequest () const
             {
                 return &fRequest_;
             }
-            inline  Request* Message::GetRequest ()
+            inline  Request* Message::PeekRequest ()
             {
                 return &fRequest_;
             }
-            inline  const Response* Message::GetResponse () const
+            inline  const Response* Message::PeekResponse () const
             {
                 return &fResponse_;
             }
-            inline  Response* Message::GetResponse ()
+            inline  Response* Message::PeekResponse ()
             {
                 return &fResponse_;
             }

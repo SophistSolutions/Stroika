@@ -44,15 +44,15 @@ namespace   Stroika {
                 /**
                  *  \ensure NotNull
                     */
-                nonvirtual  const Request*  GetRequest () const;
-                nonvirtual  Request*        GetRequest ();
+                nonvirtual  const Request*  PeekRequest () const;
+                nonvirtual  Request*        PeekRequest ();
 
             public:
                 /**
                  *  \ensure NotNull
                     */
-                nonvirtual  const Response* GetResponse () const;
-                nonvirtual  Response*       GetResponse ();
+                nonvirtual  const Response* PeekResponse () const;
+                nonvirtual  Response*       PeekResponse ();
 
             private:
                 Memory::Optional<IO::Network::SocketAddress>    fPeerAddress_;

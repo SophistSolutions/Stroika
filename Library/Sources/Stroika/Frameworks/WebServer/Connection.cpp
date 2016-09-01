@@ -47,8 +47,8 @@ Connection::Connection (Socket s)
 
 Connection::~Connection ()
 {
-    if (fMessage_.GetResponse ()->GetState () != Response::State::eCompleted) {
-        IgnoreExceptionsForCall (fMessage_.GetResponse ()->Abort ());
+    if (fMessage_.PeekResponse ()->GetState () != Response::State::eCompleted) {
+        IgnoreExceptionsForCall (fMessage_.PeekResponse ()->Abort ());
     }
 }
 
@@ -57,7 +57,7 @@ void    Connection::ReadHeaders ()
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
 
-    Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter inTextStream (fMessage_.GetRequest ()->fInputStream);
+    Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter inTextStream (fMessage_.PeekRequest ()->fInputStream);
     {
         // Read METHOD line
         String line = inTextStream.ReadLine ();
@@ -65,14 +65,14 @@ void    Connection::ReadHeaders ()
         if (tokens.size () < 3) {
             Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD REQUEST HTTP line")));
         }
-        fMessage_.GetRequest ()->fMethod = tokens[0];
+        fMessage_.PeekRequest ()->fMethod = tokens[0];
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             Execution::Throw (Execution::StringException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using   IO::Network::URL;
-        fMessage_.GetRequest ()->fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
-        if (fMessage_.GetRequest ()->fMethod.empty ()) {
+        fMessage_.PeekRequest ()->fURL = URL::Parse (tokens[1], URL::eAsRelativeURL);
+        if (fMessage_.PeekRequest ()->fMethod.empty ()) {
             // should check if GET/PUT/DELETE etc...
             Execution::Throw (Execution::StringException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
         }
@@ -91,14 +91,14 @@ void    Connection::ReadHeaders ()
         else {
             String  hdr     =   line.SubString (0, i).Trim ();
             String  value   =   line.SubString (i + 1).Trim ();
-            fMessage_.GetRequest ()->fHeaders.Add (hdr, value);
+            fMessage_.PeekRequest ()->fHeaders.Add (hdr, value);
         }
     }
 }
 
 void    Connection::Close ()
 {
-    fMessage_.GetResponse ()->Flush ();
+    fMessage_.PeekResponse ()->Flush ();
     fSocket_.Close ();
 }
 
