@@ -39,7 +39,7 @@ namespace   Stroika {
             public:
                 Connection () = delete;
                 Connection (const Connection&) = delete;
-                explicit Connection (Socket s);
+                explicit Connection (Socket s, const InterceptorChain& interceptorChain = InterceptorChain {});
             public:
                 ~Connection ();
 
@@ -61,8 +61,8 @@ namespace   Stroika {
                 nonvirtual  const Response& GetResponse () const;
 
             private:
-                InterceptorChain    fInterceptorChain_;
                 Socket              fSocket_;
+                InterceptorChain    fInterceptorChain_;
                 SocketStream        fSocketStream_;
                 Message             fMessage_;
 

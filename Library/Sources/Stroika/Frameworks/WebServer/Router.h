@@ -12,6 +12,7 @@
 #include    "../../Foundation/Execution/Synchronized.h"
 #include    "../../Foundation/IO/Network/URL.h"
 
+#include    "Interceptor.h"
 #include    "Request.h"
 #include    "RequestHandler.h"
 
@@ -91,7 +92,10 @@ namespace   Stroika {
             /**
             *       UNCLEAR where to put synconized - insizde Router or outside?
             */
-            class   Router {
+            class   Router : public Interceptor {
+            private:
+                using   inherited = Interceptor;
+
             public:
                 Router (const Sequence<Route>& routes);
 
@@ -104,7 +108,7 @@ namespace   Stroika {
                 //    nonvirtual  Optional<Handler>   Lookup (const String& method, const URL& url) const;
 
             private:
-                Execution::Synchronized<Sequence<Route>>  fRoutes_;
+                struct  Rep_;
             };
 
 

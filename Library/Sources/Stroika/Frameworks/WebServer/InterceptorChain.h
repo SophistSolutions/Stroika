@@ -35,8 +35,8 @@ namespace   Stroika {
                 class   _IRep;
 
             public:
-                InterceptorChain (const Sequence<Interceptor>& interceptors);
-                InterceptorChain (const Interceptor&) = delete;
+                InterceptorChain (const Sequence<Interceptor>& interceptors = {});
+                InterceptorChain (const InterceptorChain&) = default;
                 InterceptorChain (InterceptorChain&&) = default;
             protected:
                 InterceptorChain (const shared_ptr<_IRep>& rep);

@@ -36,6 +36,12 @@ namespace   Stroika {
             {
                 fRep_->HandleMessage (m);
             }
+            template    <typename T>
+            inline  auto    Interceptor::_GetRep () const -> const T&
+            {
+                EnsureMember (fRep_.get (), T);
+                return *dynamic_cast<const T*> (fRep_.get ());
+            }
 
 
         }

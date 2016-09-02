@@ -58,6 +58,12 @@ namespace   Stroika {
                  */
                 nonvirtual  void    HandleMessage (Message* m);
 
+            protected:
+                /**
+                 */
+                template    <typename T = _IRep>
+                nonvirtual  const T &    _GetRep () const;
+
             private:
                 shared_ptr<_IRep>   fRep_;
             };

@@ -13,7 +13,7 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
-struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
+struct  InterceptorChain::Rep_ : InterceptorChain::_IRep {
     Rep_ (const Sequence<Interceptor>& interceptors)
         : fInterceptors_ (interceptors)
     {
@@ -28,6 +28,10 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     }
     virtual void    HandleFault (Message* m, const exception_ptr& e) override
     {
+        //@todo tmphack - needs locking - really Stroika needs reverse-iterator for Sequence<>
+        for (size_t i = fInterceptors_.size (); i > 0; i--) {
+            fInterceptors_[i - 1].HandleFault (m, e);
+        }
     }
     virtual void    HandleMessage (Message* m) override
     {

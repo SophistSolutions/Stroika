@@ -54,8 +54,9 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
-    , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
+    , fInterceptorChain_ { Sequence<Interceptor> { fRouter_ } }
+, fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
+, fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
 }
 
@@ -69,7 +70,7 @@ void    ConnectionManager::onConnect_ (Socket s)
         Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
         // now read
-        Connection  conn (s);
+        Connection  conn (s, fInterceptorChain_);
         conn.ReadHeaders ();    // bad API. Must rethink...
         if (Optional<String> o = fServerHeader_.cget ()) {
             conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *o);
@@ -89,13 +90,7 @@ void    ConnectionManager::onConnect_ (Socket s)
         DbgTrace (L"Serving page %s", url.c_str ());
 #endif
         try {
-            Optional<RequestHandler>    handler = fRouter_.Lookup (conn.GetRequest ());
-            if (handler) {
-                (*handler) (&conn.fMessage_);
-            }
-            else {
-                Execution::Throw (IO::Network::HTTP::Exception (HTTP::StatusCodes::kNotFound));
-            }
+            fInterceptorChain_.HandleMessage (&conn.fMessage_);
         }
         catch (const IO::Network::HTTP::Exception& e) {
             conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
