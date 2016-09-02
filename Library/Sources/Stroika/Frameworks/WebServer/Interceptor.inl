@@ -21,14 +21,15 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** WebServer::Interceptor ************************
+             ***************************** WebServer::Interceptor ***************************
              ********************************************************************************
              */
             inline  Interceptor::Interceptor (const shared_ptr<_IRep>& rep)
                 : fRep_ (rep)
             {
+                RequireNotNull (rep);
             }
-            inline  void    Interceptor::HandleFault (Message* m, const exception_ptr& e)
+            inline  void    Interceptor::HandleFault (Message* m, const exception_ptr& e) noexcept
             {
                 fRep_->HandleFault (m, e);
             }

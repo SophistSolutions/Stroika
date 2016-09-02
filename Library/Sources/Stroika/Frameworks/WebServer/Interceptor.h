@@ -15,9 +15,6 @@
 /*
  * TODO:
  *      @todo   VERY PRELIMINARY
- *
- *      @todo   Consider if HandleMessage (what CXF has) sb HandleMessagePre, HandleMessagePost, or have separate interceptors
- *              DOCUMENT/THINK OUT CHAIN...
  */
 
 namespace   Stroika {
@@ -28,6 +25,8 @@ namespace   Stroika {
 
 
             /**
+             *  Each Interceptor envelope must be externally synchonized, but can be read from any thread, and
+             *  the way these are used, they are only ever read, except on construction.
              */
             class   Interceptor {
             protected:
@@ -47,14 +46,17 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Called for all interceptors (in reverse order) on which handleMessage had been successfully invoked,
-                 *  when normal execution of the chain was aborted for some reason.
+                 *  Called any interceptor which HandleMessage was invoked on, when a fault prevented completion of
+                 *  the interceptor chain.
+                 *
+                 *  This function should NOT throw an exception - just do what it can to cleanup.
                  */
-                nonvirtual  void    HandleFault (Message* m, const exception_ptr& e);
+                nonvirtual  void    HandleFault (Message* m, const exception_ptr& e) noexcept;
 
             public:
                 /**
-                 *  Intercepts a message
+                 *  Intercepts and handles a message. Typically this will read stuff from the Request and
+                 *  add stuff to the Response.
                  */
                 nonvirtual  void    HandleMessage (Message* m);
 
@@ -73,10 +75,18 @@ namespace   Stroika {
              */
             class   Interceptor::_IRep {
             public:
-                // Called for all interceptors (in reverse order) on which handleMessage had been successfully invoked, when normal execution of the chain was aborted for some reason.
-                virtual void    HandleFault (Message* m, const exception_ptr& e) = 0;
+                /**
+                 *  Called any interceptor which HandleMessage was invoked on, when a fault prevented completion of
+                 *  the interceptor chain.
+                 *
+                 *  This function should NOT throw an exception - just do what it can to cleanup.
+                 */
+                virtual void    HandleFault (Message* m, const exception_ptr& e) noexcept = 0;
 
-                // Intercepts a message
+                /**
+                 *  Intercepts and handles a message. Typically this will read stuff from the Request and
+                 *  add stuff to the Response.
+                 */
                 virtual void    HandleMessage (Message* m) = 0;
             };
 

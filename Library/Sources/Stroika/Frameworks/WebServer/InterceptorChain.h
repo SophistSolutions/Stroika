@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../../Foundation/Containers/Sequence.h"
+#include    "../../Foundation/Execution/Synchronized.h"
 
 #include    "Interceptor.h"
 
@@ -18,23 +19,36 @@
  * TODO:
  *      @todo   VERY PRELIMINARY
  *
+ *      @todo   MUST FIX TO DO COW HERE
+ *
  */
 
 namespace   Stroika {
     namespace   Frameworks {
         namespace   WebServer {
 
+
             using   namespace   Stroika::Foundation;
             using   Stroika::Foundation::Containers::Sequence;
 
 
             /**
+             *  The InterceptorChain is internally synchonized. But - it assumes each Interceptor its given
+             *  is itself internally synchonized.
+             *
+             *  So we can copy an Interceptor chain quickly and cheaply without (external) locks. Updating it
+             *  maybe slower, but also can be done freely without locks.
+             *
+             *  InterceptorChains are 'by value' objects, so updating one in a Connection object - for example - doesn't affect
+             *  other connections (update the one in the ConnectionManager for use in future connections).
              */
             class   InterceptorChain {
             protected:
                 class   _IRep;
 
             public:
+                /**
+                 */
                 InterceptorChain (const Sequence<Interceptor>& interceptors = {});
                 InterceptorChain (const InterceptorChain&) = default;
                 InterceptorChain (InterceptorChain&&) = default;
@@ -42,26 +56,28 @@ namespace   Stroika {
                 InterceptorChain (const shared_ptr<_IRep>& rep);
 
             public:
+                /**
+                 */
                 nonvirtual  Sequence<Interceptor>   GetInterceptors () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void                    SetInterceptors (const Sequence<Interceptor>& interceptors);
 
             public:
                 /**
-                 *  Called for all interceptors (in reverse order) on which handleMessage had been successfully invoked,
-                 *  when normal execution of the chain was aborted for some reason.
-                 */
-                nonvirtual  void    HandleFault (Message* m, const exception_ptr& e);
-
-            public:
-                /**
-                 *  Intercepts a message
+                 *  Send the given message to each interceptor in the chain. Each interceptor from start to end of the sequence
+                 *  is sent the HandleMessage () call. If any throws an exception, all the HandleMessage () methods so far called
+                 *  are called in reverse order.
+                 *
+                 *  Interceptors must not throw during the HandleFault. InterceptorChain::HandleMessage() simply rethrows the original
+                 *  fault (exception) that triggered the unwind of the message.
                  */
                 nonvirtual  void    HandleMessage (Message* m);
 
             private:
-                shared_ptr<_IRep>   fRep_;
+                Execution::RWSynchronized<shared_ptr<_IRep>>   fRep_;
 
             private:
                 struct  Rep_;
@@ -74,12 +90,9 @@ namespace   Stroika {
             public:
                 virtual Sequence<Interceptor>   GetInterceptors () const = 0;
 
-                virtual void                    SetInterceptors (const Sequence<Interceptor>& interceptors) = 0;
+                virtual shared_ptr<_IRep>       SetInterceptors (const Sequence<Interceptor>& interceptors) const = 0;
 
-                // Called for all interceptors (in reverse order) on which handleMessage had been successfully invoked, when normal execution of the chain was aborted for some reason.
-                virtual void    HandleFault (Message* m, const exception_ptr& e) = 0;
-
-                // Intercepts a message
+                // Intercepts a message, and handles exception logic - distributing to interceptors already called
                 virtual void    HandleMessage (Message* m) = 0;
             };
 

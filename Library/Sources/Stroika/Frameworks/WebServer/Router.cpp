@@ -29,9 +29,29 @@ struct  Router::Rep_ : Interceptor::_IRep {
         : fRoutes_ (routes)
     {
     }
-    virtual void    HandleFault (Message* m, const exception_ptr& e) override
+    virtual void    HandleFault (Message* m, const exception_ptr& e) noexcept override
     {
-        AssertNotImplemented ();
+        // @todo - For now - this is our only FAULT handler - so we do it here, but probably should ben a separate interceptor!!!--LGP 2016-09-02
+        RequireNotNull (m);
+        Response*   response    =   m->PeekResponse ();
+        try {
+            try {
+                std::rethrow_exception (e);
+            }
+            catch (const IO::Network::HTTP::Exception& ee) {
+                response->SetStatus (ee.GetStatus (), ee.GetReason ());
+                response->printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (ee).c_str ());
+                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            }
+            catch (...) {
+                response->SetStatus (IO::Network::HTTP::StatusCodes::kInternalError);
+                response->printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
+                response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            }
+        }
+        catch (...) {
+            DbgTrace (L"Oops! - not good, but nothing todo but burry it."); // not assert failure cuz could be out of memory
+        }
     }
     virtual void    HandleMessage (Message* m) override
     {

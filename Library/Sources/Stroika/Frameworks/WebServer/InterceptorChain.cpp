@@ -13,6 +13,7 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 
+// This class MUST be re-entrant (internally synchonized)- and is STATELESS - so no syncro needed
 struct  InterceptorChain::Rep_ : InterceptorChain::_IRep {
     Rep_ (const Sequence<Interceptor>& interceptors)
         : fInterceptors_ (interceptors)
@@ -22,23 +23,31 @@ struct  InterceptorChain::Rep_ : InterceptorChain::_IRep {
     {
         return fInterceptors_;
     }
-    virtual void                    SetInterceptors (const Sequence<Interceptor>& interceptors) override
+    virtual shared_ptr<_IRep>       SetInterceptors (const Sequence<Interceptor>& interceptors) const override
     {
-        fInterceptors_ = interceptors;
-    }
-    virtual void    HandleFault (Message* m, const exception_ptr& e) override
-    {
-        //@todo tmphack - needs locking - really Stroika needs reverse-iterator for Sequence<>
-        for (size_t i = fInterceptors_.size (); i > 0; i--) {
-            fInterceptors_[i - 1].HandleFault (m, e);
-        }
+        return make_shared<Rep_> (interceptors);
     }
     virtual void    HandleMessage (Message* m) override
     {
-        fInterceptors_.Apply ([m] (Interceptor i) { i.HandleMessage (m); });
+        size_t  sz = fInterceptors_.size ();
+        for (size_t i = 0; i < sz; ++i) {
+            try {
+                fInterceptors_[i].HandleMessage (m);
+            }
+            catch (...) {
+                exception_ptr   e   =   current_exception ();
+                do {
+                    fInterceptors_[i].HandleFault (m, e);
+                }
+                while (i-- != 0);
+                Execution::ReThrow ();
+            }
+        }
     }
-    Sequence<Interceptor>   fInterceptors_;
+    const Sequence<Interceptor>   fInterceptors_;       // no synchro needed because always readonly
 };
+
+
 
 
 /*

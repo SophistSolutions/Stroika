@@ -21,28 +21,26 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** WebServer::InterceptorChain **********************
+             *************************** WebServer::InterceptorChain ************************
              ********************************************************************************
              */
             inline  InterceptorChain::InterceptorChain (const shared_ptr<_IRep>& rep)
                 : fRep_ (rep)
             {
+                RequireNotNull (rep);
             }
             inline  Sequence<Interceptor>   InterceptorChain::GetInterceptors () const
             {
-                return fRep_->GetInterceptors ();
+                return fRep_.load ()->GetInterceptors ();
             }
             inline  void                    InterceptorChain::SetInterceptors (const Sequence<Interceptor>& interceptors)
             {
-                fRep_->SetInterceptors (interceptors);
-            }
-            inline  void    InterceptorChain::HandleFault (Message* m, const exception_ptr& e)
-            {
-                fRep_->HandleFault (m, e);
+                auto rwLock = fRep_.rwget ();
+                rwLock.store (rwLock->get ()->SetInterceptors (interceptors));
             }
             inline  void    InterceptorChain::HandleMessage (Message* m)
             {
-                fRep_->HandleMessage (m);
+                fRep_.load ()->HandleMessage (m);
             }
 
 
