@@ -17,7 +17,9 @@
 
 /*
  * TODO:
- *      (o)
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  */
 
 namespace   Stroika {
@@ -61,8 +63,8 @@ namespace   Stroika {
                 nonvirtual  const Response& GetResponse () const;
 
             private:
-                Socket              fSocket_;
                 InterceptorChain    fInterceptorChain_;
+                Socket              fSocket_;
                 SocketStream        fSocketStream_;
                 Message             fMessage_;
 

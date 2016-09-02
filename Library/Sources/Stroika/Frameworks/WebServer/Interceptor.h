@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+
 #include    "Message.h"
 
 
@@ -14,7 +16,9 @@
 
 /*
  * TODO:
- *      @todo   VERY PRELIMINARY
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  */
 
 namespace   Stroika {
@@ -25,10 +29,13 @@ namespace   Stroika {
 
 
             /**
-             *  Each Interceptor envelope must be externally synchonized, but can be read from any thread, and
+             *  Each Interceptor envelope must be externally synchronized, but can be read from any thread, and
              *  the way these are used, they are only ever read, except on construction.
+             *
+             *  \note   Inspired by, but fairly different from
+             *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/interceptor/Interceptor.html
              */
-            class   Interceptor {
+            class   Interceptor : private Debug::AssertExternallySynchronizedLock {
             protected:
                 class   _IRep;
 
@@ -72,6 +79,8 @@ namespace   Stroika {
 
 
             /**
+             *  \note   Each Interceptor::_IRep must be internally synchronized, as it may be called concurrently from different threads,
+             *          for different messages.
              */
             class   Interceptor::_IRep {
             public:
@@ -85,7 +94,7 @@ namespace   Stroika {
 
                 /**
                  *  Intercepts and handles a message. Typically this will read stuff from the Request and
-                 *  add stuff to the Response.
+                 *  add write to the Response.
                  */
                 virtual void    HandleMessage (Message* m) = 0;
             };

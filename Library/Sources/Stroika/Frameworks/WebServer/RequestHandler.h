@@ -35,6 +35,7 @@ namespace   Stroika {
             class   RequestHandler : public function<void(Message* message)> {
             public:
                 /**
+                 *  @todo - figure out how to get rid of crazy int j = 6 in overloads...
                  */
                 RequestHandler (const function<void(Message* message)>& f);
                 RequestHandler (const function<void(Request* request, Response* response)>& f);

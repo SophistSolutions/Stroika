@@ -77,8 +77,8 @@ namespace   {
     // its optimized about how much it copies etc. Its really only tuned for POD-types (OK here but not necessarily good about reallocs).
     //
     //      -- LGP 2011-07-06
-    const   size_t  kMinResponseBufferReserve_              =   32 * 1024;
-    const   size_t  kResponseBufferReallocChunkSizeReserve_ =   16 * 1024;
+    constexpr   size_t  kMinResponseBufferReserve_              =   32 * 1024;
+    constexpr   size_t  kResponseBufferReallocChunkSizeReserve_ =   16 * 1024;
 }
 
 Response::Response (const IO::Network::Socket& s,  Streams::OutputStream<Byte> outStream, const InternetMediaType& ct)
@@ -104,12 +104,14 @@ Response::~Response ()
 
 void    Response::SetContentSizePolicy (ContentSizePolicy csp)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (csp == ContentSizePolicy::eAutoCompute or csp == ContentSizePolicy::eNone);
     fContentSizePolicy_ = csp;
 }
 
 void    Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (csp == ContentSizePolicy::eExact);
     Require (fState_ == State::eInProgress);
     fContentSizePolicy_ = csp;
@@ -118,12 +120,14 @@ void    Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 
 void    Response::SetContentType (const InternetMediaType& contentType)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     fContentType_ = contentType;
 }
 
 void    Response::SetCodePage (Characters::CodePage codePage)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     Require (fBytes_.empty ());
     fCodePage_ = codePage;
@@ -131,6 +135,7 @@ void    Response::SetCodePage (Characters::CodePage codePage)
 
 void    Response::SetStatus (Status newStatus, const String& overrideReason)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     fStatus_ = newStatus;
     fStatusOverrideReason_ = overrideReason;
@@ -138,6 +143,7 @@ void    Response::SetStatus (Status newStatus, const String& overrideReason)
 
 void    Response::AddHeader (String headerName, String value)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
     ClearHeader (headerName);
@@ -146,12 +152,14 @@ void    Response::AddHeader (String headerName, String value)
 
 void    Response::ClearHeader ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     fHeaders_.clear ();
 }
 
 void    Response::ClearHeader (String headerName)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
     map<String, String>::iterator i = fHeaders_.find (headerName);
@@ -162,11 +170,13 @@ void    Response::ClearHeader (String headerName)
 
 map<String, String>  Response::GetSpecialHeaders () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
     return fHeaders_;
 }
 
 map<String, String>  Response::GetEffectiveHeaders () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
     map<String, String>  tmp =   GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
         case    ContentSizePolicy::eAutoCompute:
@@ -191,6 +201,7 @@ map<String, String>  Response::GetEffectiveHeaders () const
 
 void    Response::Flush ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fState_ == State::eInProgress) {
         {
             String  statusMsg   =   fStatusOverrideReason_.empty () ? IO::Network::HTTP::Exception::GetStandardTextForStatus (fStatus_, true) : fStatusOverrideReason_;
@@ -227,6 +238,7 @@ void    Response::Flush ()
 
 void    Response::End ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Flush ();
     fState_ = State::eCompleted;
@@ -236,6 +248,7 @@ void    Response::End ()
 
 void    Response::Abort ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fState_ != State::eCompleted) {
         fState_ = State::eCompleted;
         fUseOutStream_.Abort ();
@@ -248,6 +261,7 @@ void    Response::Abort ()
 
 void    Response::Redirect (const String& url)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require (fState_ == State::eInProgress);
     fBytes_.clear ();
 
@@ -261,6 +275,7 @@ void    Response::Redirect (const String& url)
 
 void    Response::write (const Byte* s, const Byte* e)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
@@ -276,6 +291,7 @@ void    Response::write (const Byte* s, const Byte* e)
 
 void    Response::write (const wchar_t* s, const wchar_t* e)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
     Require (s <= e);
@@ -294,6 +310,7 @@ void    Response::write (const wchar_t* s, const wchar_t* e)
 
 void    Response::printf (const wchar_t* format, ...)
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     va_list     argsList;
     va_start (argsList, format);
     String      tmp     =   Characters::FormatV (format, argsList);
@@ -303,6 +320,7 @@ void    Response::printf (const wchar_t* format, ...)
 
 String  Response::ToString () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
     StringBuilder   sb;
     sb += L"{";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";

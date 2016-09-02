@@ -14,6 +14,7 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
+#include    "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/IO/Network/HTTP/Status.h"
 #include    "../../Foundation/Memory/BLOB.h"
@@ -59,7 +60,7 @@ namespace   Stroika {
             /*
              * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
              */
-            struct  Response {
+            class  Response : private Debug::AssertExternallySynchronizedLock {
             public:
                 Response () = delete;
                 Response (const Response&) = delete;

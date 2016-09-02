@@ -17,9 +17,8 @@
 
 /*
  * TODO:
- *      @todo   VERY PRELIMINARY
  *
- *      @todo   MUST FIX TO DO COW HERE
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  */
 
@@ -41,6 +40,9 @@ namespace   Stroika {
              *
              *  InterceptorChains are 'by value' objects, so updating one in a Connection object - for example - doesn't affect
              *  other connections (update the one in the ConnectionManager for use in future connections).
+             *
+             *  \note   Inspired by, but quite different from
+             *          @see https://cxf.apache.org/javadoc/latest/org/apache/cxf/phase/PhaseInterceptorChain.html
              */
             class   InterceptorChain {
             protected:
@@ -90,6 +92,7 @@ namespace   Stroika {
             public:
                 virtual Sequence<Interceptor>   GetInterceptors () const = 0;
 
+                // note - this is const and returns a new _IRep - so that the actual rep can be immutable.
                 virtual shared_ptr<_IRep>       SetInterceptors (const Sequence<Interceptor>& interceptors) const = 0;
 
                 // Intercepts a message, and handles exception logic - distributing to interceptors already called

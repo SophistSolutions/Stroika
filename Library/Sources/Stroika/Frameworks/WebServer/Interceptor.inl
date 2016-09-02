@@ -31,15 +31,18 @@ namespace   Stroika {
             }
             inline  void    Interceptor::HandleFault (Message* m, const exception_ptr& e) noexcept
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 fRep_->HandleFault (m, e);
             }
             inline  void    Interceptor::HandleMessage (Message* m)
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 fRep_->HandleMessage (m);
             }
             template    <typename T>
             inline  auto    Interceptor::_GetRep () const -> const T&
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };  // not a fully safe check cuz returned value not checked during lifetime of this lock but pretty safe - and bug would be outside
                 EnsureMember (fRep_.get (), T);
                 return *dynamic_cast<const T*> (fRep_.get ());
             }

@@ -48,6 +48,7 @@ Request::Request (const Streams::InputStream<Byte>& inStream, const Optional<IO:
 
 Memory::BLOB    Request::GetBody ()
 {
+    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fBody_.IsMissing ()) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
         if (auto ci = fHeaders.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
@@ -69,6 +70,7 @@ Memory::BLOB    Request::GetBody ()
 
 String  Request::ToString () const
 {
+    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
     StringBuilder   sb;
     sb += L"{";
     sb += L"HTTPVersion: " + fHTTPVersion + L", ";

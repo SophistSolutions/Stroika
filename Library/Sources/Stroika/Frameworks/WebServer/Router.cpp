@@ -24,6 +24,7 @@ using   namespace   Stroika::Frameworks::WebServer;
  ************************* WebServer::Router::Rep_ ******************************
  ********************************************************************************
  */
+//
 struct  Router::Rep_ : Interceptor::_IRep {
     Rep_ (const Sequence<Route>& routes)
         : fRoutes_ (routes)
@@ -68,7 +69,7 @@ struct  Router::Rep_ : Interceptor::_IRep {
         String  method  =   request.fMethod;
         URL     url     =   request.fURL;
         String  hostRelPath =   url.GetHostRelativePath ();
-        for (Route r : fRoutes_.load ()) {
+        for (Route r : fRoutes_) {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
                 continue;
             }
@@ -83,7 +84,7 @@ struct  Router::Rep_ : Interceptor::_IRep {
         return Optional<RequestHandler> {};
     }
 
-    Execution::Synchronized<Sequence<Route>>  fRoutes_;
+    const Sequence<Route>  fRoutes_;    // no need for synchronization cuz constant - just set on construction
 };
 
 
@@ -91,7 +92,7 @@ struct  Router::Rep_ : Interceptor::_IRep {
 
 /*
  ********************************************************************************
- ************************* WebServer::Router ************************************
+ *************************** WebServer::Router **********************************
  ********************************************************************************
  */
 Router::Router (const Sequence<Route>& routes)

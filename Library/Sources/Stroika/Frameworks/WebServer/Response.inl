@@ -20,18 +20,22 @@ namespace   Stroika {
             //  class   Response
             inline  Response::State Response::GetState () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fState_;
             }
             inline  IO::Network::HTTP::Status   Response::GetStatus () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fStatus_;
             }
             inline  InternetMediaType   Response::GetContentType () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fContentType_;
             }
             inline  Characters::CodePage    Response::GetCodePage () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fCodePage_;
             }
             inline  void    Response::write (const BLOB& b)
@@ -52,6 +56,7 @@ namespace   Stroika {
             }
             inline  void    Response::writeln (const wchar_t* e)
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 RequireNotNull (e);
                 const   wchar_t kEOL[]  =   L"\r\n";
                 write (e, e + ::wcslen (e));
@@ -59,6 +64,7 @@ namespace   Stroika {
             }
             inline  void    Response::writeln (const String& e)
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 const   wchar_t kEOL[]  =   L"\r\n";
                 if (not e.empty ()) {
                     wstring tmp { e.As<wstring> () };
@@ -68,18 +74,22 @@ namespace   Stroika {
             }
             inline  void    Response::clear ()
             {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                 fBytes_.clear ();
             }
             inline  bool    Response::empty () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fBytes_.empty ();
             }
             inline  const vector<Byte>& Response::GetBytes () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fBytes_;
             }
             inline  Response::ContentSizePolicy Response::GetContentSizePolicy () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                 return fContentSizePolicy_;
             }
 

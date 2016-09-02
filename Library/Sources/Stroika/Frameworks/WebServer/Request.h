@@ -9,6 +9,7 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Containers/Mapping.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/Memory/Optional.h"
 #include    "../../Foundation/IO/Network/SocketAddress.h"
@@ -40,7 +41,7 @@ namespace   Stroika {
              *
              *  For now assume externally sycnhonized
              */
-            struct  Request {
+            class  Request : private Debug::AssertExternallySynchronizedLock {
             public:
                 Request () = delete;
                 Request (const Request&) = delete;
@@ -66,16 +67,59 @@ namespace   Stroika {
                 }
 
             public:
+                nonvirtual  String  GetHTTPVersion () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    return fHTTPVersion;
+                }
+
+            public:
+                nonvirtual  String  GetHTTPMethod () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    return fMethod;
+                }
+
+            public:
+                nonvirtual  IO::Network::URL    GetURL () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+                    return fURL;
+                }
+
+            public:
+                Mapping<String, String> GetHeaders () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+
+                    return fHeaders;
+                }
+
+            public:
+                // unclear if this SB const?
+                Streams::InputStream<Memory::Byte>  GetInputStream ()
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+
+                    return fInputStream;
+                }
+
+            public:
+                // SOON TO BE PRIVATE
                 Streams::InputStream<Memory::Byte>      fInputStream;
 
             public:
+                // SOON TO BE PRIVATE
                 String                                  fHTTPVersion;
+                // SOON TO BE PRIVATE
                 String                                  fMethod;
+                // SOON TO BE PRIVATE
                 IO::Network::URL                        fURL;
+                // SOON TO BE PRIVATE
                 Mapping<String, String>                 fHeaders;
 
             private:
-                Memory::Optional<IO::Network::SocketAddress>    fPeerAddress_;
+                Memory::Optional<IO::Network::SocketAddress>    fPeerAddress_;  // LOSE SOON _Deprecated_
 
             public:
                 /**
