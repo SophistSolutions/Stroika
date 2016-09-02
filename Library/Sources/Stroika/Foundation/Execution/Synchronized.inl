@@ -19,6 +19,35 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ******************************** Synchronized_Traits ***************************
+             ********************************************************************************
+             */
+            template    <typename MUTEX>
+            inline  void    Synchronized_Traits<MUTEX>::LOCK_SHARED (MutexType& m)
+            {
+                m.lock ();
+            }
+            template    <typename MUTEX>
+            inline  void    Synchronized_Traits<MUTEX>::UNLOCK_SHARED (MutexType& m)
+            {
+                m.unlock ();
+            }
+#if     !qCompilerAndStdLib_shared_mutex_module_Buggy
+            template    <>
+            inline  void    Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED (shared_timed_mutex& m)
+            {
+                m.lock_shared ();
+            }
+            template    <>
+            inline  void    Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED (shared_timed_mutex& m)
+            {
+                m.unlock_shared ();
+            }
+#endif
+
+
+            /*
+             ********************************************************************************
              **************************** Synchronized<T, TRAITS> ***************************
              ********************************************************************************
              */
@@ -51,13 +80,12 @@ namespace   Stroika {
             template    <typename   T, typename TRAITS>
             inline  Synchronized<T, TRAITS>::operator T () const
             {
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                return fDelegate_;
+                return load ();
             }
             template    <typename   T, typename TRAITS>
             inline  T Synchronized<T, TRAITS>::load () const
             {
-                MACRO_LOCK_GUARD_CONTEXT (fLock_);
+                shared_lock<const Synchronized<T, TRAITS>> fromCritSec { *this };   // use shared_lock if possible
                 return fDelegate_;
             }
             template    <typename   T, typename TRAITS>
@@ -81,12 +109,22 @@ namespace   Stroika {
                 return ReadableReference (&fDelegate_, &fLock_);
             }
             template    <typename   T, typename TRAITS>
-            inline  void    Synchronized<T, TRAITS>::lock ()
+            inline  void    Synchronized<T, TRAITS>::lock_shared () const
+            {
+                TRAITS::LOCK_SHARED (fLock_);
+            }
+            template    <typename   T, typename TRAITS>
+            inline  void    Synchronized<T, TRAITS>::unlock_shared () const
+            {
+                TRAITS::UNLOCK_SHARED (fLock_);
+            }
+            template    <typename   T, typename TRAITS>
+            inline  void    Synchronized<T, TRAITS>::lock () const
             {
                 fLock_.lock ();
             }
             template    <typename   T, typename TRAITS>
-            inline  void    Synchronized<T, TRAITS>::unlock ()
+            inline  void    Synchronized<T, TRAITS>::unlock () const
             {
                 fLock_.unlock ();
             }
@@ -140,7 +178,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************** Synchronized<T, TRAITS>::WritableReference **********************
+             *************** Synchronized<T, TRAITS>::WritableReference *********************
              ********************************************************************************
              */
             template    <typename   T, typename TRAITS>

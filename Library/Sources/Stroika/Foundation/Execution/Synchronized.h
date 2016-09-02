@@ -66,6 +66,9 @@ namespace   Stroika {
             template    <typename MUTEX = recursive_mutex>
             struct  Synchronized_Traits {
                 using   MutexType   =   MUTEX;
+
+                static  void    LOCK_SHARED (MutexType& m);
+                static  void    UNLOCK_SHARED (MutexType& m);
             };
 
 
@@ -194,6 +197,9 @@ namespace   Stroika {
                  *  Note - unlike operator->, load () returns a copy of the internal data, and only locks while fetching it, so that the
                  *  lock does not persist while using the result.
                  *
+                 *  \note   Using load () can be most efficient (least lock contention) with read/write locks (RWSynchronized),
+                 *          since it just uses a read lock and releases it immediately.
+                 *
                  *  \par Example Usage
                  *      \code
                  *      Synchronized<Thread> sharedData;
@@ -252,13 +258,25 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  If shared lock syncronization - does shared_lock<>::lock_shared, and otherwise just lock ()
                  */
-                nonvirtual  void    lock ();
+                nonvirtual  void    lock_shared () const;
+
+            public:
+                /**
+                 *  If shared lock syncronization - does shared_lock<>::unlock_shared, and otherwise just unlock ()
+                 */
+                nonvirtual  void    unlock_shared () const;
 
             public:
                 /**
                  */
-                nonvirtual  void    unlock ();
+                nonvirtual  void    lock () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    unlock () const;
 
             private:
                 T                   fDelegate_;
