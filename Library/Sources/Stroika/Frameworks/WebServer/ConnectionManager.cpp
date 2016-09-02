@@ -38,6 +38,45 @@ using   namespace   Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+namespace {
+    struct  ServerHeadersInterceptor_ : public Interceptor {
+        struct  Rep_ : Interceptor::_IRep {
+            Rep_ (const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+                : fServerHeader_ (serverHeader)
+                , fCORSModeSupport (corsSupportMode)
+            {
+            }
+            virtual void    HandleFault (Message* m, const exception_ptr& e) noexcept override
+            {
+            }
+            virtual void    HandleMessage (Message* m) override
+            {
+                if (fServerHeader_) {
+                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
+                }
+                if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
+                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
+                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
+                }
+            }
+
+            const Optional<String>                      fServerHeader_;    // no need for synchronization cuz constant - just set on construction
+            const ConnectionManager::CORSModeSupport    fCORSModeSupport;
+        };
+        ServerHeadersInterceptor_ (const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+            : Interceptor (make_shared<Rep_> (serverHeader, corsSupportMode))
+        {
+        }
+    };
+}
+
+
+namespace {
+    InterceptorChain    mkInterceptorChain_ (const Router& router, const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+    {
+        return InterceptorChain { Sequence<Interceptor> { ServerHeadersInterceptor_ { serverHeader, corsSupportMode }, router } };
+    }
+}
 
 
 /*
@@ -54,9 +93,9 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Socket::BindFlags& bindFlags, const Router& router, size_t maxConnections)
     : fServerHeader_ (String_Constant { L"Stroika/2.0" })
     , fRouter_ (router)
-    , fInterceptorChain_ { Sequence<Interceptor> { fRouter_ } }
-, fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
-, fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
+    , fInterceptorChain_ { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) }
+    , fThreads_ (maxConnections) // implementation detail - due to EXPENSIVE blcoking read strategy
+    , fListener_  (bindAddress, bindFlags, [this](Socket s)  { onConnect_ (s); }, maxConnections / 2)
 {
 }
 
@@ -69,40 +108,12 @@ void    ConnectionManager::onConnect_ (Socket s)
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
-        // now read
         Connection  conn (s, fInterceptorChain_);
-        conn.ReadHeaders ();    // bad API. Must rethink...
-        if (Optional<String> o = fServerHeader_.cget ()) {
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, *o);
-        }
-        if (GetCORSModeSupport () == CORSModeSupport::eSuppress) {
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant { L"*" });
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant { L"Origin, X-Requested-With, Content-Type, Accept, Authorization" });
-        }
-        constexpr bool kSupportHTTPKeepAlives_ { false };
-        if (not kSupportHTTPKeepAlives_) {
-            // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-            //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-            conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
-        }
-        String url = conn.GetRequest ().fURL.GetFullURL ();
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Serving page %s", url.c_str ());
-#endif
-        try {
-            fInterceptorChain_.HandleMessage (&conn.fMessage_);
-        }
-        catch (const IO::Network::HTTP::Exception& e) {
-            conn.GetResponse ().SetStatus (e.GetStatus (), e.GetReason ());
-            conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (e).c_str ());
-            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-        }
-        catch (...) {
-            conn.GetResponse ().SetStatus (HTTP::StatusCodes::kInternalError);
-            conn.GetResponse ().printf (L"<html><body><p>Exception: %s</p></body></html>", Characters::ToString (std::current_exception ()).c_str ());
-            conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
-        }
-        conn.GetResponse ().End ();
+        auto&& cleanup  =   Execution::Finally ([&conn] () { if (conn.GetResponse ().GetState () != Response::State::eCompleted) {conn.GetResponse ().End (); }});
+        // Now read and process each method - currently wasteful - throwing a thread at context
+        // Also - if keep-alive - keep reading
+        while (conn.ReadAndProcessMessage ())
+            ;
     }
     );
 }
@@ -156,6 +167,18 @@ void    ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 void    ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 {
     AssertNotImplemented ();
+}
+
+void    ConnectionManager::SetServerHeader (Optional<String> server)
+{
+    fServerHeader_ = server;
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) };
+}
+
+void    ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
+{
+    fCORSModeSupport_ = support;
+    fInterceptorChain_  = InterceptorChain { mkInterceptorChain_ (fRouter_, fServerHeader_.load (), fCORSModeSupport_) };
 }
 
 #if 0

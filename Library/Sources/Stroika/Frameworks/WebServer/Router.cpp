@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../../Foundation/Characters/ToString.h"
 #include    "../../Foundation/IO/Network/HTTP/Exception.h"
 
 #include    "Router.h"

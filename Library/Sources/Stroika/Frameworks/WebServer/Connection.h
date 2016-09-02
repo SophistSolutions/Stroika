@@ -62,6 +62,12 @@ namespace   Stroika {
                 nonvirtual  Response&       GetResponse ();
                 nonvirtual  const Response& GetResponse () const;
 
+            public:
+                /*
+                 *  Return true if 'keep alive'
+                 */
+                nonvirtual  bool    ReadAndProcessMessage ();
+
             private:
                 InterceptorChain    fInterceptorChain_;
                 Socket              fSocket_;

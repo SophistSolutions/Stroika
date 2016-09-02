@@ -24,17 +24,9 @@ namespace   Stroika {
             {
                 return fServerHeader_;
             }
-            inline  void ConnectionManager::SetServerHeader (Optional<String> server)
-            {
-                fServerHeader_ = server;
-            }
             inline      auto ConnectionManager::GetCORSModeSupport () const -> CORSModeSupport
             {
                 return fCORSModeSupport_;
-            }
-            inline    void ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
-            {
-                fCORSModeSupport_ = support;
             }
 
 

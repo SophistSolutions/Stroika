@@ -58,6 +58,9 @@ namespace   Stroika {
                 InterceptorChain (const shared_ptr<_IRep>& rep);
 
             public:
+                nonvirtual  InterceptorChain&   operator= (const InterceptorChain&) = default;
+
+            public:
                 /**
                  */
                 nonvirtual  Sequence<Interceptor>   GetInterceptors () const;
@@ -103,7 +106,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

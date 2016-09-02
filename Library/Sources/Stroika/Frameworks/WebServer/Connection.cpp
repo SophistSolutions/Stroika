@@ -12,6 +12,7 @@
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
+#include    "../../Foundation/IO/Network/HTTP/Headers.h"
 #include    "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 
 #include    "Connection.h"
@@ -24,6 +25,13 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::WebServer;
+
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -110,3 +118,31 @@ void    Connection::Close ()
     fSocket_.Close ();
 }
 
+bool    Connection::ReadAndProcessMessage ()
+{
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"Connection::ReadAndProcessMessage");
+#endif
+    constexpr bool kSupportHTTPKeepAlives_ { false };       // @todo - support - now structured so maybe not too hard -- LGP 2016-09-02
+    // @todo but be sure REsponse::End () doesnt close socket - just flushes response!
+
+    ReadHeaders ();    // bad API. Must rethink...
+
+    if (not kSupportHTTPKeepAlives_) {
+        // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
+    }
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    String url = GetRequest ().fURL.GetFullURL ();
+    DbgTrace (L"Serving page %s", url.c_str ());
+#endif
+    try {
+        fInterceptorChain_.HandleMessage (&fMessage_);
+    }
+    catch (...) {
+        //DbgTrace ("Caught exception halding message");
+    }
+    GetResponse ().End ();
+    return kSupportHTTPKeepAlives_;
+}
