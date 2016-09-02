@@ -61,10 +61,10 @@ namespace   Stroika {
                 nonvirtual  const Response& GetResponse () const;
 
             private:
-                Socket          fSocket_;
-                SocketStream    fSocketStream_;
-                Message         fMessage_;
                 InterceptorChain    fInterceptorChain_;
+                Socket              fSocket_;
+                SocketStream        fSocketStream_;
+                Message             fMessage_;
 
             private:
                 friend  ConnectionManager;

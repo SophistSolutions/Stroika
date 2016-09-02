@@ -14,13 +14,26 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
+    Rep_ (const Sequence<Interceptor>& interceptors)
+        : fInterceptors_ (interceptors)
+    {
+    }
+    virtual Sequence<Interceptor>   GetInterceptors () const override
+    {
+        return fInterceptors_;
+    }
+    virtual void                    SetInterceptors (const Sequence<Interceptor>& interceptors) override
+    {
+        fInterceptors_ = interceptors;
+    }
     virtual void    HandleFault (Message* m, const exception_ptr& e) override
     {
     }
     virtual void    HandleMessage (Message* m) override
     {
+        fInterceptors_.Apply ([m] (Interceptor i) { i.HandleMessage (m); });
     }
-
+    Sequence<Interceptor>   fInterceptors_;
 };
 
 
@@ -29,8 +42,7 @@ struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
  *********************** WebServer::InterceptorChain ****************************
  ********************************************************************************
  */
-
-InterceptorChain::InterceptorChain ()
-    : fRep_ (make_shared<Rep_> ())
+InterceptorChain::InterceptorChain (const Sequence<Interceptor>& interceptors)
+    : fRep_ (make_shared<Rep_> (interceptors))
 {
 }

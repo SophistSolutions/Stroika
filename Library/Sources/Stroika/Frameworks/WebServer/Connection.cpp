@@ -38,9 +38,10 @@ using   namespace   Stroika::Frameworks::WebServer;
 DISABLE_COMPILER_CLANG_WARNING_START("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
 Connection::Connection (Socket s)
-    : fSocket_ (s)
-    , fSocketStream_ (s)
-    , fMessage_ {
+    : fInterceptorChain_ { Sequence<Interceptor> {} }
+, fSocket_ (s)
+, fSocketStream_ (s)
+, fMessage_ {
     move (Request (fSocketStream_,  s.GetPeerAddress ())),
     move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),
     s.GetPeerAddress ()

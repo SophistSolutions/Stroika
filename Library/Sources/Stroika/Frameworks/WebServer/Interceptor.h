@@ -34,11 +34,16 @@ namespace   Stroika {
                 class   _IRep;
 
             public:
+                /**
+                 */
                 Interceptor () = delete;
-                Interceptor (const Interceptor&) = delete;
+                Interceptor (const Interceptor&) = default;
                 Interceptor (Interceptor&&) = default;
-            public:
+            protected:
                 Interceptor (const shared_ptr<_IRep>& rep);
+
+            public:
+                nonvirtual  Interceptor&    operator= (const Interceptor&) = default;
 
             public:
                 /**

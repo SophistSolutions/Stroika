@@ -28,6 +28,14 @@ namespace   Stroika {
                 : fRep_ (rep)
             {
             }
+            inline  Sequence<Interceptor>   InterceptorChain::GetInterceptors () const
+            {
+                return fRep_->GetInterceptors ();
+            }
+            inline  void                    InterceptorChain::SetInterceptors (const Sequence<Interceptor>& interceptors)
+            {
+                fRep_->SetInterceptors (interceptors);
+            }
             inline  void    InterceptorChain::HandleFault (Message* m, const exception_ptr& e)
             {
                 fRep_->HandleFault (m, e);
