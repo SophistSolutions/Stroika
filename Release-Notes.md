@@ -15,6 +15,52 @@ History
   </thead>
 
 
+
+
+
+
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a175">v2.0a175</a><br/>2016-09-03</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a174...v2.0a175</li>
+		<li>Synchonized&lt;&gt; RWSynchonized support - now load () method really uses shared_lock</li>
+		<li>Frameworks/webserver
+			<ul>
+				<li>Interceptor support</li>
+				<li>Router now is an interceptor so integrates better</li>
+				<li>Use HandleFault code from Intercetor for some fault (e.g. 404/exception) handling</li>
+				<li>refactored webserver code so new Message object that owns Request/Response and moved GetPeerAddress there</li>
+				<li>Docs cleanups</li>
+				<li>wrappers on data, and thread safety checks asserts with Debug::AssertExternallySynchonized</li>
+				<li>ConnectionManager now owns its own interceptor to add in server header and CORs stuff</li>
+				<li>ConnectionManager now delegates server loop to Connection::ReadAndProcessMessage () - so closer
+    	to support (not there yet) for keep-alives.</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a175-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a173-OUT.txt</li>
+				<li>vc++2k15 Update 3.1</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
  
 
 
