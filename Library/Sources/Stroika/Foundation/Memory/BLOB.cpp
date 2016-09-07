@@ -298,13 +298,18 @@ Streams::InputStream<Byte> BLOB::As () const
     return BLOBBINSTREAM_ (*this);
 }
 
-String    BLOB::ToString () const
+Characters::String    BLOB::AsHex () const
 {
+    // @todo Could be more efficient
     StringBuilder   sb;
-    sb += Characters::Format (L"[%d bytes: ", size ());
     for (Byte b : *this) {
         sb += Characters::Format (L"%02x", b);
     }
-    sb += L"]";
     return sb.str ();
+}
+
+String    BLOB::ToString () const
+{
+    // @todo Consider if we should 'LimitLength on the AsHex() string?
+    return Characters::Format (L"[%d bytes: ", size ()) + AsHex () + L"]";
 }

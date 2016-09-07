@@ -4,6 +4,7 @@
 //  TEST    Foundation::Memory
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -361,6 +362,7 @@ namespace {
             VerifyTestResult  ((BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a") == BLOB { 0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a }));
             VerifyTestResult  ((BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
             VerifyTestResult  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB { 0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6 }));
+            VerifyTestResult  ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
         }
     }
 }

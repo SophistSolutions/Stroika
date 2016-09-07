@@ -225,6 +225,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return a string of hex bytes - two characters per byte, lower case HEX characters.
+                 */
+                nonvirtual  Characters::String    AsHex () const;
+
+            public:
+                /**
                  *  Pointers returned by begin(), remain valid for the lifetime of the containing BLOB.
                  */
                 nonvirtual  const Byte* begin () const;
