@@ -51,6 +51,10 @@ namespace   Stroika {
             {
                 return Stroika_Make_FULL_VERSION (fMajorVer, fMinorVer, ((uint8_t)fVerStage), fVerSubStage, static_cast<int> (fFinalBuild));
             }
+            inline  Characters::String  Version::ToString () const
+            {
+                return AsPrettyVersionString ();
+            }
             inline  constexpr   int Version::Compare (const Version& rhs) const
             {
                 return make_signed<Binary32BitFullVersionType>::type (AsFullVersionNum ()) - make_signed<Binary32BitFullVersionType>::type (rhs.AsFullVersionNum ());

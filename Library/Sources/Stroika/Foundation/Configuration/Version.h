@@ -111,6 +111,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual  Characters::String  ToString () const;
+
+            public:
+                /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
                 nonvirtual  constexpr   int Compare (const Version& rhs) const;
