@@ -51,6 +51,8 @@ else ifeq ($(qFeatureFlag_OpenSSL), 'use')
 	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
 else ifeq ($(qFeatureFlag_ZLib), 'use')
 	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+else ifeq ($(qFeatureFlag_sqlite), 'use')
+	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
 endif
 
 
