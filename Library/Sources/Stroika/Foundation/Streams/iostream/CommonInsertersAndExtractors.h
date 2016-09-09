@@ -32,7 +32,7 @@ namespace   Stroika {
                 template<class charT, typename  Traits>
                 std::basic_istream<charT, Traits>&  operator>> (std::basic_istream<charT, Traits>& is, String& to);
                 template<class charT, typename  Traits>
-                std::basic_ostream<charT, Traits>&  operator<< (std::basic_ostream<charT, Traits>& os,  const String& from);
+                std::basic_ostream<charT, Traits>&  operator<< (std::basic_ostream<charT, Traits>& os, const String& from);
 
 
             }
