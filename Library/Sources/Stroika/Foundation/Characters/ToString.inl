@@ -122,6 +122,29 @@ namespace   Stroika {
                     return Configuration::DefaultNames<T>::k.GetName (t);
                 }
 
+                template    <typename T, size_t SZ>
+                inline  String  ToString_array_ (const T (&arr)[SZ])
+                {
+                    StringBuilder sb;
+                    sb << L"[";
+                    for (size_t i = 0; i < SZ; ++i) {
+                        sb << L" " << ToString (arr[i]);
+                        if (i + 1 < SZ) {
+                            sb << L",";
+                        }
+                        else {
+                            sb << L" ";
+                        }
+                    }
+                    sb << L"]";
+                    return sb.str ();
+                }
+                template    <typename T>
+                inline  String  ToString_ (const T& t, typename enable_if<is_array<T>::value and not is_convertible<T, String>::value>::type* = 0)
+                {
+                    return ToString_array_ (t);
+                }
+
                 /*
                  * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
                  *      There are five standard signed integer types : signed char, short int, int,
@@ -135,8 +158,9 @@ namespace   Stroika {
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, bool>::value>::type* = 0)
                 {
-                    return t ? String_Constant { L"true" } :
-                           String_Constant { L"false" };
+                    static  const   String_Constant kTrue_ { L"true" };
+                    static  const   String_Constant kFalse { L"false" };
+                    return t ? kTrue_ : kFalse;
                 }
                 template    <typename T>
                 inline  String  ToString_ (const T& t, typename enable_if<is_same<T, signed char>::value>::type* = 0)

@@ -1387,6 +1387,12 @@ namespace {
             VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
             VerifyTestResult (Characters::ToString (b) == L"[3 bytes: 34551f]");
         }
+        {
+            constexpr int ca [3] { 1, 3, 5 };
+            int a [3] { 1, 3, 5 };
+            VerifyTestResult (Characters::ToString (ca) == L"[ 1, 3, 5 ]");
+            VerifyTestResult (Characters::ToString (a) == L"[ 1, 3, 5 ]");
+        }
     }
 }
 
