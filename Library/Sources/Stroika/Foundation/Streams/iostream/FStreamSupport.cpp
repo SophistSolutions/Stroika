@@ -121,5 +121,3 @@ using   namespace   Stroika::Foundation::IO;
         OpenOutputFileStream (&tmpOfStream, fileName, mode);
         return tmpOfStream;
     }
-
-
