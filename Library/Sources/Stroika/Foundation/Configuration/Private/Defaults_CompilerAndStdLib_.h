@@ -53,12 +53,12 @@
 
 #elif   defined (__GNUC__)
 
-#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
-#pragma message ("Warning: Stroika does not support versions prior to GCC 4.9")
+#if     __GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ < 0))
+#pragma message ("Warning: Stroika does not support versions prior to GCC 5.0")
 #endif
-#if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 9))
-#pragma message ("Info: Stroika untested with this version of GCC")
-#endif
+//#if     (__GNUC__ == 5 && (__GNUC_MINOR__ > 9))
+//#pragma message ("Info: Stroika untested with this version of GCC")
+//#endif
 #if     __GNUC__ > 6 || (__GNUC__ == 6 && (__GNUC_MINOR__ > 1))
 #pragma message ("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
 #define   CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X)   1
@@ -146,25 +146,6 @@
 
 
 
-
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_make_unique_Buggy
-seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may have in wrong folder/file (docs say memory)
-*/
-#ifndef qCompilerAndStdLib_make_unique_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_make_unique_Buggy                (__GNUC__ < 5)
-#else
-#define qCompilerAndStdLib_make_unique_Buggy                0
-#endif
-
-#endif
 
 
 
@@ -368,9 +349,6 @@ seems missing on gcc 49 and untested otherwise, but works on msvc2k13. g++ may h
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
 #elif   defined (__clang__)
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
-#elif   defined (__GNUC__)
-// broken in gcc49, and works in gcc52. Untested in gcc50/51
-#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      0
 #endif
@@ -642,7 +620,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 #if     defined (__clang__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 8)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy      0
 #endif
@@ -681,8 +659,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       CompilerAndStdLib_AssumeBuggyIfNewerCheck_((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy       0
 #endif
@@ -776,8 +752,6 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9)))
 #else
 #define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     0
 #endif
@@ -813,7 +787,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #ifndef qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
 
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
+#define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy     0
 #endif
@@ -1077,8 +1051,6 @@ eq_result
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     CompilerAndStdLib_AssumeBuggyIfNewerCheck_(__clang_major__ == 3 && (__clang_minor__ <= 8))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy     0
 #endif
@@ -1098,8 +1070,6 @@ eq_result
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     0
 #endif
@@ -1120,8 +1090,6 @@ eq_result
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     0
 #endif
@@ -1141,28 +1109,6 @@ eq_result
 #define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ <= 5))
 #else
 #define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   0
-#endif
-
-#endif
-
-
-
-
-/*
- *
- *      class   Seekable {
- *          protected:
- *              class   _IRep;
- *      ...
- *
- *      struct   InStr_IRep_ : BinaryInputStream::_IRep, Seekable::_IRep {
- */
-#ifndef qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        (__GNUC__ == 4 && (__GNUC_MINOR__ == 9))
-#else
-#define qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy        0
 #endif
 
 #endif
@@ -1335,8 +1281,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 #if     defined (__clang__)
 #define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 6))
-#elif   defined (__GNUC__)
-#define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 9))
 #else
 #define qCompilerAndStdLib_string_conversions_Buggy              0
 #endif

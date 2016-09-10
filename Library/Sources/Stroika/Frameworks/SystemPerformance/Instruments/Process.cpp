@@ -2432,11 +2432,7 @@ namespace {
         }
         virtual unique_ptr<ICapturer>   Clone () const override
         {
-#if     qCompilerAndStdLib_make_unique_Buggy
-            return unique_ptr<ICapturer> (new MyCapturer_ (fCaptureContext));
-#else
             return make_unique<MyCapturer_> (fCaptureContext);
-#endif
         }
     };
 }
@@ -2453,11 +2449,7 @@ Instrument          SystemPerformance::Instruments::Process::GetInstrument (cons
 {
     return Instrument (
                InstrumentNameType (String_Constant { L"Process" }),
-#if     qCompilerAndStdLib_make_unique_Buggy
-               Instrument::SharedByValueCaptureRepType (unique_ptr<MyCapturer_> (new MyCapturer_ (CapturerWithContext_ { options }))),
-#else
-               Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
-#endif
+    Instrument::SharedByValueCaptureRepType (make_unique<MyCapturer_> (CapturerWithContext_ { options })),
     {kProcessMapMeasurement},
     GetObjectVariantMapper ()
            );
