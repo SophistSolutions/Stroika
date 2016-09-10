@@ -66,8 +66,6 @@ my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
 my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-but-set-variable ';
 my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-local-typedefs ';
 
-my $DEFAULT_CWARNING_FLAGS_GCC_AIX	= '-Wno-cpp ';
-
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
 #my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unknown-warning-option ';
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-const-variable ';
@@ -226,7 +224,7 @@ sub     IsMSVCCompiler_
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
-	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Unix';
 	}
 	if ("$^O" eq "cygwin") {
@@ -250,12 +248,8 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	if (("$^O" eq "linux") or ("$^O" eq "darwin") or ("$^O" eq "aix")) {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_UseStaticTPP;
-	}
-	if ("$^O" eq "aix") {
-		# no good reason - just haven't gotten working yet, so default to no
-		$FEATUREFLAG_LZMA = $LIBFEATUREFLAG_No;
 	}
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
@@ -307,9 +301,6 @@ sub	SetDefaultForCompilerDriver_
 		$CWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
-			if ("$^O" eq "aix") {
-				$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC_AIX;
-			}
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '6') {
 				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
 				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . " -Wno-odr"
@@ -356,8 +347,7 @@ sub	SetDefaultForCompilerDriver_
 			if ($ENABLE_GLIBCXX_DEBUG == DEFAULT_BOOL_OPTIONS) {
 				$ENABLE_GLIBCXX_DEBUG = 1;
 			}
-			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS && !("$^O" eq "aix")) {
-				### sadly - I've only needed this on AIX, and its only missing on AIX
+			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
 		}
@@ -373,10 +363,8 @@ sub	SetDefaultForCompilerDriver_
 			$INCLUDE_SYMBOLS_EXE = true;
 		}
 
-		if (!("$^O" eq "aix")) {
-			#helpful to print stack traces in log (not critical, and has performance overhead)
-			$EXTRA_LINKER_ARGS .= " -rdynamic";
-		}
+		#helpful to print stack traces in log (not critical, and has performance overhead)
+		$EXTRA_LINKER_ARGS .= " -rdynamic";
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
@@ -403,7 +391,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
-	if (!(defined $AR) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+	if (!(defined $AR) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
 		$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
@@ -411,7 +399,7 @@ sub	SetDefaultForCompilerDriver_
 	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
 		$AR = "ar";
 	}
-	if (!(defined $RANLIB) and (!("$^O" eq "aix") and IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+	if (!(defined $RANLIB) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
 		$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
@@ -425,12 +413,6 @@ sub	SetDefaultForPlatform_
 {
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$COMPILER_DRIVER = "gcc";
-		if ("$^O" eq "aix") {
-			$COMPILER_DRIVER = "gcc -pthread";
-			#mminimal-toc seems to work better than bbigtoc -- LGP 2016-03-18
-			#$EXTRA_LINKER_ARGS = "-Wl,-bbigtoc";	# we seem to almost always get these big TOC errors -- LGP 2015-08-21
-			$EXTRA_COMPILER_ARGS = "-mminimal-toc";	# avoid big TOC errors -- LGP 2016-03-18
-		}
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "g++ -V5.0";

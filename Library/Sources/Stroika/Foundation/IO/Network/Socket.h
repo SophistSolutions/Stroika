@@ -9,9 +9,6 @@
 #if     qPlatform_POSIX
 #include    <sys/socket.h>
 #endif
-#if     defined (RAW)
-#undef  RAW                 // defined in AIX 7.1 ioctl.h, included by sys/socket.h
-#endif
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"

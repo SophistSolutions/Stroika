@@ -143,9 +143,6 @@ doPatching_:
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Xerces...";
 	@(cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz --no-same-owner);
 	@(cd CURRENT; tar xf ../Patches/VC14Projects.tar.gz --no-same-owner);
-ifeq (AIX,$(shell uname))
-	@patch --quiet -p0 CURRENT/configure < Patches/AIX-autoconf-fail.PATCH
-endif
 	@$(ECHO) "done"
 
 ifeq (Unix,$(ProjectPlatformSubdir))

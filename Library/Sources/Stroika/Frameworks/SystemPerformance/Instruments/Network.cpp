@@ -3,9 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_AIX
-#include    <libperfstat.h>
-#elif   qPlatform_Windows
+#if		qPlatform_Windows
 #include    <WinSock2.h>
 #include    <Iphlpapi.h>
 #endif
@@ -161,186 +159,6 @@ namespace {
 }
 
 
-
-
-
-
-
-#if     qPlatform_AIX
-namespace {
-    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
-        struct  PerfStats_ {
-            uint64_t  fTotalBytesReceived;
-            uint64_t  fTotalBytesSent;
-            uint64_t  fTotalPacketsReceived;
-            uint64_t  fTotalPacketsSent;
-        };
-        Mapping<String, PerfStats_>       fLast;
-        struct OverallTCPStats_ {
-            uint64_t    fTotalSegments;
-            uint64_t    fTotalTCPRetransmits;
-        };
-        Optional<OverallTCPStats_>      fLastOverallTCPStats_;
-        CapturerWithContext_AIX_ (Options options)
-            : CapturerWithContext_COMMON_ (options)
-        {
-            // hack for side-effect of  updating fLastSum etc
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
-            }
-        }
-        CapturerWithContext_AIX_ (const CapturerWithContext_AIX_&) = default;   // copy by value fine - no need to re-wait...
-        Instruments::Network::Info    capture ()
-        {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
-            return capture_ ();
-        }
-        Instruments::Network::Info    capture_ ()
-        {
-            using   Instruments::Network::InterfaceInfo;
-            using   Instruments::Network::Info;
-
-            Mapping<String, PerfFetchResults_>   thisRunStats    =   perfstat_fetch_ ();
-
-            Collection<InterfaceInfo>   interfaceResults;
-
-            Time::DurationSecondsType   elapsed = Time::GetTickCount () - GetLastCaptureAt ();
-
-            IOStatistics                accumSummary;
-            for (KeyValuePair<String, PerfFetchResults_> i : thisRunStats) {
-                try {
-                    Memory::Optional<IO::Network::Interface>    oIFace = IO::Network::GetInterfaceById (i.fKey);
-                    if (oIFace) {
-                        InterfaceInfo   iiInfo;
-                        iiInfo.fInterface = *oIFace;
-
-                        IOStatistics    stats;
-                        stats.fTotalBytesReceived = i.fValue.fTotalBytesReceived;
-                        stats.fTotalBytesSent = i.fValue.fTotalBytesSent;
-                        stats.fTotalPacketsReceived = i.fValue.fTotalPacketsReceived;
-                        stats.fTotalPacketsSent = i.fValue.fTotalPacketsSent;
-
-                        if (Optional<PerfStats_> prev = fLast.Lookup (i.fKey)) {
-                            stats.fBytesPerSecondReceived = static_cast<double> (i.fValue.fTotalBytesReceived - prev->fTotalBytesReceived) / elapsed;
-                            stats.fBytesPerSecondSent = static_cast<double> (i.fValue.fTotalBytesSent - prev->fTotalBytesSent) / elapsed;
-                            stats.fPacketsPerSecondReceived = static_cast<double> (i.fValue.fTotalPacketsReceived - prev->fTotalPacketsReceived) / elapsed;
-                            stats.fPacketsPerSecondSent = static_cast<double> (i.fValue.fTotalPacketsSent - prev->fTotalPacketsSent) / elapsed;
-                        }
-
-                        // fTransmitSpeedBaud and fReceiveLinkSpeedBaud already gathered from interface, but the values appear unlikely, so try
-                        // these -LGP 2015-09-28
-                        iiInfo.fInterface.fTransmitSpeedBaud = i.fValue.fBAUDRate;
-                        iiInfo.fInterface.fReceiveLinkSpeedBaud = i.fValue.fBAUDRate;
-                        stats.fTotalErrors = i.fValue.fTotalErrors;
-                        iiInfo.fIOStatistics = stats;
-                        interfaceResults.Add (iiInfo);
-                        accumSummary += stats;
-                    }
-                    else {
-                        DbgTrace (L"Ignore missing network interface %s", i.fKey.c_str ());
-                    }
-                }
-                catch (...) {
-                    DbgTrace (L"Ignore exception looking up network interface %s", i.fKey.c_str ());
-                }
-            }
-
-            fLast.clear ();
-            thisRunStats.Apply ([this] (const KeyValuePair<String, PerfFetchResults_>& i) { fLast.Add (i.fKey, i.fValue); });
-
-            OverallTCPStats_    tcpStats    =   GetOverallTCPStats_ ();
-            accumSummary.fTotalTCPSegments = tcpStats.fTotalSegments;
-            accumSummary.fTotalTCPRetransmittedSegments = tcpStats.fTotalTCPRetransmits;
-            if (fLastOverallTCPStats_) {
-                accumSummary.fTCPSegmentsPerSecond = (tcpStats.fTotalSegments - fLastOverallTCPStats_->fTotalSegments) / elapsed;
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (tcpStats.fTotalTCPRetransmits - fLastOverallTCPStats_->fTotalTCPRetransmits) / elapsed;
-            }
-            fLastOverallTCPStats_  = tcpStats;
-
-            NoteCompletedCapture_ ();
-            return Info { interfaceResults, accumSummary };
-        }
-        struct PerfFetchResults_ :  PerfStats_ {
-            uint64_t    fBAUDRate;
-            uint64_t    fTotalErrors;
-            PerfFetchResults_ (uint64_t tbr, uint64_t tbs, uint64_t tpr, uint64_t tps, uint64_t baud, uint64_t totalErrors)
-                : PerfStats_ { tbr, tbs, tpr, tps }
-                , fBAUDRate { baud }
-                , fTotalErrors { totalErrors }
-            {
-            }
-        };
-        Mapping<String, PerfFetchResults_>   perfstat_fetch_ ()
-        {
-            Mapping<String, PerfFetchResults_>   result;
-            int interfaceCount =  perfstat_netinterface (NULL, NULL,  sizeof (perfstat_netinterface_t), 0);
-            if (interfaceCount > 0) {
-                Memory::SmallStackBuffer<perfstat_netinterface_t>   statBuf (interfaceCount);
-                perfstat_id_t firstinterface = { 0 };
-                int ret = perfstat_netinterface (&firstinterface, statBuf.begin (), sizeof(perfstat_netinterface_t), interfaceCount);
-                Assert (ret <= interfaceCount);
-                for (int i = 0; i < ret; ++i) {
-                    result.Add (
-                        String::FromNarrowSDKString (statBuf[i].name),
-                    PerfFetchResults_ {
-                        statBuf[i].ibytes,
-                        statBuf[i].obytes,
-                        statBuf[i].ipackets,
-                        statBuf[i].opackets,
-                        statBuf[i].bitrate,
-                        statBuf[i].ierrors + statBuf[i].oerrors,
-                    }
-                    );
-                }
-            }
-            return result;
-        }
-        OverallTCPStats_    GetOverallTCPStats_ ()
-        {
-            OverallTCPStats_ result {};
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx ("Instruments::Network::....GetOverallTCPStats_");
-#endif
-            using   Execution::ProcessRunner;
-            {
-                ProcessRunner   pr (String_Constant { L"/usr/bin/netstat -s" });
-                Streams::MemoryStream<Byte>   useStdOut;
-                pr.SetStdOut (useStdOut);
-                pr.Run ();
-                bool    sawTCP = false;
-                Optional<uint64_t>  dataPackets;
-                Optional<uint64_t>  retramsitPackets;
-                for (String line : Streams::TextReader (useStdOut).ReadLines ()) {
-                    line = line.Trim ();
-                    if (not sawTCP) {
-                        sawTCP = (line == L"tcp:");
-                        continue;
-                    }
-                    unsigned long long  val     {};
-                    wchar_t*            endptr  {};
-                    val = ::wcstoull (line.c_str (), &endptr, 10);
-                    AssertNotNull (endptr);
-                    String  restOfLine = endptr;
-                    if (restOfLine.Contains (L"data packets")) {
-                        if (restOfLine.Contains (L"retransmitted")) {
-                            retramsitPackets = val;
-                        }
-                        else {
-                            dataPackets = val;
-                        }
-                    }
-                }
-                result.fTotalSegments = dataPackets.Value ();
-                result.fTotalTCPRetransmits = retramsitPackets.Value ();
-            }
-            return result;
-        }
-    };
-}
-#endif
 
 
 
@@ -699,17 +517,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_AIX
-        , CapturerWithContext_AIX_
-#elif   qPlatform_POSIX
+#if		qPlatform_POSIX
         , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_AIX
-        using inherited = CapturerWithContext_AIX_;
-#elif   qPlatform_POSIX
+#if		qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;

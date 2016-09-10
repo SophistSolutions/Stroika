@@ -165,19 +165,6 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace ("interface: ifr_name=%s; ifr_addr.sa_family = %d", ifreqs[i].ifr_name, ifreqs[i].ifr_addr.sa_family);
 #endif
-#if     qPlatform_AIX
-        // I don't understand the logic behind this, but without this, we get errors
-        // in getFlags(). We could check there - and handle that with an extra return value, but this
-        // is simpler.
-        //
-        // And - its somewhat prescribed in https://www.ibm.com/developerworks/community/forums/html/topic?id=77777777-0000-0000-0000-000014698597
-        //
-        if (ifreqs[i].ifr_addr.sa_family != AF_INET and ifreqs[i].ifr_addr.sa_family != AF_INET6 and ifreqs[i].ifr_addr.sa_family != AF_LINK) {
-            // Skip interfaces not bound to and IPv4 or IPv6 address, or AF_LINK (not sure what later is used for)
-            // this list of exceptions arrived at experimentally on the one AIX machine I tested (so not good)
-            continue;
-        }
-#endif
         Interface   newInterface;
         String interfaceName { String::FromSDKString (ifreqs[i].ifr_name) };
         newInterface.fInternalInterfaceID = interfaceName;
@@ -201,24 +188,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         }
 #endif
 
-#if     qPlatform_AIX
-        {
-            auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
-                struct ifreq ifreq;
-                (void)::memset (&ifreq, 0, sizeof (ifreq));
-                Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
-                int r = ioctl (sd, SIOCGIFBAUDRATE, &ifreq);
-                if (r != 0)
-                {
-                    DbgTrace ("No speed for interface %s, errno=%d", name, errno);
-                    return Optional<uint64_t> ();
-                }
-                return ifreq.ifr_baudrate;
-            };
-            newInterface.fTransmitSpeedBaud = getSpeed (sd, ifreqs[i].ifr_name);
-            newInterface.fReceiveLinkSpeedBaud = newInterface.fTransmitSpeedBaud;
-        }
-#elif   qPlatform_Linux
+#if		qPlatform_Linux
         {
             auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
                 struct ifreq ifreq {};

@@ -7,10 +7,6 @@ SrcDir						=	$(StroikaRoot)Library/Sources/Stroika/Foundation/Execution/
 SubDirs	=	\
 	Platform/POSIX \
 
-ifeq ($(shell uname), AIX)
-SubDirs+=	\
-	Platform/AIX
-endif
 
 .PHONY:				$(SubDirs)
 
@@ -54,21 +50,12 @@ all:	$(Objs)  $(SubDirs)
 
 
 
-ifeq ($(shell uname), AIX)
-PLATFORMAIX_OBJS := $(addprefix "Platform/AIX/", $(shell $(MAKE) --directory Platform/AIX -s list-objs))
-else
-PLATFORMAIX_OBJS := 
-endif
-
 PLATFORMPOSIX_OBJS := $(addprefix "Platform/POSIX/", $(shell $(MAKE) --directory Platform/POSIX -s list-objs))
 
 
 list-objs::
-	@echo $(PLATFORMAIX_OBJS) $(PLATFORMPOSIX_OBJS) 
+	@echo $(PLATFORMPOSIX_OBJS) 
 
-
-Platform/AIX:
-	@$(MAKE) --directory Platform/AIX -s
 
 Platform/POSIX:
 	@$(MAKE) --directory Platform/POSIX -s

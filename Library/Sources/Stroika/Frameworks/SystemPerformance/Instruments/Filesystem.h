@@ -273,7 +273,7 @@ namespace   Stroika {
                         /**
                          *
                          */
-                        bool    fEstimateFilesystemStatsFromDiskStatsIfHelpful { qPlatform_AIX ? true : false };
+                        bool    fEstimateFilesystemStatsFromDiskStatsIfHelpful { false };
                     };
 
 

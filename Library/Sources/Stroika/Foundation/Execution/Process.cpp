@@ -3,10 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     qPlatform_AIX
-#include    <sys/stat.h>
-#endif
-
 #include    "Process.h"
 
 
@@ -35,20 +31,7 @@ bool    Execution::IsProcessRunning (pid_t pid)
     Debug::TraceContextBumper traceCtx ("Stroika::Foundation::Execution::IsProcessRunning");
     DbgTrace (L"(pid=%d)", pid);
 #endif
-#if     qPlatform_AIX
-    // sadly getpgid doesnt appear to work on AIX --LGP 2015-11-13
-    // From http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
-    struct stat sts;
-    char    buf[1024];
-    snprintf (buf, NEltsOf(buf), "/proc/%d", pid);
-    if (::stat (buf, &sts) == -1 && errno == ENOENT) {
-        // process doesn't exist
-        return false;
-    }
-    else {
-        return true;
-    }
-#elif     qPlatform_POSIX
+#if		qPlatform_POSIX
     // http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
     // http://linux.die.net/man/2/getpgid
     // if not owner, trick of kill (pid, 0) returns error EPERM

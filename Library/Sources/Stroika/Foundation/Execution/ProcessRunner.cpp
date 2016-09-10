@@ -93,11 +93,7 @@ namespace {
         // we may want to use vfork or some such. But for AIX, it appears best to use f_fork
         //      https://www.ibm.com/support/knowledgecenter/ssw_aix_72/com.ibm.aix.basetrf1/fork.htm
         //  -- LGP 2016-03-31
-#if     qPlatform_AIX
-        return ::f_fork ();
-#else
         return ::fork ();
-#endif
     }
 }
 #endif
@@ -981,9 +977,6 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
         ::_exit (-1);
-#if     qPlatform_AIX
-        return 0;       // silence bogus compiler warnings
-#endif
     }
     else {
         return pid;

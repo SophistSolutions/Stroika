@@ -3,9 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_AIX
-#include    <libperfstat.h>
-#elif   qPlatform_Windows
+#if		qPlatform_Windows
 #include    <Windows.h>
 #endif
 
@@ -191,121 +189,6 @@ namespace {
     }
 }
 #endif
-
-
-#if     qPlatform_AIX
-namespace {
-    struct  CapturerWithContext_AIX_ : CapturerWithContext_COMMON_ {
-        CapturerWithContext_AIX_ (const Options& options)
-            : CapturerWithContext_COMMON_ (options)
-        {
-            // Force fill of context - ignore results
-            try {
-                capture_ ();
-            }
-            catch (...) {
-                DbgTrace ("bad sign that first pre-catpure failed.");   // Dont propagate in case just listing collectors
-            }
-        }
-        struct  CPUUsageTimes_ {
-            double              fProcessCPUUsage;
-            double              fTotalCPUUsage;
-            double              fRunQLength;
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            Info::LoadAverage   fLoadAverage;
-#endif
-        };
-        CPUUsageTimes_  cputime_ ()
-        {
-            return cputime_perfstat_ ();
-        }
-        Optional<perfstat_cpu_total_t>  fPrev;
-        CPUUsageTimes_  cputime_perfstat_ ()
-        {
-            Debug::TraceContextBumper ctx ("{}::CapturerWithContext_AIX_::cputime_perfstat_");
-            perfstat_cpu_total_t    tmp;
-            Execution::ThrowErrNoIfNegative (::perfstat_cpu_total (nullptr, &tmp, sizeof(tmp), 1));
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace ("tmp.user=%lld, tmp.sys=%lld, tmp.idle=%lld, tmp.wait=%lld", tmp.user, tmp.sys, tmp.idle, tmp.wait);
-#endif
-            CPUUsageTimes_  result {};
-            if (fPrev) {
-                u_longlong_t    total {};
-                total += tmp.user - fPrev->user;
-                total += tmp.sys - fPrev->sys;
-                total += tmp.idle - fPrev->idle;
-                total += tmp.wait - fPrev->wait;
-
-                u_longlong_t    pcpuNumerator {};
-                pcpuNumerator += tmp.user - fPrev->user;
-                pcpuNumerator += tmp.sys - fPrev->sys;
-
-                u_longlong_t    idleNumerator {};
-                idleNumerator += tmp.idle - fPrev->idle;
-
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("lbolt=%lld", tmp.lbolt);
-                DbgTrace ("runocc=%lld", tmp.runocc);
-                DbgTrace ("loadavg[0]=%f, loadavg[1]=%f, loadavg[2]=%f", static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS));
-#endif
-                double  runQLength; // intentionally uninitialized
-                Info::LoadAverage   loadAverage;
-                {
-                    double loadAve[3] = { static_cast<double> (tmp.loadavg[0]) / (1 << SBITS), static_cast<double> (tmp.loadavg[1]) / (1 << SBITS), static_cast<double> (tmp.loadavg[2]) / (1 << SBITS) };
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-                    loadAverage  = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
-#endif
-                    runQLength = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt () , loadAve);
-                }
-                result = CPUUsageTimes_ {
-                    static_cast<double> (pcpuNumerator) / static_cast<double> (total),
-                    1.0 - static_cast<double> (idleNumerator) / static_cast<double> (total),
-                    runQLength
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-                    , loadAverage
-#endif
-                };
-
-#if     USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace ("fPrev.user=%lld, fPrev.sys=%lld, fPrev.idle=%lld, fPrev.wait=%lld", fPrev->user, fPrev->sys, fPrev->idle, fPrev->wait);
-                DbgTrace ("total = %lld", total);
-                DbgTrace ("100.0 * (double) DELTA(user) /  total = %f", (100.0 * (double) (tmp.user - fPrev->user) / total));
-                DbgTrace ("100.0 * (double) DELTA(sys) /  total = %f", (100.0 * (double) (tmp.sys - fPrev->sys) / total));
-                DbgTrace ("100.0 * (double) DELTA(idle) /  total = %f", (100.0 * (double) (tmp.idle - fPrev->idle) / total));
-                DbgTrace ("100.0 * (double) DELTA(wait) /  total = %f", (100.0 * (double) (tmp.wait - fPrev->wait) / total));
-#endif
-            }
-            fPrev = tmp;
-            return result;
-        }
-        Info capture ()
-        {
-            Execution::SleepUntil (fPostponeCaptureUntil_);
-            return capture_ ();
-        }
-        Info capture_ ()
-        {
-            Info    result;
-            auto tmp = cputime_ ();
-            result.fTotalProcessCPUUsage = tmp.fProcessCPUUsage;
-            result.fTotalCPUUsage = tmp.fTotalCPUUsage;
-            result.fRunQLength = tmp.fRunQLength;
-            if (result.fRunQLength) {
-                // RunQLength normalized so 1 is all available cores
-                static  const   unsigned int    kCPUCoreCount_  { GetSystemConfiguration_CPU ().GetNumberOfLogicalCores () };
-                result.fRunQLength /= kCPUCoreCount_;
-            }
-#if     qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-            result.fLoadAverage = tmp.fLoadAverage;
-#endif
-            NoteCompletedCapture_ ();
-            return result;
-        }
-    };
-}
-#endif
-
-
 
 
 
@@ -599,17 +482,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if     qPlatform_AIX
-        , CapturerWithContext_AIX_
-#elif     qPlatform_Linux
+#if		qPlatform_Linux
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
 #endif
     {
-#if     qPlatform_AIX
-        using inherited = CapturerWithContext_AIX_;
-#elif     qPlatform_Linux
+#if		qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;

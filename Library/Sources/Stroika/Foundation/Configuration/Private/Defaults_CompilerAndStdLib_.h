@@ -133,13 +133,10 @@
  *  In initial testing I've found no cases where this works...
  *      --LGP 2015-08-24
  */
+&&&&
 #ifndef qCompilerAndStdLib_Locale_Buggy
 
-#if   qPlatform_AIX
-#define qCompilerAndStdLib_Locale_Buggy             1
-#else
 #define qCompilerAndStdLib_Locale_Buggy             qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-#endif
 
 #endif
 
@@ -567,29 +564,6 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 
 
-/*
- *  There are some (e.g. accept and recvfrom) APIs in the AIX headers
- *  which generate linker warning messages and then crash when I run them. These are inlines
- *  which somehow dont get generated properly.
- *      ld: 0711-768 WARNING: Object ../../../../../../Builds/DefaultConfiguration/Stroika-Foundation.a[Socket.o], section 1, function .recvfrom:
- *        The branch at address 0x2d70 is not followed by a recognized no-op
- *        or TOC-reload instruction. The unrecognized instruction is 0x7C691B78.
- *
- *  This CAN be worked around by turning on optimation so that they get inlined. But if no inlining,
- *  we must use some trick to get past this bug define to avoid the inline.
-*/
-#ifndef qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
-
-#if     !defined (__clang__) && defined (__GNUC__) && qPlatform_AIX
-#define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      1
-#else
-#define qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy      0
-#endif
-
-#endif
-
-
-
 
 
 
@@ -654,10 +628,10 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 
 
 
-
+&&&&
 #ifndef qCompilerAndStdLib_fdopendir_Buggy
 
-#define qCompilerAndStdLib_fdopendir_Buggy   qPlatform_AIX
+#define qCompilerAndStdLib_fdopendir_Buggy   0
 
 #endif
 
