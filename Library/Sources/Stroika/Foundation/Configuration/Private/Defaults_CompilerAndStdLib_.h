@@ -339,22 +339,6 @@
 
 
 
-/*
-*/
-#ifndef qCompilerAndStdLib_is_trivially_copyable_Buggy
-
-#if     defined (_MSC_VER)
-// still broken in _MS_VS_2k15_RTM_FULLVER_
-// Fixed in _MS_VS_2k15_Update1_FULLVER_
-#define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
-#else
-#define qCompilerAndStdLib_is_trivially_copyable_Buggy      0
-#endif
-
-#endif
-
-
-
 
 
 /*

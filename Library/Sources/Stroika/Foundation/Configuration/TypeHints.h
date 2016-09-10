@@ -30,20 +30,12 @@ namespace   Stroika {
              *  This is NOT intended to be used very widely, but can be used to decide systematically (by type)
              *  if you should pass a given argument by value or by const reference.
              *
-             *  @todo SHOULD use is_trivially_copyable<> but didnt work on gcc47 (and maybe more - look into which and iether
-             *      add bug define or?? not worries - not much differnt)
-             *
              *  \note   Use sizeof(T) <= 2*sizeof(void*) - because passing by reference involves copying one pointer and then if you
              *          access once, thats a second copy. So may as well copy 2 directly (very loosy goosy, as depends on
              *          releative cost of main memory access versus stack).
              */
-#if     qCompilerAndStdLib_is_trivially_copyable_Buggy
-            template    <typename   T, typename CHECK_T = T>
-            using   ArgByValueType = typename std::conditional < (sizeof(CHECK_T) <= 2 * sizeof(void*)) and std::is_trivial<CHECK_T>::value, CHECK_T, const CHECK_T& >::type;
-#else
             template    <typename   T, typename CHECK_T = T>
             using   ArgByValueType = typename std::conditional < (sizeof(CHECK_T) <= 2 * sizeof(void*)) and std::is_trivially_copyable<CHECK_T>::value, CHECK_T, const CHECK_T& >::type;
-#endif
 
 
         }
