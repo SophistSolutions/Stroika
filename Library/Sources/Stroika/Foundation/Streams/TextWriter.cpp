@@ -3,9 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     !qCompilerAndStdLib_string_conversions_Buggy
 #include    <codecvt>
-#endif
 #include    <cstdarg>
 
 #include    "../Characters/CodePage.h"
@@ -27,11 +25,9 @@ using   namespace   Stroika::Foundation::Streams;
 
 using   Execution::make_unique_lock;
 
-#if     !qCompilerAndStdLib_string_conversions_Buggy
 namespace {
     const   codecvt_utf8<wchar_t>   kConverter_;        // safe to keep static because only read-only const methods used
 }
-#endif
 
 class   TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock  {
 public:
@@ -61,7 +57,6 @@ protected:
     }
     virtual void    Write (const Character* start, const Character* end)  override
     {
-#if     !qCompilerAndStdLib_string_conversions_Buggy
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
         const wchar_t*  pc  =   sc;
@@ -84,12 +79,6 @@ Again:
             // not sure waht to throw!
             Execution::Throw (Execution::StringException (String_Constant (L"Error converting characters codepage")));
         }
-#else
-        const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
-        const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
-        string tmp = Characters::WideStringToUTF8 (wstring (sc, ec));
-        _fSource.Write (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::Start (tmp) + tmp.length ()));
-#endif
     }
     virtual void    Flush () override
     {

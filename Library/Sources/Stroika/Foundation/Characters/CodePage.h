@@ -6,10 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     !qCompilerAndStdLib_string_conversions_Buggy
 #include    <codecvt>
-#endif
-
 #include    <string>
 #include    <vector>
 

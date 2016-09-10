@@ -347,8 +347,6 @@
 // still broken in _MS_VS_2k15_RTM_FULLVER_
 // Fixed in _MS_VS_2k15_Update1_FULLVER_
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      (_MSC_FULL_VER <= _MS_VS_2k15_RTM_FULLVER_)
-#elif   defined (__clang__)
-#define qCompilerAndStdLib_is_trivially_copyable_Buggy      ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
 #else
 #define qCompilerAndStdLib_is_trivially_copyable_Buggy      0
 #endif
@@ -745,29 +743,6 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
-*/
-#ifndef qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 6)))
-#else
-#define qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy     0
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy
@@ -1060,63 +1035,6 @@ eq_result
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
-@DESCRIPTION:
-    error: no matching constructor for initialization of 'std::codecvt_byname<wchar_t, char, mbstate_t>'
-        deletable_facet_ (Args&& ...args) : FACET (std::forward<Args> (args)...) {}
-*/
-#ifndef qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
-#else
-#define qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy     0
-#endif
-
-#endif
-
-
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ <= 6))
-#else
-#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     0
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-#ifndef qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ <= 5))
-#else
-#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   0
-#endif
-
-#endif
-
-
-
-
-
 
 
 /**
@@ -1269,25 +1187,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 #endif
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_string_conversions_Buggy
-@DESCRIPTION:   22.3.3.2.2  string conversions  N
-*/
-#ifndef qCompilerAndStdLib_string_conversions_Buggy
-
-#if     defined (__clang__)
-#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 6))
-#else
-#define qCompilerAndStdLib_string_conversions_Buggy              0
-#endif
-
-#endif
-
-
 
 
 

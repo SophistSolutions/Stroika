@@ -375,11 +375,7 @@ String  String::FromNarrowString (const char* from, const char* to, const locale
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
-#if     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
-    Destructible_codecvt_byname cvt { l.name ().c_str () };
-#else
     Destructible_codecvt_byname cvt { l.name () };
-#endif
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t mbstate {};
@@ -1175,11 +1171,7 @@ void    String::AsNarrowString (const locale& l, string* into) const
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
     using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
-#if     qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy
-    Destructible_codecvt_byname cvt {l.name ().c_str () };
-#else
     Destructible_codecvt_byname cvt {l.name () };
-#endif
     wstring wstr = As<wstring> ();
     // http://en.cppreference.com/w/cpp/locale/codecvt/out
     mbstate_t mbstate {};

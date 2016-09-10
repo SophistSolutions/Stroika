@@ -83,11 +83,9 @@ namespace   Stroika {
                 ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
                 ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));
 #endif
-#if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
                 static_assert (std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert (std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert (std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
-#endif
                 GrowToSize (nElements);
 #if     qDebug
                 ValidateGuards_ ();
@@ -109,11 +107,9 @@ namespace   Stroika {
                   //, fBuffer_ (),
                 , fPointer_ (fBuffer_)
             {
-#if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
-                static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
-                static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
-                static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
-#endif
+                static_assert (std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
+                static_assert (std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
+                static_assert (std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 #if     qDebug
                 ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
                 ::memcpy (fGuard2_, kGuard2_, sizeof (kGuard2_));

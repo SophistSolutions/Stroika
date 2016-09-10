@@ -27,11 +27,7 @@ namespace   Stroika {
 
                     Stroika_Define_Enum_Bounds(eNone, eAborted)
                 };
-#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
-                using   InterruptFlagType_  =   volatile InterruptFlagState_;
-#else
                 using   InterruptFlagType_  =   atomic<InterruptFlagState_>;
-#endif
             }
 
 
