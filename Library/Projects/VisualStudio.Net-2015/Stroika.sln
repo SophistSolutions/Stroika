@@ -588,7 +588,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{B79422CE-4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Patches", "Patches", "{1ADD4600-450F-44E5-A4B0-E29BED93E742}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\ThirdPartyComponents\Xerces\Patches\AIX-autoconf-fail.PATCH = ..\..\..\ThirdPartyComponents\Xerces\Patches\AIX-autoconf-fail.PATCH
 		..\..\..\ThirdPartyComponents\Xerces\Patches\VC12Projects.tar.gz = ..\..\..\ThirdPartyComponents\Xerces\Patches\VC12Projects.tar.gz
 		..\..\..\ThirdPartyComponents\Xerces\Patches\VC14Projects.tar.gz = ..\..\..\ThirdPartyComponents\Xerces\Patches\VC14Projects.tar.gz
 	EndProjectSection
@@ -1040,7 +1039,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F
 		..\Unix\Makefile-Foundation-DataExchange-XML = ..\Unix\Makefile-Foundation-DataExchange-XML
 		..\Unix\Makefile-Foundation-Debug = ..\Unix\Makefile-Foundation-Debug
 		..\Unix\Makefile-Foundation-Execution = ..\Unix\Makefile-Foundation-Execution
-		..\Unix\Makefile-Foundation-Execution-Platform-AIX = ..\Unix\Makefile-Foundation-Execution-Platform-AIX
 		..\Unix\Makefile-Foundation-Execution-Platform-POSIX = ..\Unix\Makefile-Foundation-Execution-Platform-POSIX
 		..\Unix\Makefile-Foundation-IO = ..\Unix\Makefile-Foundation-IO
 		..\Unix\Makefile-Foundation-IO-FileSystem = ..\Unix\Makefile-Foundation-IO-FileSystem
