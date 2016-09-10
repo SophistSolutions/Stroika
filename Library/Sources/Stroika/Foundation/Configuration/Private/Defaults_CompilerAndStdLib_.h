@@ -129,20 +129,6 @@
 
 
 
-/*
- *  In initial testing I've found no cases where this works...
- *      --LGP 2015-08-24
- */
-&&&&
-#ifndef qCompilerAndStdLib_Locale_Buggy
-
-#define qCompilerAndStdLib_Locale_Buggy             qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
-
-#endif
-
-
-
-
 
 
 
@@ -622,18 +608,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #endif
 
 
-
-
-
-
-
-
-&&&&
-#ifndef qCompilerAndStdLib_fdopendir_Buggy
-
-#define qCompilerAndStdLib_fdopendir_Buggy   0
-
-#endif
 
 
 

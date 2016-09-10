@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if		qPlatform_Linux
+#if     qPlatform_Linux
 #include    <sys/sysinfo.h>
 #include    <netinet/tcp.h>
 #elif   qPlatform_Windows
@@ -1816,13 +1816,13 @@ SkipCmdLine_:
 namespace {
     struct  CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if		qPlatform_Linux
+#if     qPlatform_Linux
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
 #endif
     {
-#if		qPlatform_Linux
+#if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;

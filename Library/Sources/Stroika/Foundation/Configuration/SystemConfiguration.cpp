@@ -328,7 +328,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     // @todo - no API to capture (maybe not useful) # physical cores
     using CPU = SystemConfiguration::CPU;
     CPU result;
-#if		qPlatform_Linux
+#if     qPlatform_Linux
     {
         using   Streams::TextReader;
         using   IO::FileSystem::FileInputStream;
@@ -577,7 +577,7 @@ SystemConfiguration::Memory Configuration::GetSystemConfiguration_Memory ()
 {
     using   Memory = SystemConfiguration::Memory;
     Memory  result;
-#if		qPlatform_POSIX
+#if     qPlatform_POSIX
     // page size cannot change while running, but number of pages can
     // (e.g. https://pubs.vmware.com/vsphere-50/index.jsp?topic=%2Fcom.vmware.vsphere.vm_admin.doc_50%2FGUID-0B4C3128-F854-43B9-9D80-A20C0C8B0FF7.html)
     static  const   size_t  kPageSize_   { static_cast<size_t> (::sysconf (_SC_PAGESIZE)) };

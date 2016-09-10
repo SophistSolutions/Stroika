@@ -386,13 +386,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if		qPlatform_Linux
+#if     qPlatform_Linux
         , CapturerWithContext_Linux_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
 #endif
     {
-#if		qPlatform_Linux
+#if     qPlatform_Linux
         using inherited = CapturerWithContext_Linux_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;

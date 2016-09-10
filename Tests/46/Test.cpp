@@ -50,7 +50,7 @@ namespace {
     {
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
         TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
 #endif
 
@@ -182,7 +182,7 @@ namespace   {
             VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
@@ -300,7 +300,7 @@ namespace   {
             TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
         {
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
@@ -361,7 +361,7 @@ namespace   {
 
         //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));

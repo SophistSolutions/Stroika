@@ -49,9 +49,6 @@ private:
     DIR*            fDirIt_             { nullptr };
     dirent          fDirEntBuf_;        // intentionally uninitialized (done by readdir)
     dirent*         fCur_               { nullptr };
-#if     qCompilerAndStdLib_fdopendir_Buggy
-    String          fDirName_;
-#endif
 #elif   qPlatform_Windows
     String          fDirName_;
     HANDLE          fHandle_            { INVALID_HANDLE_VALUE };
@@ -63,11 +60,9 @@ public:
     Rep_ (const String& dir)
 #if     qPlatform_POSIX
         : fDirIt_ { ::opendir (dir.AsSDKString ().c_str ()) }
-#if     qCompilerAndStdLib_fdopendir_Buggy
-        , fDirName_ (dir)
-#endif
 #elif   qPlatform_Windows
-        : fDirName_ (dir)
+        :
+        fDirName_ (dir)
 #endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -98,15 +93,8 @@ public:
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER(dir);
     }
 #if     qPlatform_POSIX
-    Rep_ (DIR* dirObj
-#if     qCompilerAndStdLib_fdopendir_Buggy
-          , const String& dir
-#endif
-         )
+    Rep_ (DIR* dirObj)
         : fDirIt_ { dirObj }
-#if     qCompilerAndStdLib_fdopendir_Buggy
-        , fDirName_ (dir)
-#endif
     {
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Entering DirectoryIterator::Rep_::CTOR(dirObj=%x)", int(dirObj));
@@ -216,11 +204,7 @@ Again:
 #endif
 #if     qPlatform_POSIX
         if (fDirIt_ == nullptr) {
-            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr
-#if     qCompilerAndStdLib_fdopendir_Buggy
-                                  , fDirName_
-#endif
-                                                      ));
+            return SharedIRepPtr (MakeSharedPtr<Rep_> (nullptr));
         }
         /*
          *  must find telldir() returns the location of the NEXT read. We must pass along the value of telldir as
@@ -249,11 +233,7 @@ Again:
          *          -- LGP 2014-07-10
          */
         // Note - NOT 100% sure its OK to look for identical value telldir in another dir...
-#if     qCompilerAndStdLib_fdopendir_Buggy
-        DIR*        dirObj          =   ::opendir (fDirName_.AsSDKString ().c_str ());
-#else
         DIR*        dirObj          =   ::fdopendir (::dirfd (fDirIt_));
-#endif
         if (dirObj == nullptr) {
             Execution::ThrowIfError_errno_t ();
         }
@@ -294,11 +274,7 @@ Again:
             }
             ::seekdir (dirObj, useOffset);
         }
-        return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj
-#if     qCompilerAndStdLib_fdopendir_Buggy
-                              , fDirName_
-#endif
-                                                  ));
+        return SharedIRepPtr (MakeSharedPtr<Rep_> (dirObj));
 #elif   qPlatform_Windows
         return SharedIRepPtr (MakeSharedPtr<Rep_> (fDirName_, fSeekOffset_));
 #endif

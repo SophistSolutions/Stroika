@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if		qPlatform_Windows
+#if     qPlatform_Windows
 #include    <WinSock2.h>
 #include    <Iphlpapi.h>
 #endif
@@ -517,13 +517,13 @@ namespace {
 namespace {
     struct  CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
-#if		qPlatform_POSIX
+#if     qPlatform_POSIX
         , CapturerWithContext_POSIX_
 #elif   qPlatform_Windows
         , CapturerWithContext_Windows_
 #endif
     {
-#if		qPlatform_POSIX
+#if     qPlatform_POSIX
         using inherited = CapturerWithContext_POSIX_;
 #elif   qPlatform_Windows
         using inherited = CapturerWithContext_Windows_;

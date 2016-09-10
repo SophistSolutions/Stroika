@@ -31,7 +31,7 @@ bool    Execution::IsProcessRunning (pid_t pid)
     Debug::TraceContextBumper traceCtx ("Stroika::Foundation::Execution::IsProcessRunning");
     DbgTrace (L"(pid=%d)", pid);
 #endif
-#if		qPlatform_POSIX
+#if     qPlatform_POSIX
     // http://stackoverflow.com/questions/9152979/check-if-process-exists-given-its-pid
     // http://linux.die.net/man/2/getpgid
     // if not owner, trick of kill (pid, 0) returns error EPERM

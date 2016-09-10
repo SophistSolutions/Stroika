@@ -188,7 +188,7 @@ Traversal::Iterable<Interface>  Network::GetInterfaces ()
         }
 #endif
 
-#if		qPlatform_Linux
+#if     qPlatform_Linux
         {
             auto getSpeed = [] (int sd, const char* name) -> Optional<uint64_t> {
                 struct ifreq ifreq {};

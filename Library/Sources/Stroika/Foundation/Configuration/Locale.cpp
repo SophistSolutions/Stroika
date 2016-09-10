@@ -48,7 +48,7 @@ void    Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
 
 
 
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 /*
 ********************************************************************************
@@ -91,7 +91,7 @@ vector<Characters::String>    Configuration::GetAvailableLocales ()
 *************************** Configuration::FindLocaleName **********************
 ********************************************************************************
 */
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 Characters::String    Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
     using   Characters::String;

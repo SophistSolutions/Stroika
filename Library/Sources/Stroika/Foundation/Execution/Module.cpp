@@ -118,7 +118,7 @@ SDKString Execution::GetEXEPathT ()
 
 String Execution::GetEXEPath (pid_t processID)
 {
-#if		qPlatform_POSIX && qSupport_Proc_Filesystem
+#if     qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. The only way to tell it wasn't enuf (maybe) is
     // if all the bytes passed in are used. That COULD mean it all fit, or there was more. If we get that -
     // double buf size and try again

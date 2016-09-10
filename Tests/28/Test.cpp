@@ -638,7 +638,7 @@ namespace   {
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
                     {
                         // Verify change of locale has no effect on results
                         Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
@@ -671,7 +671,7 @@ namespace   {
                     VerifyTestResult (v1 == v);
                 };
                 f ();
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
                 {
                     Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     f ();
@@ -755,7 +755,7 @@ namespace   {
                 };
                 {
                     doAll ();
-#if     !qCompilerAndStdLib_Locale_Buggy
+#if     !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
                     Configuration::ScopedUseLocale tmpLocale { Configuration::FindNamedLocale (L"en", L"us") };
                     doAll ();
 #endif
