@@ -242,15 +242,6 @@
 
 
 
-// forward declare so we can provide operator<<, but doing #include iostream/iosfwd creates much more dependency
-namespace   std {
-    template    <class charT> struct char_traits;
-    template<>  struct char_traits<wchar_t>;
-    template <class charT, class traits> class basic_ostream;
-    using   wostream    =   basic_ostream<wchar_t, char_traits<wchar_t>>;
-}
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
