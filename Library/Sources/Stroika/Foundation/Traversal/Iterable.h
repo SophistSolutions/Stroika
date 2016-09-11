@@ -259,8 +259,16 @@ namespace   Stroika {
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
                  *              Iterable<T> parameterizes access to.
+                 *      @see value_type.
                  */
                 using   ElementType =    T;
+
+            public:
+                /**
+                 *      @see ElementType.
+                 */
+                using   value_type =    T;
+
 
             protected:
                 class  _IRep;
