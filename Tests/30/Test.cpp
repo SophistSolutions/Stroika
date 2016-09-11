@@ -920,7 +920,7 @@ namespace {
             DISABLE_COMPILER_MSC_WARNING_START(4573)
             const   ObjectReaderRegistry::ReaderFromVoidStarFactory SpectrumReader_TRAITS_::sEltReader_ =
             [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
-                using   KVPType_    =   SpectrumType_::ElementType;
+                using   KVPType_    =   SpectrumType_::value_type;
                 return ObjectReaderRegistry::MakeClassReader<KVPType_> (
                 initializer_list<pair<Name, StructFieldMetaInfo>> {
                     { Name { L"waveNumber", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },
