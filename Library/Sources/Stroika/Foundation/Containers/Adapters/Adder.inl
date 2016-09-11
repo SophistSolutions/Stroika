@@ -51,6 +51,12 @@ namespace   Stroika {
                     container->Add (value);     // SB OK because Common::KeyValuePair has non-explicit CTOR taking pair<>
                 }
                 template    <typename CONTAINER_TYPE>
+                inline  void    Adder <CONTAINER_TYPE>::Add_ (set<value_type>* container, Configuration::ArgByValueType<value_type> value)
+                {
+                    RequireNotNull (container);
+                    container->insert (value);
+                }
+                template    <typename CONTAINER_TYPE>
                 inline  void    Adder <CONTAINER_TYPE>::Add_ (vector<value_type>* container, Configuration::ArgByValueType<value_type> value)
                 {
                     RequireNotNull (container);
