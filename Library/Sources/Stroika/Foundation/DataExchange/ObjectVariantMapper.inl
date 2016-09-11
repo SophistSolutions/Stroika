@@ -166,24 +166,28 @@ namespace   Stroika {
                 using   T   =   typename ACTUAL_CONTAINER_TYPE::value_type;
                 auto toVariantMapper = [](const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType             valueMapper     { mapper.FromObjectMapper<T> () };
-                    Sequence<VariantValue>          s;
                     const ACTUAL_CONTAINER_TYPE*    actualMember    { reinterpret_cast<const ACTUAL_CONTAINER_TYPE*> (fromObjOfTypeT) };
-                    for (auto i : *actualMember)
+                    Sequence<VariantValue>          s;
+                    if (not actualMember->empty ())
                     {
-                        s.Append (mapper.FromObject<T> (valueMapper, i));
+                        ToVariantMapperType             valueMapper     { mapper.FromObjectMapper<T> () };
+                        for (auto i : *actualMember) {
+                            s.Append (mapper.FromObject<T> (valueMapper, i));
+                        }
                     }
                     return VariantValue (s);
                 };
                 auto fromVariantMapper = [](const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
                     Sequence<VariantValue>      s        =  d.As<Sequence<VariantValue>> ();
-                    ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
-                    Assert (actualInto->empty ());
-                    for (auto i : s)
+                    if (not s.empty ())
                     {
-                        Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (actualInto, mapper.ToObject<T> (valueMapper, i));
+                        FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
+                        ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
+                        Assert (actualInto->empty ());
+                        for (auto i : s) {
+                            Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (actualInto, mapper.ToObject<T> (valueMapper, i));
+                        }
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
