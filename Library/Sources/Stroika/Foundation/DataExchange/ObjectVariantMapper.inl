@@ -312,6 +312,21 @@ namespace   Stroika {
             {
                 return MakeCommonSerializer_WithSimpleAdd_<Containers::SortedSet<T>> ();
             }
+            template    <typename T, typename TRAITS>
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*)
+            {
+                return MakeCommonSerializer_Range_<Traversal::DiscreteRange<T, TRAITS>> ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*)
+            {
+                return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
+            }
+            template    <typename T>
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const T*, typename std::enable_if<std::is_enum<T>::value >::type*)
+            {
+                return MakeCommonSerializer_NamedEnumerations<T> ();
+            }
             template    <typename ACTUAL_CONTAINER_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_WithSimpleAdd_ ()
             {
@@ -412,58 +427,6 @@ namespace   Stroika {
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename T, size_t SZ>
-            inline  ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
-            {
-                using   Characters::String_Constant;
-                auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    ToVariantMapperType     valueMapper     { mapper.FromObjectMapper<T> () };     // optimization if > 1 array elt, and anti-optimization array.size == 0
-                    Sequence<VariantValue>  s;
-                    const T*                actualMember    { reinterpret_cast<const T*> (fromObjOfTypeT) };
-                    for (auto i = actualMember; i < actualMember + SZ; ++i)
-                    {
-                        s.Append (mapper.FromObject<T> (valueMapper, *i));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Sequence<VariantValue>  s               =   d.As<Sequence<VariantValue>> ();
-                    T*                      actualMember    { reinterpret_cast<T*> (intoObjOfTypeT) };
-                    if (s.size () > SZ)
-                    {
-                        DbgTrace ("Array ('%s') actual size %d out of range", typeid (T[SZ]).name (), static_cast<int> (s.size ()));
-                        Execution::Throw (BadFormatException (String_Constant (L"Array size out of range")));
-                    }
-                    FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };   // optimization if > 1 array elt, and anti-optimization array.size == 0
-                    size_t idx = 0;
-                    for (auto i : s)
-                    {
-                        actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
-                    }
-                    while (idx < SZ)
-                    {
-                        actualMember[idx++] = T ();
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename T, typename TRAITS>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*)
-            {
-                return MakeCommonSerializer_Range_<Traversal::DiscreteRange<T, TRAITS>> ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*)
-            {
-                return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
-            }
-            template    <typename ENUM_TYPE>
-            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE*, typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
-            {
-                return MakeCommonSerializer_NamedEnumerations<ENUM_TYPE> ();
             }
             template    <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)

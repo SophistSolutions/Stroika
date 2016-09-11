@@ -407,8 +407,11 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
                 template    <typename T, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
-                template    <typename ENUM_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE*,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type* = 0);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const T*,  typename std::enable_if<std::is_enum<T>::value >::type* = 0);
+				// @todo https://stroika.atlassian.net/browse/STK-524
+                //template    <typename T, size_t SZ>
+                //static  TypeMappingDetails	MakeCommonSerializer_ (const T (*)[SZ]);
 
             private:
                 template    <typename ACTUAL_CONTAINER_TYPE>
@@ -421,10 +424,6 @@ namespace   Stroika {
             private:
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_WithKeyValuePairAdd_ ();
-
-            private:
-                template    <typename T, size_t SZ>
-                static  TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 
             private:
                 template    <typename RANGE_TYPE>
