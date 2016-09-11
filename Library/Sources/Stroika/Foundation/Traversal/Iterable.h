@@ -265,10 +265,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      @see ElementType.
+                 * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
                  */
-                using   value_type =    T;
-
+                using   value_type   =       T;
 
             protected:
                 class  _IRep;
@@ -802,12 +801,6 @@ namespace   Stroika {
                  * \brief STL-ish alias for GetLength()
                  */
                 nonvirtual  size_t  size () const;
-
-            public:
-                /**
-                 * \brief STL-ish alias for ElementType
-                 */
-                using   value_type   =       ElementType;
 
             protected:
                 /**
