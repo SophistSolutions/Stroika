@@ -178,7 +178,7 @@ namespace   Stroika {
                 auto fromVariantMapper = [](const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     FromVariantMapperType       valueMapper { mapper.ToObjectMapper<T> () };
-                    Sequence<VariantValue>      s           { d.As<Sequence<VariantValue>> () };
+                    Sequence<VariantValue>      s        =  d.As<Sequence<VariantValue>> ();
                     ACTUAL_CONTAINER_TYPE*      actualInto  { reinterpret_cast<ACTUAL_CONTAINER_TYPE*> (intoObjOfTypeT) };
                     Assert (actualInto->empty ());
                     for (auto i : s)
