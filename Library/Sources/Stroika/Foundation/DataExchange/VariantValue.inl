@@ -197,17 +197,17 @@ namespace Stroika {
                 static  constexpr   EnumNames<DataExchange::VariantValue::Type>    k {
                     EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer {
                         {
-                            { DataExchange::VariantValue::Type::eNull, L"eNull" },
-                            { DataExchange::VariantValue::Type::eBLOB, L"eBLOB" },
-                            { DataExchange::VariantValue::Type::eBoolean, L"eBoolean" },
-                            { DataExchange::VariantValue::Type::eInteger, L"eInteger" },
-                            { DataExchange::VariantValue::Type::eUnsignedInteger, L"eUnsignedInteger" },
-                            { DataExchange::VariantValue::Type::eFloat, L"eFloat" },
-                            { DataExchange::VariantValue::Type::eDate, L"eDate" },
-                            { DataExchange::VariantValue::Type::eDateTime, L"eDateTime" },
-                            { DataExchange::VariantValue::Type::eString, L"eString" },
-                            { DataExchange::VariantValue::Type::eArray, L"eArray" },
-                            { DataExchange::VariantValue::Type::eMap, L"eMap" },
+                            { DataExchange::VariantValue::Type::eNull, L"Null" },
+                            { DataExchange::VariantValue::Type::eBLOB, L"BLOB" },
+                            { DataExchange::VariantValue::Type::eBoolean, L"Boolean" },
+                            { DataExchange::VariantValue::Type::eInteger, L"Integer" },
+                            { DataExchange::VariantValue::Type::eUnsignedInteger, L"Unsigned-Integer" },
+                            { DataExchange::VariantValue::Type::eFloat, L"Float" },
+                            { DataExchange::VariantValue::Type::eDate, L"Date" },
+                            { DataExchange::VariantValue::Type::eDateTime, L"DateTime" },
+                            { DataExchange::VariantValue::Type::eString, L"String" },
+                            { DataExchange::VariantValue::Type::eArray, L"Array" },
+                            { DataExchange::VariantValue::Type::eMap, L"Map" },
                         }
                     }
                 };
