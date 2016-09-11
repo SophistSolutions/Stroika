@@ -9,6 +9,7 @@
 #include    "../Characters/Format.h"
 #include    "../Characters/String_Constant.h"
 #include    "../Characters/String2Int.h"
+#include    "../Characters/ToString.h"
 #include    "../Cryptography/Encoding/Algorithm/Base64.h"
 #include    "../DataExchange/BadFormatException.h"
 #include    "../Math/Common.h"
@@ -20,6 +21,16 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchange;
 
 using   Characters::String_Constant;
+
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 
 namespace {
@@ -93,6 +104,24 @@ struct  VariantValue::TIRep_ : VariantValue::IRep_ {
     DECLARE_USE_BLOCK_ALLOCATION(TIRep_);
 };
 
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Configuration {
+            constexpr   EnumNames<DataExchange::VariantValue::Type>    DefaultNames<DataExchange::VariantValue::Type>::k;
+        }
+    }
+}
 
 
 
@@ -313,6 +342,9 @@ bool    VariantValue::As () const
                 return As<UnsignedIntegerType_> () != 0;
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-bool: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to bool")));
             }
     }
@@ -334,6 +366,9 @@ Memory::BLOB    VariantValue::As () const
                 return Cryptography::Encoding::Algorithm::DecodeBase64 (As<String> ());
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-blob: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to Memory::BLOB")));
             }
     }
@@ -366,6 +401,9 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
                 return Characters::String2Int<IntegerType_> (v->fVal);
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-int: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to integer")));
             }
     }
@@ -400,6 +438,9 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
                 return Characters::String2Int<UnsignedIntegerType_> (v->fVal);
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-uint: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to unsigned integer")));
             }
     }
@@ -433,6 +474,9 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
                 return Characters::String2Float<FloatType_> (v->fVal);
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-float: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to float")));
             }
     }
@@ -461,6 +505,9 @@ Date VariantValue::As() const
                 return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-date: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to date")));
             }
     }
@@ -489,6 +536,9 @@ DateTime VariantValue::As () const
                 return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-datetime: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to date-time")));
             }
     }
@@ -622,6 +672,9 @@ map<wstring, VariantValue>   VariantValue::As () const
                 return tmp;
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-map<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to map")));
             }
     }
@@ -640,6 +693,9 @@ Mapping<String, VariantValue>   VariantValue::As () const
                 return v->fVal;
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-Mapping<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to map")));
             }
     }
@@ -664,6 +720,9 @@ Sequence<VariantValue> VariantValue::As () const
                 return v->fVal;
             }
         default: {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"failed coerce-to-Sequence<>: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
+#endif
                 Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to array")));
             }
     }

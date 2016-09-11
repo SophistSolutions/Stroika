@@ -189,4 +189,31 @@ namespace   Stroika {
         }
     }
 }
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<DataExchange::VariantValue::Type> : EnumNames<DataExchange::VariantValue::Type> {
+                static  constexpr   EnumNames<DataExchange::VariantValue::Type>    k {
+                    EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer {
+                        {
+                            { DataExchange::VariantValue::Type::eNull, L"eNull" },
+                            { DataExchange::VariantValue::Type::eBLOB, L"eBLOB" },
+                            { DataExchange::VariantValue::Type::eBoolean, L"eBoolean" },
+                            { DataExchange::VariantValue::Type::eInteger, L"eInteger" },
+                            { DataExchange::VariantValue::Type::eUnsignedInteger, L"eUnsignedInteger" },
+                            { DataExchange::VariantValue::Type::eFloat, L"eFloat" },
+                            { DataExchange::VariantValue::Type::eDate, L"eDate" },
+                            { DataExchange::VariantValue::Type::eDateTime, L"eDateTime" },
+                            { DataExchange::VariantValue::Type::eString, L"eString" },
+                            { DataExchange::VariantValue::Type::eArray, L"eArray" },
+                            { DataExchange::VariantValue::Type::eMap, L"eMap" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<DataExchange::VariantValue::Type> (k) {}
+            };
+        }
+    }
+}
 #endif  /*_Stroika_Foundation_DataExchange_VariantValue_inl_*/
