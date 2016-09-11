@@ -47,7 +47,7 @@
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
- *      @todo    Keys() method should probably retunr Set<KeyType> - instead of Iterable<KeyType>.
+ *      @todo    Keys() method should probably retunr Set<key_type> - instead of Iterable<key_type>.
  *
  */
 
@@ -131,13 +131,15 @@ namespace   Stroika {
                 /**
                  @todo - soon deprecate / remove??? this typename
                  */
-                using   KeyType     =   KEY_TYPE;
+                _Deprecated_ ("USE key_type")
+                typedef   KEY_TYPE KeyType;
 
             public:
                 /**
                  @todo - soon deprecate / remove??? this typename
                  */
-                using   ValueType   =   VALUE_TYPE;
+                _Deprecated_ ("USE mapped_type")
+                typedef VALUE_TYPE   ValueType;
 
             public:
                 /**
@@ -150,6 +152,12 @@ namespace   Stroika {
                  *  like std::map<>::mapped_type
                  */
                 using   mapped_type   =   VALUE_TYPE;
+
+            public:
+                /**
+                 *  @see inherited::value_type
+                 */
+                using   value_type   =   typename inherited::value_type;
 
             public:
                 /**
@@ -213,7 +221,7 @@ namespace   Stroika {
                  *  See:
                  *      @see Values ()
                  */
-                nonvirtual  Iterable<KeyType>   Keys () const;
+                nonvirtual  Iterable<key_type>   Keys () const;
 
             public:
                 /**
@@ -240,7 +248,7 @@ namespace   Stroika {
                  *  See:
                  *      @see Keys ()
                  */
-                nonvirtual  Iterable<ValueType>   Values () const;
+                nonvirtual  Iterable<mapped_type>   Values () const;
 
             public:
                 /**
@@ -252,28 +260,28 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<ValueType> Lookup (ArgByValueType<KeyType> key) const;
-                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, Memory::Optional<ValueType>* item) const;
-                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, ValueType* item) const;
-                nonvirtual  bool                        Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
+                nonvirtual  Memory::Optional<mapped_type>   Lookup (ArgByValueType<key_type> key) const;
+                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
+                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
+                nonvirtual  bool                            Lookup (ArgByValueType<key_type> key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  ValueType   LookupValue (ArgByValueType<KeyType> key, ArgByValueType<ValueType> defaultValue = ValueType ()) const;
+                nonvirtual  mapped_type     LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  ValueType   operator[] (ArgByValueType<KeyType> key) const;
+                nonvirtual  mapped_type   operator[] (ArgByValueType<key_type> key) const;
 
             public:
                 /**
                  *  Synonym for Lookup (key).IsPresent ()
                  */
-                nonvirtual  bool    ContainsKey (ArgByValueType<KeyType> key) const;
+                nonvirtual  bool    ContainsKey (ArgByValueType<key_type> key) const;
 
             public:
                 /**
@@ -292,8 +300,8 @@ namespace   Stroika {
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
-                nonvirtual  void    Add (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newElt);
-                nonvirtual  void    Add (ArgByValueType<KeyValuePair<KeyType, ValueType>> p);
+                nonvirtual  void    Add (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newElt);
+                nonvirtual  void    Add (ArgByValueType<KeyValuePair<key_type, mapped_type>> p);
 
             public:
                 /**
@@ -311,8 +319,8 @@ namespace   Stroika {
                  *      TBD in the case of Remove() on in iterator???? Probably should have consistent
                  *      answers but review Remove()for other containers as well.
                  */
-                nonvirtual  void    Remove (ArgByValueType<KeyType> key);
-                nonvirtual  void    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
+                nonvirtual  void    Remove (ArgByValueType<key_type> key);
+                nonvirtual  void    Remove (const Iterator<value_type>& i);
 
             public:
                 /**
@@ -350,8 +358,8 @@ namespace   Stroika {
                  *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
                  *  of CONTAINER_OF_Key_T.
                  *
-                 *  So - for example, Sequence<KeyValuePair<KeyType,ValueType>>, map<KeyType,ValueType>,
-                 *  vector<pair<KeyType,ValueType>>, etc...
+                 *  So - for example, Sequence<KeyValuePair<key_type,ValueType>>, map<key_type,ValueType>,
+                 *  vector<pair<key_type,ValueType>>, etc...
                  */
                 template    <typename CONTAINER_OF_Key_T>
                 nonvirtual  CONTAINER_OF_Key_T As () const;
@@ -380,7 +388,7 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
-                nonvirtual  void    Accumulate (ArgByValueType<KeyType> key, ArgByValueType<ValueType> newValue, const function<ValueType(ArgByValueType<ValueType>, ArgByValueType<ValueType>)>& f = [] (ArgByValueType<ValueType> l, ArgByValueType<ValueType> r) -> ValueType { return l + r; }, ValueType initialValue = {})
+                nonvirtual  void    Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<ValueType(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {})
                 {
                     Add (key, f (LookupValue (key, initialValue), newValue));
                 }
@@ -389,8 +397,8 @@ namespace   Stroika {
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                nonvirtual  void    erase (ArgByValueType<KeyType> key);
-                nonvirtual  void    erase (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
+                nonvirtual  void    erase (ArgByValueType<key_type> key);
+                nonvirtual  void    erase (const Iterator<value_type>& i);
 
             public:
                 /**
@@ -460,12 +468,12 @@ namespace   Stroika {
 
             public:
                 virtual _SharedPtrIRep          CloneEmpty (IteratorOwnerID forIterableEnvelope) const                          =   0;
-                virtual  Iterable<KeyType>      Keys () const                                                                   =   0;
-                virtual  Iterable<ValueType>    Values () const                                                                 =   0;
+                virtual  Iterable<key_type>     Keys () const                                                                   =   0;
+                virtual  Iterable<mapped_type>  Values () const                                                                 =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<ValueType>* item) const  =   0;
-                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt)           =   0;
+                virtual  bool                   Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const =   0;
+                virtual  void                   Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)          =   0;
                 virtual  void                   Remove (ArgByValueType<KEY_TYPE> key)                                           =   0;
                 virtual  void                   Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)                  =   0;
 #if     qDebug
@@ -473,8 +481,8 @@ namespace   Stroika {
 #endif
 
             protected:
-                nonvirtual Iterable<KeyType>    _Keys_Reference_Implementation () const;
-                nonvirtual Iterable<ValueType>  _Values_Reference_Implementation () const;
+                nonvirtual Iterable<key_type>       _Keys_Reference_Implementation () const;
+                nonvirtual Iterable<mapped_type>    _Values_Reference_Implementation () const;
             };
 
 
