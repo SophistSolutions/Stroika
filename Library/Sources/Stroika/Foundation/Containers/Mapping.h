@@ -58,16 +58,10 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            using   Common::KeyValuePair;
             using   Configuration::ArgByValueType;
             using   Traversal::Iterable;
             using   Traversal::Iterator;
-
-            using   Common::KeyValuePair;
-
-
-            //template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY_TYPE>>
-            //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
-            //using   Mapping_DefaultTraits = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>;
 
 
             /**
@@ -291,7 +285,7 @@ namespace   Stroika {
                  *
                  *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
-                nonvirtual  bool    ContainsValue (ArgByValueType<ValueType> v) const;
+                nonvirtual  bool    ContainsValue (ArgByValueType<mapped_type> v) const;
 
             public:
                 /**
@@ -388,10 +382,7 @@ namespace   Stroika {
                 /**
                  *  EXPERIMENTAL API/UTILITY -- added 2015-01-16 to test
                  */
-                nonvirtual  void    Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<ValueType(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {})
-                {
-                    Add (key, f (LookupValue (key, initialValue), newValue));
-                }
+                nonvirtual  void    Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f = [] (ArgByValueType<mapped_type> l, ArgByValueType<mapped_type> r) -> mapped_type { return l + r; }, mapped_type initialValue = {});
 
             public:
                 /**

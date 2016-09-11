@@ -317,6 +317,11 @@ namespace   Stroika {
                 return li.Done ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Accumulate (ArgByValueType<key_type> key, ArgByValueType<mapped_type> newValue, const function<mapped_type(ArgByValueType<mapped_type>, ArgByValueType<mapped_type>)>& f, mapped_type initialValue)
+            {
+                Add (key, f (LookupValue (key, initialValue), newValue));
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::erase (ArgByValueType<key_type> key)
             {
                 Remove (key);
