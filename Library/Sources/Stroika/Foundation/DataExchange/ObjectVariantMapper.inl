@@ -190,10 +190,10 @@ namespace   Stroika {
                         }
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
             {
                 const T*  n = nullptr;    // arg unused, just for overloading
                 return MakeCommonSerializer_ (n);
@@ -235,7 +235,7 @@ namespace   Stroika {
                         actualInto->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Collection<T>*)
@@ -274,7 +274,7 @@ namespace   Stroika {
                         *actualInto = mapper.ToObject<T> (d);
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T, TRAITS>), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (Optional<T, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*)
@@ -290,7 +290,7 @@ namespace   Stroika {
                     Synchronized<T, TRAITS>*    actualInto  =   reinterpret_cast<Synchronized<T, TRAITS>*> (intoObjOfTypeT);
                     * actualInto = mapper.ToObject<T> (d);
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Synchronized<T, TRAITS>), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (Synchronized<T, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>*)
@@ -338,7 +338,7 @@ namespace   Stroika {
                 return MakeCommonSerializer_NamedEnumerations<T> ();
             }
             template    <typename T, size_t SZ>
-            inline  ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
+            ObjectVariantMapper::TypeMappingDetails     ObjectVariantMapper::MakeCommonSerializer_ (const T (*)[SZ])
             {
                 using   Characters::String_Constant;
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
@@ -372,7 +372,7 @@ namespace   Stroika {
                         actualMember[idx++] = T ();
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_WithKeyValuePairAdd_ ()
@@ -417,7 +417,7 @@ namespace   Stroika {
                         actualInto->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p[0]), mapper.ToObject<VALUE_TYPE> (valueMapper, p[1]));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (ACTUAL_CONTAINER_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
@@ -444,7 +444,7 @@ namespace   Stroika {
                     }
                     * actualInto = *optVal;
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename ENUM_TYPE>
             inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Configuration::EnumNames<ENUM_TYPE>& nameMap)
@@ -481,7 +481,7 @@ namespace   Stroika {
                         Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
             template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ContainerWithStringishKey ()
@@ -565,7 +565,7 @@ namespace   Stroika {
                         * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
+                return TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
             }
 
 
