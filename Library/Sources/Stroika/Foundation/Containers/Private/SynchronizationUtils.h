@@ -36,6 +36,14 @@
 
 #define qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_    3
 
+// HIGHLY experimental, but I have reason to believe this may work
+#define qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_		4
+
+
+
+//tmphack to test https://stroika.atlassian.net/browse/STK-525
+//#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+
 
 #ifndef qContainersPrivateSyncrhonizationPolicy_
 #if     qPlatform_Windows
@@ -50,6 +58,8 @@
 #include    <mutex>
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
 #include    "../../Execution/Platform/Windows/CriticalSectionMutex.h"
+#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #endif
 
 
@@ -75,6 +85,8 @@ namespace   Stroika {
                     mutable std::recursive_mutex  fMutex_;
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
                     mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
+#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+                    mutable Debug::AssertExternallySynchronizedLock  fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () = default;
                     ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
@@ -95,6 +107,14 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
+        {
+#define CONTAINER_LOCK_HELPER_END()\
+}\
+}
+#elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+#define CONTAINER_LOCK_HELPER_START(CRLDS)\
+    {\
+        std::lock_guard<Debug::AssertExternallySynchronizedLock> lg (CRLDS.fMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
