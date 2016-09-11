@@ -380,6 +380,12 @@ namespace   Stroika {
                 template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::KeyType, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::ValueType>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_ContainerWithStringishKey ();
 
+            public:
+                /**
+                 */
+                template    <typename ACTUAL_CONTAINER_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_WithAdder ();
+
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
@@ -409,17 +415,8 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const T*,  typename std::enable_if<std::is_enum<T>::value >::type* = 0);
-				// @todo https://stroika.atlassian.net/browse/STK-524
-                //template    <typename T, size_t SZ>
-                //static  TypeMappingDetails	MakeCommonSerializer_ (const T (*)[SZ]);
-
-            private:
-                template    <typename ACTUAL_CONTAINER_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_WithSimpleAdd_ ();
-
-            private:
-                template    <typename ACTUAL_CONTAINER_TYPE>
-                static  TypeMappingDetails  MakeCommonSerializer_WithSimpleAddByAppend_ ();
+                template    <typename T, size_t SZ>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const T (*)[SZ]);
 
             private:
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename ACTUAL_CONTAINER_TYPE>
