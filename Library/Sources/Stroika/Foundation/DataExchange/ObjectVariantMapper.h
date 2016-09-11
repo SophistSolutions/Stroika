@@ -378,10 +378,11 @@ namespace   Stroika {
                  *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.
                  */
                 template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::KeyType, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::ValueType>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_ContainerWithStringishKey ();
+                static  TypeMappingDetails MakeCommonSerializer_ContainerWithStringishKey ();
 
             public:
                 /**
+                 *  Can be used with any container class which you append with Containers::Adapters::Adder
                  */
                 template    <typename ACTUAL_CONTAINER_TYPE>
                 static  TypeMappingDetails  MakeCommonSerializer_WithAdder ();
@@ -424,17 +425,17 @@ namespace   Stroika {
 
             private:
                 template    <typename RANGE_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
+                static  TypeMappingDetails MakeCommonSerializer_Range_ ();
 
             private:
-                nonvirtual  ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
+                nonvirtual  TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
 
             public:
                 /**
-                */
+                 */
                 struct  TypesRegistry {
                     Set<TypeMappingDetails> fSerializers;         // need Stroika set with separate traits-based key extractor/compare function
                 };
