@@ -278,10 +278,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      \brief  ElementType is just a handly copy of the *T* template type which this
-                 *              Iterator<T> parameterizes access to.
+                 *      SOON TO BE DEPRECATED - ALIAS FOR STL value_type
                  */
-                using   ElementType =   T;
+                _Deprecated_("ElementType NOW DEPRECATED - USE value_type")
+                typedef T ElementType;
+
+            public:
+                /**
+                 *  \brief  value_type = typename BASE_STD_ITERATOR::value_type;
+                 */
+                using   value_type = typename BASE_STD_ITERATOR::value_type;
 
             public:
                 class   IRep;
@@ -353,7 +359,7 @@ namespace   Stroika {
                  *  Note - the lifetime of this pointer is short - only until the next operation on the wrapper
                  *  class instance Iterator<T>.
                  */
-                nonvirtual  const T*    operator-> () const;
+                nonvirtual  const value_type*    operator-> () const;
 
             public:
                 /**
@@ -596,10 +602,10 @@ namespace   Stroika {
             template    <typename T, typename BASE_STD_ITERATOR>
             class   Iterator<T, BASE_STD_ITERATOR>::IRep {
             protected:
-                IRep ();
+                IRep () = default;
 
             public:
-                virtual ~IRep ();
+                virtual ~IRep () = default;
 
             public:
                 using  SharedIRepPtr    =   typename Iterator<T, BASE_STD_ITERATOR>::SharedIRepPtr;

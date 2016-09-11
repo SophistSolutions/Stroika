@@ -261,7 +261,8 @@ namespace   Stroika {
                  *              Iterable<T> parameterizes access to.
                  *      @see value_type.
                  */
-                using   ElementType =    T;
+                _Deprecated_ ("USE value_type")
+                typedef T ElementType;
 
             public:
                 /**

@@ -46,25 +46,10 @@ namespace   Stroika {
 
 
             /*
-            ********************************************************************************
-            ******************** Iterator<T, BASE_STD_ITERATOR>::IRep **********************
-            ********************************************************************************
-            */
-            template    <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::IRep::IRep ()
-            {
-            }
-            template    <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::IRep::~IRep ()
-            {
-            }
-
-
-            /*
-            ********************************************************************************
-            ************************* Iterator<T, BASE_STD_ITERATOR> ***********************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ************************* Iterator<T, BASE_STD_ITERATOR> ***********************
+             ********************************************************************************
+             */
             template    <typename T, typename BASE_STD_ITERATOR>
             inline Iterator<T, BASE_STD_ITERATOR>::Iterator (const Iterator& from)
                 : inherited ()
@@ -136,7 +121,7 @@ namespace   Stroika {
                 return *fCurrent_;
             }
             template    <typename T, typename BASE_STD_ITERATOR>
-            inline    const T*   Iterator<T, BASE_STD_ITERATOR>::operator-> () const
+            inline    auto Iterator<T, BASE_STD_ITERATOR>::operator-> () const -> const value_type*
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
