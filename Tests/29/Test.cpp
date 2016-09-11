@@ -617,7 +617,7 @@ namespace   {
         SharedContactsConfig_   tmp;
         tmp.fInt1 = 4;
         tmp.fInt2 = 6;
-        tmp.fSequence1.Append (5);
+        tmp.fSequence1.Append (19);
         tmp.fMapping1.Add (3, 5);
         tmp.fBasicArray1[3] = 5;
         tmp.fSet1_.Add (193);
