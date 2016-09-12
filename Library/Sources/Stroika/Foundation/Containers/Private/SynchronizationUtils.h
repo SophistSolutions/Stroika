@@ -41,7 +41,7 @@
 
 
 
-//tmphack to test https://stroika.atlassian.net/browse/STK-525
+//Test https://stroika.atlassian.net/browse/STK-525
 //#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
 
 
