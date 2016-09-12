@@ -21,6 +21,69 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a176">v2.0a176x</a><br/>2016-09-03</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a175...v2.0a176</li>
+
+
+
+		lose gcc 4.9 support, so lost bug defines (and workarounds) for qCompilerAndStdLib_make_unique_Buggy and qCompilerAndStdLib_two_levels_nesting_Protected_Access_Buggy
+
+		 lose compiler bug defines needed for clang 3.6 (had been desupported): qCompilerAndStdLib_string_conversions_Buggy qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy qCompilerAndStdLib_shared_ptr_atomic_load_missing_Buggy qCompilerAndStdLib_codecvtbyname_mising_string_ctor_Buggy qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy qCompilerAndStdLib_string_conversions_Buggy  qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
+
+		 lose obsolete qCompilerAndStdLib_is_trivially_copyable_Buggy bug workaround
+
+		 Lose AIX (qPlatform_AIX) compatability - since I no longer have the need or ability to build for AIX
+			lose qCompilerAndStdLib_AIX_GCC_TOC_Inline_Buggy
+			qPlatform_AIX
+			qCompilerAndStdLib_fdopendir_Buggy
+			lose bug define for qCompilerAndStdLib_Locale_Buggy (use !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy instead in many places) - part of losing AIX support
+
+
+		Remove bug workaround/define for qCompilerAndStdLib_COutCErrStartupCrasher_Buggy thanks to Stephan T. Lavavej @ MSFT for hints
+
+		hack to test https://stroika.atlassian.net/browse/STK-525 - experimental hack that may make container classes much faster
+
+		added value_type typedef for Iterable (probably losing ElementType)
+		start adding std::map<> like type aliases for Mapping<> - key_type and mapped_type
+		comments about Iterable<T> value_type
+		more celanups to Iterator/Iterable code - using value_type and deprecating ElementType
+		more cleanups of Mapping<> code to use value_type and key_type and mapped_value_type
+
+		USE_NOISY_TRACE_IN_THIS_MODULE_ support in VariantValue code; and DefaultNames<DataExchange::VariantValue::Type>
+
+
+		Containers::Adapters::Adder: support Collection<> type; sue new name value_type instead of ElementType
+		Support set<> with Containers/Adapters/Adder
+
+		new BLOB::AsHex () const method
+		use sqlite 3.14.1 (instead of 3.13)
+
+		Characters::ToString() overload to handle arrays (and regtest)
+		Added Version::ToString ()  support
+
+
+		various simplifications of ObjevctVariantMapper - using Adder code;
+
+
+
+		<li></li>
+		<li>x
+			<ul>
+				<li>x</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a175">v2.0a175</a><br/>2016-09-03</td>
