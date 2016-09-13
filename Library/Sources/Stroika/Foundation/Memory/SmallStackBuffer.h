@@ -22,6 +22,9 @@
  *      @todo   Support more flexible CTOR - like SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
  *              using different SIZE value. At same time - same for operator=
  *
+ *      @todo   Minor - but we could do better than alignas(size_t) by just adjusting the offset of the size pointer in the buff, and just assure
+ *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;
+ *
  *  Long-Term TOD:
  *      @todo   Support non-POD type 'T' values properly.
  *              IE Lose \req std::is_trivially_constructible<T>::value,
@@ -149,7 +152,7 @@ namespace   Stroika {
 #if     qDebug
                 Byte    fGuard1_[sizeof(kGuard1_)];
 #endif
-                alignas (T) alignas (size_t)	T       fBuffer_[BUF_SIZE];	// alignas both since sometimes accessed as array of T, and sometimes as size_t
+                alignas (T) alignas (size_t)    T       fBuffer_[BUF_SIZE]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
 #if     qDebug
                 Byte    fGuard2_[sizeof(kGuard2_)];
 #endif

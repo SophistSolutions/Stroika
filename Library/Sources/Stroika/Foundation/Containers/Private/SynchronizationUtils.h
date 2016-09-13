@@ -37,7 +37,7 @@
 #define qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_    3
 
 // HIGHLY experimental, but I have reason to believe this may work
-#define qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_		4
+#define qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_     4
 
 
 
