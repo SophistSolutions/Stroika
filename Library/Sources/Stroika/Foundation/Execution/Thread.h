@@ -329,6 +329,7 @@ namespace   Stroika {
                  * \req    GetStatus () == Status::eNotYetRunning
                  */
                 nonvirtual  void    Start ();
+                static      void    Start (const initializer_list<Thread>& threads);
 
             public:
                 /**
@@ -397,6 +398,7 @@ namespace   Stroika {
                  *  @see WaitForDoneUntil ()
                  */
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+                static      void    WaitForDone (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -409,6 +411,7 @@ namespace   Stroika {
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  */
                 nonvirtual  void    WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+                static      void    WaitForDoneUntil (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**

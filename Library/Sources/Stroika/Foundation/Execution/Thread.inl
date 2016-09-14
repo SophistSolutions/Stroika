@@ -162,9 +162,25 @@ namespace   Stroika {
                 }
                 return GetStatus_ ();
             }
+            inline  void    Thread::Start (const initializer_list<Thread>& threads)
+            {
+                for (Thread t : threads) {
+                    t.Start ();
+                }
+            }
             inline  void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
             {
                 WaitForDoneUntil (timeout + Time::GetTickCount ());
+            }
+            inline  void    Thread::WaitForDone (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout)
+            {
+                WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
+            }
+            inline  void   Thread:: WaitForDoneUntil (const initializer_list<Thread>& threads, Time::DurationSecondsType timeout)
+            {
+                for (Thread t : threads) {
+                    t.WaitForDoneUntil (timeout);
+                }
             }
 
 
