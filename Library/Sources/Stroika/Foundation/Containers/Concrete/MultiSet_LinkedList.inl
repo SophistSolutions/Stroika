@@ -117,7 +117,7 @@ namespace   Stroika {
                 Iterator<CountedValue<T>> MultiSet_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                         tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
@@ -125,7 +125,7 @@ namespace   Stroika {
                         tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
 #endif
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     return Iterator<CountedValue<T>> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
@@ -144,7 +144,7 @@ namespace   Stroika {
                     using   RESULT_TYPE     =   Iterator<CountedValue<T>>;
                     using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                     SHARED_REP_TYPE resultRep;
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         auto iLink = fData_.FindFirstThat (doToElement);
                         if (iLink == nullptr) {
                             return RESULT_TYPE::GetEmptyIterator ();
@@ -157,7 +157,7 @@ namespace   Stroika {
 #endif
                         resultRep->fIterator.SetCurrentLink (iLink);
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                 }
@@ -165,13 +165,13 @@ namespace   Stroika {
                 typename MultiSet_LinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  MultiSet_LinkedList<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
                     if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
                     else {
                         return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
@@ -200,11 +200,11 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 typename MultiSet_LinkedList<T, TRAITS>::Rep_::_IterableSharedPtrIRep   MultiSet_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
                 template    <typename T, typename TRAITS>
                 void   MultiSet_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, CounterType count)

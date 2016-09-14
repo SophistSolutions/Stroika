@@ -42,14 +42,14 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::~IteratorImplHelper_ ()
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fIterator.fPatchableContainer->fLockSupport) {
                         // must do PatchableContainerHelper<...>::PatchableIteratorMixIn::DTOR login inside lock
                         fIterator.fPatchableContainer->RemoveIterator (&fIterator);
                         Assert (fIterator.fPatchableContainer == nullptr);
                         Assert (fIterator.fNextActiveIterator == nullptr);
                         // could assert owner  - fPatchableContainer - doenst contian us in list
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
 #endif
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>

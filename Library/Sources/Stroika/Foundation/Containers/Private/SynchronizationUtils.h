@@ -86,7 +86,8 @@ namespace   Stroika {
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
                     mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
-                    mutable Debug::AssertExternallySynchronizedLock  fMutex_;
+                    mutable std::recursive_mutex                    fActiveIteratorsMutex_;
+                    mutable Debug::AssertExternallySynchronizedLock fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () = default;
                     ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
@@ -103,12 +104,26 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
 }
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
+    {\
+        std::lock_guard<std::recursive_mutex> lg (CRLDS.fMutex_);\
+        {
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
+}\
+}
 #elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_END()\
+}\
+}
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
+    {\
+        std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
+        {
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
 }\
 }
 #elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
@@ -119,12 +134,26 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
 }
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
+    {\
+        std::lock_guard<std::recursive_mutex> lg (CRLDS.fActiveIteratorsMutex_);\
+        {
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
+}\
+}
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         synchronized_\
         {
 #define CONTAINER_LOCK_HELPER_END()\
+}\
+}
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
+    {\
+        synchronized_\
+        {
+#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
 }\
 }
 #endif

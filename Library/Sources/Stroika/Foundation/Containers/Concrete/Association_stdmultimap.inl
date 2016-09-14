@@ -104,17 +104,17 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_IterableSharedPtrIRep  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS = const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                         tmpRep = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ()));
@@ -122,7 +122,7 @@ namespace   Stroika {
                         tmpRep = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
 #endif
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -162,13 +162,13 @@ namespace   Stroika {
                 typename Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Association_stdmultimap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
                     if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.clear_WithPatching ();
                             return r;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
                     else {
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();

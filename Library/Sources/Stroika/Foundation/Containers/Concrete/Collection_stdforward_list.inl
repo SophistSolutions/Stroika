@@ -95,16 +95,16 @@ namespace   Stroika {
                 typename Collection_stdforward_list<T>::Rep_::_IterableSharedPtrIRep  Collection_stdforward_list<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
                 template    <typename T>
                 Iterator<T>  Collection_stdforward_list<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                         tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_, NON_CONST_THIS->shared_from_this ());
@@ -112,7 +112,7 @@ namespace   Stroika {
                         tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
 #endif
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     return Iterator<T> (tmpRep);
                 }
                 template    <typename T>
@@ -153,13 +153,13 @@ namespace   Stroika {
                 typename Collection_stdforward_list<T>::Rep_::_SharedPtrIRep  Collection_stdforward_list<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
                     if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                             auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.clear_WithPatching ();
                             return r;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
                     else {
                         return Iterable<T>::template MakeSharedPtr<Rep_> ();
