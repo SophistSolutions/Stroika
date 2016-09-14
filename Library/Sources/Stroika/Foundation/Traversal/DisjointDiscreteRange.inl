@@ -61,7 +61,7 @@ namespace   Stroika {
                 // @todo DEBUG why this initializer syntax produces wrong overload call ???
                 // --2015-01-02
                 //Containers::SortedSet<ElementType> ss { start, end };
-                Containers::SortedSet<ElementType> ss = Containers::SortedSet<ElementType> ( start, end );
+                Containers::SortedSet<ElementType> ss = Containers::SortedSet<ElementType> (start, end);
                 ElementType startAt {};
                 Optional<ElementType>   endAt;
                 for (ElementType i : ss) {

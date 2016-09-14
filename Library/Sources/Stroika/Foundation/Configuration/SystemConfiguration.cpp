@@ -659,10 +659,10 @@ namespace {
                     if (osvi.dwMinorVersion == 0)  {
                         goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows Vista " : L"Windows Server 2008 ";
                     }
-                    else if (osvi.dwMinorVersion == 1 )  {
+                    else if (osvi.dwMinorVersion == 1)  {
                         goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 7 " : L"Windows Server 2008 R2 ";
                     }
-                    else if (osvi.dwMinorVersion == 2 )  {
+                    else if (osvi.dwMinorVersion == 2)  {
                         goodName = (osvi.wProductType == VER_NT_WORKSTATION) ? L"Windows 8 " : L"Windows Server 2012 ";
                     }
                     else if (osvi.dwMinorVersion == 3)  {
@@ -719,11 +719,11 @@ namespace {
                                     goodName += L"Enterprise Edition for Itanium-based Systems";
                                 }
                             }
-                            else if ( si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64 ) {
+                            else if ( si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) {
                                 if (osvi.wSuiteMask & VER_SUITE_DATACENTER) {
                                     goodName += L"Datacenter x64 Edition";
                                 }
-                                else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE ) {
+                                else if (osvi.wSuiteMask & VER_SUITE_ENTERPRISE) {
                                     goodName += L"Enterprise x64 Edition";
                                 }
                                 else {

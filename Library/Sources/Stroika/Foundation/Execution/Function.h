@@ -89,7 +89,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename... Args>
-                nonvirtual  result_type     operator() ( Args... args ) const;
+                nonvirtual  result_type     operator() (Args... args) const;
 
             public:
                 /**

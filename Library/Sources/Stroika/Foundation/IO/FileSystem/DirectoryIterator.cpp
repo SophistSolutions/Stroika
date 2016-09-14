@@ -77,14 +77,14 @@ public:
                 ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
                 Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
             }
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
 #elif   qPlatform_Windows
             (void)::memset (&fFindFileData_, 0, sizeof (fFindFileData_));
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
-            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR (".."))) ) {
+            if (fHandle_ != INVALID_HANDLE_VALUE and fFindFileData_.cFileName[0] == '.' and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
@@ -102,7 +102,7 @@ public:
         if (fDirIt_ != nullptr) {
             ThrowIfError_errno_t (::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_));
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 Memory::Optional<String>    tmphack;
                 More (&tmphack, true);
             }
@@ -155,13 +155,13 @@ Again:
             RequireNotNull (fDirIt_);
             int e = ::readdir_r (fDirIt_, &fDirEntBuf_, &fCur_);
             if (e == EBADF) {
-                Assert (fCur_ == nullptr );
+                Assert (fCur_ == nullptr);
             }
             else {
                 ThrowIfError_errno_t (e);
             }
             Assert (fCur_ == nullptr or fCur_ == &fDirEntBuf_);
-            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR (".."))) ) {
+            if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
                 goto Again;
             }
         }

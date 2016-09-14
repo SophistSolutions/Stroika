@@ -42,7 +42,7 @@ namespace   Stroika {
             }
             template    <typename FUNCTION_SIGNATURE>
             template< typename... Args>
-            inline  typename Function<FUNCTION_SIGNATURE>::result_type  Function<FUNCTION_SIGNATURE>::operator()( Args... args ) const
+            inline  typename Function<FUNCTION_SIGNATURE>::result_type  Function<FUNCTION_SIGNATURE>::operator() (Args... args) const
             {
                 RequireNotNull (fFun_);
                 return (*fFun_) (forward<Args>(args)...);

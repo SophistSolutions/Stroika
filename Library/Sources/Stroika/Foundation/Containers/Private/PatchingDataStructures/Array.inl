@@ -373,7 +373,7 @@ namespace   Stroika {
                         this->Invariant ();
                         if (advance) {
                             if (not this->_fSuppressMore and not this->Done ()) {
-                                Assert ( this->_fCurrent <  this->_fEnd);
+                                Assert (this->_fCurrent <  this->_fEnd);
                                 this->_fCurrent++;
                             }
                             this->_fSuppressMore = false;
@@ -392,7 +392,7 @@ namespace   Stroika {
                         this->Invariant ();
                         if (advance) {
                             if (not this->_fSuppressMore and not this->Done ()) {
-                                Assert ( this->_fCurrent <  this->_fEnd);
+                                Assert (this->_fCurrent <  this->_fEnd);
                                 this->_fCurrent++;
                             }
                             this->_fSuppressMore = false;

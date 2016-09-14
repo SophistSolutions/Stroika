@@ -260,7 +260,7 @@ namespace {
         }
 #else
         AssertNotImplemented ();
-        return SDKSTR ( L"/tmp/" );
+        return SDKSTR (L"/tmp/");
 #endif
     }
 }

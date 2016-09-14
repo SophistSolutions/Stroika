@@ -183,7 +183,7 @@ URL URL::Parse (const String& w, ParseOptions po)
          *      //      -- LGP 2006-01-24
          */
         if (w.SubString (hostNameStart).StartsWith (L"//") or not w.SubString (hostNameStart).StartsWith (L"/")) {
-            if (w.SubString (hostNameStart).StartsWith (L"//") ) {
+            if (w.SubString (hostNameStart).StartsWith (L"//")) {
                 // skip '//' before hostname
                 hostNameStart++;
                 hostNameStart++;

@@ -24,7 +24,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  WaitForIOReady::WaitForIOReady (const Set<FileDescriptorType>& fds)
-                : fFDs_ ( fds )
+                : fFDs_ (fds)
             {
             }
             inline  WaitForIOReady::WaitForIOReady (const Set<Socket>& s)
