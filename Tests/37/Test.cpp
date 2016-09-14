@@ -24,6 +24,7 @@
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -274,6 +275,7 @@ namespace {
     namespace Test3_SynchronizedOptional_ {
         void    DoIt_ ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test3_SynchronizedOptional_::DoIt ()");
             using   namespace   Memory;
             try {
                 Synchronized<Optional<int>> sharedValue { 0 };
@@ -320,6 +322,7 @@ namespace {
     namespace Test4_CvtOp_BehaviorNeededforSyncronize_ {
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test4_CvtOp_BehaviorNeededforSyncronize_::DoIt ()");
 #if 0
             struct  Base {
                 mutable bool    fCalledOp_ = false;
@@ -347,6 +350,7 @@ namespace {
     namespace   Test5_SetSpecificSyncMethods {
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test5_SetSpecificSyncMethods::DoIt ()");
             Set<int>                                sensorsToActuallyRead       { 2, 3 };
             static  const   Synchronized<Set<int>>  kACUSensors_                { Set<int> { 1, 2 } };
             Set<int>                                acufpgaSensors1     =   kACUSensors_ ^ sensorsToActuallyRead;
@@ -365,6 +369,7 @@ namespace {
     namespace   Test6_OverloadsWithSyncMethods_ {
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test6_OverloadsWithSyncMethods_::DoIt ()");
             using   Memory::Optional;
             String xx;
             Synchronized<String> yy;
@@ -470,6 +475,7 @@ namespace {
         }
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test7_Synchronized_::DoIt ()");
             Private_::TestBasics_ ();
             Private_::DoThreadTest_ ();
         }
@@ -498,10 +504,68 @@ namespace {
         }
         void    DoIt ()
         {
+            Debug::TraceContextBumper traceCtx ("{}::Test8_AssertExternallySynchronized_::DoIt ()");
             Private_::TestBasics_ ();
         }
     }
 }
+
+
+
+
+
+
+
+
+
+namespace {
+    namespace   Test9_MutlipleThreadsReadingUnsynchonizedContainer_ {
+        namespace Private_ {
+            void    TestBasics_ ()
+            {
+                Sequence<int>   tmp = Traversal::DiscreteRange<int> { 1, 1000 };
+                Thread  t1 { [&tmp] ()
+                {
+                    for (int i = 1; i < 100; ++i) {
+                        for (int j : tmp) {
+                            VerifyTestResult (1 <= j and j <= 1000);
+                        }
+                    }
+                }
+                           };
+                Thread  t2 { [&tmp] ()
+                {
+                    for (int i = 1; i < 100; ++i) {
+                        for (int j : tmp) {
+                            VerifyTestResult (1 <= j and j <= 1000);
+                        }
+                    }
+                }
+                           };
+                Thread  t3 { [&tmp] ()
+                {
+                    for (int i = 1; i < 100; ++i) {
+                        if (tmp.GetLength () == 1000) {
+                            VerifyTestResult (tmp.IndexOf (6) == 5);
+                            VerifyTestResult (tmp.GetFirst () == 1);
+                            VerifyTestResult (tmp.GetLast () == 1000);
+                        }
+                    }
+                }
+                           };
+                Thread::Start ({ t1, t2, t3 });
+                Thread::WaitForDone ({ t1, t2, t3 });
+            }
+        }
+        void    DoIt ()
+        {
+            Debug::TraceContextBumper traceCtx ("{}::Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ()");
+            Private_::TestBasics_ ();
+        }
+    }
+}
+
+
 
 
 
@@ -528,6 +592,7 @@ namespace   {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
+        Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
     }
 }
 
