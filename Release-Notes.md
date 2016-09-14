@@ -19,6 +19,36 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a177">v2.0a177x</a><br/>2016-09-14/td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a176...v2.0a177</li>
+		<li>***EXPERIMENTAL RELEASE TO EVALUATE https://stroika.atlassian.net/browse/STK-525 - qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_</li>
+
+
+
+
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a177-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a177-OUT.txt</li>
+				<li>vc++2k15 Update 3.1</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
 
 
 <tr>
