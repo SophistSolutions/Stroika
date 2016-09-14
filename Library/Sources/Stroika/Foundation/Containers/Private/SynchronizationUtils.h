@@ -89,7 +89,8 @@ namespace   Stroika {
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
                     mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
-                    mutable std::recursive_mutex                    fActiveIteratorsMutex_;
+                    /// testing more - but see comments above 'CAN break black box modularity' - may want to use recursive_mutex
+                    mutable std::mutex                              fActiveIteratorsMutex_;
                     mutable Debug::AssertExternallySynchronizedLock fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () = default;
@@ -132,14 +133,14 @@ namespace   Stroika {
 #elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
-        std::lock_guard<Debug::AssertExternallySynchronizedLock> lg (CRLDS.fMutex_);\
+        std::shared_lock<Debug::AssertExternallySynchronizedLock> lg (CRLDS.fMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_END()\
 }\
 }
 #define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
     {\
-        std::lock_guard<std::recursive_mutex> lg (CRLDS.fActiveIteratorsMutex_);\
+        std::lock_guard<std::mutex> lg (CRLDS.fActiveIteratorsMutex_);\
         {
 #define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
 }\
