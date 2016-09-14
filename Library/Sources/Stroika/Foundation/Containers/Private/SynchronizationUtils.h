@@ -42,7 +42,10 @@
 
 
 //Test https://stroika.atlassian.net/browse/STK-525
-//#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+#ifndef qContainersPrivateSyncrhonizationPolicy_
+#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
+#endif
+
 
 
 #ifndef qContainersPrivateSyncrhonizationPolicy_
