@@ -41,7 +41,7 @@ echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression te
 make regression-test-configurations >>$TEST_OUT_FILE 2>&1
 
 NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
-NUM_REGTESTS=47
+NUM_REGTESTS=48
 NUM_PASSES_OF_REGTESTS_RUN=$NUM_CONFIGURATIONS
 
 echo "Building configurations ($NUM_CONFIGURATIONS):"
