@@ -207,7 +207,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return mir.fIterator.CurrentIndex ();
                     }
@@ -218,7 +218,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         mir.fIterator.RemoveCurrent ();
                     }
@@ -229,7 +229,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.Invariant ();
                         *mir.fIterator.fStdIterator = newValue;

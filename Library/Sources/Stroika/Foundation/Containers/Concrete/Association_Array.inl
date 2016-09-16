@@ -175,7 +175,7 @@ namespace   Stroika {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto    r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
@@ -241,7 +241,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAt (mir.fIterator);
                     }

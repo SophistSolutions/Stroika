@@ -216,7 +216,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto     mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&     mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
@@ -243,7 +243,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto      mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.RemoveAt (mir.fIterator);
                     }

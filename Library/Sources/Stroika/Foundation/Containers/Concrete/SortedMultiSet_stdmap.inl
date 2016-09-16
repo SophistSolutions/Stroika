@@ -223,7 +223,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         mir.fIterator.RemoveCurrent ();
                     }
@@ -234,7 +234,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         if (newCount == 0) {
                             mir.fIterator.RemoveCurrent ();
