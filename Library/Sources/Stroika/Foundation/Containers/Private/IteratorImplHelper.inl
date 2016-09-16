@@ -56,10 +56,10 @@ namespace   Stroika {
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::Clone () const
                 {
                     AssertNotNull (fIterator.fPatchableContainer);
-                    CONTAINER_LOCK_HELPER_START (fIterator.fPatchableContainer->fLockSupport) {
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fIterator.fPatchableContainer->fLockSupport) {
                         return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
                     }
-                    CONTAINER_LOCK_HELPER_END ();
+                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 IteratorOwnerID IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::GetOwner () const

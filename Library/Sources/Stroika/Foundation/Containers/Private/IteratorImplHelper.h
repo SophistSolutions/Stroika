@@ -58,6 +58,7 @@ namespace   Stroika {
                     using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
+                    IteratorImplHelper_ (const IteratorImplHelper_&) = default; // BE CAREFUL!!! - dont accidentally use without locks
 #if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data, const typename Iterable<T>::IterableSharedPtr& savedIteratorRep);
 #else
