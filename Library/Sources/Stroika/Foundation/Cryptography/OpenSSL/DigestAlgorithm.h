@@ -7,11 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qHasFeature_OpenSSL
-#if     OPENSSL_VERSION_NUMBER < 0x1000208fL
-using  EVP_MD   =   struct  evp_md_st;
-#else
-using  EVP_MD   =   struct  env_md_st;
-#endif
+#include    <openssl/evp.h>
 #endif
 
 #include    "../../Configuration/Common.h"

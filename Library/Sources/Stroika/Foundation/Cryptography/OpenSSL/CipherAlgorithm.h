@@ -7,7 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qHasFeature_OpenSSL
-using  EVP_CIPHER   =   struct evp_cipher_st;
+#include    <openssl/evp.h>
 #endif
 
 #include    "../../Configuration/Common.h"
