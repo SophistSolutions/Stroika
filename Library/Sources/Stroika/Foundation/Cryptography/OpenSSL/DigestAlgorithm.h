@@ -40,13 +40,13 @@ namespace   Stroika {
                  *  ROUGH DRAFT
                  */
                 enum    class   DigestAlgorithm  {
-                    eDSS,
+                    //eDSS,
                     eMD5,
                     eSHA1,
                     eSHA224,
                     eSHA256,
 
-                    Stroika_Define_Enum_Bounds(eDSS, eSHA256)
+                    Stroika_Define_Enum_Bounds(eMD5, eSHA256)
                 };
 #endif
 
@@ -84,7 +84,7 @@ namespace Stroika {
                 static  constexpr   EnumNames<Cryptography::OpenSSL::DigestAlgorithm>    k {
                     EnumNames<Cryptography::OpenSSL::DigestAlgorithm>::BasicArrayInitializer {
                         {
-                            { Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
+                            //{ Cryptography::OpenSSL::DigestAlgorithm::eDSS, L"eDSS" },
                             { Cryptography::OpenSSL::DigestAlgorithm::eMD5, L"eMD5" },
                             { Cryptography::OpenSSL::DigestAlgorithm::eSHA1, L"eSHA1" },
                             { Cryptography::OpenSSL::DigestAlgorithm::eSHA224, L"eSHA224" },

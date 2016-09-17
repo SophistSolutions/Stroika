@@ -34,29 +34,57 @@ using   Memory::SmallStackBuffer;
 
 #if     qHasFeature_OpenSSL && defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment (lib, "libeay32.lib")
 #pragma comment (lib, "ssleay32.lib")
+#else
+#pragma comment (lib, "libcrypto.lib")
+#pragma comment (lib, "libssl.lib")
+#pragma comment (lib, "ws2_32.lib")
+#pragma comment (lib, "crypt32.lib")
 #endif
-
-
-
+#endif
 
 
 #if     qHasFeature_OpenSSL
 namespace {
     // This trick counts on the fact that EVP_BytesToKey() only ever looks at key_len and iv_len
-    struct  FakeCryptoAlgo_ : EVP_CIPHER {
+    struct  FakeCryptoAlgo_
+#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
+        : EVP_CIPHER
+#endif
+    {
+#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+        EVP_CIPHER* tmpCipher {};
+#endif
+        FakeCryptoAlgo_ () = delete;
+        FakeCryptoAlgo_ (const FakeCryptoAlgo_&) = delete;
         FakeCryptoAlgo_ (size_t keyLength, size_t ivLength)
         {
+#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+            tmpCipher = ::EVP_CIPHER_meth_new (0, 0, keyLength);
+            ::EVP_CIPHER_meth_set_iv_length (tmpCipher, ivLength);
+#else
             (void)::memset (this, 0, sizeof (*this));
             DISABLE_COMPILER_MSC_WARNING_START (4267)
             this->key_len = keyLength;
             this->iv_len = ivLength;
             DISABLE_COMPILER_MSC_WARNING_END (4267)
+#endif
         }
+#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+        ~FakeCryptoAlgo_ ()
+        {
+            EVP_CIPHER_meth_free (tmpCipher);
+        }
+#endif
         operator const EVP_CIPHER* () const
         {
+#if     OPENSSL_VERSION_NUMBER >= 0x1010000fL
+            return tmpCipher;
+#else
             return this;
+#endif
         }
     };
 }
@@ -76,24 +104,24 @@ namespace {
  */
 size_t  DerivedKey::KeyLength (CipherAlgorithm cipherAlgorithm)
 {
-    return Convert2OpenSSL (cipherAlgorithm)->key_len;
+    return ::EVP_CIPHER_key_length (Convert2OpenSSL (cipherAlgorithm));
 }
 
 size_t  DerivedKey::KeyLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
-    return cipherAlgorithm->key_len;
+    return ::EVP_CIPHER_key_length (cipherAlgorithm);
 }
 
 size_t  DerivedKey::IVLength (CipherAlgorithm cipherAlgorithm)
 {
-    return Convert2OpenSSL (cipherAlgorithm)->iv_len;
+    return ::EVP_CIPHER_iv_length (Convert2OpenSSL (cipherAlgorithm));
 }
 
 size_t  DerivedKey::IVLength (const EVP_CIPHER* cipherAlgorithm)
 {
     RequireNotNull (cipherAlgorithm);
-    return cipherAlgorithm->iv_len;
+    return ::EVP_CIPHER_iv_length (cipherAlgorithm);
 }
 
 String  DerivedKey::ToString () const

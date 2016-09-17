@@ -27,8 +27,15 @@ using   namespace   Stroika::Foundation::Memory;
 
 #if     qHasFeature_OpenSSL && defined (_MSC_VER)
 // Use #pragma comment lib instead of explicit entry in the lib entry of the project file
+#if     OPENSSL_VERSION_NUMBER < 0x1010000fL
 #pragma comment (lib, "libeay32.lib")
 #pragma comment (lib, "ssleay32.lib")
+#else
+#pragma comment (lib, "libcrypto.lib")
+#pragma comment (lib, "libssl.lib")
+#pragma comment (lib, "ws2_32.lib")
+#pragma comment (lib, "crypt32.lib")
+#endif
 #endif
 
 using   Execution::Synchronized;
