@@ -21,12 +21,8 @@ endif
 #
 
 #VERSION=1.0.2g
-VERSION=1.0.2h
-
-#https://www.openssl.org/source/openssl-1.1.0-pre5.tar.gz
-#TRIED - but build on windows not working yet (wait for next release). Build works on UNIX but then I run into Stroika incompat with some
-# changes in openssl (so will require work)
-#VERSION=1.1.0-pre6
+#VERSION=1.0.2h
+VERSION=1.1.0
 
 #appears needed for 1.0.2d
 ifeq ($(VERSION),1.0.2d)
