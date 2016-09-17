@@ -93,7 +93,7 @@ if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 else
 	echo "...skipped raspberrypi tests cuz machine not available"
 	echo "...skipped raspberrypi tests cuz machine not available">>$TEST_OUT_FILE 2>&1
-	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 2))
+	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 3))
 fi
 
 
