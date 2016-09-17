@@ -86,10 +86,9 @@ namespace   {
 
 
 
-int     main (int argc, const char* argv[])
+int		main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
-    Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
-    return EXIT_SUCCESS;
+    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
 

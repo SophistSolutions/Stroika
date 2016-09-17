@@ -9,7 +9,6 @@
 
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
-//#include    "Stroika/Foundation/Memory/VariantValue.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -32,13 +31,8 @@ namespace   {
 }
 
 
-
-int main (int argc, const char* argv[])
+int		main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
-    Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
-    return EXIT_SUCCESS;
+    return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }
-
-
-

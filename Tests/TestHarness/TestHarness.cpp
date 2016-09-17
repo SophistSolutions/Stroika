@@ -74,8 +74,7 @@ void    TestHarness::Setup ()
     SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (_FatalSignalHandler_, SignalHandler::Type::eDirect));
 }
 
-
-void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
+int		TestHarness::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
         (*regressionTest) ();
@@ -88,8 +87,9 @@ void    TestHarness::PrintPassOrFail (void (*regressionTest) ())
         cout << "Failed" << endl;
         DbgTrace (L"FAILED: REGRESSION TEST (Execution::StringException): '%s", Characters::ToString (exc).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
-        exit (EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
+    return EXIT_SUCCESS;
 }
 
 

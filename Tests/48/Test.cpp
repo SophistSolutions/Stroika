@@ -1827,6 +1827,5 @@ int     main (int argc, const char* argv[])
     TemporaryTest_::DoTest_ ();
 
     Stroika::TestHarness::Setup ();
-    Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
-    return EXIT_SUCCESS;
+    return Stroika::TestHarness::PrintPassOrFail (RunPerformanceTests_);
 }
