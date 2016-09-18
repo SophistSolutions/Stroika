@@ -109,6 +109,15 @@ CONFIG_ARGS+=	-no-engines
 endif
 
 
+
+#ifeq (Unix,$(ProjectPlatformSubdir))
+#https://stroika.atlassian.net/browse/STK-527
+#	This hack doesnt appear needed right now, and isnt right in general, because it depeds if target OS uses pthreads or some other thread library
+#CONFIG_ARGS+=	-lpthread
+#endif
+
+
+
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (1.0.,$(findstring 1.0.,$(VERSION)))
 WIN_CRYPTO_LIB_BASENAME=libeay32
