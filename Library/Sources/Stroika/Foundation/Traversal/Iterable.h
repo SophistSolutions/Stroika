@@ -114,9 +114,14 @@ namespace   Stroika {
              *  Probably just always leave on.
              *
              *  @todo REVIEW - UNSURE OF THIS - NEEDS BETTER EXPLANATION AT LEAST!!!!
+             *
+             *  SEE regression test that references qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
+             *      I THINK THE LOGIC MAYBE FLAWED-- LGP 2016-09-18
+             *
+             *      TURN OFF NOW BY DEFAULT - LGP 2016-09-18
              */
 #ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-#define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        1
+#define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        0
 #endif
 
 
