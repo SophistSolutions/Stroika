@@ -119,6 +119,8 @@ namespace   Stroika {
              *      I THINK THE LOGIC MAYBE FLAWED-- LGP 2016-09-18
              *
              *      TURN OFF NOW BY DEFAULT - LGP 2016-09-18
+             *
+             *      @todo https://stroika.atlassian.net/browse/STK-530 - test - but if possible - get rid of this --LGP 2016-09-18
              */
 #ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
 #define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        0
