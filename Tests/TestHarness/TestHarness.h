@@ -15,7 +15,7 @@ namespace   Stroika {
         void    Setup ();
 
         // print succeeded if it completes, and failed if exception caught
-        int		PrintPassOrFail (void (*regressionTest) ());
+        int     PrintPassOrFail (void (*regressionTest) ());
 
         // LIKE calling Assert but it will ALSO trigger a failure in NODEBUG builds
         void    Test_ (bool failIfFalse, const char* regressionTestText, const char* fileName, int lineNum);

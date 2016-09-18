@@ -127,7 +127,7 @@ namespace   {
 
 
 
-int		main (int argc, const char* argv[])
+int     main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

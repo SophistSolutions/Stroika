@@ -74,7 +74,7 @@ void    TestHarness::Setup ()
     SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (_FatalSignalHandler_, SignalHandler::Type::eDirect));
 }
 
-int		TestHarness::PrintPassOrFail (void (*regressionTest) ())
+int     TestHarness::PrintPassOrFail (void (*regressionTest) ())
 {
     try {
         (*regressionTest) ();
