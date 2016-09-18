@@ -286,11 +286,23 @@ namespace   Stroika {
                 return GetAt (0);
             }
             template    <typename T>
+            inline  Memory::Optional<T>    Sequence<T>::GetFirstIf () const
+            {
+                return this->IsEmpty () ? MemoryL::Optional<T> {} :
+                       GetFirst ();
+            }
+            template    <typename T>
             inline  T    Sequence<T>::GetLast () const
             {
                 Require (not this->IsEmpty ());
                 // IRep::GetAt() defined to allow special kBadSequenceIndex
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().GetAt (kBadSequenceIndex);
+            }
+            template    <typename T>
+            inline  Memory::Optional<T>    Sequence<T>::GetLastIf () const
+            {
+                return this->IsEmpty () ? MemoryL::Optional<T> {} :
+                       GetLast ();
             }
             template    <typename T>
             inline  void    Sequence<T>::push_back (ArgByValueType<T> item)

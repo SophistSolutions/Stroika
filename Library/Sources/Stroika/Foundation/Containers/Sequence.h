@@ -12,6 +12,7 @@
 #include    "../Configuration/Concepts.h"
 #include    "../Common/Compare.h"
 #include    "../Execution/Synchronized.h"
+#include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 #include    "../Traversal/RandomAccessIterator.h"
@@ -426,9 +427,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  Memory::Optional<T> GetFirstIf () const;
+
+            public:
+                /**
                  *  \req not empty ();
                  */
                 nonvirtual  T       GetLast () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Memory::Optional<T> GetLastIf () const;
 
             public:
                 /**
