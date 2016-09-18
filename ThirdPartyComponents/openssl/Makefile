@@ -277,7 +277,7 @@ endif
 	@
 	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)...";
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) -j1 --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
+	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
