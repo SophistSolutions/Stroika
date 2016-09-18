@@ -57,16 +57,6 @@ namespace   Stroika {
                 nonvirtual  Memory::BLOB    GetBody ();
 
             public:
-                /**
-                    *  @see Socket::GetPeerAddress
-                    */
-                _Deprecated_ ("USE Message::GetPeerAddress")
-                nonvirtual  Memory::Optional<IO::Network::SocketAddress> GetPeerAddress () const
-                {
-                    return fPeerAddress_;
-                }
-
-            public:
                 nonvirtual  String  GetHTTPVersion () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
@@ -117,9 +107,6 @@ namespace   Stroika {
                 IO::Network::URL                        fURL;
                 // SOON TO BE PRIVATE
                 Mapping<String, String>                 fHeaders;
-
-            private:
-                Memory::Optional<IO::Network::SocketAddress>    fPeerAddress_;  // LOSE SOON _Deprecated_
 
             public:
                 /**

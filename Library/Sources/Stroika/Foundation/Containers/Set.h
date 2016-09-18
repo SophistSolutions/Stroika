@@ -63,11 +63,6 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            //template    <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-            //using   _Deprecated_(Mapping_DefaultTraits,"USE DefaultTraits::Mapping") = DefaultTraits::Mapping<KEY_TYPE,VALUE_TYPE,KEY_EQUALS_COMPARER>;
-            //using   Set_DefaultTraits = DefaultTraits::Set<T, EQUALS_COMPARER>;
-
-
             /**
              *      The Set class is based on SmallTalk-80, The Language & Its Implementation,
              *      page 148.

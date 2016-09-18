@@ -50,9 +50,6 @@ namespace   Stroika {
                  */
                 template        <typename CONTAINER_TYPE>
                 struct  Adder {
-                    _Deprecated_("ElementType NOW DEPRECATED - USE value_type")
-                    typedef    typename CONTAINER_TYPE::value_type ElementType;
-
                 public:
                     /**
                      */

@@ -123,20 +123,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 @todo - soon deprecate / remove??? this typename
-                 */
-                _Deprecated_ ("USE key_type")
-                typedef   KEY_TYPE KeyType;
-
-            public:
-                /**
-                 @todo - soon deprecate / remove??? this typename
-                 */
-                _Deprecated_ ("USE mapped_type")
-                typedef VALUE_TYPE   ValueType;
-
-            public:
-                /**
                  *  like std::map<>::key_type
                  */
                 using   key_type     =   KEY_TYPE;

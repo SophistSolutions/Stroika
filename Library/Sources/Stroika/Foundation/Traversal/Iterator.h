@@ -278,13 +278,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      SOON TO BE DEPRECATED - ALIAS FOR STL value_type
-                 */
-                _Deprecated_("ElementType NOW DEPRECATED - USE value_type")
-                typedef T ElementType;
-
-            public:
-                /**
                  *  \brief  value_type = typename BASE_STD_ITERATOR::value_type;
                  */
                 using   value_type = typename BASE_STD_ITERATOR::value_type;

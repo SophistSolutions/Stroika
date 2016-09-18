@@ -264,15 +264,6 @@ namespace   Stroika {
             class   Iterable : public IterableBase, protected Debug::AssertExternallySynchronizedLock {
             public:
                 /**
-                 *      \brief  ElementType is just a handly copy of the *T* template type which this
-                 *              Iterable<T> parameterizes access to.
-                 *      @see value_type.
-                 */
-                _Deprecated_ ("USE value_type")
-                typedef T ElementType;
-
-            public:
-                /**
                  * \brief value_type is an alias for the type iterated over - like vector<T>::value_type
                  */
                 using   value_type   =       T;

@@ -52,8 +52,6 @@
  *      @todo   Redo examples (maybe small bits of API) using new Reader/Writer abstract impl
  *              stuff (backends to XML or JSON)
  *
- *      @todo   Consider moving this out of the Foundation into a framework?
- *
  *      @todo   EFFICIENCY NOTES AND TODO MAYBE IMPROVE?
  *
  *              This can be moderately efficient, but it is not highly efficient. The use of function
@@ -373,12 +371,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *
                  *  This works on Any Iterable<KeyValuePair<>>, where the Key can be Mapped to / from a String, using
                  *  an already defined typemapper (from KEY_TYPE to/from String) or be of type String.
                  */
-                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::KeyType, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::ValueType>
-                static  TypeMappingDetails MakeCommonSerializer_ContainerWithStringishKey ();
+                template    <typename ACTUAL_CONTAINTER_TYPE, typename KEY_TYPE = typename ACTUAL_CONTAINTER_TYPE::key_type, typename VALUE_TYPE = typename ACTUAL_CONTAINTER_TYPE::mapped_type>
+                static  TypeMappingDetails  MakeCommonSerializer_ContainerWithStringishKey ();
 
             public:
                 /**
@@ -431,7 +428,7 @@ namespace   Stroika {
                 nonvirtual  TypeMappingDetails  MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
 
             private:
-                nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
+                nonvirtual  TypeMappingDetails  Lookup_ (const type_index& forTypeInfo) const;
 
             public:
                 /**
