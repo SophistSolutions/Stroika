@@ -86,6 +86,8 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#https://stroika.atlassian.net/browse/STK-528
+#CONFIG_ARGS+=	-asm
 CONFIG_ARGS+=	-no-asm
 endif
 
