@@ -196,6 +196,11 @@ ifeq ($(qFeatureFlag_OpenSSL), use)
 #	dso_dlfcn.c:(.text+0x2f): undefined reference to `dlclose'
 #
 LIBCURL_CONFIGURE +=  LIBS='-ldl'
+
+#https://stroika.atlassian.net/browse/STK-527
+#This hack is NO GOOD - but without it - we dont get ssl feature enabled!
+LIBCURL_CONFIGURE +=  LIBS='-ldl -lpthread'
+
 endif
 
 
