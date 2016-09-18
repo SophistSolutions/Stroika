@@ -50,7 +50,7 @@ Connection::Connection (Socket s, const InterceptorChain& interceptorChain)
     , fSocket_ (s)
     , fSocketStream_ (s)
     , fMessage_ {
-    move (Request (fSocketStream_,  s.GetPeerAddress ())),
+    move (Request (fSocketStream_)),
     move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),
     s.GetPeerAddress ()
 }

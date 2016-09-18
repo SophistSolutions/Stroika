@@ -23,6 +23,8 @@
  *
  *      @todo   Think out if these should be Copy By Value or reference, and about thread safety. For now avoid by saying not
  *              copyable, but still mus tthink out thread safety
+ *
+ *      @todo   Make fHeaders etc private
  */
 
 namespace   Stroika {
@@ -46,7 +48,7 @@ namespace   Stroika {
                 Request () = delete;
                 Request (const Request&) = delete;
                 Request (Request&&) = default;
-                Request (const Streams::InputStream<Memory::Byte>& inStream, const Memory::Optional<IO::Network::SocketAddress>& peerAddress = Memory::Optional<IO::Network::SocketAddress> {});
+                Request (const Streams::InputStream<Memory::Byte>& inStream);
 
             public:
                 nonvirtual  const Request& operator= (const Request&) = delete;
@@ -57,42 +59,30 @@ namespace   Stroika {
                 nonvirtual  Memory::BLOB    GetBody ();
 
             public:
-                nonvirtual  String  GetHTTPVersion () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                    return fHTTPVersion;
-                }
+                /**
+                 */
+                nonvirtual  String  GetHTTPVersion () const;
 
             public:
-                nonvirtual  String  GetHTTPMethod () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                    return fMethod;
-                }
+                /**
+                 */
+                nonvirtual  String  GetHTTPMethod () const;
 
             public:
-                nonvirtual  IO::Network::URL    GetURL () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                    return fURL;
-                }
+                /**
+                 */
+                nonvirtual  IO::Network::URL    GetURL () const;
 
             public:
-                Mapping<String, String> GetHeaders () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-
-                    return fHeaders;
-                }
+                /**
+                 */
+                nonvirtual  Mapping<String, String> GetHeaders () const;
 
             public:
-                // unclear if this SB const?
-                Streams::InputStream<Memory::Byte>  GetInputStream ()
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-
-                    return fInputStream;
-                }
+                /**
+                 *  @todo unclear if this SB const?
+                 */
+                nonvirtual  Streams::InputStream<Memory::Byte>  GetInputStream ();
 
             public:
                 // SOON TO BE PRIVATE
