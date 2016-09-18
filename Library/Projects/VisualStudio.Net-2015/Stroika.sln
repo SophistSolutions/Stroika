@@ -1669,6 +1669,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "internal", "internal", "{31
 		..\..\..\ThirdPartyComponents\openssl\CURRENT\crypto\include\internal\x509_int.h = ..\..\..\ThirdPartyComponents\openssl\CURRENT\crypto\include\internal\x509_int.h
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{76395823-2D89-4DF5-ACC3-10D796DB43B2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\00-base-templates.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\00-base-templates.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\10-main.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\10-main.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-djgpp.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-djgpp.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-haiku.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-haiku.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-masm.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\50-masm.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\90-team.conf = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\90-team.conf
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\common.tmpl = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\common.tmpl
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\descrip.mms.tmpl = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\descrip.mms.tmpl
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\INTERNALS.Configure = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\INTERNALS.Configure
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\README = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\README
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\README.design = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\README.design
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\unix-Makefile.tmpl = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\unix-Makefile.tmpl
+		..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl = ..\..\..\ThirdPartyComponents\openssl\CURRENT\Configurations\windows-makefile.tmpl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -2069,5 +2086,6 @@ Global
 		{FAA7D304-7496-4006-8AF4-50CD6D74DE8D} = {F464835C-0B9E-4791-9B7B-8589565036B4}
 		{339D80BB-D1C1-4664-8762-C92ED16C6AAF} = {C6932FC8-94E5-44F0-A457-0146C85AE124}
 		{310D6300-87AB-419E-9174-2B9EF68F691C} = {339D80BB-D1C1-4664-8762-C92ED16C6AAF}
+		{76395823-2D89-4DF5-ACC3-10D796DB43B2} = {F464835C-0B9E-4791-9B7B-8589565036B4}
 	EndGlobalSection
 EndGlobal
