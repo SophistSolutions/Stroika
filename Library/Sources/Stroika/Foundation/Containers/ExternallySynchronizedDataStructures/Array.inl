@@ -632,14 +632,14 @@ namespace   Stroika {
                 inline  Array<T, TRAITS>::ForwardIterator::ForwardIterator (const Array<T, TRAITS>* data)
                     : inherited (data)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     this->_fCurrent = this->_fStart;
                     this->Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     this->Invariant ();
                     if (advance) {
                         if (not this->_fSuppressMore and not this->Done ()) {
@@ -652,7 +652,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     this->Invariant ();
                     if (advance) {
                         if (this->_fSuppressMore) {
@@ -676,7 +676,6 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::ForwardIterator::More (nullptr_t, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     return More (static_cast<T*> (nullptr), advance);
                 }
 
@@ -690,7 +689,7 @@ namespace   Stroika {
                 inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>* data)
                     : inherited (data)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     if (data->GetLength () == 0) {
                         this->_fCurrent = this->_fEnd;    // magic to indicate done
                     }
@@ -702,7 +701,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::BackwardIterator::More (T* current, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     this->Invariant ();
                     if (advance) {
                         if (not this->_fSuppressMore and not this->Done ()) {
@@ -721,7 +720,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this->_fData };
                     this->Invariant ();
                     if (advance) {
                         if (this->_fSuppressMore) {
@@ -751,7 +750,6 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::BackwardIterator::More (nullptr_t, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     return More (static_cast<T*> (nullptr), advance);
                 }
 
