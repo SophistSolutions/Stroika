@@ -523,36 +523,40 @@ namespace {
         namespace Private_ {
             void    TestBasics_ ()
             {
+                constexpr   size_t  kMaxRepeatCount_    { 1000 };
                 Sequence<int>   tmp = Traversal::DiscreteRange<int> { 1, 1000 };
-                Thread  t1 { [&tmp] ()
-                {
-                    for (int i = 1; i < 100; ++i) {
-                        for (int j : tmp) {
-                            VerifyTestResult (1 <= j and j <= 1000);
+                Thread  t1 {
+                    [&tmp] ()
+                    {
+                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                            for (int j : tmp) {
+                                VerifyTestResult (1 <= j and j <= 1000);
+                            }
                         }
                     }
-                }
-                           };
-                Thread  t2 { [&tmp] ()
-                {
-                    for (int i = 1; i < 100; ++i) {
-                        for (int j : tmp) {
-                            VerifyTestResult (1 <= j and j <= 1000);
+                };
+                Thread  t2 {
+                    [&tmp] ()
+                    {
+                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                            for (int j : tmp) {
+                                VerifyTestResult (1 <= j and j <= 1000);
+                            }
                         }
                     }
-                }
-                           };
-                Thread  t3 { [&tmp] ()
-                {
-                    for (int i = 1; i < 100; ++i) {
-                        if (tmp.GetLength () == 1000) {
-                            VerifyTestResult (tmp.IndexOf (6) == 5);
-                            VerifyTestResult (tmp.GetFirst () == 1);
-                            VerifyTestResult (tmp.GetLast () == 1000);
+                };
+                Thread  t3 {
+                    [&tmp] ()
+                    {
+                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                            if (tmp.GetLength () == 1000) {
+                                VerifyTestResult (tmp.IndexOf (6) == 5);
+                                VerifyTestResult (tmp.GetFirst () == 1);
+                                VerifyTestResult (tmp.GetLast () == 1000);
+                            }
                         }
                     }
-                }
-                           };
+                };
                 Thread::Start ({ t1, t2, t3 });
                 Thread::WaitForDone ({ t1, t2, t3 });
             }
