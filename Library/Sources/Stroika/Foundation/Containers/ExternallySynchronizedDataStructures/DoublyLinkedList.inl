@@ -552,26 +552,6 @@ namespace   Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
                 }
-                template      <typename  T, typename TRAITS>
-                inline    typename DoublyLinkedList<T, TRAITS>::Link*   DoublyLinkedList<T, TRAITS>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T, TRAITS>* data)
-                {
-                    lock_guard<const AssertExternallySynchronizedLock> critSec { *_fData };
-                    RequireNotNull (data);
-                    return data->_fHead;
-                }
-                template      <typename  T, typename TRAITS>
-                inline const typename DoublyLinkedList<T, TRAITS>::Link* DoublyLinkedList<T, TRAITS>::ForwardIterator::_GetFirstDataLink (const DoublyLinkedList<T, TRAITS>* data)
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
-                    RequireNotNull (data);
-                    return data->_fHead;
-                }
-                template      <typename  T, typename TRAITS>
-                inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::_SetFirstDataLink (DoublyLinkedList<T, TRAITS>* data, Link* newFirstLink)
-                {
-                    RequireNotNull (data);
-                    data->_fHead = newFirstLink;
-                }
 #if     qDebug
                 template      <typename  T, typename TRAITS>
                 void    DoublyLinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const

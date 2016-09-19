@@ -286,11 +286,6 @@ namespace   Stroika {
                     nonvirtual  void    Invariant () const;
 
                 protected:
-                    static  Link*       _GetFirstDataLink (DoublyLinkedList<T, TRAITS>* data);
-                    static  const Link* _GetFirstDataLink (const DoublyLinkedList<T, TRAITS>* data);
-                    static  void        _SetFirstDataLink (DoublyLinkedList<T, TRAITS>* data, Link* newFirstLink);
-
-                protected:
                 public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
                     const DoublyLinkedList<T, TRAITS>*  _fData;
                     const Link*                         _fCurrent;
