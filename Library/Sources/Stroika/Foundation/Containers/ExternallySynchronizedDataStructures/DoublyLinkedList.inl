@@ -357,6 +357,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    DoublyLinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     this->Invariant ();
                     const_cast<Link*> (i._fCurrent)->fItem = newValue;
