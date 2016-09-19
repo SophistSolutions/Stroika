@@ -523,7 +523,7 @@ namespace {
         namespace Private_ {
             void    TestBasics_ ()
             {
-                constexpr   size_t  kMaxRepeatCount_    { 1000 };
+                static  constexpr   size_t  kMaxRepeatCount_    { 1000 };
                 Sequence<int>   tmp = Traversal::DiscreteRange<int> { 1, 1000 };
                 Thread  t1 {
                     [&tmp] ()
