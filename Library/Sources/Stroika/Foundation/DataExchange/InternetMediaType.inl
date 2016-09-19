@@ -142,6 +142,7 @@ namespace   Stroika {
                     const   InternetMediaType   kXSLT_CT;
                     const   InternetMediaType   kJavaArchive_CT;
                     const   InternetMediaType   kApplication_RTF_CT;
+                    const   InternetMediaType   kApplication_Zip_CT;
                 };
             }
         }
@@ -183,6 +184,8 @@ namespace   Stroika {
                 inline  const   InternetMediaType&  JavaArchive_CT ()                       {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kJavaArchive_CT;  }
 
                 inline  const   InternetMediaType&  Application_RTF_CT ()                   {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_RTF_CT;  }
+
+                inline  const   InternetMediaType&  Application_Zip_CT ()                   {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_Zip_CT;  }
 
             }
         }

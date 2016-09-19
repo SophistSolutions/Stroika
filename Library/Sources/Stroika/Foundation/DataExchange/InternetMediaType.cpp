@@ -50,6 +50,7 @@ DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleD
     , kXSLT_CT                              (String_Constant { L"application/x-xslt" })
     , kJavaArchive_CT                       (String_Constant { L"application/java-archive" })
     , kApplication_RTF_CT                   (String_Constant { L"application/rtf" })
+    , kApplication_Zip_CT                   (String_Constant { L"application/zip" })
 {
 }
 

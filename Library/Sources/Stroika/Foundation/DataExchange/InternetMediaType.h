@@ -117,6 +117,9 @@ namespace   Stroika {
              *  referenced (after inlining) through an extra pointer, but that should be the limit of the overhead - if the
              *  compilers do a decent job.
              *      -- LGP 2009-05-29
+             *
+             *  \note
+             *      @see http://www.iana.org/assignments/media-types/media-types.xhtml
              */
             namespace   PredefinedInternetMediaType {
                 const   InternetMediaType&  OctetStream_CT ();
@@ -147,6 +150,8 @@ namespace   Stroika {
                 const   InternetMediaType&  JavaArchive_CT ();
 
                 const   InternetMediaType&  Application_RTF_CT ();          // Microsoft RTF - Rich Text Format
+
+                const   InternetMediaType&  Application_Zip_CT ();          // application/zip
             }
 
 
