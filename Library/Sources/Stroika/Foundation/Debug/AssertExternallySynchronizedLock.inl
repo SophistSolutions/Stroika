@@ -96,8 +96,9 @@ namespace   Stroika {
             {
 #if     qDebug
                 lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
-                Require (fSharedLockThreads_.find (this_thread::get_id ()) != fSharedLockThreads_.end ());  // else unbalanced
-                fSharedLockThreads_.erase (fSharedLockThreads_.find (this_thread::get_id ()));
+                multiset<std::thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
+                Require (tti != fSharedLockThreads_.end ());  // else unbalanced
+                fSharedLockThreads_.erase (tti);
 #endif
             }
 
