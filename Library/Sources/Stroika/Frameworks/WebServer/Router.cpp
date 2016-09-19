@@ -67,8 +67,8 @@ struct  Router::Rep_ : Interceptor::_IRep {
     }
     Optional<RequestHandler>   Lookup_ (const Request& request) const
     {
-        String  method  =   request.fMethod;
-        URL     url     =   request.fURL;
+        String  method  =   request.GetHTTPMethod ();
+        URL     url     =   request.GetURL ();
         String  hostRelPath =   url.GetHostRelativePath ();
         for (Route r : fRoutes_) {
             if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {

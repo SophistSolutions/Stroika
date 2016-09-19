@@ -38,10 +38,10 @@ using   namespace   Stroika::Frameworks::WebServer;
  ********************************************************************************
  */
 Request::Request (const Streams::InputStream<Byte>& inStream)
-    : fInputStream (inStream)
-    , fHTTPVersion ()
-    , fURL ()
-    , fHeaders ()
+    : fInputStream_ (inStream)
+    , fHTTPVersion_ ()
+    , fURL_ ()
+    , fHeaders_ ()
 {
 }
 
@@ -50,10 +50,10 @@ Memory::BLOB    Request::GetBody ()
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fBody_.IsMissing ()) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
-        if (auto ci = fHeaders.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
+        if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
             size_t contentLength = Characters::String2Int<size_t> (*ci);
             Memory::SmallStackBuffer<Memory::Byte>  buf (contentLength);
-            size_t  n   =   fInputStream.ReadAll (begin (buf), end (buf));
+            size_t  n   =   fInputStream_.ReadAll (begin (buf), end (buf));
             Assert (n <= contentLength);
             if (n != contentLength) {
                 Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, contentLength)));
@@ -61,7 +61,7 @@ Memory::BLOB    Request::GetBody ()
             fBody_ = Memory::BLOB (begin (buf), end (buf));
         }
         else {
-            fBody_ = fInputStream.ReadAll ();
+            fBody_ = fInputStream_.ReadAll ();
         }
     }
     return *fBody_;
@@ -72,10 +72,10 @@ String  Request::ToString () const
     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
     StringBuilder   sb;
     sb += L"{";
-    sb += L"HTTPVersion: " + fHTTPVersion + L", ";
-    sb += L"Method: " + fMethod + L", ";
-    sb += L"fURL: " + Characters::ToString (fURL) + L", ";
-    sb += L"Headers: " + Characters::ToString (fHeaders) + L", ";
+    sb += L"HTTPVersion: " + fHTTPVersion_ + L", ";
+    sb += L"Method: " + fMethod_ + L", ";
+    sb += L"URL: " + Characters::ToString (fURL_) + L", ";
+    sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
     sb += L"}";
     return sb.str ();
 }

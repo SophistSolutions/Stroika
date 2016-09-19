@@ -25,29 +25,47 @@ namespace   Stroika {
             inline  String  Request::GetHTTPVersion () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                return fHTTPVersion;
+                return fHTTPVersion_;
             }
             inline  String  Request::GetHTTPMethod () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                return fMethod;
+                return fMethod_;
+            }
+            inline  void    Request::SetHTTPMethod (const String& method)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                fMethod_ = method;
             }
             inline  IO::Network::URL    Request::GetURL () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-                return fURL;
+                return fURL_;
+            }
+            inline  void    Request::SetURL (const IO::Network::URL& url)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                fURL_ = url;
             }
             inline  Mapping<String, String> Request::GetHeaders () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
-
-                return fHeaders;
+                return fHeaders_;
+            }
+            inline  void    Request::SetHeaders (const Mapping<String, String>& headers)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                fHeaders_ = headers;
+            }
+            inline  void    Request::AddHeader (const String& headerName, const String& value)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                fHeaders_.Add (headerName, value);
             }
             inline  Streams::InputStream<Memory::Byte>  Request::GetInputStream ()
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
-
-                return fInputStream;
+                return fInputStream_;
             }
 
 

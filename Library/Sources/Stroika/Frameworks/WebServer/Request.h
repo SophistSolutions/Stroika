@@ -23,8 +23,6 @@
  *
  *      @todo   Think out if these should be Copy By Value or reference, and about thread safety. For now avoid by saying not
  *              copyable, but still mus tthink out thread safety
- *
- *      @todo   Make fHeaders etc private
  */
 
 namespace   Stroika {
@@ -71,7 +69,17 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  void    SetHTTPMethod (const String& method);
+
+            public:
+                /**
+                 */
                 nonvirtual  IO::Network::URL    GetURL () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    SetURL (const IO::Network::URL& url);
 
             public:
                 /**
@@ -80,23 +88,29 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  void    SetHeaders (const Mapping<String, String>& headers);
+
+            public:
+                /**
+                 */
+                nonvirtual  void    AddHeader (const String& headerName, const String& value);
+
+            public:
+                /**
                  *  @todo unclear if this SB const?
                  */
                 nonvirtual  Streams::InputStream<Memory::Byte>  GetInputStream ();
 
-            public:
+            private:
                 // SOON TO BE PRIVATE
-                Streams::InputStream<Memory::Byte>      fInputStream;
+                Streams::InputStream<Memory::Byte>      fInputStream_;
 
-            public:
-                // SOON TO BE PRIVATE
-                String                                  fHTTPVersion;
-                // SOON TO BE PRIVATE
-                String                                  fMethod;
-                // SOON TO BE PRIVATE
-                IO::Network::URL                        fURL;
-                // SOON TO BE PRIVATE
-                Mapping<String, String>                 fHeaders;
+            private:
+                String                                  fHTTPVersion_;
+                String                                  fMethod_;
+                IO::Network::URL                        fURL_;
+                Mapping<String, String>                 fHeaders_;
 
             public:
                 /**
