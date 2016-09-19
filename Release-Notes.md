@@ -19,6 +19,84 @@ History
 
 
 
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a178">v2.0a178x</a><br/>2016-09-19???/td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a177...v2.0a178</li>
+
+
+		use libcurl 7.50.3
+
+		 3.14.2 sqlite
+
+		more data hiding with Frameworks/WebServer
+
+		speed tweak on AssertExternallySynchronizedLock::unlock_shared ()
+
+
+		 qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
+
+
+		https://stroika.atlassian.net/browse/STK-531 - first draft adding AssertExternallySynchronizedLock support to Containers/Private/DataStructures...stl/extenrallysynconized
+
+		qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_ tweaks for debug build performacne
+
+
+
+		lose lots of deprecated members - eg. ElementType; KeyType;/ValueType and change remaining code to use element_type and mapped_type and key_type
+
+		Comments about https://stroika.atlassian.net/browse/STK-530 aka qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_ bug report (losing)
+
+		 new vs2k15 patch release - _MS_VS_2k15_Update3_02_FULLVER_ - assumed same bugs
+
+
+
+		new Sequence<>::GetFirstIf/GetLastIf helpers
+
+		regression test harness PrintPassOrFail() now returns value to be passed out of main instead of calling exit - so fewer false leak reports on failure
+
+
+		OpenSSL
+		   use #include <openssl instead of tying to replacehide/hide definitions - in openssl subdir modules anyhow
+		   https://stroika.atlassian.net/browse/STK-488 - got building and passing regtests on windows (openssl 1.1.0)
+		   temporary workaroudn for https://stroika.atlassian.net/browse/STK-527 bug - diff  libcurl build workaround needed for newer openssl
+		   notes about +#https://stroika.atlassian.net/browse/STK-528 - using nasm for building openssl
+
+
+		corrected misundersnatding - auto of an expression returning a reference doesnt produce a refernece value i nthe auto - so use auto& - so now we dont copy iteratorreps anymore in various concrete impls of studff using iterators - (so no need to worry about corruption of thier linked list)
+
+		added explicit  IteratorImplHelper_ (const IteratorImplHelper_&) = default; and comemnt we must be careful about synchonization on this method; one place I know we call it - I added wrapper of CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (and others in a second will be eliminated)
+
+
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a178-{x86-vs2k15,linux-gcc-6.1.0-x64}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Windows}-2.0a178-OUT.txt</li>
+				<li>vc++2k15 Update 3.2</li>
+				<li>gcc 5.3</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined (tried but not working threadsanitizer) on tests</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a177">v2.0a177</a><br/>2016-09-14/td>
 <td>
