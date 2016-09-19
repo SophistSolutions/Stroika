@@ -14,6 +14,12 @@ namespace   Stroika {
             namespace   ExternallySynchronizedDataStructures {
 
 
+                // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
+#ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_
+#define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_  0
+#endif
+
+
                 /*
                 ********************************************************************************
                 ********************** LinkedList<T,TRAITS>::Link ******************************
@@ -80,6 +86,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 LinkedList<T, TRAITS>& LinkedList<T, TRAITS>::operator= (const LinkedList<T, TRAITS>& list)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
                     if (this != &list) {
                         RemoveAll ();
@@ -115,6 +122,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    LinkedList<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
                     // only way
                     //
@@ -140,11 +148,13 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    LinkedList<T, TRAITS>::IsEmpty () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     return _fHead == nullptr;
                 }
                 template      <typename  T, typename TRAITS>
                 inline  size_t  LinkedList<T, TRAITS>::GetLength () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     size_t  n   =   0;
                     for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                         n++;
@@ -154,6 +164,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T   LinkedList<T, TRAITS>::GetFirst () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not IsEmpty ());
                     AssertNotNull (_fHead);
                     return _fHead->fItem;
@@ -161,6 +172,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    LinkedList<T, TRAITS>::Prepend (T item)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
 
                     _fHead = new Link (item, _fHead);
@@ -170,6 +182,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    LinkedList<T, TRAITS>::RemoveFirst ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not IsEmpty ());
                     AssertNotNull (_fHead);
 
@@ -184,6 +197,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    LinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     Invariant ();
                     i.Invariant ();
@@ -195,6 +209,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     /*
                      * NB: This code works fine, even if we are done!!!
                      */
@@ -222,6 +237,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     AssertNotNull (i._fCurrent); // since not done...
                     i.Invariant ();
@@ -230,6 +246,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     Invariant ();
                     i.Invariant ();
@@ -290,6 +307,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 T*    LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };   // lock not shared cuz return mutable ptr
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem , item)) {
                             return &i->fItem;
@@ -300,6 +318,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 const T*    LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem,  item)) {
                             return &i->fItem;
@@ -311,6 +330,7 @@ namespace   Stroika {
                 template    <typename FUNCTION>
                 inline  void    LinkedList<T, TRAITS>::Apply (FUNCTION doToElement) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                         (doToElement) (i->fItem);
                     }
@@ -319,6 +339,7 @@ namespace   Stroika {
                 template    <typename FUNCTION>
                 inline  typename LinkedList<T, TRAITS>::Link*    LinkedList<T, TRAITS>::FindFirstThat (FUNCTION doToElement) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                         if ((doToElement) (i->fItem)) {
                             return i;
@@ -329,6 +350,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::RemoveAll ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
 
                     for (Link* i = _fHead; i != nullptr;) {
@@ -344,6 +366,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 T   LinkedList<T, TRAITS>::GetAt (size_t i) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (i >= 0);
                     Require (i < GetLength ());
                     const Link* cur = _fHead;
@@ -356,6 +379,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::SetAt (T item, size_t i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (i >= 0);
                     Require (i < GetLength ());
                     Link* cur = _fHead;
@@ -369,6 +393,9 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::Invariant_ () const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+#endif
                     /*
                      * Check we are properly linked together.
                      */

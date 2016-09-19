@@ -15,6 +15,12 @@ namespace   Stroika {
             namespace   ExternallySynchronizedDataStructures {
 
 
+                // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
+#ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_   0
+#endif
+
+
 #if     qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
                 namespace PRIVATE_ {
                     template<class InputIt, class Size, class ForwardIt>
@@ -86,6 +92,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::InsertAt (size_t index, ArgByValueType<T> item)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (index >= 0);
                     Require (index <= _fLength);
                     Invariant ();
@@ -117,6 +124,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::RemoveAt (size_t index)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (index >= 0);
                     Require (index < _fLength);
                     Invariant ();
@@ -130,7 +138,6 @@ namespace   Stroika {
                         // We tried getting rid of index var and using ptr compare but
                         // did much worse on CFront/MPW Thursday, August 27, 1992 4:12:08 PM
                         for ( size_t i = _fLength - index - 1; i > 0; i--) {
-
                             *lhs++ = *rhs++;
                         }
                     }
@@ -140,6 +147,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::RemoveAll ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
                     T*   p   =   &_fItems[0];
                     for ( size_t i = _fLength; i > 0; i--, p++) {
@@ -151,6 +159,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 bool    Array<T, TRAITS>::Contains (ArgByValueType<T> item) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
                     const   T*   current =   &_fItems [0];
                     const   T*   last    =   &_fItems [_fLength];
@@ -165,6 +174,7 @@ namespace   Stroika {
                 template    <typename FUNCTION>
                 inline  void    Array<T, TRAITS>::Apply (FUNCTION doToElement) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     const   T*   i      =   &_fItems [0];
                     const   T*   last   =   &_fItems [_fLength];
                     for (; i < last; i++) {
@@ -175,6 +185,7 @@ namespace   Stroika {
                 template    <typename FUNCTION>
                 inline  size_t    Array<T, TRAITS>::FindFirstThat (FUNCTION doToElement) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     const   T*   start  =   &_fItems [0];
                     const   T*   i      =   start;
                     const   T*   last   =   &_fItems [_fLength];
@@ -188,6 +199,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (GetLength () <= slotsAlloced);
                     Invariant ();
                     if (_fSlotsAllocated != slotsAlloced) {
@@ -241,6 +253,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 Array<T, TRAITS>& Array<T, TRAITS>::operator= (const Array<T, TRAITS>& list)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
                     size_t  newLength       =   list.GetLength ();
 
@@ -292,6 +305,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::SetLength (size_t newLength, ArgByValueType<T> fillValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Invariant ();
 
                     /*
@@ -359,6 +373,9 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::_Invariant () const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+#endif
                     Assert ((_fSlotsAllocated == 0) == (_fItems == nullptr));     // always free iff slots alloced = 0
                     Assert (_fLength <= _fSlotsAllocated);
                 }
@@ -372,6 +389,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     RequireNotNull (pi);
                     RequireNotNull (movedFrom);
                     size_t  currentIdx  =   pi->_fCurrent - pi->_fStart;
@@ -385,6 +403,9 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T   Array<T, TRAITS>::GetAt (size_t i) const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+#endif
                     Require (i >= 0);
                     Require (i < _fLength);
                     return _fItems [i];
@@ -392,6 +413,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::SetAt (size_t i, ArgByValueType<T> item)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (i >= 0);
                     Require (i < _fLength);
                     _fItems [i] = item;
@@ -399,6 +421,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T&  Array<T, TRAITS>::operator[] (size_t i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (i >= 0);
                     Require (i < _fLength);
                     return _fItems [i];
@@ -406,6 +429,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T   Array<T, TRAITS>::operator[] (size_t i) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (i >= 0);
                     Require (i < _fLength);
                     return _fItems [i];
@@ -413,63 +437,76 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  size_t  Array<T, TRAITS>::GetLength () const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+#endif
                     return _fLength;
                 }
                 template      <typename  T, typename TRAITS>
                 inline  size_t  Array<T, TRAITS>::GetCapacity () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     return _fSlotsAllocated;
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::Compact ()
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     SetCapacity (GetLength ());
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     this->RemoveAt (i.CurrentIndex ());
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::RemoveAt (const BackwardIterator& i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     this->RemoveAt (i.CurrentIndex ());
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::SetAt (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     SetAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::SetAt (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     SetAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
+                inline  void    Array<T, TRAITS>::AddBefore (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     // i CAN BE DONE OR NOT
                     InsertAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
+                inline  void    Array<T, TRAITS>::AddBefore (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     // i CAN BE DONE OR NOT
                     InsertAt (i.CurrentIndex (), newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
+                inline  void    Array<T, TRAITS>::AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     InsertAt (i.CurrentIndex () + 1, newValue);
                 }
                 template      <typename  T, typename TRAITS>
-                void    Array<T, TRAITS>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
+                inline  void    Array<T, TRAITS>::AddAfter (const BackwardIterator& i, ArgByValueType<T> newValue)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());
                     InsertAt (i.CurrentIndex () + 1, newValue);
                 }
@@ -510,11 +547,13 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 nonvirtual  bool    Array<T, TRAITS>::_ArrayIteratorBase::Equals (const typename Array<T, TRAITS>::_ArrayIteratorBase& rhs) const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
                 }
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::More (T* current, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     if (advance) {
                         this->_fSuppressMore = false;
                     }
@@ -530,12 +569,14 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::Done () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     Invariant ();
                     return bool (_fCurrent == _fEnd);
                 }
                 template      <typename  T, typename TRAITS>
                 inline  size_t  Array<T, TRAITS>::_ArrayIteratorBase::CurrentIndex () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     /*
                      * NB: This can be called if we are done - if so, it returns GetLength().
                      */
@@ -545,6 +586,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T       Array<T, TRAITS>::_ArrayIteratorBase::Current () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     Invariant ();
                     EnsureNotNull (_fCurrent);
                     return *_fCurrent;
@@ -552,6 +594,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline   void Array<T, TRAITS>::_ArrayIteratorBase::SetIndex (size_t i)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *_fData };
                     Require (i <= size_t (_fEnd - _fStart));
                     _fCurrent = _fStart + i;
                     _fSuppressMore = false;
@@ -567,6 +610,9 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
+#endif
                     AssertNotNull (_fData);
                     Assert (_fStart == _fData->_fItems);
                     Assert (size_t (_fEnd - _fStart) == _fData->GetLength ());
@@ -584,12 +630,14 @@ namespace   Stroika {
                 inline  Array<T, TRAITS>::ForwardIterator::ForwardIterator (const Array<T, TRAITS>* data)
                     : inherited (data)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     this->_fCurrent = this->_fStart;
                     this->Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     this->Invariant ();
                     if (advance) {
                         if (not this->_fSuppressMore and not this->Done ()) {
@@ -602,6 +650,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     this->Invariant ();
                     if (advance) {
                         if (this->_fSuppressMore) {
@@ -625,6 +674,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::ForwardIterator::More (nullptr_t, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
                     return More (static_cast<T*> (nullptr), advance);
                 }
 
@@ -638,6 +688,7 @@ namespace   Stroika {
                 inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>* data)
                     : inherited (data)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     if (data->GetLength () == 0) {
                         this->_fCurrent = this->_fEnd;    // magic to indicate done
                     }
@@ -649,6 +700,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::BackwardIterator::More (T* current, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     this->Invariant ();
                     if (advance) {
                         if (not this->_fSuppressMore and not this->Done ()) {
@@ -667,6 +719,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  void    Array<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     this->Invariant ();
                     if (advance) {
                         if (this->_fSuppressMore) {
@@ -696,6 +749,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::BackwardIterator::More (nullptr_t, bool advance)
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                     return More (static_cast<T*> (nullptr), advance);
                 }
 

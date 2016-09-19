@@ -9,6 +9,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Configuration/TypeHints.h"
 #include    "../../Common/Compare.h"
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Memory/Optional.h"
 
@@ -66,7 +67,7 @@ namespace   Stroika {
                  *  will manage all patching, or know that none is necessary.
                  */
                 template      <typename  T, typename TRAITS = LinkedList_DefaultTraits<T>>
-                class   LinkedList {
+                class   LinkedList : protected Debug::AssertExternallySynchronizedLock {
                 public:
                     using   value_type  =   T;
 

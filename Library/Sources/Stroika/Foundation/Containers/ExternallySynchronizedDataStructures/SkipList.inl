@@ -85,11 +85,13 @@ namespace   Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 inline  size_t  SkipList<KEY, VALUE, TRAITS>::GetLength () const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     return fLength;
                 }
                 template <typename KEY, typename VALUE, typename TRAITS>
                 typename SkipList<KEY, VALUE, TRAITS>::Node*  SkipList<KEY, VALUE, TRAITS>::FindNode (const KeyType& key)  const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Assert (fHead.size () > 0);
 
                     std::vector<Node*> const* startV = &fHead;
@@ -124,6 +126,7 @@ namespace   Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 bool    SkipList<KEY, VALUE, TRAITS>::Find (const KeyType& key, ValueType* val)  const
                 {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                     Node* n = FindNode (key);
                     if (n != nullptr) {
                         if (val != nullptr) {
@@ -136,6 +139,7 @@ namespace   Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void    SkipList<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     std::vector<Node*>  links;
 
                     Node* n = FindNearest (key, links);
@@ -152,6 +156,7 @@ namespace   Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void    SkipList<KEY, VALUE, TRAITS>::AddNode (Node* node, const std::vector<Node*>& links)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     RequireNotNull (node);
                     size_t  newLinkHeight = DetermineLinkHeight ();
                     node->fNext.resize (newLinkHeight);
@@ -182,6 +187,7 @@ namespace   Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void    SkipList<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
                 {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     std::vector<Node*>  links;
                     Node*   n = FindNearest (key, links);
                     if (n != nullptr) {

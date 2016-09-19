@@ -25,11 +25,13 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (value_type item) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                         return this->find (item) != this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
                         // only way
                         //
@@ -52,11 +54,11 @@ namespace   Stroika {
                         pi->fStdIterator = newI;
                         pi->fData = this;
                     }
-
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename FUNCTION>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                         for (auto i = this->begin (); i != this->end (); ++i) {
                             (doToElement) (*i);
                         }
@@ -65,6 +67,7 @@ namespace   Stroika {
                     template    <typename FUNCTION>
                     inline  typename STL_CONTAINER_OF_T::const_iterator    STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                         for (auto i = this->begin (); i != this->end (); ++i) {
                             if ((doToElement) (*i)) {
                                 return i;
@@ -76,6 +79,7 @@ namespace   Stroika {
                     template <typename PREDICATE>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
                         return std::find_if (this->begin (), this->end (), pred) != this->end ();
                     }
 
@@ -109,6 +113,7 @@ namespace   Stroika {
                     template    <typename VALUE_TYPE>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                         bool    done    =   Done ();
                         if (advance) {
                             if (not done) {
@@ -125,6 +130,7 @@ namespace   Stroika {
                     template    <typename VALUE_TYPE>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                         RequireNotNull (result);
                         if (advance) {
                             if (not Done ()) {
@@ -141,12 +147,14 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  size_t    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                         AssertNotNull (fData);
                         return fStdIterator - fData->begin ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::SetCurrentLink (typename CONTAINER_TYPE::const_iterator l)
                     {
+                        lock_guard<const AssertExternallySynchronizedLock> critSec { *fData };
                         // MUUST COME FROM THIS stl container
                         // CAN be end ()
                         //
@@ -157,6 +165,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
                     {
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
                         return fStdIterator == rhs.fStdIterator;
                     }
 

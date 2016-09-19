@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
+#include    "../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../Memory/BlockAllocated.h"
 #include    "../../Memory/Optional.h"
 
@@ -43,7 +44,7 @@ namespace   Stroika {
                 template < typename KEY,
                            typename VALUE,
                            typename TRAITS >
-                class   SkipList {
+                class   SkipList : protected Debug::AssertExternallySynchronizedLock {
                 public:
                     using   KeyType     =   KEY;
                     using   ValueType   =   VALUE;

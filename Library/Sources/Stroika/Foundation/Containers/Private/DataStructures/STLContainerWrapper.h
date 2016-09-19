@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Debug/AssertExternallySynchronizedLock.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../../Memory/Optional.h"
 
@@ -55,7 +56,7 @@ namespace   Stroika {
                      *  DOES provide 'deletion'/update safety.
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper : public STL_CONTAINER_OF_T {
+                    class   STLContainerWrapper : public STL_CONTAINER_OF_T,  protected Debug::AssertExternallySynchronizedLock {
                     private:
                         using   inherited   =   STL_CONTAINER_OF_T;
 
