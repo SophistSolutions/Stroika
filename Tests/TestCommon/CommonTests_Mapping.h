@@ -26,7 +26,7 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                using   ELEMENT_TYPE    =   typename USING_MAPPING_CONTAINER::ElementType;
+                using   ELEMENT_TYPE    =   typename USING_MAPPING_CONTAINER::value_type;
                 USING_MAPPING_CONTAINER   s;
                 applyToContainer (s);
                 USING_MAPPING_CONTAINER   s1 = s;
@@ -154,8 +154,8 @@ namespace CommonTests {
                 m.Add (1, 88);
                 m.Add (2, 101);
 
-                using   KeyType     =   typename USING_MAPPING_CONTAINER::KeyType;
-                using   ValueType   =   typename USING_MAPPING_CONTAINER::ValueType;
+                using   KeyType     =   typename USING_MAPPING_CONTAINER::key_type;
+                using   ValueType   =   typename USING_MAPPING_CONTAINER::mapped_type;
 
                 {
                     map<KeyType, ValueType>      n   =   m.template As<map<KeyType, ValueType>> ();
@@ -180,8 +180,8 @@ namespace CommonTests {
                 m.Add (2, 101);
                 VerifyTestResult (m.size () == 2);
 
-                using   KeyType     =   typename USING_MAPPING_CONTAINER::KeyType;
-                using   ValueType   =   typename USING_MAPPING_CONTAINER::ValueType;
+                using   KeyType     =   typename USING_MAPPING_CONTAINER::key_type;
+                using   ValueType   =   typename USING_MAPPING_CONTAINER::mapped_type;
 
                 {
                     vector<KeyValuePair<KeyType, ValueType>>      n   =   m.template As<vector<KeyValuePair<KeyType, ValueType>>> ();
@@ -285,7 +285,7 @@ namespace CommonTests {
                 }
                 VerifyTestResult (c.Keys ().length () == 100);
 
-                using KT = typename USING_MAPPING_CONTAINER::KeyType;
+                using KT = typename USING_MAPPING_CONTAINER::key_type;
                 c.RetainAll (initializer_list<KT> { 1, 3, 5 });
                 VerifyTestResult (c.Keys ().length () == 3);
                 VerifyTestResult (c.Keys ().SetEquals (Iterable<KT> { 1, 3, 5 }) );

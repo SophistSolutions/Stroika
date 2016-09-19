@@ -78,7 +78,7 @@ namespace {
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
     Thread  mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
-        using ElementType   =   typename ITERABLE_TYPE::ElementType;
+        using ElementType   =   typename ITERABLE_TYPE::value_type;
         return Thread ([iterable, lock, repeatCount] () {
             Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {

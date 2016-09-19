@@ -33,7 +33,7 @@ namespace {
     template    <typename CONCRETE_CONTAINER>
     void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    T;
+        typedef typename CONCRETE_CONTAINER::value_type     T;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
         auto testFunc = [] (const SortedSet<T, TraitsType>& s) {
             // verify in sorted order

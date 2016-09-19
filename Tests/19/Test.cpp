@@ -63,7 +63,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_1_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -104,7 +104,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_2_Contains_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
@@ -137,7 +137,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
     void    SimpleSequenceTest_3_Compare_ ()
     {
-        using       T       =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using       T       =   typename CONCRETE_SEQUENCE_T::value_type;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -164,7 +164,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_4_Equals_ ()
     {
-        using   T       =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T       =   typename CONCRETE_SEQUENCE_T::value_type;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
             CONCRETE_SEQUENCE_T s;
@@ -240,7 +240,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_7_IndexOf_ ()
     {
-        using   T               =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T               =   typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -294,7 +294,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
-        using   T           =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T           =   typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             for (size_t i = 0; i < 1000; ++i) {
@@ -449,7 +449,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
-        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
@@ -514,7 +514,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
-        using   T       =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T       =   typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
 
@@ -541,7 +541,7 @@ namespace {
     void    SimpleSequenceTest_13_Initializers_ ()
     {
         CONCRETE_SEQUENCE_T s;
-        using   T   =   typename CONCRETE_SEQUENCE_T::ElementType;
+        using   T   =   typename CONCRETE_SEQUENCE_T::value_type;
         VerifyTestResult (s.empty ());
 
         // fix - once we have on all subclasses - do be basic test for aech
@@ -639,7 +639,7 @@ namespace {
         //          container-type regtests?
         //
         using SEQ = typename CONCRETE_SEQUENCE_T::ArchetypeContainerType;
-        using   ELTTYPE = typename CONCRETE_SEQUENCE_T::ElementType;
+        using   ELTTYPE = typename CONCRETE_SEQUENCE_T::value_type;
 
         auto counter = [] (SEQ s) -> size_t {
             size_t  cnt = 0;

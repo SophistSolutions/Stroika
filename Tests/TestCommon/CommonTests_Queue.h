@@ -24,7 +24,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void    DoAllTests_ ()
             {
-                typedef typename CONCRETE_CONTAINER::ElementType ELEMENT_TYPE;
+                typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
                 CONCRETE_CONTAINER s;
                 CONCRETE_CONTAINER  s3 = s;
             }
@@ -34,7 +34,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
             void    DoAllTests_ ()
             {
-                typedef typename CONCRETE_CONTAINER::ElementType ELEMENT_TYPE;
+                typedef typename CONCRETE_CONTAINER::value_type ELEMENT_TYPE;
                 CONCRETE_CONTAINER s;
                 s.Enqueue (1);
                 VerifyTestResult (s.size () == 1);

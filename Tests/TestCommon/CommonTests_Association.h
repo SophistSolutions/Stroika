@@ -26,7 +26,7 @@ namespace CommonTests {
             template <typename USING_ASSOCIATION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                using   ELEMENT_TYPE    =   typename USING_ASSOCIATION_CONTAINER::ElementType;
+                using   ELEMENT_TYPE    =   typename USING_ASSOCIATION_CONTAINER::value_type;
                 USING_ASSOCIATION_CONTAINER   s;
                 applyToContainer (s);
                 USING_ASSOCIATION_CONTAINER   s1 = s;

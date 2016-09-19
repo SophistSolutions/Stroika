@@ -27,7 +27,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void    IteratorTests_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename CONCRETE_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::value_type   T;
 
                 const   size_t  kTestSize   = 100;
 
@@ -85,7 +85,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void    CollectionTimings_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename CONCRETE_CONTAINER::ElementType       T;
+                typedef typename CONCRETE_CONTAINER::value_type       T;
 #if     qPrintTimings
                 Time t = GetCurrentTime();
                 cout << tab << "testing Collection<size_t> of length " << s.GetLength() << endl;
@@ -118,7 +118,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void        On_Container_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename CONCRETE_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::value_type   T;
                 size_t  three = 3;
 
                 typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);
@@ -180,7 +180,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
             void        On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                typedef typename CONCRETE_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::value_type   T;
                 typedef typename CONCRETE_CONTAINER::TraitsType    TraitsType;
                 size_t  three = 3;
 
@@ -258,9 +258,9 @@ namespace CommonTests {
             void    BasicIteratorTest_ ()
             {
                 CONCRETE_CONTAINER   collection;
-                typename CONCRETE_CONTAINER::ElementType t1 = 1;
-                typename CONCRETE_CONTAINER::ElementType t2 = 2;
-                typename CONCRETE_CONTAINER::ElementType t3 = 3;
+                typename CONCRETE_CONTAINER::value_type t1 = 1;
+                typename CONCRETE_CONTAINER::value_type t2 = 2;
+                typename CONCRETE_CONTAINER::value_type t3 = 3;
                 VerifyTestResult (collection.IsEmpty ());
                 collection.Add (t1);
                 collection.Add (t1);
@@ -272,8 +272,8 @@ namespace CommonTests {
                 }
 #endif
                 {
-                    Iterator<typename CONCRETE_CONTAINER::ElementType>   i = collection.begin ();
-                    Iterator<typename CONCRETE_CONTAINER::ElementType>   ii = i;
+                    Iterator<typename CONCRETE_CONTAINER::value_type>   i = collection.begin ();
+                    Iterator<typename CONCRETE_CONTAINER::value_type>   ii = i;
                     VerifyTestResult (i == ii);
                     VerifyTestResult (i != collection.end ()); // because bag wasn't empty
                     ++i;
@@ -282,7 +282,7 @@ namespace CommonTests {
                 }
                 {
                     VerifyTestResult (collection.size () == 2);    // cuz we said so above
-                    Iterator<typename CONCRETE_CONTAINER::ElementType>   i = collection.begin ();
+                    Iterator<typename CONCRETE_CONTAINER::value_type>   i = collection.begin ();
                     VerifyTestResult (not i.Done ());
                     VerifyTestResult (i != collection.end ());
                     ++i;
@@ -312,7 +312,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoIt_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename CONCRETE_CONTAINER::ElementType       T;
+                typedef typename CONCRETE_CONTAINER::value_type       T;
                 CONCRETE_CONTAINER   b;
 
                 constexpr int FIRST = 0;

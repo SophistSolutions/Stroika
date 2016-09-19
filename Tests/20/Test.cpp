@@ -34,7 +34,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        using   ElementType =   typename CONCRETE_CONTAINER::ElementType;
+        using   ElementType =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const Set<ElementType, typename TraitsType::SetTraitsType>& s) {
             // only work todo on sorted sets

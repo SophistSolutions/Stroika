@@ -34,7 +34,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        using   ElementType     =   typename CONCRETE_CONTAINER::ElementType;
+        using   ElementType     =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType      =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
@@ -51,7 +51,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        using   ElementType =   typename CONCRETE_CONTAINER::ElementType;
+        using   ElementType =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
