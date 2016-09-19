@@ -65,10 +65,8 @@ namespace   Stroika {
                     explicit IteratorImplHelper_ (IteratorOwnerID owner, PATCHABLE_CONTAINER* data);
 #endif
 
-#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                 public:
                     virtual ~IteratorImplHelper_ ();
-#endif
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);

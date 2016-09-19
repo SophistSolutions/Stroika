@@ -146,16 +146,10 @@ Again:
                     template    <typename NON_PATCHED_DATA_STRUCTURE_CLASS, typename LOCKER>
                     inline  PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS, LOCKER>::PatchableIteratorMixIn::~PatchableIteratorMixIn ()
                     {
-#if     qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
                         if (fPatchableContainer != nullptr) {
                             AssertNotNull (fPatchableContainer);
                             fPatchableContainer->RemoveIterator (this);
                         }
-#else
-                        AssertNotNull (fPatchableContainer);
-                        fPatchableContainer->RemoveIterator (this);
-                        // could assert owner  - fPatchableContainer - doenst contian us in list
-#endif
                         Assert (fNextActiveIterator == nullptr);
                         Assert (fPatchableContainer == nullptr);
                     }
