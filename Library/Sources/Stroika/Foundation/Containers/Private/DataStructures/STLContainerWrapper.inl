@@ -17,6 +17,11 @@ namespace   Stroika {
                 namespace   DataStructures {
 
 
+                    // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
+#ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
+#define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_STLContainerWrapper_IncludeSlowDebugChecks_    0
+#endif
+
                     /*
                      ********************************************************************************
                      ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
@@ -106,6 +111,9 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Done () const
                     {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_STLContainerWrapper_IncludeSlowDebugChecks_
+                        shared_lock<const AssertExternallySynchronizedLock> critSec { *fData };
+#endif
                         AssertNotNull (fData);
                         return fStdIterator == fData->end ();
                     }
@@ -161,7 +169,6 @@ namespace   Stroika {
                         // bit of a queer kludge to covnert from const iterator to iterator in STL
                         fStdIterator = fData->erase (l, l);
                     }
-
                     template    <typename STL_CONTAINER_OF_T>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
                     {

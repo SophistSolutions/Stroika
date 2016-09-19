@@ -18,6 +18,8 @@ namespace   Stroika {
 #ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_DoublyLinkedList_IncludeSlowDebugChecks_
 #define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_DoublyLinkedList_IncludeSlowDebugChecks_    0
 #endif
+
+
                 /*
                 ********************************************************************************
                 ********************* DoublyLinkedList<T, TRAITS>::Link ************************
