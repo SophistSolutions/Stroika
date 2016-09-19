@@ -569,7 +569,9 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::Done () const
                 {
+#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
+#endif
                     Invariant ();
                     return bool (_fCurrent == _fEnd);
                 }
