@@ -28,6 +28,7 @@ History
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a177...v2.0a178</li>
 
+		(***todo cleanup -= but below includes log messages as of 2016-09-19 9am)
 
 		use libcurl 7.50.3
 
