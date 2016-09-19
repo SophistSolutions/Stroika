@@ -525,7 +525,7 @@ namespace {
              *  You can tell if a process is a real process id or thread id, by seeing if the tgid (sometimes tid) or task
              *  group id) is the same as the PID. If yes, its a process. If no, its a thread in the tgid process.
              *
-             *  However, iterating over the files in teh /proc filesystem APPEARS to only produce real processes, and to skip
+             *  However, iterating over the files in the /proc filesystem APPEARS to only produce real processes, and to skip
              *  the lightweight process thread ids,  so we don't need to specially filter them out. However, I've not found
              *  this claim documented anywhere, so beware...
              */

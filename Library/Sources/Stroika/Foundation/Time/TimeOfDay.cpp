@@ -74,7 +74,7 @@ namespace   {
 namespace   {
     String  GenTimeStr4TOD_ (LCID lcid, unsigned int hour, unsigned int minutes, unsigned int seconds)
     {
-// Consider rewriting using Win32 GetTimeFormat () - and just futzing with teh format string for the case
+// Consider rewriting using Win32 GetTimeFormat () - and just futzing with the format string for the case
 // of zero minutes/seconds?? That might be more robust in case of changes in adding special tokens for some cultures/etc?
 //
 // Anyhow - I think what i have no works OK...

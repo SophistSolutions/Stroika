@@ -231,7 +231,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             /*
             @METHOD:        LRUCache_<ELEMENT>::LookupElement
-            @DESCRIPTION:   <p>Check and see if the given element is in the cache. Return that element if its tehre, and nullptr otherwise.
+            @DESCRIPTION:   <p>Check and see if the given element is in the cache. Return that element if its there, and nullptr otherwise.
                         Note that this routine re-orders the cache so that the most recently looked up element is first, and because
                         of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
                         for this LRUCache_.</p>

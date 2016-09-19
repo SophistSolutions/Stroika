@@ -128,7 +128,7 @@ namespace   Stroika {
                      *      to page out the data.
                      *
                      *      If constructed with a BinaryStream (NYI) - then the caller (Client::Send) can return before all the data
-                     *      is available. Any future calls on teh Client may block (TBD???) or fail???
+                     *      is available. Any future calls on the Client may block (TBD???) or fail???
                      *
                      *      But then the data can be paged out without ever being accumulated into a single large buffer.
                      *

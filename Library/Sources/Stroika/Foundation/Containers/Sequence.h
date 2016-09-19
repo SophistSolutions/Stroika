@@ -47,7 +47,7 @@
  *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
- *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
+ *                  In other words, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
  *
  *                  std::iterator<input_iterator_tag, T> versus ?? other iterator tag?

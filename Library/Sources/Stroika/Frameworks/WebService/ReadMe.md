@@ -41,7 +41,7 @@ TODO/DESIGN NOTES:
 	o	Do in such a way that it can be edited/revfined/re-used:
 		o	EITHER
 			o	two passes - one from WSDL to generate bare bones config (or optionally fill details mapped config)
-			o	Then you can edit the bare bones and copy in what you want (edited) from teh defailts filled config
+			o	Then you can edit the bare bones and copy in what you want (edited) from the defailts filled config
 			o	Then you can run a second phase to generate actual C++ mappings code - based on earlier config file.
 
 			Idea is you quickly get basic mapping (like with gsoap). But you can reconfigure just the pieces you want

@@ -82,7 +82,7 @@
  *                      }
  *                      Maybe when the iterator is constructed - it checks for a couple important types
  *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
- *                      And the benefit in teh more common case is you avoid the virtual function call! so the it++ can be
+ *                      And the benefit in the more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).
  */
 

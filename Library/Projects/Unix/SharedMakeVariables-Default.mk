@@ -1,5 +1,5 @@
 # This file should generally not be edited. Mostly - one edits/configures the Configuration.mk, and then this generates the right
-# values in make variables to be used in teh SharedBuildRules.mk file.
+# values in make variables to be used in the SharedBuildRules.mk file.
 #
 # One would mostly want to edit this file if there was some flag one wanted to add to CFLAGS for example, that wasn't arleady controlled
 # by a value in Configuration.mk

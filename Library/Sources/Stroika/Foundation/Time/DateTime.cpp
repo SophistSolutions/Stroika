@@ -529,7 +529,7 @@ time_t  DateTime::As () const
     time_t  result  =   ::mktime (&tm);     // from http://en.cppreference.com/w/cpp/chrono/c/mktime - -1 returned on error
     if (result != -1) {
         /*
-         * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with teh given
+         * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with the given
          * DateTime() object.
          */
         result -= Time::GetLocaltimeToGMTOffset (false);

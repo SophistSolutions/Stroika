@@ -90,7 +90,7 @@ public:
                 throw;  // cancel this thread
             }
             catch (...) {
-                // other exceptions WARNING WITH DEBUG MESSAGE - but otehrwise - EAT/IGNORE
+                // other exceptions WARNING WITH DEBUG MESSAGE - but otherwise - EAT/IGNORE
             }
         }
     }

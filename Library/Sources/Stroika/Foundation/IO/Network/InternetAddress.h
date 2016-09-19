@@ -37,7 +37,7 @@
  *                  Global (0xE)
  *              };
  *
- *              Note - there is the Scope, and then teh ScoeeID (not sure?)
+ *              Note - there is the Scope, and then the ScoeeID (not sure?)
  *              IPAddress.ScopeId
  *              http://msdn.microsoft.com/en-us/library/system.net.ipaddress.scopeid(v=vs.110).aspx
  *

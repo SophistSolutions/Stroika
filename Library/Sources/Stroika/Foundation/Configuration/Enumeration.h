@@ -242,7 +242,7 @@ namespace   Stroika {
              *          Stroika_Define_Enum_Bounds(a, c)
              *      };
              *
-             *      // this template specialization must be located in teh Stroika::Configuration namespace
+             *      // this template specialization must be located in the Stroika::Configuration namespace
              *      namespace Stroika::Foundation::Configuration {
              *          template<>
              *          const EnumNames<Priority>   DefaultNames<Priority>::k {

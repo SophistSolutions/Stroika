@@ -61,7 +61,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  * Stuff  INSIDE try section raises exceptions. Catch and rethow SOME binding in a new filename (if none was known).
- * Otehr exceptions just ignore (so they auto-propagate)
+ * Other exceptions just ignore (so they auto-propagate)
  */
 #define     CATCH_REBIND_FILENAMES_HELPER_(USEFILENAME) \
     catch (const FileBusyException& e) {    \

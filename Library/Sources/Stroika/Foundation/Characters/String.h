@@ -123,7 +123,7 @@
  *
  *      @todo   Add PadLeft/PadRight or FillLeft/FilLRight() - not sure which name is better. But idea is to
  *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
- *              the given arg char repeated on teh left or right.
+ *              the given arg char repeated on the left or right.
  *
  *      @todo   Add FromISOLatin1()
  *

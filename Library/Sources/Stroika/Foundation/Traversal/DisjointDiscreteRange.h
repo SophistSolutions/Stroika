@@ -108,7 +108,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Not needed, but this provides the ability to performance tweek teh search done by FindFirstThat/FindLastThat
+                 *  Not needed, but this provides the ability to performance tweek the search done by FindFirstThat/FindLastThat
                  */
                 struct  FindHints {
                     ElementType fSeedPosition;

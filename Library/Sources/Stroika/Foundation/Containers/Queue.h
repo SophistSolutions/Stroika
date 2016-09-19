@@ -39,8 +39,8 @@
  *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).
  *
  *      @todo   trial balloon - EnqueueAll(CONTAINER), and Enqueue (STARTIT, ENDIT), enques
- *              items in order from start to end, so that when iterating over teh resulting queue, you
- *              encounter the items in teh order you added them. That makes EnqueueAll(CONTINER) as simple
+ *              items in order from start to end, so that when iterating over the resulting queue, you
+ *              encounter the items in the order you added them. That makes EnqueueAll(CONTINER) as simple
  *              as EnqueueAll(C.begin(),C.end()).
  *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.

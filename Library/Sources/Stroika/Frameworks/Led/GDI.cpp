@@ -1250,7 +1250,7 @@ void    Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (c
      *  up as taking significant time. Its all that BitBlt above.
      *
      *  Anyhow - if this does someday look slow - it can easily be fixed. We can just break the loop into two nested loops,
-     *  the outer one over rows, and the inner row loop stopping NOT at teh end of the REAL row - but just at the end
+     *  the outer one over rows, and the inner row loop stopping NOT at the end of the REAL row - but just at the end
      *  of the subset we are using (easy cuz we always start at 0,0).
      */
     Verify (::GdiFlush ()); // make sure bits in sync... - not SURE if this is needed?
