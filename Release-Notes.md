@@ -23,7 +23,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a178">v2.0a178x</a><br/>2016-09-19???/td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a178">v2.0a178</a><br/>2016-09-20</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a177...v2.0a178</li>
@@ -66,6 +66,8 @@ History
 				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>1 bug with regtest - KILLED on Builds/gcc-release-sanitize/Test48 - OK cuz just ran out of memory for sanitizer code </li>
+				<li>1 bug with regtest - FAILED: RegressionTestFailure; caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_;;/home/lewis/Sandbox/Stroika-Reg-Tests-Dev/Tests/36/Test.cpp: 259 - just adjust timeout or ignore</li>
 			</ul>
 		</li>
 	</ul>
