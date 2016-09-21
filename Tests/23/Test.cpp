@@ -34,12 +34,12 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        using   ElementType     =   typename CONCRETE_CONTAINER::value_type;
+        using   value_type      =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType      =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
-            Optional<ElementType> last;
-            for (ElementType i : m) {
+            Optional<value_type> last;
+            for (value_type i : m) {
                 if (last.IsPresent ()) {
                     VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
                 }
@@ -51,12 +51,12 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        using   ElementType =   typename CONCRETE_CONTAINER::value_type;
+        using   value_type  =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
-            Optional<ElementType> last;
-            for (ElementType i : m) {
+            Optional<value_type> last;
+            for (value_type i : m) {
                 if (last.IsPresent ()) {
                     VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
                 }
@@ -73,19 +73,19 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (ElementType v1, ElementType v2)
+            using   value_type =   SimpleClassWithoutComparisonOperators;
+            static  bool    Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
-            static  int    Compare (ElementType v1, ElementType v2)
+            static  int    Compare (value_type v1, value_type v2)
             {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  int    Compare (ElementType v1, ElementType v2)
+            using   value_type =   SimpleClassWithoutComparisonOperators;
+            static  int    Compare (value_type v1, value_type v2)
             {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }

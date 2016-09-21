@@ -24,13 +24,13 @@ namespace CommonTests {
             template    <typename USING_SET_CONTAINER>
             void    DoAllTests_ ()
             {
-                using   ElementType                 =   typename USING_SET_CONTAINER::value_type;
+                using   value_type                  =   typename USING_SET_CONTAINER::value_type;
                 using   EqualsCompareFunctionType   =   typename USING_SET_CONTAINER::EqualsCompareFunctionType;
                 USING_SET_CONTAINER   s;
                 s.Add (3);
                 s.Add (9);
-                IterableTests::SimpleIterableTest_All_For_Type<Iterable<ElementType>> (s);
-                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<ElementType>, EqualsCompareFunctionType> (s, EqualsCompareFunctionType ());
+                IterableTests::SimpleIterableTest_All_For_Type<Iterable<value_type>> (s);
+                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<value_type>, EqualsCompareFunctionType> (s, EqualsCompareFunctionType ());
             }
         }
 

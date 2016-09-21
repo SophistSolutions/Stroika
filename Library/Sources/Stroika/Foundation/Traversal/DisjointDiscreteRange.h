@@ -43,7 +43,7 @@ namespace   Stroika {
                 using THIS_CLASS_ = DisjointDiscreteRange<T, RANGE_TYPE>;
 
             public:
-                using ElementType = typename DisjointRange<T, RANGE_TYPE>::ElementType;
+                using value_type = typename DisjointRange<T, RANGE_TYPE>::value_type;
 
             public:
                 using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
@@ -66,7 +66,7 @@ namespace   Stroika {
                 template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
                 explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>::value, int >::type* = nullptr);
                 template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type* = nullptr);
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>::value, int >::type* = nullptr);
 
             public:
                 nonvirtual  DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;
@@ -74,7 +74,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Add (ElementType elt);
+                nonvirtual  void    Add (value_type elt);
 
             public:
                 /**
@@ -85,12 +85,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Optional<ElementType> GetNext (ElementType elt) const;
+                nonvirtual  Optional<value_type> GetNext (value_type elt) const;
 
             public:
                 /**
                  */
-                nonvirtual  Optional<ElementType> GetPrevious (ElementType elt) const;
+                nonvirtual  Optional<value_type> GetPrevious (value_type elt) const;
 
             public:
                 /**
@@ -104,16 +104,16 @@ namespace   Stroika {
                  *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
                  *  appear in the Elements() Iterable<T>.
                  */
-                nonvirtual  Iterable<ElementType>   Elements () const;
+                nonvirtual  Iterable<value_type>   Elements () const;
 
             public:
                 /**
                  *  Not needed, but this provides the ability to performance tweek the search done by FindFirstThat/FindLastThat
                  */
                 struct  FindHints {
-                    ElementType fSeedPosition;
+                    value_type  fSeedPosition;
                     bool        fForwardFirst;
-                    FindHints (ElementType seedPosition, bool forwardFirst);
+                    FindHints (value_type seedPosition, bool forwardFirst);
                 };
 
             public:
@@ -121,20 +121,20 @@ namespace   Stroika {
                  *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
                  &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
                  */
-                nonvirtual  Optional<ElementType>    FindFirstThat (const function<bool(ElementType)>& testF) const;
-                nonvirtual  Optional<ElementType>    FindFirstThat (const function<bool(ElementType)>& testF, const FindHints& hints) const;
+                nonvirtual  Optional<value_type>    FindFirstThat (const function<bool(value_type)>& testF) const;
+                nonvirtual  Optional<value_type>    FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
 
             public:
                 /**
                  *  Find the last element of the DisjointDiscreteRange that passes the argument function test.
                  &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
                  */
-                nonvirtual  Optional<ElementType>    FindLastThat (const function<bool(ElementType)>& testF) const;
-                nonvirtual  Optional<ElementType>    FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) const;
+                nonvirtual  Optional<value_type>    FindLastThat (const function<bool(value_type)>& testF) const;
+                nonvirtual  Optional<value_type>    FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
 
             private:
-                nonvirtual  Optional<ElementType>    ScanTil_ (const function<bool(ElementType)>& testF, const function<Optional<ElementType>(ElementType)>& iterNext, ElementType seedPosition) const;
-                nonvirtual  Optional<ElementType>    ScanFindAny_ (const function<bool(ElementType)>& testF, ElementType seedPosition, bool forwardFirst) const;
+                nonvirtual  Optional<value_type>    ScanTil_ (const function<bool(value_type)>& testF, const function<Optional<value_type>(value_type)>& iterNext, value_type seedPosition) const;
+                nonvirtual  Optional<value_type>    ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
             };
 
 

@@ -34,12 +34,12 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        using   ElementType =   typename CONCRETE_CONTAINER::value_type;
+        using   value_type  =   typename CONCRETE_CONTAINER::value_type;
         using   TraitsType  =   typename CONCRETE_CONTAINER::TraitsType;
-        auto extraChecksFunction = [] (const Set<ElementType, typename TraitsType::SetTraitsType>& s) {
+        auto extraChecksFunction = [] (const Set<value_type, typename TraitsType::SetTraitsType>& s) {
             // only work todo on sorted sets
         };
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<ElementType, typename TraitsType::SetTraitsType>> (extraChecksFunction);
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<value_type, typename TraitsType::SetTraitsType>> (extraChecksFunction);
     }
 }
 
@@ -51,8 +51,8 @@ namespace   {
         using namespace CommonTests::SetTests;
 
         struct  MySimpleClassWithoutComparisonOperators_CompareEquals_ {
-            using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (ElementType v1, ElementType v2)
+            using   value_type =   SimpleClassWithoutComparisonOperators;
+            static  bool    Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
@@ -71,8 +71,8 @@ namespace   {
         DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
         {
             struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_CompareEquals_ {
-                using   ElementType =   SimpleClassWithoutComparisonOperators;
-                static  int    Compare (ElementType v1, ElementType v2)
+                using   value_type =   SimpleClassWithoutComparisonOperators;
+                static  int    Compare (value_type v1, value_type v2)
                 {
                     return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
                 }

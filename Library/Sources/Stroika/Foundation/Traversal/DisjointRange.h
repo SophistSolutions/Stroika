@@ -59,7 +59,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ElementType     =   typename RangeType::ElementType;
+                using   value_type     =   typename RangeType::value_type;
 
             public:
                 /**
@@ -86,7 +86,7 @@ namespace   Stroika {
             public:
                 /**
                  *  A disjoint range is made up of a fininte number of disjoint (non-overlapping) subranges, which are arranged
-                 *  following the natural ordering intrinsic to the ElementType. This returns those subranges.
+                 *  following the natural ordering intrinsic to the value_type. This returns those subranges.
                  */
                 nonvirtual  Containers::Sequence<RangeType>    SubRanges () const;
 
@@ -109,7 +109,7 @@ namespace   Stroika {
                  *  This returns true if r is contained in some sub-element range. This is only the smae as
                  *  GetBounds().Contains() if SubRanges ().size () <= 1.
                  */
-                nonvirtual  bool    Contains (ElementType elt) const;
+                nonvirtual  bool    Contains (value_type elt) const;
                 nonvirtual  bool    Contains (const RangeType& rhs) const;
 
             public:

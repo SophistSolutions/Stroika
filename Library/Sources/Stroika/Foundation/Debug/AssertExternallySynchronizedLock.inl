@@ -56,49 +56,25 @@ namespace   Stroika {
             inline  void    AssertExternallySynchronizedLock::lock () const
             {
 #if     qDebug
-                if (fLocks_++ == 0) {
-                    // If first time in, save thread-id
-                    fCurLockThread_ = this_thread::get_id ();
-                    lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
-                    if (not fSharedLockThreads_.empty ()) {
-                        // If first already shared locks - OK - so long as same thread
-                        Require (fSharedLockThreads_.count (fCurLockThread_) == fSharedLockThreads_.size ());
-                    }
-                }
-                else {
-                    // If first already locked - OK - so long as same thread
-                    Require (fCurLockThread_ == this_thread::get_id ());
-                }
+				lock_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock () const
             {
 #if     qDebug
-                Require (fCurLockThread_ == this_thread::get_id ());
-                Require (fLocks_ > 0);  // else unbalanced
-                --fLocks_;
+				unlock_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::lock_shared () const
             {
 #if     qDebug
-                // OK to shared lock from various threads
-                // But if already locked, NOT OK (would have blocked in real impl) - if you try to shared lock from another thread while locked
-                if (fLocks_ != 0) {
-                    // If first already locks - OK - so long as same thread
-                    Require (fCurLockThread_ == this_thread::get_id ());
-                }
-                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
-                fSharedLockThreads_.insert (this_thread::get_id ());
+				lock_shared_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock_shared () const
             {
 #if     qDebug
-                lock_guard<mutex> sharedLockProtect { fSharedLockThreadsMutex_.Get () };
-                multiset<std::thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
-                Require (tti != fSharedLockThreads_.end ());  // else unbalanced
-                fSharedLockThreads_.erase (tti);
+				unlock_shared_ ();
 #endif
             }
 

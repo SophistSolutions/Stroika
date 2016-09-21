@@ -56,12 +56,12 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithComparer_ {
-            using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (ElementType v1, ElementType v2)
+            using   value_type =   SimpleClassWithoutComparisonOperators;
+            static  bool    Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
-            static  int    Compare (ElementType v1, ElementType v2)
+            static  int    Compare (value_type v1, value_type v2)
             {
                 return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
             }

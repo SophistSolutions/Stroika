@@ -61,8 +61,8 @@ namespace   {
         using   COMPARE_SIZET       =   Common::ComparerWithEquals<size_t>;
         using   COMPARE_SimpleClass =   Common::ComparerWithEquals<SimpleClass>;
         struct  COMPARE_SimpleClassWithoutComparisonOperators {
-            using   ElementType =   SimpleClassWithoutComparisonOperators;
-            static  bool    Equals (ElementType v1, ElementType v2)
+            using   value_type =   SimpleClassWithoutComparisonOperators;
+            static  bool    Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }

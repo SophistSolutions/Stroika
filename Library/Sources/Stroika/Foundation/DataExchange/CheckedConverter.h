@@ -80,7 +80,7 @@ namespace   Stroika {
              *  @see CheckedConverter_ValueInRange
              */
             template    <typename   RANGE_TYPE>
-            RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e);
+            RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::value_type& s, const typename RANGE_TYPE::value_type& e);
 
 
             /**

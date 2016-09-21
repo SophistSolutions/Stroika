@@ -67,7 +67,7 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithEqualsOptionally {
-                using       ElementType     =   T;
+                using       value_type     =   T;
 
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
@@ -97,7 +97,7 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
-                using   ElementType     =   T;
+                using   value_type     =   T;
 
                 static_assert(Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
                 RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);

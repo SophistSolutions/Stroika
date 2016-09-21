@@ -122,7 +122,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ElementType     =   typename inherited::ElementType;
+                using   value_type     =   typename inherited::value_type;
 
             public:
                 /**
@@ -209,22 +209,22 @@ namespace   Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
-                nonvirtual  Memory::Optional<ElementType>   Lookup (ArgByValueType<KeyType> key) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, Memory::Optional<ElementType>* item) const;
-                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, ElementType* item) const;
+                nonvirtual  Memory::Optional<value_type>    Lookup (ArgByValueType<KeyType> key) const;
+                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
+                nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, value_type* item) const;
                 nonvirtual  bool                            Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
 
             public:
                 /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
                  */
-                nonvirtual  ElementType     LookupValue (ArgByValueType<KeyType> key, ArgByValueType<ElementType> defaultValue = ElementType {}) const;
+                nonvirtual  value_type      LookupValue (ArgByValueType<KeyType> key, ArgByValueType<value_type> defaultValue = value_type {}) const;
 
             public:
                 /**
                  *  \req ContainsKey (key);
                  */
-                nonvirtual  ElementType   operator[] (ArgByValueType<KeyType> key) const;
+                nonvirtual  value_type   operator[] (ArgByValueType<KeyType> key) const;
 
             public:
                 /**
@@ -273,7 +273,7 @@ namespace   Stroika {
                 virtual  Iterable<KEY_TYPE> Keys () const                                                                       =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool               Lookup (ArgByValueType<KeyType> key, Memory::Optional<ElementType>* item) const     =   0;
+                virtual  bool               Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const      =   0;
                 virtual  void               Remove (ArgByValueType<KEY_TYPE> key)                                               =   0;
             };
 

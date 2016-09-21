@@ -459,7 +459,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 2}, RT {4, 5}};
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
             VerifyTestResult (dr.SubRanges ().size () == 2);
@@ -469,7 +469,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {4, 5}, RT {1, 2}};
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
             VerifyTestResult (dr.SubRanges ().size () == 2);
@@ -479,7 +479,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {};
             VerifyTestResult (dr.empty ());
             dr.Add (4);
@@ -507,7 +507,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
@@ -517,7 +517,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
@@ -526,7 +526,7 @@ namespace {
         }
         {
             using RT = Range<float>;
-            using DRT = DisjointRange<RT::ElementType, RT>;
+            using DRT = DisjointRange<RT::value_type, RT>;
             DRT dr {RT {1, 5}, RT {3, 7}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
@@ -535,7 +535,7 @@ namespace {
         }
         {
             using RT = Range<float>;
-            using DRT = DisjointRange<RT::ElementType, RT>;
+            using DRT = DisjointRange<RT::value_type, RT>;
             DRT dr {RT {1, 5}, RT {2, 2} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
@@ -544,7 +544,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 4}, RT {5, 9} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 9));
@@ -556,7 +556,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 1}, RT {3, 3}, RT {5, 5} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 5));
@@ -577,7 +577,7 @@ namespace {
         }
         {
             using RT = DiscreteRange<int>;
-            using DRT = DisjointDiscreteRange<RT::ElementType, RT>;
+            using DRT = DisjointDiscreteRange<RT::value_type, RT>;
             DRT dr {RT {1, 2}, RT {4, 5}, RT {7, 8} };
             VerifyTestResult (not dr.empty ());
             VerifyTestResult (dr.GetBounds () == RT (1, 8));

@@ -25,43 +25,43 @@ namespace   Stroika {
              */
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
+            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
             {
-                return i == numeric_limits<ElementType>::max () ? i : static_cast<ElementType> (i + 1);
+                return i == numeric_limits<value_type>::max () ? i : static_cast<value_type> (i + 1);
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
+            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
             {
-                return i == numeric_limits<ElementType>::max () ? i : nextafter (i, numeric_limits<ElementType>::max ());
+                return i == numeric_limits<value_type>::max () ? i : nextafter (i, numeric_limits<value_type>::max ());
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
+            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type*)
             {
-                return i == numeric_limits<ElementType>::min () ? i : static_cast<ElementType> (i - 1);
+                return i == numeric_limits<value_type>::min () ? i : static_cast<value_type> (i - 1);
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
+            inline  T   RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type*)
             {
-                return i == numeric_limits<ElementType>::min () ? i : nextafter (i, numeric_limits<ElementType>::min ());
+                return i == numeric_limits<value_type>::min () ? i : nextafter (i, numeric_limits<value_type>::min ());
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (ElementType v, typename enable_if <is_integral<SFINAE>::value>::type*)
+            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if <is_integral<SFINAE>::value>::type*)
             {
                 return Characters::Format (L"%d", static_cast<int> (v));
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (ElementType v, typename enable_if <is_floating_point<SFINAE>::value>::type*)
+            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if <is_floating_point<SFINAE>::value>::type*)
             {
                 return Characters::Format (L"%f", static_cast<double> (v));
             }
             template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template    <typename SFINAE>
-            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (ElementType v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type*)
+            inline  Characters::String  RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::Format (value_type v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type*)
             {
                 return v.Format ();
             }

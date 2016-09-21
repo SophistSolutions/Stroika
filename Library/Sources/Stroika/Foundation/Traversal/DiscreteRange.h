@@ -129,7 +129,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ElementType =   typename inherited::ElementType;
+                using   value_type =   typename inherited::value_type;
 
             public:
                 /**

@@ -150,6 +150,12 @@ namespace   Stroika {
                 nonvirtual  void    unlock_shared () const;
 
 #if     qDebug
+			private:
+                nonvirtual  void    lock_ () const;
+                nonvirtual  void    unlock_ () const;
+                nonvirtual  void    lock_shared_ () const;
+                nonvirtual  void    unlock_shared_ () const;
+
             private:
                 mutable atomic_uint_fast32_t                fLocks_ { 0 };
                 mutable std::thread::id                     fCurLockThread_;

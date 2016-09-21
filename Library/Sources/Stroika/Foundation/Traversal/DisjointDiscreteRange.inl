@@ -18,7 +18,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename RANGE_TYPE>
-            inline  DisjointDiscreteRange<T, RANGE_TYPE>:: FindHints::FindHints (ElementType seedPosition, bool forwardFirst)
+            inline  DisjointDiscreteRange<T, RANGE_TYPE>:: FindHints::FindHints (value_type seedPosition, bool forwardFirst)
                 : fSeedPosition (seedPosition)
                 , fForwardFirst (forwardFirst)
             {
@@ -54,17 +54,17 @@ namespace   Stroika {
             }
             template    <typename T, typename RANGE_TYPE>
             template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, ElementType>::value, int >::type*)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, typename enable_if < is_convertible <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>::value, int >::type*)
                 : inherited ()
             {
                 Containers::Sequence<RangeType> srs {};
                 // @todo DEBUG why this initializer syntax produces wrong overload call ???
                 // --2015-01-02
-                //Containers::SortedSet<ElementType> ss { start, end };
-                Containers::SortedSet<ElementType> ss = Containers::SortedSet<ElementType> (start, end);
-                ElementType startAt {};
-                Optional<ElementType>   endAt;
-                for (ElementType i : ss) {
+                //Containers::SortedSet<value_type> ss { start, end };
+                Containers::SortedSet<value_type> ss = Containers::SortedSet<value_type> (start, end);
+                value_type startAt {};
+                Optional<value_type>   endAt;
+                for (value_type i : ss) {
                     if (endAt.IsMissing ()) {
                         startAt = i;
                         endAt = i;
@@ -86,7 +86,7 @@ namespace   Stroika {
                 *this = move (THIS_CLASS_ { srs });
             }
             template    <typename T, typename RANGE_TYPE>
-            void    DisjointDiscreteRange<T, RANGE_TYPE>::Add (ElementType elt)
+            void    DisjointDiscreteRange<T, RANGE_TYPE>::Add (value_type elt)
             {
                 Containers::Sequence<RangeType> srs { this->SubRanges () };
                 // Walk list, and if new item < than a given, either extend or insert. If contained, we have nothing todo
@@ -95,13 +95,13 @@ namespace   Stroika {
                         return;
                     }
                     else if (elt == i->GetLowerBound () - 1) {
-                        srs.Update (i, DiscreteRange<ElementType> (elt, i->GetUpperBound ()));
+                        srs.Update (i, DiscreteRange<value_type> (elt, i->GetUpperBound ()));
                         // No need to check for merge adjacent cuz done by constructor
                         *this = move (THIS_CLASS_ { srs });
                         return;
                     }
                     else if (elt == i->GetUpperBound () + 1) {
-                        srs.Update (i, DiscreteRange<ElementType> (i->GetLowerBound (), elt));
+                        srs.Update (i, DiscreteRange<value_type> (i->GetLowerBound (), elt));
                         // No need to check for merge adjacent cuz done by constructor
                         *this = move (THIS_CLASS_ { srs });
                         return;
@@ -112,7 +112,7 @@ namespace   Stroika {
                     }
                 }
                 // if not less than any there, we must append new item
-                srs.push_back (DiscreteRange<ElementType> (elt, elt));
+                srs.push_back (DiscreteRange<value_type> (elt, elt));
                 *this = move (THIS_CLASS_ { srs });
             }
             template    <typename T, typename RANGE_TYPE>
@@ -128,22 +128,22 @@ namespace   Stroika {
                 return DisjointDiscreteRange { inherited::Intersection (rhs).SubRanges () };
             }
             template    <typename T, typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (ElementType elt) const -> Optional<ElementType> {
+            auto   DisjointDiscreteRange<T, RANGE_TYPE>::GetNext (value_type elt) const -> Optional<value_type> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or successors
-                ElementType next = RANGE_TYPE::TraitsType::GetNext (elt);
+                value_type next = RANGE_TYPE::TraitsType::GetNext (elt);
                 Iterator<RangeType> i { subRanges.FindFirstThat ([next] (const RangeType & r) -> bool {return r.GetUpperBound () >= next;}) };
                 if (i)
                 {
                     return max (next, i->GetLowerBound ());
                 }
-                return Optional<ElementType> ();
+                return Optional<value_type> ();
             }
             template    <typename T, typename RANGE_TYPE>
-            auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (ElementType elt) const -> Optional<ElementType> {
+            auto DisjointDiscreteRange<T, RANGE_TYPE>::GetPrevious (value_type elt) const -> Optional<value_type> {
                 Containers::Sequence<RangeType> subRanges { this->SubRanges () };
                 // Find the first subrange which might contain elt, or predecessors
-                ElementType prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
+                value_type prev = RANGE_TYPE::TraitsType::GetPrevious (elt);
                 Iterator<RangeType> i { subRanges.FindFirstThat ([prev] (const RangeType & r) -> bool {return r.GetUpperBound () >= prev;}) };
                 if (i)
                 {
@@ -172,16 +172,16 @@ namespace   Stroika {
                     Ensure (i->GetUpperBound () < prev);
                     return i->GetUpperBound ();
                 }
-                return Optional<ElementType> ();
+                return Optional<value_type> ();
             }
             template    <typename T, typename RANGE_TYPE>
-            auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<ElementType> {
+            auto   DisjointDiscreteRange<T, RANGE_TYPE>::Elements () const -> Iterable<value_type> {
                 using   UnsignedDifferenceType  =   typename RANGE_TYPE::UnsignedDifferenceType;
                 Containers::Sequence<RangeType>     subRanges { this->SubRanges () };
                 struct context_ {
                     Containers::Sequence<RangeType>     fSubRanges;
                     size_t                              fSubRangeIdx {};
-                    ElementType                         fCurrentSubRangeIteratorAt {};
+                    value_type                          fCurrentSubRangeIteratorAt {};
                     context_ () = delete;
                     context_ (const Containers::Sequence<RangeType>& sr)
                         : fSubRanges (sr)
@@ -190,13 +190,13 @@ namespace   Stroika {
                     context_ (const context_ & from) = default;
                 };
                 auto myContext = make_shared<context_> (context_ {subRanges});
-                auto getNext = [myContext] () -> Optional<ElementType> {
+                auto getNext = [myContext] () -> Optional<value_type> {
                     if (myContext->fSubRangeIdx < myContext->fSubRanges.size ())
                     {
                         RangeType               curRange        { myContext->fSubRanges[myContext->fSubRangeIdx] };
                         UnsignedDifferenceType  nEltsPerRange   { curRange.GetDistanceSpanned () };
                         Assert (static_cast<UnsignedDifferenceType> (myContext->fCurrentSubRangeIteratorAt) <= nEltsPerRange);
-                        ElementType result { curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt };
+                        value_type result { curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt };
                         if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
                             myContext->fSubRangeIdx++;
                             myContext->fCurrentSubRangeIteratorAt = 0;
@@ -206,26 +206,26 @@ namespace   Stroika {
                         }
                         return result;
                     }
-                    return Optional<ElementType> ();
+                    return Optional<value_type> ();
                 };
-                return Traversal::CreateGenerator<ElementType> (getNext);
+                return Traversal::CreateGenerator<value_type> (getNext);
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(ElementType)>& testF) const -> Optional<ElementType> {
-                return this->empty () ? Optional<ElementType> () : FindFirstThat (testF, FindHints (this->GetBounds ().GetLowerBound (), true));
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(value_type)>& testF) const -> Optional<value_type> {
+                return this->empty () ? Optional<value_type> () : FindFirstThat (testF, FindHints (this->GetBounds ().GetLowerBound (), true));
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const -> Optional<value_type> {
                 Require (this->Contains (hints.fSeedPosition));
-                Optional<ElementType>    o   =   ScanFindAny_ (testF,  hints.fSeedPosition, hints.fForwardFirst);
+                Optional<value_type>    o   =   ScanFindAny_ (testF,  hints.fSeedPosition, hints.fForwardFirst);
                 if (o)
                 {
                     // If we found any, then there is a first, so find scan back to find it...
-                    ElementType  firstTrueFor { *o };
-                    ElementType  i { firstTrueFor };
+                    value_type  firstTrueFor { *o };
+                    value_type  i { firstTrueFor };
                     while (testF (i)) {
                         firstTrueFor = i;
-                        Optional<ElementType> o = GetPrevious (i);
+                        Optional<value_type> o = GetPrevious (i);
                         if (o) {
                             i = *o;
                         }
@@ -236,25 +236,25 @@ namespace   Stroika {
                     return firstTrueFor;
                 }
                 else {
-                    return Optional<ElementType> ();
+                    return Optional<value_type> ();
                 }
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF) const -> Optional<ElementType> {
-                return this->empty () ? Optional<ElementType> () : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(value_type)>& testF) const -> Optional<value_type> {
+                return this->empty () ? Optional<value_type> () : FindLastThat (testF, FindHints (this->GetBounds ().GetUpperBound (), false));
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(ElementType)>& testF, const FindHints& hints) const -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const -> Optional<value_type> {
                 Require (this->Contains (hints.fSeedPosition));
-                Optional<ElementType>    o   =   ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
+                Optional<value_type>    o   =   ScanFindAny_ (testF, hints.fSeedPosition, hints.fForwardFirst);
                 if (o)
                 {
                     // If we found any, then there is a last, so find scan forwards to find it...
-                    ElementType  lastTrueFor { *o };
-                    ElementType  i { lastTrueFor };
+                    value_type  lastTrueFor { *o };
+                    value_type  i { lastTrueFor };
                     while (testF (i)) {
                         lastTrueFor = i;
-                        Optional<ElementType> o = GetNext (i);
+                        Optional<value_type> o = GetNext (i);
                         if (o) {
                             i = *o;
                         }
@@ -265,37 +265,37 @@ namespace   Stroika {
                     return lastTrueFor;
                 }
                 else {
-                    return Optional<ElementType> ();
+                    return Optional<value_type> ();
                 }
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool(ElementType)>& testF, const function<Optional<ElementType>(ElementType)>& iterNext, ElementType seedPosition) const -> Optional<ElementType> {
-                ElementType i { seedPosition };
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanTil_ (const function<bool(value_type)>& testF, const function<Optional<value_type>(value_type)>& iterNext, value_type seedPosition) const -> Optional<value_type> {
+                value_type i { seedPosition };
                 while (not testF (i))
                 {
-                    Optional<ElementType> o = iterNext (i);
+                    Optional<value_type> o = iterNext (i);
                     if (o) {
                         i = *o;
                     }
                     else {
-                        return Optional<ElementType> ();
+                        return Optional<value_type> ();
                     }
                 }
                 Ensure (testF (i));
                 return i;
             }
             template    <typename T, typename RANGE_TYPE>
-            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool(ElementType)>& testF, ElementType seedPosition, bool forwardFirst) const -> Optional<ElementType> {
+            auto    DisjointDiscreteRange<T, RANGE_TYPE>::ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const -> Optional<value_type> {
                 /*
                  *  First we must find a value/position where testF is true. It could be forward or backward from our start hint.
                  *  Try one direction, and then the other.
                  *
                  *  Only return 'IsIMissing()' if there are no values from which testF is true.
                  */
-                function<Optional<ElementType>(ElementType)> backwardNext   =   [this] (ElementType i) { return GetPrevious (i); };
-                function<Optional<ElementType>(ElementType)> forwardNext    =   [this] (ElementType i) { return GetNext (i); };
-                ElementType             i   { seedPosition };
-                Optional<ElementType>   o   { ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i) };
+                function<Optional<value_type>(value_type)> backwardNext   =   [this] (value_type i) { return GetPrevious (i); };
+                function<Optional<value_type>(value_type)> forwardNext    =   [this] (value_type i) { return GetNext (i); };
+                value_type              i   { seedPosition };
+                Optional<value_type>    o   { ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i) };
                 if (o)
                 {
                     // then we found a value scanning back for which testF is true
@@ -310,7 +310,7 @@ namespace   Stroika {
                     }
                     else {
                         // if not found scanning forward, or backward, its not there!
-                        return Optional<ElementType> ();
+                        return Optional<value_type> ();
                     }
                 }
                 Assert (testF (i));

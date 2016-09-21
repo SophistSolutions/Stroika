@@ -61,7 +61,7 @@ namespace   Stroika {
                 fSubRanges_.clear ();
             }
             template    <typename T, typename RANGE_TYPE>
-            bool    DisjointRange<T, RANGE_TYPE>::Contains (ElementType elt) const
+            bool    DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
             {
                 return fSubRanges_.FindFirstThat ([elt] (RangeType r) { return r.Contains (elt); });
             }
@@ -179,8 +179,8 @@ namespace   Stroika {
 #endif
                 AssertInternalRepValid_ ();
                 if (not r.empty ()) {
-                    ElementType         rStart  { r.GetLowerBound () };
-                    ElementType         rEnd    { r.GetUpperBound () };
+                    value_type          rStart  { r.GetLowerBound () };
+                    value_type          rEnd    { r.GetUpperBound () };
                     if (fSubRanges_.size () == 0) {
                         fSubRanges_.Append (r);
                     }
@@ -228,7 +228,7 @@ namespace   Stroika {
                             // cuz this means no ranges to the right containing rStart
                             //
                             // when appending, we can sometimes extend the last item
-                            ElementType prevVal = RangeType::TraitsType::GetPrevious (rStart);
+                            value_type          prevVal = RangeType::TraitsType::GetPrevious (rStart);
                             Iterator<RangeType> i = fSubRanges_.FindFirstThat ([prevVal] (const RangeType & r) -> bool {return r.GetUpperBound () == prevVal; });
                             if (i) {
                                 Assert (i->GetUpperBound () == prevVal);
@@ -336,7 +336,7 @@ namespace   Stroika {
                         Assert (lastRangeSeenSoFar->GetUpperBound () <= r.GetLowerBound ());    // equal maybe bad but check that case with itersects which pays attention to openness
                         Assert (not lastRangeSeenSoFar->Intersects (r));
                         // and make sure we merge together adjacent points
-                        ElementType nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
+                        value_type  nextVal = RangeType::TraitsType::GetNext (lastRangeSeenSoFar->GetUpperBound ());
                         Assert (nextVal < r.GetLowerBound ());  // if nextval of previous item == lowerBound of successive one, we could have merged them into a contiguous run
                     }
                     lastRangeSeenSoFar = r;

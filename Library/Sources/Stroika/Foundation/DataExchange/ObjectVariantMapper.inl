@@ -520,7 +520,7 @@ namespace   Stroika {
                 static  const   String_Constant kUpperBoundLabel_       { L"UpperBound" };
                 auto toVariantMapper = [] (const ObjectVariantMapper & mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    using   ElementType     =   typename RANGE_TYPE::ElementType;
+                    using   value_type     =   typename RANGE_TYPE::value_type;
                     Mapping<String, VariantValue> m;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
                     if (actualMember->empty ())
@@ -528,15 +528,15 @@ namespace   Stroika {
                         return VariantValue ();
                     }
                     else {
-                        ToVariantMapperType   valueMapper   { mapper.FromObjectMapper<ElementType> () };
-                        m.Add (kLowerBoundLabel_, mapper.FromObject<ElementType> (valueMapper, actualMember->GetLowerBound ()));
-                        m.Add (kUpperBoundLabel_, mapper.FromObject<ElementType> (valueMapper, actualMember->GetUpperBound ()));
+                        ToVariantMapperType   valueMapper   { mapper.FromObjectMapper<value_type> () };
+                        m.Add (kLowerBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetLowerBound ()));
+                        m.Add (kUpperBoundLabel_, mapper.FromObject<value_type> (valueMapper, actualMember->GetUpperBound ()));
                         return VariantValue (m);
                     }
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper & mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
-                    using   ElementType     =   typename RANGE_TYPE::ElementType;
+                    using   value_type     =   typename RANGE_TYPE::value_type;
                     Mapping<String, VariantValue>   m           { d.As<Mapping<String, VariantValue>> () };
                     RANGE_TYPE*                     actualInto  { reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT) };
                     if (m.empty ())
@@ -559,9 +559,9 @@ namespace   Stroika {
                             DbgTrace ("Range ('%s') needs UpperBound", typeid (RANGE_TYPE).name ());
                             Execution::Throw (BadFormatException (String_Constant (L"Range needs 'UpperBound' element")));
                         }
-                        FromVariantMapperType   valueMapper { mapper.ToObjectMapper<ElementType> () };
-                        ElementType             from        { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (kLowerBoundLabel_)) };
-                        ElementType             to          { mapper.ToObject<ElementType> (valueMapper, *m.Lookup (kUpperBoundLabel_)) };
+                        FromVariantMapperType   valueMapper { mapper.ToObjectMapper<value_type> () };
+                        value_type              from        { mapper.ToObject<value_type> (valueMapper, *m.Lookup (kLowerBoundLabel_)) };
+                        value_type              to          { mapper.ToObject<value_type> (valueMapper, *m.Lookup (kUpperBoundLabel_)) };
                         * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                     }
                 };

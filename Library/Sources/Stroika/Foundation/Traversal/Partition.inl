@@ -24,14 +24,14 @@ namespace   Stroika {
                     using   Memory::Optional;
                     TraceContextBumper ctx ("IsPartition_Helper_");
                     using   namespace   Traversal;
-                    using ElementType = typename RANGETYPE::ElementType;
-                    SortedMapping<ElementType, RANGETYPE>   tmp;
+                    using value_type = typename RANGETYPE::value_type;
+                    SortedMapping<value_type, RANGETYPE>   tmp;
                     for (RANGETYPE r : iterable) {
                         tmp.Add (r.GetLowerBound (), r);
                     }
-                    Optional<ElementType>   upperBoundSeenSoFar;
+                    Optional<value_type>    upperBoundSeenSoFar;
                     Openness                upperBoundSeenSoFarOpenness {};
-                    for (KeyValuePair<ElementType, RANGETYPE> i : tmp) {
+                    for (KeyValuePair<value_type, RANGETYPE> i : tmp) {
                         //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());
                         if (upperBoundSeenSoFar) {
                             if (not comparer (*upperBoundSeenSoFar, i.fValue.GetLowerBound ())) {
@@ -58,7 +58,7 @@ namespace   Stroika {
             template    <typename RANGETYPE>
             inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable)
             {
-                return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [] (typename RANGETYPE::ElementType lhs, typename RANGETYPE::ElementType rhs) { return Math::NearlyEquals (lhs, rhs); } );
+                return Private_::IsPartition_Helper_<RANGETYPE> (iterable, [] (typename RANGETYPE::value_type lhs, typename RANGETYPE::value_type rhs) { return Math::NearlyEquals (lhs, rhs); } );
             }
             template    <typename RANGETYPE, typename RANGE_ELT_COMPARER>
             inline  bool    IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer)

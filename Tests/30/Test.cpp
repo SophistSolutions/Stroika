@@ -655,8 +655,8 @@ namespace {
          */
         template    <typename TARGET_TYPE>
         struct   TunerMappingReader_TRAITS_ {
-            using   ElementType = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-            static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
+            using   value_type = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
+            static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
             {
                 RequireNotNull (proxyValue);
                 return  sEltReader_ (proxyValue);
@@ -908,8 +908,8 @@ namespace {
         }
         namespace PRIVATE_ {
             struct   SpectrumReader_TRAITS_ {
-                using   ElementType = KeyValuePair<WaveNumberType_, IntensityType_>;
-                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
+                using   value_type = KeyValuePair<WaveNumberType_, IntensityType_>;
+                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
                 {
                     RequireNotNull (proxyValue);
                     return  sEltReader_ (proxyValue);
@@ -941,8 +941,8 @@ namespace {
                 }
             };
             struct   StringKVStringReader_TRAITS_ {
-                using   ElementType = KeyValuePair<String, String>;
-                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, ElementType* proxyValue)
+                using   value_type = KeyValuePair<String, String>;
+                static  shared_ptr<ObjectReaderRegistry::IElementConsumer>   MakeActualReader (ObjectReaderRegistry::Context& r, value_type* proxyValue)
                 {
                     RequireNotNull (proxyValue);
                     return  sEltReader_ (proxyValue);
@@ -954,7 +954,7 @@ namespace {
             DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
             const   ObjectReaderRegistry::ReaderFromVoidStarFactory StringKVStringReader_TRAITS_::sEltReader_ =
             [] () -> ObjectReaderRegistry::ReaderFromVoidStarFactory {
-                using   KVPType_    =   StringKVStringReader_TRAITS_::ElementType;
+                using   KVPType_    =   StringKVStringReader_TRAITS_::value_type;
                 return ObjectReaderRegistry::MakeClassReader<KVPType_> (
                 initializer_list<pair<Name, StructFieldMetaInfo>> {
                     { Name { L"Key", Name::eAttribute }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey) },

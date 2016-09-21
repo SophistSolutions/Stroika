@@ -240,7 +240,7 @@ namespace   Stroika {
             struct Concept_EqualsCompareFunctionType {
                 static void check ()
                 {
-                    using   T       =   typename TRAITS::ElementType;
+                    using   T       =   typename TRAITS::value_type;
                     if (false) {
                         if (TRAITS::Equals (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr))) {
                         }
@@ -257,7 +257,7 @@ namespace   Stroika {
             struct Concept_WellOrderCompareFunctionType {
                 static void check ()
                 {
-                    using   T       =   typename TRAITS::ElementType;
+                    using   T       =   typename TRAITS::value_type;
                     if (false) {
                         int i = TRAITS::Compare (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr));
                     }

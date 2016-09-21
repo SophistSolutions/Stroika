@@ -78,7 +78,7 @@ namespace   Stroika {
                  */
                 template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitRangeTraitsWithoutMinMax {
-                    using   ElementType             =   T;
+                    using   value_type              =   T;
                     using   SignedDifferenceType    =   SIGNED_DIFF_TYPE;
                     using   UnsignedDifferenceType  =   UNSIGNED_DIFF_TYPE;
 
@@ -88,29 +88,29 @@ namespace   Stroika {
                     /**
                      *  Return the Next possible value, or if already at the end of the range, the same value.
                      */
-                    template    <typename SFINAE = ElementType>
-                    static  ElementType GetNext (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = ElementType>
-                    static  ElementType GetNext (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  value_type GetNext (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  value_type GetNext (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
 
                     /**
                      *  Return the Previous possible value, or if already at the end of the range, the same value.
                      */
-                    template    <typename SFINAE = ElementType>
-                    static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = ElementType>
-                    static  ElementType GetPrevious (ElementType i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  value_type GetPrevious (value_type i, typename enable_if <std::is_integral<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  value_type GetPrevious (value_type i, typename enable_if <std::is_floating_point<SFINAE>::value>::type* = 0);
 
                     /**
-                     *  Format as a string the given ElementType. This method is not required, and may not compile (SFINAE), but
+                     *  Format as a string the given value_type. This method is not required, and may not compile (SFINAE), but
                      *  often provides a convenient default argument to the Range<>::Format () function.
                      */
-                    template    <typename SFINAE = ElementType>
-                    static  Characters::String  Format (ElementType v, typename enable_if <is_integral<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = ElementType>
-                    static  Characters::String  Format (ElementType v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0);
-                    template    <typename SFINAE = ElementType>
-                    static  Characters::String  Format (ElementType v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  Characters::String  Format (value_type v, typename enable_if <is_integral<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  Characters::String  Format (value_type v, typename enable_if <is_floating_point<SFINAE>::value>::type* = 0);
+                    template    <typename SFINAE = value_type>
+                    static  Characters::String  Format (value_type v, typename enable_if < !is_integral<SFINAE>::value and !is_floating_point<SFINAE>::value >::type* = 0);
                 };
 
 
@@ -186,7 +186,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                using   ElementType     =   T;
+                using   value_type     =   T;
 
             public:
                 /**
@@ -368,7 +368,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Print a displayable rendition of the given range, using the argument funciton to format
-                 *  the basic ElementType.
+                 *  the basic value_type.
                  *
                  *  \par Example Usage
                  *      \code
