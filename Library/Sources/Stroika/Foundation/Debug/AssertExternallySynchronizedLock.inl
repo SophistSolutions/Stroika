@@ -56,25 +56,25 @@ namespace   Stroika {
             inline  void    AssertExternallySynchronizedLock::lock () const
             {
 #if     qDebug
-				lock_ ();
+                lock_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock () const
             {
 #if     qDebug
-				unlock_ ();
+                unlock_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::lock_shared () const
             {
 #if     qDebug
-				lock_shared_ ();
+                lock_shared_ ();
 #endif
             }
             inline  void    AssertExternallySynchronizedLock::unlock_shared () const
             {
 #if     qDebug
-				unlock_shared_ ();
+                unlock_shared_ ();
 #endif
             }
 

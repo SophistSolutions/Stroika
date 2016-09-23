@@ -150,7 +150,7 @@ namespace   Stroika {
                 nonvirtual  void    unlock_shared () const;
 
 #if     qDebug
-			private:
+            private:
                 nonvirtual  void    lock_ () const;
                 nonvirtual  void    unlock_ () const;
                 nonvirtual  void    lock_shared_ () const;
