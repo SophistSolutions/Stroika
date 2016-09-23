@@ -25,6 +25,7 @@
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include    "Stroika/Foundation/Time/DateTime.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -523,12 +524,12 @@ namespace {
         namespace Private_ {
             void    TestBasics_ ()
             {
-                static  constexpr   size_t  kMaxRepeatCount_    { 1000 };
+                static  constexpr   size_t  kIOverallRepeatCount_                   { qDebug ? 100 : 1000 };
                 Sequence<int>   tmp = Traversal::DiscreteRange<int> { 1, 1000 };
                 Thread  t1 {
                     [&tmp] ()
                     {
-                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
                             }
@@ -538,7 +539,7 @@ namespace {
                 Thread  t2 {
                     [&tmp] ()
                     {
-                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
                             }
@@ -548,7 +549,7 @@ namespace {
                 Thread  t3 {
                     [&tmp] ()
                     {
-                        for (int i = 1; i < kMaxRepeatCount_; ++i) {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             if (tmp.GetLength () == 1000) {
                                 VerifyTestResult (tmp.IndexOf (6) == 5);
                                 VerifyTestResult (tmp.GetFirst () == 1);
@@ -565,6 +566,89 @@ namespace {
         {
             Debug::TraceContextBumper traceCtx ("{}::Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ()");
             Private_::TestBasics_ ();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+namespace {
+    namespace   Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_ {
+        namespace Private_ {
+            template    <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename ITER_FUNCTION>
+            void    TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, ITER_FUNCTION iterF)
+            {
+                static  constexpr   size_t  kIOverallRepeatCount_                   { qDebug ? 100 : 1000 };
+                static  constexpr   int     kInnterConstantForHowMuchStuffTodo_     { 1000 };
+                Synchronized<CONTAINER>   syncObj;
+                Thread  adderThread {
+                    [&syncObj, &addF] ()
+                    {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                            for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
+                                addF (&syncObj.rwget ().rwref (), j);
+                            }
+                        }
+                    }
+                };
+                Thread  removerThread {
+                    [&syncObj, &remF] ()
+                    {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                            for (int j : Traversal::DiscreteRange<int> { 1, kInnterConstantForHowMuchStuffTodo_ }) {
+                                remF (&syncObj.rwget ().rwref (), j);
+                            }
+                        }
+                    }
+                };
+                Thread  walkerThread {
+                    [&syncObj, &iterF] ()
+                    {
+                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                            int cnt {};
+                            for (auto j : syncObj.load ()) {
+                                iterF (j);
+                            }
+                        }
+                    }
+                };
+                Thread::Start ({ adderThread, removerThread, walkerThread });
+                Thread::WaitForDone ({ adderThread, removerThread, walkerThread });
+            }
+        }
+        void    DoIt ()
+        {
+            //
+            //Test to capture regression caused by incomplete fix in
+            //      https://stroika.atlassian.net/browse/STK-525 -- qContainersPrivateSyncrhonizationPolicy_
+            //
+            Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ()");
+            int cnt {};
+            Private_::TestBasics_<Sequence<int>> (
+            [] (Sequence<int>* c, size_t i) { c->Append (i); },
+            [] (Sequence<int>* c, size_t i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+            [&cnt] (int v) { cnt += v; }
+                                              );
+            Private_::TestBasics_<Set<int>> (
+            [] (Set<int>* c, size_t i) { c->Add (i); },
+            [] (Set<int>* c, size_t i) { c->Remove (i); },
+            [&cnt] (int v) { cnt += v; }
+                                         );
+            Private_::TestBasics_<Mapping<int, Time::DateTime>> (
+            [] (Mapping<int, Time::DateTime>* c, size_t i) { c->Add (i, Time::DateTime::Now ()); },
+            [] (Mapping<int, Time::DateTime>* c, size_t i) { c->Remove (i); },
+            [&cnt] (KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; }
+                    );
         }
     }
 }
@@ -597,6 +681,7 @@ namespace   {
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
         Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
+        Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
     }
 }
 
