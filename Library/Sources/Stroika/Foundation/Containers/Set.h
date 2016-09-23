@@ -204,6 +204,10 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  The overload takign an item doesnt require the value exists, but removes it if it does. The overload taking an iterator requires
+                 *  the iterator is valid.
+                 *
+                 *  @see RemoveIf ()
                  */
                 nonvirtual  void    Remove (ArgByValueType<T> item);
                 nonvirtual  void    Remove (const Iterator<T>& i);
@@ -223,10 +227,14 @@ namespace   Stroika {
                  *          write_to_disk(n);
                  *      }
                  *      \endcode
+                 *
+                 *  @see Remove ()
                  */
                 nonvirtual  bool    RemoveIf (ArgByValueType<T> item);
 
             public:
+                /**
+                 */
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
