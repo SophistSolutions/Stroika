@@ -105,29 +105,6 @@ namespace   Stroika {
 
 
             /**
-             *  EXPERIMENTAL AS OF v2.0a22x
-             *
-             *  This has a moderate performance cost (overhead starting iteration). However, it assures bug-free
-             *  behavior if iterating when the container (still exists so owner OK) - but its rep gets replaced
-             *  due to assignment. Key to envelope thread safety.
-             *
-             *  Probably just always leave on.
-             *
-             *  @todo REVIEW - UNSURE OF THIS - NEEDS BETTER EXPLANATION AT LEAST!!!!
-             *
-             *  SEE regression test that references qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-             *      I THINK THE LOGIC MAYBE FLAWED-- LGP 2016-09-18
-             *
-             *      TURN OFF NOW BY DEFAULT - LGP 2016-09-18
-             *
-             *      @todo https://stroika.atlassian.net/browse/STK-530 - test - but if possible - get rid of this --LGP 2016-09-18
-             */
-#ifndef qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_
-#define qStroika_Foundation_Traveral_IteratorRepHoldsIterableOwnerSharedPtr_        0
-#endif
-
-
-            /**
              */
             struct  IterableBase {
             public:
