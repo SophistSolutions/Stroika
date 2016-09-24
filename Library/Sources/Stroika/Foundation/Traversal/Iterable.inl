@@ -185,22 +185,19 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep) noexcept
-                :
-                _fRep (rep)
+                : _fRep (rep)
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (const Iterable<T>& from) noexcept
-                :
-                _fRep (from._fRep)
+                : _fRep (from._fRep)
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
             }
             template    <typename T>
             inline  Iterable<T>::Iterable (Iterable<T>&& from) noexcept
-                :
-                _fRep (std::move (from._fRep))
+                : _fRep (std::move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
 #if     !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
@@ -374,8 +371,9 @@ namespace   Stroika {
             Iterable<T>     Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
                 using   Memory::Optional;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<T>()> getNext = [tmpIt, includeIfTrue] () mutable -> Memory::Optional<T> {
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<T>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue] () mutable -> Memory::Optional<T> {
                     if (tmpIt)
                     {
                         ++tmpIt;
@@ -409,9 +407,9 @@ namespace   Stroika {
             Iterable<T>     Iterable<T>::Distinct () const
             {
                 using   Memory::Optional;
-                set<T>   t1 (begin (), end ());     // Somewhat simplistic/stupid/weak implementation
+                set<T>      t1 (begin (), end ());     // Somewhat simplistic/stupid/weak implementation
                 vector<T>   tmp (t1.begin (), t1.end ());
-                size_t idx { 0 };
+                size_t      idx { 0 };
                 function<Optional<T>()> getNext = [tmp, idx] () mutable -> Optional<T> {
                     if (idx < tmp.size ())
                     {
@@ -450,8 +448,9 @@ namespace   Stroika {
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1) const
             {
                 using   Memory::Optional;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<RESULT>()> getNext = [tmpIt, extract1] () mutable -> Memory::Optional<RESULT> {
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<RESULT>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1] () mutable -> Memory::Optional<RESULT> {
                     if (tmpIt)
                     {
                         return RESULT (extract1 (*tmpIt++));
@@ -465,8 +464,9 @@ namespace   Stroika {
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2) const
             {
                 using   Memory::Optional;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<RESULT>()> getNext = [tmpIt, extract1, extract2] () mutable -> Memory::Optional<RESULT> {
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<RESULT>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2] () mutable -> Memory::Optional<RESULT> {
                     if (tmpIt)
                     {
                         RESULT result { extract1 (*tmpIt), extract2 (*tmpIt) };
@@ -482,8 +482,9 @@ namespace   Stroika {
             Iterable<RESULT>    Iterable<T>::Select (const function<T1(const T&)>& extract1, const function<T2(const T&)>& extract2, const function<T3(const T&)>& extract3) const
             {
                 using   Memory::Optional;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<RESULT>()> getNext = [tmpIt, extract1, extract2, extract3] () mutable -> Memory::Optional<RESULT> {
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<RESULT>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3] () mutable -> Memory::Optional<RESULT> {
                     if (tmpIt)
                     {
                         RESULT result { extract1 (*tmpIt), extract2 (*tmpIt), extract3 (*tmpIt) };
@@ -498,9 +499,10 @@ namespace   Stroika {
             Iterable<T> Iterable<T>::Skip (size_t nItems) const
             {
                 using   Memory::Optional;
-                size_t  nItemsToSkip = nItems;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<T>()> getNext = [tmpIt, nItemsToSkip] () mutable -> Memory::Optional<T> {
+                size_t      nItemsToSkip = nItems;
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt   { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<T>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip] () mutable -> Memory::Optional<T> {
                     while (tmpIt and nItemsToSkip > 0)
                     {
                         nItemsToSkip--;
@@ -514,9 +516,10 @@ namespace   Stroika {
             Iterable<T> Iterable<T>::Take (size_t nItems) const
             {
                 using   Memory::Optional;
-                size_t  nItemsToTake = nItems;
-                Iterator<T> tmpIt { this->MakeIterator () };
-                function<Optional<T>()> getNext = [tmpIt, nItemsToTake] () mutable -> Memory::Optional<T> {
+                size_t      nItemsToTake = nItems;
+                Iterable<T> copyOfIterableSoRefCntBumpedInLambda = *this;
+                Iterator<T> tmpIt { copyOfIterableSoRefCntBumpedInLambda.MakeIterator () };
+                function<Optional<T>()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake] () mutable -> Memory::Optional<T> {
                     if (nItemsToTake == 0)
                     {
                         return Optional<T> ();
