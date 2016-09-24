@@ -182,9 +182,11 @@ namespace   Stroika {
                 /**
                  *  Keys () returns an Iterable object with just the key part of the Mapping.
                  *
-                 *  Note this method may not return a collection which is sorted. Note also, the
-                 *  returned value is a copy of the keys (by value) - at least logically (implementations
-                 *  maybe smart enough to use lazy copying).
+                 *  \note   Keys () will return a an Iterable producing (iterating) elements in
+                 *          the same order as the collection it is created from.
+                 *
+                 *          It is equivilent to copying the underlying collection and 'projecting' the
+                 *          key fields.
                  *
                  *  \em Design Note:
                  *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
@@ -207,9 +209,11 @@ namespace   Stroika {
                 /**
                  *  Values () returns an Iterable object with just the value part of the Mapping.
                  *
-                 *  Note this method may not return a collection which is sorted. Note also, the
-                 *  returned value is a copy of the keys (by value) - at least logically (implementations
-                 *  maybe smart enough to use lazy copying).
+                 *  \note   Values () will return a an Iterable producing (iterating) elements in
+                 *          the same order as the collection it is created from.
+                 *
+                 *          It is equivilent to copying the underlying collection and 'projecting' the
+                 *          value fields.
                  *
                  *  \em Design Note:
                  *      The analagous method in C#.net - Dictionary<TKey, TValue>.ValueCollection
