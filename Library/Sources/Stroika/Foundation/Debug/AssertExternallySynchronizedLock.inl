@@ -25,7 +25,7 @@ namespace   Stroika {
             inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src)
                 : AssertExternallySynchronizedLock ()
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1 { src };    // to copy, the src can have shared_locks, but no (write) locks
+                shared_lock<const AssertExternallySynchronizedLock> critSec1 { src };    // to copy, the src can have shared_locks, but no (write) locks
             }
             inline  AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src)
                 : AssertExternallySynchronizedLock ()

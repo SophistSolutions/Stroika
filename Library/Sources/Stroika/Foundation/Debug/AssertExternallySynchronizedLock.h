@@ -8,6 +8,7 @@
 
 #include    <atomic>
 #include    <mutex>
+#include    <shared_mutex>
 #include    <set>
 #include    <thread>
 
@@ -90,7 +91,7 @@ namespace   Stroika {
             public:
                 /**
                  *  \note   Copy/Move constructor checks for existing locks while copying.
-                 *          Must be able to readlock source on copy, and have zero existing locks on target or move.
+                 *          Must be able to readlock source on copy, and have zero existing locks on src for move.
                  */
 #if     !qDebug
                 constexpr
