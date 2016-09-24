@@ -73,6 +73,8 @@ namespace   Stroika {
             namespace Private {
 
 
+                /// @todo https://stroika.atlassian.net/browse/STK-533
+                // LOSE qContainersPrivateSyncrhonizationPolicy_ - always narrow mutex and debug::assertexteranllysynchonized
                 struct  ContainerRepLockDataSupport_ {
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
                     /*
