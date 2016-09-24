@@ -760,6 +760,13 @@ namespace {
             VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
         }
         {
+            using Containers::Set;
+            using Containers::Sequence;
+            Sequence<int> a { 1, 3, 5, 7, 9 };
+            a = Sequence<int> { a.Skip (2) };   // https://stroika.atlassian.net/browse/STK-532 - crash
+            VerifyTestResult ((a == Sequence<int> { 5, 7, 9 }));
+        }
+        {
             Iterable<int> c { 1, 2, 3, 4, 5, 6 };
             VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
         }
