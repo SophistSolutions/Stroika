@@ -27,7 +27,7 @@ namespace   Stroika {
                         , fLockSupport ()
                         , fActiveIteratorsListHead (nullptr)
                     {
-                        Require (not HasActiveIterators ());
+                        Assert (not HasActiveIterators ());
 Again:
                         for (auto v = rhs->fActiveIteratorsListHead; v != nullptr; v = v->fNextActiveIterator) {
                             if (v->fOwnerID == newOwnerID) {
