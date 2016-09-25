@@ -15,6 +15,7 @@
  *
  *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DONT DO until I have a STRING class
  *              implementation based on UTF-8, to minimize the performance costs...
+ *				https://stroika.atlassian.net/browse/STK-534
  *
  *      @todo       KEY ISSUES TO DECIDE:
  *          o   Can we use a class with no loss of performance (or must we use typdef wchar_t Character)

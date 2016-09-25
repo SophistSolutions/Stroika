@@ -136,9 +136,8 @@ public:
         RequireNotReached ();
         return 0;
     }
-    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
     {
-        Require (offset == nullptr);    // not seekable
         /*
          *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
          *  If none to read there - pull from fRealIn_ src, and push those through the cipher.

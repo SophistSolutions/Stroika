@@ -90,7 +90,7 @@ namespace {
             {
                 Verify (::deflateEnd (&fZStream_) == Z_OK);
             }
-            virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
+            virtual size_t  Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd);  // API rule for streams
 Again:
@@ -132,7 +132,7 @@ Again:
             {
                 Verify (::inflateEnd (&fZStream_) == Z_OK);
             }
-            virtual size_t  Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) override
+            virtual size_t  Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd);  // API rule for streams
 Again:

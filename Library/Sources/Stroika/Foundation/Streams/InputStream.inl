@@ -85,16 +85,15 @@ namespace   Stroika {
 #endif
                         return fRealIn_.SeekRead (whence, offset);
                     }
-                    virtual size_t  Read (SeekOffsetType* offset, ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                    virtual size_t  Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
                         using   Execution::make_unique_lock;
-                        // @todo implement 'offset' support
 #if     qCompilerAndStdLib_make_unique_lock_IsSlow
                         MACRO_LOCK_GUARD_CONTEXT (fCriticalSection_);
 #else
                         auto    critSec { make_unique_lock (fCriticalSection_) };
 #endif
-                        return fRealIn_.Read (offset, intoStart, intoEnd);
+                        return fRealIn_.Read (intoStart, intoEnd);
                     }
 
                 private:
@@ -132,7 +131,7 @@ namespace   Stroika {
             inline  auto  InputStream<ELEMENT_TYPE>::Read () const -> Memory::Optional<ElementType> {
                 ElementType b {};
                 RequireNotNull (_GetRep ());
-                return (_GetRep ()->Read (nullptr, &b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
+                return (_GetRep ()->Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
             }
             template    <typename ELEMENT_TYPE>
             inline  size_t  InputStream<ELEMENT_TYPE>::Read (ElementType* intoStart, ElementType* intoEnd) const
@@ -140,13 +139,7 @@ namespace   Stroika {
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetRep ().get ());
-                return _GetRep ()->Read (nullptr, intoStart, intoEnd);
-            }
-            template    <typename ELEMENT_TYPE>
-            size_t  InputStream<ELEMENT_TYPE>::Read (SeekOffsetType* offset, ElementType* intoStart, ElementType* intoEnd) const
-            {
-                RequireNotNull (offset);
-                return _GetRep ()->Read (offset, intoStart, intoEnd);
+                return _GetRep ()->Read (intoStart, intoEnd);
             }
             template    <typename ELEMENT_TYPE>
             template    <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>

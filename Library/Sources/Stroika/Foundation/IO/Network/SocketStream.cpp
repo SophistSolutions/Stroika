@@ -53,9 +53,8 @@ public:
         RequireNotReached ();   // not seekable
         return 0;
     }
-    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
     {
-        Require (offset == nullptr);    // not seekable
         return fSD_.Read (intoStart, intoEnd);
     }
     virtual SeekOffsetType  GetWriteOffset () const override

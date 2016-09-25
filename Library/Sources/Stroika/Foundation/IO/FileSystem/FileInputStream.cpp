@@ -105,9 +105,8 @@ public:
     {
         return fSeekable_ == eSeekable;
     }
-    virtual size_t  Read (SeekOffsetType* offset, Byte* intoStart, Byte* intoEnd) override
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
     {
-        // @todo implement 'offset' support
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);

@@ -40,9 +40,8 @@ protected:
     {
         return true;
     }
-    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    virtual size_t    Read (Character* intoStart, Character* intoEnd) override
     {
-        // @todo 'offset' param NYI
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
@@ -156,10 +155,9 @@ protected:
     {
         return false;
     }
-    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    virtual size_t    Read (Character* intoStart, Character* intoEnd) override
     {
         Require (intoEnd - intoStart >= 1);
-        Assert (offset == nullptr); // @todo 'offset' param NYI
         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
         Character*  outI    =   intoStart;
         for (; fSrcIter_ != fSource_.end () and outI != intoEnd; ++fSrcIter_, outI++) {

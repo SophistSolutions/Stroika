@@ -47,9 +47,8 @@ namespace   Stroika {
                 {
                     return true;
                 }
-                virtual size_t  Read (SeekOffsetType* offset, ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                virtual size_t  Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
-                    // @todo implement 'offset' support
                     RequireNotNull (intoStart);
                     RequireNotNull (intoEnd);
                     Require (intoStart < intoEnd);

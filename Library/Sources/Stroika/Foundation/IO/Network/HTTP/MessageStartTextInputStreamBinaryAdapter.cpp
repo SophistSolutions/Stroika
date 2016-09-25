@@ -52,9 +52,8 @@ protected:
     {
         return true;
     }
-    virtual size_t    Read (SeekOffsetType* offset, Character* intoStart, Character* intoEnd) override
+    virtual size_t    Read (Character* intoStart, Character* intoEnd) override
     {
-        // @todo SUPPORT 'offset'
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
 
