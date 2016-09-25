@@ -390,7 +390,7 @@ regression-test-configurations:
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --trace2file disable --block-allocation disable;\
+		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-6.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
