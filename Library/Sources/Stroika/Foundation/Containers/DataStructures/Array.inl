@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_inl_
-#define _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_inl_   1
+#ifndef _Stroika_Foundation_Containers_DataStructures_Array_inl_
+#define _Stroika_Foundation_Containers_DataStructures_Array_inl_   1
 
 
 #include    "../../Debug/Assertions.h"
@@ -12,12 +12,12 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   ExternallySynchronizedDataStructures {
+            namespace   DataStructures {
 
 
                 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
-#ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
-#define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_   0
+#ifndef     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
+#define     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_   0
 #endif
 
 
@@ -373,7 +373,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::_Invariant () const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #endif
                     Assert ((_fSlotsAllocated == 0) == (_fItems == nullptr));     // always free iff slots alloced = 0
@@ -403,7 +403,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  T   Array<T, TRAITS>::GetAt (size_t i) const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #endif
                     Require (i >= 0);
@@ -437,7 +437,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  size_t  Array<T, TRAITS>::GetLength () const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #endif
                     return _fLength;
@@ -569,7 +569,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::Done () const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
 #endif
                     Invariant ();
@@ -612,7 +612,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *_fData };
 #endif
                     AssertNotNull (_fData);
@@ -758,4 +758,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_inl_ */
+#endif /* _Stroika_Foundation_Containers_DataStructures_Array_inl_ */

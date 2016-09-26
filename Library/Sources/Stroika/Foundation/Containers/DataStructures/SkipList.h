@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_SkipList_h_
-#define _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_SkipList_h_
+#ifndef _Stroika_Foundation_Containers_DataStructures_SkipList_h_
+#define _Stroika_Foundation_Containers_DataStructures_SkipList_h_
 
 #include    "../../StroikaPreComp.h"
 
@@ -15,6 +15,9 @@
 
 
 /**
+ *
+ *      SkipList<> is a backend implementation. It is not intended to be directly
+ *  used by programmers, except in implementing concrete container reps.
  *
  * TODO:
  *      STATUS _ FAR FROM COMPILING - JUST STARTED INTEGRATING VERSION OF CODE FROM STERL 2013-06-17
@@ -30,7 +33,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   ExternallySynchronizedDataStructures {
+            namespace   DataStructures {
 
 
                 /*
@@ -207,4 +210,4 @@ namespace   Stroika {
  */
 #include    "SkipList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_SkipList_h_ */
+#endif  /*_Stroika_Foundation_Containers_DataStructures_SkipList_h_ */

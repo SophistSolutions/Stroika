@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_h_
-#define _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_h_
+#ifndef _Stroika_Foundation_Containers_DataStructures_Array_h_
+#define _Stroika_Foundation_Containers_DataStructures_Array_h_
 
 #include    "../../StroikaPreComp.h"
 
@@ -104,7 +104,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   ExternallySynchronizedDataStructures {
+            namespace   DataStructures {
 
                 using   Configuration::ArgByValueType;
 
@@ -322,4 +322,4 @@ namespace   Stroika {
  */
 #include    "Array.inl"
 
-#endif  /*_Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_Array_h_ */
+#endif  /*_Stroika_Foundation_Containers_DataStructures_Array_h_ */

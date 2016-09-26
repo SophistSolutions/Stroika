@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_h_
-#define _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_h_
+#ifndef _Stroika_Foundation_Containers_DataStructures_LinkedList_h_
+#define _Stroika_Foundation_Containers_DataStructures_LinkedList_h_
 
 #include    "../../StroikaPreComp.h"
 
@@ -17,6 +17,11 @@
 
 
 /**
+ *
+ *
+ *      LinkedList<T,TRAITS> is a backend implementation. It is not intended to be directly
+ *  used by programmers, except in implementing concrete container reps.
+ *
  *
  * TODO:
  *
@@ -43,7 +48,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   ExternallySynchronizedDataStructures {
+            namespace   DataStructures {
 
 
                 using   Configuration::ArgByValueType;
@@ -314,4 +319,4 @@ namespace   Stroika {
  */
 #include    "LinkedList.inl"
 
-#endif  /*_Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_h_ */
+#endif  /*_Stroika_Foundation_Containers_DataStructures_LinkedList_h_ */

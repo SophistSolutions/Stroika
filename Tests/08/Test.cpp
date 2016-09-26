@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-//  TEST    Foundation::Containers::ExternallySynchronizedDataStructures::SkipList
+//  TEST    Foundation::Containers::DataStructures::SkipList
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -21,7 +21,7 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 //using   namespace   Stroika::Foundation::Containers;
-//using   namespace   Stroika::Foundation::Containers::ExternallySynchronizedDataStructures;
+//using   namespace   Stroika::Foundation::Containers::DataStructures;
 //using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 

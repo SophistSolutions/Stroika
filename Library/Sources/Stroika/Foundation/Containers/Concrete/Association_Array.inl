@@ -73,7 +73,7 @@ namespace   Stroika {
                     using   KeyEqualsCompareFunctionType        =   typename Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::KeyEqualsCompareFunctionType;
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   NonPatchingDataStructureImplType_   =   DataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
                     using   DataStructureImplType_              =   Private::PatchingDataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>, Private::ContainerRepLockDataSupport_>;
 
                 private:

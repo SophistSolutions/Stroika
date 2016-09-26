@@ -201,7 +201,7 @@ namespace   Stroika {
                 bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RANGE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        for (typename ExternallySynchronizedDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
@@ -220,7 +220,7 @@ namespace   Stroika {
                 bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::InverseLookup (ArgByValueType<RANGE_TYPE> key, Memory::Optional<DOMAIN_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        for (typename ExternallySynchronizedDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().first;

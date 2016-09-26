@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2016.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_inl_
-#define _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_inl_  1
+#ifndef _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_
+#define _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_  1
 
 
 #include    "../../Debug/Assertions.h"
@@ -11,12 +11,12 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   ExternallySynchronizedDataStructures {
+            namespace   DataStructures {
 
 
                 // Would like to leave on by default but we just added and cannot afford to have debug builds get that slow
-#ifndef     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_
-#define     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_  0
+#ifndef     qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
+#define     qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_  0
 #endif
 
 
@@ -409,7 +409,7 @@ namespace   Stroika {
                 template      <typename  T, typename TRAITS>
                 void    LinkedList<T, TRAITS>::Invariant_ () const
                 {
-#if     qStroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_IncludeSlowDebugChecks_
+#if     qStroika_Foundation_Containers_DataStructures_LinkedList_IncludeSlowDebugChecks_
                     shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
 #endif
                     /*
@@ -567,4 +567,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_ExternallySynchronizedDataStructures_LinkedList_inl_ */
+#endif /* _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_ */

@@ -76,7 +76,7 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   NonPatchingDataStructureImplType_   =   ExternallySynchronizedDataStructures::LinkedList<CountedValue<T>>;
+                    using   NonPatchingDataStructureImplType_   =   DataStructures::LinkedList<CountedValue<T>>;
                     using   DataStructureImplType_              =   Private::PatchingDataStructures::LinkedList<CountedValue<T>, Private::ContainerRepLockDataSupport_>;
                     using   IteratorRep_                        =   typename Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_>;
 
