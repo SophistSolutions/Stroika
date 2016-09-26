@@ -6,7 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    "../DataStructures/STLContainerWrapper.h"
+#include    "../../DataStructures/STLContainerWrapper.h"
 
 #include    "PatchableContainerHelper.h"
 
