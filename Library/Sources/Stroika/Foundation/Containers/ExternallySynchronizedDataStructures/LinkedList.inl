@@ -180,6 +180,22 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
+                void    LinkedList<T, TRAITS>::Append (ArgByValueType<T> item)
+                {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                    if (this->_fHead == nullptr) {
+                        Prepend (item);
+                    }
+                    else {
+                        Link* last = this->_fHead;
+                        for (; last->fNext != nullptr; last = last->fNext)
+                            ;
+                        Assert (last != nullptr);
+                        Assert (last->fNext == nullptr);
+                        last->fNext = new Link (item, nullptr);
+                    }
+                }
+                template      <typename  T, typename TRAITS>
                 inline  void    LinkedList<T, TRAITS>::RemoveFirst ()
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };

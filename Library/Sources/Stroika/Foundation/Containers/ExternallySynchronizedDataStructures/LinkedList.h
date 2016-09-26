@@ -181,6 +181,18 @@ namespace   Stroika {
                 public:
                     nonvirtual  void    RemoveAll ();
 
+
+                public:
+                    /**
+                     *  Performance:
+                     *      Worst Case: O(N)
+                     *      Average Case: O(N)
+                     *
+                     *      Not alot of point in having these, as they are terribly slow,
+                     *  but the could be convienient.
+                     */
+                    nonvirtual  void    Append (ArgByValueType<T> item);
+
                 public:
                     /*
                      *  Performance:
@@ -287,6 +299,7 @@ namespace   Stroika {
                 private:
                     friend  class   LinkedList<T, TRAITS>;
                 };
+
 
             }
         }
