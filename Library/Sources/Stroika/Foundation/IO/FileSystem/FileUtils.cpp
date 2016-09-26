@@ -261,7 +261,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
                     else {
                         // THEN - starting at the one that doesn't exist - go from top-down again
                         int skipThisMany    =   (i - paths.rbegin ());
-                        Assert (skipThisMany < paths . size ())
+                        Assert (skipThisMany < paths . size ());
                         for (auto ii = paths.begin () + skipThisMany; ii != paths.end (); ++ii) {
                             CreateDirectory (*ii, false);
                         }

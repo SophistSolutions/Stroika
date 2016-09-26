@@ -188,7 +188,7 @@ int ActiveLedItApp::ExitInstance ()
     _AFX_THREAD_STATE* pState = AfxGetThreadState();
     ASSERT(pState != NULL);
     Assert (pState->m_nCtrlRef == 0);
-    Assert (AfxGetModuleState ()->m_nObjectCount == 0)
+    Assert (AfxGetModuleState ()->m_nObjectCount == 0);
 
     return inherited::ExitInstance ();
 }
