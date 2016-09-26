@@ -251,7 +251,7 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                inline	void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                inline  void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());

@@ -58,6 +58,6 @@ void        BufferedStringRep ::_Rep::SetLength_ (size_t newLength)
 const wchar_t*  BufferedStringRep ::_Rep::c_str_peek () const noexcept
 {
     size_t  len =   _GetLength ();
-    Ensure (_fStart[len] == '\0')
+    Ensure (_fStart[len] == '\0');
     return _fStart;
 }

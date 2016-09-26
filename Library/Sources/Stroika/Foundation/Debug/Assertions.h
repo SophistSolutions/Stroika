@@ -154,31 +154,39 @@ namespace   Stroika {
             /**
              *  \def Assert(c)
              *
+             *  \note   logically
+             *          if (!(c)) {
+             *              Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }
+             *          }
+             *          But using funny !! and || syntax to allow use in expressions
+             *
              *  @see GetAssertionHandler
              *
              *  \hideinitializer
              */
-#define Assert(c)           {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }}
+#define Assert(c)          (!!(c) || (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
 
 
             /**
              *  \def Require(c)
              *
              *  @see GetAssertionHandler
+             *  @see Assert
              *
              *  \hideinitializer
              */
-#define Require(c)          {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }}
+#define Require(c)          (!!(c) || (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
 
 
             /**
              *  \def Ensure(c)
              *
              *  @see GetAssertionHandler
+             *  @see Assert
              *
              *  \hideinitializer
              */
-#define Ensure(c)           {if (!(c)) { Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_); }}
+#define Ensure(c)          (!!(c) || (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", #c, __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false))
 
 #else
 
@@ -246,7 +254,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define AssertNotReached()      Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define AssertNotReached()      (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
 
 
             /**
@@ -256,7 +264,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define RequireNotReached()     Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define RequireNotReached()     (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Require", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
 
 
             /**
@@ -266,7 +274,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define EnsureNotReached()      Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define EnsureNotReached()      (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Ensure", "Not Reached", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
 
 
             /**
@@ -277,7 +285,7 @@ namespace   Stroika {
              *
              *  \hideinitializer
              */
-#define AssertNotImplemented()  Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_)
+#define AssertNotImplemented()  (Stroika::Foundation::Debug::Private::Debug_Trap_ ("Assert", "Not Implemented", __FILE__, __LINE__, ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_),false)
 
 #else
 

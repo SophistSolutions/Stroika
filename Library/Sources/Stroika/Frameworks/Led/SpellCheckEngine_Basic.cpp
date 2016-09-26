@@ -770,8 +770,8 @@ void    SpellCheckEngine_Basic::RegressionTest_1 ()
 
     {
         Led_tString r3S;
-        Assert (not tester.LookupWord (LED_TCHAR_OF ("ibm")))
-        Assert (not tester.LookupWord (LED_TCHAR_OF ("Ibm")))
+        Assert (not tester.LookupWord (LED_TCHAR_OF ("ibm")));
+        Assert (not tester.LookupWord (LED_TCHAR_OF ("Ibm")));
         bool    r3      =   tester.LookupWord (LED_TCHAR_OF ("IBM"), &r3S);
         Assert (r3 and r3S == LED_TCHAR_OF ("IBM"));
     }
@@ -781,7 +781,7 @@ void    SpellCheckEngine_Basic::RegressionTest_1 ()
         const Led_tChar* wordEnd = NULL;
         const Led_tChar*    p   =   NULL;
         bool    result = tester.ScanForUndefinedWord (testText, testText + Led_tStrlen (testText), &p, &wordStart, &wordEnd);
-        Assert (result and Led_tString (wordStart, wordEnd) == LED_TCHAR_OF ("is"))
+        Assert (result and Led_tString (wordStart, wordEnd) == LED_TCHAR_OF ("is"));
     }
 
     {
@@ -797,13 +797,13 @@ void    SpellCheckEngine_Basic::RegressionTest_1 ()
             Led_tString word    =   Led_tString (wordStartResult, wordEndResult);
             nWordsFound++;
             if (nWordsFound == 1) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("is"))
+                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("is"));
             }
             if (nWordsFound == 2) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("very"))
+                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("very"));
             }
             if (nWordsFound == 3) {
-                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("test"))
+                Assert (Led_tString (wordStartResult, wordEndResult) == LED_TCHAR_OF ("test"));
             }
         }
         Assert (nWordsFound == 3);
