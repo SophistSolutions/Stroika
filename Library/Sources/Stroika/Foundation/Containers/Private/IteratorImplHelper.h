@@ -89,6 +89,49 @@ namespace   Stroika {
                 };
 
 
+                /// VERY EARLY DRAFT SUPPORT FOR https://stroika.atlassian.net/browse/STK-535 - Remove support for Iterator patching (or make optional)
+                template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR = typename CONTAINER::ForwardIterator, typename CONTAINER_VALUE = T>
+                class   IteratorImplHelper_NEW_ : public Iterator<T>::IRep {
+                private:
+                    using   inherited   =   typename    Iterator<T>::IRep;
+
+                public:
+                    using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
+                    using   DataStructureImplValueType_ =   CONTAINER_VALUE;
+
+                public:
+                    IteratorImplHelper_NEW_ (const IteratorImplHelper_NEW_&) = default; //not sure why needed - SB able to make =delete
+                    explicit IteratorImplHelper_NEW_ (IteratorOwnerID owner, const CONTAINER* data);
+
+                public:
+                    virtual ~IteratorImplHelper_NEW_ () = default;
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_NEW_);
+
+                    // Iterator<T>::IRep
+                public:
+                    virtual SharedIRepPtr       Clone () const override;
+                    virtual IteratorOwnerID     GetOwner () const override;
+                    virtual void                More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool                Equals (const typename Iterator<T>::IRep* rhs) const override;
+
+                private:
+                    /*
+                     *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
+                     *  a temporary, and to copy.
+                     */
+                    template    <typename CHECK_KEY = typename CONTAINER::value_type>
+                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
+                    template    <typename CHECK_KEY = typename CONTAINER::value_type>
+                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
+
+                public:
+                    IteratorOwnerID             fOwner_;
+                    mutable CONTAINER_ITERATOR  fIterator;
+                };
+
+
             }
         }
     }
