@@ -8,6 +8,8 @@
 
 #include    <cstddef>
 
+#include    "../Configuration/Enumeration.h"
+
 
 
 namespace   Stroika {
@@ -41,6 +43,32 @@ namespace   Stroika {
             typename CONTAINER::value_type* End (CONTAINER& c);
             template    <typename CONTAINER>
             const typename CONTAINER::value_type*   End (const CONTAINER& c);
+
+
+            /**
+             *  \note   This si a major departure from earlier versions of Stroika. Stroika - all the way back
+             *          to Stroika 1.0 has had automatic internal ContainerUpdateIteratorSafety.
+             *
+             *          But this comes at a cost, and really doesn't make much sense without also having autoatic
+             *          thread synchonization. And that - was deemed too performance costly.
+             *
+             *          So we provide this as a constructor option - but the default is now 'eExternal' - so
+             *          by default you must externally assure your iterators are 'refreshed' if you modify the container.
+             *
+             *          If the setting ContainerUpdateIteratorSafety::eExternal is selected (the default) - then you will
+             *          at least get an assertion failure in DEBUG builds - if you ever utilize an iterator after the underlying
+             *          container has been updated.
+             *
+             *  \note   Configuration::DefaultNames<> supported
+             */
+            enum    class   ContainerUpdateIteratorSafety {
+                eInternal,
+                eExternal,
+
+                eDEFAULT    =   eExternal,
+
+                Stroika_Define_Enum_Bounds (eInternal, eExternal)
+            };
 
 
             /**

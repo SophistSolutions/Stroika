@@ -105,5 +105,23 @@ namespace   Stroika {
         }
     }
 }
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template<>
+            struct   DefaultNames<Containers::ContainerUpdateIteratorSafety> : EnumNames<Containers::ContainerUpdateIteratorSafety> {
+                static  constexpr   EnumNames<Containers::ContainerUpdateIteratorSafety>    k {
+                    EnumNames<Containers::ContainerUpdateIteratorSafety>::BasicArrayInitializer {
+                        {
+                            { Containers::ContainerUpdateIteratorSafety::eInternal, L"Internal" },
+                            { Containers::ContainerUpdateIteratorSafety::eExternal, L"External" },
+                        }
+                    }
+                };
+                DefaultNames () : EnumNames<Containers::ContainerUpdateIteratorSafety> (k) {}
+            };
+        }
+    }
+}
 #endif  /*_Stroika_Foundation_Containers_Common_inl_*/
 
