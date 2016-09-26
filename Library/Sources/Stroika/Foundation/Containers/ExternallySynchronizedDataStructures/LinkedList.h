@@ -67,7 +67,7 @@ namespace   Stroika {
                  *  will manage all patching, or know that none is necessary.
                  */
                 template      <typename  T, typename TRAITS = LinkedList_DefaultTraits<T>>
-                class   LinkedList : protected Debug::AssertExternallySynchronizedLock {
+                class   LinkedList : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using   value_type  =   T;
 

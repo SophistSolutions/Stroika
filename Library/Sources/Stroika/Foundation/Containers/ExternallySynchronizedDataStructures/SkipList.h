@@ -44,7 +44,7 @@ namespace   Stroika {
                 template < typename KEY,
                            typename VALUE,
                            typename TRAITS >
-                class   SkipList : protected Debug::AssertExternallySynchronizedLock {
+                class   SkipList : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using   KeyType     =   KEY;
                     using   ValueType   =   VALUE;

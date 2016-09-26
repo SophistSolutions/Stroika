@@ -128,7 +128,7 @@ namespace   Stroika {
                  *  remove them from contains, not when the caches happen to empty.
                  */
                 template      <typename  T, typename TRAITS = Array_DefaultTraits<T>>
-                class   Array : protected Debug::AssertExternallySynchronizedLock {
+                class   Array : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using   value_type  =   T;
 
