@@ -299,7 +299,7 @@ namespace   Stroika {
                     cur->fItem = item;
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    DoublyLinkedList<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const DoublyLinkedList<T, TRAITS>* movedFrom)
+                inline  void    DoublyLinkedList<T, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T, TRAITS>* movedFrom)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW

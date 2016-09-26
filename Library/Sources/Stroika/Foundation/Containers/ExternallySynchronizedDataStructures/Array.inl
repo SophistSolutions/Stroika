@@ -387,7 +387,7 @@ namespace   Stroika {
                     delete[] (char*)_fItems;
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const Array<T, TRAITS>* movedFrom)
+                inline  void    Array<T, TRAITS>::MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array<T, TRAITS>* movedFrom)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     RequireNotNull (pi);

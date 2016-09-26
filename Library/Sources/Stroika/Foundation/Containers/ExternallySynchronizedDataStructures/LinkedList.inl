@@ -120,7 +120,7 @@ namespace   Stroika {
 #endif
                 }
                 template      <typename  T, typename TRAITS>
-                inline  void    LinkedList<T, TRAITS>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const LinkedList<T, TRAITS>* movedFrom)
+                inline  void    LinkedList<T, TRAITS>::MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T, TRAITS>* movedFrom)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
@@ -251,7 +251,7 @@ namespace   Stroika {
                     Invariant ();
                 }
                 template      <typename  T, typename TRAITS>
-                void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                inline	void    LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                     Require (not i.Done ());

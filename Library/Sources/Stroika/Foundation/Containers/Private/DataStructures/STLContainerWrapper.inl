@@ -34,7 +34,7 @@ namespace   Stroika {
                         return this->find (item) != this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (IteratorBaseType* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
                     {
                         lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
                         // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
