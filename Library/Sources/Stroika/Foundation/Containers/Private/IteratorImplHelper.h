@@ -100,7 +100,7 @@ namespace   Stroika {
                     using   DataStructureImplValueType_ =   CONTAINER_VALUE;
 
                 public:
-                    IteratorImplHelper_NEW_ (const IteratorImplHelper_NEW_&) = default; //not sure why needed - SB able to make =delete
+                    IteratorImplHelper_NEW_ (const IteratorImplHelper_NEW_&) = default;
                     explicit IteratorImplHelper_NEW_ (IteratorOwnerID owner, const CONTAINER* data);
 
                 public:

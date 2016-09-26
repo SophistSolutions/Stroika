@@ -121,7 +121,7 @@ namespace   Stroika {
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
                 typename Iterator<T>::SharedIRepPtr IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Clone () const
                 {
-                    return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_> (*this);
+                    return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_NEW_> (*this);
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
                 IteratorOwnerID IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::GetOwner () const
