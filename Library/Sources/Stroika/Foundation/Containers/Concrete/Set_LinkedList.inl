@@ -149,8 +149,8 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::Rep_ExternalSync_ (const Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
-                    , fData_ (&from->fData_, forIterableEnvelope)
-                {
+                    , fData_ (from->fData_)
+                {		//???? @todo forIterableEnvelope - if we will support it
                     RequireNotNull (from);
                 }
                 template    <typename T, typename TRAITS>
@@ -428,12 +428,11 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 Set_LinkedList<T, TRAITS>::Set_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (typename inherited::_SharedPtrIRep (
-                                     containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
-                                     inherited::template MakeSharedPtr<Rep_InternalSync_> () :
-                                     inherited::template MakeSharedPtr<Rep_ExternalSync_> ()
-                                                                      )
-                                                                      )
+                    : inherited (
+                          containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
+                          typename inherited::_SharedPtrIRep ( inherited::template MakeSharedPtr<Rep_InternalSync_> ()) :
+                          typename inherited::_SharedPtrIRep (::template MakeSharedPtr<Rep_ExternalSync_> ())
+                                                             )
                 {
                     AssertRepValidType_ ();
                 }
