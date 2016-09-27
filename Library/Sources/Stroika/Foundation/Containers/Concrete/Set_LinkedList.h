@@ -33,7 +33,6 @@ namespace   Stroika {
                  *  \brief   Set_LinkedList<T, TRAITS> is an LinkedList-based concrete implementation of the Set<T, TRAITS> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename T, typename TRAITS = DefaultTraits::Set<T>>
                 class   Set_LinkedList : public Set<T, typename TRAITS::SetTraitsType> {
@@ -41,6 +40,8 @@ namespace   Stroika {
                     using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;
 
                 public:
+                    /**
+                     */
                     Set_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Set_LinkedList (const Set_LinkedList<T, TRAITS>& src);
                     Set_LinkedList (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
@@ -49,13 +50,13 @@ namespace   Stroika {
                     template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
-
                 public:
                     nonvirtual  Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
 
 
                 private:
-                    class   Rep_;
+                    class   Rep_ExternalSync_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
