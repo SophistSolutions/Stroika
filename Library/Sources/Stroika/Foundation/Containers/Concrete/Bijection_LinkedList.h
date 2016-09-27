@@ -41,12 +41,12 @@ namespace   Stroika {
                     using   inherited   =   Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>;
 
                 public:
-                    Bijection_LinkedList ();
+                    Bijection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Bijection_LinkedList (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    explicit Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    explicit Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);

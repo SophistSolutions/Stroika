@@ -45,22 +45,22 @@ namespace   Stroika {
                 template    <typename T>
                 class   Sequence_Factory {
                 private:
-                    static  atomic<Sequence<T> (*) ()>   sFactory_;
+                    static  atomic<Sequence<T> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Sequence<T>  mk ();
+                    static  Sequence<T>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Sequence<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Sequence<T> (*factory) () = nullptr);
+                    static  void    Register (Sequence<T> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  Sequence<T>  Default_ ();
+                    static  Sequence<T>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
                 };
 
 

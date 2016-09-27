@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedCollection<T, TRAITS> (*) ()>     SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedCollection<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>     SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::mk ()
+                inline  SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,17 +40,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedCollection_Factory<T, TRAITS>::Register (SortedCollection<T, TRAITS> (*factory) ())
+                void    SortedCollection_Factory<T, TRAITS>::Register (SortedCollection<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::Default_ ()
+                SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return SortedCollection_LinkedList<T, TRAITS> ();
+                    return SortedCollection_LinkedList<T, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 

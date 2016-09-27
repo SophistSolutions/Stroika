@@ -84,13 +84,13 @@ namespace   Stroika {
                 using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
-                Bag ();
-                Bag (const Bag<T>& src);
-                Bag (const std::initializer_list<T>& src);
+                Bag (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                Bag (const Bag<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                Bag (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template <typename CONTAINER_OF_T>
-                explicit Bag (const CONTAINER_OF_T& src);
+                explicit Bag (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Bag (const _SharedPtrIRep& rep);

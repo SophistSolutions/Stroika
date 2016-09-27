@@ -118,14 +118,14 @@ namespace   Stroika {
                 using   _SharedPtrIRep  =   typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
-                Collection ();
+                Collection (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 Collection (const Collection<T>& src);
                 Collection (Collection<T>&& src);
-                Collection (const initializer_list<T>& src);
+                Collection (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Collection<T>*>::value >::type >
-                Collection (const CONTAINER_OF_T& src);
+                Collection (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Collection (const _SharedPtrIRep& src);

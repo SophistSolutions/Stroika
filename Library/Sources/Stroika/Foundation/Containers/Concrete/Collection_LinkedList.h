@@ -43,10 +43,10 @@ namespace   Stroika {
                     using   inherited   =     Collection<T>;
 
                 public:
-                    Collection_LinkedList ();
-                    Collection_LinkedList (const T* start, const T* end);
-                    Collection_LinkedList (const Collection<T>& src);
-                    Collection_LinkedList (const Collection_LinkedList<T>& src);
+                    Collection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_LinkedList (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_LinkedList (const Collection_LinkedList<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                     nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
 

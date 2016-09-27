@@ -32,9 +32,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
+                inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,17 +47,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
+                void    SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
+                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                    return SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 

@@ -27,7 +27,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -39,7 +39,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -47,7 +47,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -56,7 +56,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -65,7 +65,7 @@ namespace   Stroika {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

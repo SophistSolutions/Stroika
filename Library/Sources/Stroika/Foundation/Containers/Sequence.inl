@@ -20,7 +20,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Sequence<T>::Sequence ()
+            inline  Sequence<T>::Sequence (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -38,7 +38,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Sequence<T>::Sequence (const initializer_list<T>& src)
+            inline  Sequence<T>::Sequence (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -47,7 +47,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src)
+            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -70,7 +70,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();

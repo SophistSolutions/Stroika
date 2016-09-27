@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set ()
+            inline  Set<T, TRAITS>::Set (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -37,7 +37,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (const initializer_list<T>& src)
+            inline  Set<T, TRAITS>::Set (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -46,7 +46,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
+            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -68,7 +68,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

@@ -263,7 +263,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array ()
+                Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -276,7 +276,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -285,7 +285,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

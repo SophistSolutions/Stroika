@@ -43,22 +43,22 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   SortedCollection_Factory {
                 private:
-                    static  atomic<SortedCollection<T, TRAITS> (*) ()> sFactory_;
+                    static  atomic<SortedCollection<T, TRAITS> (*) (ContainerUpdateIteratorSafety)> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
                      */
-                    static  SortedCollection<T, TRAITS>  mk ();
+                    static  SortedCollection<T, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Collection<T>. Note this is a global change.
                      */
-                    static  void    Register (SortedCollection<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (SortedCollection<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  SortedCollection<T, TRAITS>  Default_ ();
+                    static  SortedCollection<T, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
                 };
 
 

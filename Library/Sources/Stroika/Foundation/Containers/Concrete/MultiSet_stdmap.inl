@@ -281,7 +281,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -294,7 +294,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src)
+                inline  MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -302,7 +302,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -310,7 +310,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<CountedValue<T>>& src)
+                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

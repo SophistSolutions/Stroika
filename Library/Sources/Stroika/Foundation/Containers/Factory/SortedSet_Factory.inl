@@ -32,9 +32,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedSet<T, TRAITS> (*) ()>     SortedSet_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedSet<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>     SortedSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::mk ()
+                inline  SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,17 +47,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedSet_Factory<T, TRAITS>::Register (SortedSet<T, TRAITS> (*factory) ())
+                void    SortedSet_Factory<T, TRAITS>::Register (SortedSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::Default_ ()
+                SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return SortedSet_stdset<T, TRAITS> ();
+                    return SortedSet_stdset<T, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 

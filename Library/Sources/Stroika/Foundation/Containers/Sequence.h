@@ -215,14 +215,14 @@ namespace   Stroika {
                  *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  */
-                Sequence ();
+                Sequence (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 Sequence (const Sequence<T>& src);
                 Sequence (Sequence<T>&& src);
-                Sequence (const initializer_list<T>& src);
+                Sequence (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value >::type >
-                Sequence (const CONTAINER_OF_T& src);
+                Sequence (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);

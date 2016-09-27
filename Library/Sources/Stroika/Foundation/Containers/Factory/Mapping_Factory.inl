@@ -26,9 +26,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
+                atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -41,15 +41,15 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
+                void    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

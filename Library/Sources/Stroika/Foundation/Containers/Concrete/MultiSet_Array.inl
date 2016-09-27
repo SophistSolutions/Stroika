@@ -336,13 +336,13 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array ()
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -357,7 +357,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -366,7 +366,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -374,7 +374,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src)
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

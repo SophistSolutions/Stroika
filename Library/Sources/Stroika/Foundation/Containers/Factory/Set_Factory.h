@@ -48,22 +48,22 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Set_Factory {
                 private:
-                    static  atomic<Set<T, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Set<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Set<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Set<T, TRAITS>  mk ();
+                    static  Set<T, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Set<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Set<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Set<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  Set<T, TRAITS>  Default_ ();
+                    static  Set<T, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
 
                 private:
                     template    <typename CHECK_T>

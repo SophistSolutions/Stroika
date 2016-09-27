@@ -40,12 +40,12 @@ namespace   Stroika {
                     using   inherited   =     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
                 public:
-                    Mapping_Array ();
+                    Mapping_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Mapping_Array (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                     template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
-                    explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);

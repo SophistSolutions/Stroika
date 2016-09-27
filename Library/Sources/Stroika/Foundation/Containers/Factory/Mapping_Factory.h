@@ -49,22 +49,22 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   Mapping_Factory {
                 private:
-                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
 
                 private:
                     template    <typename CHECK_KEY>

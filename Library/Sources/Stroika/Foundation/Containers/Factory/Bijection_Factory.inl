@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
+                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) (ContainerUpdateIteratorSafety)>    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,15 +40,15 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) ())
+                void    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ ()
+                Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

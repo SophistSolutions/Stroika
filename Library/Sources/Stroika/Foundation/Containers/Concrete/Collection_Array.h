@@ -39,10 +39,10 @@ namespace   Stroika {
                     using   inherited   =     Collection<T>;
 
                 public:
-                    Collection_Array ();
-                    Collection_Array (const Collection<T>& src);
+                    Collection_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_Array (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Collection_Array (const Collection_Array<T>& src);
-                    Collection_Array (const T* start, const T* end);
+                    Collection_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Collection_Array<T>& operator= (const Collection_Array<T>& rhs);

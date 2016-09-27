@@ -40,12 +40,12 @@ namespace   Stroika {
                     using   inherited   =     Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>;
 
                 public:
-                    Association_Array ();
+                    Association_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Association_Array (const Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Association_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    explicit Association_Array (const CONTAINER_OF_PAIR_KEY_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    explicit Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);

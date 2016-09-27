@@ -255,7 +255,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                Set_LinkedList<T, TRAITS>::Set_LinkedList ()
+                Set_LinkedList<T, TRAITS>::Set_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -267,7 +267,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const initializer_list<T>& src)
+                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -276,7 +276,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& src)
+                inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -285,7 +285,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

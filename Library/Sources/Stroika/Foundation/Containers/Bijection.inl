@@ -26,7 +26,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
+            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -46,7 +46,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -55,7 +55,7 @@ namespace   Stroika {
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -64,7 +64,7 @@ namespace   Stroika {
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

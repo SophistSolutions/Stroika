@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Sequence<T> (*) ()>  Sequence_Factory<T>::sFactory_ (nullptr);
+                atomic<Sequence<T> (*) (ContainerUpdateIteratorSafety)>  Sequence_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Sequence<T>  Sequence_Factory<T>::mk ()
+                inline  Sequence<T>  Sequence_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,17 +40,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T>
-                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) ())
+                void    Sequence_Factory<T>::Register (Sequence<T> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Sequence<T>  Sequence_Factory<T>::Default_ ()
+                Sequence<T>  Sequence_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return Sequence_Array<T> ();
+                    return Sequence_Array<T> (containerUpdateSafetyPolicy);
                 }
 
 

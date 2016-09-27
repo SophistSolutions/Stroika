@@ -236,7 +236,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                Set_stdset<T, TRAITS>::Set_stdset ()
+                Set_stdset<T, TRAITS>::Set_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -248,7 +248,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline  Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src)
+                inline  Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -257,7 +257,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src)
+                inline  Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

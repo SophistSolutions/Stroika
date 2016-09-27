@@ -71,14 +71,14 @@ namespace   Stroika {
                 *
                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                 */
-                SortedAssociation ();
+                SortedAssociation (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
-                SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
+                SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>
-                explicit SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src);
+                explicit SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                SortedAssociation (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit SortedAssociation (const _SharedPtrIRep& src);

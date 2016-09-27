@@ -53,12 +53,12 @@ namespace   Stroika {
                      *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
                      *  performance.
                      */
-                    Sequence_SparseSortedMapping (T sparseValue);
-                    Sequence_SparseSortedMapping (const Sequence_SparseSortedMapping<T>& s);
+                    Sequence_SparseSortedMapping (T sparseValue, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Sequence_SparseSortedMapping (const Sequence_SparseSortedMapping<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template <typename CONTAINER_OF_T>
-                    explicit Sequence_SparseSortedMapping (T sparseValue, const CONTAINER_OF_T& s);
+                    explicit Sequence_SparseSortedMapping (T sparseValue, const CONTAINER_OF_T& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_SparseSortedMapping (T sparseValue, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    explicit Sequence_SparseSortedMapping (T sparseValue, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Sequence_SparseSortedMapping<T>&    operator= (const Sequence_SparseSortedMapping<T>& s);

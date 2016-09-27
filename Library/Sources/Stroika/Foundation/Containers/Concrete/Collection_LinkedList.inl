@@ -222,13 +222,13 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T>
-                Collection_LinkedList<T>::Collection_LinkedList ()
+                Collection_LinkedList<T>::Collection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
+                Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
@@ -237,7 +237,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
+                Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -245,7 +245,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src)
+                inline  Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (src)
                 {
                     AssertRepValidType_ ();

@@ -90,12 +90,12 @@ namespace   Stroika {
                  *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naive interpreation of above
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
-                Stack ();
+                Stack (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 Stack (const Stack<T>& src);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value >::type >
-                Stack (const CONTAINER_OF_T& src);
+                Stack (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Stack (const _SharedPtrIRep& src);

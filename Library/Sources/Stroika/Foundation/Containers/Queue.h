@@ -123,13 +123,13 @@ namespace   Stroika {
                 /**
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
                  */
-                Queue ();
+                Queue (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 Queue (const Queue<T>& src);
-                Queue (const initializer_list<T>& src);
+                Queue (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value >::type >
-                Queue (const CONTAINER_OF_T& src);
+                Queue (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Queue (const _SharedPtrIRep& rep);

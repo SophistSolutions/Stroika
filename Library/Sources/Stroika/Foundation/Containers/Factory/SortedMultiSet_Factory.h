@@ -44,22 +44,22 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   SortedMultiSet_Factory {
                 private:
-                    static  atomic<SortedMultiSet<T, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<SortedMultiSet<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedMultiSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static  SortedMultiSet<T, TRAITS>  mk ();
+                    static  SortedMultiSet<T, TRAITS>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedMultiSet<T,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (SortedMultiSet<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (SortedMultiSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  SortedMultiSet<T, TRAITS>  Default_ ();
+                    static  SortedMultiSet<T, TRAITS>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
                 };
 
 

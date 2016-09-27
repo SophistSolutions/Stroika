@@ -116,17 +116,17 @@ namespace   Stroika {
                  *
                  *  The underlying data structure of the Association is defined by @see Concrete::Association_Factory<>
                  */
-                Association ();
+                Association (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
-                Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
-                Association (const multimap<KEY_TYPE, VALUE_TYPE>& src);
+                Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                Association (const multimap<KEY_TYPE, VALUE_TYPE>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename TRAITS2>
-                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
+                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
-                explicit Association (const CONTAINER_OF_PAIR_KEY_T& src);
+                explicit Association (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit Association (const _SharedPtrIRep& rep);

@@ -41,12 +41,12 @@ namespace   Stroika {
                     using   inherited   =     Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>;
 
                 public:
-                    Association_LinkedList ();
+                    Association_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Association_LinkedList (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    explicit Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;

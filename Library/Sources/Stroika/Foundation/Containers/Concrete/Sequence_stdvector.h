@@ -46,12 +46,12 @@ namespace   Stroika {
                     using   inherited   =     Sequence<T>;
 
                 public:
-                    Sequence_stdvector ();
+                    Sequence_stdvector (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Sequence_stdvector (const Sequence_stdvector<T>& s);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>::value >::type >
-                    explicit Sequence_stdvector (const CONTAINER_OF_T& s);
+                    explicit Sequence_stdvector (const CONTAINER_OF_T& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);

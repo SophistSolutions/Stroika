@@ -71,14 +71,14 @@ namespace   Stroika {
                  *
                  *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                  */
-                SortedMapping ();
+                SortedMapping (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-                SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
-                SortedMapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
+                SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                SortedMapping (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if < (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value >::type >
-                SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src);
+                SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit SortedMapping (const _SharedPtrIRep& src);

@@ -288,7 +288,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet ()
+            MultiSet<T, TRAITS>::MultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -301,7 +301,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
+            inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -322,7 +322,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& s)
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -330,7 +330,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& s)
+            MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -338,7 +338,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
+            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -346,7 +346,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end)
+            MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

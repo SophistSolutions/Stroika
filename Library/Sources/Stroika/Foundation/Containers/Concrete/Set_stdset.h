@@ -70,13 +70,13 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    Set_stdset ();
+                    Set_stdset (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Set_stdset (const Set_stdset<T, TRAITS>& src);
-                    Set_stdset (const std::initializer_list<T>& src);
+                    Set_stdset (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value >::type >
-                    explicit Set_stdset (const CONTAINER_OF_T& src);
+                    explicit Set_stdset (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_T>
-                    explicit Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+                    explicit Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**

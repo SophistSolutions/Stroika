@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet ()
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -46,7 +46,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -54,7 +54,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -63,7 +63,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src)
+            inline  SortedMultiSet<T, TRAITS>::SortedMultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedMultiSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

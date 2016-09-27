@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T>
-                atomic<Queue<T> (*) ()>     Queue_Factory<T>::sFactory_ (nullptr);
+                atomic<Queue<T> (*) (ContainerUpdateIteratorSafety)>     Queue_Factory<T>::sFactory_ (nullptr);
                 template    <typename T>
-                inline  Queue<T>  Queue_Factory<T>::mk ()
+                inline  Queue<T>  Queue_Factory<T>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,17 +40,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T>
-                void    Queue_Factory<T>::Register (Queue<T> (*factory) ())
+                void    Queue_Factory<T>::Register (Queue<T> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T>
-                Queue<T>  Queue_Factory<T>::Default_ ()
+                Queue<T>  Queue_Factory<T>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return Queue_DoublyLinkedList<T> ();
+                    return Queue_DoublyLinkedList<T> (containerUpdateSafetyPolicy);
                 }
 
 

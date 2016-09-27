@@ -259,7 +259,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap ()
+                SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -272,7 +272,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

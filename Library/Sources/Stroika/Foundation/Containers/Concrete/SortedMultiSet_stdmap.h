@@ -44,14 +44,14 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    SortedMultiSet_stdmap ();
+                    SortedMultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src);
-                    SortedMultiSet_stdmap (const std::initializer_list<T>& src);
-                    SortedMultiSet_stdmap (const std::initializer_list<CountedValue<T>>& src);
+                    SortedMultiSet_stdmap (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    SortedMultiSet_stdmap (const std::initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>::value >::type >
-                    explicit SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
-                    SortedMultiSet_stdmap (const T* start, const T* end);
-                    SortedMultiSet_stdmap (const CountedValue<T>* start, const CountedValue<T>* end);
+                    explicit SortedMultiSet_stdmap (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    SortedMultiSet_stdmap (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    SortedMultiSet_stdmap (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**

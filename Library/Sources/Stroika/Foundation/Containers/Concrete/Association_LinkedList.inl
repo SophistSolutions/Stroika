@@ -87,7 +87,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ ****************
+                ******** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ ************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -256,11 +256,11 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                *********** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
+                *********** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList ()
+                Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -273,7 +273,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                inline  Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline  Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -282,7 +282,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

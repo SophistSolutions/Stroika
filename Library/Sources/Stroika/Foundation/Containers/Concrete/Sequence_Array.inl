@@ -294,7 +294,7 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T>
-                Sequence_Array<T>::Sequence_Array ()
+                Sequence_Array<T>::Sequence_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -306,7 +306,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src)
+                inline  Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -314,7 +314,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                inline  Sequence_Array<T>::Sequence_Array (const vector<T>& src)
+                inline  Sequence_Array<T>::Sequence_Array (const vector<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -323,7 +323,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& src)
+                inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -332,7 +332,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

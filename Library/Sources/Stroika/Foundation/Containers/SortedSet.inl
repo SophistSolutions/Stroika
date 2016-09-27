@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet ()
+            inline  SortedSet<T, TRAITS>::SortedSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -45,7 +45,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
-            inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
+            inline  SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -54,7 +54,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
+            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();
@@ -63,7 +63,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline  SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::SortedSet_Factory<T, TRAITS>::mk ()))
             {
                 _AssertRepValidType ();

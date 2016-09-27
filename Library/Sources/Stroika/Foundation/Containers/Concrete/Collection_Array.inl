@@ -220,13 +220,13 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 template    <typename T>
-                Collection_Array<T>::Collection_Array ()
+                Collection_Array<T>::Collection_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_Array<T>::Collection_Array (const Collection<T>& src)
+                Collection_Array<T>::Collection_Array (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -235,7 +235,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_Array<T>::Collection_Array (const T* start, const T* end)
+                Collection_Array<T>::Collection_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));

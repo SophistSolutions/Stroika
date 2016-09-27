@@ -42,14 +42,14 @@ namespace   Stroika {
                     using   inherited   =   Sequence<T>;
 
                 public:
-                    Sequence_DoublyLinkedList ();
+                    Sequence_DoublyLinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& src);
-                    Sequence_DoublyLinkedList (const initializer_list<T>& src);
-                    Sequence_DoublyLinkedList (const vector<T>& src);
+                    Sequence_DoublyLinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Sequence_DoublyLinkedList (const vector<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_DoublyLinkedList<T>*>::value >::type >
-                    explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& src);
+                    explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& rhs) = default;

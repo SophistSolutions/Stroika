@@ -42,14 +42,14 @@ namespace   Stroika {
                     using   inherited   =     Sequence<T>;
 
                 public:
-                    Sequence_Array ();
+                    Sequence_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Sequence_Array (const Sequence_Array<T>& s);
-                    Sequence_Array (const initializer_list<T>& s);
-                    Sequence_Array (const vector<T>& s);
+                    Sequence_Array (const initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Sequence_Array (const vector<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_Array<T>*>::value >::type >
-                    explicit Sequence_Array (const CONTAINER_OF_T& s);
+                    explicit Sequence_Array (const CONTAINER_OF_T& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    explicit Sequence_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     nonvirtual  Sequence_Array<T>& operator= (const Sequence_Array<T>& s);

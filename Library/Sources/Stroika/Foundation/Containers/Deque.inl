@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Deque<T>::Deque ()
+            inline  Deque<T>::Deque (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -31,7 +31,7 @@ namespace   Stroika {
                 _AssertRepValidType ();
             }
             template    <typename T>
-            inline  Deque<T>::Deque (const initializer_list<T>& src)
+            inline  Deque<T>::Deque (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -40,7 +40,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline  Deque<T>::Deque (const CONTAINER_OF_T& src)
+            inline  Deque<T>::Deque (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();
@@ -63,7 +63,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Deque_Factory<T>::mk ()))
             {
                 _AssertRepValidType ();

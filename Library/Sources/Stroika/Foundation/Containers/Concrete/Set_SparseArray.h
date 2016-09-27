@@ -45,13 +45,13 @@ namespace   Stroika {
                     using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;
 
                 public:
-                    Set_SparseArray ();
-                    Set_SparseArray (const Set_SparseArray<T, TRAITS>& src);
-                    Set_SparseArray (const std::initializer_list<T>& src);
+                    Set_SparseArray (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Set_SparseArray (const Set_SparseArray<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Set_SparseArray (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename CONTAINER_OF_T>
-                    explicit Set_SparseArray (const CONTAINER_OF_T& src);
+                    explicit Set_SparseArray (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Set_SparseArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    explicit Set_SparseArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
 
                 public:

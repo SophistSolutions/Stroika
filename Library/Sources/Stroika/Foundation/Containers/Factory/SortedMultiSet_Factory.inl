@@ -32,9 +32,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedMultiSet<T, TRAITS> (*) ()>   SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedMultiSet<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::mk ()
+                inline  SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,17 +47,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) ())
+                void    SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::Default_ ()
+                SortedMultiSet<T, TRAITS>  SortedMultiSet_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return SortedMultiSet_stdmap<T, TRAITS> ();
+                    return SortedMultiSet_stdmap<T, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 

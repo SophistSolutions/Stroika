@@ -44,22 +44,22 @@ namespace   Stroika {
                 template    <typename T>
                 class   Stack_Factory {
                 private:
-                    static  atomic<Stack<T> (*) ()>   sFactory_;
+                    static  atomic<Stack<T> (*) (ContainerUpdateIteratorSafety)>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Stack<T> CTOR does so automatically.
                      */
-                    static  Stack<T>  mk ();
+                    static  Stack<T>  mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Stack<T>. Note this is a global change.
                      */
-                    static  void    Register (Stack<T> (*factory) () = nullptr);
+                    static  void    Register (Stack<T> (*factory) (ContainerUpdateIteratorSafety) = nullptr);
 
                 private:
-                    static  Stack<T>  Default_ ();
+                    static  Stack<T>  Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy);
                 };
 
 

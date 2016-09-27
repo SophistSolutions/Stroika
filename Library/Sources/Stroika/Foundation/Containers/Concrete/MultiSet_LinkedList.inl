@@ -317,13 +317,13 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -331,7 +331,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -345,7 +345,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
@@ -353,7 +353,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src)
+                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();

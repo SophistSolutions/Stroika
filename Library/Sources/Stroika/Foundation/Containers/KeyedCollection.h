@@ -151,18 +151,18 @@ namespace   Stroika {
                  *  @todo use kConstructorsHaveExtractorArgument in SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR but harder with MSVC2k13
                  */
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
-                KeyedCollection ();
+                KeyedCollection (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
-                KeyedCollection (KeyExtractorFunctionType keyExtractor);
+                KeyedCollection (KeyExtractorFunctionType keyExtractor, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <is_function<typename TraitsType::KeyExtractor>::value>::type>
-                KeyedCollection (const std::initializer_list<T>& src);
+                KeyedCollection (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if <not is_function<typename TraitsType::KeyExtractor>::value>::type>
-                KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
+                KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value >::type >
-                explicit KeyedCollection (const CONTAINER_OF_T& src, KeyExtractorFunctionType keyExtractor);
+                explicit KeyedCollection (const CONTAINER_OF_T& src, KeyExtractorFunctionType keyExtractor, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
+                KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit KeyedCollection (const _SharedPtrIRep& src);

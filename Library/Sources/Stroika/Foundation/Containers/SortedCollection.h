@@ -99,14 +99,14 @@ namespace   Stroika {
             public:
                 /**
                  */
-                SortedCollection ();
+                SortedCollection (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 SortedCollection (const SortedCollection<T, TRAITS>& src);
                 SortedCollection (SortedCollection<T, TRAITS>&& src);
-                SortedCollection (const std::initializer_list<T>& src);
+                SortedCollection (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    < typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if < Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T, TRAITS>*>::value >::type >
-                SortedCollection (const CONTAINER_OF_T& src);
+                SortedCollection (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                 template    <typename COPY_FROM_ITERATOR_OF_T>
-                SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
             protected:
                 explicit SortedCollection (const _SharedPtrIRep& src);

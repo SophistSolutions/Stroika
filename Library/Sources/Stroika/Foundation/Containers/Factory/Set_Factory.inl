@@ -26,9 +26,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Set<T, TRAITS> (*) ()>   Set_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<Set<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>   Set_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::mk ()
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -41,15 +41,15 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T, typename TRAITS>
-                void    Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) ())
+                void    Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ ()
+                Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.

@@ -25,9 +25,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<MultiSet<T, TRAITS> (*) ()>     MultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<MultiSet<T, TRAITS> (*) (ContainerUpdateIteratorSafety)>     MultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::mk ()
+                inline  MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::mk (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,17 +40,17 @@ namespace   Stroika {
                     if (f == nullptr) {
                         f = &Default_;
                     }
-                    return f ();
+                    return f (containerUpdateSafetyPolicy);
                 }
                 template    <typename T, typename TRAITS>
-                void    MultiSet_Factory<T, TRAITS>::Register (MultiSet<T, TRAITS> (*factory) ())
+                void    MultiSet_Factory<T, TRAITS>::Register (MultiSet<T, TRAITS> (*factory) (ContainerUpdateIteratorSafety))
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::Default_ ()
+                MultiSet<T, TRAITS>  MultiSet_Factory<T, TRAITS>::Default_ (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 {
-                    return MultiSet_Array<T, TRAITS> ();
+                    return MultiSet_Array<T, TRAITS> (containerUpdateSafetyPolicy);
                 }
 
 
