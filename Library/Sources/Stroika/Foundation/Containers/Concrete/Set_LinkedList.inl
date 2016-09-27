@@ -250,7 +250,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
-                    fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                    ///@todo....fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                 }
 #endif
 
@@ -428,7 +428,12 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 Set_LinkedList<T, TRAITS>::Set_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ? _SharedPtrIRep (inherited::template MakeSharedPtr<Rep_InternalSync_> ()) : _SharedPtrIRep (inherited::template MakeSharedPtr<Rep_ExternalSync_> ()))
+                    : inherited (typename inherited::_SharedPtrIRep (
+                                     containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ?
+                                     inherited::template MakeSharedPtr<Rep_InternalSync_> () :
+                                     inherited::template MakeSharedPtr<Rep_ExternalSync_> ()
+                                                                      )
+                                                                      )
                 {
                     AssertRepValidType_ ();
                 }
