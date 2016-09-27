@@ -428,7 +428,7 @@ namespace   Stroika {
                  */
                 template    <typename T, typename TRAITS>
                 Set_LinkedList<T, TRAITS>::Set_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (_SharedPtrIRep (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ? inherited::template MakeSharedPtr<Rep_InternalSync_> () : inherited::template MakeSharedPtr<Rep_ExternalSync_> ()))
+                    : inherited (containerUpdateSafetyPolicy == ContainerUpdateIteratorSafety::eInternal ? _SharedPtrIRep (inherited::template MakeSharedPtr<Rep_InternalSync_> ()) : _SharedPtrIRep (inherited::template MakeSharedPtr<Rep_ExternalSync_> ()))
                 {
                     AssertRepValidType_ ();
                 }

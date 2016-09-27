@@ -302,7 +302,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : MultiSet (containerUpdateSafetyPolicy))
+                : MultiSet (containerUpdateSafetyPolicy)
             {
                 AddAll (src);
                 _AssertRepValidType ();
