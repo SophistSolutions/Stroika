@@ -16,6 +16,7 @@
 #include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 #include    "DefaultTraits/Bijection.h"
+#include    "Common.h"
 
 
 /*

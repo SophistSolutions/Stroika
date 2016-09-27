@@ -16,6 +16,7 @@
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 #include    "DefaultTraits/MultiSet.h"
+#include    "Common.h"
 
 
 /**

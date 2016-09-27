@@ -10,6 +10,7 @@
 
 #include    "Mapping.h"
 #include    "DefaultTraits/SortedAssociation.h"
+#include    "Common.h"
 
 
 /**
