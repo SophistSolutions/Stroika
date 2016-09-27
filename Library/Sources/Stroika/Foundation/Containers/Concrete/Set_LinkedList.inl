@@ -75,8 +75,8 @@ namespace   Stroika {
 #endif
 
                 private:
-                    using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList <T, Private::ContainerRepLockDataSupport_, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
-                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+                    using   DataStructureImplType_  =   DataStructures::LinkedList<T, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_NEW_<T, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_      fData_;
