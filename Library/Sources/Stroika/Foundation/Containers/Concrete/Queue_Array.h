@@ -56,6 +56,8 @@ namespace   Stroika {
                     explicit Queue_Array (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
+                    /**
+                     */
                     nonvirtual  Queue_Array<T>& operator= (const Queue_Array<T>& rhs) = default;
 
                 public:

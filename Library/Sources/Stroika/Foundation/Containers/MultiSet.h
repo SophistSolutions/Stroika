@@ -165,7 +165,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  MultiSet&   operator= (const MultiSet& rhs) = default;
-                nonvirtual  MultiSet& operator= (MultiSet&& rhs) = default;
+                nonvirtual  MultiSet&   operator= (MultiSet&& rhs) = default;
 
             public:
                 /**

@@ -54,6 +54,8 @@ namespace   Stroika {
                     explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
+                    /**
+                     */
                     nonvirtual  Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
 
                 public:

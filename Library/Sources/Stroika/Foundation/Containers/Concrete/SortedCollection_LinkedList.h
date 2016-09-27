@@ -52,6 +52,8 @@ namespace   Stroika {
                     SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& sb);
 
                 public:
+                    /**
+                     */
                     nonvirtual  SortedCollection_LinkedList<T, TRAITS>&  operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:

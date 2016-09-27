@@ -51,8 +51,9 @@ namespace   Stroika {
                     explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
+                    /**
+                     */
                     nonvirtual  Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
-
 
                 private:
                     class   Rep_ExternalSync_;

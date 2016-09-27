@@ -100,7 +100,10 @@ namespace   Stroika {
             public:
                 ~Bag ();
 #endif
+
             public:
+                /**
+                 */
                 nonvirtual  Bag<T>& operator= (const Bag<T>& rhs) = default;
 
             public:

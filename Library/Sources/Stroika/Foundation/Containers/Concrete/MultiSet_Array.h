@@ -45,13 +45,15 @@ namespace   Stroika {
                 public:
                     MultiSet_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     MultiSet_Array (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    MultiSet_Array (const std::initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    MultiSet_Array (const std::initializer_list<CountedValue<T>>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    MultiSet_Array (const std::initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    MultiSet_Array (const std::initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     MultiSet_Array (const MultiSet_Array<T, TRAITS>& src);
                     MultiSet_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     MultiSet_Array (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
 
                 public:
+                    /**
+                     */
                     nonvirtual  MultiSet_Array<T, TRAITS>& operator= (const MultiSet_Array<T, TRAITS>& rhs);
 
                 public:

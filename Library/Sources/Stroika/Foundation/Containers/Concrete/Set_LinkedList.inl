@@ -44,7 +44,7 @@ namespace   Stroika {
                 public:
                     Rep_ExternalSync_ () = default;
                     Rep_ExternalSync_ (const Rep_ExternalSync_& from) = delete;
-                    Rep_ExternalSync_ (Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_ExternalSync_ (const Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope);
 
                 public:
                     nonvirtual  Rep_ExternalSync_& operator= (const Rep_ExternalSync_&) = delete;
@@ -76,7 +76,7 @@ namespace   Stroika {
 
                 private:
                     using   DataStructureImplType_  =   DataStructures::LinkedList<T, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
-                    using   IteratorRep_            =   typename Private::IteratorImplHelper_NEW_<T, DataStructureImplType_>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_ExternalSync_<T, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_      fData_;
@@ -147,7 +147,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                inline  Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::Rep_ExternalSync_ (Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                inline  Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::Rep_ExternalSync_ (const Rep_ExternalSync_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
@@ -190,8 +190,7 @@ namespace   Stroika {
                     if (iLink == nullptr) {
                         return RESULT_TYPE::GetEmptyIterator ();
                     }
-                    Rep_ExternalSync_*   NON_CONST_THIS  =   const_cast<Rep_ExternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                    resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_);
                     resultRep->fIterator.SetCurrentLink (iLink);
                     // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
@@ -221,7 +220,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::Add (ArgByValueType<T> item)
                 {
                     // safe to use UnpatchedForwardIterator cuz locked and no updates
-                    for (typename DataStructureImplType_::UnpatchedForwardIterator it (&fData_); it.More (nullptr, true);) {
+                    for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                             return;
                         }
@@ -232,7 +231,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::Remove (ArgByValueType<T> item)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
-                    for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                    for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                         if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                             fData_.RemoveAt (it);
                             return;

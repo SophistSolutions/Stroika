@@ -106,11 +106,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 * *IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR,CONTAINER_VALUE> ***
+                 **IteratorImplHelper_ExternalSync_<T,CONTAINER, CONTAINER_ITERATOR,CONTAINER_VALUE>**
                  ********************************************************************************
                  */
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                inline  IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::IteratorImplHelper_NEW_ (IteratorOwnerID owner, const CONTAINER* data)
+                inline  IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::IteratorImplHelper_ExternalSync_ (IteratorOwnerID owner, const CONTAINER* data)
                     : inherited ()
                     , fOwner_ (owner)
                     , fIterator (data)
@@ -119,31 +119,31 @@ namespace   Stroika {
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Clone () const
+                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Clone () const
                 {
-                    return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_NEW_> (*this);
+                    return Iterator<T>::template MakeSharedPtr<IteratorImplHelper_ExternalSync_> (*this);
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                IteratorOwnerID IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::GetOwner () const
+                IteratorOwnerID IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::GetOwner () const
                 {
                     return fOwner_;
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                void    IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More (Memory::Optional<T>* result, bool advance)
+                void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More (Memory::Optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);
                     More_SFINAE_ (result, advance);
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
                 template    <typename CHECK_KEY>
-                inline  void    IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
+                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
                     fIterator.More (result, advance);
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
                 template    <typename CHECK_KEY>
-                inline  void    IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
+                inline  void    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type*)
                 {
                     RequireNotNull (result);
                     Memory::Optional<DataStructureImplValueType_> tmp;
@@ -156,7 +156,7 @@ namespace   Stroika {
                     }
                 }
                 template    <typename T, typename CONTAINER, typename CONTAINER_ITERATOR, typename CONTAINER_VALUE>
-                bool    IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const
+                bool    IteratorImplHelper_ExternalSync_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_VALUE>::Equals (const typename Iterator<T>::IRep* rhs) const
                 {
                     RequireNotNull (rhs);
                     using   ActualIterImplType_ =   IteratorImplHelper_NEW_<T, CONTAINER, CONTAINER_ITERATOR, CONTAINER_ITERATOR>;

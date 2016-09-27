@@ -55,7 +55,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                    */
+                     */
                     nonvirtual  SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& rhs) = default;
 
                 private:
