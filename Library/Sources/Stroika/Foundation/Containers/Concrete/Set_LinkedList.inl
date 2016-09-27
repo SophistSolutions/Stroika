@@ -76,7 +76,7 @@ namespace   Stroika {
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList <T, Private::ContainerRepLockDataSupport_, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
-                    using   IteratorRepSafeIter_    =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_      fData_;
@@ -134,7 +134,7 @@ namespace   Stroika {
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::LinkedList <T, Private::ContainerRepLockDataSupport_, DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>>;
-                    using   IteratorRepSafeIter_    =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_      fData_;
@@ -161,7 +161,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 Iterator<T>  Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
-                    return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRepSafeIter_> (suggestedOwner, &this->fData_));
+                    return Iterator<T> (Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &this->fData_));
                 }
                 template    <typename T, typename TRAITS>
                 size_t  Set_LinkedList<T, TRAITS>::Rep_ExternalSync_::GetLength () const
@@ -283,7 +283,7 @@ namespace   Stroika {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRepSafeIter_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                     }
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     return Iterator<T> (tmpRep);
