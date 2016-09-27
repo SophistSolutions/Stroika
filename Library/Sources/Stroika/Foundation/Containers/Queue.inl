@@ -22,7 +22,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Queue<T>::Queue (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
             }
@@ -34,7 +34,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Queue<T>::Queue (const initializer_list<T>& q, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AddAllToTail (q);
@@ -43,7 +43,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Queue<T>::Queue (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
@@ -67,7 +67,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Queue_Factory<T>::mk ()))
+                : inherited (move (Concrete::Queue_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AddAllToTail (start, end);

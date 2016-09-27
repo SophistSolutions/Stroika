@@ -27,7 +27,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Collection<T>::Collection (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : inherited (move (Concrete::Collection_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
             }
@@ -59,18 +59,16 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Collection<T>::Collection (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : Collection (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Collection<T>::Collection (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Collection_Factory<T>::mk ()))
+                : Collection (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }

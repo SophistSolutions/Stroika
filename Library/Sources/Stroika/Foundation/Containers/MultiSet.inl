@@ -289,7 +289,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
             }
@@ -302,9 +302,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : MultiSet (containerUpdateSafetyPolicy))
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }
@@ -323,7 +322,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const initializer_list<T>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AddAll (s);
@@ -331,25 +330,22 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& s, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : MultiSet (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (s);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : MultiSet (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::MultiSet_Factory<T, TRAITS>::mk ()))
+                : MultiSet (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (start, end);
                 _AssertRepValidType ();
             }

@@ -22,7 +22,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Stack<T>::Stack (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
             }
@@ -35,7 +35,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Stack<T>::Stack (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();
@@ -58,7 +58,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Stack<T>::Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Stack_Factory<T>::mk ()))
+                : inherited (move (Concrete::Stack_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AssertNotImplemented ();

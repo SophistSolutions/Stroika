@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Sequence<T>::Sequence (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
             }
@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AppendAll (src);
@@ -48,7 +48,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Sequence_Factory<T>::mk ()))
+                : inherited (move (Concrete::Sequence_Factory<T>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();
                 AppendAll (src);
