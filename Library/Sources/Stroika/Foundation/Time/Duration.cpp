@@ -349,18 +349,37 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
         }
         if (timeLeft > 0) {
             // DO nano, micro, milliseconds here
-            uint32_t    nNanoSeconds    =   uint32_t (timeLeft * 1000 * 1000 * 1000 + 0.5); // round
-            if (not result.empty ()) {
-                result += kCommaSpace_;
+
+            uint16_t    nMilliseconds   =   static_cast<uint16_t> (floor (timeLeft * 1.0e3));
+            Assert (0 <= nMilliseconds and nMilliseconds < 1000);
+            // intentionally show something like 1003us as 1003 us, not 1ms, 3us
+            if (nMilliseconds > 2 or Math::NearlyEquals (timeLeft, .001) or Math::NearlyEquals (timeLeft, .002)) {
+                if (not result.empty ()) {
+                    result += kCommaSpace_;
+                }
+                result += Characters::Format (L"%d ", int (nMilliseconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nMilliseconds);
+                timeLeft -= 1.0e-3 * nMilliseconds;
             }
-            if (nNanoSeconds < 1000) {
-                result += Characters::Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+            uint16_t    nMicroSeconds   =   static_cast<uint16_t> (floor (timeLeft * 1.0e6));
+            if (nMicroSeconds > 0) {
+                if (not result.empty ()) {
+                    result += kCommaSpace_;
+                }
+                result += Characters::Format (L"%d ", int (nMicroSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nMicroSeconds);
+                timeLeft -= 1.0e-6 * nMicroSeconds;
             }
-            else if (nNanoSeconds < 1000 * 1000) {
-                result += Characters::Format (L"%d ", nNanoSeconds / 1000) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nNanoSeconds / 1000);
-            }
-            else  {
-                result += Characters::Format (L"%d ", nNanoSeconds / (1000 * 1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds / (1000 * 1000));
+            Time::DurationSecondsType   nNanoSeconds    = timeLeft * 1.0e9;
+            if (nNanoSeconds > 1.0e-5) {
+                if (not result.empty ()) {
+                    result += kCommaSpace_;
+                }
+                Time::DurationSecondsType extraBits = nNanoSeconds - floor (nNanoSeconds);
+                if (extraBits > 1.0e-2) {
+                    result += Characters::Format (L"%f ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, 2);
+                }
+                else {
+                    result += Characters::Format (L"%d ", int (nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                }
             }
         }
     }

@@ -538,6 +538,10 @@ namespace   {
             VerifyTestResult (kD.PrettyPrint () == L"45 µs");
         }
         {
+            const   Duration    kD      =   Duration (1.6e-6);
+            VerifyTestResult (kD.PrettyPrint () == L"1 µs, 600 ns");
+        }
+        {
             const   Duration    kD      =   Duration (L"PT0.000045S");
             VerifyTestResult (kD.PrettyPrint () == L"45 µs");
             VerifyTestResult ((-kD).PrettyPrint () == L"-45 µs");
