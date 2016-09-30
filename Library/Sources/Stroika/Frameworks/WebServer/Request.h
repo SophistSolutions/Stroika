@@ -88,6 +88,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Return the unsigned integer value of the Content-Length header.
+                 */
+                nonvirtual  Memory::Optional<uint64_t>  GetContentLength () const;
+
+            public:
+                /**
                  */
                 nonvirtual  void    SetHeaders (const Mapping<String, String>& headers);
 

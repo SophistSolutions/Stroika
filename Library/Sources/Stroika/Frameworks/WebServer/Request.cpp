@@ -63,14 +63,14 @@ Memory::BLOB    Request::GetBody ()
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fBody_.IsMissing ()) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
-        if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
-            size_t contentLength = Characters::String2Int<size_t> (*ci);
-            Memory::SmallStackBuffer<Memory::Byte>  buf (contentLength);
-            if (contentLength != 0) {
+        if (Optional<uint64_t> contentLength = GetContentLength ()) {
+            // assumes content can fit in RAM
+            Memory::SmallStackBuffer<Memory::Byte>  buf (static_cast<size_t> (*contentLength));
+            if (*contentLength != 0) {
                 size_t  n   =   fInputStream_.ReadAll (begin (buf), end (buf));
-                Assert (n <= contentLength);
-                if (n != contentLength) {
-                    Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, contentLength)));
+                Assert (n <= *contentLength);
+                if (n != *contentLength) {
+                    Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, *contentLength)));
                 }
             }
             fBody_ = Memory::BLOB (begin (buf), end (buf));
@@ -80,6 +80,17 @@ Memory::BLOB    Request::GetBody ()
         }
     }
     return *fBody_;
+}
+
+Optional<uint64_t>  Request::GetContentLength () const
+{
+    shared_lock<const AssertExternallySynchronizedLock> critSec { *this };
+    if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
+        return Characters::String2Int<uint64_t> (*ci);
+    }
+    else {
+        return Optional<uint64_t> {};
+    }
 }
 
 String  Request::ToString () const
