@@ -153,6 +153,12 @@ Duration&   Duration::operator+= (const Duration& rhs)
     return *this;
 }
 
+Duration&   Duration::operator-= (const Duration& rhs)
+{
+    *this = *this - rhs;
+    return *this;
+}
+
 void    Duration::clear ()
 {
     fDurationRep_.clear ();
@@ -378,7 +384,7 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                     result += Characters::Format (L"%f ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, 2);
                 }
                 else {
-                    result += Characters::Format (L"%d ", int (nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                    result += Characters::Format (L"%d ", int (nNanoSeconds)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, int (nNanoSeconds));
                 }
             }
         }
@@ -701,8 +707,17 @@ Duration    Time::operator+ (const Duration& lhs, const Duration& rhs)
     return Duration (lhs.As<Time::DurationSecondsType> () + rhs.As<DurationSecondsType> ());
 }
 
+Duration    Time::operator- (const Duration& lhs, const Duration& rhs)
+{
+    return Duration (lhs.As<Time::DurationSecondsType> () - rhs.As<DurationSecondsType> ());
+}
+
 Duration    Time::operator* (const Duration& lhs, long double rhs)
 {
     return Duration (lhs.As<Time::DurationSecondsType> () * rhs);
 }
 
+Duration    Time::operator* (long double lhs, const Duration& rhs)
+{
+    return Duration (rhs.As<Time::DurationSecondsType> () * lhs);
+}

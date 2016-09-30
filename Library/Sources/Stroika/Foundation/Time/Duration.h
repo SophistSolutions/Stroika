@@ -167,6 +167,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  Duration&   operator-= (const Duration& rhs);
+
+            public:
+                /**
                  * Defined for
                  *      time_t (alias for another type here)
                  *      int
@@ -377,9 +382,15 @@ namespace   Stroika {
             Duration    operator+ (const Duration& lhs, const Duration& rhs);
 
             /**
+             *  Return the difference of the two durations.
+             */
+            Duration    operator- (const Duration& lhs, const Duration& rhs);
+
+            /**
              *  Multiply the duration by the floating point argument
              */
             Duration    operator* (const Duration& lhs, long double rhs);
+            Duration    operator* (long double lhs, const Duration& rhs);
 
             /**
              *  Divide the duration by the floating point argument
