@@ -8,6 +8,7 @@
 
 #include    "../Configuration/Common.h"
 
+#include    "../Characters/String.h"
 #include    "../Time/Realtime.h"
 #include    "Synchronized.h"
 #include    "Thread.h"
@@ -67,6 +68,12 @@ namespace   Stroika {
 
                     nonvirtual    bool operator== (const ControlParams& rhs) const;
                     nonvirtual    bool operator!= (const ControlParams& rhs) const;
+
+                    /**
+                      *  @see Characters::ToString ();
+                      */
+                    nonvirtual  Characters::String  ToString () const;
+
                 };
 
             public:

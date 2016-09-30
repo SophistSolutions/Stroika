@@ -11,6 +11,9 @@
  ********************************************************************************
  */
 #include    "Sleep.h"
+#include    "../Characters/StringBuilder.h"
+#include    "../Characters/ToString.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -38,6 +41,17 @@ namespace   Stroika {
             inline  bool PIDLoop<CONTROL_VAR_TYPE>::ControlParams::operator!= (const ControlParams& rhs) const
             {
                 return not operator== (rhs);
+            }
+            template    <typename CONTROL_VAR_TYPE>
+            inline  Characters::String PIDLoop<CONTROL_VAR_TYPE>::ControlParams::ToString () const
+            {
+                Characters::StringBuilder   out;
+                out += L"{";
+                out += L"P: " + Characters::ToString (P) + L"',";
+                out += L"I: " + Characters::ToString (I) + L"',";
+                out += L"D: " + Characters::ToString (D) + L"',";
+                out += L"}";
+                return out.str ();
             }
 
 
