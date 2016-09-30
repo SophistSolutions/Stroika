@@ -89,6 +89,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Return the unsigned integer value of the Content-Length header.
+                 *
+                 *  \note - this does not imply having read the body, and nor is it updated to reflect the body size read after its been read.
                  */
                 nonvirtual  Memory::Optional<uint64_t>  GetContentLength () const;
 
