@@ -134,7 +134,7 @@ bool    Connection::ReadAndProcessMessage ()
         GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant { L"close" });
     }
 #if     USE_NOISY_TRACE_IN_THIS_MODULE_
-    String url = GetRequest ().fURL.GetFullURL ();
+    String url = GetRequest ().GetURL ().GetFullURL ();
     DbgTrace (L"Serving page %s", url.c_str ());
 #endif
     try {
