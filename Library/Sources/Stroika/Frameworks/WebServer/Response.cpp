@@ -16,6 +16,7 @@
 #include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/Debug/Assertions.h"
+#include    "../../Foundation/Debug/Trace.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/IO/Network/HTTP/Exception.h"
 #include    "../../Foundation/IO/Network/HTTP/Headers.h"
@@ -31,6 +32,17 @@ using   namespace   Stroika::Foundation::Memory;
 
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::WebServer;
+
+
+
+
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
+
 
 
 
@@ -65,7 +77,7 @@ namespace   Stroika {
 
 /*
  ********************************************************************************
- ************************ WebServer::Response *******************************
+ **************************** WebServer::Response *******************************
  ********************************************************************************
  */
 namespace   {
@@ -201,6 +213,10 @@ map<String, String>  Response::GetEffectiveHeaders () const
 
 void    Response::Flush ()
 {
+#if     USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"Response::Flush");
+    DbgTrace (L"fState_ = %s", Characters::ToString (fState_).c_str ());
+#endif
     lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
     if (fState_ == State::eInProgress) {
         {
