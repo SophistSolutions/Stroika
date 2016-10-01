@@ -55,7 +55,7 @@ namespace   Stroika {
                     nonvirtual  Stack_LinkedList<T>& operator= (const Stack_LinkedList<T>& rhs);
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
