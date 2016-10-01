@@ -193,7 +193,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_Array<T>::Collection_Array (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Collection_Array<T>::Collection_Array (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : Collection_Array (containerUpdateSafetyPolicy)
                 {
                     SetCapacity (src.GetLength ());
@@ -201,7 +201,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
-                Collection_Array<T>::Collection_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                inline  Collection_Array<T>::Collection_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                     : Collection_Array (containerUpdateSafetyPolicy)
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
