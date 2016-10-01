@@ -84,7 +84,7 @@ namespace   Stroika {
                     nonvirtual  Set_stdset<T, TRAITS>& operator= (const Set_stdset<T, TRAITS>& rhs);
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
