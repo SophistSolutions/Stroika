@@ -27,11 +27,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::*****************
+                 ******* Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_*****
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+                class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
                 private:
                     using   inherited   =   typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
 
@@ -42,15 +42,15 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope);
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -88,38 +88,38 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******** Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ ****************
+                ******** Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_ ****************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
+                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
                     : inherited ()
                     , fData_ (&from->fData_, forIterableEnvelope)
                 {
                     RequireNotNull (from);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_IterableSharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
+                typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::_IterableSharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Clone (IteratorOwnerID forIterableEnvelope) const
                 {
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
                     }
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::MakeIterator (IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                         tmpRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                     }
                     CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                size_t  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::GetLength () const
+                size_t  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return (fData_.GetLength ());
@@ -127,7 +127,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::IsEmpty () const
+                bool  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         return fData_.IsEmpty ();
@@ -135,7 +135,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void      Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
+                void      Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
@@ -145,7 +145,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
                 {
                     using   RESULT_TYPE     =   Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
                     using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
@@ -155,7 +155,7 @@ namespace   Stroika {
                         if (iLink == nullptr) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
                         resultRep = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         resultRep->fIterator.SetCurrentLink (iLink);
                     }
@@ -164,33 +164,33 @@ namespace   Stroika {
                     return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
+                typename Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::_SharedPtrIRep  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
                 {
                     if (fData_.HasActiveIterators ()) {
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
                         CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
                     }
                     else {
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
+                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_InternalSync_> ();
                     }
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterable<KEY_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
+                Iterable<KEY_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Keys () const
                 {
                     return this->_Keys_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterable<VALUE_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Values () const
+                Iterable<VALUE_TYPE>    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Values () const
                 {
                     return this->_Values_Reference_Implementation ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<VALUE_TYPE>* item) const
+                bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<VALUE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         for (typename DataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -209,7 +209,7 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt)
+                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -224,7 +224,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (ArgByValueType<KEY_TYPE> key)
+                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Remove (ArgByValueType<KEY_TYPE> key)
                 {
                     using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
@@ -238,7 +238,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
+                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
                 {
                     const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -250,7 +250,7 @@ namespace   Stroika {
                 }
 #if     qDebug
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
+                void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_InternalSync_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
                 {
                     CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
@@ -261,13 +261,13 @@ namespace   Stroika {
 
 
                 /*
-                ********************************************************************************
-                *********** Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 *********** Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
+                 ********************************************************************************
+                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -280,18 +280,16 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
                 inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : Mapping_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : Mapping_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
@@ -299,7 +297,7 @@ namespace   Stroika {
                 inline  void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

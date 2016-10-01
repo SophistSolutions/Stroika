@@ -24,11 +24,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* MultiSet_LinkedList<T, TRAITS>::Rep_ *********************
+                 ************** MultiSet_LinkedList<T, TRAITS>::Rep_InternalSync_ ***************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   MultiSet_LinkedList<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
+                class   MultiSet_LinkedList<T, TRAITS>::Rep_InternalSync_ : public MultiSet<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename MultiSet<T, TRAITS>::_IRep;
 
@@ -40,39 +40,220 @@ namespace   Stroika {
                     using   CounterType = typename inherited::CounterType;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                        : inherited ()
+                        , fData_ (&from->fData_, forIterableEnvelope)
+                    {
+                        RequireNotNull (from);
+                    }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual size_t                              GetLength () const override;
-                    virtual bool                                IsEmpty () const override;
-                    virtual Iterator<CountedValue<T>>           MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<CountedValue<T>>           FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep              Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    }
+                    virtual size_t                              GetLength () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return (fData_.GetLength ());
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual bool                                IsEmpty () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.IsEmpty ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterator<CountedValue<T>>           MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        return Iterator<CountedValue<T>> (tmpRep);
+                    }
+                    virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                            // use iterator (which currently implies lots of locks) with this->_Apply ()
+                            fData_.Apply (doToElement);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterator<CountedValue<T>>           FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        using   RESULT_TYPE     =   Iterator<CountedValue<T>>;
+                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        SHARED_REP_TYPE resultRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            auto iLink = fData_.FindFirstThat (doToElement);
+                            if (iLink == nullptr) {
+                                return RESULT_TYPE::GetEmptyIterator ();
+                            }
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                            resultRep->fIterator.SetCurrentLink (iLink);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
+                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                    }
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep                      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual bool                                Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool                                Contains (ArgByValueType<T> item) const override;
-                    virtual void                                Add (ArgByValueType<T> item, CounterType count) override;
-                    virtual void                                Remove (ArgByValueType<T> item, CounterType count) override;
-                    virtual void                                Remove (const Iterator<CountedValue<T>>& i) override;
-                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override;
-                    virtual CounterType                         OccurrencesOf (ArgByValueType<T> item) const override;
-                    virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
-                    virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override;
+                    virtual _SharedPtrIRep                      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        if (fData_.HasActiveIterators ()) {
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                                auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                r->fData_.RemoveAll ();
+                                return r;
+                            }
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        }
+                        else {
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> ();
+                        }
+                    }
+                    virtual bool                                Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
+                    {
+                        return this->_Equals_Reference_Implementation (rhs);
+                    }
+                    virtual bool                                Contains (ArgByValueType<T> item) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            CountedValue<T>   c = item;
+                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                                    Assert (c.fCount != 0);
+                                    return (true);
+                                }
+                            }
+                            return (false);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                                Add (ArgByValueType<T> item, CounterType count) override
+                    {
+                        using   Traversal::kUnknownIteratorOwnerID;
+                        if (count != 0) {
+                            CountedValue<T>   current (item);
+                            CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                                    if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                        current.fCount += count;
+                                        fData_.SetAt (it, current);
+                                        return;
+                                    }
+                                }
+                                fData_.Prepend (CountedValue<T> (item, count));
+                            }
+                            CONTAINER_LOCK_HELPER_END ();
+                        }
+                    }
+                    virtual void                                Remove (ArgByValueType<T> item, CounterType count) override
+                    {
+                        using   Traversal::kUnknownIteratorOwnerID;
+                        if (count != 0) {
+                            CountedValue<T>   current (item);
+                            CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                                    if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                        if (current.fCount > count) {
+                                            current.fCount -= count;
+                                        }
+                                        else {
+                                            current.fCount = 0;     // Should this be an underflow excpetion, assertion???
+                                        }
+                                        if (current.fCount == 0) {
+                                            fData_.RemoveAt (it);
+                                        }
+                                        else {
+                                            fData_.SetAt (it, current);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            CONTAINER_LOCK_HELPER_END ();
+                        }
+                    }
+                    virtual void                                Remove (const Iterator<CountedValue<T>>& i) override
+                    {
+                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.RemoveAt (mir.fIterator);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
+                    {
+                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            if (newCount == 0) {
+                                fData_.RemoveAt (mir.fIterator);
+                            }
+                            else {
+                                CountedValue<T>   c   =   mir.fIterator.Current ();
+                                c.fCount = newCount;
+                                fData_.SetAt (mir.fIterator, c);
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual CounterType                         OccurrencesOf (ArgByValueType<T> item) const override
+                    {
+                        CountedValue<T>   c = item;
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                                    Ensure (c.fCount != 0);
+                                    return c.fCount;
+                                }
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                        return 0;
+                    }
+                    virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    {
+                        return this->_Elements_Reference_Implementation (rep);
+                    }
+                    virtual Iterable<T>                         UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
+                    {
+                        return this->_UniqueElements_Reference_Implementation (rep);
+                    }
 #if     qDebug
-                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #endif
 
                 private:
@@ -87,254 +268,26 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* MultiSet_LinkedList<T, TRAITS>::Rep_ *********************
-                 ********************************************************************************
-                 */
-                template    <typename T, typename TRAITS>
-                inline  MultiSet_LinkedList<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-                    : inherited ()
-                    , fData_ (&from->fData_, forIterableEnvelope)
-                {
-                    RequireNotNull (from);
-                }
-                template    <typename T, typename TRAITS>
-                size_t  MultiSet_LinkedList<T, TRAITS>::Rep_::GetLength () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return (fData_.GetLength ());
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                bool  MultiSet_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.IsEmpty ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<CountedValue<T>> MultiSet_LinkedList<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
-                {
-                    typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    return Iterator<CountedValue<T>> (tmpRep);
-                }
-                template    <typename T, typename TRAITS>
-                void      MultiSet_LinkedList<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<CountedValue<T>>     MultiSet_LinkedList<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
-                {
-                    using   RESULT_TYPE     =   Iterator<CountedValue<T>>;
-                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                    SHARED_REP_TYPE resultRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        auto iLink = fData_.FindFirstThat (doToElement);
-                        if (iLink == nullptr) {
-                            return RESULT_TYPE::GetEmptyIterator ();
-                        }
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        resultRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                        resultRep->fIterator.SetCurrentLink (iLink);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                    return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-                }
-                template    <typename T, typename TRAITS>
-                typename MultiSet_LinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  MultiSet_LinkedList<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
-                {
-                    if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                            r->fData_.RemoveAll ();
-                            return r;
-                        }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    }
-                    else {
-                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
-                    }
-                }
-                template    <typename T, typename TRAITS>
-                bool    MultiSet_LinkedList<T, TRAITS>::Rep_::Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const
-                {
-                    return this->_Equals_Reference_Implementation (rhs);
-                }
-                template    <typename T, typename TRAITS>
-                bool   MultiSet_LinkedList<T, TRAITS>::Rep_::Contains (ArgByValueType<T> item) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        CountedValue<T>   c = item;
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
-                                Assert (c.fCount != 0);
-                                return (true);
-                            }
-                        }
-                        return (false);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                typename MultiSet_LinkedList<T, TRAITS>::Rep_::_IterableSharedPtrIRep   MultiSet_LinkedList<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
-                {
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, CounterType count)
-                {
-                    using   Traversal::kUnknownIteratorOwnerID;
-                    if (count != 0) {
-                        CountedValue<T>   current (item);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
-                                    current.fCount += count;
-                                    fData_.SetAt (it, current);
-                                    return;
-                                }
-                            }
-                            fData_.Prepend (CountedValue<T> (item, count));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                }
-                template    <typename T, typename TRAITS>
-                void   MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, CounterType count)
-                {
-                    using   Traversal::kUnknownIteratorOwnerID;
-                    if (count != 0) {
-                        CountedValue<T>   current (item);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
-                                    if (current.fCount > count) {
-                                        current.fCount -= count;
-                                    }
-                                    else {
-                                        current.fCount = 0;     // Should this be an underflow excpetion, assertion???
-                                    }
-                                    if (current.fCount == 0) {
-                                        fData_.RemoveAt (it);
-                                    }
-                                    else {
-                                        fData_.SetAt (it, current);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                }
-                template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<CountedValue<T>>& i)
-                {
-                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.RemoveAt (mir.fIterator);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
-                {
-                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        if (newCount == 0) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        else {
-                            CountedValue<T>   c   =   mir.fIterator.Current ();
-                            c.fCount = newCount;
-                            fData_.SetAt (mir.fIterator, c);
-                        }
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                auto    MultiSet_LinkedList<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
-                {
-                    CountedValue<T>   c = item;
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
-                                Ensure (c.fCount != 0);
-                                return c.fCount;
-                            }
-                        }
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                    return 0;
-                }
-                template    <typename T, typename TRAITS>
-                Iterable<T>    MultiSet_LinkedList<T, TRAITS>::Rep_::Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const
-                {
-                    return this->_Elements_Reference_Implementation (rep);
-                }
-                template    <typename T, typename TRAITS>
-                Iterable<T>    MultiSet_LinkedList<T, TRAITS>::Rep_::UniqueElements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const
-                {
-                    return this->_UniqueElements_Reference_Implementation (rep);
-                }
-#if     qDebug
-                template    <typename T, typename TRAITS>
-                void    MultiSet_LinkedList<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#endif
-
-
-                /*
-                 ********************************************************************************
                  ************************ MultiSet_LinkedList<T, TRAITS> ************************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const MultiSet<T, TRAITS>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
@@ -345,18 +298,16 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : MultiSet_LinkedList (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
@@ -364,7 +315,7 @@ namespace   Stroika {
                 inline  void    MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

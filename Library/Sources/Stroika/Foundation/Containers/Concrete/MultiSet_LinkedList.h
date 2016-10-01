@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
