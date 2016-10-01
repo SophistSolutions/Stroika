@@ -27,7 +27,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
                 : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk (containerUpdateSafetyPolicy)))
             {
                 _AssertRepValidType ();

@@ -38,18 +38,16 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk ()))
+                : Set (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+                : Set (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (src);
                 _AssertRepValidType ();
             }
@@ -69,9 +67,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                : inherited (move (Concrete::Set_Factory<T, TRAITS>::mk (containerUpdateSafetyPolicy)))
+                : Set (containerUpdateSafetyPolicy)
             {
-                _AssertRepValidType ();
                 AddAll (start, end);
                 _AssertRepValidType ();
             }

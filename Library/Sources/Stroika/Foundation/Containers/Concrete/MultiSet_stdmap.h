@@ -74,7 +74,7 @@ namespace   Stroika {
                     nonvirtual  MultiSet_stdmap<T, TRAITS>& operator= (const MultiSet_stdmap<T, TRAITS>& rhs) = default;
 
                 private:
-                    class Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
