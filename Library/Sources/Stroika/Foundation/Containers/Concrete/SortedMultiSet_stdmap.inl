@@ -28,11 +28,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ****************** SortedMultiSet_stdmap<T, TRAITS>::Rep_ **********************
+                 ************ SortedMultiSet_stdmap<T, TRAITS>::Rep_InternalSync_ ***************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public SortedMultiSet<T, TRAITS>::_IRep {
+                class   SortedMultiSet_stdmap<T, TRAITS>::Rep_InternalSync_ : public SortedMultiSet<T, TRAITS>::_IRep {
                 private:
                     using   inherited   =   typename    SortedMultiSet<T, TRAITS>::_IRep;
 
@@ -45,39 +45,181 @@ namespace   Stroika {
                     using   CounterType = typename inherited::CounterType;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                        : inherited ()
+                        , fData_ (&from->fData_, forIterableEnvelope)
+                    {
+                        RequireNotNull (from);
+                    }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual size_t                      GetLength () const override;
-                    virtual bool                        IsEmpty () const override;
-                    virtual Iterator<CountedValue<T>>   MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<CountedValue<T>>   FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep      Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    }
+                    virtual size_t                      GetLength () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.size ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual bool                        IsEmpty () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.empty ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterator<CountedValue<T>>   MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        return Iterator<CountedValue<T>> (tmpRep);
+                    }
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        this->_Apply (doToElement);
+                    }
+                    virtual Iterator<CountedValue<T>>   FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        return this->_FindFirstThat (doToElement, suggestedOwner);
+                    }
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual _MultisetSharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual bool                        Equals (const typename MultiSetType::_IRep& rhs) const override;
-                    virtual bool                        Contains (ArgByValueType<T> item) const override;
-                    virtual void                        Add (ArgByValueType<T> item, CounterType count) override;
-                    virtual void                        Remove (ArgByValueType<T> item, CounterType count) override;
-                    virtual void                        Remove (const Iterator<CountedValue<T>>& i) override;
-                    virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override;
-                    virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override;
-                    virtual Iterable<T>                 Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
-                    virtual Iterable<T>                 UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const override;
+                    virtual _MultisetSharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        if (fData_.HasActiveIterators ()) {
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                                auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                r->fData_.clear_WithPatching ();
+                                return r;
+                            }
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        }
+                        else {
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_InternalSync_> ();
+                        }
+                    }
+                    virtual bool                        Equals (const typename MultiSetType::_IRep& rhs) const override
+                    {
+                        return this->_Equals_Reference_Implementation (rhs);
+                    }
+                    virtual bool                        Contains (ArgByValueType<T> item) const override
+                    {
+                        CountedValue<T> tmp (item);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.find (item) != fData_.end ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                        Add (ArgByValueType<T> item, CounterType count) override
+                    {
+                        if (count == 0) {
+                            return;
+                        }
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            auto i = fData_.find (item);
+                            if (i == fData_.end ()) {
+                                fData_.insert (typename map<T, CounterType>::value_type (item, count));
+                            }
+                            else {
+                                i->second += count;
+                            }
+                            // MUST PATCH
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                        Remove (ArgByValueType<T> item, CounterType count) override
+                    {
+                        if (count == 0) {
+                            return;
+                        }
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            auto i = fData_.find (item);
+                            Require (i != fData_.end ());
+                            if (i != fData_.end ()) {
+                                Require (i->second >= count);
+                                i->second -= count;
+                                if (i->second == 0) {
+                                    fData_.erase_WithPatching (i);
+                                }
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                        Remove (const Iterator<CountedValue<T>>& i) override
+                    {
+                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            mir.fIterator.RemoveCurrent ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
+                    {
+                        const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            if (newCount == 0) {
+                                mir.fIterator.RemoveCurrent ();
+                            }
+                            else {
+                                mir.fIterator.fStdIterator->second = newCount;
+                            }
+                            // TODO - PATCH
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            auto i = fData_.find (item);
+                            if (i == fData_.end ()) {
+                                return 0;
+                            }
+                            return i->second;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterable<T>                 Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override
+                    {
+                        return this->_Elements_Reference_Implementation (rep);
+                    }
+                    virtual Iterable<T>                 UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const override
+                    {
+                        return this->_UniqueElements_Reference_Implementation (rep);
+                    }
 #if     qDebug
-                    virtual void                        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #endif
 
                 private:
@@ -91,207 +233,19 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **************** SortedMultiSet_stdmap<T, TRAITS>::Rep_ ************************
-                 ********************************************************************************
-                 */
-                template    <typename T, typename TRAITS>
-                inline  SortedMultiSet_stdmap<T, TRAITS>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-                    : inherited ()
-                    , fData_ (&from->fData_, forIterableEnvelope)
-                {
-                    RequireNotNull (from);
-                }
-                template    <typename T, typename TRAITS>
-                size_t  SortedMultiSet_stdmap<T, TRAITS>::Rep_::GetLength () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.size ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                bool  SortedMultiSet_stdmap<T, TRAITS>::Rep_::IsEmpty () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.empty ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<CountedValue<T>> SortedMultiSet_stdmap<T, TRAITS>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
-                {
-                    typename Iterator<CountedValue<T>>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    return Iterator<CountedValue<T>> (tmpRep);
-                }
-                template    <typename T, typename TRAITS>
-                void      SortedMultiSet_stdmap<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
-                {
-                    this->_Apply (doToElement);
-                }
-                template    <typename T, typename TRAITS>
-                Iterator<CountedValue<T>>     SortedMultiSet_stdmap<T, TRAITS>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
-                {
-                    return this->_FindFirstThat (doToElement, suggestedOwner);
-                }
-                template    <typename T, typename TRAITS>
-                typename SortedMultiSet_stdmap<T, TRAITS>::Rep_::_MultisetSharedPtrIRep  SortedMultiSet_stdmap<T, TRAITS>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
-                {
-                    if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                            r->fData_.clear_WithPatching ();
-                            return r;
-                        }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    }
-                    else {
-                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
-                    }
-                }
-                template    <typename T, typename TRAITS>
-                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Equals (const typename MultiSetType::_IRep& rhs) const
-                {
-                    return this->_Equals_Reference_Implementation (rhs);
-                }
-                template    <typename T, typename TRAITS>
-                bool    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Contains (ArgByValueType<T> item) const
-                {
-                    CountedValue<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.find (item) != fData_.end ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                typename SortedMultiSet_stdmap<T, TRAITS>::Rep_::_IterableSharedPtrIRep    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
-                {
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Add (ArgByValueType<T> item, CounterType count)
-                {
-                    if (count == 0) {
-                        return;
-                    }
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        auto i = fData_.find (item);
-                        if (i == fData_.end ()) {
-                            fData_.insert (typename map<T, CounterType>::value_type (item, count));
-                        }
-                        else {
-                            i->second += count;
-                        }
-                        // MUST PATCH
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Remove (ArgByValueType<T> item, CounterType count)
-                {
-                    if (count == 0) {
-                        return;
-                    }
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        auto i = fData_.find (item);
-                        Require (i != fData_.end ());
-                        if (i != fData_.end ()) {
-                            Require (i->second >= count);
-                            i->second -= count;
-                            if (i->second == 0) {
-                                fData_.erase_WithPatching (i);
-                            }
-                        }
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Remove (const Iterator<CountedValue<T>>& i)
-                {
-                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        mir.fIterator.RemoveCurrent ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount)
-                {
-                    const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        if (newCount == 0) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        else {
-                            mir.fIterator.fStdIterator->second = newCount;
-                        }
-                        // TODO - PATCH
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                auto  SortedMultiSet_stdmap<T, TRAITS>::Rep_::OccurrencesOf (ArgByValueType<T> item) const -> CounterType
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        auto i = fData_.find (item);
-                        if (i == fData_.end ()) {
-                            return 0;
-                        }
-                        return i->second;
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::Elements (const typename MultiSetType::_SharedPtrIRep& rep) const
-                {
-                    return this->_Elements_Reference_Implementation (rep);
-                }
-                template    <typename T, typename TRAITS>
-                Iterable<T>    SortedMultiSet_stdmap<T, TRAITS>::Rep_::UniqueElements (const typename MultiSetType::_SharedPtrIRep& rep) const
-                {
-                    return this->_UniqueElements_Reference_Implementation (rep);
-                }
-#if     qDebug
-                template    <typename T, typename TRAITS>
-                void    SortedMultiSet_stdmap<T, TRAITS>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#endif
-
-
-                /*
-                 ********************************************************************************
                  ************************ SortedMultiSet_stdmap<T, TRAITS> **********************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
@@ -303,26 +257,23 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T, typename ENABLE_IF>
                 SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMultiSet_stdmap (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
@@ -330,7 +281,7 @@ namespace   Stroika {
                 inline  void    SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMember
 #endif
                 }
 
