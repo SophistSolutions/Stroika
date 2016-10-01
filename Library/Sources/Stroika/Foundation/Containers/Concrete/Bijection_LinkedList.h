@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;

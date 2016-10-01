@@ -24,11 +24,11 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* Collection_Array<T,TRAITS>::Rep_ *************************
+                 ************** Collection_Array<T,TRAITS>::Rep_InternalSync_ *******************
                  ********************************************************************************
                  */
                 template    <typename T>
-                class   Collection_Array<T>::Rep_ : public Collection<T>::_IRep {
+                class   Collection_Array<T>::Rep_InternalSync_ : public Collection<T>::_IRep {
                 private:
                     using   inherited = typename Collection<T>::_IRep;
 
@@ -39,33 +39,135 @@ namespace   Stroika {
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ () = default;
-                    Rep_ (const Rep_& from) = delete;
-                    Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope);
+                    Rep_InternalSync_ () = default;
+                    Rep_InternalSync_ (const Rep_InternalSync_& from) = delete;
+                    Rep_InternalSync_ (Rep_InternalSync_* from, IteratorOwnerID forIterableEnvelope)
+                        : fData_ (&from->fData_, forIterableEnvelope)
+                    {
+                        RequireNotNull (from);
+                    }
 
                 public:
-                    nonvirtual  Rep_& operator= (const Rep_&) = delete;
+                    nonvirtual  Rep_InternalSync_& operator= (const Rep_InternalSync_&) = delete;
 
                 public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+                    DECLARE_USE_BLOCK_ALLOCATION (Rep_InternalSync_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t                  GetLength () const override;
-                    virtual bool                    IsEmpty () const override;
-                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
+                    virtual _IterableSharedPtrIRep  Clone (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                    }
+                    virtual Iterator<T>             MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    {
+                        typename Iterator<T>::SharedIRepPtr tmpRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        return Iterator<T> (tmpRep);
+                    }
+                    virtual size_t                  GetLength () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.GetLength ();
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual bool                    IsEmpty () const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            return fData_.GetLength () == 0;
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                            // use iterator (which currently implies lots of locks) with this->_Apply ()
+                            fData_.Apply (doToElement);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    {
+                        using   RESULT_TYPE     =   Iterator<T>;
+                        using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+                        SHARED_REP_TYPE resultRep;
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                            size_t i = fData_.FindFirstThat (doToElement);
+                            if (i == fData_.GetLength ()) {
+                                return RESULT_TYPE::GetEmptyIterator ();
+                            }
+                            Rep_InternalSync_*   NON_CONST_THIS  =   const_cast<Rep_InternalSync_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                            resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                            resultRep->fIterator.SetIndex (i);
+                        }
+                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
+                        return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
+                    }
 
                     // Collection<T>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override;
-                    virtual void                Add (ArgByValueType<T> item) override;
-                    virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override;
-                    virtual void                Remove (const Iterator<T>& i) override;
+                    virtual _SharedPtrIRep      CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    {
+                        if (fData_.HasActiveIterators ()) {
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
+                                // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
+                                auto r = Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> (const_cast<Rep_InternalSync_*> (this), forIterableEnvelope);
+                                r->fData_.RemoveAll ();
+                                return r;
+                            }
+                            CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
+                        }
+                        else {
+                            return Iterable<T>::template MakeSharedPtr<Rep_InternalSync_> ();
+                        }
+                    }
+                    virtual void                Add (ArgByValueType<T> item) override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            // Appending is fastest
+                            fData_.InsertAt (fData_.GetLength (), item);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
+                    {
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.SetAt (mir.fIterator, newValue);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void                Remove (const Iterator<T>& i) override
+                    {
+                        const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
+                        AssertMember (&ir, IteratorRep_);
+                        auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.RemoveAt (mir.fIterator);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #if     qDebug
-                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override;
+                    virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
+                    {
+                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
+                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
 #endif
 
                 private:
@@ -81,162 +183,26 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** Collection_Array<T,TRAITS>::Rep_ ***********************
+                 ************************* Collection_Array<T,TRAITS> ***************************
                  ********************************************************************************
                  */
                 template    <typename T>
-                inline  Collection_Array<T>::Rep_::Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
-                    : fData_ (&from->fData_, forIterableEnvelope)
-                {
-                    RequireNotNull (from);
-                }
-                template    <typename T>
-                typename Collection_Array<T>::Rep_::_IterableSharedPtrIRep  Collection_Array<T>::Rep_::Clone (IteratorOwnerID forIterableEnvelope) const
-                {
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                }
-                template    <typename T>
-                Iterator<T>  Collection_Array<T>::Rep_::MakeIterator (IteratorOwnerID suggestedOwner) const
-                {
-                    typename Iterator<T>::SharedIRepPtr tmpRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    return Iterator<T> (tmpRep);
-                }
-                template    <typename T>
-                size_t  Collection_Array<T>::Rep_::GetLength () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.GetLength ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                bool  Collection_Array<T>::Rep_::IsEmpty () const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        return fData_.GetLength () == 0;
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                void      Collection_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                        // use iterator (which currently implies lots of locks) with this->_Apply ()
-                        fData_.Apply (doToElement);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                Iterator<T>     Collection_Array<T>::Rep_::FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const
-                {
-                    using   RESULT_TYPE     =   Iterator<T>;
-                    using   SHARED_REP_TYPE =   Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
-                    SHARED_REP_TYPE resultRep;
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                        size_t i = fData_.FindFirstThat (doToElement);
-                        if (i == fData_.GetLength ()) {
-                            return RESULT_TYPE::GetEmptyIterator ();
-                        }
-                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        resultRep = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
-                        resultRep->fIterator.SetIndex (i);
-                    }
-                    CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                    return RESULT_TYPE (typename RESULT_TYPE::SharedIRepPtr (resultRep));
-                }
-                template    <typename T>
-                typename Collection_Array<T>::Rep_::_SharedPtrIRep  Collection_Array<T>::Rep_::CloneEmpty (IteratorOwnerID forIterableEnvelope) const
-                {
-                    if (fData_.HasActiveIterators ()) {
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START (fData_.fLockSupport) {
-                            // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
-                            r->fData_.RemoveAll ();
-                            return r;
-                        }
-                        CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END ();
-                    }
-                    else {
-                        return Iterable<T>::template MakeSharedPtr<Rep_> ();
-                    }
-                }
-                template    <typename T>
-                void    Collection_Array<T>::Rep_::Add (ArgByValueType<T> item)
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        // Appending is fastest
-                        fData_.InsertAt (fData_.GetLength (), item);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                void    Collection_Array<T>::Rep_::Update (const Iterator<T>& i, ArgByValueType<T> newValue)
-                {
-                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.SetAt (mir.fIterator, newValue);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T>
-                void    Collection_Array<T>::Rep_::Remove (const Iterator<T>& i)
-                {
-                    const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
-                    AssertMember (&ir, IteratorRep_);
-                    auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.RemoveAt (mir.fIterator);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#if     qDebug
-                template    <typename T>
-                void    Collection_Array<T>::Rep_::AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-#endif
-
-
-                /*
-                ********************************************************************************
-                ************************* Collection_Array<T,TRAITS> ***************************
-                ********************************************************************************
-                */
-                template    <typename T>
-                Collection_Array<T>::Collection_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                inline  Collection_Array<T>::Collection_Array (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
+                    : inherited (inherited::template MakeSharedPtr<Rep_InternalSync_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : Collection_Array (containerUpdateSafetyPolicy)
                 {
-                    AssertRepValidType_ ();
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : Collection_Array (containerUpdateSafetyPolicy)
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     AssertRepValidType_ ();
@@ -263,7 +229,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Collection_Array<T>::Compact ()
                 {
-                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_InternalSync_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().fData_.Compact ();
@@ -273,7 +239,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  size_t  Collection_Array<T>::GetCapacity () const
                 {
-                    using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
+                    using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_>;
                     _SafeReadRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         return accessor._ConstGetRep ().fData_.GetCapacity ();
@@ -283,7 +249,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Collection_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_InternalSync_>;
                     _SafeReadWriteRepAccessor accessor { this };
                     CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
                         accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
@@ -294,7 +260,7 @@ namespace   Stroika {
                 inline  void    Collection_Array<T>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<Rep_InternalSync_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

@@ -46,12 +46,13 @@ namespace   Stroika {
                     Collection_LinkedList (ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Collection_LinkedList (const T* start, const T* end, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
                     Collection_LinkedList (const Collection<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
-                    Collection_LinkedList (const Collection_LinkedList<T>& src, ContainerUpdateIteratorSafety containerUpdateSafetyPolicy = ContainerUpdateIteratorSafety::eDEFAULT);
+                    Collection_LinkedList (const Collection_LinkedList<T>& src);
 
+                public:
                     nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
