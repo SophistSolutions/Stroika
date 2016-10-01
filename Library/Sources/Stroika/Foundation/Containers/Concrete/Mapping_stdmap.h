@@ -85,7 +85,7 @@ namespace   Stroika {
                     nonvirtual  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
 
                 private:
-                    class   Rep_;
+                    class   Rep_InternalSync_;
 
                 private:
                     nonvirtual  void    AssertRepValidType_ () const;
