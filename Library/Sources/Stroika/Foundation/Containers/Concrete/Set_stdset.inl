@@ -203,7 +203,7 @@ namespace   Stroika {
                     AssertRepValidType_ ();
                 }
                 template    <typename T, typename TRAITS>
-                inline	Set_stdset<T, TRAITS>::Set_stdset (const Set_stdset<T, TRAITS>& src)
+                inline  Set_stdset<T, TRAITS>::Set_stdset (const Set_stdset<T, TRAITS>& src)
                     : inherited (src)
                 {
                     AssertRepValidType_ ();
