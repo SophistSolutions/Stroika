@@ -54,7 +54,7 @@ namespace   Stroika {
                  *  DOES provide 'deletion'/update safety.
                  */
                 template    <typename STL_CONTAINER_OF_T>
-                class   STLContainerWrapper : public STL_CONTAINER_OF_T,  protected Debug::AssertExternallySynchronizedLock {
+                class   STLContainerWrapper : public STL_CONTAINER_OF_T,  public Debug::AssertExternallySynchronizedLock {
                 private:
                     using   inherited   =   STL_CONTAINER_OF_T;
 

@@ -71,17 +71,13 @@ namespace   Stroika {
                     }
                     virtual size_t                      GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.size ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.size ();
                     }
                     virtual bool                        IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.empty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.empty ();
                     }
                     virtual Iterator<CountedValue<T>>  MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
@@ -126,10 +122,8 @@ namespace   Stroika {
                     virtual bool                        Contains (ArgByValueType<T> item) const override
                     {
                         CountedValue<T> tmp (item);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.find (item) != fData_.end ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.find (item) != fData_.end ();
                     }
                     virtual void                        Add (ArgByValueType<T> item, CounterType count) override
                     {
@@ -194,14 +188,12 @@ namespace   Stroika {
                     }
                     virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            if (i == fData_.end ()) {
-                                return 0;
-                            }
-                            return i->second;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        if (i == fData_.end ()) {
+                            return 0;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        return i->second;
                     }
                     virtual Iterable<T>                 Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
                     {
@@ -214,10 +206,8 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 

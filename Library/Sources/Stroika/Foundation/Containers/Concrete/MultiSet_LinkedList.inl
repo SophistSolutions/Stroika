@@ -67,17 +67,13 @@ namespace   Stroika {
                     }
                     virtual size_t                              GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return (fData_.GetLength ());
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return (fData_.GetLength ());
                     }
                     virtual bool                                IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.IsEmpty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.IsEmpty ();
                     }
                     virtual Iterator<CountedValue<T>>           MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
@@ -91,12 +87,10 @@ namespace   Stroika {
                     }
                     virtual void                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<CountedValue<T>>           FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -140,34 +134,30 @@ namespace   Stroika {
                     }
                     virtual bool                                Contains (ArgByValueType<T> item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            CountedValue<T>   c = item;
-                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
-                                    Assert (c.fCount != 0);
-                                    return (true);
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        CountedValue<T>   c = item;
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                                Assert (c.fCount != 0);
+                                return (true);
                             }
-                            return (false);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        return false;
                     }
                     virtual void                                Add (ArgByValueType<T> item, CounterType count) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
                         if (count != 0) {
                             CountedValue<T>   current (item);
-                            CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                    if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
-                                        current.fCount += count;
-                                        fData_.SetAt (it, current);
-                                        return;
-                                    }
+                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                    current.fCount += count;
+                                    fData_.SetAt (it, current);
+                                    return;
                                 }
-                                fData_.Prepend (CountedValue<T> (item, count));
                             }
-                            CONTAINER_LOCK_HELPER_END ();
+                            fData_.Prepend (CountedValue<T> (item, count));
                         }
                     }
                     virtual void                                Remove (ArgByValueType<T> item, CounterType count) override
@@ -175,26 +165,24 @@ namespace   Stroika {
                         using   Traversal::kUnknownIteratorOwnerID;
                         if (count != 0) {
                             CountedValue<T>   current (item);
-                            CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                                for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
-                                    if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
-                                        if (current.fCount > count) {
-                                            current.fCount -= count;
-                                        }
-                                        else {
-                                            current.fCount = 0;     // Should this be an underflow excpetion, assertion???
-                                        }
-                                        if (current.fCount == 0) {
-                                            fData_.RemoveAt (it);
-                                        }
-                                        else {
-                                            fData_.SetAt (it, current);
-                                        }
-                                        break;
+                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                    if (current.fCount > count) {
+                                        current.fCount -= count;
                                     }
+                                    else {
+                                        current.fCount = 0;     // Should this be an underflow excpetion, assertion???
+                                    }
+                                    if (current.fCount == 0) {
+                                        fData_.RemoveAt (it);
+                                    }
+                                    else {
+                                        fData_.SetAt (it, current);
+                                    }
+                                    break;
                                 }
                             }
-                            CONTAINER_LOCK_HELPER_END ();
                         }
                     }
                     virtual void                                Remove (const Iterator<CountedValue<T>>& i) override
@@ -202,40 +190,34 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void                                UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (newCount == 0) {
-                                fData_.RemoveAt (mir.fIterator);
-                            }
-                            else {
-                                CountedValue<T>   c   =   mir.fIterator.Current ();
-                                c.fCount = newCount;
-                                fData_.SetAt (mir.fIterator, c);
-                            }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (newCount == 0) {
+                            fData_.RemoveAt (mir.fIterator);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            CountedValue<T>   c   =   mir.fIterator.Current ();
+                            c.fCount = newCount;
+                            fData_.SetAt (mir.fIterator, c);
+                        }
                     }
                     virtual CounterType                         OccurrencesOf (ArgByValueType<T> item) const override
                     {
                         CountedValue<T>   c = item;
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
-                                    Ensure (c.fCount != 0);
-                                    return c.fCount;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                                Ensure (c.fCount != 0);
+                                return c.fCount;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                         return 0;
                     }
                     virtual Iterable<T>                         Elements (const typename MultiSet<T, TRAITS>::_SharedPtrIRep& rep) const override
@@ -249,10 +231,8 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 

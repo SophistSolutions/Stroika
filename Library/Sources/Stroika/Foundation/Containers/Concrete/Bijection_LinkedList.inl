@@ -76,26 +76,20 @@ namespace   Stroika {
                     }
                     virtual size_t                                      GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetLength ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength ();
                     }
                     virtual bool                                        IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.IsEmpty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.IsEmpty ();
                     }
                     virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -149,17 +143,15 @@ namespace   Stroika {
                     }
                     virtual bool                    Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RANGE_TYPE>* item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                                if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
-                                    if (item != nullptr) {
-                                        *item = it.Current ().second;
-                                    }
-                                    return true;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                                if (item != nullptr) {
+                                    *item = it.Current ().second;
                                 }
+                                return true;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                         if (item != nullptr) {
                             item->clear ();
                         }
@@ -167,17 +159,15 @@ namespace   Stroika {
                     }
                     virtual bool                    InverseLookup (ArgByValueType<RANGE_TYPE> key, Memory::Optional<DOMAIN_TYPE>* item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                                if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, key)) {
-                                    if (item != nullptr) {
-                                        *item = it.Current ().first;
-                                    }
-                                    return true;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, key)) {
+                                if (item != nullptr) {
+                                    *item = it.Current ().first;
                                 }
+                                return true;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                         if (item != nullptr) {
                             item->clear ();
                         }
@@ -186,60 +176,50 @@ namespace   Stroika {
                     virtual void                    Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                                if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
-                                    fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
-                                    return;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                                fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
+                                return;
                             }
-                            fData_.Append (pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.Append (pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
                     }
                     virtual void                    RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                                if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
-                                    fData_.RemoveAt (it);
-                                    return;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
+                                fData_.RemoveAt (it);
+                                return;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                    RemoveRangeElement (ArgByValueType<RANGE_TYPE> r) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                                if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
-                                    fData_.RemoveAt (it);
-                                    return;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
+                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
+                                fData_.RemoveAt (it);
+                                return;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                    Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override
                     {
                         const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 

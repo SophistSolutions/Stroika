@@ -79,26 +79,20 @@ namespace   Stroika {
                     }
                     virtual size_t                      GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetLength ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength ();
                     }
                     virtual bool                        IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.IsEmpty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.IsEmpty ();
                     }
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<T>                 FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -138,27 +132,21 @@ namespace   Stroika {
                     }
                     virtual void                Push (ArgByValueType<T> item) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Append (item);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Append (item);
                     }
                     virtual T                   Pop () override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            T   result  =   fData_.GetFirst ();
-                            fData_.RemoveFirst ();
-                            // FIX/PATCH
-                            return result;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        T   result  =   fData_.GetFirst ();
+                        fData_.RemoveFirst ();
+                        // FIX/PATCH
+                        return result;
                     }
                     virtual T                   Top () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetFirst ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetFirst ();
                     }
 
                 private:

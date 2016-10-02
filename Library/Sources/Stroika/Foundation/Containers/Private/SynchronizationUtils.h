@@ -29,41 +29,10 @@
 
 
 
-#define qContainersPrivateSyncrhonizationPolicy_StdMutex_                   1
-
-//http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
-#define qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_              2
-
-#define qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_    3
-
-// HIGHLY experimental, but I have reason to believe this may work
-#define qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_     4
 
 
 
-//Test https://stroika.atlassian.net/browse/STK-525
-#ifndef qContainersPrivateSyncrhonizationPolicy_
-#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
-#endif
-
-
-
-#ifndef qContainersPrivateSyncrhonizationPolicy_
-#if     qPlatform_Windows
-#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
-#else
-#define qContainersPrivateSyncrhonizationPolicy_    qContainersPrivateSyncrhonizationPolicy_StdMutex_
-#endif
-#endif
-
-
-#if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-#include    <mutex>
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
-#include    "../../Execution/Platform/Windows/CriticalSectionMutex.h"
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
 #include    "../../Debug/AssertExternallySynchronizedLock.h"
-#endif
 
 
 
@@ -73,66 +42,16 @@ namespace   Stroika {
             namespace Private {
 
 
-                /// @todo https://stroika.atlassian.net/browse/STK-533
-                // LOSE qContainersPrivateSyncrhonizationPolicy_ - always narrow mutex and debug::assertexteranllysynchonized
                 struct  ContainerRepLockDataSupport_ {
-#if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-                    /*
-                     *  We used std::mutex instead of std::recursive_mutex for performance reasons until v2.0a102.
-                     *
-                     *  However, this was a mistake. It CAN break black box modularity, because you can assign a container to
-                     *  another and lose track of what 'rep' is being used, and end up with a deadlock (or at least easily
-                     *  uneasily viewable blocking).
-                     *
-                     *  With very limited empirical testing, on WinDoze / VS2k13, it made no obvious performance differnce
-                     *  anyhow.
-                     */
-                    mutable std::recursive_mutex  fMutex_;
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
-                    mutable Execution::Platform::Windows::CriticalSectionMutex  fMutex_;
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
                     /// testing more - but see comments above 'CAN break black box modularity' - may want to use recursive_mutex
                     mutable std::mutex                              fActiveIteratorsMutex_;
                     mutable Debug::AssertExternallySynchronizedLock fMutex_;
-#endif
                     ContainerRepLockDataSupport_ () = default;
                     ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
                     const ContainerRepLockDataSupport_& operator= (const ContainerRepLockDataSupport_&) = delete;
                 };
 
 
-
-#if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-#define CONTAINER_LOCK_HELPER_START(CRLDS)\
-    {\
-        std::lock_guard<std::recursive_mutex> lg (CRLDS.fMutex_);\
-        {
-#define CONTAINER_LOCK_HELPER_END()\
-}\
-}
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
-    {\
-        std::lock_guard<std::recursive_mutex> lg (CRLDS.fMutex_);\
-        {
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
-}\
-}
-#elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_WinCriticalSectionMutex_
-#define CONTAINER_LOCK_HELPER_START(CRLDS)\
-    {\
-        std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
-        {
-#define CONTAINER_LOCK_HELPER_END()\
-}\
-}
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
-    {\
-        std::lock_guard<Execution::Platform::Windows::CriticalSectionMutex> lg (CRLDS.fMutex_);\
-        {
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
-}\
-}
-#elif     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_DebugExternalSyncMutex_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         std::shared_lock<Debug::AssertExternallySynchronizedLock> lg (CRLDS.fMutex_);\
@@ -147,22 +66,6 @@ namespace   Stroika {
 #define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
 }\
 }
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_
-#define CONTAINER_LOCK_HELPER_START(CRLDS)\
-    {\
-        synchronized_\
-        {
-#define CONTAINER_LOCK_HELPER_END()\
-}\
-}
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_START(CRLDS)\
-    {\
-        synchronized_\
-        {
-#define CONTAINER_LOCK_HELPER_ITERATORLISTUPDATE_END()\
-}\
-}
-#endif
 
 
 

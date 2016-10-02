@@ -78,29 +78,23 @@ namespace   Stroika {
                     }
                     virtual size_t                  GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            size_t  cnt = 0;
-                            for (auto i = fData_.begin (); i != fData_.end (); ++i, cnt++)
-                                ;
-                            return cnt;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        size_t  cnt = 0;
+                        for (auto i = fData_.begin (); i != fData_.end (); ++i, cnt++)
+                            ;
+                        return cnt;
                     }
                     virtual bool                    IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.empty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.empty ();
                     }
                     virtual void                    Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<T>             FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -170,10 +164,8 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 

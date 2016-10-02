@@ -72,17 +72,13 @@ namespace   Stroika {
                     }
                     virtual size_t                      GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.size ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.size ();
                     }
                     virtual bool                        IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.empty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.empty ();
                     }
                     virtual Iterator<CountedValue<T>>   MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
@@ -127,82 +123,70 @@ namespace   Stroika {
                     virtual bool                        Contains (ArgByValueType<T> item) const override
                     {
                         CountedValue<T> tmp (item);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.find (item) != fData_.end ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.find (item) != fData_.end ();
                     }
                     virtual void                        Add (ArgByValueType<T> item, CounterType count) override
                     {
                         if (count == 0) {
                             return;
                         }
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            if (i == fData_.end ()) {
-                                fData_.insert (typename map<T, CounterType>::value_type (item, count));
-                            }
-                            else {
-                                i->second += count;
-                            }
-                            // MUST PATCH
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        if (i == fData_.end ()) {
+                            fData_.insert (typename map<T, CounterType>::value_type (item, count));
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            i->second += count;
+                        }
+                        // MUST PATCH
                     }
                     virtual void                        Remove (ArgByValueType<T> item, CounterType count) override
                     {
                         if (count == 0) {
                             return;
                         }
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            Require (i != fData_.end ());
-                            if (i != fData_.end ()) {
-                                Require (i->second >= count);
-                                i->second -= count;
-                                if (i->second == 0) {
-                                    fData_.erase_WithPatching (i);
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        Require (i != fData_.end ());
+                        if (i != fData_.end ()) {
+                            Require (i->second >= count);
+                            i->second -= count;
+                            if (i->second == 0) {
+                                fData_.erase_WithPatching (i);
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                        Remove (const Iterator<CountedValue<T>>& i) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        mir.fIterator.RemoveCurrent ();
                     }
                     virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            if (newCount == 0) {
-                                mir.fIterator.RemoveCurrent ();
-                            }
-                            else {
-                                mir.fIterator.fStdIterator->second = newCount;
-                            }
-                            // TODO - PATCH
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        if (newCount == 0) {
+                            mir.fIterator.RemoveCurrent ();
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            mir.fIterator.fStdIterator->second = newCount;
+                        }
+                        // TODO - PATCH
                     }
                     virtual CounterType                 OccurrencesOf (ArgByValueType<T> item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (item);
-                            if (i == fData_.end ()) {
-                                return 0;
-                            }
-                            return i->second;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (item);
+                        if (i == fData_.end ()) {
+                            return 0;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        return i->second;
                     }
                     virtual Iterable<T>                 Elements (const typename MultiSetType::_SharedPtrIRep& rep) const override
                     {
@@ -215,10 +199,8 @@ namespace   Stroika {
 #if     qDebug
                     virtual void                        AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 

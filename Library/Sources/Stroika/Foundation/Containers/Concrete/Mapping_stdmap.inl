@@ -79,28 +79,22 @@ namespace   Stroika {
                     }
                     virtual size_t                                              GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            return fData_.size ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.size ();
                     }
                     virtual bool                                                IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            return fData_.empty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.empty ();
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -134,22 +128,20 @@ namespace   Stroika {
                     }
                     virtual bool                    Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<VALUE_TYPE>* item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (key);
-                            if (i == fData_.end ()) {
-                                if (item != nullptr) {
-                                    item->clear ();
-                                }
-                                return false;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (key);
+                        if (i == fData_.end ()) {
+                            if (item != nullptr) {
+                                item->clear ();
                             }
-                            else {
-                                if (item != nullptr) {
-                                    *item = i->second;
-                                }
-                                return true;
-                            }
+                            return false;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            if (item != nullptr) {
+                                *item = i->second;
+                            }
+                            return true;
+                        }
                     }
                     virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
                     {

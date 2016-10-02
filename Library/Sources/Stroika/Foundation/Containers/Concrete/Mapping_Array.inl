@@ -75,26 +75,20 @@ namespace   Stroika {
                     }
                     virtual size_t                                              GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetLength ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength ();
                     }
                     virtual bool                                                IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            return fData_.GetLength () == 0;
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetLength () == 0;
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -142,64 +136,54 @@ namespace   Stroika {
                     }
                     virtual bool                    Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<VALUE_TYPE>* item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                                if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
-                                    if (item != nullptr) {
-                                        *item = it.Current ().fValue;
-                                    }
-                                    return true;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                                if (item != nullptr) {
+                                    *item = it.Current ().fValue;
                                 }
+                                return true;
                             }
-                            if (item != nullptr) {
-                                item->clear ();
-                            }
-                            return false;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        if (item != nullptr) {
+                            item->clear ();
+                        }
+                        return false;
                     }
                     virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                                if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
-                                    fData_[it.CurrentIndex ()].fValue = newElt;
-                                    return;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                                fData_[it.CurrentIndex ()].fValue = newElt;
+                                return;
                             }
-                            fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
                     }
                     virtual void                    Remove (ArgByValueType<KEY_TYPE> key) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                                if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
-                                    fData_.RemoveAt (it.CurrentIndex ());
-                                    return;
-                                }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                                fData_.RemoveAt (it.CurrentIndex ());
+                                return;
                             }
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.RemoveAt (mir.fIterator);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug
                     virtual void                    AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 
@@ -264,30 +248,24 @@ namespace   Stroika {
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.Compact ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    accessor._GetWriteableRep ().fData_.Compact ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  size_t  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::GetCapacity () const
                 {
                     using   _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        return accessor._ConstGetRep ().fData_.GetCapacity ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
                     using   _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
                     _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { accessor._ConstGetRep ().fData_ };
+                    accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const

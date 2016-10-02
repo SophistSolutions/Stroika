@@ -79,28 +79,22 @@ namespace   Stroika {
                     }
                     virtual size_t                                              GetLength () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            return fData_.size ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.size ();
                     }
                     virtual bool                                                IsEmpty () const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            return fData_.empty ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        return fData_.empty ();
                     }
                     virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
-                            // use iterator (which currently implies lots of locks) with this->_Apply ()
-                            fData_.Apply (doToElement);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
+                        // use iterator (which currently implies lots of locks) with this->_Apply ()
+                        fData_.Apply (doToElement);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
@@ -130,67 +124,57 @@ namespace   Stroika {
                     }
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            auto i = fData_.find (key);
-                            if (i == fData_.end ()) {
-                                if (item != nullptr) {
-                                    item->clear ();
-                                }
-                                return false;
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        auto i = fData_.find (key);
+                        if (i == fData_.end ()) {
+                            if (item != nullptr) {
+                                item->clear ();
                             }
-                            else {
-                                if (item != nullptr) {
-                                    *item = i->second;
-                                }
-                                return true;
-                            }
+                            return false;
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            if (item != nullptr) {
+                                *item = i->second;
+                            }
+                            return true;
+                        }
                     }
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            auto i = fData_.find (key);
-                            if (i == fData_.end ()) {
-                                i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
-                                // no need to patch map<>
-                            }
-                            else {
-                                i->second = newElt;
-                            }
-                            fData_.Invariant ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        auto i = fData_.find (key);
+                        if (i == fData_.end ()) {
+                            i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
+                            // no need to patch map<>
                         }
-                        CONTAINER_LOCK_HELPER_END ();
+                        else {
+                            i->second = newElt;
+                        }
+                        fData_.Invariant ();
                     }
                     virtual void                Remove (KEY_TYPE key) override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.Invariant ();
-                            auto i = fData_.find (key);
-                            if (i != fData_.end ()) {
-                                fData_.erase_WithPatching (i);
-                            }
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Invariant ();
+                        auto i = fData_.find (key);
+                        if (i != fData_.end ()) {
+                            fData_.erase_WithPatching (i);
                         }
-                        CONTAINER_LOCK_HELPER_END ();
                     }
                     virtual void                Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&    mir = dynamic_cast<const IteratorRep_&> (ir);
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            mir.fIterator.RemoveCurrent ();
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        mir.fIterator.RemoveCurrent ();
                     }
 #if     qDebug
                     virtual void                AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        CONTAINER_LOCK_HELPER_START (fData_.fLockSupport) {
-                            fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
 
