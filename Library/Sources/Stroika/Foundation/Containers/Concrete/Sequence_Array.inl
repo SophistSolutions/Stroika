@@ -28,10 +28,26 @@ namespace   Stroika {
                 using   Traversal::IteratorOwnerID;
 
 
+                /*
+                 */
                 template    <typename T>
-                class   Sequence_Array<T>::UpdateSafeIterationContainerRep_ : public Sequence<T>::_IRep {
+                class   Sequence_Array<T>::ISeqArrRep_ : public Sequence<T>::_IRep {
                 private:
                     using   inherited   =   typename Sequence<T>::_IRep;
+
+                public:
+                    virtual void    Compact () = 0;
+                    virtual size_t  GetCapacity () const = 0;
+                    virtual void    SetCapacity (size_t slotsAlloced) = 0;
+                };
+
+
+                /*
+                 */
+                template    <typename T>
+                class   Sequence_Array<T>::UpdateSafeIterationContainerRep_ : public Sequence_Array<T>::ISeqArrRep_ {
+                private:
+                    using   inherited   =   typename Sequence_Array<T>::ISeqArrRep_;
 
                 public:
                     using   _IterableSharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
@@ -87,7 +103,6 @@ namespace   Stroika {
                     }
                     virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -202,8 +217,8 @@ namespace   Stroika {
                     }
                     virtual void                Remove (size_t from, size_t to) override
                     {
-                        // quickie poor impl
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        // quickie poor impl
                         for (size_t i = from; i < to; ++i) {
                             fData_.RemoveAt (from);
                         }
@@ -215,6 +230,24 @@ namespace   Stroika {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
+
+                    // Sequence_Array<T>::ISeqArrRep_
+                public:
+                    virtual void    Compact () override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.Compact ();
+                    }
+                    virtual size_t  GetCapacity () const override
+                    {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        return fData_.GetCapacity ();
+                    }
+                    virtual void    SetCapacity (size_t slotsAlloced) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
+                        fData_.SetCapacity (slotsAlloced);
+                    }
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::Array<T, Private::ContainerRepLockDataSupport_>;
@@ -283,38 +316,23 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Sequence_Array<T>::Compact ()
                 {
-                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.Compact ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    typename inherited::template _SafeReadWriteRepAccessor<ISeqArrRep_>  { this } ._GetWriteableRep ().Compact ();
                 }
                 template    <typename T>
                 inline  size_t  Sequence_Array<T>::GetCapacity () const
                 {
-                    using   _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        return accessor._ConstGetRep ().fData_.GetCapacity ();
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    return typename inherited::template _SafeReadRepAccessor<ISeqArrRep_>._ConstGetRep ().GetCapacity ();
                 }
                 template    <typename T>
                 inline  void    Sequence_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    using   _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<UpdateSafeIterationContainerRep_>;
-                    _SafeReadWriteRepAccessor accessor { this };
-                    CONTAINER_LOCK_HELPER_START (accessor._ConstGetRep ().fData_.fLockSupport) {
-                        accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
+                    typename inherited::template _SafeReadWriteRepAccessor<ISeqArrRep_>  { this } ._GetWriteableRep ().SetCapacity (slotsAlloced);
                 }
                 template    <typename T>
                 inline  void    Sequence_Array<T>::AssertRepValidType_ () const
                 {
 #if     qDebug
-                    typename inherited::template _SafeReadRepAccessor<UpdateSafeIterationContainerRep_> tmp { this };   // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<ISeqArrRep_> tmp { this };   // for side-effect of AssertMemeber
 #endif
                 }
 

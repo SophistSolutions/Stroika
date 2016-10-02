@@ -73,6 +73,7 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                 private:
+                    class   ISeqArrRep_;
                     class   UpdateSafeIterationContainerRep_;
 
                 private:
