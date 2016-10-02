@@ -130,7 +130,7 @@ namespace   Stroika {
                         if (count == 0) {
                             return;
                         }
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
                             fData_.insert (typename map<T, CounterType>::value_type (item, count));
@@ -145,7 +145,7 @@ namespace   Stroika {
                         if (count == 0) {
                             return;
                         }
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         auto i = fData_.find (item);
                         Require (i != fData_.end ());
                         if (i != fData_.end ()) {
@@ -161,7 +161,7 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         mir.fIterator.RemoveCurrent ();
                     }
                     virtual void                        UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
@@ -169,7 +169,7 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (newCount == 0) {
                             mir.fIterator.RemoveCurrent ();
                         }

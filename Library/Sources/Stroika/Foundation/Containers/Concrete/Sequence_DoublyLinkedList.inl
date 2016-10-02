@@ -137,7 +137,7 @@ namespace   Stroika {
                     virtual void                SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.SetAt (i, item);
                     }
                     virtual size_t              IndexOf (const Iterator<T>& i) const override
@@ -150,7 +150,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
@@ -158,7 +158,7 @@ namespace   Stroika {
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
@@ -168,7 +168,7 @@ namespace   Stroika {
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
                         Require (at == kBadSequenceIndex or at <= GetLength ());
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (at == kBadSequenceIndex) {
                             at = fData_.GetLength ();
                         }
@@ -206,7 +206,7 @@ namespace   Stroika {
                         // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                         size_t index = from;
                         size_t amountToRemove = (to - from);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {

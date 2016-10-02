@@ -148,7 +148,7 @@ namespace   Stroika {
                     }
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_[it.CurrentIndex ()].fValue = newElt;
@@ -159,7 +159,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (KEY_TYPE key) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
@@ -172,7 +172,7 @@ namespace   Stroika {
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if     qDebug

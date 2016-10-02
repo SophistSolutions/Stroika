@@ -129,19 +129,19 @@ namespace   Stroika {
                     }
                     virtual void                AddTail (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.Append (item);
                     }
                     virtual T                   RemoveHead () override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         T   item =  fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         return item;
                     }
                     virtual Memory::Optional<T> RemoveHeadIf () override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (fData_.IsEmpty ()) {
                             return Memory::Optional<T> ();
                         }

@@ -120,12 +120,12 @@ namespace   Stroika {
                     }
                     virtual void                Add (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.push_front (item);
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);
@@ -134,7 +134,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&      mir =   dynamic_cast<const IteratorRep_&> (ir);

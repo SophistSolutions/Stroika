@@ -141,7 +141,7 @@ namespace   Stroika {
                     virtual void                SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.SetAt (i, item);
                     }
                     virtual size_t              IndexOf (const Iterator<T>& i) const override
@@ -154,7 +154,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
@@ -162,7 +162,7 @@ namespace   Stroika {
                     }
                     virtual void                Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
@@ -171,7 +171,7 @@ namespace   Stroika {
                     virtual void                Insert (size_t at, const T* from, const T* to) override
                     {
                         Require (at == kBadSequenceIndex or at <= GetLength ());
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (at == kBadSequenceIndex) {
                             at = fData_.GetLength ();
                         }
@@ -203,7 +203,7 @@ namespace   Stroika {
                     virtual void                Remove (size_t from, size_t to) override
                     {
                         // quickie poor impl
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (size_t i = from; i < to; ++i) {
                             fData_.RemoveAt (from);
                         }

@@ -145,7 +145,7 @@ namespace   Stroika {
                     virtual void                                    Add (ArgByValueType<T> item, CounterType count) override
                     {
                         CountedValue<T> tmp (item, count);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         size_t index = Find_ (tmp);
                         if (index == kNotFound_) {
                             fData_.InsertAt (fData_.GetLength (), tmp);
@@ -158,7 +158,7 @@ namespace   Stroika {
                     virtual void                                    Remove (ArgByValueType<T> item, CounterType count) override
                     {
                         CountedValue<T> tmp (item);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         size_t index = Find_ (tmp);
                         if (index != kNotFound_) {
                             Assert (index < fData_.GetLength ());
@@ -177,7 +177,7 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void                                    UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
@@ -185,7 +185,7 @@ namespace   Stroika {
                         const typename Iterator<CountedValue<T>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         if (newCount == 0) {
                             fData_.RemoveAt (mir.fIterator);
                         }

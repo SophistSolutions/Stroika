@@ -281,7 +281,7 @@ namespace   Stroika {
                 : fRealCache_ (1)
             {
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
-                lock_guard<const AssertExternallySynchronizedLock> fromCritSec { from };    // after above getMaxCacheSize to avoid recursive access
+                lock_guard<const Debug::AssertExternallySynchronizedLock> fromCritSec { from };    // after above getMaxCacheSize to avoid recursive access
                 for (auto i : from.fRealCache_) {
                     if (i) {
                         Add (i->fKey, i->fValue);
@@ -306,7 +306,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  size_t  LRUCache<KEY, VALUE, TRAITS>::GetMaxCacheSize () const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { *this };
                 return fRealCache_.GetMaxCacheSize ();
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
@@ -318,7 +318,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             inline  typename TRAITS::StatsType  LRUCache<KEY, VALUE, TRAITS>::GetStats () const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { *this };
                 return fRealCache_;
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
@@ -353,7 +353,7 @@ namespace   Stroika {
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key) const -> OptionalValueType
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { *this };
                 OptKeyValuePair_*  v   =   fRealCache_.LookupElement (key);
                 if (v == nullptr) {
                     return OptionalValueType ();
@@ -389,7 +389,7 @@ namespace   Stroika {
             }
             template    <typename KEY, typename VALUE, typename TRAITS>
             auto     LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::DefaultTraits::Mapping<KEY, VALUE, KeyEqualsCompareFunctionType>> {
-                lock_guard<const AssertExternallySynchronizedLock> critSec { *this };
+                lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { *this };
                 Containers::Mapping<KEY, VALUE, Containers::DefaultTraits::Mapping<KEY, VALUE, KeyEqualsCompareFunctionType>>  result;
                 for (auto i : fRealCache_)
                 {

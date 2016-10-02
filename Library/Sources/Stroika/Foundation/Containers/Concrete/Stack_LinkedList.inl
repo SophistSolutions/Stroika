@@ -132,12 +132,12 @@ namespace   Stroika {
                     }
                     virtual void                Push (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         fData_.Append (item);
                     }
                     virtual T                   Pop () override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         T   result  =   fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         // FIX/PATCH

@@ -157,7 +157,7 @@ namespace   Stroika {
                     virtual void                    Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<VALUE_TYPE> newElt) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.SetAt (it, KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
@@ -169,7 +169,7 @@ namespace   Stroika {
                     virtual void                    Remove (ArgByValueType<KEY_TYPE> key) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it);
@@ -179,7 +179,7 @@ namespace   Stroika {
                     }
                     virtual void                    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&       mir =   dynamic_cast<const IteratorRep_&> (ir);

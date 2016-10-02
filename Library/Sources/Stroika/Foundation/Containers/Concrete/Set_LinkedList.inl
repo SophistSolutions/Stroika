@@ -111,13 +111,13 @@ namespace   Stroika {
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
                     {
-                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const T*    l = fData_.Lookup (item);
                         return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     virtual void                Add (ArgByValueType<T> item) override
                     {
-                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
                         for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
@@ -128,7 +128,7 @@ namespace   Stroika {
                     }
                     virtual void                Remove (ArgByValueType<T> item) override
                     {
-                        lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         using   Traversal::kUnknownIteratorOwnerID;
                         for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {

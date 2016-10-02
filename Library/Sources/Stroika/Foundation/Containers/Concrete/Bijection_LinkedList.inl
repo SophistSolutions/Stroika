@@ -176,7 +176,7 @@ namespace   Stroika {
                     virtual void                    Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
@@ -188,7 +188,7 @@ namespace   Stroika {
                     virtual void                    RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
                                 fData_.RemoveAt (it);
@@ -199,7 +199,7 @@ namespace   Stroika {
                     virtual void                    RemoveRangeElement (ArgByValueType<RANGE_TYPE> r) override
                     {
                         using   Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
                                 fData_.RemoveAt (it);
@@ -209,7 +209,7 @@ namespace   Stroika {
                     }
                     virtual void                    Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override
                     {
-                        std::lock_guard<const AssertExternallySynchronizedLock> critSec { fData_ };
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec { fData_ };
                         const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep&    ir  =   i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto&   mir =   dynamic_cast<const IteratorRep_&> (ir);
